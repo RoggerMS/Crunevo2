@@ -1,1 +1,21 @@
-<!-- Right sidebar placeholder -->
+<div class="sidebar">
+  <div class="mb-3">
+    <h6 class="text-muted">Apuntes más vistos</h6>
+    <ul class="list-group small">
+      {% for n in popular_notes or [] %}
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <span>{{ n.title }}</span>
+        <span class="badge bg-secondary rounded-pill">{{ n.views }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="mb-3">
+    <h6 class="text-muted">Usuarios activos</h6>
+    <ul class="list-group small">
+      {% for u in active_users or [] %}
+      <li class="list-group-item">{{ u.username }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>

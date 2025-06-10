@@ -1,9 +1,47 @@
+html {
+  transition: background-color 0.3s, color 0.3s;
+}
+
 body[data-bs-theme="dark"] {
   background-color: #121212;
   color: #f8f9fa;
 }
 
+.sidebar {
+  position: sticky;
+  top: 80px;
+}
+
 .comment {
   border-bottom: 1px solid #dee2e6;
-  padding: 0.5rem 0;
+  padding-bottom: 0.5rem;
+}
+
+.chat-container {
+  height: 300px;
+  overflow-y: auto;
+}
+
+.message {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  margin-bottom: 0.5rem;
+  max-width: 75%;
+}
+
+.message.sent {
+  background-color: #0d6efd;
+  color: #fff;
+  margin-left: auto;
+}
+
+.message.received {
+  background-color: #e9ecef;
+}
+
+#searchSuggestions {
+  z-index: 1000;
+  top: 100%;
+  max-height: 300px;
+  overflow-y: auto;
 }

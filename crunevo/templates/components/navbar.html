@@ -1,29 +1,36 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
   <div class="container-fluid">
     <a class="navbar-brand" href="{{ url_for('feed.index') }}">Crunevo</a>
+    <form class="d-none d-lg-flex mx-3 flex-grow-1 position-relative" id="globalSearchForm">
+      <input class="form-control" type="search" placeholder="Buscar" aria-label="Buscar" id="globalSearchInput" autocomplete="off">
+      <div id="searchSuggestions" class="list-group position-absolute w-100"></div>
+    </form>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.index') }}">Inicio</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.trending') }}">Tendencias</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('notes.list_notes') }}">Apuntes</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('store.store_index') }}">Tienda</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('chat.chat_index') }}">Chat</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.index') }}"><i class="bi bi-house-door"></i></a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.trending') }}"><i class="bi bi-fire"></i></a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('notes.list_notes') }}"><i class="bi bi-journal-text"></i></a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('store.store_index') }}"><i class="bi bi-bag"></i></a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('chat.chat_index') }}"><i class="bi bi-chat-dots"></i></a></li>
         {% if current_user.is_authenticated and current_user.role == 'admin' %}
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}">Admin</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2"></i></a></li>
         {% endif %}
       </ul>
       <ul class="navbar-nav align-items-center">
         {% if current_user.is_authenticated %}
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.perfil') }}">Perfil</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Salir</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.perfil') }}"><i class="bi bi-person-circle"></i></a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i></a></li>
         {% else %}
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Ingresar</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right"></i></a></li>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+        <li class="nav-item text-white mx-2"><i class="bi bi-coin"></i> {{ current_user.credits }}</li>
         {% endif %}
         <li class="nav-item">
-          <button id="themeToggle" class="btn btn-sm btn-secondary ms-2" type="button">🌙</button>
+          <button id="themeToggle" class="btn btn-sm btn-secondary ms-2" type="button"><i class="bi bi-moon"></i></button>
         </li>
       </ul>
     </div>

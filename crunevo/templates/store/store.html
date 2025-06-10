@@ -1,20 +1,49 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Tienda</h2>
+<h2 class="mb-4">Tienda</h2>
 <div class="row">
-{% for product in products %}
-  <div class="col-md-4">
-    <div class="card mb-3">
-      <img src="{{ product.image }}" class="card-img-top" alt="...">
+  <aside class="col-lg-3 mb-3">
+    <div class="card">
       <div class="card-body">
-        <h5 class="card-title">{{ product.name }}</h5>
-        <p class="card-text">{{ product.description }}</p>
-        <p>${{ product.price }}</p>
-        <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-primary">Agregar</a>
+        <h6 class="card-title">Filtros</h6>
+        <hr>
+        <div class="mb-3">
+          <strong>Categorías</strong>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="cat1">
+            <label class="form-check-label" for="cat1">General</label>
+          </div>
+        </div>
+        <div class="mb-3">
+          <strong>Precio</strong>
+          <input type="range" class="form-range" min="0" max="100">
+        </div>
       </div>
     </div>
+  </aside>
+  <div class="col-lg-9">
+    <div class="row g-3">
+      {% for product in products %}
+      <div class="col-sm-6 col-md-4">
+        <div class="card h-100">
+          <img src="{{ product.image }}" class="card-img-top" alt="imagen">
+          <div class="card-body d-flex flex-column">
+            <h6 class="card-title">{{ product.name }}</h6>
+            <p class="fw-bold">${{ product.price }}</p>
+            {% if product.stock > 0 %}
+            <span class="badge bg-success mb-2">En stock</span>
+            {% else %}
+            <span class="badge bg-danger mb-2">Agotado</span>
+            {% endif %}
+            <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-primary mt-auto">Agregar al carrito</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="mt-4 text-end">
+      <a href="{{ url_for('store.view_cart') }}" class="btn btn-success">Ver Carrito</a>
+    </div>
   </div>
-{% endfor %}
 </div>
-<a href="{{ url_for('store.view_cart') }}" class="btn btn-success">Ver Carrito</a>
 {% endblock %}

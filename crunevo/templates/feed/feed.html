@@ -1,16 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
-{% if trending %}
-<h2>Tendencias</h2>
-{% else %}
-<h2>Feed</h2>
-{% endif %}
+<h5 class="mb-3">{% if trending %}Tendencias{% else %}Feed{% endif %}</h5>
 {% for note in notes %}
-  <div class="card mb-3">
+  <div class="card mb-3 shadow-sm">
     <div class="card-body">
+      <div class="d-flex align-items-center mb-2">
+        <img src="{{ note.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+        <strong class="me-auto">{{ note.author.username }}</strong>
+        <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d') }}</small>
+      </div>
       <h5 class="card-title">{{ note.title }}</h5>
       <p class="card-text">{{ note.description }}</p>
-      <a href="{{ url_for('notes.detail', note_id=note.id) }}" class="btn btn-sm btn-secondary">Ver apunte</a>
+      <div class="mb-2">
+        {% for tag in note.tags.split(',') if note.tags %}
+        <span class="badge bg-secondary">{{ tag }}</span>
+        {% endfor %}
+      </div>
+      <a href="{{ url_for('notes.detail', note_id=note.id) }}" class="btn btn-sm btn-primary">Ver apunte</a>
     </div>
   </div>
 {% endfor %}

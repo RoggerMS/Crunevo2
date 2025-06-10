@@ -14,3 +14,26 @@
     }
   });
 })();
+
+// simple AJAX search suggestions
+document.addEventListener('DOMContentLoaded', function(){
+  const input = document.getElementById('globalSearchInput');
+  const box = document.getElementById('searchSuggestions');
+  if(!input) return;
+  input.addEventListener('input', function(){
+    const q = this.value.trim();
+    if(q.length < 2){ box.innerHTML=''; return; }
+    fetch(`/search?q=${encodeURIComponent(q)}`)
+      .then(r => r.json())
+      .then(data => {
+        box.innerHTML = '';
+        data.forEach(item => {
+          const a = document.createElement('a');
+          a.className = 'list-group-item list-group-item-action';
+          a.href = item.url;
+          a.textContent = item.title;
+          box.appendChild(a);
+        });
+      });
+  });
+});

@@ -1,8 +1,8 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
-diff --git a/crunevo_cascaron/crunevo/static/css/style.css b/crunevo_cascaron/crunevo/static/css/style.css
+diff --git a/crunevo/static/css/style.css b/crunevo/static/css/style.css
 index 7df2b8864d81ea3a68130ad49951983bf452c52c..b9c5eefaa44133133ffe93796d91f23cdc6306f4 100644
---- a/crunevo_cascaron/crunevo/static/css/style.css
-+++ b/crunevo_cascaron/crunevo/static/css/style.css
+--- a/crunevo/static/css/style.css
++++ b/crunevo/static/css/style.css
 @@ -1,9 +1,47 @@
 +html {
 +  transition: background-color 0.3s, color 0.3s;
@@ -52,7 +52,7 @@ index 7df2b8864d81ea3a68130ad49951983bf452c52c..b9c5eefaa44133133ffe93796d91f23c
 +  max-height: 300px;
 +  overflow-y: auto;
  }
-diff --git a/crunevo_cascaron/crunevo/static/img/default.png b/crunevo_cascaron/crunevo/static/img/default.png
+diff --git a/crunevo/static/img/default.png b/crunevo/static/img/default.png
 new file mode 100644
 index 0000000000000000000000000000000000000000..97d0e2d970787784ce8595c807358894e607e6f2
 GIT binary patch
@@ -63,10 +63,10 @@ PP?W*b)z4*}Q$iB}h+7X5
 literal 0
 HcmV?d00001
 
-diff --git a/crunevo_cascaron/crunevo/static/js/main.js b/crunevo_cascaron/crunevo/static/js/main.js
+diff --git a/crunevo/static/js/main.js b/crunevo/static/js/main.js
 index 230755d7dd816a1e0a1bc4d603c520fb3d4e51df..6eddba56cae6211a5b3cef3755de4e24e1f2f3cf 100644
---- a/crunevo_cascaron/crunevo/static/js/main.js
-+++ b/crunevo_cascaron/crunevo/static/js/main.js
+--- a/crunevo/static/js/main.js
++++ b/crunevo/static/js/main.js
 @@ -1,16 +1,39 @@
  // dark mode toggle
  (function(){
@@ -107,10 +107,10 @@ index 230755d7dd816a1e0a1bc4d603c520fb3d4e51df..6eddba56cae6211a5b3cef3755de4e24
 +      });
 +  });
 +});
-diff --git a/crunevo_cascaron/crunevo/templates/base.html b/crunevo_cascaron/crunevo/templates/base.html
+diff --git a/crunevo/templates/base.html b/crunevo/templates/base.html
 index 6cc2b0b162a6bd7deb87f42feb80915b65ee91e5..01ba7b99fe1e9aa51c5f7f63e3fbfbac960ea63a 100644
---- a/crunevo_cascaron/crunevo/templates/base.html
-+++ b/crunevo_cascaron/crunevo/templates/base.html
+--- a/crunevo/templates/base.html
++++ b/crunevo/templates/base.html
 @@ -1,26 +1,37 @@
  <!doctype html>
  <html lang="es" data-bs-theme="light">
@@ -159,10 +159,10 @@ index 6cc2b0b162a6bd7deb87f42feb80915b65ee91e5..01ba7b99fe1e9aa51c5f7f63e3fbfbac
      <script src="{{ url_for('static', filename='js/main.js') }}"></script>
  </body>
  </html>
-diff --git a/crunevo_cascaron/crunevo/templates/chat/chat.html b/crunevo_cascaron/crunevo/templates/chat/chat.html
+diff --git a/crunevo/templates/chat/chat.html b/crunevo/templates/chat/chat.html
 index 2a8c63d0ac3d2e08f2cd934424a1f596c187608d..93347b9fadf54626b0402596b5512f026693ee9f 100644
---- a/crunevo_cascaron/crunevo/templates/chat/chat.html
-+++ b/crunevo_cascaron/crunevo/templates/chat/chat.html
+--- a/crunevo/templates/chat/chat.html
++++ b/crunevo/templates/chat/chat.html
 @@ -1,38 +1,43 @@
  {% extends 'base.html' %}
  {% block content %}
@@ -224,10 +224,10 @@ index 2a8c63d0ac3d2e08f2cd934424a1f596c187608d..93347b9fadf54626b0402596b5512f02
 +  });
  </script>
  {% endblock %}
-diff --git a/crunevo_cascaron/crunevo/templates/components/navbar.html b/crunevo_cascaron/crunevo/templates/components/navbar.html
+diff --git a/crunevo/templates/components/navbar.html b/crunevo/templates/components/navbar.html
 index baf962ab4a79f7f4c1398b15135696f64cff9bcc..7df25ce2bac43f94f4c2d81eb8196eec05d040b0 100644
---- a/crunevo_cascaron/crunevo/templates/components/navbar.html
-+++ b/crunevo_cascaron/crunevo/templates/components/navbar.html
+--- a/crunevo/templates/components/navbar.html
++++ b/crunevo/templates/components/navbar.html
 @@ -1,31 +1,38 @@
 -<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 +<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
@@ -278,10 +278,10 @@ index baf962ab4a79f7f4c1398b15135696f64cff9bcc..7df25ce2bac43f94f4c2d81eb8196eec
      </div>
    </div>
  </nav>
-diff --git a/crunevo_cascaron/crunevo/templates/components/sidebar_left.html b/crunevo_cascaron/crunevo/templates/components/sidebar_left.html
+diff --git a/crunevo/templates/components/sidebar_left.html b/crunevo/templates/components/sidebar_left.html
 index 534860b5c05b603ea9f403518a0020314610e2ba..4b6ae8a67a1a73551fb575e45b88a1a151920330 100644
---- a/crunevo_cascaron/crunevo/templates/components/sidebar_left.html
-+++ b/crunevo_cascaron/crunevo/templates/components/sidebar_left.html
+--- a/crunevo/templates/components/sidebar_left.html
++++ b/crunevo/templates/components/sidebar_left.html
 @@ -1 +1,7 @@
 -<!-- Left sidebar placeholder -->
 +<div class="list-group sidebar">
@@ -291,10 +291,10 @@ index 534860b5c05b603ea9f403518a0020314610e2ba..4b6ae8a67a1a73551fb575e45b88a1a1
 +  <a class="list-group-item list-group-item-action" href="#"><i class="bi bi-star me-2"></i>Favoritos</a>
 +  <a class="list-group-item list-group-item-action" href="#"><i class="bi bi-people me-2"></i>Clubes</a>
 +</div>
-diff --git a/crunevo_cascaron/crunevo/templates/components/sidebar_right.html b/crunevo_cascaron/crunevo/templates/components/sidebar_right.html
+diff --git a/crunevo/templates/components/sidebar_right.html b/crunevo/templates/components/sidebar_right.html
 index c81428909e36e7563d617704bbb5061aeb0efdf0..fb1f136501c6be0c3718a70ddf46173ae9ac2560 100644
---- a/crunevo_cascaron/crunevo/templates/components/sidebar_right.html
-+++ b/crunevo_cascaron/crunevo/templates/components/sidebar_right.html
+--- a/crunevo/templates/components/sidebar_right.html
++++ b/crunevo/templates/components/sidebar_right.html
 @@ -1 +1,21 @@
 -<!-- Right sidebar placeholder -->
 +<div class="sidebar">
@@ -318,10 +318,10 @@ index c81428909e36e7563d617704bbb5061aeb0efdf0..fb1f136501c6be0c3718a70ddf46173a
 +    </ul>
 +  </div>
 +</div>
-diff --git a/crunevo_cascaron/crunevo/templates/feed/feed.html b/crunevo_cascaron/crunevo/templates/feed/feed.html
+diff --git a/crunevo/templates/feed/feed.html b/crunevo/templates/feed/feed.html
 index e6c144e1519cae425225ce53471724d27537ae92..a8fde3976c68fbfa22524b8306910f7200d10b7e 100644
---- a/crunevo_cascaron/crunevo/templates/feed/feed.html
-+++ b/crunevo_cascaron/crunevo/templates/feed/feed.html
+--- a/crunevo/templates/feed/feed.html
++++ b/crunevo/templates/feed/feed.html
 @@ -1,17 +1,23 @@
  {% extends 'base.html' %}
  {% block content %}
@@ -353,10 +353,10 @@ index e6c144e1519cae425225ce53471724d27537ae92..a8fde3976c68fbfa22524b8306910f72
    </div>
  {% endfor %}
  {% endblock %}
-diff --git a/crunevo_cascaron/crunevo/templates/notes/detalle.html b/crunevo_cascaron/crunevo/templates/notes/detalle.html
+diff --git a/crunevo/templates/notes/detalle.html b/crunevo/templates/notes/detalle.html
 index c127b551425469a4cea1c885e4c53f9d262ef1cc..fc1415c881c3ce49bb6ca0ec85665c04790a3bc3 100644
---- a/crunevo_cascaron/crunevo/templates/notes/detalle.html
-+++ b/crunevo_cascaron/crunevo/templates/notes/detalle.html
+--- a/crunevo/templates/notes/detalle.html
++++ b/crunevo/templates/notes/detalle.html
 @@ -1,42 +1,62 @@
  {% extends 'base.html' %}
  {% block content %}
@@ -454,11 +454,11 @@ index c127b551425469a4cea1c885e4c53f9d262ef1cc..fc1415c881c3ce49bb6ca0ec85665c04
 -});
  </script>
  {% endblock %}
-diff --git a/crunevo_cascaron/crunevo/templates/perfil_publico.html b/crunevo_cascaron/crunevo/templates/perfil_publico.html
+diff --git a/crunevo/templates/perfil_publico.html b/crunevo/templates/perfil_publico.html
 new file mode 100644
 index 0000000000000000000000000000000000000000..3214bd2b82af09ed12f6e0218411d27bf065171f
 --- /dev/null
-+++ b/crunevo_cascaron/crunevo/templates/perfil_publico.html
++++ b/crunevo/templates/perfil_publico.html
 @@ -0,0 +1,29 @@
 +{% extends 'base.html' %}
 +{% block content %}
@@ -489,10 +489,10 @@ index 0000000000000000000000000000000000000000..3214bd2b82af09ed12f6e0218411d27b
 +  </div>
 +</div>
 +{% endblock %}
-diff --git a/crunevo_cascaron/crunevo/templates/store/store.html b/crunevo_cascaron/crunevo/templates/store/store.html
+diff --git a/crunevo/templates/store/store.html b/crunevo/templates/store/store.html
 index b0ef07072c164b986b847c7405da4afc9ff81eba..abb4a3312692e69e83932825ec80b911085209a0 100644
---- a/crunevo_cascaron/crunevo/templates/store/store.html
-+++ b/crunevo_cascaron/crunevo/templates/store/store.html
+--- a/crunevo/templates/store/store.html
++++ b/crunevo/templates/store/store.html
 @@ -1,20 +1,49 @@
  {% extends 'base.html' %}
  {% block content %}

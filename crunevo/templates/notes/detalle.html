@@ -1,42 +1,62 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>{{ note.title }}</h2>
-<p>{{ note.description }}</p>
-<p><strong>Etiquetas:</strong> {{ note.tags }}</p>
-<p><strong>Categoría:</strong> {{ note.category }}</p>
-<a href="/{{ note.filename }}" target="_blank" class="btn btn-primary">Ver PDF</a>
-<hr>
-<h5>Comentarios</h5>
-<div id="comments">
-  {% for c in note.comments %}
-    <div class="comment">
-      <strong>{{ c.author.username }}</strong>
-      <small>{{ c.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
-      <p>{{ c.body }}</p>
+<div class="card mb-3 shadow-sm">
+  <div class="card-body">
+    <div class="d-flex align-items-center mb-3">
+      <img src="{{ note.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
+      <div>
+        <strong>{{ note.author.username }}</strong><br>
+        <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d') }}</small>
+      </div>
+      <span class="badge bg-secondary ms-auto"><i class="bi bi-eye"></i> {{ note.views }}</span>
     </div>
-  {% endfor %}
-</div>
-<form id="commentForm" class="mt-2">
-  <div class="input-group">
-    <input type="text" name="body" class="form-control" placeholder="Añadir comentario" required>
-    <button class="btn btn-primary" type="submit">Enviar</button>
+    <h3>{{ note.title }}</h3>
+    <p>{{ note.description }}</p>
+    <div class="mb-2">
+      {% if note.category %}<span class="badge bg-info text-dark me-1">{{ note.category }}</span>{% endif %}
+      {% for tag in note.tags.split(',') if note.tags %}
+      <span class="badge bg-secondary me-1">{{ tag }}</span>
+      {% endfor %}
+    </div>
+    <a href="/{{ note.filename }}" class="btn btn-primary mb-3" target="_blank">Descargar</a>
+    <div class="ratio ratio-16x9 mb-4">
+      <iframe src="/{{ note.filename }}" frameborder="0"></iframe>
+    </div>
+    <h5 class="mb-3">Comentarios</h5>
+    <div id="comments">
+      {% for c in note.comments|sort(attribute='timestamp', reverse=True) %}
+      <div class="d-flex mb-3 comment">
+        <img src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+        <div>
+          <div class="small text-muted">{{ c.author.username }} • {{ c.timestamp.strftime('%Y-%m-%d %H:%M') }}</div>
+          <div>{{ c.body }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <form id="commentForm" class="mt-3">
+      <div class="input-group">
+        <input type="text" name="body" class="form-control" placeholder="Añadir comentario" required>
+        <button class="btn btn-primary" type="submit">Enviar</button>
+      </div>
+    </form>
   </div>
-</form>
+</div>
 <script>
-document.getElementById('commentForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const data = new FormData(this);
-  fetch('{{ url_for('notes.add_comment', note_id=note.id) }}', {
-    method: 'POST',
-    body: data,
-    headers: {'X-Requested-With': 'XMLHttpRequest'}
-  }).then(r => r.json()).then(c => {
-    const div = document.createElement('div');
-    div.className = 'comment';
-    div.innerHTML = `<strong>${c.author}</strong> <small>${c.timestamp}</small><p>${c.body}</p>`;
-    document.getElementById('comments').prepend(div);
-    e.target.reset();
+  document.getElementById('commentForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const data = new FormData(this);
+    fetch('{{ url_for('notes.add_comment', note_id=note.id) }}', {
+      method: 'POST',
+      body: data,
+      headers: {'X-Requested-With': 'XMLHttpRequest'}
+    }).then(r => r.json()).then(c => {
+      const div = document.createElement('div');
+      div.className = 'd-flex mb-3 comment';
+      div.innerHTML = `<img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar"><div><div class=\"small text-muted\">${c.author} • ${c.timestamp}</div><div>${c.body}</div></div>`;
+      document.getElementById('comments').prepend(div);
+      e.target.reset();
+    });
   });
-});
 </script>
 {% endblock %}
