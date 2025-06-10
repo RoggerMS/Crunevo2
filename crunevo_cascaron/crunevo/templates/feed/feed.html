@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if trending %}
+<h2>Tendencias</h2>
+{% else %}
+<h2>Feed</h2>
+{% endif %}
+{% for note in notes %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">{{ note.title }}</h5>
+      <p class="card-text">{{ note.description }}</p>
+      <a href="{{ url_for('notes.detail', note_id=note.id) }}" class="btn btn-sm btn-secondary">Ver apunte</a>
+    </div>
+  </div>
+{% endfor %}
+{% endblock %}

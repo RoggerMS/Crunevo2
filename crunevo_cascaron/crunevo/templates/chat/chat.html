@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Chat</h2>
+<div class="row">
+  <div class="col-md-4">
+    <ul class="list-group" id="userList">
+      {% for u in users %}
+        <li class="list-group-item" data-user="{{ u.id }}">{{ u.username }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="col-md-8">
+    <div id="chatBox" class="border p-2 mb-2" style="height:300px; overflow-y:scroll;"></div>
+    <form id="chatForm">
+      <input type="hidden" name="receiver_id" id="receiver_id">
+      <div class="input-group">
+        <input type="text" name="content" class="form-control" placeholder="Mensaje">
+        <button class="btn btn-primary" type="submit">Enviar</button>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+document.querySelectorAll('#userList li').forEach(li=>{
+  li.addEventListener('click',()=>{
+    document.getElementById('receiver_id').value = li.dataset.user;
+  });
+});
+document.getElementById('chatForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  fetch('{{ url_for('chat.send_message') }}', {method:'POST', body:new FormData(e.target)})
+    .then(r=>r.json()).then(data=>{
+      document.getElementById('chatBox').innerHTML += '<div>'+e.target.content.value+'</div>';
+      e.target.content.value='';
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ note.title }}</h2>
+<p>{{ note.description }}</p>
+<p><strong>Etiquetas:</strong> {{ note.tags }}</p>
+<p><strong>Categoría:</strong> {{ note.category }}</p>
+<a href="/{{ note.filename }}" target="_blank" class="btn btn-primary">Ver PDF</a>
+<hr>
+<h5>Comentarios</h5>
+<div id="comments">
+  {% for c in note.comments %}
+    <div class="comment">
+      <strong>{{ c.author.username }}</strong>
+      <small>{{ c.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+      <p>{{ c.body }}</p>
+    </div>
+  {% endfor %}
+</div>
+<form id="commentForm" class="mt-2">
+  <div class="input-group">
+    <input type="text" name="body" class="form-control" placeholder="Añadir comentario" required>
+    <button class="btn btn-primary" type="submit">Enviar</button>
+  </div>
+</form>
+<script>
+document.getElementById('commentForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const data = new FormData(this);
+  fetch('{{ url_for('notes.add_comment', note_id=note.id) }}', {
+    method: 'POST',
+    body: data,
+    headers: {'X-Requested-With': 'XMLHttpRequest'}
+  }).then(r => r.json()).then(c => {
+    const div = document.createElement('div');
+    div.className = 'comment';
+    div.innerHTML = `<strong>${c.author}</strong> <small>${c.timestamp}</small><p>${c.body}</p>`;
+    document.getElementById('comments').prepend(div);
+    e.target.reset();
+  });
+});
+</script>
+{% endblock %}

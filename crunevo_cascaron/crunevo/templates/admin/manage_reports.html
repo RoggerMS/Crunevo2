@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Reportes</h2>
+<table class="table">
+  <thead><tr><th>ID</th><th>Usuario</th><th>Descripción</th><th>Estado</th></tr></thead>
+  <tbody>
+  {% for r in reports %}
+  <tr><td>{{ r.id }}</td><td>{{ r.user_id }}</td><td>{{ r.description }}</td><td>{{ r.status }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
