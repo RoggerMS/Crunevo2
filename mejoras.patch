@@ -1,0 +1,559 @@
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/crunevo_cascaron/crunevo/static/css/style.css b/crunevo_cascaron/crunevo/static/css/style.css
+index 7df2b8864d81ea3a68130ad49951983bf452c52c..b9c5eefaa44133133ffe93796d91f23cdc6306f4 100644
+--- a/crunevo_cascaron/crunevo/static/css/style.css
++++ b/crunevo_cascaron/crunevo/static/css/style.css
+@@ -1,9 +1,47 @@
++html {
++  transition: background-color 0.3s, color 0.3s;
++}
++
+ body[data-bs-theme="dark"] {
+   background-color: #121212;
+   color: #f8f9fa;
+ }
+ 
++.sidebar {
++  position: sticky;
++  top: 80px;
++}
++
+ .comment {
+   border-bottom: 1px solid #dee2e6;
+-  padding: 0.5rem 0;
++  padding-bottom: 0.5rem;
++}
++
++.chat-container {
++  height: 300px;
++  overflow-y: auto;
++}
++
++.message {
++  padding: 0.25rem 0.75rem;
++  border-radius: 1rem;
++  margin-bottom: 0.5rem;
++  max-width: 75%;
++}
++
++.message.sent {
++  background-color: #0d6efd;
++  color: #fff;
++  margin-left: auto;
++}
++
++.message.received {
++  background-color: #e9ecef;
++}
++
++#searchSuggestions {
++  z-index: 1000;
++  top: 100%;
++  max-height: 300px;
++  overflow-y: auto;
+ }
+diff --git a/crunevo_cascaron/crunevo/static/img/default.png b/crunevo_cascaron/crunevo/static/img/default.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..97d0e2d970787784ce8595c807358894e607e6f2
+GIT binary patch
+literal 67
+zcmeAS@N?(olHy`uVBq!ia0vp^j3CUx0wlM}@Gt=>Zci7-kcwN$fBwreFf%j$U%KlH
+PP?W*b)z4*}Q$iB}h+7X5
+
+literal 0
+HcmV?d00001
+
+diff --git a/crunevo_cascaron/crunevo/static/js/main.js b/crunevo_cascaron/crunevo/static/js/main.js
+index 230755d7dd816a1e0a1bc4d603c520fb3d4e51df..6eddba56cae6211a5b3cef3755de4e24e1f2f3cf 100644
+--- a/crunevo_cascaron/crunevo/static/js/main.js
++++ b/crunevo_cascaron/crunevo/static/js/main.js
+@@ -1,16 +1,39 @@
+ // dark mode toggle
+ (function(){
+   const theme = localStorage.getItem('theme') || 'light';
+   document.documentElement.setAttribute('data-bs-theme', theme);
+   document.addEventListener('DOMContentLoaded', function(){
+     const btn = document.getElementById('themeToggle');
+     if(btn){
+       btn.addEventListener('click', function(){
+         const current = document.documentElement.getAttribute('data-bs-theme');
+         const next = current === 'dark' ? 'light' : 'dark';
+         document.documentElement.setAttribute('data-bs-theme', next);
+         localStorage.setItem('theme', next);
+       });
+     }
+   });
+ })();
++
++// simple AJAX search suggestions
++document.addEventListener('DOMContentLoaded', function(){
++  const input = document.getElementById('globalSearchInput');
++  const box = document.getElementById('searchSuggestions');
++  if(!input) return;
++  input.addEventListener('input', function(){
++    const q = this.value.trim();
++    if(q.length < 2){ box.innerHTML=''; return; }
++    fetch(`/search?q=${encodeURIComponent(q)}`)
++      .then(r => r.json())
++      .then(data => {
++        box.innerHTML = '';
++        data.forEach(item => {
++          const a = document.createElement('a');
++          a.className = 'list-group-item list-group-item-action';
++          a.href = item.url;
++          a.textContent = item.title;
++          box.appendChild(a);
++        });
++      });
++  });
++});
+diff --git a/crunevo_cascaron/crunevo/templates/base.html b/crunevo_cascaron/crunevo/templates/base.html
+index 6cc2b0b162a6bd7deb87f42feb80915b65ee91e5..01ba7b99fe1e9aa51c5f7f63e3fbfbac960ea63a 100644
+--- a/crunevo_cascaron/crunevo/templates/base.html
++++ b/crunevo_cascaron/crunevo/templates/base.html
+@@ -1,26 +1,37 @@
+ <!doctype html>
+ <html lang="es" data-bs-theme="light">
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Crunevo</title>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
++    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+ </head>
+-<body>
++<body class="d-flex flex-column min-vh-100">
+     {% include 'components/navbar.html' %}
+-    <div class="container mt-4">
+-        {% with messages = get_flashed_messages() %}
+-          {% if messages %}
+-            {% for msg in messages %}
+-              <div class="alert alert-info">{{ msg }}</div>
+-            {% endfor %}
+-          {% endif %}
+-        {% endwith %}
+-        {% block content %}{% endblock %}
++    <div class="container-fluid mt-5 pt-3">
++        <div class="row">
++            <aside class="col-lg-3 d-none d-lg-block">
++                {% include 'components/sidebar_left.html' %}
++            </aside>
++            <main class="col-lg-6">
++                {% with messages = get_flashed_messages() %}
++                  {% if messages %}
++                    {% for msg in messages %}
++                      <div class="alert alert-info">{{ msg }}</div>
++                    {% endfor %}
++                  {% endif %}
++                {% endwith %}
++                {% block content %}{% endblock %}
++            </main>
++            <aside class="col-lg-3 d-none d-lg-block">
++                {% include 'components/sidebar_right.html' %}
++            </aside>
++        </div>
+     </div>
+ 
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+ </body>
+ </html>
+diff --git a/crunevo_cascaron/crunevo/templates/chat/chat.html b/crunevo_cascaron/crunevo/templates/chat/chat.html
+index 2a8c63d0ac3d2e08f2cd934424a1f596c187608d..93347b9fadf54626b0402596b5512f026693ee9f 100644
+--- a/crunevo_cascaron/crunevo/templates/chat/chat.html
++++ b/crunevo_cascaron/crunevo/templates/chat/chat.html
+@@ -1,38 +1,43 @@
+ {% extends 'base.html' %}
+ {% block content %}
+-<h2>Chat</h2>
++<h2 class="mb-3">Chat</h2>
+ <div class="row">
+-  <div class="col-md-4">
++  <div class="col-lg-4 mb-3">
+     <ul class="list-group" id="userList">
+       {% for u in users %}
+-        <li class="list-group-item" data-user="{{ u.id }}">{{ u.username }}</li>
++      <li class="list-group-item" data-user="{{ u.id }}">{{ u.username }}</li>
+       {% endfor %}
+     </ul>
+   </div>
+-  <div class="col-md-8">
+-    <div id="chatBox" class="border p-2 mb-2" style="height:300px; overflow-y:scroll;"></div>
++  <div class="col-lg-8">
++    <div id="chatBox" class="border rounded p-2 mb-2 chat-container"></div>
+     <form id="chatForm">
+       <input type="hidden" name="receiver_id" id="receiver_id">
+       <div class="input-group">
+         <input type="text" name="content" class="form-control" placeholder="Mensaje">
+         <button class="btn btn-primary" type="submit">Enviar</button>
+       </div>
+     </form>
+   </div>
+ </div>
+ <script>
+-document.querySelectorAll('#userList li').forEach(li=>{
+-  li.addEventListener('click',()=>{
+-    document.getElementById('receiver_id').value = li.dataset.user;
+-  });
+-});
+-document.getElementById('chatForm').addEventListener('submit', e=>{
+-  e.preventDefault();
+-  fetch('{{ url_for('chat.send_message') }}', {method:'POST', body:new FormData(e.target)})
+-    .then(r=>r.json()).then(data=>{
+-      document.getElementById('chatBox').innerHTML += '<div>'+e.target.content.value+'</div>';
+-      e.target.content.value='';
++  document.querySelectorAll('#userList li').forEach(li=>{
++    li.addEventListener('click',()=>{
++      document.getElementById('receiver_id').value = li.dataset.user;
+     });
+-});
++  });
++  document.getElementById('chatForm').addEventListener('submit', e=>{
++    e.preventDefault();
++    fetch('{{ url_for('chat.send_message') }}', {method:'POST', body:new FormData(e.target)})
++      .then(r=>r.json()).then(()=>{
++        const box = document.getElementById('chatBox');
++        const div = document.createElement('div');
++        div.className = 'message sent';
++        div.textContent = e.target.content.value;
++        box.appendChild(div);
++        box.scrollTop = box.scrollHeight;
++        e.target.content.value='';
++      });
++  });
+ </script>
+ {% endblock %}
+diff --git a/crunevo_cascaron/crunevo/templates/components/navbar.html b/crunevo_cascaron/crunevo/templates/components/navbar.html
+index baf962ab4a79f7f4c1398b15135696f64cff9bcc..7df25ce2bac43f94f4c2d81eb8196eec05d040b0 100644
+--- a/crunevo_cascaron/crunevo/templates/components/navbar.html
++++ b/crunevo_cascaron/crunevo/templates/components/navbar.html
+@@ -1,31 +1,38 @@
+-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
++<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+   <div class="container-fluid">
+     <a class="navbar-brand" href="{{ url_for('feed.index') }}">Crunevo</a>
++    <form class="d-none d-lg-flex mx-3 flex-grow-1 position-relative" id="globalSearchForm">
++      <input class="form-control" type="search" placeholder="Buscar" aria-label="Buscar" id="globalSearchInput" autocomplete="off">
++      <div id="searchSuggestions" class="list-group position-absolute w-100"></div>
++    </form>
+     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+       <span class="navbar-toggler-icon"></span>
+     </button>
+     <div class="collapse navbar-collapse" id="navbarNav">
+       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+-        <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.index') }}">Inicio</a></li>
+-        <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.trending') }}">Tendencias</a></li>
+-        <li class="nav-item"><a class="nav-link" href="{{ url_for('notes.list_notes') }}">Apuntes</a></li>
+-        <li class="nav-item"><a class="nav-link" href="{{ url_for('store.store_index') }}">Tienda</a></li>
+-        <li class="nav-item"><a class="nav-link" href="{{ url_for('chat.chat_index') }}">Chat</a></li>
++        <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.index') }}"><i class="bi bi-house-door"></i></a></li>
++        <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.trending') }}"><i class="bi bi-fire"></i></a></li>
++        <li class="nav-item"><a class="nav-link" href="{{ url_for('notes.list_notes') }}"><i class="bi bi-journal-text"></i></a></li>
++        <li class="nav-item"><a class="nav-link" href="{{ url_for('store.store_index') }}"><i class="bi bi-bag"></i></a></li>
++        <li class="nav-item"><a class="nav-link" href="{{ url_for('chat.chat_index') }}"><i class="bi bi-chat-dots"></i></a></li>
+         {% if current_user.is_authenticated and current_user.role == 'admin' %}
+-        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}">Admin</a></li>
++        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2"></i></a></li>
+         {% endif %}
+       </ul>
+       <ul class="navbar-nav align-items-center">
+         {% if current_user.is_authenticated %}
+-        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.perfil') }}">Perfil</a></li>
+-        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Salir</a></li>
++        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.perfil') }}"><i class="bi bi-person-circle"></i></a></li>
++        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i></a></li>
+         {% else %}
+-        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Ingresar</a></li>
++        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right"></i></a></li>
++        {% endif %}
++        {% if current_user.is_authenticated %}
++        <li class="nav-item text-white mx-2"><i class="bi bi-coin"></i> {{ current_user.credits }}</li>
+         {% endif %}
+         <li class="nav-item">
+-          <button id="themeToggle" class="btn btn-sm btn-secondary ms-2" type="button">🌙</button>
++          <button id="themeToggle" class="btn btn-sm btn-secondary ms-2" type="button"><i class="bi bi-moon"></i></button>
+         </li>
+       </ul>
+     </div>
+   </div>
+ </nav>
+diff --git a/crunevo_cascaron/crunevo/templates/components/sidebar_left.html b/crunevo_cascaron/crunevo/templates/components/sidebar_left.html
+index 534860b5c05b603ea9f403518a0020314610e2ba..4b6ae8a67a1a73551fb575e45b88a1a151920330 100644
+--- a/crunevo_cascaron/crunevo/templates/components/sidebar_left.html
++++ b/crunevo_cascaron/crunevo/templates/components/sidebar_left.html
+@@ -1 +1,7 @@
+-<!-- Left sidebar placeholder -->
++<div class="list-group sidebar">
++  <a class="list-group-item list-group-item-action" href="{{ url_for('auth.perfil') }}"><i class="bi bi-person me-2"></i>Mi perfil</a>
++  <a class="list-group-item list-group-item-action" href="{{ url_for('notes.list_notes') }}"><i class="bi bi-journal-text me-2"></i>Mis apuntes</a>
++  <a class="list-group-item list-group-item-action" href="{{ url_for('notes.upload_note') }}"><i class="bi bi-upload me-2"></i>Subir apunte</a>
++  <a class="list-group-item list-group-item-action" href="#"><i class="bi bi-star me-2"></i>Favoritos</a>
++  <a class="list-group-item list-group-item-action" href="#"><i class="bi bi-people me-2"></i>Clubes</a>
++</div>
+diff --git a/crunevo_cascaron/crunevo/templates/components/sidebar_right.html b/crunevo_cascaron/crunevo/templates/components/sidebar_right.html
+index c81428909e36e7563d617704bbb5061aeb0efdf0..fb1f136501c6be0c3718a70ddf46173ae9ac2560 100644
+--- a/crunevo_cascaron/crunevo/templates/components/sidebar_right.html
++++ b/crunevo_cascaron/crunevo/templates/components/sidebar_right.html
+@@ -1 +1,21 @@
+-<!-- Right sidebar placeholder -->
++<div class="sidebar">
++  <div class="mb-3">
++    <h6 class="text-muted">Apuntes más vistos</h6>
++    <ul class="list-group small">
++      {% for n in popular_notes or [] %}
++      <li class="list-group-item d-flex justify-content-between align-items-start">
++        <span>{{ n.title }}</span>
++        <span class="badge bg-secondary rounded-pill">{{ n.views }}</span>
++      </li>
++      {% endfor %}
++    </ul>
++  </div>
++  <div class="mb-3">
++    <h6 class="text-muted">Usuarios activos</h6>
++    <ul class="list-group small">
++      {% for u in active_users or [] %}
++      <li class="list-group-item">{{ u.username }}</li>
++      {% endfor %}
++    </ul>
++  </div>
++</div>
+diff --git a/crunevo_cascaron/crunevo/templates/feed/feed.html b/crunevo_cascaron/crunevo/templates/feed/feed.html
+index e6c144e1519cae425225ce53471724d27537ae92..a8fde3976c68fbfa22524b8306910f7200d10b7e 100644
+--- a/crunevo_cascaron/crunevo/templates/feed/feed.html
++++ b/crunevo_cascaron/crunevo/templates/feed/feed.html
+@@ -1,17 +1,23 @@
+ {% extends 'base.html' %}
+ {% block content %}
+-{% if trending %}
+-<h2>Tendencias</h2>
+-{% else %}
+-<h2>Feed</h2>
+-{% endif %}
++<h5 class="mb-3">{% if trending %}Tendencias{% else %}Feed{% endif %}</h5>
+ {% for note in notes %}
+-  <div class="card mb-3">
++  <div class="card mb-3 shadow-sm">
+     <div class="card-body">
++      <div class="d-flex align-items-center mb-2">
++        <img src="{{ note.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
++        <strong class="me-auto">{{ note.author.username }}</strong>
++        <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d') }}</small>
++      </div>
+       <h5 class="card-title">{{ note.title }}</h5>
+       <p class="card-text">{{ note.description }}</p>
+-      <a href="{{ url_for('notes.detail', note_id=note.id) }}" class="btn btn-sm btn-secondary">Ver apunte</a>
++      <div class="mb-2">
++        {% for tag in note.tags.split(',') if note.tags %}
++        <span class="badge bg-secondary">{{ tag }}</span>
++        {% endfor %}
++      </div>
++      <a href="{{ url_for('notes.detail', note_id=note.id) }}" class="btn btn-sm btn-primary">Ver apunte</a>
+     </div>
+   </div>
+ {% endfor %}
+ {% endblock %}
+diff --git a/crunevo_cascaron/crunevo/templates/notes/detalle.html b/crunevo_cascaron/crunevo/templates/notes/detalle.html
+index c127b551425469a4cea1c885e4c53f9d262ef1cc..fc1415c881c3ce49bb6ca0ec85665c04790a3bc3 100644
+--- a/crunevo_cascaron/crunevo/templates/notes/detalle.html
++++ b/crunevo_cascaron/crunevo/templates/notes/detalle.html
+@@ -1,42 +1,62 @@
+ {% extends 'base.html' %}
+ {% block content %}
+-<h2>{{ note.title }}</h2>
+-<p>{{ note.description }}</p>
+-<p><strong>Etiquetas:</strong> {{ note.tags }}</p>
+-<p><strong>Categoría:</strong> {{ note.category }}</p>
+-<a href="/{{ note.filename }}" target="_blank" class="btn btn-primary">Ver PDF</a>
+-<hr>
+-<h5>Comentarios</h5>
+-<div id="comments">
+-  {% for c in note.comments %}
+-    <div class="comment">
+-      <strong>{{ c.author.username }}</strong>
+-      <small>{{ c.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+-      <p>{{ c.body }}</p>
++<div class="card mb-3 shadow-sm">
++  <div class="card-body">
++    <div class="d-flex align-items-center mb-3">
++      <img src="{{ note.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
++      <div>
++        <strong>{{ note.author.username }}</strong><br>
++        <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d') }}</small>
++      </div>
++      <span class="badge bg-secondary ms-auto"><i class="bi bi-eye"></i> {{ note.views }}</span>
+     </div>
+-  {% endfor %}
+-</div>
+-<form id="commentForm" class="mt-2">
+-  <div class="input-group">
+-    <input type="text" name="body" class="form-control" placeholder="Añadir comentario" required>
+-    <button class="btn btn-primary" type="submit">Enviar</button>
++    <h3>{{ note.title }}</h3>
++    <p>{{ note.description }}</p>
++    <div class="mb-2">
++      {% if note.category %}<span class="badge bg-info text-dark me-1">{{ note.category }}</span>{% endif %}
++      {% for tag in note.tags.split(',') if note.tags %}
++      <span class="badge bg-secondary me-1">{{ tag }}</span>
++      {% endfor %}
++    </div>
++    <a href="/{{ note.filename }}" class="btn btn-primary mb-3" target="_blank">Descargar</a>
++    <div class="ratio ratio-16x9 mb-4">
++      <iframe src="/{{ note.filename }}" frameborder="0"></iframe>
++    </div>
++    <h5 class="mb-3">Comentarios</h5>
++    <div id="comments">
++      {% for c in note.comments|sort(attribute='timestamp', reverse=True) %}
++      <div class="d-flex mb-3 comment">
++        <img src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
++        <div>
++          <div class="small text-muted">{{ c.author.username }} • {{ c.timestamp.strftime('%Y-%m-%d %H:%M') }}</div>
++          <div>{{ c.body }}</div>
++        </div>
++      </div>
++      {% endfor %}
++    </div>
++    <form id="commentForm" class="mt-3">
++      <div class="input-group">
++        <input type="text" name="body" class="form-control" placeholder="Añadir comentario" required>
++        <button class="btn btn-primary" type="submit">Enviar</button>
++      </div>
++    </form>
+   </div>
+-</form>
++</div>
+ <script>
+-document.getElementById('commentForm').addEventListener('submit', function(e){
+-  e.preventDefault();
+-  const data = new FormData(this);
+-  fetch('{{ url_for('notes.add_comment', note_id=note.id) }}', {
+-    method: 'POST',
+-    body: data,
+-    headers: {'X-Requested-With': 'XMLHttpRequest'}
+-  }).then(r => r.json()).then(c => {
+-    const div = document.createElement('div');
+-    div.className = 'comment';
+-    div.innerHTML = `<strong>${c.author}</strong> <small>${c.timestamp}</small><p>${c.body}</p>`;
+-    document.getElementById('comments').prepend(div);
+-    e.target.reset();
++  document.getElementById('commentForm').addEventListener('submit', function(e){
++    e.preventDefault();
++    const data = new FormData(this);
++    fetch('{{ url_for('notes.add_comment', note_id=note.id) }}', {
++      method: 'POST',
++      body: data,
++      headers: {'X-Requested-With': 'XMLHttpRequest'}
++    }).then(r => r.json()).then(c => {
++      const div = document.createElement('div');
++      div.className = 'd-flex mb-3 comment';
++      div.innerHTML = `<img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar"><div><div class=\"small text-muted\">${c.author} • ${c.timestamp}</div><div>${c.body}</div></div>`;
++      document.getElementById('comments').prepend(div);
++      e.target.reset();
++    });
+   });
+-});
+ </script>
+ {% endblock %}
+diff --git a/crunevo_cascaron/crunevo/templates/perfil_publico.html b/crunevo_cascaron/crunevo/templates/perfil_publico.html
+new file mode 100644
+index 0000000000000000000000000000000000000000..3214bd2b82af09ed12f6e0218411d27bf065171f
+--- /dev/null
++++ b/crunevo_cascaron/crunevo/templates/perfil_publico.html
+@@ -0,0 +1,29 @@
++{% extends 'base.html' %}
++{% block content %}
++<div class="row g-4">
++  <div class="col-md-4 text-center">
++    <img src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle mb-3" width="150" height="150" alt="avatar">
++    {% if current_user.is_authenticated and current_user.id != user.id %}
++    <button class="btn btn-primary btn-sm">Seguir</button>
++    {% endif %}
++  </div>
++  <div class="col-md-8">
++    <h3 class="mb-0">{{ user.username }}</h3>
++    <p class="text-muted">{{ user.about or '' }}</p>
++    <div class="mb-3">
++      <span class="badge bg-success me-1"><i class="bi bi-coin me-1"></i>{{ user.credits }}</span>
++      <span class="badge bg-secondary me-1">{{ user.points }} pts</span>
++      <span class="badge bg-info text-dark">{{ user.notes|length }} apuntes</span>
++    </div>
++    <h5>Últimos apuntes</h5>
++    <ul class="list-group">
++      {% for note in user.notes|sort(attribute='created_at', reverse=True)[:5] %}
++      <li class="list-group-item d-flex justify-content-between align-items-start">
++        <a href="{{ url_for('notes.detail', note_id=note.id) }}">{{ note.title }}</a>
++        <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d') }}</small>
++      </li>
++      {% endfor %}
++    </ul>
++  </div>
++</div>
++{% endblock %}
+diff --git a/crunevo_cascaron/crunevo/templates/store/store.html b/crunevo_cascaron/crunevo/templates/store/store.html
+index b0ef07072c164b986b847c7405da4afc9ff81eba..abb4a3312692e69e83932825ec80b911085209a0 100644
+--- a/crunevo_cascaron/crunevo/templates/store/store.html
++++ b/crunevo_cascaron/crunevo/templates/store/store.html
+@@ -1,20 +1,49 @@
+ {% extends 'base.html' %}
+ {% block content %}
+-<h2>Tienda</h2>
++<h2 class="mb-4">Tienda</h2>
+ <div class="row">
+-{% for product in products %}
+-  <div class="col-md-4">
+-    <div class="card mb-3">
+-      <img src="{{ product.image }}" class="card-img-top" alt="...">
++  <aside class="col-lg-3 mb-3">
++    <div class="card">
+       <div class="card-body">
+-        <h5 class="card-title">{{ product.name }}</h5>
+-        <p class="card-text">{{ product.description }}</p>
+-        <p>${{ product.price }}</p>
+-        <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-primary">Agregar</a>
++        <h6 class="card-title">Filtros</h6>
++        <hr>
++        <div class="mb-3">
++          <strong>Categorías</strong>
++          <div class="form-check">
++            <input class="form-check-input" type="checkbox" id="cat1">
++            <label class="form-check-label" for="cat1">General</label>
++          </div>
++        </div>
++        <div class="mb-3">
++          <strong>Precio</strong>
++          <input type="range" class="form-range" min="0" max="100">
++        </div>
+       </div>
+     </div>
++  </aside>
++  <div class="col-lg-9">
++    <div class="row g-3">
++      {% for product in products %}
++      <div class="col-sm-6 col-md-4">
++        <div class="card h-100">
++          <img src="{{ product.image }}" class="card-img-top" alt="imagen">
++          <div class="card-body d-flex flex-column">
++            <h6 class="card-title">{{ product.name }}</h6>
++            <p class="fw-bold">${{ product.price }}</p>
++            {% if product.stock > 0 %}
++            <span class="badge bg-success mb-2">En stock</span>
++            {% else %}
++            <span class="badge bg-danger mb-2">Agotado</span>
++            {% endif %}
++            <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-primary mt-auto">Agregar al carrito</a>
++          </div>
++        </div>
++      </div>
++      {% endfor %}
++    </div>
++    <div class="mt-4 text-end">
++      <a href="{{ url_for('store.view_cart') }}" class="btn btn-success">Ver Carrito</a>
++    </div>
+   </div>
+-{% endfor %}
+ </div>
+-<a href="{{ url_for('store.view_cart') }}" class="btn btn-success">Ver Carrito</a>
+ {% endblock %}
+ 
+EOF
+)

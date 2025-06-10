@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Carrito</h2>
+<table class="table">
+  <thead><tr><th>Producto</th><th>Cantidad</th><th>Subtotal</th></tr></thead>
+  <tbody>
+  {% for product, qty in products %}
+  <tr>
+    <td>{{ product.name }}</td>
+    <td>{{ qty }}</td>
+    <td>${{ product.price * qty }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p>Total: ${{ total }}</p>
+<a href="{{ url_for('store.checkout') }}" class="btn btn-success">Pagar</a>
+{% endblock %}

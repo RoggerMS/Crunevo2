@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Mi perfil</h2>
+<form method="post">
+  <div class="mb-3">
+    <textarea class="form-control" name="about" placeholder="Sobre mí">{{ current_user.about }}</textarea>
+  </div>
+  <button class="btn btn-primary" type="submit">Guardar</button>
+</form>
+{% endblock %}
