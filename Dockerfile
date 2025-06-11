@@ -6,7 +6,7 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY crunevo /app/crunevo
-COPY migrations /app/migrations   # 👈 ESTA ES LA LÍNEA CLAVE
+COPY migrations /app/migrations   # esta línea copia las migraciones
 
 COPY . /app
 
