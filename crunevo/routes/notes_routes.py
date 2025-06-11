@@ -2,6 +2,7 @@ import os
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, jsonify
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
+import cloudinary.uploader
 from crunevo.extensions import db
 from crunevo.models import Note, Comment
 
@@ -33,11 +34,16 @@ def search_notes():
 def upload_note():
     if request.method == 'POST':
         f = request.files['file']
-        filename = secure_filename(f.filename)
-        upload_folder = current_app.config['UPLOAD_FOLDER']
-        os.makedirs(upload_folder, exist_ok=True)
-        filepath = os.path.join(upload_folder, filename)
-        f.save(filepath)
+        cloud_url = current_app.config.get('CLOUDINARY_URL')
+        if cloud_url:
+            result = cloudinary.uploader.upload(f)
+            filepath = result['secure_url']
+        else:
+            filename = secure_filename(f.filename)
+            upload_folder = current_app.config['UPLOAD_FOLDER']
+            os.makedirs(upload_folder, exist_ok=True)
+            filepath = os.path.join(upload_folder, filename)
+            f.save(filepath)
         note = Note(title=request.form['title'],
                     description=request.form['description'],
                     filename=filepath,
