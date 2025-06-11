@@ -1,4 +1,4 @@
-from app import db
+from crunevo.extensions import db
 
 
 class Product(db.Model):

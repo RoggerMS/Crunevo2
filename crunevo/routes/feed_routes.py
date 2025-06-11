@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
 from flask_login import login_required
-from models import Note
+from crunevo.models import Note
 
 feed_bp = Blueprint('feed', __name__)
 

@@ -1,5 +1,5 @@
 from datetime import datetime
-from app import db
+from crunevo.extensions import db
 
 
 class Message(db.Model):

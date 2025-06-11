@@ -1,20 +1,18 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
 from flask_migrate import Migrate
 
-db = SQLAlchemy()
-login_manager = LoginManager()
+from .extensions import db, login_manager
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object('config.Config')
+    from .config import Config
+    app.config.from_object(Config)
 
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
 
-    from models import User, Product, Note, Comment
+    from .models import User, Product, Note, Comment
 
     Migrate(app, db)
 
@@ -47,12 +45,12 @@ def create_app():
                 db.session.commit()
             app.tables_created = True
 
-    from routes.auth_routes import auth_bp
-    from routes.notes_routes import notes_bp
-    from routes.feed_routes import feed_bp
-    from routes.store_routes import store_bp
-    from routes.chat_routes import chat_bp
-    from routes.admin_routes import admin_bp
+    from .routes.auth_routes import auth_bp
+    from .routes.notes_routes import notes_bp
+    from .routes.feed_routes import feed_bp
+    from .routes.store_routes import store_bp
+    from .routes.chat_routes import chat_bp
+    from .routes.admin_routes import admin_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(notes_bp)

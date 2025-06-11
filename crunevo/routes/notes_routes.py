@@ -2,8 +2,8 @@ import os
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, jsonify
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from app import db
-from models import Note, Comment
+from crunevo.extensions import db
+from crunevo.models import Note, Comment
 
 notes_bp = Blueprint('notes', __name__, url_prefix='/notes')
 

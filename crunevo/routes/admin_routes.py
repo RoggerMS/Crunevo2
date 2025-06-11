@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_required
-from app import db
-from models import User, Product, Report
-from utils.helpers import admin_required
+from crunevo.extensions import db
+from crunevo.models import User, Product, Report
+from crunevo.utils.helpers import admin_required
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for, flash
 from flask_login import login_required
-from app import db
-from models import Product
+from crunevo.extensions import db
+from crunevo.models import Product
 
 store_bp = Blueprint('store', __name__, url_prefix='/store')
 
