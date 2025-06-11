@@ -1,7 +1,6 @@
 from flask import Flask
-from flask_migrate import Migrate
 
-from .extensions import db, login_manager
+from .extensions import db, login_manager, migrate
 
 def create_app():
     app = Flask(__name__)
@@ -14,7 +13,7 @@ def create_app():
 
     from .models import User, Product, Note, Comment
 
-    Migrate(app, db)
+    migrate.init_app(app, db)
 
     # ⚠️ IMPORTANTE: Este decorador debe estar dentro de create_app y usar 'app' local
     @app.before_request
