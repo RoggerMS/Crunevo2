@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
 from flask_login import login_required
+from datetime import datetime
 from crunevo.models import Note
 
 feed_bp = Blueprint('feed', __name__)
@@ -9,14 +10,16 @@ feed_bp = Blueprint('feed', __name__)
 @login_required
 def index():
     notes = Note.query.order_by(Note.created_at.desc()).limit(20).all()
-    return render_template('feed/feed.html', notes=notes)
+    today = datetime.utcnow().date()
+    return render_template('feed/feed.html', notes=notes, today=today)
 
 
 @feed_bp.route('/trending')
 @login_required
 def trending():
     notes = Note.query.order_by(Note.views.desc()).limit(10).all()
-    return render_template('feed/feed.html', notes=notes, trending=True)
+    today = datetime.utcnow().date()
+    return render_template('feed/feed.html', notes=notes, trending=True, today=today)
 
 
 @feed_bp.route('/api/chat', methods=['POST'])

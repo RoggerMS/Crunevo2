@@ -2,6 +2,9 @@
 {% block content %}
 <h5 class="mb-3">{% if trending %}Tendencias{% else %}Feed{% endif %}</h5>
 {% for note in notes %}
+  {% if loop.index % 3 == 0 %}
+  <div class="alert alert-info text-center">¡Sigue aprendiendo con Crunevo!</div>
+  {% endif %}
   <div class="card mb-3 shadow-sm">
     <div class="card-body">
       <div class="d-flex align-items-center mb-2">
@@ -9,7 +12,11 @@
         <strong class="me-auto">{{ note.author.username }}</strong>
         <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d') }}</small>
       </div>
-      <h5 class="card-title">{{ note.title }}</h5>
+      <h5 class="card-title">{{ note.title }}
+        {% if note.created_at.date() == today %}
+        <span class="badge bg-success ms-2">Nuevo</span>
+        {% endif %}
+      </h5>
       <p class="card-text">{{ note.description }}</p>
       <div class="mb-2">
         {% for tag in note.tags.split(',') if note.tags %}
