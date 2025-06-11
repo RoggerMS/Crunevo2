@@ -22,9 +22,9 @@ def create_app():
         if not hasattr(app, 'tables_created'):
             db.create_all()
             if not User.query.first():
-                admin = User(username="admin", email="admin@example.com", role="admin")
+                admin = User(username="admin", email="admin@example.com", role="admin", avatar_url='static/img/default.png')
                 admin.set_password("admin")
-                user = User(username="estudiante", email="user@example.com")
+                user = User(username="estudiante", email="user@example.com", avatar_url='static/img/default.png')
                 user.set_password("test")
                 db.session.add_all([admin, user])
                 db.session.add(Product(

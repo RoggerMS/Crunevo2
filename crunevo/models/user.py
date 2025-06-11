@@ -13,6 +13,7 @@ class User(UserMixin, db.Model):
     points = db.Column(db.Integer, default=0)
     credits = db.Column(db.Integer, default=0)
     chat_enabled = db.Column(db.Boolean, default=True)
+    avatar_url = db.Column(db.String(255))
     about = db.Column(db.Text)
     notes = db.relationship('Note', backref='author', lazy=True)
     comments = db.relationship('Comment', backref='author', lazy=True)
