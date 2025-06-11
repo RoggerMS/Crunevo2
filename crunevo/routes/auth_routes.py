@@ -52,6 +52,16 @@ def logout():
 def perfil():
     if request.method == 'POST':
         current_user.about = request.form.get('about')
+        avatar_url = request.form.get('avatar_url')
+        if avatar_url:
+            current_user.avatar_url = avatar_url
         db.session.commit()
         flash('Perfil actualizado')
     return render_template('auth/perfil.html')
+
+
+@auth_bp.route('/user/<int:user_id>')
+@login_required
+def public_profile(user_id):
+    user = User.query.get_or_404(user_id)
+    return render_template('perfil_publico.html', user=user)

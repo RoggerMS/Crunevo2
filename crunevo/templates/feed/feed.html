@@ -9,7 +9,9 @@
     <div class="card-body">
       <div class="d-flex align-items-center mb-2">
         <img src="{{ note.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
-        <strong class="me-auto">{{ note.author.username }}</strong>
+        <a href="{{ url_for('auth.public_profile', user_id=note.author.id) }}" class="me-auto text-decoration-none">
+          <strong>{{ note.author.username }}</strong>
+        </a>
         <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d') }}</small>
       </div>
       <h5 class="card-title">{{ note.title }}
