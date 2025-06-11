@@ -6,8 +6,8 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY crunevo /app/crunevo
-COPY migrations /app/migrations   # esta línea copia las migraciones
+COPY migrations /app/migrations  # ← Aquí falla si está vacía
 
-COPY . /app
+COPY run.py /app/run.py
 
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "crunevo.app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "run:app"]
