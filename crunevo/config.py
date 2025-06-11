@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+import cloudinary
 
 load_dotenv()
 
@@ -14,3 +15,7 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.getenv('UPLOAD_FOLDER', 'static/uploads')
+
+    CLOUDINARY_URL = os.getenv('CLOUDINARY_URL')
+    if CLOUDINARY_URL:
+        cloudinary.config(cloudinary_url=CLOUDINARY_URL)
