@@ -1,15 +1,14 @@
-FROM python:3.12-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-COPY requirements.txt /app/
+# Copiar dependencias e instalarlas
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY crunevo /app/crunevo
+# Copiar todo lo necesario
+COPY . .            # Copia todo el proyecto
+COPY migrations/ /app/migrations/  # Asegura que migrations se copie
 
-ENV FLASK_APP=crunevo.app
-
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "crunevo.app:app"]
+# Ejecutar Gunicorn como servidor
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
