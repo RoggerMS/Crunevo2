@@ -1,17 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Apuntes</h2>
-<div class="mb-3">
-  <input type="text" id="noteSearch" class="form-control" placeholder="Buscar...">
+<div class="row align-items-center mb-3">
+  <div class="col">
+    <input type="text" id="noteSearch" class="form-control" placeholder="Buscar...">
+  </div>
+  <div class="col-auto">
+    <a href="{{ url_for('notes.upload_note') }}" class="btn btn-success">Subir nuevo</a>
+  </div>
 </div>
-<a href="{{ url_for('notes.upload_note') }}" class="btn btn-success mb-3">Subir nuevo</a>
-  <ul class="list-group" id="notesList">
+<div class="row row-cols-1 row-cols-md-2 g-3" id="notesList">
 {% for note in notes %}
-  <li class="list-group-item">
-    <a href="{{ url_for('notes.detail', note_id=note.id) }}">{{ note.title }}</a> - {{ note.views }} vistas
-  </li>
+  <div class="col">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body d-flex flex-column">
+        <h6 class="card-title">{{ note.title }}</h6>
+        <p class="card-text flex-grow-1">{{ note.description }}</p>
+        <a href="{{ url_for('notes.detail', note_id=note.id) }}" class="btn btn-primary mt-auto">Ver</a>
+      </div>
+    </div>
+  </div>
 {% endfor %}
-  </ul>
+</div>
 <script>
 document.getElementById('noteSearch').addEventListener('input', function(e){
   fetch('{{ url_for('notes.search_notes') }}?q=' + encodeURIComponent(e.target.value))
@@ -20,10 +30,10 @@ document.getElementById('noteSearch').addEventListener('input', function(e){
       const list = document.getElementById('notesList');
       list.innerHTML = '';
       data.forEach(n => {
-        const li = document.createElement('li');
-        li.className = 'list-group-item';
-        li.innerHTML = `<a href="/notes/${n.id}">${n.title}</a>`;
-        list.appendChild(li);
+        const div = document.createElement('div');
+        div.className = 'col';
+        div.innerHTML = `<div class="card h-100 shadow-sm"><div class="card-body d-flex flex-column"><h6 class="card-title">${n.title}</h6><p class="card-text flex-grow-1">${n.description || ''}</p><a href="/notes/${n.id}" class="btn btn-primary mt-auto">Ver</a></div></div>`;
+        list.appendChild(div);
       });
     });
 });

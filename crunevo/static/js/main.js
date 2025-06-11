@@ -36,4 +36,20 @@ document.addEventListener('DOMContentLoaded', function(){
         });
       });
   });
+
+  // hide search suggestions on blur
+  input.addEventListener('blur', function(){
+    setTimeout(() => { box.innerHTML = ''; }, 100);
+  });
+});
+
+// close mobile menu when a link is clicked
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('.navbar-crunevo .navbar-nav .nav-link').forEach(el => {
+    el.addEventListener('click', () => {
+      const collapse = document.getElementById('navbarNav');
+      const bsCollapse = bootstrap.Collapse.getInstance(collapse);
+      if(bsCollapse) bsCollapse.hide();
+    });
+  });
 });

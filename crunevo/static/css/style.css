@@ -45,3 +45,8 @@ body[data-bs-theme="dark"] {
   max-height: 300px;
   overflow-y: auto;
 }
+
+.navbar-crunevo .navbar-toggler {
+  border: none;
+}
+
