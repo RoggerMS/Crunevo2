@@ -8,9 +8,9 @@ def unlock_achievement(user, badge_code):
         new = UserAchievement(user_id=user.id, badge_code=badge_code)
         db.session.add(new)
         db.session.commit()
-        metadata = {
+        meta_dict = {
             'badge_code': badge_code,
             'username': user.username,
         }
-        create_feed_item_for_all('logro', new.id, metadata=metadata, is_highlight=True)
+        create_feed_item_for_all('logro', new.id, meta_dict=meta_dict, is_highlight=True)
 

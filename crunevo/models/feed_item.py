@@ -10,11 +10,17 @@ class FeedItem(db.Model):
                               'mensaje', name='feed_item_type'), nullable=False)
     ref_id = db.Column(db.Integer, nullable=False)
     is_highlight = db.Column(db.Boolean, default=False)
-    meta = db.Column('metadata', db.Text, nullable=True)
+    _metadata = db.Column('metadata', db.Text, nullable=True)
     score = db.Column(db.Float, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
+        """Return minimal data per item type for API.
+
+        'apunte': title, summary, author_username, downloads
+        'post': content, author_username, image_url
+        others: fields from metadata
+        """
         try:
             data = {
                 'item_type': self.item_type,
@@ -23,9 +29,9 @@ class FeedItem(db.Model):
             }
 
             meta_data = None
-            if self.meta:
+            if self.metadata:
                 try:
-                    meta_data = json.loads(self.meta)
+                    meta_data = json.loads(self.metadata)
                 except Exception:
                     meta_data = None
 
@@ -73,4 +79,16 @@ class FeedItem(db.Model):
             return data
         except Exception:
             return {'item_type': 'deleted'}
+
+
+# expose metadata attribute without conflicting with SQLAlchemy base
+def _get_metadata(self):
+    return self._metadata
+
+
+def _set_metadata(self, value):
+    self._metadata = value
+
+
+FeedItem.metadata = property(_get_metadata, _set_metadata)
 

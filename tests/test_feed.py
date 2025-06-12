@@ -1,6 +1,8 @@
-from crunevo.models import Note
+from crunevo.models import Note, FeedItem
 from crunevo.utils.feed import create_feed_item_for_all
 from crunevo.utils.achievements import unlock_achievement
+from crunevo.utils.credits import add_credit, spend_credit
+from flask_login import login_user
 
 
 def login(client, username, password):
@@ -28,4 +30,12 @@ def test_feed_includes_achievement_event(client, db_session, test_user, another_
     assert resp.status_code == 200
     types = [d['item_type'] for d in resp.get_json()]
     assert 'logro' in types
+
+
+def test_self_spend_no_movement_feed(app, db_session, test_user):
+    with app.test_request_context('/'):
+        login_user(test_user)
+        add_credit(test_user, 5, 'test')
+        spend_credit(test_user, 2, 'test')
+    assert FeedItem.query.count() == 0
 

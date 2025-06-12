@@ -13,14 +13,20 @@ def add_credit(user, amount, reason, related_id=None):
     user.credits += amount
     db.session.add(credit)
     db.session.commit()
-    if amount > 0 and has_request_context() and current_user.is_authenticated and user.id != current_user.id:
+    if amount > 0 and has_request_context() and current_user.is_authenticated and current_user.id != user.id:
         meta = {
             'amount': amount,
             'reason': reason,
             'sender': current_user.username,
             'receiver': user.username,
         }
-        create_feed_item_for_all('movimiento', credit.id, metadata=meta, owner_ids=[user.id, current_user.id])
+        create_feed_item_for_all(
+            'movimiento',
+            credit.id,
+            meta_dict=meta,
+            owner_ids=[current_user.id, user.id],
+            is_highlight=True,
+        )
 
 
 def spend_credit(user, amount, reason, related_id=None):
@@ -33,14 +39,20 @@ def spend_credit(user, amount, reason, related_id=None):
     user.credits -= amount
     db.session.add(credit)
     db.session.commit()
-    if amount > 0 and has_request_context() and current_user.is_authenticated and user.id != current_user.id:
+    if amount > 0 and has_request_context() and current_user.is_authenticated and current_user.id != user.id:
         meta = {
             'amount': amount,
             'reason': reason,
             'sender': user.username,
             'receiver': current_user.username,
         }
-        create_feed_item_for_all('movimiento', credit.id, metadata=meta, owner_ids=[user.id, current_user.id])
+        create_feed_item_for_all(
+            'movimiento',
+            credit.id,
+            meta_dict=meta,
+            owner_ids=[user.id, current_user.id],
+            is_highlight=True,
+        )
 
     voluntary_reasons = {
         CreditReasons.DONACION,

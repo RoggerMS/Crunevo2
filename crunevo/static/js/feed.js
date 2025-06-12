@@ -15,6 +15,10 @@ async function loadFeed() {
       html = renderBadgeCard(item);
     } else if (item.item_type === 'movimiento') {
       html = renderMovimientoCard(item);
+    } else if (item.item_type === 'evento') {
+      html = renderEventoCard(item);
+    } else if (item.item_type === 'mensaje') {
+      html = renderMensajeCard(item);
     }
     if (html) {
       feed.insertAdjacentHTML('beforeend', html);
@@ -60,6 +64,16 @@ function renderMovimientoCard(data) {
     <span>💰 ${data.sender} → ${data.receiver}: ${data.amount}</span>
     <div class="mt-2"><a class="btn btn-sm btn-outline-primary" href="/">Detalle</a></div>
   </div>`;
+}
+
+function renderEventoCard(data) {
+  const highlight = data.is_highlight ? ' feed-card--highlight' : '';
+  return `<div class="feed-card${highlight}">📅 ${data.title || 'Evento'}</div>`;
+}
+
+function renderMensajeCard(data) {
+  const highlight = data.is_highlight ? ' feed-card--highlight' : '';
+  return `<div class="feed-card${highlight}">💬 ${data.text || ''}</div>`;
 }
 
 loadMore.addEventListener('click', loadFeed);
