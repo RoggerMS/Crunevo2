@@ -6,7 +6,8 @@ import cloudinary.uploader
 from crunevo.extensions import db
 from crunevo.models import Note, Comment
 from crunevo.utils.credits import add_credit
-from crunevo.constants import CreditReasons
+from crunevo.utils import unlock_achievement
+from crunevo.constants import CreditReasons, AchievementCodes
 
 notes_bp = Blueprint('notes', __name__, url_prefix='/notes')
 
@@ -56,6 +57,7 @@ def upload_note():
         current_user.points += 10
         db.session.commit()
         add_credit(current_user, 5, CreditReasons.APUNTE_SUBIDO, related_id=note.id)
+        unlock_achievement(current_user, AchievementCodes.PRIMER_APUNTE)
         flash('Apunte subido correctamente')
         return redirect(url_for('notes.list_notes'))
     return render_template('notes/upload.html')
@@ -85,3 +87,4 @@ def add_comment(note_id):
             'timestamp': comment.timestamp.strftime('%Y-%m-%d %H:%M')
         })
     return redirect(url_for('notes.detail', note_id=note_id))
+
