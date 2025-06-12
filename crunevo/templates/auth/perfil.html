@@ -21,4 +21,13 @@
     <li>{{ '+' if c.amount > 0 else '' }}{{ c.amount }} – {{ c.reason }} ({{ c.timestamp.strftime('%Y-%m-%d') }})</li>
   {% endfor %}
 </ul>
+<h5>Logros desbloqueados</h5>
+<ul>
+  {% for a in current_user.achievements %}
+    <li>🏅 {{ a.badge_code.replace("_", " ").capitalize() }} ({{ a.earned_at.strftime('%Y-%m-%d') }})</li>
+  {% else %}
+    <li>Aún no tienes logros desbloqueados.</li>
+  {% endfor %}
+</ul>
 {% endblock %}
+
