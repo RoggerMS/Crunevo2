@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, jsonify, abort
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 import cloudinary.uploader
@@ -87,4 +87,38 @@ def add_comment(note_id):
             'timestamp': comment.timestamp.strftime('%Y-%m-%d %H:%M')
         })
     return redirect(url_for('notes.detail', note_id=note_id))
+
+
+@notes_bp.route('/<int:note_id>/like', methods=['POST'])
+@login_required
+def like_note(note_id):
+    note = Note.query.get_or_404(note_id)
+    if note.user_id == current_user.id:
+        abort(403)
+    note.likes += 1
+    db.session.commit()
+    add_credit(note.author, 1, CreditReasons.VOTO_POSITIVO, related_id=note.id)
+    return jsonify({'likes': note.likes})
+
+
+@notes_bp.route('/<int:note_id>/share', methods=['POST'])
+@login_required
+def share_note(note_id):
+    note = Note.query.get_or_404(note_id)
+    unlock_achievement(current_user, AchievementCodes.COMPARTIDOR)
+    flash("¡Gracias por compartir este apunte!")
+    return redirect(url_for('notes.detail', note_id=note_id))
+
+
+@notes_bp.route('/<int:note_id>/download')
+@login_required
+def download_note(note_id):
+    note = Note.query.get_or_404(note_id)
+    note.downloads += 1
+    db.session.commit()
+
+    if note.downloads >= 100:
+        unlock_achievement(note.author, AchievementCodes.DESCARGA_100)
+
+    return redirect(f"/{note.filename}")
 

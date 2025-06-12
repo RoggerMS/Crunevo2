@@ -3,3 +3,4 @@ class CreditReasons:
     DONACION = "donación"
     COMPRA = "compra"
     AGRADECIMIENTO = "agradecimiento"
+    VOTO_POSITIVO = "voto_positivo"
