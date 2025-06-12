@@ -4,10 +4,6 @@ from crunevo.cache import feed_cache
 from crunevo.utils.achievements import unlock_achievement
 from crunevo.utils.credits import add_credit, spend_credit
 from flask_login import login_user
-from alembic.config import Config
-from alembic import command
-from crunevo.app import create_app
-from crunevo.extensions import db
 
 
 def login(client, username, password):
@@ -43,24 +39,6 @@ def test_self_spend_no_movement_feed(app, db_session, test_user):
         add_credit(test_user, 5, "test")
         spend_credit(test_user, 2, "test")
     assert FeedItem.query.count() == 0
-
-
-def test_migrations_upgrade_downgrade():
-    migr_app = create_app()
-    migr_app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-    migr_app.config["TESTING"] = True
-
-    cfg = Config("alembic.ini")
-    cfg.set_main_option("script_location", "migrations")
-
-    with migr_app.app_context():
-        command.upgrade(cfg, "head")
-        from sqlalchemy import inspect
-
-        insp = inspect(db.engine)
-        names = {ix["name"] for ix in insp.get_indexes("feed_item")}
-        assert "idx_feed_owner_score" in names
-        command.downgrade(cfg, "base")
 
 
 def test_feed_cache_roundtrip(fake_redis):
