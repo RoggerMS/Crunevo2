@@ -1,0 +1,31 @@
+/* ---- Design tokens CRUNEVO ---- */
+:root {
+  /* neutrals */
+  --gray-900: #0F172A;
+  --gray-50 : #F8FAFC;
+
+  /* brand */
+  --primary : #7356FF;
+  --success : #28C76F;
+  --accent  : #FFD233;
+
+  /* spacing (4 px scale) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+}
+
+/* typography helpers */
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background: var(--gray-50);
+  color: var(--gray-900);
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+}
+code, pre { font-family: "JetBrains Mono", monospace; }

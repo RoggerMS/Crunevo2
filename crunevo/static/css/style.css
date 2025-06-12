@@ -1,3 +1,4 @@
+@import url("tokens.css");
 html {
   transition: background-color 0.3s, color 0.3s;
 }
@@ -64,5 +65,17 @@ body[data-bs-theme="dark"] {
 
 .text-brown {
   color: #cd7f32;
+}
+
+/* helpers hasta que migremos todo a clases Tailwind */
+.card {
+  background: var(--card-bg, #FFF);
+  border-radius: 0.75rem;
+  padding: var(--space-5);
+  box-shadow: 0 4px 16px rgba(0,0,0,.06);
+}
+.lift:hover {
+  transform: translateY(-2px);
+  transition: .15s ease;
 }
 
