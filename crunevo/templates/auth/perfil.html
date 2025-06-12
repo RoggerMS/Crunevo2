@@ -3,6 +3,8 @@
 <h2>Mi perfil</h2>
 <div class="mb-3 text-center">
   <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle" width="100" height="100" alt="avatar">
+  <p class="mt-2">{{ current_user.username }}</p>
+  <p>💰 Créditos: {{ current_user.credits }}</p>
 </div>
 <form method="post">
   <div class="mb-3">
@@ -13,4 +15,10 @@
   </div>
   <button class="btn btn-primary" type="submit">Guardar</button>
 </form>
+<h5>Historial de Créditos</h5>
+<ul>
+  {% for c in current_user.credit_history %}
+    <li>{{ '+' if c.amount > 0 else '' }}{{ c.amount }} – {{ c.reason }} ({{ c.timestamp.strftime('%Y-%m-%d') }})</li>
+  {% endfor %}
+</ul>
 {% endblock %}
