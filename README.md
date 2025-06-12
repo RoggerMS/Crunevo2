@@ -95,3 +95,28 @@ y se muestra un distintivo en la barra de navegación.
 - Modificar las variables `FEED_LIKE_W`, `FEED_DL_W`, `FEED_COM_W` y
   `FEED_HALF_LIFE_H` para ajustar pesos sin tocar el código.
 
+## Contribuir y correr las pruebas
+
+Instala las dependencias:
+
+```bash
+pip install -r requirements.txt
+```
+
+La suite usa SQLite en memoria y aplica las migraciones desde cero en cada
+ejecución. Los `DeprecationWarning` de SQLAlchemy se filtran mediante
+`pytest.ini` para mantener la salida limpia.
+
+Para ejecutar formato y tests en un paso:
+
+```bash
+make test
+```
+
+Opcionalmente puedes instalar los hooks de `pre-commit` para formatear el
+código automáticamente antes de cada commit:
+
+```bash
+pre-commit install
+```
+
