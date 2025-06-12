@@ -11,7 +11,7 @@ from flask import (
     abort,
 )
 from flask_login import current_user
-from crunevo.utils.helpers import activated_required
+from crunevo.utils.helpers import activated_required, verified_required
 from werkzeug.utils import secure_filename
 import cloudinary.uploader
 from crunevo.extensions import db
@@ -142,7 +142,7 @@ def share_note(note_id):
 
 
 @notes_bp.route("/<int:note_id>/download")
-@activated_required
+@verified_required
 def download_note(note_id):
     note = Note.query.get_or_404(note_id)
     note.downloads += 1

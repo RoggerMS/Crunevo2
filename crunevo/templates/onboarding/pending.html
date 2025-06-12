@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block content %}
+<p>Confirma tu correo para continuar.</p>
+<form method="post" action="{{ url_for('onboarding.resend') }}">
+  <button class="btn btn-primary" type="submit">Reenviar correo</button>
+</form>
+{% endblock %}
