@@ -5,7 +5,7 @@ import pytest
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from crunevo.app import create_app
-from crunevo.extensions import db
+from crunevo.extensions import db, mail
 from crunevo.models import User
 from crunevo.cache import feed_cache
 import fakeredis
@@ -16,6 +16,8 @@ def app():
     os.environ["DATABASE_URL"] = "sqlite:///:memory:"
     app = create_app()
     app.config["TESTING"] = True
+    app.config["MAIL_SUPPRESS_SEND"] = True
+    mail.init_app(app)
     with app.app_context():
         db.create_all()
         yield app
@@ -35,7 +37,7 @@ def db_session(app):
 
 @pytest.fixture
 def test_user(db_session):
-    user = User(username="tester", email="tester@example.com")
+    user = User(username="tester", email="tester@example.com", activated=True, avatar_url="a")
     user.set_password("secret")
     db_session.add(user)
     db_session.commit()
@@ -44,7 +46,7 @@ def test_user(db_session):
 
 @pytest.fixture
 def another_user(db_session):
-    user = User(username="tester2", email="tester2@example.com")
+    user = User(username="tester2", email="tester2@example.com", activated=True, avatar_url="a")
     user.set_password("secret")
     db_session.add(user)
     db_session.commit()

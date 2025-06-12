@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
-from flask_login import login_required, current_user
+from flask_login import current_user
+from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
 from crunevo.models import Message, User
 
@@ -7,14 +8,14 @@ chat_bp = Blueprint("chat", __name__, url_prefix="/chat")
 
 
 @chat_bp.route("/")
-@login_required
+@activated_required
 def chat_index():
     users = User.query.all()
     return render_template("chat/chat.html", users=users)
 
 
 @chat_bp.route("/send", methods=["POST"])
-@login_required
+@activated_required
 def send_message():
     receiver_id = request.form["receiver_id"]
     content = request.form["content"]

@@ -24,3 +24,12 @@ class Config:
     FEED_DL_W = float(os.getenv("FEED_DL_W", 2))
     FEED_COM_W = float(os.getenv("FEED_COM_W", 1))
     FEED_HALF_LIFE_H = float(os.getenv("FEED_HALF_LIFE_H", 24))
+
+    MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+    MAIL_PORT = int(os.getenv("MAIL_PORT", 587))
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
+    MAIL_DEFAULT_SENDER = os.getenv("MAIL_SENDER", "Crunevo <no-reply@crunevo.io>")
+
+    ONBOARDING_TOKEN_EXP_H = int(os.getenv("ONBOARDING_TOKEN_EXP_H", 48))

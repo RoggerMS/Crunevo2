@@ -3,7 +3,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
-from .extensions import db, login_manager, migrate
+from .extensions import db, login_manager, migrate, mail
 
 
 def create_app():
@@ -14,7 +14,8 @@ def create_app():
 
     db.init_app(app)
     login_manager.init_app(app)
-    login_manager.login_view = "auth.login"
+    mail.init_app(app)
+    login_manager.login_view = "onboarding.register"
 
     from .models import User, Product, Note, Comment, Post
 
@@ -31,6 +32,7 @@ def create_app():
                     email="admin@example.com",
                     role="admin",
                     avatar_url="static/img/default.png",
+                    activated=True,
                 )
                 admin.set_password("admin")
                 user = User(
@@ -63,6 +65,7 @@ def create_app():
                 db.session.commit()
             app.tables_created = True
 
+    from .routes.onboarding_routes import bp as onboarding_bp
     from .routes.auth_routes import auth_bp
     from .routes.notes_routes import notes_bp
     from .routes.feed_routes import feed_bp
@@ -72,6 +75,7 @@ def create_app():
     from .routes.ranking_routes import ranking_bp
     from .routes.errors import errors_bp
 
+    app.register_blueprint(onboarding_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(notes_bp)
     app.register_blueprint(feed_bp)
