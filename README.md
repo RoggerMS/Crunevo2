@@ -80,8 +80,15 @@ ARGON2_TIME_COST=2
 ARGON2_MEMORY_COST=102400
 ARGON2_PARALLELISM=8
 ENABLE_TALISMAN=true
+ENABLE_CSP_OVERRIDE=false
 ONBOARDING_TOKEN_EXP_H=1
 ```
+
+### Verificación manual
+
+Los administradores pueden aprobar cuentas de estudiantes desde
+`/admin/verificaciones`. Al aceptar, el usuario obtiene nivel de verificación 2
+y se muestra un distintivo en la barra de navegación.
 
 ### Ajustar el ranking del feed
 - Fórmula en `crunevo/utils/scoring.py`

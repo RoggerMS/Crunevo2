@@ -21,3 +21,4 @@ def test_login_fail_event(client):
     client.post("/login", data={"username": "nosuch", "password": "bad"})
     event = AuthEvent.query.filter_by(event_type="login_fail").first()
     assert event is not None
+    assert "nosuch" in (event.extra or "")

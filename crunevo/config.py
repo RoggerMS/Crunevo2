@@ -43,3 +43,8 @@ class Config:
         "true",
         "yes",
     )
+    ENABLE_CSP_OVERRIDE = os.getenv("ENABLE_CSP_OVERRIDE", "False").lower() in (
+        "1",
+        "true",
+        "yes",
+    )

@@ -5,6 +5,7 @@ from crunevo.extensions import limiter
 from zxcvbn import zxcvbn
 from crunevo.utils.audit import record_auth_event
 from urllib.parse import urlparse  # ✅ Corrección aquí
+import json
 from crunevo.extensions import db
 from crunevo.models import User
 from crunevo.utils import spend_credit, record_login
@@ -49,7 +50,7 @@ def login():
             if not next_page or urlparse(next_page).netloc != "":
                 next_page = url_for("feed.index")
             return redirect(next_page)
-        record_auth_event(user, "login_fail")
+        record_auth_event(user, "login_fail", extra=json.dumps({"username": username}))
         flash("Credenciales inválidas")
     return render_template("auth/login.html")
 
@@ -57,8 +58,9 @@ def login():
 @auth_bp.route("/logout")
 @activated_required
 def logout():
+    user = current_user
     logout_user()
-    record_auth_event(current_user, "logout")
+    record_auth_event(user, "logout")
     return redirect(url_for("auth.login"))
 
 

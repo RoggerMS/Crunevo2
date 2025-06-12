@@ -9,6 +9,7 @@ class AuthEvent(db.Model):
     event_type = db.Column(db.String(20), nullable=False)
     ip = db.Column(db.String(45))
     ua = db.Column(db.String(255))
+    extra = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship("User", backref="auth_events")

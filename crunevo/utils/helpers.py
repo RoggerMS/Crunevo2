@@ -24,3 +24,17 @@ def activated_required(f):
         return f(*args, **kwargs)
 
     return decorated_function
+
+
+def verified_required(f):
+    @wraps(f)
+    @activated_required
+    def decorated(*args, **kwargs):
+        if current_user.verification_level < 2:
+            from flask import flash
+
+            flash("Necesitas verificación de estudiante", "warning")
+            return redirect(url_for("feed.index"))
+        return f(*args, **kwargs)
+
+    return decorated

@@ -14,6 +14,7 @@ from crunevo.extensions import db
 from crunevo.models import User, Product, Report
 from crunevo.utils.ranking import calculate_weekly_ranking
 from crunevo.utils.helpers import admin_required
+from crunevo.utils.audit import record_auth_event
 import cloudinary.uploader
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -95,3 +96,23 @@ def run_ranking():
     calculate_weekly_ranking()
     flash("Ranking recalculado")
     return redirect(url_for("admin.dashboard"))
+
+
+@admin_bp.route("/verificaciones")
+@activated_required
+@admin_required
+def verifications():
+    users = User.query.filter_by(verification_level=0).all()
+    return render_template("admin/verifications.html", users=users)
+
+
+@admin_bp.route("/verificaciones/<int:user_id>/approve", methods=["POST"])
+@activated_required
+@admin_required
+def approve_user(user_id):
+    user = User.query.get_or_404(user_id)
+    user.verification_level = 2
+    db.session.commit()
+    record_auth_event(user, "verify_student")
+    flash("Usuario verificado")
+    return redirect(url_for("admin.verifications"))

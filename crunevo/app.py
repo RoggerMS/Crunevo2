@@ -6,6 +6,14 @@ import os
 from .extensions import db, login_manager, migrate, mail, csrf, limiter
 from flask_talisman import Talisman
 
+DEFAULT_CSP = {
+    "default-src": "'self'",
+    "img-src": ["'self'", "data:", "https://res.cloudinary.com"],
+    "style-src": ["'self'", "'unsafe-inline'"],
+    "script-src": ["'self'", "'unsafe-inline'"],
+    "connect-src": "'self'",
+}
+
 
 def create_app():
     app = Flask(__name__)
@@ -19,7 +27,13 @@ def create_app():
     csrf.init_app(app)
     limiter.init_app(app)
     if app.config.get("ENABLE_TALISMAN", True):
-        Talisman(app, content_security_policy=None)
+        csp = None if app.config.get("ENABLE_CSP_OVERRIDE") else DEFAULT_CSP
+        Talisman(
+            app,
+            content_security_policy=csp,
+            force_https=True,
+            strict_transport_security=True,
+        )
     login_manager.login_view = "onboarding.register"
 
     from .models import User, Product, Note, Comment, Post
@@ -95,9 +109,11 @@ def create_app():
         from apscheduler.schedulers.background import BackgroundScheduler
         from apscheduler.triggers.interval import IntervalTrigger
         from .jobs.decay import decay_scores
+        from .jobs.cleanup_auth_events import cleanup_auth_events
 
         scheduler = BackgroundScheduler()
         scheduler.add_job(decay_scores, IntervalTrigger(hours=1))
+        scheduler.add_job(cleanup_auth_events, IntervalTrigger(hours=24))
         scheduler.start()
         app.scheduler = scheduler
 

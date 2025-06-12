@@ -28,5 +28,5 @@ APScheduler==3.10.4
 argon2-cffi==23.1.0
 Flask-Talisman==1.1.0
 Flask-Limiter==3.5.0
-zxcvbn-password-strength==1.1.0
+zxcvbn==4.5.0
 freezegun==1.5.0

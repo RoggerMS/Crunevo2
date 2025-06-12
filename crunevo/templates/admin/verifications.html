@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Verificaciones pendientes</h2>
+<table class="table">
+  <thead><tr><th>ID</th><th>Usuario</th><th>Email</th><th>Acciones</th></tr></thead>
+  <tbody>
+  {% for u in users %}
+  <tr>
+    <td>{{ u.id }}</td>
+    <td>{{ u.username }}</td>
+    <td>{{ u.email }}</td>
+    <td>
+      <form action="{{ url_for('admin.approve_user', user_id=u.id) }}" method="post" class="d-inline">
+        <button class="btn btn-success btn-sm" type="submit">&#x2705;</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
