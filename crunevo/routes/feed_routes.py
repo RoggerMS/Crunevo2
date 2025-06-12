@@ -14,12 +14,13 @@ from flask import (
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required
 from datetime import datetime
-from crunevo.extensions import db
+from crunevo.extensions import db, csrf
 from crunevo.models import Post, FeedItem
 import redis
 from crunevo.cache.feed_cache import fetch as cache_fetch, push_items as cache_push
 
 feed_bp = Blueprint("feed", __name__)
+csrf.exempt(feed_bp)
 
 
 @feed_bp.route("/", methods=["GET", "POST"])

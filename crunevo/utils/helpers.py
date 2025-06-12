@@ -18,7 +18,7 @@ def activated_required(f):
     @login_required
     def decorated_function(*args, **kwargs):
         if not current_user.activated:
-            return redirect(url_for("onboarding.register"))
+            return redirect(url_for("onboarding.pending"))
         if current_user.username == current_user.email or not current_user.avatar_url:
             return redirect(url_for("onboarding.finish"))
         return f(*args, **kwargs)

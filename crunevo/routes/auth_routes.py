@@ -1,6 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, current_user
 from crunevo.utils.helpers import activated_required
+from crunevo.extensions import limiter
+from zxcvbn import zxcvbn
+from crunevo.utils.audit import record_auth_event
 from urllib.parse import urlparse  # ✅ Corrección aquí
 from crunevo.extensions import db
 from crunevo.models import User
@@ -16,6 +19,9 @@ def register():
         username = request.form["username"]
         email = request.form["email"]
         password = request.form["password"]
+        if len(password) < 12 or zxcvbn(password)["score"] < 2:
+            flash("Contraseña débil", "danger")
+            return render_template("auth/register.html"), 400
         user = User(username=username, email=email)
         user.set_password(password)
         db.session.add(user)
@@ -26,18 +32,24 @@ def register():
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
+@limiter.limit("5 per 15 minutes")
 def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
+            record_auth_event(user, "login_success")
+            if not user.activated:
+                login_user(user)
+                return redirect(url_for("onboarding.pending"))
             login_user(user)
             record_login(user)
             next_page = request.args.get("next")
             if not next_page or urlparse(next_page).netloc != "":
                 next_page = url_for("feed.index")
             return redirect(next_page)
+        record_auth_event(user, "login_fail")
         flash("Credenciales inválidas")
     return render_template("auth/login.html")
 
@@ -46,6 +58,7 @@ def login():
 @activated_required
 def logout():
     logout_user()
+    record_auth_event(current_user, "logout")
     return redirect(url_for("auth.login"))
 
 
