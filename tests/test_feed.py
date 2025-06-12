@@ -121,3 +121,18 @@ def test_feed_cache_hit_after_warmup(fake_redis, client, test_user, monkeypatch)
         )
         cached = client.get("/api/feed").get_json()
     assert cached == warm
+
+
+def test_feed_ordering(fake_redis, client, db_session, test_user, another_user):
+    note1 = Note(title="A", author=test_user)
+    note2 = Note(title="B", author=test_user)
+    db_session.add_all([note1, note2])
+    db_session.commit()
+    create_feed_item_for_all("apunte", note1.id)
+    create_feed_item_for_all("apunte", note2.id)
+
+    login(client, another_user.username, "secret")
+    client.post(f"/notes/{note1.id}/like")
+    resp = client.get("/api/feed")
+    titles = [it["title"] for it in resp.get_json() if it["item_type"] == "apunte"]
+    assert titles[0] == "A"
