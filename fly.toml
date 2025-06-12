@@ -12,6 +12,15 @@ app = "crunevo2"
 [[services]]
   internal_port = 8080
   protocol = "tcp"
+
   [[services.ports]]
+    port = 80
     handlers = ["http"]
-    port = 8080
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.tcp_checks]]
+    interval = "10s"
+    timeout = "2s"
