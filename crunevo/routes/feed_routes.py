@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, request, jsonify, redirect, url_fo
 from flask_login import login_required, current_user
 from datetime import datetime
 from crunevo.extensions import db
-from crunevo.models import Note, Post
+from crunevo.models import Note, Post, FeedItem
 
 feed_bp = Blueprint('feed', __name__)
 
@@ -32,12 +32,11 @@ def index():
         post = Post(content=content, image_url=image_url, author=current_user)
         db.session.add(post)
         db.session.commit()
+        from crunevo.utils import create_feed_item_for_all
+        create_feed_item_for_all('post', post.id)
         flash('Publicación creada')
         return redirect(url_for('feed.index'))
-
-    posts = Post.query.order_by(Post.created_at.desc()).all()
-    today = datetime.utcnow().date()
-    return render_template('feed/feed.html', posts=posts, today=today)
+    return render_template('feed/index.html')
 
 
 @feed_bp.route('/trending')
@@ -61,3 +60,14 @@ def api_chat():
 def api_analizar():
     text = request.json.get('text')
     return jsonify({'analysis': f'Analisis simple de {len(text)} caracteres'})
+
+
+@feed_bp.route('/api/feed')
+@login_required
+def api_feed():
+    page = int(request.args.get('page', 1))
+    q = (FeedItem.query
+         .filter_by(owner_id=current_user.id)
+         .order_by(FeedItem.score.desc(), FeedItem.created_at.desc())
+         .paginate(page=page, per_page=10, error_out=False))
+    return jsonify([fi.to_dict() for fi in q.items])

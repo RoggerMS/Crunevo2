@@ -5,20 +5,25 @@ Revises: 25c67a28b1b9
 Create Date: 2025-06-12 00:00:00.000000
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
-revision = 'ad2c58317e3c'
-down_revision = '25c67a28b1b9'
+revision = "ad2c58317e3c"
+down_revision = "25c67a28b1b9"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.add_column('note', sa.Column('downloads', sa.Integer(), nullable=True, server_default='0'))
-    op.alter_column('note', 'downloads', server_default=None)
+    op.add_column(
+        "note", sa.Column("downloads", sa.Integer(), nullable=True, server_default="0")
+    )
+    bind = op.get_bind()
+    if bind.dialect.name != "sqlite":
+        op.alter_column("note", "downloads", server_default=None)
 
 
 def downgrade():
-    op.drop_column('note', 'downloads')
+    op.drop_column("note", "downloads")

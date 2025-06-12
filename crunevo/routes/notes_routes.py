@@ -56,6 +56,8 @@ def upload_note():
         db.session.add(note)
         current_user.points += 10
         db.session.commit()
+        from crunevo.utils import create_feed_item_for_all
+        create_feed_item_for_all('apunte', note.id)
         add_credit(current_user, 5, CreditReasons.APUNTE_SUBIDO, related_id=note.id)
         unlock_achievement(current_user, AchievementCodes.PRIMER_APUNTE)
         flash('Apunte subido correctamente')
