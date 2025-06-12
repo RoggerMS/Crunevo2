@@ -6,3 +6,7 @@
   margin-bottom: 1rem;
   background-color: #fff;
 }
+
+.feed-card--highlight {
+  border: 2px solid gold;
+}

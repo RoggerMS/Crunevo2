@@ -1,44 +1,76 @@
 from datetime import datetime
 from crunevo.extensions import db
 from sqlalchemy import Enum
+import json
 
 class FeedItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    item_type = db.Column(Enum('apunte', 'post', name='feed_item_type'), nullable=False)
+    item_type = db.Column(Enum('apunte', 'post', 'logro', 'evento', 'movimiento',
+                              'mensaje', name='feed_item_type'), nullable=False)
     ref_id = db.Column(db.Integer, nullable=False)
+    is_highlight = db.Column(db.Boolean, default=False)
+    meta = db.Column('metadata', db.Text, nullable=True)
     score = db.Column(db.Float, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
-        data = {
-            'item_type': self.item_type,
-            'ref_id': self.ref_id,
-        }
-        if self.item_type == 'apunte':
-            from crunevo.models import Note, User
-            note = (db.session.query(Note.title, Note.description, User.username, Note.downloads)
+        try:
+            data = {
+                'item_type': self.item_type,
+                'ref_id': self.ref_id,
+                'is_highlight': self.is_highlight,
+            }
+
+            meta_data = None
+            if self.meta:
+                try:
+                    meta_data = json.loads(self.meta)
+                except Exception:
+                    meta_data = None
+
+            if self.item_type == 'apunte':
+                from crunevo.models import Note, User
+                note = (
+                    db.session.query(
+                        Note.title,
+                        Note.description,
+                        User.username,
+                        Note.downloads,
+                    )
                     .join(User, Note.user_id == User.id)
                     .filter(Note.id == self.ref_id)
-                    .first())
-            if note:
-                data.update({
-                    'title': note.title,
-                    'summary': note.description,
-                    'author_username': note.username,
-                    'downloads': note.downloads,
-                })
-        elif self.item_type == 'post':
-            from crunevo.models import Post, User
-            post = (db.session.query(Post.content, Post.image_url, User.username)
+                    .first()
+                )
+                if note:
+                    data.update({
+                        'title': note.title,
+                        'summary': note.description,
+                        'author_username': note.username,
+                        'downloads': note.downloads,
+                    })
+                else:
+                    return {'item_type': 'deleted'}
+            elif self.item_type == 'post':
+                from crunevo.models import Post, User
+                post = (
+                    db.session.query(Post.content, Post.image_url, User.username)
                     .join(User, Post.user_id == User.id)
                     .filter(Post.id == self.ref_id)
-                    .first())
-            if post:
-                data.update({
-                    'content': post.content,
-                    'author_username': post.username,
-                    'image_url': post.image_url,
-                })
-        return data
+                    .first()
+                )
+                if post:
+                    data.update({
+                        'content': post.content,
+                        'author_username': post.username,
+                        'image_url': post.image_url,
+                    })
+                else:
+                    return {'item_type': 'deleted'}
+            else:
+                if meta_data:
+                    data.update(meta_data)
+            return data
+        except Exception:
+            return {'item_type': 'deleted'}
 
