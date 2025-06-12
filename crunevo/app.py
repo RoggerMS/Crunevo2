@@ -1,4 +1,7 @@
 from flask import Flask
+import logging
+from logging.handlers import RotatingFileHandler
+import os
 
 from .extensions import db, login_manager, migrate
 
@@ -50,6 +53,7 @@ def create_app():
     from .routes.store_routes import store_bp
     from .routes.chat_routes import chat_bp
     from .routes.admin_routes import admin_bp
+    from .routes.errors import errors_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(notes_bp)
@@ -57,10 +61,16 @@ def create_app():
     app.register_blueprint(store_bp)
     app.register_blueprint(chat_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(errors_bp)
+
+    if not app.debug:
+        if not os.path.exists('logs'):
+            os.mkdir('logs')
+        file_handler = RotatingFileHandler('logs/crunevo.log', maxBytes=10240, backupCount=10)
+        file_handler.setLevel(logging.INFO)
+        app.logger.addHandler(file_handler)
+
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('CRUNEVO startup')
 
     return app
-
-app = create_app()
-
-if __name__ == '__main__':
-    app.run(debug=True)

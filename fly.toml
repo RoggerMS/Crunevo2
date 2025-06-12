@@ -3,6 +3,9 @@ app = "crunevo2"
 [build]
   dockerfile = "Dockerfile"
 
+[env]
+  FLASK_APP = "crunevo.wsgi"
+
 [deploy]
   release_command = "flask db upgrade"
 
