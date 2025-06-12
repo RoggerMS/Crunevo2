@@ -1,4 +1,4 @@
-.PHONY: lint fmt test
+.PHONY: lint fmt test ci
 
 lint:
 	ruff check .
@@ -11,4 +11,8 @@ fmt:
 test:
 	ruff check .
 	black . --check
+	pytest -q
+
+ci:
+	$(MAKE) lint
 	pytest -q

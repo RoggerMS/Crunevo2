@@ -1,26 +1,28 @@
-# Python cache files
-**/__pycache__/
-*.pyc
+# Environment
+.env
 
 # Local instance data
 instance/
 **/instance/
 *.db
 
+# Python cache files
+**/__pycache__/
+*.pyc
+
 # Patch artifacts
 *.patch
 *.zip
 
-# Environment configuration
-.env
-
-# Fly.io CLI state
-.fly/
-
 # Logs
 logs/
 *.log
+
+# Tool caches
 .pytest_cache/
 .ruff_cache/
 htmlcov/
 .coverage
+
+# Fly.io CLI state
+.fly/
