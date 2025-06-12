@@ -1,16 +1,27 @@
 from datetime import datetime
 from crunevo.extensions import db
-from sqlalchemy import Enum
+from sqlalchemy import Enum as SAEnum
 import json
+
 
 class FeedItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    item_type = db.Column(Enum('apunte', 'post', 'logro', 'evento', 'movimiento',
-                              'mensaje', name='feed_item_type'), nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    item_type = db.Column(
+        SAEnum(
+            "apunte",
+            "post",
+            "logro",
+            "evento",
+            "movimiento",
+            "mensaje",
+            name="feed_item_type",
+        ),
+        nullable=False,
+    )
     ref_id = db.Column(db.Integer, nullable=False)
     is_highlight = db.Column(db.Boolean, default=False)
-    _metadata = db.Column('metadata', db.Text, nullable=True)
+    _metadata = db.Column("metadata", db.Text, nullable=True)
     score = db.Column(db.Float, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -23,9 +34,9 @@ class FeedItem(db.Model):
         """
         try:
             data = {
-                'item_type': self.item_type,
-                'ref_id': self.ref_id,
-                'is_highlight': self.is_highlight,
+                "item_type": self.item_type,
+                "ref_id": self.ref_id,
+                "is_highlight": self.is_highlight,
             }
 
             meta_data = None
@@ -35,8 +46,9 @@ class FeedItem(db.Model):
                 except Exception:
                     meta_data = None
 
-            if self.item_type == 'apunte':
+            if self.item_type == "apunte":
                 from crunevo.models import Note, User
+
                 note = (
                     db.session.query(
                         Note.title,
@@ -49,16 +61,19 @@ class FeedItem(db.Model):
                     .first()
                 )
                 if note:
-                    data.update({
-                        'title': note.title,
-                        'summary': note.description,
-                        'author_username': note.username,
-                        'downloads': note.downloads,
-                    })
+                    data.update(
+                        {
+                            "title": note.title,
+                            "summary": note.description,
+                            "author_username": note.username,
+                            "downloads": note.downloads,
+                        }
+                    )
                 else:
-                    return {'item_type': 'deleted'}
-            elif self.item_type == 'post':
+                    return {"item_type": "deleted"}
+            elif self.item_type == "post":
                 from crunevo.models import Post, User
+
                 post = (
                     db.session.query(Post.content, Post.image_url, User.username)
                     .join(User, Post.user_id == User.id)
@@ -66,19 +81,21 @@ class FeedItem(db.Model):
                     .first()
                 )
                 if post:
-                    data.update({
-                        'content': post.content,
-                        'author_username': post.username,
-                        'image_url': post.image_url,
-                    })
+                    data.update(
+                        {
+                            "content": post.content,
+                            "author_username": post.username,
+                            "image_url": post.image_url,
+                        }
+                    )
                 else:
-                    return {'item_type': 'deleted'}
+                    return {"item_type": "deleted"}
             else:
                 if meta_data:
                     data.update(meta_data)
             return data
         except Exception:
-            return {'item_type': 'deleted'}
+            return {"item_type": "deleted"}
 
 
 # expose metadata attribute without conflicting with SQLAlchemy base
@@ -91,4 +108,3 @@ def _set_metadata(self, value):
 
 
 FeedItem.metadata = property(_get_metadata, _set_metadata)
-
