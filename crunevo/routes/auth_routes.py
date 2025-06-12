@@ -4,7 +4,7 @@ from urllib.parse import urlparse  # ✅ Corrección aquí
 from crunevo.extensions import db
 from crunevo.models import User
 from crunevo.utils.helpers import admin_required
-from crunevo.utils import spend_credit
+from crunevo.utils import spend_credit, record_login
 from crunevo.constants import CreditReasons
 from werkzeug.security import generate_password_hash
 
@@ -34,6 +34,7 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
             login_user(user)
+            record_login(user)
             next_page = request.args.get('next')
             if not next_page or urlparse(next_page).netloc != '':
                 next_page = url_for('feed.index')
