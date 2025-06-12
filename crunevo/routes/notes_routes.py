@@ -17,6 +17,7 @@ from crunevo.extensions import db
 from crunevo.models import Note, Comment, NoteVote
 from crunevo.utils.credits import add_credit
 from crunevo.utils import unlock_achievement
+from crunevo.utils.scoring import update_feed_score
 from crunevo.constants import CreditReasons, AchievementCodes
 
 notes_bp = Blueprint("notes", __name__, url_prefix="/notes")
@@ -93,7 +94,9 @@ def add_comment(note_id):
     body = request.form["body"]
     comment = Comment(body=body, author=current_user, note=note)
     db.session.add(comment)
+    note.comments_count += 1
     db.session.commit()
+    update_feed_score(note.id)
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return jsonify(
             {
@@ -122,6 +125,7 @@ def like_note(note_id):
     vote = NoteVote(user_id=current_user.id, note_id=note.id)
     db.session.add(vote)
     db.session.commit()
+    update_feed_score(note.id)
 
     add_credit(note.author, 1, CreditReasons.VOTO_POSITIVO, related_id=note.id)
     return jsonify({"likes": note.likes})
@@ -142,6 +146,7 @@ def download_note(note_id):
     note = Note.query.get_or_404(note_id)
     note.downloads += 1
     db.session.commit()
+    update_feed_score(note.id)
 
     if note.downloads >= 100:
         unlock_achievement(note.author, AchievementCodes.DESCARGA_100)

@@ -81,6 +81,16 @@ def create_app():
     app.register_blueprint(ranking_bp)
     app.register_blueprint(errors_bp)
 
+    if os.getenv("SCHEDULER") == "1":
+        from apscheduler.schedulers.background import BackgroundScheduler
+        from apscheduler.triggers.interval import IntervalTrigger
+        from .jobs.decay import decay_scores
+
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(decay_scores, IntervalTrigger(hours=1))
+        scheduler.start()
+        app.scheduler = scheduler
+
     if not app.debug:
         if not os.path.exists("logs"):
             os.mkdir("logs")

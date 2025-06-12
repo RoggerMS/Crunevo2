@@ -64,3 +64,7 @@ Para correr Redis localmente de forma rápida:
 docker run -d --name redis -p 6379:6379 redis:7
 ```
 
+### Ajustar el ranking del feed
+- Fórmula en `crunevo/utils/scoring.py`
+- Modificar constantes para afinar pesos.
+

@@ -1,6 +1,7 @@
 from crunevo.extensions import db
-from crunevo.models import User, FeedItem
+from crunevo.models import User, FeedItem, Note
 from crunevo.cache.feed_cache import push_items
+from .scoring import compute_score
 import json
 
 
@@ -16,6 +17,14 @@ def create_feed_item_for_all(
 
     meta_str = json.dumps(meta_dict) if meta_dict else None
 
+    base_score = 0
+    if item_type == "apunte":
+        note = Note.query.get(ref_id)
+        if note:
+            base_score = compute_score(
+                note.likes, note.downloads, note.comments_count, note.created_at
+            )
+
     items = [
         FeedItem(
             owner_id=uid,
@@ -23,6 +32,7 @@ def create_feed_item_for_all(
             ref_id=ref_id,
             metadata=meta_str,
             is_highlight=is_highlight,
+            score=base_score,
         )
         for uid in owner_ids
     ]
