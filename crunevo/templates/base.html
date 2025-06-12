@@ -18,11 +18,11 @@
 <body class="d-flex flex-column min-vh-100">
     {% include 'components/navbar.html' %}
     <div class="container-fluid mt-5 pt-3">
-        <div class="row">
-            <aside class="col-lg-3 d-none d-lg-block">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <aside class="hidden lg:block">
                 {% include 'components/sidebar_left.html' %}
             </aside>
-            <main class="col-lg-6">
+            <main class="space-y-6">
                 {% with messages = get_flashed_messages() %}
                   {% if messages %}
                     {% for msg in messages %}
@@ -32,7 +32,7 @@
                 {% endwith %}
                 {% block content %}{% endblock %}
             </main>
-            <aside class="col-lg-3 d-none d-lg-block">
+            <aside class="hidden lg:block">
                 {% include 'components/sidebar_right.html' %}
             </aside>
         </div>

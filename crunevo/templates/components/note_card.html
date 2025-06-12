@@ -1,0 +1,14 @@
+<article class="card lift mb-6">
+  {% if note.thumbnail_url %}
+    <img src="{{ note.thumbnail_url }}" alt="preview" class="rounded mb-4 w-full">
+  {% else %}
+    <img src="{{ url_for('static', filename='img/placeholder.svg') }}" alt="preview" class="rounded mb-4 w-full">
+  {% endif %}
+  <h3 class="text-lg font-semibold mb-2">{{ note.title }}</h3>
+  <ul class="flex flex-wrap gap-1 text-sm text-gray-500 mb-4">
+    {% for tag in note.tags.split(',') if note.tags %}
+      <li>#{{ tag }}</li>
+    {% endfor %}
+  </ul>
+  <a href="{{ url_for('notes.detail', note_id=note.id) }}" class="inline-block bg-[var(--primary)] text-white px-3 py-1 rounded">Ver apunte</a>
+</article>

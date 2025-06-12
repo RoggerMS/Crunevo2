@@ -53,3 +53,9 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 });
+
+// simple dark mode toggle using dataset
+document.getElementById('themeToggle')?.addEventListener('click', () => {
+  const html = document.documentElement;
+  html.dataset.bsTheme = html.dataset.bsTheme === 'dark' ? 'light' : 'dark';
+});

@@ -30,7 +30,7 @@
         {% if current_user.is_authenticated %}
           <li class="nav-item text-white mx-2"><i class="bi bi-coin"></i> {{ current_user.credits }}</li>
         {% if current_user.verification_level >= 2 %}
-        <li class="nav-item text-warning"><i class="bi bi-mortarboard-fill"></i></li>
+        {% include 'components/edu_badge.html' %}
         {% endif %}
         {% endif %}
           <li class="nav-item">

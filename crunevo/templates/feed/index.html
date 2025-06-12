@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/custom_feed.css') }}">
-<div id="feed"></div>
-<button id="loadMore" class="btn btn-light w-100">Más contenido</button>
-<script src="{{ url_for('static', filename='js/feed.js') }}"></script>
+{% for item in items %}
+  {% if item.item_type == "apunte" %}
+    {% include 'components/note_card.html' with context %}
+  {% elif item.item_type == "post" %}
+    {% include 'components/post_card.html' with context %}
+  {% elif item.item_type == "question" %}
+    {% include 'components/question_card.html' with context %}
+  {% endif %}
+{% endfor %}
 {% endblock %}
