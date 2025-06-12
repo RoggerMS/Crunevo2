@@ -64,6 +64,25 @@ Para correr Redis localmente de forma rápida:
 docker run -d --name redis -p 6379:6379 redis:7
 ```
 
+### Migrations
+
+Para crear una nueva migración y aplicarla:
+
+```bash
+flask --app crunevo.app:create_app db migrate -m "mensaje"
+flask --app crunevo.app:create_app db upgrade
+```
+
+### Variables de entorno de seguridad
+
+```
+ARGON2_TIME_COST=2
+ARGON2_MEMORY_COST=102400
+ARGON2_PARALLELISM=8
+ENABLE_TALISMAN=true
+ONBOARDING_TOKEN_EXP_H=1
+```
+
 ### Ajustar el ranking del feed
 - Fórmula en `crunevo/utils/scoring.py`
 - Modificar las variables `FEED_LIKE_W`, `FEED_DL_W`, `FEED_COM_W` y

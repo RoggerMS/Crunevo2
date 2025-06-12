@@ -32,4 +32,14 @@ class Config:
     MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
     MAIL_DEFAULT_SENDER = os.getenv("MAIL_SENDER", "Crunevo <no-reply@crunevo.io>")
 
-    ONBOARDING_TOKEN_EXP_H = int(os.getenv("ONBOARDING_TOKEN_EXP_H", 48))
+    ONBOARDING_TOKEN_EXP_H = int(os.getenv("ONBOARDING_TOKEN_EXP_H", 1))
+
+    ARGON2_TIME_COST = int(os.getenv("ARGON2_TIME_COST", 2))
+    ARGON2_MEMORY_COST = int(os.getenv("ARGON2_MEMORY_COST", 102400))
+    ARGON2_PARALLELISM = int(os.getenv("ARGON2_PARALLELISM", 8))
+
+    ENABLE_TALISMAN = os.getenv("ENABLE_TALISMAN", "True").lower() in (
+        "1",
+        "true",
+        "yes",
+    )

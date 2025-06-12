@@ -25,9 +25,13 @@
         <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i></a></li>
         {% else %}
         <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right"></i></a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('onboarding.register') }}">Registrarse</a></li>
         {% endif %}
         {% if current_user.is_authenticated %}
         <li class="nav-item text-white mx-2"><i class="bi bi-coin"></i> {{ current_user.credits }}</li>
+        {% if current_user.verification_level >= 2 %}
+        <li class="nav-item text-warning"><i class="bi bi-mortarboard-fill"></i></li>
+        {% endif %}
         {% endif %}
         <li class="nav-item">
           <button id="themeToggle" class="btn btn-sm btn-secondary ms-2" type="button"><i class="bi bi-moon"></i></button>

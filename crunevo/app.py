@@ -3,7 +3,8 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
-from .extensions import db, login_manager, migrate, mail
+from .extensions import db, login_manager, migrate, mail, csrf, limiter
+from flask_talisman import Talisman
 
 
 def create_app():
@@ -15,6 +16,10 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     mail.init_app(app)
+    csrf.init_app(app)
+    limiter.init_app(app)
+    if app.config.get("ENABLE_TALISMAN", True):
+        Talisman(app, content_security_policy=None)
     login_manager.login_view = "onboarding.register"
 
     from .models import User, Product, Note, Comment, Post
@@ -33,6 +38,7 @@ def create_app():
                     role="admin",
                     avatar_url="static/img/default.png",
                     activated=True,
+                    verification_level=2,
                 )
                 admin.set_password("admin")
                 user = User(
