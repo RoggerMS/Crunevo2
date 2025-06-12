@@ -6,3 +6,4 @@ from .report import Report
 from .comment import Comment
 from .post import Post
 from .credit import Credit
+from .ranking import RankingCache

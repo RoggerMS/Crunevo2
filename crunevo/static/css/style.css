@@ -50,3 +50,19 @@ body[data-bs-theme="dark"] {
   border: none;
 }
 
+.border-gold {
+  border-left: 4px solid #d4af37;
+}
+
+.border-silver {
+  border-left: 4px solid #c0c0c0;
+}
+
+.border-bronze {
+  border-left: 4px solid #cd7f32;
+}
+
+.text-brown {
+  color: #cd7f32;
+}
+
