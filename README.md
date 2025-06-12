@@ -66,5 +66,6 @@ docker run -d --name redis -p 6379:6379 redis:7
 
 ### Ajustar el ranking del feed
 - Fórmula en `crunevo/utils/scoring.py`
-- Modificar constantes para afinar pesos.
+- Modificar las variables `FEED_LIKE_W`, `FEED_DL_W`, `FEED_COM_W` y
+  `FEED_HALF_LIFE_H` para ajustar pesos sin tocar el código.
 

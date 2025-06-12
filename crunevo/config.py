@@ -19,3 +19,8 @@ class Config:
     CLOUDINARY_URL = os.getenv("CLOUDINARY_URL")
     if CLOUDINARY_URL:
         cloudinary.config(cloudinary_url=CLOUDINARY_URL)
+
+    FEED_LIKE_W = float(os.getenv("FEED_LIKE_W", 4))
+    FEED_DL_W = float(os.getenv("FEED_DL_W", 2))
+    FEED_COM_W = float(os.getenv("FEED_COM_W", 1))
+    FEED_HALF_LIFE_H = float(os.getenv("FEED_HALF_LIFE_H", 24))

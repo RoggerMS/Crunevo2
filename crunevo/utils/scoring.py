@@ -1,20 +1,28 @@
 from datetime import datetime
+from flask import current_app
 from crunevo.extensions import db
 from crunevo.cache.feed_cache import push_items
 from crunevo.models import FeedItem, Note
 
-LIKE_WEIGHT = 4
-DOWNLOAD_WEIGHT = 2
-COMMENT_WEIGHT = 1
+
+def _weights():
+    cfg = current_app.config
+    return (
+        cfg.get("FEED_LIKE_W", 4),
+        cfg.get("FEED_DL_W", 2),
+        cfg.get("FEED_COM_W", 1),
+        cfg.get("FEED_HALF_LIFE_H", 24),
+    )
 
 
 def compute_score(
     likes: int, downloads: int, comments: int, created: datetime
 ) -> float:
     """Compute ranking score for a note."""
+    like_w, dl_w, com_w, half_life = _weights()
     age_hours = (datetime.utcnow() - created).total_seconds() / 3600
-    freshness = max(0.0, 1 - age_hours / 48)
-    base = likes * LIKE_WEIGHT + downloads * DOWNLOAD_WEIGHT + comments * COMMENT_WEIGHT
+    freshness = 1 / (1 + age_hours / half_life)
+    base = likes * like_w + downloads * dl_w + comments * com_w
     return base * freshness
 
 

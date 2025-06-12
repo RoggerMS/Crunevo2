@@ -34,6 +34,7 @@ class FeedItem(db.Model):
             desc("score"),
             desc("created_at"),
         ),
+        db.Index("idx_feed_type_ref", "item_type", "ref_id"),
     )
 
     def to_dict(self):
