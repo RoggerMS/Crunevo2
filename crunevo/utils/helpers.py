@@ -33,7 +33,10 @@ def verified_required(f):
         if current_user.verification_level < 2:
             from flask import flash
 
-            flash("Necesitas verificación de estudiante", "warning")
+            flash(
+                "Necesitas verificación de estudiante para descargar apuntes",
+                "warning",
+            )
             return redirect(url_for("feed.index"))
         return f(*args, **kwargs)
 
