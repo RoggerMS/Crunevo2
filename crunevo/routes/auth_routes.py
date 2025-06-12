@@ -4,6 +4,8 @@ from urllib.parse import urlparse  # ✅ Corrección aquí
 from crunevo.extensions import db
 from crunevo.models import User
 from crunevo.utils.helpers import admin_required
+from crunevo.utils import spend_credit
+from crunevo.constants import CreditReasons
 from werkzeug.security import generate_password_hash
 
 auth_bp = Blueprint('auth', __name__)
@@ -65,3 +67,18 @@ def perfil():
 def public_profile(user_id):
     user = User.query.get_or_404(user_id)
     return render_template('perfil_publico.html', user=user)
+
+
+@auth_bp.route('/agradecer/<int:user_id>', methods=['POST'])
+@login_required
+def agradecer(user_id):
+    target = User.query.get_or_404(user_id)
+    if target.id == current_user.id:
+        flash('No puedes agradecerte a ti mismo', 'warning')
+        return redirect(url_for('auth.public_profile', user_id=user_id))
+    try:
+        spend_credit(current_user, 1, CreditReasons.AGRADECIMIENTO, related_id=target.id)
+        flash('¡Gracias enviado!')
+    except ValueError:
+        flash('No tienes créditos suficientes', 'danger')
+    return redirect(url_for('auth.public_profile', user_id=user_id))
