@@ -4,6 +4,7 @@ from flask_login import login_required
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
 from crunevo.models import User, Product, Report
+from crunevo.utils.ranking import calculate_weekly_ranking
 from crunevo.utils.helpers import admin_required
 import cloudinary.uploader
 
@@ -72,3 +73,12 @@ def add_product():
 def manage_reports():
     reports = Report.query.all()
     return render_template('admin/manage_reports.html', reports=reports)
+
+
+@admin_bp.route('/run-ranking')
+@login_required
+@admin_required
+def run_ranking():
+    calculate_weekly_ranking()
+    flash('Ranking recalculado')
+    return redirect(url_for('admin.dashboard'))

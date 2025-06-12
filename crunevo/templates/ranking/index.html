@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">🏆 Ranking Semanal</h2>
+{% if last_update %}
+<p class="text-muted">Última actualización: {{ last_update.strftime('%Y-%m-%d %H:%M') }}</p>
+{% endif %}
+<div class="table-responsive">
+<table class="table table-hover align-middle">
+  <thead>
+    <tr>
+      <th class="text-center">#</th>
+      <th>Usuario</th>
+      <th class="text-end">Puntaje</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in ranking %}
+    <tr class="{% if loop.index == 1 %}table-warning border-gold{% elif loop.index == 2 %}table-secondary border-silver{% elif loop.index == 3 %}table-bronze border-bronze{% endif %}">
+      <td class="text-center fs-4">
+        {% if loop.index == 1 %}<i class="bi bi-trophy-fill text-warning"></i>{% elif loop.index == 2 %}<i class="bi bi-trophy-fill text-secondary"></i>{% elif loop.index == 3 %}<i class="bi bi-trophy-fill text-brown"></i>{% else %}{{ loop.index }}{% endif %}
+      </td>
+      <td>
+        <img src="{{ r.user.avatar_url or url_for('static', filename='img/default.png') }}" width="32" height="32" class="rounded-circle me-1">
+        {{ r.user.username }} <small class="text-muted">({{ r.user.carrera or '' }})</small>
+      </td>
+      <td class="text-end"><strong>{{ r.score }}</strong></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

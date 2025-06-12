@@ -2,4 +2,5 @@
 {% block content %}
 <h2>Panel Administrativo</h2>
 <p>Usuarios registrados: {{ user_count }}</p>
+<a href="{{ url_for('admin.run_ranking') }}" class="btn btn-primary mb-3">Calcular ranking semanal</a>
 {% endblock %}
