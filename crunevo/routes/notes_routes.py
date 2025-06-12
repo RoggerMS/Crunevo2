@@ -6,6 +6,7 @@ import cloudinary.uploader
 from crunevo.extensions import db
 from crunevo.models import Note, Comment
 from crunevo.utils.credits import add_credit
+from crunevo.constants import CreditReasons
 
 notes_bp = Blueprint('notes', __name__, url_prefix='/notes')
 
@@ -54,7 +55,7 @@ def upload_note():
         db.session.add(note)
         current_user.points += 10
         db.session.commit()
-        add_credit(current_user, 5, "apunte_subido", related_id=note.id)
+        add_credit(current_user, 5, CreditReasons.APUNTE_SUBIDO, related_id=note.id)
         flash('Apunte subido correctamente')
         return redirect(url_for('notes.list_notes'))
     return render_template('notes/upload.html')
