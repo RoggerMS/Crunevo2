@@ -16,6 +16,7 @@ class User(UserMixin, db.Model):
     avatar_url = db.Column(db.String(255))
     about = db.Column(db.Text)
     notes = db.relationship('Note', backref='author', lazy=True)
+    posts = db.relationship('Post', backref='author', lazy=True)
     comments = db.relationship('Comment', backref='author', lazy=True)
 
     def set_password(self, password):

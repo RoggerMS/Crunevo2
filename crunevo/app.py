@@ -14,7 +14,7 @@ def create_app():
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
 
-    from .models import User, Product, Note, Comment
+    from .models import User, Product, Note, Comment, Post
 
     migrate.init_app(app, db)
 
@@ -44,6 +44,7 @@ def create_app():
                 )
                 db.session.add(note)
                 db.session.add(Comment(body="Muy útil", author=admin, note=note))
+                db.session.add(Post(content="Hola, este es un post de ejemplo", author=user))
                 db.session.commit()
             app.tables_created = True
 
