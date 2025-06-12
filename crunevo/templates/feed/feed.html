@@ -21,9 +21,11 @@
       </h5>
       <p class="card-text">{{ note.description }}</p>
       <div class="mb-2">
-        {% for tag in note.tags.split(',') if note.tags %}
-        <span class="badge bg-secondary">{{ tag }}</span>
-        {% endfor %}
+        {% if note.tags %}
+          {% for tag in note.tags.split(',') %}
+          <span class="badge bg-secondary">{{ tag }}</span>
+          {% endfor %}
+        {% endif %}
       </div>
       <a href="{{ url_for('notes.detail', note_id=note.id) }}" class="btn btn-sm btn-primary">Ver apunte</a>
     </div>
