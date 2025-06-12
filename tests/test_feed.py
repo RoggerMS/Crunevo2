@@ -1,10 +1,12 @@
 from crunevo.models import Note, FeedItem
 from crunevo.utils.feed import create_feed_item_for_all
+from crunevo.cache import feed_cache
 from crunevo.utils.achievements import unlock_achievement
 from crunevo.utils.credits import add_credit, spend_credit
 from flask_login import login_user
 from flask_migrate import upgrade, downgrade
 from crunevo.app import create_app
+from crunevo.extensions import db
 
 
 def login(client, username, password):
@@ -49,4 +51,73 @@ def test_migrations_upgrade_downgrade():
 
     with migr_app.app_context():
         upgrade()
+        from sqlalchemy import inspect
+
+        insp = inspect(db.engine)
+        names = {ix["name"] for ix in insp.get_indexes("feed_item")}
+        assert "idx_feed_owner_score" in names
         downgrade(revision="base")
+
+
+def test_feed_cache_roundtrip(fake_redis):
+    from datetime import datetime
+
+    items = [
+        {
+            "score": 1.0,
+            "created_at": datetime.utcnow(),
+            "payload": {"hello": "world"},
+        }
+    ]
+    feed_cache.push_items(42, items)
+    assert feed_cache.fetch(42) == [{"hello": "world"}]
+
+
+def test_push_items_sets_ttl(fake_redis):
+    from datetime import datetime
+    from crunevo.cache.feed_cache import push_items, FEED_KEY
+
+    push_items(1, [{"score": 0, "created_at": datetime.utcnow(), "payload": {}}])
+    assert fake_redis.ttl(FEED_KEY.format(user_id=1)) > 0
+
+
+def test_feed_fallback_on_redis_error(monkeypatch, client, db_session, test_user):
+    from redis.exceptions import RedisError
+
+    monkeypatch.setattr(
+        feed_cache,
+        "fetch",
+        lambda *a, **k: (_ for _ in ()).throw(RedisError("boom")),
+    )
+    login(client, test_user.username, "secret")
+    resp = client.get("/api/feed")
+    assert resp.status_code == 200
+
+
+def test_feed_cache_hit_after_warmup(fake_redis, client, test_user, monkeypatch):
+    login(client, test_user.username, "secret")
+    warm = client.get("/api/feed").get_json()
+
+    class FakeQueryReturningNothing:
+        def filter_by(self, *a, **k):
+            return self
+
+        def order_by(self, *a, **k):
+            return self
+
+        def offset(self, *a, **k):
+            return self
+
+        def limit(self, *a, **k):
+            return self
+
+        def all(self):
+            return []
+
+    with monkeypatch.context() as m:
+        m.setattr(
+            "crunevo.routes.feed_routes.FeedItem.query",
+            FakeQueryReturningNothing(),
+        )
+        cached = client.get("/api/feed").get_json()
+    assert cached == warm

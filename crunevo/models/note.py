@@ -13,5 +13,5 @@ class Note(db.Model):
     downloads = db.Column(db.Integer, default=0)
     likes = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    comments = db.relationship('Comment', backref='note', lazy=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    comments = db.relationship("Comment", backref="note", lazy=True)

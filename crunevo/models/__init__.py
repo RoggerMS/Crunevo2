@@ -11,4 +11,3 @@ from .achievement import UserAchievement
 from .login_history import LoginHistory
 from .note_vote import NoteVote
 from .feed_item import FeedItem
-

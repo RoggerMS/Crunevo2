@@ -6,16 +6,16 @@ load_dotenv()
 
 
 class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY', 'devkey')
+    SECRET_KEY = os.getenv("SECRET_KEY", "devkey")
 
-    _db_uri = os.getenv('DATABASE_URL', 'sqlite:///crunevo.db')
-    if _db_uri.startswith('postgres://'):
-        _db_uri = _db_uri.replace('postgres://', 'postgresql://', 1)
+    _db_uri = os.getenv("DATABASE_URL", "sqlite:///crunevo.db")
+    if _db_uri.startswith("postgres://"):
+        _db_uri = _db_uri.replace("postgres://", "postgresql://", 1)
     SQLALCHEMY_DATABASE_URI = _db_uri
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    UPLOAD_FOLDER = os.getenv('UPLOAD_FOLDER', 'static/uploads')
+    UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "static/uploads")
 
-    CLOUDINARY_URL = os.getenv('CLOUDINARY_URL')
+    CLOUDINARY_URL = os.getenv("CLOUDINARY_URL")
     if CLOUDINARY_URL:
         cloudinary.config(cloudinary_url=CLOUDINARY_URL)

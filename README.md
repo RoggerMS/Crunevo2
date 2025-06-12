@@ -51,5 +51,16 @@ It usually means Fly.io detected an outdated manifest from a previous deployment
    fly deploy
    ```
 
-`CLOUDINARY_URL` and `DATABASE_URL` are already supported in `config.py`, and `flask db upgrade` runs automatically as the release command.
+`CLOUDINARY_URL` and `DATABASE_URL` are already supported in `config.py`, and `flask db upgrade` runs automatically as the release command. The feed cache uses Redis, so set `REDIS_URL` (default `redis://localhost:6379/0`) and make sure a Redis instance is available when deploying or running locally.
+* Si Redis no está disponible el feed funcionará en modo "degradado"
+  (lee directamente de la base de datos) y repoblará el cache
+  automáticamente cuando Redis vuelva.
+* El ZSET de cada usuario expira a los 7 días para evitar crecimiento infinito.
+* El tamaño máximo del feed (`MAX_CACHE` en `feed_cache.py`) se puede ajustar
+  según la carga; por defecto mantiene los **200** elementos más recientes.
+
+Para correr Redis localmente de forma rápida:
+```bash
+docker run -d --name redis -p 6379:6379 redis:7
+```
 
