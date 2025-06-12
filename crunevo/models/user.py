@@ -15,6 +15,7 @@ class User(UserMixin, db.Model):
     chat_enabled = db.Column(db.Boolean, default=True)
     avatar_url = db.Column(db.String(255))
     about = db.Column(db.Text)
+    credit_history = db.relationship('Credit', back_populates='user', lazy=True)
     notes = db.relationship('Note', backref='author', lazy=True)
     posts = db.relationship('Post', backref='author', lazy=True)
     comments = db.relationship('Comment', backref='author', lazy=True)
