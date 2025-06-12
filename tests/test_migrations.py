@@ -1,10 +1,12 @@
-def test_alembic_upgrade(app):
-    from alembic.config import Config
-    from alembic.command import upgrade
-    from crunevo.extensions import db
+from alembic.config import Config
+from alembic.command import upgrade
+import os
+from crunevo.app import create_app
 
-    cfg = Config("alembic.ini")
 
+def test_alembic_upgrade():
+    os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+    app = create_app()
     with app.app_context():
-        db.drop_all()
+        cfg = Config("alembic.ini")
         upgrade(cfg, "head")

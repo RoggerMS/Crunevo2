@@ -107,12 +107,10 @@ La suite usa SQLite en memoria y aplica las migraciones desde cero en cada
 ejecución. Los `DeprecationWarning` de SQLAlchemy se filtran mediante
 `pytest.ini` para mantener la salida limpia.
 
-Para ejecutar los tests y verificar el formato:
+Para ejecutar formato y tests en un paso:
 
 ```bash
-ruff check .
-black . --check
-pytest -q
+make test
 ```
 
 Opcionalmente puedes instalar los hooks de `pre-commit` para formatear el

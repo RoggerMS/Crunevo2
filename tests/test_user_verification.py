@@ -1,6 +1,5 @@
 from crunevo.models import User, Note
-import html
-import re
+from bs4 import BeautifulSoup
 
 
 def test_badge_visible(client, db_session):
@@ -73,8 +72,9 @@ def test_download_requires_verification(client, db_session):
 
 
 def _get_csrf_token(page):
-    m = re.search(r'name="csrf_token" value="([^"]+)"', html.unescape(page))
-    return m.group(1) if m else None
+    soup = BeautifulSoup(page, "html.parser")
+    token_input = soup.find("input", {"name": "csrf_token"})
+    return token_input["value"] if token_input else None
 
 
 def test_admin_verification_csrf(client, db_session):
