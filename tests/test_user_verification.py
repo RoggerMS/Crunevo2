@@ -1,5 +1,6 @@
 from crunevo.models import User, Note
-from bs4 import BeautifulSoup
+import html
+import re
 
 
 def test_badge_visible(client, db_session):
@@ -72,9 +73,8 @@ def test_download_requires_verification(client, db_session):
 
 
 def _get_csrf_token(page):
-    soup = BeautifulSoup(page, "html.parser")
-    token_input = soup.find("input", {"name": "csrf_token"})
-    return token_input["value"] if token_input else None
+    m = re.search(r'name="csrf_token" value="([^"]+)"', html.unescape(page))
+    return m.group(1) if m else None
 
 
 def test_admin_verification_csrf(client, db_session):
@@ -97,17 +97,20 @@ def test_admin_verification_csrf(client, db_session):
     db_session.commit()
 
     client.post("/login", data={"username": "adm", "password": "pass"})
-    client.application.config["WTF_CSRF_ENABLED"] = True
+    with client.application.app_context():
+        client.application.config.update(WTF_CSRF_ENABLED=True)
 
-    page = client.get("/admin/verificaciones").data.decode()
-    token = _get_csrf_token(page)
+        page = client.get("/admin/verificaciones").data.decode()
+        token = _get_csrf_token(page)
 
-    assert client.post(f"/admin/verificaciones/{user.id}/approve").status_code == 400
+        assert (
+            client.post(f"/admin/verificaciones/{user.id}/approve").status_code == 400
+        )
 
-    resp = client.post(
-        f"/admin/verificaciones/{user.id}/approve",
-        data={"csrf_token": token},
-    )
-    assert resp.status_code == 302
-    db_session.refresh(user)
-    assert user.verification_level == 2
+        resp = client.post(
+            f"/admin/verificaciones/{user.id}/approve",
+            data={"csrf_token": token},
+        )
+        assert resp.status_code == 302
+        user = db_session.get(User, user.id)
+        assert user.verification_level == 2

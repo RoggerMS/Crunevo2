@@ -8,4 +8,5 @@ def test_alembic_upgrade():
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
     with app.app_context():
         cfg = Config("alembic.ini")
+        cfg.set_main_option("script_location", "migrations")
         upgrade(cfg, "head")
