@@ -9,7 +9,8 @@ def login(client, username, password):
 def test_register_creates_inactive(client):
     with mail.record_messages() as outbox:
         client.post(
-            "/onboarding/register", data={"email": "new@example.com", "password": "pw"}
+            "/onboarding/register",
+            data={"email": "new@example.com", "password": "StrongPassw0rd!"},
         )
         user = User.query.filter_by(email="new@example.com").first()
         assert user is not None
@@ -19,7 +20,7 @@ def test_register_creates_inactive(client):
 
 def test_confirm_activates(client, db_session):
     user = User(username="temp", email="temp@example.com")
-    user.set_password("pw")
+    user.set_password("StrongPassw0rd!")
     db_session.add(user)
     db_session.commit()
     token = EmailToken(user_id=user.id, email=user.email)
@@ -32,10 +33,10 @@ def test_confirm_activates(client, db_session):
 
 def test_finish_profile_persists(client, db_session):
     user = User(username="tmp", email="tmp@example.com", activated=True)
-    user.set_password("pw")
+    user.set_password("StrongPassw0rd!")
     db_session.add(user)
     db_session.commit()
-    login(client, user.username, "pw")
+    login(client, user.username, "StrongPassw0rd!")
     client.post(
         "/onboarding/finish", data={"alias": "alias", "avatar": "url", "bio": "bio"}
     )
@@ -43,3 +44,31 @@ def test_finish_profile_persists(client, db_session):
     assert user.username == "alias"
     assert user.avatar_url == "url"
     assert user.about == "bio"
+
+
+def test_resend_adds_email(client, db_session):
+    user = User(username="res", email="res@example.com")
+    user.set_password("StrongPassw0rd!")
+    db_session.add(user)
+    db_session.commit()
+    login(client, user.username, "StrongPassw0rd!")
+    with mail.record_messages() as outbox:
+        client.post("/onboarding/resend")
+        assert len(outbox) == 1
+
+
+def test_token_expires(client, db_session):
+    from freezegun import freeze_time
+    from datetime import timedelta
+
+    user = User(username="exp", email="exp@example.com")
+    user.set_password("StrongPassw0rd!")
+    db_session.add(user)
+    db_session.commit()
+    token = EmailToken(user_id=user.id, email=user.email)
+    db_session.add(token)
+    db_session.commit()
+    with freeze_time(token.created_at + timedelta(seconds=3601)):
+        resp = client.get(f"/onboarding/confirm/{token.token}")
+    assert resp.status_code == 302
+    assert not user.activated
