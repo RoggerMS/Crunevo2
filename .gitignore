@@ -20,3 +20,5 @@ instance/
 # Logs
 logs/
 *.log
+.pytest_cache/
+.ruff_cache/

@@ -1,4 +1,6 @@
 from crunevo.models import User, Note
+import html
+import re
 
 
 def test_badge_visible(client, db_session):
@@ -71,10 +73,8 @@ def test_download_requires_verification(client, db_session):
 
 
 def _get_csrf_token(page):
-    import re
-
-    m = re.search(r"/approve\"[^>]*>([^<]+)", page)
-    return m.group(1).strip() if m else None
+    m = re.search(r'name="csrf_token" value="([^"]+)"', html.unescape(page))
+    return m.group(1) if m else None
 
 
 def test_admin_verification_csrf(client, db_session):
