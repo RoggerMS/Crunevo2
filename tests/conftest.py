@@ -34,3 +34,12 @@ def test_user(db_session):
     db_session.add(user)
     db_session.commit()
     return user
+
+
+@pytest.fixture
+def another_user(db_session):
+    user = User(username='tester2', email='tester2@example.com')
+    user.set_password('secret')
+    db_session.add(user)
+    db_session.commit()
+    return user

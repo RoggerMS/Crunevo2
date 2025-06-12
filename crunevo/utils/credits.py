@@ -1,5 +1,7 @@
 from crunevo.models import Credit
 from crunevo.extensions import db
+from crunevo.constants import AchievementCodes, CreditReasons
+from crunevo.utils.achievements import unlock_achievement
 
 
 def add_credit(user, amount, reason, related_id=None):
@@ -20,3 +22,13 @@ def spend_credit(user, amount, reason, related_id=None):
     user.credits -= amount
     db.session.add(credit)
     db.session.commit()
+
+    voluntary_reasons = {
+        CreditReasons.DONACION,
+        CreditReasons.AGRADECIMIENTO,
+        "donacion",
+        "agradecimiento",
+        "donación",
+    }
+    if isinstance(reason, str) and reason.lower() in voluntary_reasons:
+        unlock_achievement(user, AchievementCodes.DONADOR)
