@@ -4,7 +4,8 @@ from crunevo.cache import feed_cache
 from crunevo.utils.achievements import unlock_achievement
 from crunevo.utils.credits import add_credit, spend_credit
 from flask_login import login_user
-from flask_migrate import upgrade, downgrade
+from alembic.config import Config
+from alembic import command
 from crunevo.app import create_app
 from crunevo.extensions import db
 
@@ -49,14 +50,17 @@ def test_migrations_upgrade_downgrade():
     migr_app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
     migr_app.config["TESTING"] = True
 
+    cfg = Config("alembic.ini")
+    cfg.set_main_option("script_location", "migrations")
+
     with migr_app.app_context():
-        upgrade()
+        command.upgrade(cfg, "head")
         from sqlalchemy import inspect
 
         insp = inspect(db.engine)
         names = {ix["name"] for ix in insp.get_indexes("feed_item")}
         assert "idx_feed_owner_score" in names
-        downgrade(revision="base")
+        command.downgrade(cfg, "base")
 
 
 def test_feed_cache_roundtrip(fake_redis):
