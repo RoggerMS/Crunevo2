@@ -20,7 +20,16 @@
       <span class="badge bg-secondary me-1">{{ tag }}</span>
       {% endfor %}
     </div>
-    <a href="/{{ note.filename }}" class="btn btn-primary mb-3" target="_blank">Descargar</a>
+      <a href="{{ url_for('notes.download_note', note_id=note.id) }}" class="btn btn-primary mb-3" target="_blank">Descargar</a>
+      <form action="{{ url_for('notes.share_note', note_id=note.id) }}" method="post" style="display:inline;">
+        <button class="btn btn-outline-primary btn-sm" type="submit">🔗 Compartir</button>
+      </form>
+      {% if current_user.id != note.author.id %}
+      <form method="post" action="{{ url_for('notes.like_note', note_id=note.id) }}" style="display:inline;">
+        <button class="btn btn-outline-success btn-sm">👍 Me gusta</button>
+      </form>
+      {% endif %}
+      <p><strong>Likes:</strong> {{ note.likes }}</p>
     <div class="ratio ratio-16x9 mb-4">
       <iframe src="/{{ note.filename }}" frameborder="0"></iframe>
     </div>
