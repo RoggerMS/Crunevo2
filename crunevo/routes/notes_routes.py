@@ -10,7 +10,8 @@ from flask import (
     jsonify,
     abort,
 )
-from flask_login import login_required, current_user
+from flask_login import current_user
+from crunevo.utils.helpers import activated_required
 from werkzeug.utils import secure_filename
 import cloudinary.uploader
 from crunevo.extensions import db
@@ -24,14 +25,14 @@ notes_bp = Blueprint("notes", __name__, url_prefix="/notes")
 
 
 @notes_bp.route("/")
-@login_required
+@activated_required
 def list_notes():
     notes = Note.query.order_by(Note.created_at.desc()).all()
     return render_template("notes/list.html", notes=notes)
 
 
 @notes_bp.route("/search")
-@login_required
+@activated_required
 def search_notes():
     q = request.args.get("q", "")
     results = Note.query.filter(
@@ -43,7 +44,7 @@ def search_notes():
 
 
 @notes_bp.route("/upload", methods=["GET", "POST"])
-@login_required
+@activated_required
 def upload_note():
     if request.method == "POST":
         f = request.files["file"]
@@ -79,7 +80,7 @@ def upload_note():
 
 
 @notes_bp.route("/<int:note_id>")
-@login_required
+@activated_required
 def detail(note_id):
     note = Note.query.get_or_404(note_id)
     note.views += 1
@@ -88,7 +89,7 @@ def detail(note_id):
 
 
 @notes_bp.route("/<int:note_id>/comment", methods=["POST"])
-@login_required
+@activated_required
 def add_comment(note_id):
     note = Note.query.get_or_404(note_id)
     body = request.form["body"]
@@ -109,7 +110,7 @@ def add_comment(note_id):
 
 
 @notes_bp.route("/<int:note_id>/like", methods=["POST"])
-@login_required
+@activated_required
 def like_note(note_id):
     note = Note.query.get_or_404(note_id)
     if note.user_id == current_user.id:
@@ -132,16 +133,16 @@ def like_note(note_id):
 
 
 @notes_bp.route("/<int:note_id>/share", methods=["POST"])
-@login_required
+@activated_required
 def share_note(note_id):
-    note = Note.query.get_or_404(note_id)
+    _note = Note.query.get_or_404(note_id)
     unlock_achievement(current_user, AchievementCodes.COMPARTIDOR)
     flash("¡Gracias por compartir este apunte!")
     return redirect(url_for("notes.detail", note_id=note_id))
 
 
 @notes_bp.route("/<int:note_id>/download")
-@login_required
+@activated_required
 def download_note(note_id):
     note = Note.query.get_or_404(note_id)
     note.downloads += 1

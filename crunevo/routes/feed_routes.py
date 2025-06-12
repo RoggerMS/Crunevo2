@@ -11,7 +11,8 @@ from flask import (
     flash,
     current_app,
 )
-from flask_login import login_required, current_user
+from flask_login import current_user
+from crunevo.utils.helpers import activated_required
 from datetime import datetime
 from crunevo.extensions import db
 from crunevo.models import Post, FeedItem
@@ -22,7 +23,7 @@ feed_bp = Blueprint("feed", __name__)
 
 
 @feed_bp.route("/", methods=["GET", "POST"])
-@login_required
+@activated_required
 def index():
     if request.method == "POST":
         content = request.form["content"]
@@ -52,7 +53,7 @@ def index():
 
 
 @feed_bp.route("/trending")
-@login_required
+@activated_required
 def trending():
     posts = Post.query.order_by(Post.created_at.desc()).limit(10).all()
     today = datetime.utcnow().date()
@@ -60,7 +61,7 @@ def trending():
 
 
 @feed_bp.route("/api/chat", methods=["POST"])
-@login_required
+@activated_required
 def api_chat():
     question = request.json.get("question")
     # placeholder for future AI integration
@@ -68,14 +69,14 @@ def api_chat():
 
 
 @feed_bp.route("/api/analizar", methods=["POST"])
-@login_required
+@activated_required
 def api_analizar():
     text = request.json.get("text")
     return jsonify({"analysis": f"Analisis simple de {len(text)} caracteres"})
 
 
 @feed_bp.route("/api/feed")
-@login_required
+@activated_required
 def api_feed():
     page = int(request.args.get("page", 1))
     start = (page - 1) * 10

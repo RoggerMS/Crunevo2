@@ -8,7 +8,7 @@ from flask import (
     request,
     current_app,
 )
-from flask_login import login_required
+from crunevo.utils.helpers import activated_required
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
 from crunevo.models import User, Product, Report
@@ -20,7 +20,7 @@ admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 
 @admin_bp.route("/")
-@login_required
+@activated_required
 @admin_required
 def dashboard():
     user_count = User.query.count()
@@ -28,7 +28,7 @@ def dashboard():
 
 
 @admin_bp.route("/users")
-@login_required
+@activated_required
 @admin_required
 def manage_users():
     users = User.query.all()
@@ -36,7 +36,7 @@ def manage_users():
 
 
 @admin_bp.route("/store", methods=["GET", "POST"])
-@login_required
+@activated_required
 @admin_required
 def manage_store():
     products = Product.query.all()
@@ -44,7 +44,7 @@ def manage_store():
 
 
 @admin_bp.route("/products/new", methods=["GET", "POST"])
-@login_required
+@activated_required
 @admin_required
 def add_product():
     if request.method == "POST":
@@ -81,7 +81,7 @@ def add_product():
 
 
 @admin_bp.route("/reports")
-@login_required
+@activated_required
 @admin_required
 def manage_reports():
     reports = Report.query.all()
@@ -89,7 +89,7 @@ def manage_reports():
 
 
 @admin_bp.route("/run-ranking")
-@login_required
+@activated_required
 @admin_required
 def run_ranking():
     calculate_weekly_ranking()

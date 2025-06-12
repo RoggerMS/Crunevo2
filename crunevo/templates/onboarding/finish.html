@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Completa tu perfil</h2>
+<form method="post">
+  <div class="mb-3">
+    <input type="text" name="alias" class="form-control" placeholder="Alias" required>
+  </div>
+  <div class="mb-3">
+    <input type="text" name="avatar" class="form-control" placeholder="URL del avatar" required>
+  </div>
+  <div class="mb-3">
+    <textarea name="bio" class="form-control" placeholder="Biografía"></textarea>
+  </div>
+  <button class="btn btn-primary" type="submit">Guardar</button>
+</form>
+{% endblock %}

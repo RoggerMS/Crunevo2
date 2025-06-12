@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
-from flask_login import login_user, logout_user, login_required, current_user
+from flask_login import login_user, logout_user, current_user
+from crunevo.utils.helpers import activated_required
 from urllib.parse import urlparse  # ✅ Corrección aquí
 from crunevo.extensions import db
 from crunevo.models import User
@@ -42,14 +43,14 @@ def login():
 
 
 @auth_bp.route("/logout")
-@login_required
+@activated_required
 def logout():
     logout_user()
     return redirect(url_for("auth.login"))
 
 
 @auth_bp.route("/perfil", methods=["GET", "POST"])
-@login_required
+@activated_required
 def perfil():
     if request.method == "POST":
         current_user.about = request.form.get("about")
@@ -62,14 +63,14 @@ def perfil():
 
 
 @auth_bp.route("/user/<int:user_id>")
-@login_required
+@activated_required
 def public_profile(user_id):
     user = User.query.get_or_404(user_id)
     return render_template("perfil_publico.html", user=user)
 
 
 @auth_bp.route("/agradecer/<int:user_id>", methods=["POST"])
-@login_required
+@activated_required
 def agradecer(user_id):
     target = User.query.get_or_404(user_id)
     if target.id == current_user.id:
