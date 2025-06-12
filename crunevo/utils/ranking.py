@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from crunevo.extensions import db
 from crunevo.models import User, Note, Credit, RankingCache
+from crunevo.utils import unlock_achievement
+from crunevo.constants import AchievementCodes
 
 
 def calculate_weekly_ranking():
@@ -9,6 +11,7 @@ def calculate_weekly_ranking():
     db.session.query(RankingCache).filter_by(period='semanal').delete()
 
     users = User.query.all()
+    created = []
     for user in users:
         apuntes = (
             Note.query.filter(Note.author == user, Note.created_at >= start_date)
@@ -32,5 +35,10 @@ def calculate_weekly_ranking():
         if score > 0:
             rc = RankingCache(user_id=user.id, score=score, period='semanal')
             db.session.add(rc)
+            created.append(rc)
 
     db.session.commit()
+
+    ranked = sorted(created, key=lambda r: r.score, reverse=True)
+    for rc in ranked[:3]:
+        unlock_achievement(rc.user, AchievementCodes.TOP_3)
