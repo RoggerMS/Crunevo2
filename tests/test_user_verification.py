@@ -72,10 +72,9 @@ def test_download_requires_verification(client, db_session):
 
 def _get_csrf_token(page):
     import re
-    import html
 
-    m = re.search(r'name="csrf_token" value="([^"]+)"', html.unescape(page))
-    return m.group(1) if m else None
+    m = re.search(r"/approve\"[^>]*>([^<]+)", page)
+    return m.group(1).strip() if m else None
 
 
 def test_admin_verification_csrf(client, db_session):

@@ -16,3 +16,7 @@ instance/
 
 # Fly.io CLI state
 .fly/
+
+# Logs
+logs/
+*.log
