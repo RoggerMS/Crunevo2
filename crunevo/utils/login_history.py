@@ -10,7 +10,9 @@ def record_login(user, login_date=None):
     if login_date is None:
         login_date = date.today()
 
-    exists = LoginHistory.query.filter_by(user_id=user.id, login_date=login_date).first()
+    exists = LoginHistory.query.filter_by(
+        user_id=user.id, login_date=login_date
+    ).first()
     if not exists:
         entry = LoginHistory(user_id=user.id, login_date=login_date)
         db.session.add(entry)

@@ -1,10 +1,12 @@
 from datetime import datetime
 from crunevo.extensions import db
-from sqlalchemy import Enum as SAEnum
+from sqlalchemy import Enum as SAEnum, desc
 import json
 
 
 class FeedItem(db.Model):
+    __tablename__ = "feed_item"
+
     id = db.Column(db.Integer, primary_key=True)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     item_type = db.Column(
@@ -24,6 +26,15 @@ class FeedItem(db.Model):
     _metadata = db.Column("metadata", db.Text, nullable=True)
     score = db.Column(db.Float, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (
+        db.Index(
+            "idx_feed_owner_score",
+            "owner_id",
+            desc("score"),
+            desc("created_at"),
+        ),
+    )
 
     def to_dict(self):
         """Return minimal data per item type for API.
