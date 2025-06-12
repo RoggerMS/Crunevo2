@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 import cloudinary.uploader
 from crunevo.extensions import db
-from crunevo.models import Note, Comment
+from crunevo.models import Note, Comment, NoteVote
 from crunevo.utils.credits import add_credit
 from crunevo.utils import unlock_achievement
 from crunevo.constants import CreditReasons, AchievementCodes
@@ -95,8 +95,16 @@ def like_note(note_id):
     note = Note.query.get_or_404(note_id)
     if note.user_id == current_user.id:
         abort(403)
+
+    existing_vote = NoteVote.query.filter_by(user_id=current_user.id, note_id=note.id).first()
+    if existing_vote:
+        return jsonify({'error': 'Ya votaste'}), 400
+
     note.likes += 1
+    vote = NoteVote(user_id=current_user.id, note_id=note.id)
+    db.session.add(vote)
     db.session.commit()
+
     add_credit(note.author, 1, CreditReasons.VOTO_POSITIVO, related_id=note.id)
     return jsonify({'likes': note.likes})
 

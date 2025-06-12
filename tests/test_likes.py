@@ -32,3 +32,19 @@ def test_cannot_like_own_note(client, db_session, test_user):
 
     db_session.refresh(note)
     assert note.likes == 0
+
+
+def test_user_cannot_vote_twice(client, db_session, test_user, another_user):
+    note = Note(title="Test note", author=another_user)
+    db_session.add(note)
+    db_session.commit()
+
+    login(client, 'tester', 'secret')
+    resp1 = client.post(f'/notes/{note.id}/like')
+    assert resp1.status_code == 200
+
+    resp2 = client.post(f'/notes/{note.id}/like')
+    assert resp2.status_code == 400
+
+    db_session.refresh(note)
+    assert note.likes == 1

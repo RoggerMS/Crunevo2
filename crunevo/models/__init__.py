@@ -9,4 +9,5 @@ from .credit import Credit
 from .ranking import RankingCache
 from .achievement import UserAchievement
 from .login_history import LoginHistory
+from .note_vote import NoteVote
 
