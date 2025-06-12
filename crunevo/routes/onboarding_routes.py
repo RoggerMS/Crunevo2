@@ -11,9 +11,12 @@ from flask import (
 from flask_login import login_user, current_user, login_required
 from itsdangerous import URLSafeTimedSerializer
 
-from crunevo.extensions import db
+from crunevo.extensions import db, limiter, csrf
+from flask_limiter.util import get_remote_address
+from zxcvbn import zxcvbn
 from crunevo.models import User, EmailToken
 from crunevo.utils.mailer import send_email
+from crunevo.utils.audit import record_auth_event
 
 bp = Blueprint("onboarding", __name__, url_prefix="/onboarding")
 
@@ -31,11 +34,19 @@ def send_confirmation_email(user):
     send_email(user.email, "Confirma tu cuenta", html)
 
 
+def _user_key():
+    return current_user.get_id() or get_remote_address()
+
+
 @bp.route("/register", methods=["GET", "POST"])
+@limiter.limit("3 per hour")
 def register():
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
+        if len(password) < 12 or zxcvbn(password)["score"] < 2:
+            flash("Contraseña débil", "danger")
+            return render_template("onboarding/register.html"), 400
         user = User(username=email, email=email)
         user.set_password(password)
         db.session.add(user)
@@ -57,6 +68,7 @@ def confirm(token):
     record.consumed_at = datetime.utcnow()
     record.user.activated = True
     db.session.commit()
+    record_auth_event(record.user, "confirm_email")
     login_user(record.user)
     return redirect(url_for("onboarding.finish"))
 
@@ -71,3 +83,26 @@ def finish():
         db.session.commit()
         return redirect(url_for("feed.index"))
     return render_template("onboarding/finish.html")
+
+
+@bp.route("/pending")
+@login_required
+def pending():
+    if current_user.activated:
+        return redirect(url_for("feed.index"))
+    return render_template("onboarding/pending.html")
+
+
+@bp.route("/resend", methods=["POST"])
+@login_required
+@limiter.limit("3 per hour", key_func=_user_key)
+def resend():
+    if current_user.activated:
+        return redirect(url_for("feed.index"))
+    send_confirmation_email(current_user)
+    record_auth_event(current_user, "resend_email")
+    flash("Correo reenviado")
+    return redirect(url_for("onboarding.pending"))
+
+
+csrf.exempt(resend)

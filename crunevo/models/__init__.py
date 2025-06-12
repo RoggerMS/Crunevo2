@@ -12,3 +12,4 @@ from .login_history import LoginHistory  # noqa: F401
 from .note_vote import NoteVote  # noqa: F401
 from .feed_item import FeedItem  # noqa: F401
 from .email_token import EmailToken  # noqa: F401
+from .auth_event import AuthEvent  # noqa: F401

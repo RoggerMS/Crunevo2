@@ -14,9 +14,11 @@ import fakeredis
 @pytest.fixture
 def app():
     os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+    os.environ["ENABLE_TALISMAN"] = "0"
     app = create_app()
     app.config["TESTING"] = True
     app.config["MAIL_SUPPRESS_SEND"] = True
+    app.config["WTF_CSRF_ENABLED"] = False
     mail.init_app(app)
     with app.app_context():
         db.create_all()
@@ -37,7 +39,9 @@ def db_session(app):
 
 @pytest.fixture
 def test_user(db_session):
-    user = User(username="tester", email="tester@example.com", activated=True, avatar_url="a")
+    user = User(
+        username="tester", email="tester@example.com", activated=True, avatar_url="a"
+    )
     user.set_password("secret")
     db_session.add(user)
     db_session.commit()
@@ -46,7 +50,9 @@ def test_user(db_session):
 
 @pytest.fixture
 def another_user(db_session):
-    user = User(username="tester2", email="tester2@example.com", activated=True, avatar_url="a")
+    user = User(
+        username="tester2", email="tester2@example.com", activated=True, avatar_url="a"
+    )
     user.set_password("secret")
     db_session.add(user)
     db_session.commit()
