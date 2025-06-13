@@ -1,14 +1,14 @@
 <article class="card lift mb-6">
   {% if note.thumbnail_url %}
-    <img src="{{ note.thumbnail_url }}" alt="preview" class="rounded mb-4 w-full">
+    <img src="{{ note.thumbnail_url }}" alt="preview" class="tw-rounded mb-4 tw-w-full">
   {% else %}
-    <img src="{{ url_for('static', filename='img/placeholder.svg') }}" alt="preview" class="rounded mb-4 w-full">
+    <img src="{{ url_for('static', filename='img/placeholder.svg') }}" alt="preview" class="tw-rounded mb-4 tw-w-full">
   {% endif %}
-  <h3 class="text-lg font-semibold mb-2">{{ note.title }}</h3>
-  <ul class="flex flex-wrap gap-1 text-sm text-gray-500 mb-4">
+  <h3 class="tw-text-lg tw-font-semibold mb-2">{{ note.title }}</h3>
+  <ul class="tw-flex tw-flex-wrap tw-gap-1 tw-text-sm tw-text-gray-500 mb-4">
     {% for tag in note.tags.split(',') if note.tags %}
       <li>#{{ tag }}</li>
     {% endfor %}
   </ul>
-  <a href="{{ url_for('notes.view_note', id=note.id) }}" class="inline-block bg-[var(--primary)] text-white px-3 py-1 rounded">Ver apunte</a>
+  <a href="{{ url_for('notes.view_note', id=note.id) }}" class="tw-inline-block tw-bg-[var(--primary)] tw-text-white tw-px-3 tw-py-1 tw-rounded">Ver apunte</a>
 </article>

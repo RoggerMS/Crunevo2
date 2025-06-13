@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
           box.innerHTML = '';
           data.forEach((item) => {
             const a = document.createElement('a');
-            a.className = 'block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700';
+            a.className = 'tw-block tw-px-2 tw-py-1 hover:tw-bg-gray-100 dark:hover:tw-bg-gray-700';
             a.href = item.url;
             a.textContent = item.title;
             box.appendChild(a);

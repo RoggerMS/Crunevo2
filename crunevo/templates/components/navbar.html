@@ -3,7 +3,7 @@
     <a class="navbar-brand" href="{{ url_for('feed.index') }}">Crunevo</a>
   <form class="d-none d-lg-flex mx-4 flex-grow-1 position-relative" id="globalSearchForm">
       <input class="form-control" type="search" placeholder="Buscar" aria-label="Buscar" id="globalSearchInput" autocomplete="off">
-      <div id="searchSuggestions" class="absolute left-0 z-10 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow"></div>
+      <div id="searchSuggestions" class="tw-absolute tw-left-0 tw-z-10 tw-w-full tw-bg-white dark:tw-bg-gray-800 tw-border tw-border-gray-200 dark:tw-border-gray-700 tw-rounded tw-shadow"></div>
     </form>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
@@ -24,7 +24,9 @@
         <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.perfil') }}"><i class="bi bi-person-circle"></i></a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i></a></li>
         {% else %}
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right"></i></a></li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('auth.login') }}">Iniciar sesión</a>
+        </li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('onboarding.register') }}">Registrarse</a></li>
         {% endif %}
         {% if current_user.is_authenticated %}
@@ -34,7 +36,7 @@
         {% endif %}
         {% endif %}
           <li class="nav-item">
-            <button id="themeToggle" class="btn btn-sm btn-secondary ml-2 focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2" type="button"><i class="bi bi-moon"></i></button>
+            <button id="themeToggle" class="btn btn-sm btn-secondary ml-2 focus-visible:tw-ring-2 focus-visible:tw-ring-[var(--primary)] focus-visible:tw-ring-offset-2" type="button"><i class="bi bi-moon"></i></button>
           </li>
       </ul>
     </div>
