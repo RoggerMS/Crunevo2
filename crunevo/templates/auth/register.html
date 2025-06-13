@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
 {% import 'components/input.html' as forms %}
 {% import 'components/button.html' as btn %}
+{% import 'components/csrf.html' as csrf %}
 {% block content %}
 <div class="tw-max-w-md tw-mx-auto tw-my-16 card">
   <h2>Registro</h2>
   <form method="post" class="tw-space-y-4">
+    {{ csrf.csrf_field() }}
     {{ forms.input('username', placeholder='Usuario') }}
     {{ forms.input('email', type='email', placeholder='Email') }}
     {{ forms.input('password', type='password', placeholder='Contraseña') }}
