@@ -10,6 +10,7 @@ from crunevo.extensions import db
 from crunevo.models import User
 from crunevo.utils import spend_credit, record_login
 from crunevo.constants import CreditReasons
+from sqlalchemy.exc import IntegrityError
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -26,7 +27,12 @@ def register():
         user = User(username=username, email=email)
         user.set_password(password)
         db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash("Usuario o correo ya registrado", "danger")
+            return render_template("auth/register.html"), 400
         flash("Registro exitoso. Inicia sesión")
         return redirect(url_for("auth.login"))
     return render_template("auth/register.html")

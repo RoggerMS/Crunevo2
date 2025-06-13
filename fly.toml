@@ -11,6 +11,7 @@ primary_region = 'bog'
 
 [env]
   FLASK_APP = 'crunevo.wsgi'
+  FLASK_ENV = 'production'
   PORT = "8080"
 
 [experimental]

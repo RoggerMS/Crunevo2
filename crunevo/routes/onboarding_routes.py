@@ -17,6 +17,7 @@ from zxcvbn import zxcvbn
 from crunevo.models import User, EmailToken
 from crunevo.utils.mailer import send_email
 from crunevo.utils.audit import record_auth_event
+from sqlalchemy.exc import IntegrityError
 
 bp = Blueprint("onboarding", __name__, url_prefix="/onboarding")
 
@@ -50,7 +51,12 @@ def register():
         user = User(username=email, email=email)
         user.set_password(password)
         db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash("Usuario o correo ya registrado", "danger")
+            return render_template("onboarding/register.html"), 400
         send_confirmation_email(user)
         return render_template("onboarding/confirm.html")
     return render_template("onboarding/register.html")
