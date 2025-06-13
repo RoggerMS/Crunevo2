@@ -102,6 +102,7 @@ La ruta `/notes/<id>` responde tanto al endpoint `notes.detail` como a `notes.vi
 
 Ejemplo:
 ```
+url_for('notes.detail', note_id=42)  => /notes/42
 url_for('notes.view_note', id=42)   => /notes/42
 ```
 

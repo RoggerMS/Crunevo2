@@ -39,7 +39,7 @@ def _user_key():
 
 
 @bp.route("/register", methods=["GET", "POST"])
-@limiter.limit("15 per hour")
+@limiter.limit("15 per hour", deduct_when=lambda r: request.method == "POST")
 def register():
     if request.method == "POST":
         email = request.form["email"]
@@ -95,7 +95,9 @@ def pending():
 
 @bp.route("/resend", methods=["POST"])
 @login_required
-@limiter.limit("3 per hour", key_func=_user_key)
+@limiter.limit(
+    "3 per hour", key_func=_user_key, deduct_when=lambda r: request.method == "POST"
+)
 def resend():
     if current_user.activated:
         return redirect(url_for("feed.index"))
