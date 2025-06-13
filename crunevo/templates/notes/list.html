@@ -32,7 +32,7 @@ document.getElementById('noteSearch').addEventListener('input', function(e){
       data.forEach(n => {
         const div = document.createElement('div');
         div.className = 'col';
-        div.innerHTML = `<div class="card h-100 shadow-sm"><div class="card-body d-flex flex-column"><h6 class="card-title">${n.title}</h6><p class="card-text flex-grow-1">${n.description || ''}</p><a href="/notes/${n.id}" class="btn btn-primary mt-auto">Ver</a></div></div>`;
+        div.innerHTML = `<div class="card h-100 shadow-sm"><div class="card-body d-flex flex-column"><h6 class="card-title">${n.title}</h6><p class="card-text flex-grow-1">${n.description || ''}</p><a href="{{ url_for('notes.view_note', id='__ID__') }}" class="btn btn-primary mt-auto">Ver</a></div></div>`.replace('__ID__', n.id);
         list.appendChild(div);
       });
     });

@@ -79,8 +79,3 @@ body[data-bs-theme="dark"] {
   transition: .15s ease;
 }
 
-:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--primary);
-}
-

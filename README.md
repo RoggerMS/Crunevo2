@@ -97,7 +97,14 @@ y se muestra un distintivo en la barra de navegación.
 
 ### Rutas
 
+
 La ruta `/notes/<id>` responde tanto al endpoint `notes.detail` como a `notes.view_note` (alias para plantillas).
+
+Ejemplo:
+```
+url_for('notes.detail', note_id=42)  => /notes/42
+url_for('notes.view_note', id=42)   => /notes/42
+```
 
 ## Contribuir y correr las pruebas
 
