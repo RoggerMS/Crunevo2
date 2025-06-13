@@ -62,13 +62,9 @@
   document.getElementById('commentForm').addEventListener('submit', function(e){
     e.preventDefault();
     const data = new FormData(this);
-    fetch('{{ url_for('notes.add_comment', note_id=note.id) }}', {
+    csrfFetch('{{ url_for('notes.add_comment', note_id=note.id) }}', {
       method: 'POST',
-      body: data,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
-      }
+      body: data
     }).then(r => r.json()).then(c => {
       const div = document.createElement('div');
       div.className = 'd-flex mb-3 comment';

@@ -131,3 +131,15 @@ código automáticamente antes de cada commit:
 pre-commit install
 ```
 
+## Configuración
+
+La clave CSRF (`FLASK_WTF_SECRET_KEY`) suele ser la misma que `SECRET_KEY`.
+La variable `ENABLE_CSRF` está siempre activa en producción y no deberías deshabilitarla.
+En producción la protección CSRF está siempre habilitada.
+
+Si necesitas el token desde JavaScript puedes leerlo con:
+
+```javascript
+document.querySelector('meta[name="csrf-token"]').content;
+```
+
