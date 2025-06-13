@@ -1,3 +1,5 @@
-<div class="toast" role="alert">
-  <div class="toast-body">{{ message }}</div>
+{% macro toast(message) %}
+<div class="rounded bg-[var(--primary)]/10 px-4 py-2 text-[var(--primary)] shadow">
+  {{ message }}
 </div>
+{% endmacro %}

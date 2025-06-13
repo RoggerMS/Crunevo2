@@ -24,7 +24,9 @@
         <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.perfil') }}"><i class="bi bi-person-circle"></i></a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i></a></li>
         {% else %}
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right"></i></a></li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('auth.login') }}">Iniciar sesión</a>
+        </li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('onboarding.register') }}">Registrarse</a></li>
         {% endif %}
         {% if current_user.is_authenticated %}

@@ -15,6 +15,7 @@ import fakeredis
 def app():
     os.environ["DATABASE_URL"] = "sqlite:///:memory:"
     os.environ["ENABLE_TALISMAN"] = "0"
+    os.environ["RATELIMIT_STORAGE_URI"] = "memory://"
     app = create_app()
     app.config["TESTING"] = True
     app.config["MAIL_SUPPRESS_SEND"] = True

@@ -23,13 +23,12 @@
                 {% include 'components/sidebar_left.html' %}
             </aside>
             <main class="space-y-6">
+                {% import 'components/toast.html' as toast %}
                 {% with messages = get_flashed_messages() %}
                   {% if messages %}
-                    <div class="fixed top-20 inset-x-0 flex justify-center z-50">
+                    <div class="fixed top-20 inset-x-0 z-50 flex flex-col items-center space-y-2">
                       {% for msg in messages %}
-                        <div class="mb-2 w-fit rounded bg-[var(--primary)]/10 px-4 py-2 text-[var(--primary)] shadow">
-                          {{ msg }}
-                        </div>
+                        {{ toast.toast(msg) }}
                       {% endfor %}
                     </div>
                   {% endif %}
