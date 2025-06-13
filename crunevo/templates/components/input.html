@@ -1,0 +1,8 @@
+{% macro input(name, type='text', value='', placeholder='', error=None) %}
+<div>
+  <input name="{{ name }}" type="{{ type }}" value="{{ value }}" placeholder="{{ placeholder }}" class="block w-full bg-transparent border-b py-2 outline-none transition-colors {{ 'border-red-500' if error else 'border-gray-300' }} focus:border-[var(--primary)]">
+  {% if error %}
+  <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+  {% endif %}
+</div>
+{% endmacro %}

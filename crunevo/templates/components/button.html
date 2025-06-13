@@ -1,0 +1,15 @@
+{% macro button(text, href=None, type='button', variant='primary', class='') %}
+{% set base = 'inline-flex items-center justify-center rounded-md px-4 py-2 font-medium transition-transform active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 ' + class %}
+{% if variant == 'primary' %}
+  {% set classes = base + ' bg-[var(--primary)] text-white' %}
+{% elif variant == 'secondary' %}
+  {% set classes = base + ' bg-gray-100 text-gray-900' %}
+{% else %}
+  {% set classes = base + ' text-[var(--primary)]' %}
+{% endif %}
+{% if href %}
+<a href="{{ href }}" class="{{ classes }}">{{ text }}</a>
+{% else %}
+<button type="{{ type }}" class="{{ classes }}">{{ text }}</button>
+{% endif %}
+{% endmacro %}

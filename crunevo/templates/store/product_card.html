@@ -1,0 +1,12 @@
+{% import 'components/button.html' as btn %}
+<article class="card lift h-full flex flex-col">
+  <img src="{{ product.image }}" alt="imagen" class="rounded mb-4">
+  <h6 class="font-semibold mb-1">{{ product.name }}</h6>
+  <p class="font-bold">${{ product.price }}</p>
+  {% if product.stock > 0 %}
+    <span class="badge bg-success mb-2">En stock</span>
+  {% else %}
+    <span class="badge mb-2 bg-[var(--accent)]/10 text-[var(--accent)]">Próximamente</span>
+  {% endif %}
+  {{ btn.button('Agregar al carrito', href=url_for('store.add_to_cart', product_id=product.id), class='mt-auto') }}
+</article>

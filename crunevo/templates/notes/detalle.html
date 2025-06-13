@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
+{% import 'components/button.html' as btn %}
 {% block content %}
-<div class="card mb-3 shadow-sm">
-  <div class="card-body">
+<article class="prose lg:prose-lg mx-auto card">
     <div class="d-flex align-items-center mb-3">
       <img src="{{ note.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
       <div>
@@ -20,7 +20,7 @@
       <span class="badge bg-secondary me-1">{{ tag }}</span>
       {% endfor %}
     </div>
-      <a href="{{ url_for('notes.download_note', note_id=note.id) }}" class="btn btn-primary mb-3" target="_blank">Descargar</a>
+      {{ btn.button('Descargar', href=url_for('notes.download_note', note_id=note.id), class='mb-3') }}
       <form action="{{ url_for('notes.share_note', note_id=note.id) }}" method="post" style="display:inline;">
         <button class="btn btn-outline-primary btn-sm" type="submit">🔗 Compartir</button>
       </form>
@@ -53,8 +53,7 @@
         <button class="btn btn-primary" type="submit">Enviar</button>
       </div>
     </form>
-  </div>
-</div>
+</article>
 <script>
   document.getElementById('commentForm').addEventListener('submit', function(e){
     e.preventDefault();

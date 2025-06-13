@@ -88,6 +88,11 @@ def detail(note_id):
     return render_template("notes/detalle.html", note=note)
 
 
+# Alias endpoint for backward compatibility with templates using
+# `notes.view_note` and parameter name `id`.
+notes_bp.add_url_rule("/<int:id>", endpoint="view_note", view_func=detail)
+
+
 @notes_bp.route("/<int:note_id>/comment", methods=["POST"])
 @activated_required
 def add_comment(note_id):

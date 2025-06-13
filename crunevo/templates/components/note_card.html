@@ -10,5 +10,5 @@
       <li>#{{ tag }}</li>
     {% endfor %}
   </ul>
-  <a href="{{ url_for('notes.detail', note_id=note.id) }}" class="inline-block bg-[var(--primary)] text-white px-3 py-1 rounded">Ver apunte</a>
+  <a href="{{ url_for('notes.view_note', id=note.id) }}" class="inline-block bg-[var(--primary)] text-white px-3 py-1 rounded">Ver apunte</a>
 </article>
