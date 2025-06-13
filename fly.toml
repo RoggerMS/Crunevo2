@@ -1,7 +1,4 @@
-# fly.toml app configuration file generated for crunevo2-alt on 2025-06-12T22:29:52-05:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
+# fly.toml app configuration file generated for crunevo2-alt
 
 app = 'crunevo2-alt'
 primary_region = 'bog'
@@ -14,6 +11,10 @@ primary_region = 'bog'
 
 [env]
   FLASK_APP = 'crunevo.wsgi'
+  PORT = "8080"
+
+[experimental]
+  auto_rollback = true
 
 [[services]]
   protocol = 'tcp'
