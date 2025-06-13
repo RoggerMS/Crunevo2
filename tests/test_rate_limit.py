@@ -9,7 +9,7 @@ def test_login_rate_limit(client):
 
 
 def test_register_rate_limit(client):
-    for i in range(3):
+    for i in range(15):
         client.post(
             "/onboarding/register",
             data={"email": f"a{i}@ex.com", "password": "StrongPassw0rd!"},
