@@ -8,10 +8,13 @@ load_dotenv()
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "devkey")
 
-    _db_uri = os.getenv("DATABASE_URL", "sqlite:///crunevo.db")
-    if _db_uri.startswith("postgres://"):
-        _db_uri = _db_uri.replace("postgres://", "postgresql://", 1)
-    SQLALCHEMY_DATABASE_URI = _db_uri
+    DEBUG = os.getenv("FLASK_DEBUG", "0").lower() in ("1", "true", "yes")
+
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///data.db").replace(
+        "postgres://", "postgresql://"
+    )
+    if DEBUG:
+        print("DB:", SQLALCHEMY_DATABASE_URI)
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "static/uploads")
@@ -31,6 +34,10 @@ class Config:
     MAIL_USERNAME = os.getenv("MAIL_USERNAME")
     MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
     MAIL_DEFAULT_SENDER = os.getenv("MAIL_SENDER", "Crunevo <no-reply@crunevo.io>")
+    if not (MAIL_SERVER and MAIL_USERNAME and MAIL_PASSWORD):
+        MAIL_SUPPRESS_SEND = True
+    else:
+        MAIL_SUPPRESS_SEND = False
 
     ONBOARDING_TOKEN_EXP_H = int(os.getenv("ONBOARDING_TOKEN_EXP_H", 1))
 

@@ -53,8 +53,9 @@ def register():
         db.session.add(user)
         try:
             db.session.commit()
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
+            current_app.logger.warning("IntegrityError: %s", e)
             flash("Usuario o correo ya registrado", "danger")
             return render_template("onboarding/register.html"), 400
         send_confirmation_email(user)
