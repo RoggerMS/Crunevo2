@@ -7,7 +7,7 @@ primary_region = 'bog'
   dockerfile = 'Dockerfile'
 
 [deploy]
-release_command = "flask db upgrade -c alembic.ini"
+  release_command = "flask db upgrade"
 
 [env]
   FLASK_APP = 'crunevo.wsgi'
