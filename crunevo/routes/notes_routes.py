@@ -111,7 +111,7 @@ def add_comment(note_id):
                 "timestamp": comment.timestamp.strftime("%Y-%m-%d %H:%M"),
             }
         )
-    return redirect(url_for("notes.detail", note_id=note_id))
+    return redirect(url_for("notes.view_note", id=note_id))
 
 
 @notes_bp.route("/<int:note_id>/like", methods=["POST"])
@@ -143,7 +143,7 @@ def share_note(note_id):
     _note = Note.query.get_or_404(note_id)
     unlock_achievement(current_user, AchievementCodes.COMPARTIDOR)
     flash("¡Gracias por compartir este apunte!")
-    return redirect(url_for("notes.detail", note_id=note_id))
+    return redirect(url_for("notes.view_note", id=note_id))
 
 
 @notes_bp.route("/<int:note_id>/download")
