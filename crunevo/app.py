@@ -25,9 +25,12 @@ def create_app():
     login_manager.init_app(app)
     mail.init_app(app)
     csrf.init_app(app)
+    limiter._storage_uri = app.config.get("RATELIMIT_STORAGE_URI")
     limiter.init_app(app)
     if app.config.get("ENABLE_TALISMAN", True):
-        csp = None if app.config.get("ENABLE_CSP_OVERRIDE") else DEFAULT_CSP
+        csp = app.config.get("TALISMAN_CSP", DEFAULT_CSP)
+        if app.config.get("ENABLE_CSP_OVERRIDE"):
+            csp = None
         Talisman(
             app,
             content_security_policy=csp,

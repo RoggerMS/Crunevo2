@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% import 'components/button.html' as btn %}
 {% block content %}
-<div class="max-w-lg mx-auto my-16 card space-y-4 text-center">
+<div class="tw-max-w-lg tw-mx-auto tw-my-16 card tw-space-y-4 tw-text-center">
   <p>Confirma tu correo para continuar.</p>
-  <form method="post" action="{{ url_for('onboarding.resend') }}" class="space-y-4">
+  <form method="post" action="{{ url_for('onboarding.resend') }}" class="tw-space-y-4">
     {{ btn.button('Reenviar correo', type='submit') }}
   </form>
   {{ btn.button('Volver al inicio', href=url_for('index')) }}

@@ -48,3 +48,11 @@ class Config:
         "true",
         "yes",
     )
+
+    TALISMAN_CSP = {
+        "default-src": ["'self'", "https://cdn.jsdelivr.net"],
+    }
+
+    RATELIMIT_STORAGE_URI = os.getenv(
+        "RATELIMIT_STORAGE_URI", os.getenv("REDIS_URL", "memory://")
+    )

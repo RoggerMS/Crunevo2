@@ -1,13 +1,17 @@
 {% extends 'base.html' %}
+{% import 'components/input.html' as forms %}
+{% import 'components/button.html' as btn %}
 {% block content %}
-<h2>Registro</h2>
-<form method="post">
-  <div class="mb-3">
-    <input type="email" name="email" class="form-control" placeholder="Email" required>
-  </div>
-  <div class="mb-3">
-    <input type="password" name="password" class="form-control" placeholder="Contraseña" required>
-  </div>
-  <button class="btn btn-primary" type="submit">Crear cuenta</button>
-</form>
+<div class="tw-max-w-md tw-mx-auto tw-my-16 card">
+  <h2>Registro</h2>
+  <form method="post" class="tw-space-y-4">
+    {{ forms.input('email', type='email', placeholder='Email') }}
+    {{ forms.input('password', type='password', placeholder='Contraseña') }}
+    {{ btn.button('Crear cuenta', type='submit') }}
+  </form>
+  <p class="mt-4 tw-text-center tw-text-sm">
+    ¿Ya tienes cuenta?
+    <a href="{{ url_for('auth.login') }}" class="tw-text-[var(--primary)] tw-underline">Inicia sesión</a>
+  </p>
+</div>
 {% endblock %}
