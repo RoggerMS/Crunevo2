@@ -2,9 +2,9 @@
 {% import 'components/input.html' as forms %}
 {% import 'components/button.html' as btn %}
 {% block content %}
-<div class="max-w-lg mx-auto my-16 card">
+<div class="tw-max-w-lg tw-mx-auto tw-my-16 card">
   <h2>Subir Apunte</h2>
-  <form method="post" enctype="multipart/form-data" class="space-y-4">
+  <form method="post" enctype="multipart/form-data" class="tw-space-y-4">
     {{ forms.input('title', placeholder='Título') }}
     <div>
       <textarea name="description" class="form-control" placeholder="Descripción"></textarea>

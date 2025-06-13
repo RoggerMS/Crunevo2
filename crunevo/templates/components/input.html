@@ -1,12 +1,12 @@
 {% macro input(name, type='text', value='', placeholder='', error=None) %}
-<div>
+<div class="mb-3">
   {% if type == 'file' %}
   <input name="{{ name }}" type="file" class="form-control" />
   {% else %}
-  <input name="{{ name }}" type="{{ type }}" value="{{ value }}" placeholder="{{ placeholder }}" class="block w-full bg-transparent border-b py-2 outline-none transition-colors {{ 'border-red-500' if error else 'border-gray-300' }} focus:border-[var(--primary)]">
+  <input name="{{ name }}" type="{{ type }}" value="{{ value }}" placeholder="{{ placeholder }}" class="form-control tw-bg-transparent tw-border-b tw-outline-none tw-transition-colors {{ 'tw-border-red-500' if error else 'tw-border-gray-300' }} focus:tw-border-[var(--primary)]">
   {% endif %}
   {% if error %}
-  <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+  <div class="invalid-feedback d-block">{{ error }}</div>
   {% endif %}
 </div>
 {% endmacro %}
