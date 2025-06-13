@@ -30,13 +30,9 @@
   });
   document.getElementById('chatForm').addEventListener('submit', e=>{
     e.preventDefault();
-    fetch('{{ url_for('chat.send_message') }}', {
+    csrfFetch('{{ url_for('chat.send_message') }}', {
       method:'POST',
-      body:new FormData(e.target),
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
-      }
+      body:new FormData(e.target)
     })
       .then(r=>r.json()).then(()=>{
         const box = document.getElementById('chatBox');

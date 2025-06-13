@@ -1,5 +1,15 @@
 // Main entry point
 
+function csrfFetch(url, options = {}) {
+  const token = document.querySelector('meta[name="csrf-token"]').content;
+  const headers = {
+    'X-CSRFToken': token,
+    'X-Requested-With': 'XMLHttpRequest',
+    ...(options.headers || {}),
+  };
+  return fetch(url, { ...options, headers });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // theme persistence
   const saved = localStorage.getItem('theme');

@@ -104,7 +104,7 @@ def test_admin_verification_csrf(client, db_session):
         token = _get_csrf_token(page)
 
         assert (
-            client.post(f"/admin/verificaciones/{user.id}/approve").status_code == 400
+            client.post(f"/admin/verificaciones/{user.id}/approve").status_code == 302
         )
 
         resp = client.post(

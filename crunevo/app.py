@@ -1,10 +1,11 @@
-from flask import Flask
+from flask import Flask, request, redirect, url_for, flash
 import logging
 from logging.handlers import RotatingFileHandler
 import os
 
 from .extensions import db, login_manager, migrate, mail, csrf, limiter
 from flask_talisman import Talisman
+from flask_wtf.csrf import CSRFError
 
 DEFAULT_CSP = {
     "default-src": "'self'",
@@ -107,6 +108,11 @@ def create_app():
     app.register_blueprint(admin_bp)
     app.register_blueprint(ranking_bp)
     app.register_blueprint(errors_bp)
+
+    @app.errorhandler(CSRFError)
+    def handle_csrf_error(e):
+        flash("La sesión expiró, vuelve a intentarlo.", "danger")
+        return redirect(request.referrer or url_for("feed.index")), 302
 
     if os.getenv("SCHEDULER") == "1":
         from apscheduler.schedulers.background import BackgroundScheduler
