@@ -39,7 +39,7 @@ def _user_key():
 
 
 @bp.route("/register", methods=["GET", "POST"])
-@limiter.limit("3 per hour")
+@limiter.limit("15 per hour")
 def register():
     if request.method == "POST":
         email = request.form["email"]
