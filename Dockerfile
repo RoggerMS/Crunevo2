@@ -5,11 +5,12 @@ WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-#  Copiamos el archivo alembic.ini a /app
+# Copiamos el archivo alembic.ini a /app/migrations
 COPY alembic.ini /app/migrations/alembic.ini
 
-# Copiamos el resto del código
+# Copiamos el código fuente
 COPY crunevo /app/crunevo
 COPY migrations /app/migrations
 
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
+# Línea corregida para corregir el fallo del servidor en Fly.io
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "crunevo.wsgi:app"]
