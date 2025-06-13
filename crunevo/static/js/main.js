@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function(){
         box.innerHTML = '';
         data.forEach(item => {
           const a = document.createElement('a');
-          a.className = 'list-group-item list-group-item-action';
+          a.className = 'block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700';
           a.href = item.url;
           a.textContent = item.title;
           box.appendChild(a);

@@ -95,6 +95,10 @@ y se muestra un distintivo en la barra de navegación.
 - Modificar las variables `FEED_LIKE_W`, `FEED_DL_W`, `FEED_COM_W` y
   `FEED_HALF_LIFE_H` para ajustar pesos sin tocar el código.
 
+### Rutas
+
+La ruta `/notes/<id>` responde tanto al endpoint `notes.detail` como a `notes.view_note` (alias para plantillas).
+
 ## Contribuir y correr las pruebas
 
 Instala las dependencias:
