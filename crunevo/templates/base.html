@@ -25,9 +25,13 @@
             <main class="space-y-6">
                 {% with messages = get_flashed_messages() %}
                   {% if messages %}
-                    {% for msg in messages %}
-                      <div class="alert alert-info">{{ msg }}</div>
-                    {% endfor %}
+                    <div class="fixed top-20 inset-x-0 flex justify-center z-50">
+                      {% for msg in messages %}
+                        <div class="mb-2 w-fit rounded bg-[var(--primary)]/10 px-4 py-2 text-[var(--primary)] shadow">
+                          {{ msg }}
+                        </div>
+                      {% endfor %}
+                    </div>
                   {% endif %}
                 {% endwith %}
                 {% block content %}{% endblock %}
