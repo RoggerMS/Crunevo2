@@ -98,6 +98,7 @@ def create_app():
     from .routes.admin_routes import admin_bp
     from .routes.ranking_routes import ranking_bp
     from .routes.errors import errors_bp
+    from .routes.health_routes import health_bp
 
     app.register_blueprint(onboarding_bp)
     app.register_blueprint(auth_bp)
@@ -108,6 +109,7 @@ def create_app():
     app.register_blueprint(admin_bp)
     app.register_blueprint(ranking_bp)
     app.register_blueprint(errors_bp)
+    app.register_blueprint(health_bp)
 
     @app.errorhandler(CSRFError)
     def handle_csrf_error(e):

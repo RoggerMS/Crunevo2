@@ -13,6 +13,7 @@ primary_region = 'bog'
   FLASK_APP = 'crunevo.wsgi'
   FLASK_ENV = 'production'
   PORT = "8080"
+  DATABASE_URL = "postgresql://<user>:<pass>@<host>:<port>/<db>"
 
 [experimental]
   auto_rollback = true

@@ -1,4 +1,12 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import (
+    Blueprint,
+    render_template,
+    redirect,
+    url_for,
+    flash,
+    request,
+    current_app,
+)
 from flask_login import login_user, logout_user, current_user
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import limiter
@@ -29,8 +37,9 @@ def register():
         db.session.add(user)
         try:
             db.session.commit()
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
+            current_app.logger.warning("IntegrityError: %s", e)
             flash("Usuario o correo ya registrado", "danger")
             return render_template("auth/register.html"), 400
         flash("Registro exitoso. Inicia sesión")
