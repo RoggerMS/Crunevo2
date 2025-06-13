@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
 {% block content %}
 <h5 class="mb-3">Feed</h5>
 <form method="post" enctype="multipart/form-data" class="mb-4">
+  {{ csrf.csrf_field() }}
   <textarea name="content" class="form-control mb-2" placeholder="Comparte una idea" required></textarea>
   <input type="file" name="image" class="form-control mb-2">
   <button class="btn btn-primary" type="submit">Publicar</button>
