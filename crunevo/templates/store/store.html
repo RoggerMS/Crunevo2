@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% import 'components/button.html' as btn %}
 {% block content %}
 <h2 class="mb-4">Tienda</h2>
 <div class="row">
@@ -25,24 +26,12 @@
     <div class="row g-3">
       {% for product in products %}
       <div class="col-sm-6 col-md-4">
-        <div class="card h-100">
-          <img src="{{ product.image }}" class="card-img-top" alt="imagen">
-          <div class="card-body d-flex flex-column">
-            <h6 class="card-title">{{ product.name }}</h6>
-            <p class="fw-bold">${{ product.price }}</p>
-            {% if product.stock > 0 %}
-            <span class="badge bg-success mb-2">En stock</span>
-            {% else %}
-            <span class="badge bg-danger mb-2">Agotado</span>
-            {% endif %}
-            <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-primary mt-auto">Agregar al carrito</a>
-          </div>
-        </div>
+        {% include 'store/product_card.html' %}
       </div>
       {% endfor %}
     </div>
     <div class="mt-4 text-end">
-      <a href="{{ url_for('store.view_cart') }}" class="btn btn-success">Ver Carrito</a>
+      {{ btn.button('Ver Carrito', href=url_for('store.view_cart'), variant='secondary') }}
     </div>
   </div>
 </div>

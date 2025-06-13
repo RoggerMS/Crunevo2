@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
+{% import 'components/input.html' as forms %}
+{% import 'components/button.html' as btn %}
 {% block content %}
-<h2>Iniciar sesión</h2>
-<form method="post">
-  <div class="mb-3">
-    <input type="text" name="username" class="form-control" placeholder="Usuario" required>
-  </div>
-  <div class="mb-3">
-    <input type="password" name="password" class="form-control" placeholder="Contraseña" required>
-  </div>
-  <button class="btn btn-primary" type="submit">Entrar</button>
-</form>
+<div class="max-w-md mx-auto my-16 card">
+  <h2>Iniciar sesión</h2>
+  <form method="post" class="space-y-4">
+    {{ forms.input('username', placeholder='Usuario') }}
+    {{ forms.input('password', type='password', placeholder='Contraseña') }}
+    {{ btn.button('Entrar', type='submit') }}
+  </form>
+</div>
 {% endblock %}
