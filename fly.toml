@@ -1,26 +1,37 @@
-app = "crunevo2"
+# fly.toml app configuration file generated for crunevo2-alt on 2025-06-12T22:29:52-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'crunevo2-alt'
+primary_region = 'bog'
 
 [build]
-  dockerfile = "Dockerfile"
-
-[env]
-  FLASK_APP = "crunevo.wsgi"
+  dockerfile = 'Dockerfile'
 
 [deploy]
-  release_command = "flask db upgrade"
+  release_command = 'flask db upgrade'
+
+[env]
+  FLASK_APP = 'crunevo.wsgi'
 
 [[services]]
+  protocol = 'tcp'
   internal_port = 8080
-  protocol = "tcp"
 
   [[services.ports]]
     port = 80
-    handlers = ["http"]
+    handlers = ['http']
 
   [[services.ports]]
     port = 443
-    handlers = ["tls", "http"]
+    handlers = ['tls', 'http']
 
   [[services.tcp_checks]]
-    interval = "10s"
-    timeout = "2s"
+    interval = '10s'
+    timeout = '2s'
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
