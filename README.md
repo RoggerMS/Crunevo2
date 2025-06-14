@@ -51,6 +51,18 @@ It usually means Fly.io detected an outdated manifest from a previous deployment
    fly deploy
    ```
 
+If you want to run the application locally but use a PostgreSQL
+database hosted on Fly.io:
+```bash
+fly postgres create ...           # crea cluster
+fly postgres attach ...           # genera DATABASE_URL
+fly secrets set SECRET_KEY=...    # etc.
+```
+
+DNS notes:
+* `www.crunevo.com` → CNAME `crunevo2-alt.fly.dev`
+* `crunevo.com` → A `66.241.124.8` (o AAAA si asignas IPv6)
+
 `CLOUDINARY_URL` and `DATABASE_URL` are already supported in `config.py`, and `flask db upgrade` runs automatically as the release command. The feed cache uses Redis, so set `REDIS_URL` (default `redis://localhost:6379/0`) and make sure a Redis instance is available when deploying or running locally.
 * Si Redis no está disponible el feed funcionará en modo "degradado"
   (lee directamente de la base de datos) y repoblará el cache

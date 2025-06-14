@@ -34,10 +34,12 @@ class Config:
     MAIL_USERNAME = os.getenv("MAIL_USERNAME")
     MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
     MAIL_DEFAULT_SENDER = os.getenv("MAIL_SENDER", "Crunevo <no-reply@crunevo.io>")
-    if not (MAIL_SERVER and MAIL_USERNAME and MAIL_PASSWORD):
-        MAIL_SUPPRESS_SEND = True
-    else:
-        MAIL_SUPPRESS_SEND = False
+
+    RESEND_API_KEY = os.getenv("RESEND_API_KEY")
+    USE_RESEND = RESEND_API_KEY is not None
+    MAIL_SUPPRESS_SEND = (
+        not (MAIL_SERVER and MAIL_USERNAME and MAIL_PASSWORD) and not USE_RESEND
+    )
 
     ONBOARDING_TOKEN_EXP_H = int(os.getenv("ONBOARDING_TOKEN_EXP_H", 1))
 
