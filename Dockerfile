@@ -11,7 +11,7 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar alembic.ini dentro de la carpeta /migrations, como lo espera env.py
-COPY alembic.ini /app/migrations/alembic.ini
+COPY migrations/alembic.ini /app/migrations/alembic.ini
 
 # Copiar código fuente y migraciones
 COPY crunevo /app/crunevo
