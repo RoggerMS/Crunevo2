@@ -26,20 +26,35 @@ item_enum = sa.Enum(
 
 
 def upgrade():
-    item_enum.create(op.get_bind(), checkfirst=True)
+    bind = op.get_bind()
+
+    if bind.dialect.name == "postgresql":
+        op.execute(
+            """
+            DO $$ BEGIN
+                IF NOT EXISTS (
+                    SELECT 1 FROM pg_type WHERE typname = 'feed_item_type'
+                ) THEN
+                    CREATE TYPE feed_item_type AS ENUM (
+                        'apunte','post','logro','movimiento','evento','mensaje'
+                    );
+                END IF;
+            END $$;
+            """
+        )
+
     op.create_table(
         "feed_item",
-        sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("owner_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False),
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("owner_id", sa.Integer, sa.ForeignKey("user.id"), nullable=False),
         sa.Column("item_type", item_enum, nullable=False),
-        sa.Column("ref_id", sa.Integer(), nullable=False),
-        sa.Column("is_highlight", sa.Boolean(), server_default=sa.text("0")),
-        sa.Column("metadata", sa.Text()),
-        sa.Column("score", sa.Float(), server_default="0"),
-        sa.Column("created_at", sa.DateTime()),
+        sa.Column("ref_id", sa.Integer, nullable=False),
+        sa.Column("is_highlight", sa.Boolean, server_default=sa.text("FALSE")),
+        sa.Column("metadata", sa.Text),
+        sa.Column("score", sa.Float, server_default="0"),
+        sa.Column("created_at", sa.DateTime),
     )
 
 
 def downgrade():
     op.drop_table("feed_item")
-    item_enum.drop(op.get_bind(), checkfirst=True)
