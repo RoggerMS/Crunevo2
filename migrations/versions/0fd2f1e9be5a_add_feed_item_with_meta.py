@@ -3,7 +3,6 @@
 Revision ID: 0fd2f1e9be5a
 Revises: f47bb65af23c
 Create Date: 2025-06-12 05:45:00.000000
-
 """
 
 from alembic import op
@@ -22,12 +21,12 @@ item_enum = sa.Enum(
     "evento",
     "mensaje",
     name="feed_item_type",
+    create_type=False  # No volverá a crear el tipo si ya existe
 )
-
 
 def upgrade():
     bind = op.get_bind()
-
+    
     if bind.dialect.name == "postgresql":
         op.execute(
             """
@@ -55,6 +54,6 @@ def upgrade():
         sa.Column("created_at", sa.DateTime),
     )
 
-
 def downgrade():
     op.drop_table("feed_item")
+    op.execute("DROP TYPE IF EXISTS feed_item_type")
