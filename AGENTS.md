@@ -7,5 +7,4 @@
 - Merge duplicated `DOMContentLoaded` listeners into a single entry point in `main.js`.
 - All `<form method="post">` must import `components/csrf.html` and call
   `csrf_field()` immediately after the `<form>` tag.
-- Nunca hacer CREATE TYPE sin verificar existencia; usar IF NOT EXISTS o checkfirst.
 - Nunca hacer CREATE TYPE sin comprobar si el tipo ya existe; usa IF NOT EXISTS o checkfirst=True.
