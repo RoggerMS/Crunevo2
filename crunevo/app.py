@@ -139,5 +139,7 @@ def create_app():
 
         app.logger.setLevel(logging.INFO)
         app.logger.info("CRUNEVO startup")
+        app.logger.info("Debug=%s", app.debug)
+        app.logger.info("DB=%s", app.config.get("SQLALCHEMY_DATABASE_URI"))
 
     return app

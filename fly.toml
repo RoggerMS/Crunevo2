@@ -1,6 +1,6 @@
-# fly.toml app configuration file generated for crunevo2-alt
+# fly.toml app configuration file for crunevo2
 
-app = 'crunevo2-alt'
+app = 'crunevo2'
 primary_region = 'bog'
 
 [build]
@@ -47,4 +47,4 @@ primary_region = 'bog'
   cpus = 1
 
 # If using shared IPv4, point the root domain (crunevo.com)
-# to 66.241.124.8 with an A record.
+# to 66.241.125.104 with an A record.
