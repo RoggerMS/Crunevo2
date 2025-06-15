@@ -31,7 +31,7 @@ def upgrade():
             """
         )
 
-    # ⛔️ El enum debe estar definido DENTRO de upgrade()
+    #  El enum debe estar definido DENTRO de upgrade()
     item_enum = sa.Enum(
         "apunte",
         "post",
@@ -40,7 +40,7 @@ def upgrade():
         "evento",
         "mensaje",
         name="feed_item_type",
-        create_type=False,  # 👈🏻 este flag evita el error
+        create_type=False,  #  este flag evita el error
     )
 
     op.create_table(
