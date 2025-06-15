@@ -13,17 +13,6 @@ down_revision = "f47bb65af23c"
 branch_labels = None
 depends_on = None
 
-item_enum = sa.Enum(
-    "apunte",
-    "post",
-    "logro",
-    "movimiento",
-    "evento",
-    "mensaje",
-    name="feed_item_type",
-    create_type=False  # No volverá a crear el tipo si ya existe
-)
-
 def upgrade():
     bind = op.get_bind()
 
@@ -42,7 +31,7 @@ def upgrade():
             """
         )
 
-    # ⚠️ mueve esto aquí dentro
+    # ✅ Aquí va dentro de upgrade()
     item_enum = sa.Enum(
         "apunte",
         "post",
@@ -51,21 +40,8 @@ def upgrade():
         "evento",
         "mensaje",
         name="feed_item_type",
-        create_type=False  # no volverá a crear
+        create_type=False  # importante para evitar error
     )
-
-    op.create_table(
-        "feed_item",
-        sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("owner_id", sa.Integer, sa.ForeignKey("user.id"), nullable=False),
-        sa.Column("item_type", item_enum, nullable=False),
-        sa.Column("ref_id", sa.Integer, nullable=False),
-        sa.Column("is_highlight", sa.Boolean, server_default=sa.text("FALSE")),
-        sa.Column("metadata", sa.Text),
-        sa.Column("score", sa.Float, server_default="0"),
-        sa.Column("created_at", sa.DateTime),
-    )
-
 
     op.create_table(
         "feed_item",
