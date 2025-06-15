@@ -26,7 +26,7 @@ item_enum = sa.Enum(
 
 def upgrade():
     bind = op.get_bind()
-    
+
     if bind.dialect.name == "postgresql":
         op.execute(
             """
@@ -41,6 +41,31 @@ def upgrade():
             END $$;
             """
         )
+
+    # ⚠️ mueve esto aquí dentro
+    item_enum = sa.Enum(
+        "apunte",
+        "post",
+        "logro",
+        "movimiento",
+        "evento",
+        "mensaje",
+        name="feed_item_type",
+        create_type=False  # no volverá a crear
+    )
+
+    op.create_table(
+        "feed_item",
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("owner_id", sa.Integer, sa.ForeignKey("user.id"), nullable=False),
+        sa.Column("item_type", item_enum, nullable=False),
+        sa.Column("ref_id", sa.Integer, nullable=False),
+        sa.Column("is_highlight", sa.Boolean, server_default=sa.text("FALSE")),
+        sa.Column("metadata", sa.Text),
+        sa.Column("score", sa.Float, server_default="0"),
+        sa.Column("created_at", sa.DateTime),
+    )
+
 
     op.create_table(
         "feed_item",
