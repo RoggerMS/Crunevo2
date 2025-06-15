@@ -30,12 +30,40 @@ document.getElementById('noteSearch').addEventListener('input', function(e){
       const list = document.getElementById('notesList');
       list.innerHTML = '';
       data.forEach(n => {
-        const div = document.createElement('div');
-        div.className = 'col';
-        div.innerHTML = `<div class="card h-100 shadow-sm"><div class="card-body d-flex flex-column"><h6 class="card-title">${n.title}</h6><p class="card-text flex-grow-1">${n.description || ''}</p><a href="{{ url_for('notes.view_note', id='__ID__') }}" class="btn btn-primary mt-auto">Ver</a></div></div>`.replace('__ID__', n.id);
-        list.appendChild(div);
+        list.appendChild(createNoteCard(n));
       });
     });
 });
+
+function createNoteCard(n) {
+  const col = document.createElement('div');
+  col.className = 'col';
+
+  const card = document.createElement('div');
+  card.className = 'card h-100 shadow-sm';
+
+  const body = document.createElement('div');
+  body.className = 'card-body d-flex flex-column';
+
+  const title = document.createElement('h6');
+  title.className = 'card-title';
+  title.textContent = n.title;
+
+  const desc = document.createElement('p');
+  desc.className = 'card-text flex-grow-1';
+  desc.textContent = n.description || '';
+
+  const link = document.createElement('a');
+  link.className = 'btn btn-primary mt-auto';
+  link.href = `/notes/${n.id}`;
+  link.textContent = 'Ver';
+
+  body.appendChild(title);
+  body.appendChild(desc);
+  body.appendChild(link);
+  card.appendChild(body);
+  col.appendChild(card);
+  return col;
+}
 </script>
 {% endblock %}
