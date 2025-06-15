@@ -16,6 +16,7 @@ COPY migrations/alembic.ini /app/migrations/alembic.ini
 # Copiar código fuente y migraciones
 COPY crunevo /app/crunevo
 COPY migrations /app/migrations
+COPY migrations/versions /app/migrations/versions
 
 # Ejecutar la aplicación con Gunicorn
 CMD ["gunicorn", "-b", "0.0.0.0:8080", "crunevo.wsgi:app"]
