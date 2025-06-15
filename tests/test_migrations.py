@@ -1,6 +1,6 @@
 from alembic.command import upgrade
 from alembic.config import Config
-from crunevo.app import create_app
+from crunevo import create_app
 
 
 def test_alembic_upgrade():
