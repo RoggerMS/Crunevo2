@@ -15,8 +15,28 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column("auth_event", sa.Column("extra", sa.Text()))
+    conn = op.get_bind()
+    result = conn.execute(
+        sa.text(
+            "SELECT column_name FROM information_schema.columns "
+            "WHERE table_name='auth_event' AND column_name='extra'"
+        )
+    )
+    exists = result.first() is not None
+
+    if not exists:
+        op.add_column("auth_event", sa.Column("extra", sa.Text()))
 
 
 def downgrade():
-    op.drop_column("auth_event", "extra")
+    conn = op.get_bind()
+    result = conn.execute(
+        sa.text(
+            "SELECT column_name FROM information_schema.columns "
+            "WHERE table_name='auth_event' AND column_name='extra'"
+        )
+    )
+    exists = result.first() is not None
+
+    if exists:
+        op.drop_column("auth_event", "extra")
