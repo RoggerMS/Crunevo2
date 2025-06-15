@@ -15,16 +15,32 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column(
-        "user",
-        sa.Column(
-            "verification_level",
-            sa.SmallInteger(),
-            nullable=False,
-            server_default="0",
-        ),
+    conn = op.get_bind()
+    result = conn.execute(
+        sa.text(
+            "SELECT column_name FROM information_schema.columns WHERE table_name='user' AND column_name='verification_level'"
+        )
     )
+    exists = result.first() is not None
+
+    if not exists:
+        op.add_column(
+            "user",
+            sa.Column("verification_level", sa.SmallInteger(), nullable=False, server_default="0")
+        )
+        op.alter_column("user", "verification_level", server_default=None)
+
 
 
 def downgrade():
-    op.drop_column("user", "verification_level")
+    conn = op.get_bind()
+    result = conn.execute(
+        sa.text(
+            "SELECT column_name FROM information_schema.columns WHERE table_name='user' AND column_name='verification_level'"
+        )
+    )
+    exists = result.first() is not None
+
+    if exists:
+        op.drop_column("user", "verification_level")
+
