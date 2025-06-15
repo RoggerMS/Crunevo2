@@ -4,7 +4,7 @@ import pytest
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from crunevo.app import create_app
+from crunevo import create_app
 from crunevo.extensions import db, mail
 from crunevo.models import User
 from crunevo.cache import feed_cache
