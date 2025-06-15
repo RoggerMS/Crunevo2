@@ -17,14 +17,23 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column(
-        "note",
-        sa.Column("comments_count", sa.Integer(), nullable=True, server_default="0"),
-    )
     conn = op.get_bind()
-    conn.execute(sa.text("UPDATE note SET comments_count = 0"))
-    if conn.dialect.name != "sqlite":
-        op.alter_column("note", "comments_count", server_default=None)
+    conn.execute("""
+    DO $$
+    BEGIN
+        IF NOT EXISTS (
+            SELECT 1
+            FROM information_schema.columns
+            WHERE table_name='note' AND column_name='comments_count'
+        ) THEN
+            ALTER TABLE note ADD COLUMN comments_count INTEGER DEFAULT 0;
+        END IF;
+    END$$;
+    """)
+    # Limpieza del default en PostgreSQL
+    if conn.dialect.name == "postgresql":
+        conn.execute("ALTER TABLE note ALTER COLUMN comments_count DROP DEFAULT;")
+
 
 
 def downgrade():
