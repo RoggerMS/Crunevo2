@@ -24,6 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('theme', next);
   });
 
+  // load feed on feed page
+  if (typeof loadFeed === 'function' && document.getElementById('feed')) {
+    loadFeed();
+  }
+
   // simple AJAX search suggestions
   const input = document.getElementById('globalSearchInput');
   const box = document.getElementById('searchSuggestions');

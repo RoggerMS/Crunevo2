@@ -13,3 +13,8 @@ def healthz():
     except Exception as e:
         current_app.logger.error("Healthz DB error: %s", e)
         return "error", 500
+
+
+@health_bp.route("/ping")
+def ping():
+    return "pong"

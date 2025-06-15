@@ -77,5 +77,4 @@ function renderMensajeCard(data) {
 }
 
 loadMore.addEventListener('click', loadFeed);
-document.addEventListener('DOMContentLoaded', loadFeed);
 
