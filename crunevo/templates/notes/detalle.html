@@ -68,7 +68,7 @@
     const btn = this.querySelector('button');
     btn.disabled = true;
     const data = new FormData(this);
-    csrfFetch('{{ url_for('notes.add_comment', note_id=note.id) }}', {
+    csrfFetch("{{ url_for('notes.add_comment', note_id=note.id) }}", {
       method: 'POST',
       body: data
     }).then(r => r.json()).then(c => {
