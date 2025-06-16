@@ -3,7 +3,7 @@
 {% import 'components/button.html' as btn %}
 {% import 'components/csrf.html' as csrf %}
 {% block content %}
-<div class="tw-max-w-md tw-mx-auto tw-my-16 card">
+<div class="tw-max-w-md tw-mx-auto tw-my-16 tw-rounded-2xl tw-shadow-sm tw-bg-white dark:tw-bg-gray-900 tw-p-4 tw-space-y-4">
   <h2>Iniciar sesión</h2>
   <form method="post" class="tw-space-y-4">
     {{ csrf.csrf_field() }}

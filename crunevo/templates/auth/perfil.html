@@ -7,15 +7,15 @@
   <p class="mt-2">{{ current_user.username }}</p>
   <p>💰 Créditos: {{ current_user.credits }}</p>
 </div>
-<form method="post">
+<form method="post" class="tw-space-y-4">
   {{ csrf.csrf_field() }}
-  <div class="mb-3">
-    <textarea class="form-control" name="about" placeholder="Sobre mí">{{ current_user.about }}</textarea>
+  <div>
+    <textarea class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none" name="about" placeholder="Sobre mí">{{ current_user.about }}</textarea>
   </div>
-  <div class="mb-3">
-    <input type="text" class="form-control" name="avatar_url" placeholder="URL del avatar" value="{{ current_user.avatar_url }}">
+  <div>
+    <input type="text" class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none" name="avatar_url" placeholder="URL del avatar" value="{{ current_user.avatar_url }}">
   </div>
-  <button class="btn btn-primary" type="submit">Guardar</button>
+  <button class="tw-rounded tw-bg-[var(--primary)] tw-text-white tw-px-4 tw-py-2 tw-transition tw-duration-200 hover:tw-bg-[var(--primary)]/80" type="submit">Guardar</button>
 </form>
 <h5>Historial de Créditos</h5>
 <ul>
