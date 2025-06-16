@@ -95,7 +95,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     collapse.addEventListener('hidden.bs.collapse', () => {
       document.body.classList.remove('tw-overflow-hidden');
-      document.getElementById('menuBackdrop')?.remove();
+    document.getElementById('menuBackdrop')?.remove();
+  });
+  }
+
+  const overlayMenu = document.getElementById('mobileOverlayMenu');
+  const toggler = document.querySelector('.navbar-toggler');
+  const closeBtn = document.getElementById('closeMobileMenu');
+
+  if (toggler && overlayMenu) {
+    toggler.addEventListener('click', () => {
+      overlayMenu.classList.remove('tw-hidden');
+      document.body.style.overflow = 'hidden';
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      overlayMenu.classList.add('tw-hidden');
+      document.body.style.overflow = 'auto';
     });
   }
 });

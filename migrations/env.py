@@ -12,9 +12,9 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-config_path = Path(config.config_file_name)
+config_path = Path(config.config_file_name.strip())
 if not config_path.is_absolute():
-    config_path = Path(__file__).resolve().parent.parent / config_path
+    config_path = Path(__file__).resolve().parent / config_path
 fileConfig(config_path)
 logger = logging.getLogger("alembic.env")
 
