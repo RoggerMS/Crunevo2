@@ -76,35 +76,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const overlay = document.getElementById('mobileMenuOverlay');
-  const panel = document.getElementById('mobileMenuPanel');
   const toggleBtn = document.getElementById('mobileMenuToggle');
   const closeBtn = document.getElementById('closeMobileMenu');
 
-  function openMenu() {
-    overlay?.classList.remove('tw-hidden');
-    panel?.classList.remove('-tw-translate-x-full');
-    document.body.style.overflow = 'hidden';
-    toggleBtn?.setAttribute('aria-expanded', 'true');
-  }
-
   function closeMenu() {
-    panel?.classList.add('-tw-translate-x-full');
+    overlay?.classList.add('tw-hidden');
     document.body.style.overflow = 'auto';
-    toggleBtn?.setAttribute('aria-expanded', 'false');
-    setTimeout(() => overlay?.classList.add('tw-hidden'), 300);
   }
 
-  toggleBtn?.addEventListener('click', openMenu);
+  toggleBtn?.addEventListener('click', () => {
+    overlay?.classList.remove('tw-hidden');
+    document.body.style.overflow = 'hidden';
+  });
+
   closeBtn?.addEventListener('click', closeMenu);
 
   overlay?.addEventListener('click', (e) => {
     if (e.target === overlay) closeMenu();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !overlay?.classList.contains('tw-hidden')) {
-      closeMenu();
-    }
   });
 
 });

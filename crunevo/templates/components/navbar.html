@@ -1,6 +1,5 @@
 <nav class="navbar navbar-dark navbar-crunevo fixed-top">
-  <div class="tw-container tw-mx-auto tw-px-4 tw-max-w-7xl d-flex align-items-center justify-content-between">
-    <button id="mobileMenuToggle" class="btn btn-link text-white tw-md:tw-hidden tw-text-2xl" type="button" aria-label="Menú" aria-controls="mobileMenuPanel" aria-expanded="false">
+    <button id="mobileMenuToggle" class="btn btn-link text-white tw-md:tw-hidden tw-text-2xl" type="button" aria-label="Menú">
       <i class="bi bi-list"></i>
     </button>
     <a class="navbar-brand" href="{{ url_for('feed.index') }}">Crunevo</a>
@@ -41,20 +40,20 @@
   </div>
 </nav>
 
-<div id="mobileMenuOverlay" class="tw-fixed tw-inset-0 tw-bg-black/60 tw-z-50 tw-hidden md:tw-hidden tw-transition-opacity" aria-hidden="true">
-  <div id="mobileMenuPanel" class="tw-fixed tw-top-0 tw-left-0 tw-h-full tw-w-64 tw-bg-white dark:tw-bg-gray-900 tw-transform -tw-translate-x-full tw-transition-transform tw-duration-300 tw-py-4 tw-px-6" role="dialog" aria-modal="true" aria-label="Menú móvil">
-    <button id="closeMobileMenu" class="tw-absolute tw-top-2 tw-right-2 tw-text-2xl" type="button" aria-label="Cerrar menú">&times;</button>
+<div id="mobileMenuOverlay" class="tw-fixed tw-inset-0 tw-bg-black/60 tw-z-50 tw-hidden md:tw-hidden">
+  <div class="tw-fixed tw-top-0 tw-left-0 tw-h-full tw-w-64 tw-bg-white tw-p-4 dark:tw-bg-gray-900">
+    <button id="closeMobileMenu" class="tw-absolute tw-top-2 tw-right-2 tw-text-2xl" type="button">✖</button>
     <ul class="tw-space-y-4 tw-mt-10">
-      <li><a href="{{ url_for('feed.index') }}" class="tw-block tw-px-2"><i class="bi bi-house-door"></i> Inicio</a></li>
-      <li><a href="{{ url_for('notes.list_notes') }}" class="tw-block tw-px-2"><i class="bi bi-journal-text"></i> Apuntes</a></li>
-      <li><a href="{{ url_for('store.store_index') }}" class="tw-block tw-px-2"><i class="bi bi-bag"></i> Tienda</a></li>
-      <li><a href="{{ url_for('chat.chat_index') }}" class="tw-block tw-px-2"><i class="bi bi-chat-dots"></i> Chat</a></li>
+      <li><a href="{{ url_for('feed.index') }}" class="tw-block"><i class="bi bi-house-door"></i> Inicio</a></li>
+      <li><a href="{{ url_for('notes.list_notes') }}" class="tw-block"><i class="bi bi-journal-text"></i> Apuntes</a></li>
+      <li><a href="{{ url_for('store.store_index') }}" class="tw-block"><i class="bi bi-bag"></i> Tienda</a></li>
+      <li><a href="{{ url_for('chat.chat_index') }}" class="tw-block"><i class="bi bi-chat-dots"></i> Chat</a></li>
       {% if current_user.is_authenticated %}
-      <li><a href="{{ url_for('auth.perfil') }}" class="tw-block tw-px-2"><i class="bi bi-person-circle"></i> Perfil</a></li>
-      <li><a href="{{ url_for('auth.logout') }}" class="tw-block tw-px-2"><i class="bi bi-box-arrow-right"></i> Salir</a></li>
+      <li><a href="{{ url_for('auth.perfil') }}" class="tw-block"><i class="bi bi-person-circle"></i> Perfil</a></li>
+      <li><a href="{{ url_for('auth.logout') }}" class="tw-block"><i class="bi bi-box-arrow-right"></i> Salir</a></li>
       {% else %}
-      <li><a href="{{ url_for('auth.login') }}" class="tw-block tw-px-2">Iniciar sesión</a></li>
-      <li><a href="{{ url_for('onboarding.register') }}" class="tw-block tw-px-2">Registrarse</a></li>
+      <li><a href="{{ url_for('auth.login') }}" class="tw-block">Iniciar sesión</a></li>
+      <li><a href="{{ url_for('onboarding.register') }}" class="tw-block">Registrarse</a></li>
       {% endif %}
     </ul>
   </div>
