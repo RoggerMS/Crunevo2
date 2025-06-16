@@ -102,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeMenu() {
     if (!overlay || !panel) return;
+    overlay.classList.add('tw-hidden');
     panel.classList.add('-tw-translate-x-full');
     document.body.style.overflow = 'auto';
     toggleBtn?.setAttribute('aria-expanded', 'false');
@@ -144,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Ensure the mobile menu doesn't stay open when resizing to desktop
   window.addEventListener('resize', () => {
-    if (window.innerWidth >= 768) {
+    if (window.innerWidth >= 992) {
       closeMenu();
     }
   });
