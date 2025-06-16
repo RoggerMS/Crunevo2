@@ -22,3 +22,6 @@
   listener de redimensionado a 992px (PR overlay fix).
 - Se establece `height` y `width` en 0 para `#mobileMenuOverlay` en
   escritorio y se asegura que `closeMenu()` añada `tw-hidden` (PR overlay fix 2).
+- Se corrige la clase inicial de `#navLinks` para mostrarse horizontal en
+  escritorio y se evita abrir el menú móvil en pantallas grandes
+  (PR navbar desktop fix).
