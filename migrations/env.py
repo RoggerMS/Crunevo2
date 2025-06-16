@@ -8,9 +8,14 @@ from alembic import context
 config = context.config
 
 # Interpret the config file for Python logging.
-config_path = Path(config.config_file_name)
-if not config_path.is_absolute():
-    config_path = Path(__file__).resolve().parent / config_path
+config_path = Path(config.config_file_name).name
+config_path = Path(__file__).resolve().parent / config_path
+
+if not config_path.exists():
+    raise FileNotFoundError(f"Logging config file not found: {config_path}")
+
+fileConfig(str(config_path))
+
 
 if not config_path.exists():
     raise FileNotFoundError(f"Logging config file not found: {config_path}")
