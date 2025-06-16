@@ -3,6 +3,14 @@
   background-color: rgba(115, 86, 255, 0.75);
   backdrop-filter: blur(6px);
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 1030;
+  min-height: 64px;
+}
+
+@media (max-width: 768px) {
+  .navbar-crunevo {
+    min-height: 56px;
+  }
 }
 
 [data-bs-theme="dark"] .navbar-crunevo {

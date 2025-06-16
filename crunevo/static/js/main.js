@@ -125,6 +125,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === overlay) closeMenu();
   });
 
+  document.addEventListener('click', (e) => {
+    if (
+      overlay &&
+      !overlay.classList.contains('tw-hidden') &&
+      panel &&
+      !panel.contains(e.target) &&
+      toggleBtn &&
+      !toggleBtn.contains(e.target)
+    ) {
+      closeMenu();
+    }
+  });
+
+  window.addEventListener('pageshow', () => {
+    closeMenu();
+  });
+
+  // Ensure the mobile menu doesn't stay open when resizing to desktop
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 768) {
+      closeMenu();
+    }
+  });
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !overlay?.classList.contains('tw-hidden')) {
       closeMenu();
