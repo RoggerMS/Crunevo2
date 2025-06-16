@@ -79,10 +79,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const panel = document.getElementById('mobileMenuPanel');
   const toggleBtn = document.getElementById('mobileMenuToggle');
   const closeBtn = document.getElementById('closeMobileMenu');
+  const navLinks = document.getElementById('navLinks');
+  const desktopContainer = document.getElementById('desktopNavContainer');
 
   function openMenu() {
     overlay?.classList.remove('tw-hidden');
     panel?.classList.remove('-tw-translate-x-full');
+    if (navLinks && panel) {
+      panel.appendChild(navLinks);
+      navLinks.classList.remove('tw-hidden');
+    }
     document.body.style.overflow = 'hidden';
     toggleBtn?.setAttribute('aria-expanded', 'true');
   }
@@ -91,6 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
     panel?.classList.add('-tw-translate-x-full');
     document.body.style.overflow = 'auto';
     toggleBtn?.setAttribute('aria-expanded', 'false');
+    if (navLinks && desktopContainer) {
+      desktopContainer.appendChild(navLinks);
+      navLinks.classList.add('tw-hidden');
+    }
     setTimeout(() => overlay?.classList.add('tw-hidden'), 300);
   }
 
