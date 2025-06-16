@@ -88,6 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (navLinks && panel) {
       panel.appendChild(navLinks);
       navLinks.classList.remove('tw-hidden');
+      navLinks.classList.add('tw-flex-col', 'tw-space-y-4');
+      navLinks.classList.remove(
+        'md:tw-flex',
+        'md:tw-flex-row',
+        'md:tw-space-x-4',
+      );
     }
     document.body.style.overflow = 'hidden';
     toggleBtn?.setAttribute('aria-expanded', 'true');
@@ -99,6 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleBtn?.setAttribute('aria-expanded', 'false');
     if (navLinks && desktopContainer) {
       desktopContainer.appendChild(navLinks);
+      navLinks.classList.remove('tw-flex-col', 'tw-space-y-4');
+      navLinks.classList.add('md:tw-flex', 'md:tw-flex-row', 'md:tw-space-x-4');
       navLinks.classList.add('tw-hidden');
     }
     setTimeout(() => overlay?.classList.add('tw-hidden'), 300);
