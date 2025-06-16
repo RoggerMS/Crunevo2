@@ -79,4 +79,23 @@ document.addEventListener('DOMContentLoaded', () => {
       if (bsCollapse) bsCollapse.hide();
     });
   });
+
+  const collapse = document.getElementById('navbarNav');
+  if (collapse) {
+    collapse.addEventListener('shown.bs.collapse', () => {
+      document.body.classList.add('tw-overflow-hidden');
+      const back = document.createElement('div');
+      back.id = 'menuBackdrop';
+      back.className = 'tw-fixed tw-inset-0 tw-bg-black/50 tw-z-[1030]';
+      back.addEventListener('click', () => {
+        const inst = bootstrap.Collapse.getInstance(collapse);
+        inst.hide();
+      });
+      document.body.appendChild(back);
+    });
+    collapse.addEventListener('hidden.bs.collapse', () => {
+      document.body.classList.remove('tw-overflow-hidden');
+      document.getElementById('menuBackdrop')?.remove();
+    });
+  }
 });

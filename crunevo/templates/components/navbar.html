@@ -5,10 +5,11 @@
       <input class="form-control" type="search" placeholder="Buscar" aria-label="Buscar" id="globalSearchInput" autocomplete="off">
       <div id="searchSuggestions" class="tw-absolute tw-left-0 tw-z-10 tw-w-full tw-bg-white dark:tw-bg-gray-800 tw-border tw-border-gray-200 dark:tw-border-gray-700 tw-rounded tw-shadow"></div>
     </form>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Menú">
       <span class="navbar-toggler-icon"></span>
     </button>
   <div class="collapse navbar-collapse" id="navbarNav">
+    <button class="btn-close btn-close-white d-lg-none ms-auto me-3" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Cerrar"></button>
     <ul class="navbar-nav mr-auto mb-2 lg:mb-0">
         <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.index') }}"><i class="bi bi-house-door"></i></a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.trending') }}"><i class="bi bi-fire"></i></a></li>
