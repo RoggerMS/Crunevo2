@@ -1,11 +1,12 @@
 {% macro button(text, href=None, type='button', variant='primary', class='') %}
-{% set base = 'tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-4 tw-py-2 tw-font-medium tw-transition-transform active:tw-scale-[0.98] focus-visible:tw-ring-2 focus-visible:tw-ring-[var(--primary)] focus-visible:tw-ring-offset-2 ' + class %}
-{% if variant == 'primary' %}
-  {% set classes = 'btn btn-primary ' + base %}
-{% elif variant == 'secondary' %}
-  {% set classes = 'btn btn-secondary ' + base %}
+{% if variant == 'secondary' %}
+  {% set classes =
+    'tw-rounded tw-bg-gray-200 dark:tw-bg-gray-700 tw-text-gray-900 dark:tw-text-gray-100 tw-px-4 tw-py-2 tw-transition tw-duration-200 hover:tw-bg-gray-300 dark:hover:tw-bg-gray-600 focus-visible:tw-ring-2 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-[var(--primary)] '
+    + class %}
 {% else %}
-  {% set classes = 'btn btn-link tw-text-[var(--primary)] ' + base %}
+  {% set classes =
+    'tw-rounded tw-bg-[var(--primary)] tw-text-white tw-px-4 tw-py-2 tw-transition tw-duration-200 hover:tw-bg-[var(--primary)]/80 focus-visible:tw-ring-2 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-[var(--primary)] '
+    + class %}
 {% endif %}
 {% if href %}
 <a href="{{ href }}" class="{{ classes }}">{{ text }}</a>
