@@ -25,3 +25,5 @@
 - Se corrige la clase inicial de `#navLinks` para mostrarse horizontal en
   escritorio y se evita abrir el menú móvil en pantallas grandes
   (PR navbar desktop fix).
+- Se establece `z-index: -1` y `position: static` para `#mobileMenuOverlay`
+  en escritorio, previniendo que bloquee el contenido (PR overlay fix 3).
