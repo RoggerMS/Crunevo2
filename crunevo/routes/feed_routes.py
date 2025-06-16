@@ -91,16 +91,21 @@ def edu_feed():
         flash("Publicación creada")
         return redirect(url_for("feed.edu_feed"))
 
-    page = request.args.get("page", 1, type=int)
-    per_page = 10
-    pagination = Note.query.order_by(Note.created_at.desc()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
-    notes = pagination.items
+    feed_items_raw = FeedItem.query.order_by(FeedItem.created_at.desc()).limit(20).all()
+    feed_items = []
+    for item in feed_items_raw:
+        if item.item_type == "apunte":
+            note = Note.query.get(item.ref_id)
+            if note:
+                feed_items.append({"type": "note", "data": note})
+        elif item.item_type == "post":
+            post = Post.query.get(item.ref_id)
+            if post:
+                feed_items.append({"type": "post", "data": post})
+
     return render_template(
         "feed/list.html",
-        notes=notes,
-        pagination=pagination,
+        feed_items=feed_items,
         note_form=note_form,
         image_form=image_form,
     )
