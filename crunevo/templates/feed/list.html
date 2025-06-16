@@ -27,21 +27,21 @@
 </div>
 
 <div id="feed" class="tw-mt-6 tw-grid tw-gap-6 md:tw-grid-cols-2">
-  {% for note in notes %}
-    {% include 'components/feed_card.html' with context %}
+  {% for item in feed_items %}
+    {% if item.type == 'note' %}
+      {% set note = item.data %}
+      {% include 'components/feed_card.html' %}
+    {% elif item.type == 'post' %}
+      {% set post = item.data %}
+      {% include 'components/post_card.html' %}
+    {% endif %}
   {% endfor %}
 </div>
 
-{% if not notes %}
+{% if not feed_items %}
   <div class="tw-text-center tw-my-10">
     <i class="bi bi-journal-text tw-text-4xl tw-text-gray-400"></i>
     <p>Aún no hay apuntes... ¿quieres ser el primero en compartir?</p>
-  </div>
-{% endif %}
-
-{% if pagination.pages > 1 %}
-  <div class="tw-text-center tw-my-4">
-    <a href="{{ url_for('feed.edu_feed', page=pagination.next_num) }}" class="btn btn-secondary" id="loadMore">Ver más</a>
   </div>
 {% endif %}
 {% endblock %}
