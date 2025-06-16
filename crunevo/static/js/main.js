@@ -10,6 +10,16 @@ function csrfFetch(url, options = {}) {
   return fetch(url, { ...options, headers });
 }
 
+function showToast(message) {
+  const box = document.querySelector('.fixed.top-20');
+  if (!box) return;
+  const div = document.createElement('div');
+  div.className = 'tw-rounded tw-bg-[var(--primary)]/10 tw-px-4 tw-py-2 tw-text-[var(--primary)] tw-shadow';
+  div.textContent = message;
+  box.appendChild(div);
+  setTimeout(() => div.remove(), 3000);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // theme persistence
   const saved = localStorage.getItem('theme');
