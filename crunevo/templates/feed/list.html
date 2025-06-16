@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+
+{% block content %}
+<div class="card tw-space-y-4">
+  <input type="text" class="form-control" placeholder="¿Qué deseas compartir hoy?" readonly>
+  <div class="tw-flex tw-gap-2">
+    <button id="toggleNote" type="button" class="btn btn-outline-primary btn-sm">Subir Apunte</button>
+    <button id="toggleImage" type="button" class="btn btn-outline-secondary btn-sm">Compartir Imagen</button>
+  </div>
+  <form id="noteForm" method="post" enctype="multipart/form-data" class="tw-space-y-2 tw-hidden">
+    {{ csrf.csrf_field() }}
+    <input type="hidden" name="form_type" value="note">
+    <input type="text" name="title" class="form-control" placeholder="Título" required>
+    <textarea name="summary" class="form-control" placeholder="Resumen"></textarea>
+    <input type="text" name="tags" class="form-control" placeholder="Etiquetas">
+    <input type="file" name="file" class="form-control">
+    <button type="submit" class="btn btn-primary">Publicar</button>
+  </form>
+  <form id="imageForm" method="post" enctype="multipart/form-data" class="tw-space-y-2 tw-hidden">
+    {{ csrf.csrf_field() }}
+    <input type="hidden" name="form_type" value="image">
+    <input type="text" name="title" class="form-control" placeholder="Descripción">
+    <input type="file" name="image" class="form-control">
+    <button type="submit" class="btn btn-primary">Compartir</button>
+  </form>
+</div>
+
+<div id="feed" class="tw-mt-6 tw-grid tw-gap-6 md:tw-grid-cols-2">
+  {% for note in notes %}
+    {% include 'components/feed_card.html' with context %}
+  {% endfor %}
+</div>
+
+{% if not notes %}
+  <div class="tw-text-center tw-my-10">
+    <i class="bi bi-journal-text tw-text-4xl tw-text-gray-400"></i>
+    <p>Aún no hay apuntes... ¿quieres ser el primero en compartir?</p>
+  </div>
+{% endif %}
+
+{% if pagination.pages > 1 %}
+  <div class="tw-text-center tw-my-4">
+    <a href="{{ url_for('feed.edu_feed', page=pagination.next_num) }}" class="btn btn-secondary" id="loadMore">Ver más</a>
+  </div>
+{% endif %}
+{% endblock %}
