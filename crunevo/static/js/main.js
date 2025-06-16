@@ -39,6 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
     loadFeed();
   }
 
+  if (typeof initFeedToggle === 'function') {
+    initFeedToggle();
+  }
+
   // simple AJAX search suggestions
   const input = document.getElementById('globalSearchInput');
   const box = document.getElementById('searchSuggestions');
