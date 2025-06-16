@@ -24,7 +24,7 @@
 </div>
 <script>
 document.getElementById('noteSearch').addEventListener('input', function(e){
-  fetch('{{ url_for('notes.search_notes') }}?q=' + encodeURIComponent(e.target.value))
+  fetch("{{ url_for('notes.search_notes') }}?q=" + encodeURIComponent(e.target.value))
     .then(r => r.json())
     .then(data => {
       const list = document.getElementById('notesList');

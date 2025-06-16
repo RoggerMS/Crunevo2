@@ -8,10 +8,6 @@
     <button class="navbar-toggler" type="button" aria-label="Menú">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div
-      id="mobileOverlayMenu"
-      class="tw-fixed tw-inset-0 tw-bg-[rgba(0,0,0,0.8)] tw-z-[1030] tw-hidden lg:tw-hidden tw-flex tw-flex-col tw-items-center tw-justify-center tw-space-y-6"
-    >
       <a href="{{ url_for('feed.index') }}" class="tw-text-white tw-text-2xl"><i class="bi bi-house-door"></i> Inicio</a>
       <a href="{{ url_for('notes.list_notes') }}" class="tw-text-white tw-text-2xl"><i class="bi bi-journal-text"></i> Apuntes</a>
       <a href="{{ url_for('store.store_index') }}" class="tw-text-white tw-text-2xl"><i class="bi bi-bag"></i> Tienda</a>
