@@ -82,7 +82,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const navLinks = document.getElementById('navLinks');
   const desktopContainer = document.getElementById('desktopNavContainer');
 
+  window.addEventListener('load', () => {
+    if (window.innerWidth >= 992 && navLinks) {
+      navLinks.classList.remove('tw-flex-col', 'tw-space-y-4');
+      navLinks.classList.add('md:tw-flex', 'md:tw-flex-row', 'md:tw-space-x-4');
+      navLinks.classList.remove('tw-hidden');
+      desktopContainer?.appendChild(navLinks);
+    }
+  });
+
   function openMenu() {
+    if (window.innerWidth >= 992) return;
     if (!overlay || !panel) return;
     overlay.classList.remove('tw-hidden');
     panel.classList.remove('-tw-translate-x-full');

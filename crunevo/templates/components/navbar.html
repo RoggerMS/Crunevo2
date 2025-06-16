@@ -11,7 +11,7 @@
       <div id="searchSuggestions" class="tw-absolute tw-left-0 tw-z-10 tw-w-full tw-bg-white dark:tw-bg-gray-800 tw-border tw-border-gray-200 dark:tw-border-gray-700 tw-rounded tw-shadow"></div>
     </form>
     <div id="desktopNavContainer" class="d-none d-md-flex align-items-center">
-      <ul id="navLinks" class="navbar-nav tw-flex tw-flex-col tw-space-y-4 md:tw-flex-row md:tw-space-y-0 md:tw-space-x-4 align-items-center tw-hidden md:tw-flex">
+      <ul id="navLinks" class="navbar-nav d-none d-md-flex align-items-center md:tw-flex md:tw-flex-row md:tw-space-x-4">
   <li class="nav-item"><a class="nav-link tw-flex tw-items-center" href="{{ url_for('feed.index') }}"><i class="bi bi-house-door"></i><span class="ms-2 md:tw-hidden">Inicio</span></a></li>
   <li class="nav-item"><a class="nav-link tw-flex tw-items-center" href="{{ url_for('feed.trending') }}"><i class="bi bi-fire"></i><span class="ms-2 md:tw-hidden">Tendencias</span></a></li>
   <li class="nav-item"><a class="nav-link tw-flex tw-items-center" href="{{ url_for('notes.list_notes') }}"><i class="bi bi-journal-text"></i><span class="ms-2 md:tw-hidden">Apuntes</span></a></li>
