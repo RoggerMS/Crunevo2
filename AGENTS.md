@@ -12,3 +12,5 @@
 - Se ajustó el padding global mediante CSS en el body y se agregó z-index al navbar para evitar que tape el contenido.
 - Se mejoró el cierre del menú móvil y se fijó la altura del navbar (PR navbar fixes 2).
 - Se cierra el menú móvil al redimensionar la pantalla (PR navbar fixes 3).
+- Se movió el padding-top global al archivo style.css y se eliminó el bloque de
+  estilos embebidos en base.html (PR navbar fixes 4).
