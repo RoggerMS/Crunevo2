@@ -8,3 +8,4 @@
 - All `<form method="post">` must import `components/csrf.html` and call
   `csrf_field()` immediately after the `<form>` tag.
 - Nunca hacer CREATE TYPE sin comprobar si el tipo ya existe; usa IF NOT EXISTS o checkfirst=True.
+- Se corrigió la barra de navegación fija añadiendo padding global y mejorando el menú móvil (PR navbar fixes).

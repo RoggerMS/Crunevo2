@@ -83,8 +83,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const desktopContainer = document.getElementById('desktopNavContainer');
 
   function openMenu() {
-    overlay?.classList.remove('tw-hidden');
-    panel?.classList.remove('-tw-translate-x-full');
+    if (!overlay || !panel) return;
+    overlay.classList.remove('tw-hidden');
+    panel.classList.remove('-tw-translate-x-full');
     if (navLinks && panel) {
       panel.appendChild(navLinks);
       navLinks.classList.remove('tw-hidden');
@@ -100,7 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function closeMenu() {
-    panel?.classList.add('-tw-translate-x-full');
+    if (!overlay || !panel) return;
+    panel.classList.add('-tw-translate-x-full');
     document.body.style.overflow = 'auto';
     toggleBtn?.setAttribute('aria-expanded', 'false');
     if (navLinks && desktopContainer) {
@@ -109,7 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
       navLinks.classList.add('md:tw-flex', 'md:tw-flex-row', 'md:tw-space-x-4');
       navLinks.classList.add('tw-hidden');
     }
-    setTimeout(() => overlay?.classList.add('tw-hidden'), 300);
+    const onEnd = () => {
+      overlay.classList.add('tw-hidden');
+      panel.removeEventListener('transitionend', onEnd);
+    };
+    panel.addEventListener('transitionend', onEnd);
   }
 
   toggleBtn?.addEventListener('click', openMenu);
