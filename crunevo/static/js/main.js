@@ -83,11 +83,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const desktopContainer = document.getElementById('desktopNavContainer');
 
   window.addEventListener('load', () => {
-    if (window.innerWidth >= 992 && navLinks) {
-      navLinks.classList.remove('tw-flex-col', 'tw-space-y-4');
-      navLinks.classList.add('md:tw-flex', 'md:tw-flex-row', 'md:tw-space-x-4');
-      navLinks.classList.remove('tw-hidden');
-      desktopContainer?.appendChild(navLinks);
+    if (window.innerWidth >= 992 && navLinks && desktopContainer) {
+      desktopContainer.appendChild(navLinks);
+      navLinks.classList.remove('tw-flex-col', 'tw-space-y-4', 'tw-hidden');
+      navLinks.classList.add('tw-flex', 'tw-flex-row', 'tw-space-x-4');
     }
   });
 

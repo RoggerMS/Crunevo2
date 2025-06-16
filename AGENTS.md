@@ -27,3 +27,5 @@
   (PR navbar desktop fix).
 - Se establece `z-index: -1` y `position: static` para `#mobileMenuOverlay`
   en escritorio, previniendo que bloquee el contenido (PR overlay fix 3).
+- Se asegura que `#navLinks` se coloque en `#desktopNavContainer` al cargar la
+  página y se oculta `#mobileMenuPanel` en escritorio (PR navbar panel fix).
