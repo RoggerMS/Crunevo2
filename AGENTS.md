@@ -14,3 +14,7 @@
 - Se cierra el menú móvil al redimensionar la pantalla (PR navbar fixes 3).
 - Se movió el padding-top global al archivo style.css y se eliminó el bloque de
   estilos embebidos en base.html (PR navbar fixes 4).
+- Se ajustó el `main` con padding-top en móviles y se quitó en pantallas
+  mayores (PR navbar fixes 5).
+- Se agregó margen superior al `main` solo en escritorio con CSS
+  (`@media (min-width: 992px)`)

@@ -16,6 +16,21 @@ body {
   body {
     padding-top: 56px;
   }
+  main {
+    padding-top: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  main {
+    padding-top: 0;
+  }
+}
+
+@media (min-width: 992px) {
+  main {
+    margin-top: 64px;
+  }
 }
 
 .sidebar {
