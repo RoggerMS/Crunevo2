@@ -71,40 +71,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // close mobile menu when a link is clicked
-  document.querySelectorAll('.navbar-crunevo .navbar-nav .nav-link').forEach((el) => {
-    el.addEventListener('click', () => {
-      const collapse = document.getElementById('navbarNav');
-      const bsCollapse = bootstrap.Collapse.getInstance(collapse);
-      if (bsCollapse) bsCollapse.hide();
-    });
-  });
-
-  const collapse = document.getElementById('navbarNav');
-  if (collapse) {
-    collapse.addEventListener('shown.bs.collapse', () => {
-      document.body.classList.add('tw-overflow-hidden');
-      const back = document.createElement('div');
-      back.id = 'menuBackdrop';
-      back.className = 'tw-fixed tw-inset-0 tw-bg-black/50 tw-z-[1030]';
-      back.addEventListener('click', () => {
-        const inst = bootstrap.Collapse.getInstance(collapse);
-        inst.hide();
-      });
-      document.body.appendChild(back);
-    });
-    collapse.addEventListener('hidden.bs.collapse', () => {
-      document.body.classList.remove('tw-overflow-hidden');
-    document.getElementById('menuBackdrop')?.remove();
-  });
-  }
-
   const overlayMenu = document.getElementById('mobileOverlayMenu');
-  const toggler = document.querySelector('.navbar-toggler');
+  const openBtn = document.getElementById('openMobileMenu');
   const closeBtn = document.getElementById('closeMobileMenu');
 
-  if (toggler && overlayMenu) {
-    toggler.addEventListener('click', () => {
+  if (openBtn && overlayMenu) {
+    openBtn.addEventListener('click', () => {
       overlayMenu.classList.remove('tw-hidden');
       document.body.style.overflow = 'hidden';
     });
@@ -116,4 +88,5 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.style.overflow = 'auto';
     });
   }
+
 });
