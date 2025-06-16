@@ -14,27 +14,29 @@
       <span class="badge bg-secondary ms-auto"><i class="bi bi-eye"></i> {{ note.views }}</span>
     </div>
     <h3>{{ note.title }}</h3>
-    <p>{{ note.description }}</p>
+    <p>{{ note.description or '' }}</p>
     <div class="mb-2">
       {% if note.category %}<span class="badge bg-info text-dark me-1">{{ note.category }}</span>{% endif %}
-      {% for tag in note.tags.split(',') if note.tags %}
+      {% for tag in (note.tags or '').split(',') %}
       <span class="badge bg-secondary me-1">{{ tag }}</span>
       {% endfor %}
     </div>
       {{ btn.button('Descargar', href=url_for('notes.download_note', note_id=note.id), class='mb-3') }}
-      <form action="{{ url_for('notes.share_note', note_id=note.id) }}" method="post" style="display:inline;">
+      <form id="shareForm" action="{{ url_for('notes.share_note', note_id=note.id) }}" method="post" style="display:inline;">
         {{ csrf.csrf_field() }}
         <button class="btn btn-outline-primary btn-sm" type="submit">🔗 Compartir</button>
       </form>
       {% if current_user.id != note.author.id %}
-      <form method="post" action="{{ url_for('notes.like_note', note_id=note.id) }}" style="display:inline;">
+      <form id="likeForm" method="post" action="{{ url_for('notes.like_note', note_id=note.id) }}" style="display:inline;">
         {{ csrf.csrf_field() }}
-        <button class="btn btn-outline-success btn-sm">👍 Me gusta</button>
+        <button class="btn btn-outline-success btn-sm" type="submit">👍 Me gusta</button>
       </form>
       {% endif %}
-      <p><strong>Likes:</strong> {{ note.likes }}</p>
+      <p><strong>Likes:</strong> <span id="likeCount">{{ note.likes }}</span></p>
     <div class="ratio ratio-16x9 mb-4">
-      <iframe src="/{{ note.filename }}" frameborder="0"></iframe>
+      <object data="/{{ note.filename or '' }}" type="application/pdf" width="100%" height="100%">
+        {{ note.filename }}
+      </object>
     </div>
     <h5 class="mb-3">Comentarios</h5>
     <div id="comments">
@@ -59,8 +61,12 @@
     </form>
 </article>
 <script>
+
+
   document.getElementById('commentForm').addEventListener('submit', function(e){
     e.preventDefault();
+    const btn = this.querySelector('button');
+    btn.disabled = true;
     const data = new FormData(this);
     csrfFetch('{{ url_for('notes.add_comment', note_id=note.id) }}', {
       method: 'POST',
@@ -71,7 +77,27 @@
       div.innerHTML = `<img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar"><div><div class=\"small text-muted\">${c.author} • ${c.timestamp}</div><div>${c.body}</div></div>`;
       document.getElementById('comments').prepend(div);
       e.target.reset();
-    });
+      showToast('Comentario agregado');
+    }).finally(() => { btn.disabled = false; });
+  });
+
+  document.getElementById('likeForm')?.addEventListener('submit', function(e){
+    e.preventDefault();
+    const btn = this.querySelector('button');
+    btn.disabled = true;
+    csrfFetch(this.action, {method:'POST'}).then(r => r.json()).then(data => {
+      document.getElementById('likeCount').textContent = data.likes;
+      showToast('¡Gracias por tu voto!');
+    }).finally(() => { btn.disabled = false; });
+  });
+
+  document.getElementById('shareForm')?.addEventListener('submit', function(e){
+    e.preventDefault();
+    const btn = this.querySelector('button');
+    btn.disabled = true;
+    csrfFetch(this.action, {method:'POST'}).then(() => {
+      showToast('Gracias por compartir');
+    }).finally(() => { btn.disabled = false; });
   });
 </script>
 {% endblock %}
