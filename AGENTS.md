@@ -29,3 +29,6 @@
   en escritorio, previniendo que bloquee el contenido (PR overlay fix 3).
 - Se asegura que `#navLinks` se coloque en `#desktopNavContainer` al cargar la
   página y se oculta `#mobileMenuPanel` en escritorio (PR navbar panel fix).
+- Se fuerzan `display: none` y `pointer-events: none` para `#mobileMenuOverlay`
+  y `#mobileMenuPanel` en escritorio, actualizando `main.js` para aplicar estos
+  estilos al cargar la página y al cerrar el menú (PR overlay hide complete).

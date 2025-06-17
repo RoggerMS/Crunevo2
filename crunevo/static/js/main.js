@@ -87,6 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
       desktopContainer.appendChild(navLinks);
       navLinks.classList.remove('tw-flex-col', 'tw-space-y-4', 'tw-hidden');
       navLinks.classList.add('tw-flex', 'tw-flex-row', 'tw-space-x-4');
+      panel?.classList.add('tw-hidden');
+      overlay?.classList.add('tw-hidden');
+      overlay?.setAttribute('style', 'display: none; pointer-events: none;');
+      panel?.setAttribute('style', 'display: none; pointer-events: none;');
     }
   });
 
@@ -95,6 +99,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!overlay || !panel) return;
     overlay.classList.remove('tw-hidden');
     panel.classList.remove('-tw-translate-x-full');
+    overlay.style.display = 'block';
+    overlay.style.pointerEvents = 'auto';
+    panel.style.display = 'block';
+    panel.style.pointerEvents = 'auto';
     if (navLinks && panel) {
       panel.appendChild(navLinks);
       navLinks.classList.remove('tw-hidden');
@@ -113,6 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!overlay || !panel) return;
     overlay.classList.add('tw-hidden');
     panel.classList.add('-tw-translate-x-full');
+    overlay.style.display = 'none';
+    overlay.style.pointerEvents = 'none';
+    panel.style.display = 'none';
+    panel.style.pointerEvents = 'none';
     document.body.style.overflow = 'auto';
     toggleBtn?.setAttribute('aria-expanded', 'false');
     if (navLinks && desktopContainer) {
