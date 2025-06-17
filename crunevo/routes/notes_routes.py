@@ -68,12 +68,15 @@ def upload_note():
             if cloud_url:
                 filename = secure_filename(f.filename)
                 public_id = os.path.splitext(filename)[0]
-                result = cloudinary.uploader.upload(
+                _ = cloudinary.uploader.upload(
                     f,
                     resource_type="auto",
                     public_id=f"notes/{public_id}",
                 )
-                filepath = result["secure_url"]
+                url, _ = cloudinary.utils.cloudinary_url(
+                    f"notes/{public_id}.pdf", resource_type="raw", secure=True
+                )
+                filepath = url
             else:
                 filename = secure_filename(f.filename)
                 upload_folder = current_app.config["UPLOAD_FOLDER"]

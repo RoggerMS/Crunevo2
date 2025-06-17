@@ -43,3 +43,5 @@
 - Updated notes detail template to embed PDFs with an `<iframe>` wrapped in `.ratio`, added fallback download link and removed duplicate buttons (PR pdf-viewer-fix).
 
 - Confirmed notes upload uses `resource_type='auto'` for Cloudinary; recommended verifying URL uses '/raw/upload' (answer to resource_type question).
+- Forced Cloudinary URLs for notes to use `resource_type='raw'` when generating
+  `secure_url` (PR notes-raw-url).
