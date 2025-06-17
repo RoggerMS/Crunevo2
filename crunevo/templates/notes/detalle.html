@@ -21,7 +21,7 @@
       <span class="badge bg-secondary me-1">{{ tag }}</span>
       {% endfor %}
     </div>
-      {{ btn.button('Descargar', href=url_for('notes.download_note', note_id=note.id), class='mb-3') }}
+      <a class="btn btn-primary mb-3" href="{{ note.filename }}" target="_blank">Descargar</a>
       <form id="shareForm" action="{{ url_for('notes.share_note', note_id=note.id) }}" method="post" style="display:inline;">
         {{ csrf.csrf_field() }}
         <button class="btn btn-outline-primary btn-sm" type="submit">🔗 Compartir</button>
@@ -34,9 +34,7 @@
       {% endif %}
       <p><strong>Likes:</strong> <span id="likeCount">{{ note.likes }}</span></p>
     <div class="ratio ratio-16x9 mb-4">
-      <object data="{{ note.filename }}" type="application/pdf" width="100%" height="100%">
-        <a href="{{ note.filename }}" target="_blank">Descargar</a>
-      </object>
+      <iframe src="{{ note.filename }}" width="100%" height="500px" frameborder="0"></iframe>
     </div>
     <h5 class="mb-3">Comentarios</h5>
     <div id="comments">

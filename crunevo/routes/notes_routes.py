@@ -62,10 +62,7 @@ def upload_note():
             filename = secure_filename(f.filename)
             public_id = os.path.splitext(filename)[0]
             result = cloudinary.uploader.upload(
-                f,
-                resource_type="raw",
-                public_id=f"notes/{public_id}.pdf",
-                format="pdf",
+                f, resource_type="auto", public_id=f"notes/{public_id}"
             )
             filepath = result["secure_url"]
         else:

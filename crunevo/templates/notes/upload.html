@@ -13,7 +13,9 @@
     </div>
     {{ forms.input('tags', placeholder='Etiquetas') }}
     {{ forms.input('category', placeholder='Categoría') }}
-    {{ forms.input('file', type='file') }}
+    <div class="tw-space-y-1">
+      <input name="file" type="file" accept="application/pdf" required class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none" />
+    </div>
     {{ btn.button('Subir', type='submit') }}
   </form>
 </div>
