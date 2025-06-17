@@ -1,49 +1,38 @@
-<nav class="navbar navbar-dark navbar-crunevo fixed-top" role="navigation" aria-label="Navegaci\u00f3n principal">
-  <div class="tw-container tw-mx-auto tw-px-4 tw-max-w-7xl d-flex justify-content-between align-items-center">
-    <div class="d-flex align-items-center">
-      <button id="mobileMenuToggle" class="btn btn-link text-white tw-md:tw-hidden tw-text-2xl" type="button" aria-label="Menú" aria-controls="mobileMenuPanel" aria-expanded="false">
-        <i class="bi bi-list"></i>
-      </button>
-      <a class="navbar-brand ms-2" href="{{ url_for('feed.index') }}">Crunevo</a>
-    </div>
-    <form class="d-none d-md-flex mx-4 flex-grow-1 position-relative" id="globalSearchForm">
+<nav class="navbar navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCrunevo" aria-controls="navbarCrunevo" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand ms-2" href="{{ url_for('feed.index') }}">Crunevo</a>
+    <form class="d-none d-md-flex mx-3 flex-grow-1 position-relative" id="globalSearchForm">
       <input class="form-control" type="search" placeholder="Buscar" aria-label="Buscar" id="globalSearchInput" autocomplete="off">
-      <div id="searchSuggestions" class="tw-absolute tw-left-0 tw-z-10 tw-w-full tw-bg-white dark:tw-bg-gray-800 tw-border tw-border-gray-200 dark:tw-border-gray-700 tw-rounded tw-shadow"></div>
+      <div id="searchSuggestions" class="position-absolute start-0 w-100 bg-white border rounded shadow"></div>
     </form>
-    <div id="desktopNavContainer" class="d-none d-md-flex align-items-center">
-      <ul id="navLinks" class="navbar-nav d-none d-md-flex align-items-center tw-flex-row tw-space-x-4">
-  <li class="nav-item"><a class="nav-link tw-flex tw-items-center" href="{{ url_for('feed.index') }}"><i class="bi bi-house-door"></i><span class="ms-2 md:tw-hidden">Inicio</span></a></li>
-  <li class="nav-item"><a class="nav-link tw-flex tw-items-center" href="{{ url_for('feed.trending') }}"><i class="bi bi-fire"></i><span class="ms-2 md:tw-hidden">Tendencias</span></a></li>
-  <li class="nav-item"><a class="nav-link tw-flex tw-items-center" href="{{ url_for('notes.list_notes') }}"><i class="bi bi-journal-text"></i><span class="ms-2 md:tw-hidden">Apuntes</span></a></li>
-  <li class="nav-item"><a class="nav-link tw-flex tw-items-center" href="{{ url_for('store.store_index') }}"><i class="bi bi-bag"></i><span class="ms-2 md:tw-hidden">Tienda</span></a></li>
-  <li class="nav-item"><a class="nav-link tw-flex tw-items-center" href="{{ url_for('chat.chat_index') }}"><i class="bi bi-chat-dots"></i><span class="ms-2 md:tw-hidden">Chat</span></a></li>
-  {% if current_user.is_authenticated and current_user.role == 'admin' %}
-  <li class="nav-item"><a class="nav-link tw-flex tw-items-center" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2"></i><span class="ms-2 md:tw-hidden">Admin</span></a></li>
-  {% endif %}
-  {% if current_user.is_authenticated %}
-  <li class="nav-item"><a class="nav-link tw-flex tw-items-center" href="{{ url_for('auth.perfil') }}"><i class="bi bi-person-circle"></i><span class="ms-2 md:tw-hidden">Perfil</span></a></li>
-  <li class="nav-item"><a class="nav-link tw-flex tw-items-center" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i><span class="ms-2 md:tw-hidden">Salir</span></a></li>
-  {% else %}
-  <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Iniciar sesión</a></li>
-  <li class="nav-item"><a class="nav-link" href="{{ url_for('onboarding.register') }}">Registrarse</a></li>
-  {% endif %}
-  {% if current_user.is_authenticated %}
-  <li class="nav-item text-white mx-2"><i class="bi bi-coin"></i> {{ current_user.credits }}</li>
-  {% if current_user.verification_level >= 2 %}
-  {% include 'components/edu_badge.html' %}
-  {% endif %}
-  {% endif %}
-  <li class="nav-item">
-    <button id="themeToggle" class="btn btn-sm btn-secondary ml-2 focus-visible:tw-ring-2 focus-visible:tw-ring-[var(--primary)] focus-visible:tw-ring-offset-2" type="button"><i class="bi bi-moon"></i><span class="ms-2 md:tw-hidden">Tema</span></button>
-  </li>
+    <div class="collapse navbar-collapse" id="navbarCrunevo">
+      <ul class="navbar-nav ms-auto d-flex flex-column flex-md-row align-items-center gap-2">
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('feed.index') }}">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('feed.trending') }}">Tendencias</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('notes.list_notes') }}">Apuntes</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('store.store_index') }}">Tienda</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('chat.chat_index') }}">Chat</a></li>
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('admin.dashboard') }}">Admin</a></li>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('auth.perfil') }}">Perfil</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('auth.logout') }}">Salir</a></li>
+        <li class="nav-item text-white mx-2"><i class="bi bi-coin"></i> {{ current_user.credits }}</li>
+        {% if current_user.verification_level >= 2 %}
+          {% include 'components/edu_badge.html' %}
+        {% endif %}
+        {% else %}
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('auth.login') }}">Iniciar sesión</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('onboarding.register') }}">Registrarse</a></li>
+        {% endif %}
+        <li class="nav-item">
+          <button id="themeToggle" class="btn btn-sm btn-secondary" type="button"><i class="bi bi-moon"></i></button>
+        </li>
       </ul>
     </div>
   </div>
 </nav>
-
-<div id="mobileMenuOverlay" class="tw-fixed tw-inset-0 tw-bg-black/60 tw-z-50 tw-hidden md:tw-hidden tw-transition-opacity" aria-hidden="true">
-  <div id="mobileMenuPanel" class="tw-fixed tw-top-0 tw-left-0 tw-h-full tw-w-64 tw-bg-white dark:tw-bg-gray-900 tw-transform -tw-translate-x-full tw-transition-transform tw-duration-300 tw-py-4 tw-px-6" role="dialog" aria-modal="true" aria-label="Menú móvil">
-    <button id="closeMobileMenu" class="tw-absolute tw-top-2 tw-right-2 tw-text-2xl" type="button" aria-label="Cerrar menú">&times;</button>
-  </div>
-</div>
-

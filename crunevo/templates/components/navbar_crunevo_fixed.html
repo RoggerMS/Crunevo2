@@ -33,22 +33,3 @@
     </ul>
   </div>
 </nav>
-
-<!-- overlay only for mobile -->
-<div id="mobileMenuOverlay" class="d-md-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-none z-50">
-  <div id="mobileMenuPanel" class="bg-white p-4 h-100 w-75 position-absolute">
-    <button id="closeMobileMenu" class="btn-close float-end" type="button" aria-label="Cerrar menú"></button>
-    <ul class="mt-5 list-unstyled">
-      <li><a href="{{ url_for('feed.index') }}" class="d-block py-2"><i class="bi bi-house-door"></i> Inicio</a></li>
-      <li><a href="{{ url_for('notes.list_notes') }}" class="d-block py-2"><i class="bi bi-journal-text"></i> Apuntes</a></li>
-      <li><a href="{{ url_for('store.store_index') }}" class="d-block py-2"><i class="bi bi-bag"></i> Tienda</a></li>
-      <li><a href="{{ url_for('chat.chat_index') }}" class="d-block py-2"><i class="bi bi-chat-dots"></i> Chat</a></li>
-      {% if current_user.is_authenticated %}
-      <li><a href="{{ url_for('auth.logout') }}" class="d-block py-2">Salir</a></li>
-      {% else %}
-      <li><a href="{{ url_for('auth.login') }}" class="d-block py-2">Iniciar sesión</a></li>
-      <li><a href="{{ url_for('onboarding.register') }}" class="d-block py-2">Registrarse</a></li>
-      {% endif %}
-    </ul>
-  </div>
-</div>
