@@ -1,22 +1,41 @@
 {% extends 'base.html' %}
-{% import 'components/input.html' as forms %}
-{% import 'components/button.html' as btn %}
 {% import 'components/csrf.html' as csrf %}
 {% block content %}
-<div class="tw-max-w-lg tw-mx-auto tw-my-16 tw-rounded-2xl tw-shadow-sm tw-bg-white dark:tw-bg-gray-900 tw-p-4 tw-space-y-4">
-  <h2>Subir Apunte</h2>
-  <form method="post" enctype="multipart/form-data" class="tw-space-y-4">
-    {{ csrf.csrf_field() }}
-    {{ forms.input('title', placeholder='Título') }}
-    <div>
-      <textarea name="description" class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none" placeholder="Descripción"></textarea>
+<div class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h3 class="mb-4">📄 Subir nuevo apunte</h3>
+      <form method="post" enctype="multipart/form-data">
+        {{ csrf.csrf_field() }}
+
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="title" name="title" placeholder="Título" required>
+          <label for="title">Título</label>
+        </div>
+
+        <div class="form-floating mb-3">
+          <textarea class="form-control" placeholder="Descripción" id="description" name="description" style="height: 100px;"></textarea>
+          <label for="description">Descripción</label>
+        </div>
+
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="tags" name="tags" placeholder="Etiquetas (separadas por coma)">
+          <label for="tags">Etiquetas (ej. mate, física)</label>
+        </div>
+
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="category" name="category" placeholder="Categoría">
+          <label for="category">Categoría</label>
+        </div>
+
+        <div class="mb-3">
+          <label for="file" class="form-label">Archivo PDF</label>
+          <input class="form-control" type="file" id="file" name="file" accept="application/pdf" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Subir apunte</button>
+      </form>
     </div>
-    {{ forms.input('tags', placeholder='Etiquetas') }}
-    {{ forms.input('category', placeholder='Categoría') }}
-    <div class="tw-space-y-1">
-      <input name="file" type="file" accept="application/pdf" required class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none" />
-    </div>
-    {{ btn.button('Subir', type='submit') }}
-  </form>
+  </div>
 </div>
 {% endblock %}
