@@ -39,4 +39,5 @@
 - Fixed PDF upload to Cloudinary storing URL and adjusted templates (PR pdf-upload-fix).
 - Restored Cloudinary upload logic in `notes_routes.py` to fix undefined variable error (PR notes-upload-fix).
 - Improved PDF handling in notes: use `resource_type='auto'`, display inline with `<iframe>` and direct download link (PR notes-pdf-view).
+- Enhanced notes upload error handling and download route: validate title, catch Cloudinary errors and serve local files with `send_file` (PR notes-error-handling).
 
