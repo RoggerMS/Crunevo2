@@ -60,6 +60,11 @@ class Config:
 
     TALISMAN_CSP = {
         "default-src": ["'self'", "https://cdn.jsdelivr.net"],
+        "img-src": ["'self'", "data:", "https://res.cloudinary.com"],
+        "style-src": ["'self'", "'unsafe-inline'"],
+        "script-src": ["'self'", "'unsafe-inline'"],
+        "connect-src": "'self'",
+        "frame-src": ["'self'", "https://res.cloudinary.com"],
     }
 
     RATELIMIT_STORAGE_URI = os.getenv(
