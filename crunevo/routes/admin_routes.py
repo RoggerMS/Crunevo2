@@ -8,29 +8,59 @@ from flask import (
     request,
     current_app,
 )
-from crunevo.utils.helpers import activated_required
+from flask_login import login_required
+from crunevo.utils.helpers import activated_required, admin_required
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
-from crunevo.models import User, Product, Report
+from datetime import datetime
+from crunevo.models import User, Product, Report, Note, Credit
 from crunevo.utils.ranking import calculate_weekly_ranking
-from crunevo.utils.helpers import admin_required
 from crunevo.utils.audit import record_auth_event
 import cloudinary.uploader
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 
+@admin_bp.before_request
+@login_required
+@admin_required
+def before_admin():
+    pass
+
+
 @admin_bp.route("/")
 @activated_required
-@admin_required
 def dashboard():
-    user_count = User.query.count()
-    return render_template("admin/dashboard.html", user_count=user_count)
+    stats = {
+        "users_total": User.query.count(),
+        "notes_today": Note.query.filter(
+            Note.created_at >= datetime.utcnow().date()
+        ).count(),
+        "credits_today": db.session.query(db.func.sum(Credit.amount))
+        .filter(Credit.timestamp >= datetime.utcnow().date())
+        .scalar()
+        or 0,
+    }
+
+    uploads_chart_data = {
+        "labels": [],
+        "datasets": [
+            {
+                "label": "Subidas",
+                "data": [],
+                "borderColor": "#7b3aed",
+            }
+        ],
+    }
+    return render_template(
+        "admin/dashboard.html",
+        stats=stats,
+        uploads_chart_data=uploads_chart_data,
+    )
 
 
 @admin_bp.route("/users")
 @activated_required
-@admin_required
 def manage_users():
     users = User.query.all()
     return render_template("admin/manage_users.html", users=users)
@@ -38,7 +68,6 @@ def manage_users():
 
 @admin_bp.route("/store", methods=["GET", "POST"])
 @activated_required
-@admin_required
 def manage_store():
     products = Product.query.all()
     return render_template("admin/manage_store.html", products=products)
@@ -46,7 +75,6 @@ def manage_store():
 
 @admin_bp.route("/products/new", methods=["GET", "POST"])
 @activated_required
-@admin_required
 def add_product():
     if request.method == "POST":
         name = request.form["name"]
@@ -83,7 +111,6 @@ def add_product():
 
 @admin_bp.route("/reports")
 @activated_required
-@admin_required
 def manage_reports():
     reports = Report.query.all()
     return render_template("admin/manage_reports.html", reports=reports)
@@ -91,7 +118,6 @@ def manage_reports():
 
 @admin_bp.route("/run-ranking")
 @activated_required
-@admin_required
 def run_ranking():
     calculate_weekly_ranking()
     flash("Ranking recalculado")
@@ -100,7 +126,6 @@ def run_ranking():
 
 @admin_bp.route("/verificaciones")
 @activated_required
-@admin_required
 def verifications():
     users = User.query.filter_by(verification_level=0).all()
     return render_template("admin/verifications.html", users=users)
@@ -108,7 +133,6 @@ def verifications():
 
 @admin_bp.route("/verificaciones/<int:user_id>/approve", methods=["POST"])
 @activated_required
-@admin_required
 def approve_user(user_id):
     user = User.query.get_or_404(user_id)
     user.verification_level = 2
