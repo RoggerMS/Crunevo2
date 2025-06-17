@@ -47,3 +47,4 @@
   `secure_url` (PR notes-raw-url).
 - Ajustado el flujo de subida de PDF a Cloudinary para almacenar `resource_type='image'` en la URL principal. Esto permite visualizar correctamente el archivo en un `<iframe>` sin bloqueos por `/raw/upload`.
 - Reemplazado iframe de detalle de nota para usar Google gview y permitir visualización embebida (PR gview-iframe).
+- Se integró PDF.js como visor en `detalle.html`, cargando el primer canvas con el PDF y manteniendo enlace de descarga. (PR pdfjs-viewer)
