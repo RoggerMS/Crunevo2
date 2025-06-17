@@ -45,3 +45,4 @@
 - Confirmed notes upload uses `resource_type='auto'` for Cloudinary; recommended verifying URL uses '/raw/upload' (answer to resource_type question).
 - Forced Cloudinary URLs for notes to use `resource_type='raw'` when generating
   `secure_url` (PR notes-raw-url).
+- Ajustado el flujo de subida de PDF a Cloudinary para almacenar `resource_type='image'` en la URL principal. Esto permite visualizar correctamente el archivo en un `<iframe>` sin bloqueos por `/raw/upload`.

@@ -72,11 +72,14 @@ def upload_note():
                     f,
                     resource_type="auto",
                     public_id=f"notes/{public_id}",
+                    format="pdf",
                 )
-                url, _ = cloudinary.utils.cloudinary_url(
-                    f"notes/{public_id}.pdf", resource_type="raw", secure=True
+                view_url, _ = cloudinary.utils.cloudinary_url(
+                    f"notes/{public_id}.pdf",
+                    resource_type="image",
+                    secure=True,
                 )
-                filepath = url
+                filepath = view_url
             else:
                 filename = secure_filename(f.filename)
                 upload_folder = current_app.config["UPLOAD_FOLDER"]
