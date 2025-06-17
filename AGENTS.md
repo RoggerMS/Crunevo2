@@ -32,3 +32,5 @@
 - Se fuerzan `display: none` y `pointer-events: none` para `#mobileMenuOverlay`
   y `#mobileMenuPanel` en escritorio, actualizando `main.js` para aplicar estos
   estilos al cargar la página y al cerrar el menú (PR overlay hide complete).
+
+- Se agregó "navbar_crunevo_fixed.html" como ejemplo de navbar fijo con menú móvil.
