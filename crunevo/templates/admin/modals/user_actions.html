@@ -1,0 +1,36 @@
+<div class="modal modal-blur fade" id="modal-{{ user.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Acciones para {{ user.username }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('admin.manage_users') }}">
+          {% include 'components/csrf.html' %}
+          {{ csrf.csrf_field() }}
+          <div class="mb-3">
+            <label class="form-label">Rol</label>
+            <select class="form-select" name="role">
+              <option value="user" {{ 'selected' if user.role != 'admin' else '' }}>Estudiante</option>
+              <option value="admin" {{ 'selected' if user.role == 'admin' else '' }}>Admin</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Ajustar créditos</label>
+            <input type="number" class="form-control" name="credits" value="0">
+          </div>
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="active" id="active{{ user.id }}" {{ 'checked' if user.activated else '' }}>
+              <label class="form-check-label" for="active{{ user.id }}">
+                Activo
+              </label>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

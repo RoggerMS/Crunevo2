@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block head_extra %}
+  <link href="https://unpkg.com/@tabler/core@1.3.2/dist/css/tabler.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet">
+  <script src="https://unpkg.com/@tabler/core@1.3.2/dist/js/tabler.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='admin/custom.css') }}">
+{% endblock %}
+{% block body %}
+<body class="layout-fluid {% if current_user.pref_dark %}theme-dark{% endif %}">
+  <div class="page">
+    {% include "admin/partials/topbar.html" %}
+    {% include "admin/partials/sidebar.html" %}
+    <div class="page-wrapper">
+      <div class="container-xl">
+        {% block content %}{% endblock %}
+      </div>
+    </div>
+  </div>
+</body>
+{% endblock %}
