@@ -59,7 +59,7 @@ def upload_note():
 
         cloud_url = current_app.config.get("CLOUDINARY_URL")
         if cloud_url:
-            result = cloudinary.uploader.upload(f, resource_type="raw")
+
             filepath = result["secure_url"]
         else:
             filename = secure_filename(f.filename)
