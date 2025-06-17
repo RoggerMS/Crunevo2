@@ -154,4 +154,10 @@ Si necesitas el token desde JavaScript puedes leerlo con:
 ```javascript
 document.querySelector('meta[name="csrf-token"]').content;
 ```
+## Visor de PDF integrado (PDF.js)
 
+Desde el commit `Load PDF.js locally`, CRUNEVO utiliza una versión local de PDF.js para visualizar apuntes PDF directamente en el navegador. Esto evita errores por bloqueo de red al cargar desde CDNs y mejora la compatibilidad con Cloudinary.
+
+Ubicación:
+- `static/pdfjs/pdf.min.js`
+- `static/pdfjs/pdf.worker.min.js`
