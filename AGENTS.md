@@ -34,3 +34,4 @@
   estilos al cargar la página y al cerrar el menú (PR overlay hide complete).
 
 - Se agregó "navbar_crunevo_fixed.html" como ejemplo de navbar fijo con menú móvil.
+- Navbar migrado completamente a Bootstrap sin Tailwind ni overlay. Se eliminó el script de Tailwind y se simplificó main.js (PR bootstrap-only navbar).

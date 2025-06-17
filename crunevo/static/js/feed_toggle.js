@@ -6,12 +6,12 @@ function initFeedToggle() {
   if (!noteBtn || !imageBtn) return;
 
   noteBtn.addEventListener('click', () => {
-    noteForm.classList.remove('tw-hidden');
-    imageForm.classList.add('tw-hidden');
+    noteForm.classList.remove('d-none');
+    imageForm.classList.add('d-none');
   });
 
   imageBtn.addEventListener('click', () => {
-    imageForm.classList.remove('tw-hidden');
-    noteForm.classList.add('tw-hidden');
+    imageForm.classList.remove('d-none');
+    noteForm.classList.add('d-none');
   });
 }

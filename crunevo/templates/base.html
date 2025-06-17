@@ -11,25 +11,23 @@
     <title>Crunevo</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap-icons.css') }}">
-    <script src="{{ url_for('static', filename='js/tailwind.config.js') }}"></script>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography" defer></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/fix-bootstrap.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
 </head>
-<body class="d-flex flex-column min-vh-100 tw-bg-white dark:tw-bg-black">
+<body class="d-flex flex-column min-vh-100">
     {% include 'components/navbar.html' %}
-    <div class="tw-container tw-mx-auto tw-px-4 tw-max-w-7xl">
+    <div class="container">
         <div class="row gx-4">
             <aside class="d-none d-lg-block col-lg-3">
                 {% include 'components/sidebar_left.html' %}
             </aside>
-            <main class="col-lg-6 tw-space-y-6">
+            <main class="col-lg-6">
                 {% import 'components/toast.html' as toast %}
                 {% with messages = get_flashed_messages() %}
                   {% if messages %}
-                    <div class="fixed top-20 inset-x-0 z-50 tw-flex tw-flex-col tw-items-center tw-space-y-2">
+                    <div class="toast-container position-fixed top-0 start-0 end-0 z-50 d-flex flex-column align-items-center gap-2 mt-5">
                       {% for msg in messages %}
                         {{ toast.toast(msg) }}
                       {% endfor %}
@@ -44,7 +42,7 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='vendor/bootstrap.bundle.min.js') }}" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/feed_toggle.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
