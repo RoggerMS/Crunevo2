@@ -34,8 +34,8 @@
       {% endif %}
       <p><strong>Likes:</strong> <span id="likeCount">{{ note.likes }}</span></p>
     <div class="ratio ratio-16x9 mb-4">
-      <object data="/{{ note.filename or '' }}" type="application/pdf" width="100%" height="100%">
-        {{ note.filename }}
+      <object data="{{ note.filename }}" type="application/pdf" width="100%" height="100%">
+        <a href="{{ note.filename }}" target="_blank">Descargar</a>
       </object>
     </div>
     <h5 class="mb-3">Comentarios</h5>
