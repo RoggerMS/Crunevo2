@@ -61,9 +61,19 @@ class Config:
     TALISMAN_CSP = {
         "default-src": ["'self'", "https://cdn.jsdelivr.net"],
         "img-src": ["'self'", "data:", "https://res.cloudinary.com"],
-        "style-src": ["'self'", "'unsafe-inline'"],
-        "script-src": ["'self'", "'unsafe-inline'"],
-        "connect-src": "'self'",
+        "style-src": [
+            "'self'",
+            "'unsafe-inline'",
+            "https://cdn.jsdelivr.net",
+            "https://unpkg.com",
+        ],
+        "script-src": [
+            "'self'",
+            "'unsafe-inline'",
+            "https://cdn.jsdelivr.net",
+            "https://unpkg.com",
+        ],
+        "connect-src": ["'self'", "https://res.cloudinary.com"],
         "frame-src": ["'self'", "https://res.cloudinary.com"],
     }
 
