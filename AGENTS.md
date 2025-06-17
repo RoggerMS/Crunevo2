@@ -49,3 +49,4 @@
 - Reemplazado iframe de detalle de nota para usar Google gview y permitir visualización embebida (PR gview-iframe).
 - Se integró PDF.js como visor en `detalle.html`, cargando el primer canvas con el PDF y manteniendo enlace de descarga. (PR pdfjs-viewer)
 - Integrado PDF.js de forma local y configurado worker en detalle.html (PR pdfjs-local).
+- Corregido el path de `pdf.worker.min.js` en `detalle.html` para que PDF.js renderice correctamente (PR pdfjs-worker-path).
