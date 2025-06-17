@@ -47,7 +47,13 @@ def search_notes():
 @activated_required
 def upload_note():
     if request.method == "POST":
-        f = request.files["file"]
+        title = request.form.get("title", "").strip()
+        if not title:
+            flash("El título es obligatorio", "danger")
+            return redirect(url_for("notes.upload_note"))
+
+        description = request.form.get("description", "")
+        f = request.files.get("file")
         if not f or not f.filename:
             flash("Selecciona un archivo", "danger")
             return redirect(url_for("notes.upload_note"))
@@ -58,38 +64,45 @@ def upload_note():
             return redirect(url_for("notes.upload_note"))
 
         cloud_url = current_app.config.get("CLOUDINARY_URL")
-        if cloud_url:
-            filename = secure_filename(f.filename)
-            public_id = os.path.splitext(filename)[0]
-            result = cloudinary.uploader.upload(
-                f, resource_type="auto", public_id=f"notes/{public_id}"
-            )
-            filepath = result["secure_url"]
-        else:
-            filename = secure_filename(f.filename)
-            upload_folder = current_app.config["UPLOAD_FOLDER"]
-            os.makedirs(upload_folder, exist_ok=True)
-            filepath = os.path.join(upload_folder, filename)
-            f.save(filepath)
+        try:
+            if cloud_url:
+                filename = secure_filename(f.filename)
+                public_id = os.path.splitext(filename)[0]
+                result = cloudinary.uploader.upload(
+                    f,
+                    resource_type="auto",
+                    public_id=f"notes/{public_id}",
+                )
+                filepath = result["secure_url"]
+            else:
+                filename = secure_filename(f.filename)
+                upload_folder = current_app.config["UPLOAD_FOLDER"]
+                os.makedirs(upload_folder, exist_ok=True)
+                filepath = os.path.join(upload_folder, filename)
+                f.save(filepath)
+        except Exception:
+            current_app.logger.exception("Error al subir el archivo")
+            flash("Ocurrió un problema al subir el PDF", "danger")
+            return redirect(url_for("notes.upload_note"))
 
-    note = Note(
-        title=request.form["title"],
-        description=request.form["description"],
-        filename=filepath,
-        tags=request.form.get("tags"),
-        category=request.form.get("category"),
-        author=current_user,
-    )
-    db.session.add(note)
-    current_user.points += 10
-    db.session.commit()
-    from crunevo.utils import create_feed_item_for_all
+        note = Note(
+            title=title,
+            description=description,
+            filename=filepath,
+            tags=request.form.get("tags"),
+            category=request.form.get("category"),
+            author=current_user,
+        )
+        db.session.add(note)
+        current_user.points += 10
+        db.session.commit()
+        from crunevo.utils import create_feed_item_for_all
 
-    create_feed_item_for_all("apunte", note.id)
-    add_credit(current_user, 5, CreditReasons.APUNTE_SUBIDO, related_id=note.id)
-    unlock_achievement(current_user, AchievementCodes.PRIMER_APUNTE)
-    flash("Apunte subido correctamente")
-    return redirect(url_for("notes.list_notes"))
+        create_feed_item_for_all("apunte", note.id)
+        add_credit(current_user, 5, CreditReasons.APUNTE_SUBIDO, related_id=note.id)
+        unlock_achievement(current_user, AchievementCodes.PRIMER_APUNTE)
+        flash("Apunte subido correctamente")
+        return redirect(url_for("notes.list_notes"))
 
     return render_template("notes/upload.html")
 
