@@ -13,13 +13,13 @@ from flask import (
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required, verified_required
 from werkzeug.utils import secure_filename
-import cloudinary.uploader
 from crunevo.extensions import db
 from crunevo.models import Note, Comment, NoteVote
 from crunevo.utils.credits import add_credit
 from crunevo.utils import unlock_achievement
 from crunevo.utils.scoring import update_feed_score
 from crunevo.constants import CreditReasons, AchievementCodes
+import cloudinary.uploader
 
 notes_bp = Blueprint("notes", __name__, url_prefix="/notes")
 
@@ -59,7 +59,14 @@ def upload_note():
 
         cloud_url = current_app.config.get("CLOUDINARY_URL")
         if cloud_url:
-
+            filename = secure_filename(f.filename)
+            public_id = os.path.splitext(filename)[0]
+            result = cloudinary.uploader.upload(
+                f,
+                resource_type="raw",
+                public_id=f"notes/{public_id}.pdf",
+                format="pdf",
+            )
             filepath = result["secure_url"]
         else:
             filename = secure_filename(f.filename)
@@ -67,24 +74,26 @@ def upload_note():
             os.makedirs(upload_folder, exist_ok=True)
             filepath = os.path.join(upload_folder, filename)
             f.save(filepath)
-        note = Note(
-            title=request.form["title"],
-            description=request.form["description"],
-            filename=filepath,
-            tags=request.form.get("tags"),
-            category=request.form.get("category"),
-            author=current_user,
-        )
-        db.session.add(note)
-        current_user.points += 10
-        db.session.commit()
-        from crunevo.utils import create_feed_item_for_all
 
-        create_feed_item_for_all("apunte", note.id)
-        add_credit(current_user, 5, CreditReasons.APUNTE_SUBIDO, related_id=note.id)
-        unlock_achievement(current_user, AchievementCodes.PRIMER_APUNTE)
-        flash("Apunte subido correctamente")
-        return redirect(url_for("notes.list_notes"))
+    note = Note(
+        title=request.form["title"],
+        description=request.form["description"],
+        filename=filepath,
+        tags=request.form.get("tags"),
+        category=request.form.get("category"),
+        author=current_user,
+    )
+    db.session.add(note)
+    current_user.points += 10
+    db.session.commit()
+    from crunevo.utils import create_feed_item_for_all
+
+    create_feed_item_for_all("apunte", note.id)
+    add_credit(current_user, 5, CreditReasons.APUNTE_SUBIDO, related_id=note.id)
+    unlock_achievement(current_user, AchievementCodes.PRIMER_APUNTE)
+    flash("Apunte subido correctamente")
+    return redirect(url_for("notes.list_notes"))
+
     return render_template("notes/upload.html")
 
 
