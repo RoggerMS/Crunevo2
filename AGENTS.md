@@ -38,4 +38,5 @@
 - Implemented Tabler-based admin dashboard with new templates and blueprint enforcement.
 - Fixed PDF upload to Cloudinary storing URL and adjusted templates (PR pdf-upload-fix).
 - Restored Cloudinary upload logic in `notes_routes.py` to fix undefined variable error (PR notes-upload-fix).
+- Improved PDF handling in notes: use `resource_type='auto'`, display inline with `<iframe>` and direct download link (PR notes-pdf-view).
 
