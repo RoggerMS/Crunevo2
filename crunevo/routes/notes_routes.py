@@ -48,9 +48,25 @@ def search_notes():
 def upload_note():
     if request.method == "POST":
         f = request.files["file"]
+        if not f or not f.filename:
+            flash("Selecciona un archivo", "danger")
+            return redirect(url_for("notes.upload_note"))
+
+        ext = os.path.splitext(f.filename)[1].lower()
+        if ext != ".pdf":
+            flash("El archivo debe ser un PDF", "danger")
+            return redirect(url_for("notes.upload_note"))
+
         cloud_url = current_app.config.get("CLOUDINARY_URL")
         if cloud_url:
-            result = cloudinary.uploader.upload(f)
+            filename = secure_filename(f.filename)
+            public_id = os.path.splitext(filename)[0]
+            result = cloudinary.uploader.upload(
+                f,
+                resource_type="raw",
+                public_id=f"notes/{public_id}.pdf",
+                format="pdf",
+            )
             filepath = result["secure_url"]
         else:
             filename = secure_filename(f.filename)
@@ -157,4 +173,4 @@ def download_note(note_id):
     if note.downloads >= 100:
         unlock_achievement(note.author, AchievementCodes.DESCARGA_100)
 
-    return redirect(f"/{note.filename}")
+    return redirect(note.filename)

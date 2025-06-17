@@ -36,3 +36,5 @@
 - Se agregó "navbar_crunevo_fixed.html" como ejemplo de navbar fijo con menú móvil.
 - Navbar migrado completamente a Bootstrap sin Tailwind ni overlay. Se eliminó el script de Tailwind y se simplificó main.js (PR bootstrap-only navbar).
 - Implemented Tabler-based admin dashboard with new templates and blueprint enforcement.
+- Fixed PDF upload to Cloudinary storing URL and adjusted templates (PR pdf-upload-fix).
+- Adjusted Cloudinary upload to force .pdf extension in public_id (PR pdf-upload-force-format).
