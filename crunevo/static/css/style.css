@@ -107,16 +107,23 @@ body {
 @media (min-width: 992px) {
   #mobileMenuOverlay {
     display: none !important;
+    visibility: hidden !important;
     height: 0 !important;
     width: 0 !important;
     pointer-events: none !important;
-    background: none !important;
-    z-index: -1 !important;
+    background: transparent !important;
     position: static !important;
+    z-index: -1 !important;
+    opacity: 0 !important;
   }
 
   #mobileMenuPanel {
     display: none !important;
+    height: 0 !important;
+    width: 0 !important;
+    position: static !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
   }
 }
 
