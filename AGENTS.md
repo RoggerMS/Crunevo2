@@ -46,3 +46,4 @@
 - Forced Cloudinary URLs for notes to use `resource_type='raw'` when generating
   `secure_url` (PR notes-raw-url).
 - Ajustado el flujo de subida de PDF a Cloudinary para almacenar `resource_type='image'` en la URL principal. Esto permite visualizar correctamente el archivo en un `<iframe>` sin bloqueos por `/raw/upload`.
+- Reemplazado iframe de detalle de nota para usar Google gview y permitir visualización embebida (PR gview-iframe).
