@@ -1,0 +1,54 @@
+<nav class="navbar navbar-dark navbar-crunevo fixed-top" role="navigation" aria-label="Navegación principal">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+
+    <div class="d-flex align-items-center">
+      <button id="mobileMenuToggle" class="btn btn-link text-white d-md-none" type="button" aria-label="Menú">
+        <i class="bi bi-list"></i>
+      </button>
+      <a class="navbar-brand ms-2" href="{{ url_for('feed.index') }}">Crunevo</a>
+    </div>
+
+    <form class="d-none d-md-flex mx-3 flex-grow-1 position-relative" id="globalSearchForm">
+      <input class="form-control" type="search" placeholder="Buscar" aria-label="Buscar" id="globalSearchInput" autocomplete="off">
+      <div id="searchSuggestions" class="position-absolute start-0 w-100 bg-white border rounded shadow"></div>
+    </form>
+
+    <ul id="navLinks" class="navbar-nav flex-row align-items-center gap-3 d-none d-md-flex">
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.index') }}"><i class="bi bi-house-door"></i></a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.trending') }}"><i class="bi bi-fire"></i></a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('notes.list_notes') }}"><i class="bi bi-journal-text"></i></a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('store.store_index') }}"><i class="bi bi-bag"></i></a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('chat.chat_index') }}"><i class="bi bi-chat-dots"></i></a></li>
+      {% if current_user.is_authenticated %}
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Salir</a></li>
+      {% else %}
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Iniciar sesión</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('onboarding.register') }}">Registrarse</a></li>
+      {% endif %}
+      <li class="nav-item">
+        <button id="themeToggle" class="btn btn-sm btn-secondary" type="button">
+          <i class="bi bi-moon"></i>
+        </button>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- overlay only for mobile -->
+<div id="mobileMenuOverlay" class="d-md-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-none z-50">
+  <div id="mobileMenuPanel" class="bg-white p-4 h-100 w-75 position-absolute">
+    <button id="closeMobileMenu" class="btn-close float-end" type="button" aria-label="Cerrar menú"></button>
+    <ul class="mt-5 list-unstyled">
+      <li><a href="{{ url_for('feed.index') }}" class="d-block py-2"><i class="bi bi-house-door"></i> Inicio</a></li>
+      <li><a href="{{ url_for('notes.list_notes') }}" class="d-block py-2"><i class="bi bi-journal-text"></i> Apuntes</a></li>
+      <li><a href="{{ url_for('store.store_index') }}" class="d-block py-2"><i class="bi bi-bag"></i> Tienda</a></li>
+      <li><a href="{{ url_for('chat.chat_index') }}" class="d-block py-2"><i class="bi bi-chat-dots"></i> Chat</a></li>
+      {% if current_user.is_authenticated %}
+      <li><a href="{{ url_for('auth.logout') }}" class="d-block py-2">Salir</a></li>
+      {% else %}
+      <li><a href="{{ url_for('auth.login') }}" class="d-block py-2">Iniciar sesión</a></li>
+      <li><a href="{{ url_for('onboarding.register') }}" class="d-block py-2">Registrarse</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
