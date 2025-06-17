@@ -1,40 +1,44 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
 {% block content %}
-<div class="container my-5">
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <h3 class="mb-4">📄 Subir nuevo apunte</h3>
-      <form method="post" enctype="multipart/form-data">
-        {{ csrf.csrf_field() }}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-4 p-md-5">
+          <h3 class="card-title mb-4 text-center">Subir nuevo apunte</h3>
+          <form method="post" enctype="multipart/form-data">
+            {{ csrf.csrf_field() }}
 
-        <div class="form-floating mb-3">
-          <input type="text" class="form-control" id="title" name="title" placeholder="Título" required>
-          <label for="title">Título</label>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="title" name="title" placeholder="Título" required>
+              <label for="title">Título</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <textarea class="form-control" placeholder="Descripción" id="description" name="description" style="height: 120px"></textarea>
+              <label for="description">Descripción</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="tags" name="tags" placeholder="Etiquetas (separadas por coma)">
+              <label for="tags">Etiquetas (ej. mate, física)</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="category" name="category" placeholder="Categoría">
+              <label for="category">Categoría</label>
+            </div>
+
+            <div class="mb-4">
+              <label for="file" class="form-label">Archivo PDF</label>
+              <input class="form-control" type="file" id="file" name="file" accept="application/pdf" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Subir</button>
+          </form>
         </div>
-
-        <div class="form-floating mb-3">
-          <textarea class="form-control" placeholder="Descripción" id="description" name="description" style="height: 100px;"></textarea>
-          <label for="description">Descripción</label>
-        </div>
-
-        <div class="form-floating mb-3">
-          <input type="text" class="form-control" id="tags" name="tags" placeholder="Etiquetas (separadas por coma)">
-          <label for="tags">Etiquetas (ej. mate, física)</label>
-        </div>
-
-        <div class="form-floating mb-3">
-          <input type="text" class="form-control" id="category" name="category" placeholder="Categoría">
-          <label for="category">Categoría</label>
-        </div>
-
-        <div class="mb-3">
-          <label for="file" class="form-label">Archivo PDF</label>
-          <input class="form-control" type="file" id="file" name="file" accept="application/pdf" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100">Subir apunte</button>
-      </form>
+      </div>
     </div>
   </div>
 </div>
