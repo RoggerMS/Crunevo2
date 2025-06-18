@@ -14,6 +14,7 @@ from flask import (
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required
 from datetime import datetime
+from sqlalchemy import func
 from crunevo.extensions import db, csrf
 from crunevo.models import (
     Post,
@@ -39,9 +40,10 @@ def get_featured_posts():
     top_notes = Note.query.order_by(Note.views.desc()).limit(3).all()
     top_posts = Post.query.order_by(Post.likes.desc()).limit(3).all()
     top_users = (
-        User.query.join(UserAchievement)
-        .order_by(UserAchievement.earned_at.desc())
-        .distinct()
+        db.session.query(User)
+        .join(UserAchievement)
+        .group_by(User.id)
+        .order_by(func.max(UserAchievement.earned_at).desc())
         .limit(3)
         .all()
     )
