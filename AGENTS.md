@@ -61,3 +61,5 @@
 - Navbar ahora usa clase `navbar-crunevo` y `navbar-expand-md`, con iconos en cada enlace (PR navbar-icons).
 - Implementado input rápido en el feed para publicar texto e imagen o PDF, mostrando los últimos posts (PR feed-quick-input).
 - Corregido url_for en pending.html para usar 'feed.index' y evitar BuildError (PR pending-home-link)
+- Añadida sección de destacados en el feed con notas más vistas, posts populares y usuarios con logros recientes (PR featured-posts)
+- Añadido ranking semanal y logros recientes en el feed (PR weekly-ranking)
