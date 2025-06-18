@@ -1,46 +1,23 @@
-<nav class="nav flex-column p-3">
-  <span class="text-muted fw-bold small">🧑 Administración</span>
+<div class="position-sticky pt-3 nav flex-column">
+  <span class="text-muted fw-bold small mb-2">🧑 Administración</span>
   <a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}">
-    <i class="ti ti-layout-dashboard me-1"></i> Dashboard
+    <i class="ti ti-layout-dashboard me-2"></i> Dashboard
   </a>
   <a class="nav-link {% if request.endpoint == 'admin.manage_users' %}active{% endif %}" href="{{ url_for('admin.manage_users') }}">
-    <i class="ti ti-users me-1"></i> Gestión de usuarios
+    <i class="ti ti-users me-2"></i> Gestión de usuarios
   </a>
   <a class="nav-link {% if request.endpoint == 'admin.manage_reports' %}active{% endif %}" href="{{ url_for('admin.manage_reports') }}">
-    <i class="ti ti-flag me-1"></i> Reportes
+    <i class="ti ti-flag me-2"></i> Reportes
   </a>
   <a class="nav-link {% if request.endpoint == 'admin.manage_store' %}active{% endif %}" href="{{ url_for('admin.manage_store') }}">
-    <i class="ti ti-building-store me-1"></i> Tienda
-  </a>
-  <a class="nav-link disabled" href="#">
-    <i class="ti ti-coin me-1"></i> Créditos
-  </a>
-  <a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}">
-    <i class="ti ti-chart-bar me-1"></i> Estadísticas
+    <i class="ti ti-building-store me-2"></i> Tienda
   </a>
 
-  <span class="text-muted fw-bold small mt-4">🏅 Comunidad</span>
-  <a class="nav-link disabled" href="#">
-    <i class="ti ti-check me-1"></i> Verificaciones
-  </a>
-  <a class="nav-link disabled" href="#">
-    <i class="ti ti-badge me-1"></i> Insignias
-  </a>
-  <a class="nav-link disabled" href="#">
-    <i class="ti ti-award me-1"></i> Logros
-  </a>
-  <a class="nav-link disabled" href="#">
-    <i class="ti ti-users-group me-1"></i> Clubes
-  </a>
-  <a class="nav-link disabled" href="#">
-    <i class="ti ti-calendar-event me-1"></i> Eventos
-  </a>
+  <span class="text-muted fw-bold small mt-4 mb-2">🏅 Comunidad</span>
+  <a class="nav-link disabled"><i class="ti ti-check me-2"></i> Verificaciones</a>
+  <a class="nav-link disabled"><i class="ti ti-award me-2"></i> Logros</a>
+  <a class="nav-link disabled"><i class="ti ti-calendar-event me-2"></i> Eventos</a>
 
-  <span class="text-muted fw-bold small mt-4">🤖 Sistema</span>
-  <a class="nav-link disabled" href="#">
-    <i class="ti ti-robot me-1"></i> Moderación IA
-  </a>
-  <a class="nav-link disabled" href="#">
-    <i class="ti ti-settings-cog me-1"></i> Configuración
-  </a>
-</nav>
+  <span class="text-muted fw-bold small mt-4 mb-2">⚙️ Sistema</span>
+  <a class="nav-link disabled"><i class="ti ti-settings me-2"></i> Configuración</a>
+</div>
