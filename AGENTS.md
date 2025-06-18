@@ -58,3 +58,4 @@
 - CSP ampliado: `connect-src` incluye Cloudinary y `script-src`/`style-src` permiten CDN (PR cloudinary-csp-connect).
 
 - Actualizado `<header>` en `admin/partials/topbar.html` con clase `navbar-light` (PR admin-topbar-light).
+- Añadidos atributos ARIA al botón de menú para que muestre el icono hamburguesa y funcione la colapsación (PR fix/navbar-toggler).
