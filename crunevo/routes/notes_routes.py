@@ -178,7 +178,7 @@ def add_comment(note_id):
             {
                 "body": comment.body,
                 "author": comment.author.username,
-                "timestamp": comment.timestamp.strftime("%Y-%m-%d %H:%M"),
+                "timestamp": comment.created_at.strftime("%Y-%m-%d %H:%M"),
             }
         )
     return redirect(url_for("notes.view_note", id=note_id))
@@ -194,17 +194,22 @@ def like_note(note_id):
     existing_vote = NoteVote.query.filter_by(
         user_id=current_user.id, note_id=note.id
     ).first()
-    if existing_vote:
-        return jsonify({"error": "Ya votaste"}), 400
 
-    note.likes += 1
-    vote = NoteVote(user_id=current_user.id, note_id=note.id)
-    db.session.add(vote)
+    if existing_vote:
+        note.likes = max((note.likes or 0) - 1, 0)
+        db.session.delete(existing_vote)
+        action = "unliked"
+    else:
+        note.likes = (note.likes or 0) + 1
+        vote = NoteVote(user_id=current_user.id, note_id=note.id)
+        db.session.add(vote)
+        add_credit(note.author, 1, CreditReasons.VOTO_POSITIVO, related_id=note.id)
+        action = "liked"
+
     db.session.commit()
     update_feed_score(note.id)
 
-    add_credit(note.author, 1, CreditReasons.VOTO_POSITIVO, related_id=note.id)
-    return jsonify({"likes": note.likes})
+    return jsonify({"likes": note.likes, "status": action})
 
 
 @notes_bp.route("/<int:note_id>/share", methods=["POST"])
