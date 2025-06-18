@@ -41,7 +41,7 @@ class FeedItem(db.Model):
         """Return minimal data per item type for API.
 
         'apunte': title, summary, author_username, downloads
-        'post': content, author_username, image_url
+        'post': content, author_username, file_url
         others: fields from metadata
         """
         try:
@@ -87,8 +87,8 @@ class FeedItem(db.Model):
                 from crunevo.models import Post, User
 
                 post = (
-                    db.session.query(Post.content, Post.image_url, User.username)
-                    .join(User, Post.user_id == User.id)
+                    db.session.query(Post.content, Post.file_url, User.username)
+                    .join(User, Post.author_id == User.id)
                     .filter(Post.id == self.ref_id)
                     .first()
                 )
@@ -97,7 +97,7 @@ class FeedItem(db.Model):
                         {
                             "content": post.content,
                             "author_username": post.username,
-                            "image_url": post.image_url,
+                            "file_url": post.file_url,
                         }
                     )
                 else:

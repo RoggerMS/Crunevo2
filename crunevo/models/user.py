@@ -18,7 +18,9 @@ class User(UserMixin, db.Model):
     about = db.Column(db.Text)
     credit_history = db.relationship("Credit", back_populates="user", lazy=True)
     notes = db.relationship("Note", backref="author", lazy=True)
-    posts = db.relationship("Post", backref="author", lazy=True)
+    posts = db.relationship(
+        "Post", backref="author", lazy=True, foreign_keys="Post.author_id"
+    )
     comments = db.relationship("Comment", backref="author", lazy=True)
 
     def set_password(self, password):

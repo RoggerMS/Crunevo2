@@ -66,23 +66,23 @@ def edu_feed():
 
     if image_form.validate_on_submit() and request.form.get("form_type") == "image":
         image = image_form.image.data
-        image_url = None
+        file_url = None
         if image and image.filename:
             cloud_url = current_app.config.get("CLOUDINARY_URL")
             if cloud_url:
-                result = cloudinary.uploader.upload(image)
-                image_url = result["secure_url"]
+                result = cloudinary.uploader.upload(image, resource_type="auto")
+                file_url = result["secure_url"]
             else:
                 filename = secure_filename(image.filename)
                 upload_folder = current_app.config["UPLOAD_FOLDER"]
                 os.makedirs(upload_folder, exist_ok=True)
                 filepath = os.path.join(upload_folder, filename)
                 image.save(filepath)
-                image_url = filepath
+                file_url = filepath
 
         post = Post(
             content=image_form.title.data or "",
-            image_url=image_url,
+            file_url=file_url,
             author=current_user,
         )
         db.session.add(post)
@@ -115,30 +115,40 @@ def edu_feed():
 @activated_required
 def index():
     if request.method == "POST":
-        content = request.form["content"]
-        image = request.files.get("image")
-        image_url = None
-        if image and image.filename:
+        content = request.form.get("content", "").strip()
+        if not content:
+            flash("Debes escribir algo", "danger")
+            return redirect(url_for("feed.index"))
+
+        file = request.files.get("file")
+        file_url = None
+        if file and file.filename:
             cloud_url = current_app.config.get("CLOUDINARY_URL")
-            if cloud_url:
-                result = cloudinary.uploader.upload(image)
-                image_url = result["secure_url"]
-            else:
-                filename = secure_filename(image.filename)
-                upload_folder = current_app.config["UPLOAD_FOLDER"]
-                os.makedirs(upload_folder, exist_ok=True)
-                filepath = os.path.join(upload_folder, filename)
-                image.save(filepath)
-                image_url = filepath
-        post = Post(content=content, image_url=image_url, author=current_user)
+            try:
+                if cloud_url:
+                    res = cloudinary.uploader.upload(file, resource_type="auto")
+                    file_url = res["secure_url"]
+                else:
+                    filename = secure_filename(file.filename)
+                    upload_folder = current_app.config["UPLOAD_FOLDER"]
+                    os.makedirs(upload_folder, exist_ok=True)
+                    filepath = os.path.join(upload_folder, filename)
+                    file.save(filepath)
+                    file_url = filepath
+            except Exception:
+                current_app.logger.exception("Error al subir archivo")
+                flash("Ocurrió un problema al subir el archivo", "danger")
+                return redirect(url_for("feed.index"))
+
+        post = Post(content=content, file_url=file_url, author=current_user)
         db.session.add(post)
         db.session.commit()
-        from crunevo.utils import create_feed_item_for_all
-
         create_feed_item_for_all("post", post.id)
         flash("Publicación creada")
         return redirect(url_for("feed.index"))
-    return render_template("feed/index.html")
+
+    posts = Post.query.order_by(Post.created_at.desc()).limit(10).all()
+    return render_template("feed/feed.html", posts=posts)
 
 
 @feed_bp.route("/trending")
