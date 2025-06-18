@@ -129,3 +129,15 @@ def test_view_post(client, db_session, test_user):
     resp = client.get(f"/post/{post.id}")
     assert resp.status_code == 200
     assert b"hello" in resp.data
+
+
+def test_view_post_alias(client, db_session, test_user):
+    """Ensure /posts/<id> alias works for view_post."""
+    post = Post(content="alias", author=test_user)
+    db_session.add(post)
+    db_session.commit()
+
+    login(client, test_user.username, "secret")
+    resp = client.get(f"/posts/{post.id}")
+    assert resp.status_code == 200
+    assert b"alias" in resp.data

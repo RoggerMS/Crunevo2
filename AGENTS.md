@@ -71,3 +71,4 @@
 
 - Agregado endpoint `feed.view_post` con plantilla `post_detail.html` para ver publicaciones individuales (PR post-detail-route).
 - Se unificó la ruta alias de `feed.view_post` usando <int:post_id> para evitar BuildError en templates.
+- Se añadió prueba unitaria para verificar el alias `/posts/<id>` de `feed.view_post` (PR view-post-alias-test).
