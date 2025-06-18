@@ -22,6 +22,7 @@ class User(UserMixin, db.Model):
         "Post", backref="author", lazy=True, foreign_keys="Post.author_id"
     )
     comments = db.relationship("Comment", backref="author", lazy=True)
+    post_comments = db.relationship("PostComment", backref="author", lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_hash(password)

@@ -106,10 +106,49 @@
           <img src="{{ post.file_url }}" class="img-fluid rounded mb-2">
           {% endif %}
         {% endif %}
-        <div class="text-muted small">{{ post.likes }} likes</div>
+          <p class="text-muted small mb-2">
+            <strong>Likes:</strong>
+            <span id="likeCount{{ post.id }}">{{ post.likes }}</span>
+          </p>
+          <form
+            class="like-form mb-3"
+            method="post"
+            action="{{ url_for('feed.like_post', post_id=post.id) }}"
+            data-target="likeCount{{ post.id }}"
+          >
+            {{ csrf.csrf_field() }}
+            <button class="btn btn-outline-success btn-sm" type="submit">👍 Me gusta</button>
+          </form>
+
+          <h6 class="mb-2">Comentarios</h6>
+          <div id="comments{{ post.id }}">
+            {% for c in post.comments|sort(attribute='timestamp', reverse=True) %}
+            <div class="d-flex mb-3 comment">
+              <img src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+              <div>
+                <div class="small text-muted">
+                  <a href="{{ url_for('auth.public_profile', user_id=c.author.id) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                </div>
+                <div>{{ c.body }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <form
+            class="comment-form"
+            method="post"
+            action="{{ url_for('feed.comment_post', post_id=post.id) }}"
+            data-container="comments{{ post.id }}"
+          >
+            {{ csrf.csrf_field() }}
+            <div class="input-group mb-2">
+              <input type="text" name="body" class="form-control" placeholder="Añadir comentario" required>
+              <button class="btn btn-primary" type="submit">Enviar</button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
-    {% endfor %}
+      {% endfor %}
   </div>
   <div class="col-lg-4 mt-4 mt-lg-0">
     <div class="card mb-3">
@@ -141,4 +180,47 @@
     {% include 'components/sidebar_right.html' %}
   </div>
 </div>
+{% endblock %}
+
+{% block body_end %}
+<script>
+document.querySelectorAll('.like-form').forEach(form => {
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const btn = this.querySelector('button');
+    btn.disabled = true;
+    csrfFetch(this.action, { method: 'POST' })
+      .then(r => r.json())
+      .then(data => {
+        const target = document.getElementById(this.dataset.target);
+        if (target) target.textContent = data.likes;
+        showToast('¡Gracias por tu reacción!');
+      })
+      .finally(() => { btn.disabled = false; });
+  });
+});
+
+document.querySelectorAll('.comment-form').forEach(form => {
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const btn = this.querySelector('button');
+    btn.disabled = true;
+    const data = new FormData(this);
+    csrfFetch(this.action, { method: 'POST', body: data })
+      .then(r => r.json())
+      .then(c => {
+        const container = document.getElementById(this.dataset.container);
+        if (container) {
+          const div = document.createElement('div');
+          div.className = 'd-flex mb-3 comment';
+          div.innerHTML = `<img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar"><div><div class=\"small text-muted\">{{ current_user.username }} • ${c.timestamp}</div><div>${c.body}</div></div>`;
+          container.prepend(div);
+        }
+        form.reset();
+        showToast('Comentario agregado');
+      })
+      .finally(() => { btn.disabled = false; });
+  });
+});
+</script>
 {% endblock %}
