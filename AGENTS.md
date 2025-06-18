@@ -102,3 +102,4 @@
 - Panel de productos en admin incluye edición visual, eliminación segura y acceso directo a vista pública (PR admin-product-actions).
 
 - Panel de administración muestra tarjetas con métricas de usuarios, apuntes, tienda, créditos y ranking (PR admin-dashboard-cards).
+- Corregido url_for en manage_store.html para usar 'store.product_detail' (PR admin-product-link-fix).
