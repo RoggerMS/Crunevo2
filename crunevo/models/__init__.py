@@ -4,6 +4,7 @@ from .product import Product  # noqa: F401
 from .chat import Message  # noqa: F401
 from .report import Report  # noqa: F401
 from .comment import Comment  # noqa: F401
+from .post_comment import PostComment  # noqa: F401
 from .post import Post  # noqa: F401
 from .credit import Credit  # noqa: F401
 from .ranking import RankingCache  # noqa: F401

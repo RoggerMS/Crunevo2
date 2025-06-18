@@ -18,6 +18,7 @@ from sqlalchemy import func
 from crunevo.extensions import db, csrf
 from crunevo.models import (
     Post,
+    PostComment,
     FeedItem,
     Note,
     User,
@@ -227,6 +228,34 @@ def view_post(post_id: int):
 
 # Alias route for backwards compatibility
 feed_bp.add_url_rule("/posts/<int:post_id>", endpoint="view_post", view_func=view_post)
+
+
+@feed_bp.route("/like/<int:post_id>", methods=["POST"])
+@activated_required
+def like_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    post.likes += 1
+    db.session.commit()
+    return jsonify({"likes": post.likes})
+
+
+@feed_bp.route("/comment/<int:post_id>", methods=["POST"])
+@activated_required
+def comment_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    body = request.form.get("body", "").strip()
+    if not body:
+        return jsonify({"error": "Comentario vacío"}), 400
+    comment = PostComment(body=body, author=current_user, post=post)
+    db.session.add(comment)
+    db.session.commit()
+    return jsonify(
+        {
+            "body": comment.body,
+            "author": comment.author.username,
+            "timestamp": comment.timestamp.strftime("%Y-%m-%d %H:%M"),
+        }
+    )
 
 
 @feed_bp.route("/api/chat", methods=["POST"])

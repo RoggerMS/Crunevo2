@@ -10,3 +10,4 @@ class Post(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     likes = db.Column(db.Integer, default=0)
     type = db.Column(db.String(20))
+    comments = db.relationship("PostComment", backref="post", lazy=True)
