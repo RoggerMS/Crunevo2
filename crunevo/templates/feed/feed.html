@@ -1,14 +1,22 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
 {% block content %}
-<h5 class="mb-3">Feed</h5>
-<form method="post" enctype="multipart/form-data" class="mb-4">
-  {{ csrf.csrf_field() }}
-  <textarea name="content" class="form-control mb-2" placeholder="Comparte una idea" required></textarea>
-  <input type="file" name="file" accept=".jpg,.png,.pdf" class="form-control mb-2">
-  <button class="btn btn-primary" type="submit">Publicar</button>
-</form>
-<div class="row mb-4 tw-gap-2">
+<div class="row">
+  <!-- Lado izquierdo (menú lateral) -->
+  <div class="col-lg-2 d-none d-lg-block">
+    {% include 'components/sidebar_left.html' %}
+  </div>
+
+  <!-- Contenido central -->
+  <div class="col-lg-7 col-md-12">
+    <h5 class="mb-3">Feed</h5>
+    <form method="post" enctype="multipart/form-data" class="mb-4">
+      {{ csrf.csrf_field() }}
+      <textarea name="content" class="form-control mb-2" placeholder="Comparte una idea" required></textarea>
+      <input type="file" name="file" accept=".jpg,.png,.pdf" class="form-control mb-2">
+      <button class="btn btn-primary" type="submit">Publicar</button>
+    </form>
+    <div class="row mb-4 tw-gap-2">
   <div class="col-md-4">
     <h5>📘 Apuntes más vistos</h5>
     {% for note in top_notes %}
@@ -99,6 +107,11 @@
         {% endfor %}
       </ul>
     </div>
+  </div> <!-- Fin row de publicaciones -->
+  </div> <!-- Fin contenido central -->
+  <!-- Zona derecha (destacados, ranking, etc.) -->
+  <div class="col-lg-3 d-none d-lg-block">
+    {% include 'components/sidebar_right.html' %}
   </div>
 </div>
 {% endblock %}

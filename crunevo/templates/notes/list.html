@@ -1,15 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Apuntes</h2>
-<div class="row align-items-center mb-3">
-  <div class="col">
-    <input type="text" id="noteSearch" class="form-control" placeholder="Buscar...">
+<div class="row">
+  <!-- Lado izquierdo (menú lateral) -->
+  <div class="col-lg-2 d-none d-lg-block">
+    {% include 'components/sidebar_left.html' %}
   </div>
-  <div class="col-auto">
-    <a href="{{ url_for('notes.upload_note') }}" class="btn btn-success">Subir nuevo</a>
-  </div>
-</div>
-<div class="row row-cols-1 row-cols-md-2 g-3" id="notesList">
+  <!-- Contenido central -->
+  <div class="col-lg-7 col-md-12">
+    <h2>Apuntes</h2>
+    <div class="row align-items-center mb-3 d-flex justify-content-between">
+      <div class="col">
+        <input type="text" id="noteSearch" class="form-control" placeholder="Buscar...">
+      </div>
+      <div class="col-auto">
+        <a href="{{ url_for('notes.upload_note') }}" class="btn btn-success">Subir nuevo</a>
+      </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 g-3" id="notesList">
 {% for note in notes %}
   <div class="col">
     <div class="card h-100 shadow-sm">
@@ -66,4 +73,9 @@ function createNoteCard(n) {
   return col;
 }
 </script>
+  </div> <!-- Fin contenido central -->
+  <div class="col-lg-3 d-none d-lg-block">
+    {% include 'components/sidebar_right.html' %}
+  </div>
+</div>
 {% endblock %}

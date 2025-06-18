@@ -77,3 +77,4 @@
 - Revalidado enlace a `feed.view_post`; no se reproduce BuildError y se mantiene alias `/posts/<id>` (QA feed-view-post-check 2).
 - Prueba adicional confirma url_for("feed.view_post") genera /post/<id> (QA feed-view-post-check 3).
 - Endpoint `feed.view_post` se define explícitamente en la ruta y se comprueba que la blueprint está registrada (QA feed-view-post-check 4).
+- Layout updated to use `container-fluid px-md-5` and sidebars distributed per page with row/col system (PR full-width-layout).
