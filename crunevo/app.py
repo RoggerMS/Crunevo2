@@ -40,54 +40,7 @@ def create_app():
         )
     login_manager.login_view = "onboarding.register"
 
-    from .models import User, Product, Note, Comment, Post
-
     migrate.init_app(app, db)
-
-    # ⚠️ IMPORTANTE: Este decorador debe estar dentro de create_app y usar 'app' local
-    @app.before_request
-    def create_tables_once():
-        if not hasattr(app, "tables_created"):
-            db.create_all()
-            if not User.query.first():
-                admin = User(
-                    username="admin",
-                    email="admin@example.com",
-                    role="admin",
-                    avatar_url="static/img/default.png",
-                    activated=True,
-                    verification_level=2,
-                )
-                admin.set_password("admin")
-                user = User(
-                    username="estudiante",
-                    email="user@example.com",
-                    avatar_url="static/img/default.png",
-                )
-                user.set_password("test")
-                db.session.add_all([admin, user])
-                db.session.add(
-                    Product(
-                        name="Libro de matemáticas",
-                        description="Libro PDF",
-                        price=9.99,
-                        image="https://via.placeholder.com/150",
-                        stock=10,
-                    )
-                )
-                note = Note(
-                    title="Apunte de prueba",
-                    description="Introducción",
-                    filename="static/uploads/demo.pdf",
-                    author=user,
-                )
-                db.session.add(note)
-                db.session.add(Comment(body="Muy útil", author=admin, note=note))
-                db.session.add(
-                    Post(content="Hola, este es un post de ejemplo", author=user)
-                )
-                db.session.commit()
-            app.tables_created = True
 
     from .routes.onboarding_routes import bp as onboarding_bp
     from .routes.auth_routes import auth_bp
