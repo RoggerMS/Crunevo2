@@ -42,10 +42,17 @@ function renderApunteCard(data) {
 
 function renderPostCard(data) {
   const highlight = data.is_highlight ? ' feed-card--highlight' : '';
-  const img = data.image_url ? `<img src="${data.image_url}" class="img-fluid rounded mb-2">` : '';
+  let fileHtml = '';
+  if (data.file_url) {
+    if (data.file_url.endsWith('.pdf')) {
+      fileHtml = `<a href="${data.file_url}" target="_blank" class="btn btn-sm btn-outline-primary mb-2">Ver PDF</a>`;
+    } else {
+      fileHtml = `<img src="${data.file_url}" class="img-fluid rounded mb-2">`;
+    }
+  }
   return `<div class="feed-card${highlight}">
     <p>${data.content}</p>
-    ${img}
+    ${fileHtml}
     <small class="text-muted">@${data.author_username}</small>
     <div class="mt-2"><a class="btn btn-sm btn-secondary" href="#comentarios">Comentar</a></div>
   </div>`;
