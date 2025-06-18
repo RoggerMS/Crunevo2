@@ -59,9 +59,24 @@ def dashboard():
     )
 
 
-@admin_bp.route("/users")
+@admin_bp.route("/users", methods=["GET", "POST"])
 @activated_required
 def manage_users():
+    if request.method == "POST":
+        user_id = request.form.get("user_id", type=int)
+        user = User.query.get_or_404(user_id)
+        user.role = request.form.get("role", user.role)
+        user.activated = "active" in request.form
+        credits_delta = request.form.get("credits", type=int)
+        if credits_delta:
+            credit = Credit(
+                user_id=user.id, amount=credits_delta, reason="admin_adjust"
+            )
+            db.session.add(credit)
+            user.credits += credits_delta
+        db.session.commit()
+        flash("Usuario actualizado")
+        return redirect(url_for("admin.manage_users"))
     users = User.query.all()
     return render_template("admin/manage_users.html", users=users)
 
