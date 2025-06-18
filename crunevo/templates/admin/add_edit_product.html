@@ -1,6 +1,6 @@
 {% extends 'admin/base_admin.html' %}
 {% import 'components/csrf.html' as csrf %}
-{% block content %}
+{% block admin_content %}
 <h2 class="page-title">Agregar/Editar Producto</h2>
 <form method="post" enctype="multipart/form-data" class="card p-3">
   {{ csrf.csrf_field() }}

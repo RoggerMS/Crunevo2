@@ -82,3 +82,5 @@
 - Se ajustó 'feed.html' corrigiendo clases y confirmando las columnas de destacados (PR feed-layout-fix2).
 - Ajustado el layout de destacados para distribuir correctamente las tarjetas en tres columnas (PR feed-layout-fix3).
 - Verificada CSS global sin conflictos y la fila de destacados usa `row-cols-md-3` para asegurar las tres columnas (PR feed-layout-fix4).
+- Ajustado layout de admin para separar navbar fijo y añadir padding al contenido (PR admin-spacing-fix).
+- Mejorado `base_admin.html` con padding horizontal en el main y sidebar con enlaces actualizados (PR admin-spacing-fix2).

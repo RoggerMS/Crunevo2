@@ -7,16 +7,16 @@
   <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='admin/custom.css') }}">
 {% endblock %}
-{% block body %}
-<body class="layout-fluid {% if current_user.pref_dark %}theme-dark{% endif %}">
-  <div class="page">
-    {% include "admin/partials/topbar.html" %}
-    {% include "admin/partials/sidebar.html" %}
-    <div class="page-wrapper">
-      <div class="container-xl">
-        {% block content %}{% endblock %}
-      </div>
+{% block content %}
+  {% include "admin/partials/topbar.html" %}
+  <div class="container-fluid mt-5">
+    <div class="row">
+      <aside class="col-lg-3 d-none d-lg-block">
+        {% include "admin/partials/sidebar.html" %}
+      </aside>
+      <main class="col-lg-9 px-md-4 pt-4">
+        {% block admin_content %}{% endblock %}
+      </main>
     </div>
   </div>
-</body>
 {% endblock %}
