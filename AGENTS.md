@@ -91,3 +91,4 @@
 - Sidebar del panel admin reorganizado con secciones y estilos para íconos alineados (PR admin-sidebar-design).
 - Sidebar resalta enlace activo, toasts usan Bootstrap y topbar incluye botón de tema (PR admin-sidebar-active).
 - Layout de admin en dos columnas con sidebar fijo y topbar dentro de main. Sidebar usa `nav flex-column` (PR admin-sidebar-col-fix).
+- Añadido sistema de navegación de secciones por botones en el feed (PR feed-section-buttons).
