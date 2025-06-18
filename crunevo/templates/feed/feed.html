@@ -16,8 +16,8 @@
       <input type="file" name="file" accept=".jpg,.png,.pdf" class="form-control mb-2">
       <button class="btn btn-primary" type="submit">Publicar</button>
     </form>
-    <div class="row mb-4 g-3">
-      <div class="col-md-4">
+    <div class="row row-cols-1 row-cols-md-3 mb-4 g-3">
+      <div class="col">
         <h5>📘 Apuntes más vistos</h5>
         <div class="row row-cols-1 g-3">
           {% for note in top_notes %}
@@ -33,7 +33,7 @@
         </div>
       </div>
 
-      <div class="col-md-4">
+      <div class="col">
         <h5>🔥 Publicaciones populares</h5>
         <div class="row row-cols-1 g-3">
           {% for post in top_posts %}
@@ -49,7 +49,7 @@
         </div>
       </div>
 
-      <div class="col-md-4">
+      <div class="col">
         <h5>🏅 Usuarios destacados</h5>
         <div class="row row-cols-1 g-3">
           {% for user in top_users %}

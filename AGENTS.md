@@ -81,3 +81,4 @@
 - Se corrigió la sección de destacados en feed.html usando filas y columnas Bootstrap para mostrar tarjetas en tres columnas (PR feed-layout-fix).
 - Se ajustó 'feed.html' corrigiendo clases y confirmando las columnas de destacados (PR feed-layout-fix2).
 - Ajustado el layout de destacados para distribuir correctamente las tarjetas en tres columnas (PR feed-layout-fix3).
+- Verificada CSS global sin conflictos y la fila de destacados usa `row-cols-md-3` para asegurar las tres columnas (PR feed-layout-fix4).
