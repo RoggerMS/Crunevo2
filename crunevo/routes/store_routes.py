@@ -23,6 +23,12 @@ def product_detail(product_id):
     return render_template("store/producto.html", product=product)
 
 
+# Provide legacy endpoint name for backwards compatibility
+store_bp.add_url_rule(
+    "/product/<int:product_id>", endpoint="view_product", view_func=product_detail
+)
+
+
 @store_bp.route("/add/<int:product_id>")
 @activated_required
 def add_to_cart(product_id):
