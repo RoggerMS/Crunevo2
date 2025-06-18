@@ -1,4 +1,4 @@
-from crunevo.models import Note, FeedItem
+from crunevo.models import Note, FeedItem, Post
 from crunevo.utils.feed import create_feed_item_for_all
 from crunevo.cache import feed_cache
 from crunevo.utils.achievements import unlock_achievement
@@ -118,3 +118,14 @@ def test_feed_ordering(fake_redis, client, db_session, test_user, another_user):
     resp = client.get("/api/feed")
     titles = [it["title"] for it in resp.get_json() if it["item_type"] == "apunte"]
     assert titles[0] == "A"
+
+
+def test_view_post(client, db_session, test_user):
+    post = Post(content="hello", author=test_user)
+    db_session.add(post)
+    db_session.commit()
+
+    login(client, test_user.username, "secret")
+    resp = client.get(f"/post/{post.id}")
+    assert resp.status_code == 200
+    assert b"hello" in resp.data

@@ -68,3 +68,5 @@
 - Fixed feed template to handle posts without an author (PR orphan-posts-fix).
 - Simplified author checks in feed template using a local variable (PR feed-author-var).
 - Corregido el query de usuarios destacados para agrupar por usuario y ordenar por el logro más reciente (PR top-users-orderby-fix).
+
+- Agregado endpoint `feed.view_post` con plantilla `post_detail.html` para ver publicaciones individuales (PR post-detail-route).

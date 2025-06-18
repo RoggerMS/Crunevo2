@@ -217,6 +217,17 @@ def trending():
     return render_template("feed/feed.html", posts=posts, trending=True, today=today)
 
 
+@feed_bp.route("/post/<int:post_id>")
+@activated_required
+def view_post(post_id: int):
+    """Display a single post."""
+    post = Post.query.get_or_404(post_id)
+    return render_template("feed/post_detail.html", post=post)
+
+
+feed_bp.add_url_rule("/posts/<int:id>", endpoint="view_post", view_func=view_post)
+
+
 @feed_bp.route("/api/chat", methods=["POST"])
 @activated_required
 def api_chat():
