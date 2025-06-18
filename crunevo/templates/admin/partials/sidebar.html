@@ -1,20 +1,26 @@
 <div class="navbar-expand-md">
   <div class="collapse navbar-collapse" id="sidebar-menu">
     <ul class="navbar-nav pt-lg-3">
-      <!-- Actuales -->
-      <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.manage_users') }}"><i class="ti ti-users"></i> Gestionar usuarios</a></li>
-      <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.manage_reports') }}"><i class="ti ti-flag"></i> Reportes</a></li>
-      <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.manage_store') }}"><i class="ti ti-building-store"></i> Tienda</a></li>
+      <!-- Sección 1: Administración -->
+      <li class="nav-item text-muted small px-3 mt-2">🧑 Administración</li>
+      <li class="nav-item"><a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}"><i class="ti ti-layout-dashboard"></i> Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link {% if request.endpoint == 'admin.manage_users' %}active{% endif %}" href="{{ url_for('admin.manage_users') }}"><i class="ti ti-users"></i> Gestión de usuarios</a></li>
+      <li class="nav-item"><a class="nav-link {% if request.endpoint == 'admin.manage_reports' %}active{% endif %}" href="{{ url_for('admin.manage_reports') }}"><i class="ti ti-flag"></i> Reportes</a></li>
+      <li class="nav-item"><a class="nav-link {% if request.endpoint == 'admin.manage_store' %}active{% endif %}" href="{{ url_for('admin.manage_store') }}"><i class="ti ti-building-store"></i> Tienda</a></li>
       <li class="nav-item"><a class="nav-link disabled" href="#"><i class="ti ti-coin"></i> Créditos</a></li>
-      <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i class="ti ti-chart-bar"></i> Estadísticas</a></li>
+      <li class="nav-item"><a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}"><i class="ti ti-chart-bar"></i> Estadísticas</a></li>
 
-      <!-- Potenciales futuros -->
+      <!-- Sección 2: Comunidad -->
+      <li class="nav-item text-muted small px-3 mt-4">🏅 Comunidad</li>
       <li class="nav-item"><a class="nav-link disabled" href="#"><i class="ti ti-check"></i> Verificaciones</a></li>
       <li class="nav-item"><a class="nav-link disabled" href="#"><i class="ti ti-badge"></i> Insignias</a></li>
       <li class="nav-item"><a class="nav-link disabled" href="#"><i class="ti ti-award"></i> Logros</a></li>
-      <li class="nav-item"><a class="nav-link disabled" href="#"><i class="ti ti-calendar-event"></i> Eventos</a></li>
       <li class="nav-item"><a class="nav-link disabled" href="#"><i class="ti ti-users-group"></i> Clubes</a></li>
-      <li class="nav-item"><a class="nav-link disabled" href="#"><i class="ti ti-robot"></i> IA / Moderación</a></li>
+      <li class="nav-item"><a class="nav-link disabled" href="#"><i class="ti ti-calendar-event"></i> Eventos</a></li>
+
+      <!-- Sección 3: Sistema -->
+      <li class="nav-item text-muted small px-3 mt-4">🤖 Sistema</li>
+      <li class="nav-item"><a class="nav-link disabled" href="#"><i class="ti ti-robot"></i> Moderación IA</a></li>
       <li class="nav-item"><a class="nav-link disabled" href="#"><i class="ti ti-settings-cog"></i> Configuración</a></li>
     </ul>
   </div>

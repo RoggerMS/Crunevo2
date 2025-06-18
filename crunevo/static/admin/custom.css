@@ -1,3 +1,23 @@
 :root {
   --tblr-primary: #7b3aed;
 }
+
+.navbar-nav .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+}
+
+.navbar-nav .nav-item.text-muted {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.navbar-nav .nav-link.active {
+  background-color: var(--tblr-primary);
+  color: #fff;
+  border-radius: 0.25rem;
+}

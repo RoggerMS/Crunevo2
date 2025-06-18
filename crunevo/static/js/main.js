@@ -10,14 +10,22 @@ function csrfFetch(url, options = {}) {
   return fetch(url, { ...options, headers });
 }
 
-function showToast(message) {
+function showToast(message, options = {}) {
   const box = document.querySelector('.toast-container');
   if (!box) return;
   const div = document.createElement('div');
-  div.className = 'alert alert-primary';
-  div.textContent = message;
+  div.className = 'toast align-items-center text-bg-primary border-0';
+  div.role = 'alert';
+  div.ariaLive = 'assertive';
+  div.ariaAtomic = 'true';
+  div.dataset.bsDelay = options.delay || 3000;
+  div.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">${message}</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>`;
   box.appendChild(div);
-  setTimeout(() => div.remove(), 3000);
+  new bootstrap.Toast(div).show();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -26,12 +34,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (saved) {
     document.documentElement.dataset.bsTheme = saved;
   }
-  const toggle = document.getElementById('themeToggle');
-  toggle?.addEventListener('click', () => {
-    const html = document.documentElement;
-    const next = html.dataset.bsTheme === 'dark' ? 'light' : 'dark';
-    html.dataset.bsTheme = next;
-    localStorage.setItem('theme', next);
+  document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const html = document.documentElement;
+      const next = html.dataset.bsTheme === 'dark' ? 'light' : 'dark';
+      html.dataset.bsTheme = next;
+      localStorage.setItem('theme', next);
+    });
+  });
+
+  document.querySelectorAll('.toast').forEach((t) => {
+    new bootstrap.Toast(t).show();
   });
 
   // load feed on feed page
