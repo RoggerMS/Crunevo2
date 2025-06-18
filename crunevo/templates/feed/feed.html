@@ -45,26 +45,54 @@
     {% endfor %}
   </div>
 </div>
-{% for post in posts %}
-  <div class="card mb-3 shadow-sm">
-    <div class="card-body">
-      <div class="d-flex align-items-center mb-2">
-        <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
-        <a href="{{ url_for('auth.public_profile', user_id=post.author.id) }}" class="me-auto text-decoration-none">
-          <strong>{{ post.author.username }}</strong>
-        </a>
-        <small class="text-muted">{{ post.created_at.strftime('%Y-%m-%d') }}</small>
-      </div>
-      <p class="card-text">{{ post.content }}</p>
-      {% if post.file_url %}
-        {% if post.file_url.endswith('.pdf') %}
-        <a href="{{ post.file_url }}" target="_blank" class="btn btn-sm btn-outline-primary mb-2">Ver PDF</a>
-        {% else %}
-        <img src="{{ post.file_url }}" class="img-fluid rounded mb-2">
+<div class="row">
+  <div class="col-lg-8">
+    {% for post in posts %}
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+          <a href="{{ url_for('auth.public_profile', user_id=post.author.id) }}" class="me-auto text-decoration-none">
+            <strong>{{ post.author.username }}</strong>
+          </a>
+          <small class="text-muted">{{ post.created_at.strftime('%Y-%m-%d') }}</small>
+        </div>
+        <p class="card-text">{{ post.content }}</p>
+        {% if post.file_url %}
+          {% if post.file_url.endswith('.pdf') %}
+          <a href="{{ post.file_url }}" target="_blank" class="btn btn-sm btn-outline-primary mb-2">Ver PDF</a>
+          {% else %}
+          <img src="{{ post.file_url }}" class="img-fluid rounded mb-2">
+          {% endif %}
         {% endif %}
-      {% endif %}
-      <div class="text-muted small">{{ post.likes }} likes</div>
+        <div class="text-muted small">{{ post.likes }} likes</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="col-lg-4 mt-4 mt-lg-0">
+    <div class="card mb-3">
+      <div class="card-header bg-success text-white">🏆 Top de la semana</div>
+      <ul class="list-group list-group-flush">
+        {% for user in top_ranked %}
+        <li class="list-group-item">
+          <strong>{{ user.username }}</strong><br>
+          Créditos: {{ user.credits }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-header bg-info text-white">🧩 Logros recientes</div>
+      <ul class="list-group list-group-flush">
+        {% for user, logros in recent_achievements %}
+        <li class="list-group-item">
+          <strong>{{ user }}</strong>: {{ logros }}
+        </li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
-{% endfor %}
+</div>
 {% endblock %}

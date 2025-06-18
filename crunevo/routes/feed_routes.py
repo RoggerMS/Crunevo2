@@ -15,7 +15,14 @@ from flask_login import current_user
 from crunevo.utils.helpers import activated_required
 from datetime import datetime
 from crunevo.extensions import db, csrf
-from crunevo.models import Post, FeedItem, Note, User, UserAchievement
+from crunevo.models import (
+    Post,
+    FeedItem,
+    Note,
+    User,
+    UserAchievement,
+    LoginHistory,
+)
 from crunevo.forms import FeedNoteForm, FeedImageForm
 from crunevo.utils import create_feed_item_for_all, unlock_achievement
 from crunevo.utils.credits import add_credit
@@ -39,6 +46,31 @@ def get_featured_posts():
         .all()
     )
     return top_notes, top_posts, top_users
+
+
+def get_weekly_ranking():
+    """Return top users of the week and recently earned achievements."""
+    from datetime import timedelta, date
+
+    one_week_ago = date.today() - timedelta(days=7)
+    top_users = (
+        User.query.join(LoginHistory)
+        .filter(LoginHistory.login_date >= one_week_ago)
+        .group_by(User.id)
+        .order_by(User.credits.desc())
+        .limit(3)
+        .all()
+    )
+
+    recent_achievements = (
+        db.session.query(User.username, UserAchievement.badge_code)
+        .join(UserAchievement)
+        .order_by(UserAchievement.earned_at.desc())
+        .limit(5)
+        .all()
+    )
+
+    return top_users, recent_achievements
 
 
 @feed_bp.route("/feed", methods=["GET", "POST"])
@@ -163,12 +195,15 @@ def index():
 
     posts = Post.query.order_by(Post.created_at.desc()).limit(10).all()
     top_notes, top_posts, top_users = get_featured_posts()
+    top_ranked, recent_achievements = get_weekly_ranking()
     return render_template(
         "feed/feed.html",
         posts=posts,
         top_notes=top_notes,
         top_posts=top_posts,
         top_users=top_users,
+        top_ranked=top_ranked,
+        recent_achievements=recent_achievements,
     )
 
 
