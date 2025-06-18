@@ -85,3 +85,4 @@
 - Ajustado layout de admin para separar navbar fijo y añadir padding al contenido (PR admin-spacing-fix).
 - Mejorado `base_admin.html` con padding horizontal en el main y sidebar con enlaces actualizados (PR admin-spacing-fix2).
 - Admin layout now uses `page` and `page-wrapper`; sidebar muestra Créditos y Estadísticas (PR admin-page-wrapper).
+- Agregado bloque de noticias en el feed principal para mostrar anuncios de CRUNEVO (PR feed-news-section)

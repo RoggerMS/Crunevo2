@@ -66,6 +66,20 @@
       </div>
     </div> <!-- Fin fila de destacados -->
 
+    <div class="card mb-4 border-info">
+      <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+        <span>📰 Noticias de CRUNEVO</span>
+        <button class="btn btn-sm btn-outline-light d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#feedNews" aria-expanded="false" aria-controls="feedNews">Mostrar</button>
+      </div>
+      <div id="feedNews" class="collapse d-md-block">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">🎉 Ya puedes subir videos educativos a CRUNEVO</li>
+          <li class="list-group-item">🔧 Nuevo: ahora puedes bloquear usuarios en el chat</li>
+          <li class="list-group-item">🏆 Participa en el sorteo del mes (20 créditos)</li>
+        </ul>
+      </div>
+    </div>
+
   <div class="row">
     <div class="col-lg-8">
     {% for post in posts %}
