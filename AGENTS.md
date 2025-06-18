@@ -73,3 +73,5 @@
 - Se unificó la ruta alias de `feed.view_post` usando <int:post_id> para evitar BuildError en templates.
 - Se añadió prueba unitaria para verificar el alias `/posts/<id>` de `feed.view_post` (PR view-post-alias-test).
 - Verificadas rutas del feed y sin reproducir BuildError; alias '/posts/<id>' activo (QA feed-view-post-check).
+
+- Revalidado enlace a `feed.view_post`; no se reproduce BuildError y se mantiene alias `/posts/<id>` (QA feed-view-post-check 2).
