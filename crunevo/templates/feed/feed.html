@@ -8,6 +8,43 @@
   <input type="file" name="file" accept=".jpg,.png,.pdf" class="form-control mb-2">
   <button class="btn btn-primary" type="submit">Publicar</button>
 </form>
+<div class="row mb-4 tw-gap-2">
+  <div class="col-md-4">
+    <h5>📘 Apuntes más vistos</h5>
+    {% for note in top_notes %}
+    <div class="card mb-2 tw-shadow-sm">
+      <div class="card-body">
+        <h6 class="card-title">{{ note.title }}</h6>
+        <a href="{{ url_for('notes.detail', note_id=note.id) }}" class="btn btn-sm btn-primary">Ver</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="col-md-4">
+    <h5>🔥 Publicaciones populares</h5>
+    {% for post in top_posts %}
+    <div class="card mb-2 tw-shadow-sm">
+      <div class="card-body">
+        <p>{{ post.content[:100] }}...</p>
+        <a href="{{ url_for('feed.view_post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary">Ver más</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="col-md-4">
+    <h5>🏅 Usuarios destacados</h5>
+    {% for user in top_users %}
+    <div class="card mb-2 tw-shadow-sm">
+      <div class="card-body">
+        <strong>{{ user.username }}</strong><br>
+        <span class="badge bg-info">Logros recientes</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
 {% for post in posts %}
   <div class="card mb-3 shadow-sm">
     <div class="card-body">

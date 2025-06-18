@@ -15,7 +15,7 @@ from flask_login import current_user
 from crunevo.utils.helpers import activated_required
 from datetime import datetime
 from crunevo.extensions import db, csrf
-from crunevo.models import Post, FeedItem, Note
+from crunevo.models import Post, FeedItem, Note, User, UserAchievement
 from crunevo.forms import FeedNoteForm, FeedImageForm
 from crunevo.utils import create_feed_item_for_all, unlock_achievement
 from crunevo.utils.credits import add_credit
@@ -25,6 +25,20 @@ from crunevo.cache.feed_cache import fetch as cache_fetch, push_items as cache_p
 
 feed_bp = Blueprint("feed", __name__)
 csrf.exempt(feed_bp)
+
+
+def get_featured_posts():
+    """Return top notes, posts and users with recent achievements."""
+    top_notes = Note.query.order_by(Note.views.desc()).limit(3).all()
+    top_posts = Post.query.order_by(Post.likes.desc()).limit(3).all()
+    top_users = (
+        User.query.join(UserAchievement)
+        .order_by(UserAchievement.earned_at.desc())
+        .distinct()
+        .limit(3)
+        .all()
+    )
+    return top_notes, top_posts, top_users
 
 
 @feed_bp.route("/feed", methods=["GET", "POST"])
@@ -148,7 +162,14 @@ def index():
         return redirect(url_for("feed.index"))
 
     posts = Post.query.order_by(Post.created_at.desc()).limit(10).all()
-    return render_template("feed/feed.html", posts=posts)
+    top_notes, top_posts, top_users = get_featured_posts()
+    return render_template(
+        "feed/feed.html",
+        posts=posts,
+        top_notes=top_notes,
+        top_posts=top_posts,
+        top_users=top_users,
+    )
 
 
 @feed_bp.route("/trending")
