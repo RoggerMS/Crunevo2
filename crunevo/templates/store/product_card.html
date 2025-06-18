@@ -1,12 +1,22 @@
 {% import 'components/button.html' as btn %}
-<article class="tw-rounded-2xl tw-shadow-sm tw-bg-white dark:tw-bg-gray-900 tw-p-4 tw-flex tw-flex-col h-full">
-  <img src="{{ product.image }}" alt="imagen" class="tw-rounded mb-4">
-  <h6 class="tw-font-semibold mb-1">{{ product.name }}</h6>
-  <p class="font-bold">${{ product.price }}</p>
-  {% if product.stock > 0 %}
-    <span class="badge bg-success mb-2">En stock</span>
-  {% else %}
-    <span class="badge mb-2 tw-bg-[var(--accent)]/10 tw-text-[var(--accent)]">Próximamente</span>
-  {% endif %}
-  {{ btn.button('Agregar al carrito', href=url_for('store.add_to_cart', product_id=product.id), class='mt-auto') }}
-</article>
+<div class="card h-100 shadow-sm">
+  <a href="{{ url_for('store.view_product', product_id=product.id) }}">
+    <img src="{{ product.image }}" class="card-img-top img-fluid" style="max-height: 180px; object-fit: cover;" alt="imagen">
+  </a>
+  <div class="card-body d-flex flex-column">
+    <h5 class="card-title">
+      <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="text-decoration-none text-dark">
+        {{ product.name }}
+      </a>
+    </h5>
+    <p class="card-text">${{ product.price }}</p>
+    {% if product.stock > 0 %}
+      <span class="badge bg-success mb-2">En stock</span>
+    {% else %}
+      <span class="badge bg-secondary mb-2">Próximamente</span>
+    {% endif %}
+  </div>
+  <div class="card-footer bg-white border-0">
+    <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-outline-primary w-100">Agregar al carrito</a>
+  </div>
+</div>

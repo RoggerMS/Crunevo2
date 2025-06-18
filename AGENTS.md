@@ -102,3 +102,6 @@
 - Panel de productos en admin incluye edición visual, eliminación segura y acceso directo a vista pública (PR admin-product-actions).
 
 - Panel de administración muestra tarjetas con métricas de usuarios, apuntes, tienda, créditos y ranking (PR admin-dashboard-cards).
+- Tienda actualizada con grilla Bootstrap y tarjetas con shadow en store.html y product_card.html (PR store-bootstrap-cards).
+- Añadida vista de detalle de producto con ruta '/product/<id>' y enlace desde las tarjetas (PR store-product-detail).
+- Carrito rediseñado con tabla responsive y controles de cantidad; nuevas rutas para modificar cantidades (PR cart-update).
