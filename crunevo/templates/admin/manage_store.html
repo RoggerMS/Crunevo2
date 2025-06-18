@@ -1,7 +1,8 @@
 {% extends 'admin/base_admin.html' %}
 {% block admin_content %}
 <h2 class="page-title mb-4">Administrar Tienda</h2>
-<a href="{{ url_for('admin.add_product') }}" class="btn btn-success mb-3">Nuevo producto</a>
+<a href="{{ url_for('admin.add_product') }}" class="btn btn-success mb-3 me-2">Nuevo producto</a>
+<a href="{{ url_for('admin.export_products') }}" class="btn btn-outline-primary btn-sm mb-3">Exportar a CSV</a>
 <div class="card shadow-sm">
   <div class="card-body p-0">
     <div class="table-responsive">
@@ -21,7 +22,7 @@
           <div class="dropdown">
             <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">⋮</button>
             <ul class="dropdown-menu shadow-sm">
-              <li><a class="dropdown-item" href="{{ url_for('store.view_product', product_id=product.id) }}" target="_blank">Ver en tienda</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('store.product_detail', product_id=product.id) }}" target="_blank">Ver en tienda</a></li>
               <li><a class="dropdown-item" href="{{ url_for('admin.edit_product', product_id=product.id) }}">Editar</a></li>
               <li><button class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteProductModal{{ product.id }}">Eliminar</button></li>
             </ul>

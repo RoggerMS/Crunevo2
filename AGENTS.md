@@ -105,3 +105,6 @@
 - Tienda actualizada con grilla Bootstrap y tarjetas con shadow en store.html y product_card.html (PR store-bootstrap-cards).
 - Añadida vista de detalle de producto con ruta '/product/<id>' y enlace desde las tarjetas (PR store-product-detail).
 - Carrito rediseñado con tabla responsive y controles de cantidad; nuevas rutas para modificar cantidades (PR cart-update).
+- Panel de administración ahora incluye vista detallada de movimientos de créditos con tabla y razón (PR admin-credits-history).
+- Panel de administración permite exportar usuarios, créditos y productos a CSV (PR admin-exports).
+- En el panel de productos se corrigió el enlace a la vista pública usando `store.product_detail` (PR admin-product-link-fix).
