@@ -1,8 +1,9 @@
 {% extends 'admin/base_admin.html' %}
 {% block admin_content %}
+<h2 class="page-title mb-4">Estadísticas</h2>
 <div class="row row-cards">
   <div class="col-sm-6 col-lg-3">
-    <div class="card card-sm">
+    <div class="card card-sm shadow-sm">
       <div class="card-body">
         <div class="d-flex align-items-center">
           <span class="text-secondary"><i class="ti ti-user fs-2"></i></span>
@@ -16,7 +17,7 @@
   </div>
 </div>
 
-<canvas id="chartSubidas" height="80"></canvas>
+<canvas id="chartSubidas" height="80" class="mt-4"></canvas>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const ctx = document.getElementById('chartSubidas');

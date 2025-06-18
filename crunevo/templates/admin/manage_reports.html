@@ -1,9 +1,10 @@
 {% extends 'admin/base_admin.html' %}
 {% block admin_content %}
-<h2 class="page-title">Reportes</h2>
-<div class="card">
-  <div class="table-responsive">
-    <table id="tablaReportes" class="table table-vcenter card-table">
+<h2 class="page-title mb-4">Reportes</h2>
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table id="tablaReportes" class="table table-vcenter card-table">
       <thead>
         <tr><th>ID</th><th>Usuario</th><th>Descripción</th><th>Estado</th></tr>
       </thead>
@@ -12,7 +13,8 @@
         <tr><td>{{ r.id }}</td><td>{{ r.user_id }}</td><td>{{ r.description }}</td><td>{{ r.status }}</td></tr>
         {% endfor %}
       </tbody>
-    </table>
+      </table>
+    </div>
   </div>
 </div>
 
