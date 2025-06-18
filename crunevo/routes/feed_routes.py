@@ -217,7 +217,7 @@ def trending():
     return render_template("feed/feed.html", posts=posts, trending=True, today=today)
 
 
-@feed_bp.route("/post/<int:post_id>")
+@feed_bp.route("/post/<int:post_id>", endpoint="view_post")
 @activated_required
 def view_post(post_id: int):
     """Display a single post."""
