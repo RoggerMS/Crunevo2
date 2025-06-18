@@ -234,6 +234,8 @@ feed_bp.add_url_rule("/posts/<int:post_id>", endpoint="view_post", view_func=vie
 @activated_required
 def like_post(post_id):
     post = Post.query.get_or_404(post_id)
+    if post.likes is None:
+        post.likes = 0
     post.likes += 1
     db.session.commit()
     return jsonify({"likes": post.likes})
