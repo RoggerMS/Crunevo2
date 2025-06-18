@@ -8,15 +8,19 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='admin/custom.css') }}">
 {% endblock %}
 {% block content %}
-  {% include "admin/partials/topbar.html" %}
-  <div class="container-fluid mt-5">
-    <div class="row">
-      <aside class="col-lg-3 d-none d-lg-block">
-        {% include "admin/partials/sidebar.html" %}
-      </aside>
-      <main class="col-lg-9 px-md-4 pt-4">
-        {% block admin_content %}{% endblock %}
-      </main>
+  <div class="page">
+    {% include "admin/partials/topbar.html" %}
+    <div class="page-wrapper pt-4 px-4">
+      <div class="container-xl">
+        <div class="row">
+          <aside class="col-lg-3 d-none d-lg-block">
+            {% include "admin/partials/sidebar.html" %}
+          </aside>
+          <main class="col-lg-9 px-md-4">
+            {% block admin_content %}{% endblock %}
+          </main>
+        </div>
+      </div>
     </div>
   </div>
 {% endblock %}
