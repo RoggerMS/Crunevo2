@@ -215,3 +215,15 @@ def toggle_user_status(user_id):
 def user_activity(user_id):
     user = User.query.get_or_404(user_id)
     return render_template("admin/user_activity.html", user=user)
+
+
+@admin_bp.route("/credits")
+@admin_required
+def manage_credits():
+    credits = (
+        db.session.query(Credit, User)
+        .join(User, Credit.user_id == User.id)
+        .order_by(Credit.timestamp.desc())
+        .all()
+    )
+    return render_template("admin/manage_credits.html", credits=credits)
