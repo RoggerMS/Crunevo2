@@ -78,3 +78,4 @@
 - Prueba adicional confirma url_for("feed.view_post") genera /post/<id> (QA feed-view-post-check 3).
 - Endpoint `feed.view_post` se define explícitamente en la ruta y se comprueba que la blueprint está registrada (QA feed-view-post-check 4).
 - Layout updated to use `container-fluid px-md-5` and sidebars distributed per page with row/col system (PR full-width-layout).
+- Se corrigió la sección de destacados en feed.html usando filas y columnas Bootstrap para mostrar tarjetas en tres columnas (PR feed-layout-fix).
