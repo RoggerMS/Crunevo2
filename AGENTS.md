@@ -89,3 +89,4 @@
 - Se añadieron likes y comentarios en las publicaciones del feed (PR feed-comments-likes)
 - Panel admin rediseñado con Tabler: tema dinámico, sidebar ampliado y cards con shadow (PR admin-tabler-redesign).
 - Sidebar del panel admin reorganizado con secciones y estilos para íconos alineados (PR admin-sidebar-design).
+- Sidebar resalta enlace activo, toasts usan Bootstrap y topbar incluye botón de tema (PR admin-sidebar-active).

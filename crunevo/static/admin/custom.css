@@ -15,3 +15,9 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+.navbar-nav .nav-link.active {
+  background-color: var(--tblr-primary);
+  color: #fff;
+  border-radius: 0.25rem;
+}
