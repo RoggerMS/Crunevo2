@@ -1,0 +1,23 @@
+{% import 'components/csrf.html' as csrf %}
+<div class="modal fade" id="editRoleModal{{ user.id }}" tabindex="-1">
+  <div class="modal-dialog">
+    <form method="POST" action="{{ url_for('admin.update_user_role', user_id=user.id) }}">
+      {{ csrf.csrf_field() }}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Cambiar rol</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <select name="role" class="form-select">
+            <option value="student" {% if user.role == 'student' %}selected{% endif %}>Estudiante</option>
+            <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Administrador</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" type="submit">Guardar cambios</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

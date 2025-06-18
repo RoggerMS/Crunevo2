@@ -12,8 +12,7 @@ from flask_login import login_required
 from crunevo.utils.helpers import activated_required, admin_required
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
-from datetime import datetime
-from crunevo.models import User, Product, Report, Note, Credit
+from crunevo.models import User, Product, Report, Note, Credit, Comment
 from crunevo.utils.ranking import calculate_weekly_ranking
 from crunevo.utils.audit import record_auth_event
 import cloudinary.uploader
@@ -29,33 +28,27 @@ def before_admin():
 
 
 @admin_bp.route("/")
-@activated_required
+@admin_required
 def dashboard():
-    stats = {
-        "users_total": User.query.count(),
-        "notes_today": Note.query.filter(
-            Note.created_at >= datetime.utcnow().date()
-        ).count(),
-        "credits_today": db.session.query(db.func.sum(Credit.amount))
-        .filter(Credit.timestamp >= datetime.utcnow().date())
-        .scalar()
-        or 0,
-    }
-
-    uploads_chart_data = {
-        "labels": [],
-        "datasets": [
-            {
-                "label": "Subidas",
-                "data": [],
-                "borderColor": "#7b3aed",
-            }
-        ],
-    }
+    users_total = User.query.count()
+    notes_total = Note.query.count()
+    comments_total = Comment.query.count()
+    products_total = Product.query.count()
+    credits_total = db.session.query(db.func.sum(Credit.amount)).scalar() or 0
+    last_ranking = (
+        db.session.query(Credit)
+        .filter(Credit.reason == "ranking")
+        .order_by(Credit.id.desc())
+        .first()
+    )
     return render_template(
         "admin/dashboard.html",
-        stats=stats,
-        uploads_chart_data=uploads_chart_data,
+        users_total=users_total,
+        notes_total=notes_total,
+        comments_total=comments_total,
+        products_total=products_total,
+        credits_total=credits_total,
+        last_ranking=last_ranking,
     )
 
 
@@ -124,6 +117,44 @@ def add_product():
     return render_template("admin/add_edit_product.html")
 
 
+@admin_bp.route("/products/<int:product_id>/edit", methods=["GET", "POST"])
+@admin_required
+def edit_product(product_id):
+    product = Product.query.get_or_404(product_id)
+    if request.method == "POST":
+        product.name = request.form["name"]
+        product.description = request.form.get("description")
+        product.price = float(request.form["price"])
+        product.stock = int(request.form["stock"])
+        file = request.files.get("image")
+        if file and file.filename:
+            cloud_url = current_app.config.get("CLOUDINARY_URL")
+            if cloud_url:
+                res = cloudinary.uploader.upload(file)
+                product.image = res["secure_url"]
+            else:
+                filename = secure_filename(file.filename)
+                upload_folder = current_app.config["UPLOAD_FOLDER"]
+                os.makedirs(upload_folder, exist_ok=True)
+                filepath = os.path.join(upload_folder, filename)
+                file.save(filepath)
+                product.image = filepath
+        db.session.commit()
+        flash("Producto actualizado correctamente")
+        return redirect(url_for("admin.manage_store"))
+    return render_template("admin/add_edit_product.html", product=product)
+
+
+@admin_bp.route("/products/<int:product_id>/delete", methods=["POST"])
+@admin_required
+def delete_product(product_id):
+    product = Product.query.get_or_404(product_id)
+    db.session.delete(product)
+    db.session.commit()
+    flash("Producto eliminado correctamente")
+    return redirect(url_for("admin.manage_store"))
+
+
 @admin_bp.route("/reports")
 @activated_required
 def manage_reports():
@@ -155,3 +186,32 @@ def approve_user(user_id):
     record_auth_event(user, "verify_student")
     flash("Usuario verificado")
     return redirect(url_for("admin.verifications"))
+
+
+@admin_bp.route("/user/<int:user_id>/role", methods=["POST"])
+@admin_required
+def update_user_role(user_id):
+    user = User.query.get_or_404(user_id)
+    new_role = request.form.get("role")
+    if new_role in ["student", "admin"]:
+        user.role = new_role
+        db.session.commit()
+        flash("Rol actualizado correctamente")
+    return redirect(url_for("admin.manage_users"))
+
+
+@admin_bp.route("/user/<int:user_id>/toggle_status")
+@admin_required
+def toggle_user_status(user_id):
+    user = User.query.get_or_404(user_id)
+    user.activated = not user.activated
+    db.session.commit()
+    flash("Estado de cuenta actualizado")
+    return redirect(url_for("admin.manage_users"))
+
+
+@admin_bp.route("/user/<int:user_id>/activity")
+@admin_required
+def user_activity(user_id):
+    user = User.query.get_or_404(user_id)
+    return render_template("admin/user_activity.html", user=user)
