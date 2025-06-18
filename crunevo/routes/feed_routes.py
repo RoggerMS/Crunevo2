@@ -196,7 +196,15 @@ def index():
         flash("Publicación creada")
         return redirect(url_for("feed.index"))
 
-    posts = Post.query.order_by(Post.created_at.desc()).limit(10).all()
+    filter_opt = request.args.get("filter", "recientes")
+
+    query = Post.query
+    if filter_opt == "populares":
+        query = query.order_by(Post.likes.desc())
+    else:  # recientes por defecto
+        query = query.order_by(Post.created_at.desc())
+
+    posts = query.limit(10).all()
     top_notes, top_posts, top_users = get_featured_posts()
     top_ranked, recent_achievements = get_weekly_ranking()
     return render_template(
@@ -207,6 +215,7 @@ def index():
         top_users=top_users,
         top_ranked=top_ranked,
         recent_achievements=recent_achievements,
+        filter=filter_opt,
     )
 
 
