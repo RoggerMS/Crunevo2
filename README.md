@@ -51,6 +51,22 @@ It usually means Fly.io detected an outdated manifest from a previous deployment
    fly deploy
    ```
 
+## Troubleshooting deployment failures
+
+If `fly deploy` fails with `release_command failed` and the logs show an
+`OperationalError` when connecting to `crunevo-db.flycast`, the app could not
+reach the PostgreSQL instance. Make sure a Fly Postgres cluster exists and is
+attached to your application:
+
+```bash
+fly postgres create --name crunevo-db       # creates the database
+fly postgres attach --postgres-app crunevo-db -a crunevo2
+```
+
+This command sets the `DATABASE_URL` secret automatically. Verify it with
+`fly secrets list -a crunevo2`. If the database is stopped, restart it with
+`fly pg restart -a crunevo-db` and then run `fly deploy` again.
+
 If you want to run the application locally but use a PostgreSQL
 database hosted on Fly.io:
 ```bash
