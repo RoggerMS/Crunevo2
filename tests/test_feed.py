@@ -1,3 +1,4 @@
+from flask import url_for
 from crunevo.models import Note, FeedItem, Post
 from crunevo.utils.feed import create_feed_item_for_all
 from crunevo.cache import feed_cache
@@ -141,3 +142,9 @@ def test_view_post_alias(client, db_session, test_user):
     resp = client.get(f"/posts/{post.id}")
     assert resp.status_code == 200
     assert b"alias" in resp.data
+
+
+def test_url_for_view_post(app):
+    with app.app_context():
+        with app.test_request_context():
+            assert url_for("feed.view_post", post_id=42) == "/post/42"

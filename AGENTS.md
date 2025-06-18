@@ -75,3 +75,4 @@
 - Verificadas rutas del feed y sin reproducir BuildError; alias '/posts/<id>' activo (QA feed-view-post-check).
 
 - Revalidado enlace a `feed.view_post`; no se reproduce BuildError y se mantiene alias `/posts/<id>` (QA feed-view-post-check 2).
+- Prueba adicional confirma url_for("feed.view_post") genera /post/<id> (QA feed-view-post-check 3).
