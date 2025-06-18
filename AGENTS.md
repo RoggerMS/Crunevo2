@@ -65,3 +65,4 @@
 - Añadido ranking semanal y logros recientes en el feed (PR weekly-ranking)
 - Corregidos formularios del panel de administración: `manage_users` acepta
   POST, `user_actions.html` importa `csrf_field` y envía `user_id` (PR admin-fixes)
+- Fixed feed template to handle posts without an author (PR orphan-posts-fix).
