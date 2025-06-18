@@ -108,3 +108,4 @@
 - Panel de administración ahora incluye vista detallada de movimientos de créditos con tabla y razón (PR admin-credits-history).
 - Panel de administración permite exportar usuarios, créditos y productos a CSV (PR admin-exports).
 - En el panel de productos se corrigió el enlace a la vista pública usando `store.product_detail` (PR admin-product-link-fix).
+- Eliminada la función `create_tables_once` en app.py para evitar timeouts; las tablas se gestionan con migraciones (PR app-init-fix).
