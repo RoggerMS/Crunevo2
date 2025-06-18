@@ -1,10 +1,10 @@
 {% extends 'admin/base_admin.html' %}
 {% block admin_content %}
-<h2 class="page-title">Gestión de usuarios</h2>
-
-<div class="card">
-  <div class="table-responsive">
-    <table id="tablaUsuarios" class="table table-vcenter card-table">
+<h2 class="page-title mb-4">Gestión de usuarios</h2>
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table id="tablaUsuarios" class="table table-vcenter card-table">
       <thead>
         <tr>
           <th>Nombre</th><th>Email</th><th>Rol</th>
@@ -30,7 +30,8 @@
         {% include 'admin/modals/user_actions.html' %}
         {% endfor %}
       </tbody>
-    </table>
+      </table>
+    </div>
   </div>
 </div>
 
