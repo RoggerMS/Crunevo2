@@ -1,0 +1,21 @@
+{% import 'components/csrf.html' as csrf %}
+<div class="modal fade" id="deleteProductModal{{ product.id }}" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="POST" action="{{ url_for('admin.delete_product', product_id=product.id) }}">
+      {{ csrf.csrf_field() }}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirmar eliminación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          ¿Seguro que deseas eliminar el producto <strong>{{ product.name }}</strong>?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger">Eliminar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<h3>Actividad reciente de {{ user.username }}</h3>
+<ul>
+  <li>Último login: {{ user.last_login or "Desconocido" }}</li>
+  <li>Apuntes subidos: {{ user.notes|length }}</li>
+  <li>Comentarios hechos: {{ user.comments|length }}</li>
+</ul>
+{% endblock %}

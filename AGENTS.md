@@ -98,3 +98,7 @@
 - Implementado filtros rápidos en el feed por query string (PR feed-quick-filters).
 - Lista de apuntes ahora permite filtrar por recientes, más vistos y categorías y muestra tags en cada tarjeta (PR notes-filters).
 - Apuntes admiten comentarios y reacción con likes que se pueden quitar (PR notes-comments-likes).
+- Gestión de usuarios ahora incluye acciones rápidas por fila con dropdown y modal para cambiar rol (PR user-quick-actions).
+- Panel de productos en admin incluye edición visual, eliminación segura y acceso directo a vista pública (PR admin-product-actions).
+
+- Panel de administración muestra tarjetas con métricas de usuarios, apuntes, tienda, créditos y ranking (PR admin-dashboard-cards).

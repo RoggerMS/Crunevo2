@@ -22,12 +22,21 @@
             <span class="status-dot status-dot-{{ 'green' if user.activated else 'red' }}"></span>
           </td>
           <td class="text-end">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#modal-{{ user.id }}" class="btn btn-sm">
-              <i class="ti ti-settings"></i>
-            </a>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
+                ⋮
+              </button>
+              <ul class="dropdown-menu shadow-sm">
+                <li><a class="dropdown-item" href="{{ url_for('auth.public_profile', user_id=user.id) }}" target="_blank">Ver perfil público</a></li>
+                <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editRoleModal{{ user.id }}">Cambiar rol</button></li>
+                <li><a class="dropdown-item text-warning" href="{{ url_for('admin.toggle_user_status', user_id=user.id) }}">Suspender / Reactivar</a></li>
+                <li><a class="dropdown-item text-muted" href="{{ url_for('admin.user_activity', user_id=user.id) }}">Ver actividad</a></li>
+              </ul>
+            </div>
           </td>
         </tr>
         {% include 'admin/modals/user_actions.html' %}
+        {% include 'admin/modals/edit_role.html' %}
         {% endfor %}
       </tbody>
       </table>

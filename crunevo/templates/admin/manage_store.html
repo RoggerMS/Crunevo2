@@ -6,10 +6,29 @@
   <div class="card-body p-0">
     <div class="table-responsive">
       <table id="tablaProductos" class="table table-vcenter card-table">
-      <thead><tr><th>ID</th><th>Nombre</th><th>Stock</th></tr></thead>
+      <thead>
+        <tr>
+          <th>ID</th><th>Nombre</th><th>Stock</th><th></th>
+        </tr>
+      </thead>
       <tbody>
-      {% for p in products %}
-      <tr><td>{{ p.id }}</td><td>{{ p.name }}</td><td>{{ p.stock }}</td></tr>
+      {% for product in products %}
+      <tr>
+        <td>{{ product.id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.stock }}</td>
+        <td class="text-end">
+          <div class="dropdown">
+            <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">⋮</button>
+            <ul class="dropdown-menu shadow-sm">
+              <li><a class="dropdown-item" href="{{ url_for('store.view_product', product_id=product.id) }}" target="_blank">Ver en tienda</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('admin.edit_product', product_id=product.id) }}">Editar</a></li>
+              <li><button class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteProductModal{{ product.id }}">Eliminar</button></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      {% include 'admin/modals/delete_product.html' %}
       {% endfor %}
       </tbody>
       </table>
