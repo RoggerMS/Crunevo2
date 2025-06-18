@@ -1,51 +1,53 @@
 {% extends 'base.html' %}
 {% import 'components/button.html' as btn %}
 {% block content %}
-<div class="row">
-  <!-- Lado izquierdo (menú lateral) -->
-  <div class="col-lg-2 d-none d-lg-block">
-    {% include 'components/sidebar_left.html' %}
-  </div>
+<div class="container mt-4">
+  <div class="row">
+    <!-- Lado izquierdo (menú lateral) -->
+    <div class="col-lg-2 d-none d-lg-block">
+      {% include 'components/sidebar_left.html' %}
+    </div>
 
-  <!-- Contenido central -->
-  <div class="col-lg-7 col-md-12">
-    <h2 class="mb-4">Tienda</h2>
-    <div class="row d-flex justify-content-between">
-      <aside class="col-md-4 col-lg-3 mb-3 d-none d-md-block">
-        <div class="tw-rounded-2xl tw-shadow-sm tw-bg-white dark:tw-bg-gray-900 tw-p-4">
-            <h6 class="card-title">Filtros</h6>
-            <hr>
-            <div class="mb-3">
-              <strong>Categorías</strong>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="cat1">
-                <label class="form-check-label" for="cat1">General</label>
+    <!-- Contenido central -->
+    <div class="col-lg-7 col-md-12">
+      <h2 class="mb-4">Tienda</h2>
+      <div class="row d-flex justify-content-between">
+        <aside class="col-md-3 mb-4 d-none d-md-block">
+          <div class="tw-rounded-2xl tw-shadow-sm tw-bg-white dark:tw-bg-gray-900 tw-p-4">
+              <h6 class="card-title">Filtros</h6>
+              <hr>
+              <div class="mb-3">
+                <strong>Categorías</strong>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="cat1">
+                  <label class="form-check-label" for="cat1">General</label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <strong>Precio</strong>
+                <input type="range" class="form-range" min="0" max="100">
               </div>
             </div>
-            <div class="mb-3">
-              <strong>Precio</strong>
-              <input type="range" class="form-range" min="0" max="100">
+        </aside>
+        <div class="col-md-9">
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+            {% for product in products %}
+            <div class="col">
+              {% include 'store/product_card.html' %}
             </div>
+            {% endfor %}
           </div>
-      </aside>
-      <div class="col-md-8 col-lg-9">
-        <div class="row g-3">
-          {% for product in products %}
-          <div class="col-sm-6 col-md-4">
-            {% include 'store/product_card.html' %}
+          <div class="mt-4 text-end">
+            {{ btn.button('Ver Carrito', href=url_for('store.view_cart'), variant='secondary') }}
           </div>
-          {% endfor %}
-        </div>
-        <div class="mt-4 text-end">
-          {{ btn.button('Ver Carrito', href=url_for('store.view_cart'), variant='secondary') }}
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Zona derecha (destacados, ranking, etc.) -->
-  <div class="col-lg-3 d-none d-lg-block">
-    {% include 'components/sidebar_right.html' %}
+    <!-- Zona derecha (destacados, ranking, etc.) -->
+    <div class="col-lg-3 d-none d-lg-block">
+      {% include 'components/sidebar_right.html' %}
+    </div>
   </div>
 </div>
 {% endblock %}

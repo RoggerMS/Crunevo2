@@ -1,18 +1,61 @@
 {% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
 {% block content %}
-<h2>Carrito</h2>
-<table class="table">
-  <thead><tr><th>Producto</th><th>Cantidad</th><th>Subtotal</th></tr></thead>
-  <tbody>
-  {% for product, qty in products %}
-  <tr>
-    <td>{{ product.name }}</td>
-    <td>{{ qty }}</td>
-    <td>${{ product.price * qty }}</td>
-  </tr>
-  {% endfor %}
-  </tbody>
-</table>
-<p>Total: ${{ total }}</p>
-<a href="{{ url_for('store.checkout') }}" class="btn btn-success">Pagar</a>
+<div class="container py-4">
+  <h2 class="mb-4">Carrito</h2>
+  {% if products %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Producto</th>
+          <th class="text-center">Cantidad</th>
+          <th class="text-end">Subtotal</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for product, qty in products %}
+        <tr>
+          <td style="width: 80px;">
+            <img src="{{ product.image }}" class="img-fluid rounded" style="max-height: 60px; object-fit: cover;" alt="imagen">
+          </td>
+          <td>
+            <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="text-decoration-none">{{ product.name }}</a>
+            <div class="text-muted">${{ product.price }}</div>
+          </td>
+          <td class="text-center">
+            <form method="post" action="{{ url_for('store.decrease_item', product_id=product.id) }}" class="d-inline">
+              {{ csrf.csrf_field() }}
+              <button class="btn btn-sm btn-outline-secondary" aria-label="Restar">-</button>
+            </form>
+            <span class="mx-2">{{ qty }}</span>
+            <form method="post" action="{{ url_for('store.increase_item', product_id=product.id) }}" class="d-inline">
+              {{ csrf.csrf_field() }}
+              <button class="btn btn-sm btn-outline-secondary" aria-label="Sumar">+</button>
+            </form>
+          </td>
+          <td class="text-end">${{ product.price * qty }}</td>
+          <td>
+            <form method="post" action="{{ url_for('store.remove_item', product_id=product.id) }}" class="d-inline">
+              {{ csrf.csrf_field() }}
+              <button class="btn btn-sm btn-link text-danger">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="text-end mb-3">
+    <strong>Total: ${{ total }}</strong>
+  </div>
+  <div class="text-end">
+    <a href="{{ url_for('store.checkout') }}" class="btn btn-success">Finalizar compra</a>
+  </div>
+  {% else %}
+  <p>No hay productos en el carrito.</p>
+  {% endif %}
+</div>
 {% endblock %}
