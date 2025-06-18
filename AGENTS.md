@@ -94,3 +94,4 @@
 - Añadido sistema de navegación de secciones por botones en el feed (PR feed-section-buttons).
 - Estructura de admin modernizada con Tabler 1.3.x: sidebar fijo, topbar simplificada y soporte de tema oscuro (PR admin-modern-layout).
 - Fixed like_post to initialize likes when null (PR post-like-null-fix).
+- Navbar principal se oculta en /admin usando un condicional en base.html (PR admin-navbar-hide).

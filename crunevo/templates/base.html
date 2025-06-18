@@ -18,7 +18,9 @@
     {% block head_extra %}{% endblock %}
 </head>
 <body class="d-flex flex-column min-vh-100">
-    {% include 'components/navbar.html' %}
+    {% if not request.path.startswith('/admin') %}
+      {% include 'components/navbar.html' %}
+    {% endif %}
     <div class="container-fluid px-md-5">
         {% import 'components/toast.html' as toast %}
         {% with messages = get_flashed_messages() %}
