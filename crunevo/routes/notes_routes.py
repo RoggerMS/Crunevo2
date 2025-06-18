@@ -27,8 +27,36 @@ notes_bp = Blueprint("notes", __name__, url_prefix="/notes")
 @notes_bp.route("/")
 @activated_required
 def list_notes():
-    notes = Note.query.order_by(Note.created_at.desc()).all()
-    return render_template("notes/list.html", notes=notes)
+    filter_opt = request.args.get("filter", "recientes")
+    tag = request.args.get("tag")
+
+    query = Note.query
+    if tag:
+        query = query.filter(Note.tags.ilike(f"%{tag}%"))
+
+    if filter_opt == "vistos":
+        query = query.order_by(Note.views.desc())
+    else:  # recientes por defecto
+        query = query.order_by(Note.created_at.desc())
+
+    notes = query.all()
+
+    # Obtener lista de tags únicos para filtros rápidos
+    tag_values = db.session.query(Note.tags).filter(Note.tags != "").all()
+    all_tags = set()
+    for t in tag_values:
+        for tt in t[0].split(","):
+            tt = tt.strip()
+            if tt:
+                all_tags.add(tt)
+
+    return render_template(
+        "notes/list.html",
+        notes=notes,
+        filter=filter_opt,
+        categories=sorted(all_tags),
+        selected_tag=tag,
+    )
 
 
 @notes_bp.route("/search")
@@ -39,7 +67,15 @@ def search_notes():
         (Note.title.ilike(f"%{q}%")) | (Note.tags.ilike(f"%{q}%"))
     ).all()
     return jsonify(
-        [{"id": n.id, "title": n.title, "description": n.description} for n in results]
+        [
+            {
+                "id": n.id,
+                "title": n.title,
+                "description": n.description,
+                "tags": n.tags,
+            }
+            for n in results
+        ]
     )
 
 

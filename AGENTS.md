@@ -96,3 +96,4 @@
 - Fixed like_post to initialize likes when null (PR post-like-null-fix).
 - Navbar principal se oculta en /admin usando un condicional en base.html (PR admin-navbar-hide).
 - Implementado filtros rápidos en el feed por query string (PR feed-quick-filters).
+- Lista de apuntes ahora permite filtrar por recientes, más vistos y categorías y muestra tags en cada tarjeta (PR notes-filters).
