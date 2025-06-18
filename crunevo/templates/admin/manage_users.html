@@ -1,6 +1,7 @@
 {% extends 'admin/base_admin.html' %}
 {% block admin_content %}
 <h2 class="page-title mb-4">Gestión de usuarios</h2>
+<a href="{{ url_for('admin.export_users') }}" class="btn btn-outline-primary btn-sm mb-3">Exportar a CSV</a>
 <div class="card shadow-sm">
   <div class="card-body p-0">
     <div class="table-responsive">

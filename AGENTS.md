@@ -102,3 +102,5 @@
 - Panel de productos en admin incluye edición visual, eliminación segura y acceso directo a vista pública (PR admin-product-actions).
 
 - Panel de administración muestra tarjetas con métricas de usuarios, apuntes, tienda, créditos y ranking (PR admin-dashboard-cards).
+- Panel de administración ahora incluye vista detallada de movimientos de créditos con tabla y razón (PR admin-credits-history).
+- Panel de administración permite exportar usuarios, créditos y productos a CSV (PR admin-exports).

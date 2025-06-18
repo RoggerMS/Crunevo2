@@ -7,9 +7,12 @@ from flask import (
     flash,
     request,
     current_app,
+    Response,
 )
 from flask_login import login_required
 from crunevo.utils.helpers import activated_required, admin_required
+import csv
+from io import StringIO
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
 from crunevo.models import User, Product, Report, Note, Credit, Comment
@@ -215,3 +218,83 @@ def toggle_user_status(user_id):
 def user_activity(user_id):
     user = User.query.get_or_404(user_id)
     return render_template("admin/user_activity.html", user=user)
+
+
+@admin_bp.route("/credits")
+@admin_required
+def manage_credits():
+    credits = (
+        db.session.query(Credit, User)
+        .join(User, Credit.user_id == User.id)
+        .order_by(Credit.timestamp.desc())
+        .all()
+    )
+    return render_template("admin/manage_credits.html", credits=credits)
+
+
+@admin_bp.route("/users/export")
+@admin_required
+def export_users():
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["ID", "Nombre", "Email", "Rol", "Créditos", "Estado"])
+    for user in User.query.all():
+        writer.writerow(
+            [
+                user.id,
+                user.username,
+                user.email,
+                user.role,
+                user.credits,
+                "Activo" if user.activated else "Inactivo",
+            ]
+        )
+    headers = {"Content-Disposition": "attachment; filename=users.csv"}
+    return Response(output.getvalue(), mimetype="text/csv", headers=headers)
+
+
+@admin_bp.route("/credits/export")
+@admin_required
+def export_credits():
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["ID", "Usuario", "Email", "Monto", "Razón", "Fecha"])
+    credits = (
+        db.session.query(Credit, User)
+        .join(User, Credit.user_id == User.id)
+        .order_by(Credit.timestamp.desc())
+        .all()
+    )
+    for credit, user in credits:
+        writer.writerow(
+            [
+                credit.id,
+                user.username,
+                user.email,
+                credit.amount,
+                credit.reason,
+                credit.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+            ]
+        )
+    headers = {"Content-Disposition": "attachment; filename=credits.csv"}
+    return Response(output.getvalue(), mimetype="text/csv", headers=headers)
+
+
+@admin_bp.route("/store/export")
+@admin_required
+def export_products():
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["ID", "Nombre", "Precio", "Stock", "URL de imagen"])
+    for product in Product.query.all():
+        writer.writerow(
+            [
+                product.id,
+                product.name,
+                product.price,
+                product.stock,
+                product.image,
+            ]
+        )
+    headers = {"Content-Disposition": "attachment; filename=products.csv"}
+    return Response(output.getvalue(), mimetype="text/csv", headers=headers)

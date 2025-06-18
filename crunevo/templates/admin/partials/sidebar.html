@@ -12,6 +12,9 @@
   <a class="nav-link {% if request.endpoint == 'admin.manage_store' %}active{% endif %}" href="{{ url_for('admin.manage_store') }}">
     <i class="ti ti-building-store me-2"></i> Tienda
   </a>
+  <a class="nav-link {% if request.endpoint == 'admin.manage_credits' %}active{% endif %}" href="{{ url_for('admin.manage_credits') }}">
+    <i class="ti ti-coin me-2"></i> Créditos
+  </a>
 
   <span class="text-muted fw-bold small mt-4 mb-2">🏅 Comunidad</span>
   <a class="nav-link disabled"><i class="ti ti-check me-2"></i> Verificaciones</a>
