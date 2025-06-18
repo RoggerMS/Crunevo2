@@ -104,3 +104,4 @@
 - Panel de administración muestra tarjetas con métricas de usuarios, apuntes, tienda, créditos y ranking (PR admin-dashboard-cards).
 - Corregido url_for en manage_store.html para usar 'store.product_detail' (PR admin-product-link-fix).
 - Se añadió alias 'store.view_product' en store_routes para mantener compatibilidad (PR store-product-alias).
+- Se cambió el enlace de manage_store.html a 'store.view_product' para evitar BuildError (PR store-link-alias-fix).
