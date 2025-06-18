@@ -225,7 +225,8 @@ def view_post(post_id: int):
     return render_template("feed/post_detail.html", post=post)
 
 
-feed_bp.add_url_rule("/posts/<int:id>", endpoint="view_post", view_func=view_post)
+# Alias route for backwards compatibility
+feed_bp.add_url_rule("/posts/<int:post_id>", endpoint="view_post", view_func=view_post)
 
 
 @feed_bp.route("/api/chat", methods=["POST"])
