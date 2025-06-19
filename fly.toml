@@ -10,7 +10,7 @@ primary_region = 'bog'
   release_command = "flask db upgrade"
 
 [env]
-  FLASK_APP = 'crunevo.wsgi'
+  FLASK_APP = 'crunevo.wsgi:app'
   FLASK_ENV = 'production'
   PORT = "8080"
 

@@ -126,3 +126,4 @@
 
 - Dockerfile now reads FLASK_APP to run gunicorn, enabling admin instance to use wsgi_admin (PR admin-gunicorn-env).
 - Updated create_app to use `is_admin` flag and ensure admin blueprints load only when ADMIN_INSTANCE=1. wsgi_admin.py now sets this variable explicitly (PR admin-blueprint-filter).
+- Updated wsgi.py to import create_app from crunevo.app and set FLASK_APP to 'crunevo.wsgi:app' in fly.toml to ensure Gunicorn loads the app correctly (PR wsgi-app-fix).
