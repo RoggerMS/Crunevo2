@@ -18,12 +18,6 @@ from crunevo.extensions import db
 from crunevo.models import User, Product, Report, Note, Credit, Comment
 from crunevo.utils.ranking import calculate_weekly_ranking
 from crunevo.utils.audit import record_auth_event
-from crunevo.utils.stats import (
-    user_registrations_last_7_days,
-    notes_last_4_weeks,
-    credits_last_4_weeks,
-    products_last_3_months,
-)
 import cloudinary.uploader
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -50,12 +44,6 @@ def dashboard():
         .order_by(Credit.id.desc())
         .first()
     )
-    stats = {
-        "users": user_registrations_last_7_days(),
-        "notes": notes_last_4_weeks(),
-        "credits": credits_last_4_weeks(),
-        "products": products_last_3_months(),
-    }
     return render_template(
         "admin/dashboard.html",
         users_total=users_total,
@@ -64,7 +52,6 @@ def dashboard():
         products_total=products_total,
         credits_total=credits_total,
         last_ranking=last_ranking,
-        stats=stats,
     )
 
 
