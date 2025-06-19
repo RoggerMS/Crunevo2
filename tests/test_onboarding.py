@@ -72,3 +72,16 @@ def test_token_expires(client, db_session):
         resp = client.get(f"/onboarding/confirm/{token.token}")
     assert resp.status_code == 302
     assert not user.activated
+
+
+def test_generated_token_length_and_confirm(client):
+    with mail.record_messages():
+        client.post(
+            "/onboarding/register",
+            data={"email": "tok@test.com", "password": "StrongPassw0rd!"},
+        )
+    user = User.query.filter_by(email="tok@test.com").first()
+    token = EmailToken.query.filter_by(user_id=user.id).first()
+    assert len(token.token) < 64
+    client.get(f"/onboarding/confirm/{token.token}")
+    assert user.activated

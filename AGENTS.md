@@ -111,3 +111,4 @@
 - Eliminada la función `create_tables_once` en app.py para evitar timeouts; las tablas se gestionan con migraciones (PR app-init-fix).
 - Added Fly.io troubleshooting steps for Postgres connection errors in README (PR fly-release-troubleshooting).
 - Updated Fly.io docs to reference `crunevo-db.internal` (PR fly-db-internal-fix).
+- Onboarding tokens now use `secrets.token_urlsafe(32)` and no longer encode the email (PR onboarding-token-length).
