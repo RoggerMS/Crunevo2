@@ -19,7 +19,11 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
     {% if not request.path.startswith('/admin') %}
-      {% include 'components/navbar.html' %}
+      {% if config.ADMIN_INSTANCE %}
+        {% include 'components/navbar_admin.html' %}
+      {% else %}
+        {% include 'components/navbar.html' %}
+      {% endif %}
     {% endif %}
     <div class="container-fluid px-md-5">
         {% import 'components/toast.html' as toast %}

@@ -50,6 +50,7 @@ def register():
 @auth_bp.route("/login", methods=["GET", "POST"])
 @limiter.limit("5 per 15 minutes")
 def login():
+    admin_mode = current_app.config.get("ADMIN_INSTANCE")
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -61,13 +62,16 @@ def login():
                 return redirect(url_for("onboarding.pending"))
             login_user(user)
             record_login(user)
+            if admin_mode:
+                return redirect(url_for("admin.dashboard"))
             next_page = request.args.get("next")
             if not next_page or urlparse(next_page).netloc != "":
                 next_page = url_for("feed.index")
             return redirect(next_page)
         record_auth_event(user, "login_fail", extra=json.dumps({"username": username}))
         flash("Credenciales inválidas")
-    return render_template("auth/login.html")
+    template = "auth/login_admin.html" if admin_mode else "auth/login.html"
+    return render_template(template)
 
 
 @auth_bp.route("/logout")
