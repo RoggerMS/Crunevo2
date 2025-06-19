@@ -90,8 +90,8 @@ def add_product():
     if request.method == "POST":
         name = request.form["name"]
         description = request.form.get("description")
-        price = request.form["price"]
-        stock = request.form.get("stock", 0)
+        price = float(request.form["price"])
+        stock = int(request.form.get("stock", 0))
         file = request.files.get("image")
         image_url = None
         if file and file.filename:
