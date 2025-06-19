@@ -61,4 +61,39 @@
     </div>
   </div>
 </div>
+
+<div class="row mt-4" id="chartsRow">
+  <div class="col-md-6 col-xl-3 mb-4">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Usuarios / día</h3></div>
+      <div class="card-body">
+        <canvas id="usersChart" height="200" data-chart='{{ stats.users | tojson }}'></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3 mb-4">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Apuntes / semana</h3></div>
+      <div class="card-body">
+        <canvas id="notesChart" height="200" data-chart='{{ stats.notes | tojson }}'></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3 mb-4">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Créditos / semana</h3></div>
+      <div class="card-body">
+        <canvas id="creditsChart" height="200" data-chart='{{ stats.credits | tojson }}'></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3 mb-4">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Productos / mes</h3></div>
+      <div class="card-body">
+        <canvas id="productsChart" height="200" data-chart='{{ stats.products | tojson }}'></canvas>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
