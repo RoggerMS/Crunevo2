@@ -88,6 +88,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  if (typeof initAdminCharts === 'function') {
+    initAdminCharts();
+  }
+
   // Bootstrap collapse handles the mobile menu
 
 });
