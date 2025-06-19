@@ -120,3 +120,5 @@
 - Admin panel moved to subdomain burrito.crunevo.com with dedicated Fly app (PR admin-subdomain).
 - Panel de administración aislado por completo en burrito.crunevo.com; /admin no se registra en el dominio principal y navbar público sin enlace Admin (PR admin-isolation).
 - Pantalla de login exclusiva para admins en /login, redirige al dashboard y se bloquea /admin en www (PR admin-login-isolation).
+- Verificada configuración ADMIN_INSTANCE=1 en fly-admin.toml y wsgi_admin.py; login redirige al dashboard y blueprint admin se registra solo en modo admin (QA admin-config-check).
+- Confirmado FLASK_APP usa "crunevo.wsgi_admin:app" y create_app separa blueprints según ADMIN_INSTANCE (QA admin-env-check).
