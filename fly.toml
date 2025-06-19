@@ -39,7 +39,7 @@ primary_region = 'bog'
     grace_period = '5s'
     method       = 'get'
     path         = '/healthz'
-    protocol     = 'http'
+    protocol     = 'https'
 
 [[vm]]
   memory = '1gb'
