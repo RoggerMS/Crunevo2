@@ -9,7 +9,7 @@ from flask import (
     current_app,
 )
 from flask_login import login_user, current_user, login_required
-from itsdangerous import URLSafeTimedSerializer
+import secrets
 
 from crunevo.extensions import db, limiter, csrf
 from flask_limiter.util import get_remote_address
@@ -22,13 +22,12 @@ from sqlalchemy.exc import IntegrityError
 bp = Blueprint("onboarding", __name__, url_prefix="/onboarding")
 
 
-def generate_token(email):
-    s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
-    return s.dumps(email)
+def generate_token():
+    return secrets.token_urlsafe(32)
 
 
 def send_confirmation_email(user):
-    token = generate_token(user.email)
+    token = generate_token()
     db.session.add(EmailToken(token=token, email=user.email, user_id=user.id))
     db.session.commit()
     html = render_template("emails/confirm.html", token=token)
