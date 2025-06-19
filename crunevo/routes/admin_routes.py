@@ -36,8 +36,6 @@ def restrict_to_subdomain():
         return
     host = request.host.split(":")[0]
     if not host.startswith("burrito."):
-        if host.endswith("crunevo.com"):
-            return redirect("https://burrito.crunevo.com" + request.full_path, code=302)
         abort(403)
 
 
