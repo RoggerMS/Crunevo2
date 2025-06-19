@@ -54,11 +54,11 @@ def create_app():
     from .routes.errors import errors_bp
     from .routes.health_routes import health_bp
 
-    admin_only = os.environ.get("ADMIN_INSTANCE") == "1"
+    is_admin = os.environ.get("ADMIN_INSTANCE") == "1"
     testing_env = os.environ.get("PYTEST_CURRENT_TEST") is not None
-    app.config["ADMIN_INSTANCE"] = admin_only
+    app.config["ADMIN_INSTANCE"] = is_admin
 
-    if admin_only:
+    if is_admin:
         app.register_blueprint(auth_bp)
         app.register_blueprint(admin_bp)
         app.register_blueprint(errors_bp)
