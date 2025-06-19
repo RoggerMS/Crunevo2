@@ -112,3 +112,4 @@
 - Added Fly.io troubleshooting steps for Postgres connection errors in README (PR fly-release-troubleshooting).
 - Updated Fly.io docs to reference `crunevo-db.internal` (PR fly-db-internal-fix).
 - Onboarding tokens now use `secrets.token_urlsafe(32)` and no longer encode the email (PR onboarding-token-length).
+- Comment form listener now checks element existence with optional chaining in `detalle.html` (PR comment-form-null-check).
