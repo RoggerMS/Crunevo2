@@ -128,3 +128,4 @@
 - Updated create_app to use `is_admin` flag and ensure admin blueprints load only when ADMIN_INSTANCE=1. wsgi_admin.py now sets this variable explicitly (PR admin-blueprint-filter).
 - Updated wsgi.py to import create_app from crunevo.app and set FLASK_APP to 'crunevo.wsgi:app' in fly.toml to ensure Gunicorn loads the app correctly (PR wsgi-app-fix).
 - Confirmed admin instance loads wsgi_admin via fly-admin.toml and blueprints register only in that mode (QA admin-deploy-fix).
+- wsgi_admin.py ahora establece ADMIN_INSTANCE antes de importar create_app para evitar que el panel admin muestre el feed público (PR wsgi-admin-env-order).
