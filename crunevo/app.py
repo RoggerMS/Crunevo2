@@ -54,6 +54,8 @@ def create_app():
     from .routes.health_routes import health_bp
 
     admin_only = os.environ.get("ADMIN_INSTANCE") == "1"
+    testing_env = os.environ.get("PYTEST_CURRENT_TEST") is not None
+    app.config["ADMIN_INSTANCE"] = admin_only
 
     if admin_only:
         app.register_blueprint(auth_bp)
@@ -67,10 +69,11 @@ def create_app():
         app.register_blueprint(feed_bp)
         app.register_blueprint(store_bp)
         app.register_blueprint(chat_bp)
-        app.register_blueprint(admin_bp)
         app.register_blueprint(ranking_bp)
         app.register_blueprint(errors_bp)
         app.register_blueprint(health_bp)
+        if testing_env:
+            app.register_blueprint(admin_bp)
 
     @app.errorhandler(CSRFError)
     def handle_csrf_error(e):

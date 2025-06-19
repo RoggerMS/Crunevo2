@@ -118,3 +118,4 @@
 - Dashboard incluye gráficas de usuarios, apuntes, créditos y productos usando Chart.js (PR admin-dashboard-charts)
 - Corregido _fill_series en products_last_3_months pasando 'rows' (PR admin-stats-bugfix)
 - Admin panel moved to subdomain burrito.crunevo.com with dedicated Fly app (PR admin-subdomain).
+- Panel de administración aislado por completo en burrito.crunevo.com; /admin no se registra en el dominio principal y navbar público sin enlace Admin (PR admin-isolation).
