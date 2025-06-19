@@ -13,7 +13,6 @@ from flask import (
 )
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required
-from datetime import datetime
 from sqlalchemy import func
 from crunevo.extensions import db, csrf
 from crunevo.models import (
@@ -223,8 +222,7 @@ def index():
 @activated_required
 def trending():
     posts = Post.query.order_by(Post.created_at.desc()).limit(10).all()
-    today = datetime.utcnow().date()
-    return render_template("feed/feed.html", posts=posts, trending=True, today=today)
+    return render_template("feed/feed.html", posts=posts, trending=True)
 
 
 @feed_bp.route("/post/<int:post_id>", endpoint="view_post")
