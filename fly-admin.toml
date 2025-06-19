@@ -1,0 +1,42 @@
+app = "crunevo-admin"
+primary_region = "bog"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[deploy]
+  release_command = "flask db upgrade"
+
+[env]
+  FLASK_APP = "crunevo.wsgi_admin"
+  FLASK_ENV = "production"
+  ADMIN_INSTANCE = "1"
+  PORT = "8080"
+
+[experimental]
+  auto_rollback = true
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.http_checks]]
+    interval     = 10000
+    timeout      = 2000
+    grace_period = "30s"
+    method       = "get"
+    path         = "/healthz"
+    protocol     = "https"
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1

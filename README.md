@@ -2,6 +2,8 @@
 
 This repository contains the Crunevo2 Flask application. The project is configured to run on Fly.io using Docker and PostgreSQL.
 
+The administration panel is served from the dedicated subdomain `https://burrito.crunevo.com`.
+
 ## Deploying to Fly.io
 
 If you encounter the error below when attempting to deploy:

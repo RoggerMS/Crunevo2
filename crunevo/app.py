@@ -53,16 +53,24 @@ def create_app():
     from .routes.errors import errors_bp
     from .routes.health_routes import health_bp
 
-    app.register_blueprint(onboarding_bp)
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(notes_bp)
-    app.register_blueprint(feed_bp)
-    app.register_blueprint(store_bp)
-    app.register_blueprint(chat_bp)
-    app.register_blueprint(admin_bp)
-    app.register_blueprint(ranking_bp)
-    app.register_blueprint(errors_bp)
-    app.register_blueprint(health_bp)
+    admin_only = os.environ.get("ADMIN_INSTANCE") == "1"
+
+    if admin_only:
+        app.register_blueprint(auth_bp)
+        app.register_blueprint(admin_bp)
+        app.register_blueprint(errors_bp)
+        app.register_blueprint(health_bp)
+    else:
+        app.register_blueprint(onboarding_bp)
+        app.register_blueprint(auth_bp)
+        app.register_blueprint(notes_bp)
+        app.register_blueprint(feed_bp)
+        app.register_blueprint(store_bp)
+        app.register_blueprint(chat_bp)
+        app.register_blueprint(admin_bp)
+        app.register_blueprint(ranking_bp)
+        app.register_blueprint(errors_bp)
+        app.register_blueprint(health_bp)
 
     @app.errorhandler(CSRFError)
     def handle_csrf_error(e):

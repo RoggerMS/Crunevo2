@@ -8,6 +8,7 @@ from flask import (
     request,
     current_app,
     Response,
+    abort,
 )
 from flask_login import login_required
 from crunevo.utils.helpers import activated_required, admin_required
@@ -27,6 +28,17 @@ from crunevo.utils.stats import (
 import cloudinary.uploader
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
+
+
+@admin_bp.before_request
+def restrict_to_subdomain():
+    if current_app.config.get("TESTING"):
+        return
+    host = request.host.split(":")[0]
+    if not host.startswith("burrito."):
+        if host.endswith("crunevo.com"):
+            return redirect("https://burrito.crunevo.com" + request.full_path, code=302)
+        abort(403)
 
 
 @admin_bp.before_request
