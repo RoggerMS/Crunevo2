@@ -116,3 +116,4 @@
 - Removed unused today variable from trending route in feed_routes.py (PR trending-today-remove).
 - En `add_product` se castea `price` a float y `stock` a int antes de crear el producto (PR admin-add-product-cast).
 - Dashboard incluye gráficas de usuarios, apuntes, créditos y productos usando Chart.js (PR admin-dashboard-charts)
+- Corregido _fill_series en products_last_3_months pasando 'rows' (PR admin-stats-bugfix)

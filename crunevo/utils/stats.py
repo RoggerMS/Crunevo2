@@ -87,8 +87,7 @@ def products_last_3_months():
         )
     else:
         rows = []
-    labels, values = _fill_series(start, 3, timedelta(days=31))
-    # adjust labels to first day of month
+    # Ajuste de etiquetas y valores para el gráfico mensual
     labels = [_month_add(start, i).strftime("%Y-%m") for i in range(3)]
     mapping = {dt.strftime("%Y-%m"): int(count) for dt, count in rows}
     values = [mapping.get(label, 0) for label in labels]
