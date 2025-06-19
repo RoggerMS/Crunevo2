@@ -123,3 +123,5 @@
 - Verificada configuración ADMIN_INSTANCE=1 en fly-admin.toml y wsgi_admin.py; login redirige al dashboard y blueprint admin se registra solo en modo admin (QA admin-config-check).
 - Confirmado FLASK_APP usa "crunevo.wsgi_admin:app" y create_app separa blueprints según ADMIN_INSTANCE (QA admin-env-check).
 - wsgi_admin.py simplificado para importar create_app desde crunevo.app sin variables extra y se verificó FLASK_APP en fly-admin.toml (QA admin-wsgi-cleanup).
+
+- Dockerfile now reads FLASK_APP to run gunicorn, enabling admin instance to use wsgi_admin (PR admin-gunicorn-env).
