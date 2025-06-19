@@ -75,6 +75,9 @@ fly postgres attach ...           # genera DATABASE_URL
 fly secrets set SECRET_KEY=...    # etc.
 ```
 
+When connecting from another Fly app, use the internal hostname
+`crunevo-db.internal` (some older docs referenced `db.internal`).
+
 DNS notes:
 * `www.crunevo.com` → CNAME `crunevo2.fly.dev`
 * `crunevo.com` → A `66.241.125.104` (o AAAA si asignas IPv6)
