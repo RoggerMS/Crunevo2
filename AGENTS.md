@@ -114,3 +114,4 @@
 - Onboarding tokens now use `secrets.token_urlsafe(32)` and no longer encode the email (PR onboarding-token-length).
 - Comment form listener now checks element existence with optional chaining in `detalle.html` (PR comment-form-null-check).
 - Removed unused today variable from trending route in feed_routes.py (PR trending-today-remove).
+- En `add_product` se castea `price` a float y `stock` a int antes de crear el producto (PR admin-add-product-cast).
