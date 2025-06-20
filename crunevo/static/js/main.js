@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const avatarInput = document.getElementById('avatarFileInput');
   const avatarPreview = document.getElementById('avatarPreview');
+  const avatarUrlInput = document.getElementById('avatarUrlInput');
   if (avatarInput && avatarPreview) {
     avatarInput.addEventListener('change', () => {
       const file = avatarInput.files[0];
@@ -124,6 +125,18 @@ document.addEventListener('DOMContentLoaded', () => {
         avatarPreview.src = URL.createObjectURL(file);
         avatarPreview.classList.remove('tw-hidden');
       } else {
+        if (!avatarUrlInput || !avatarUrlInput.value) {
+          avatarPreview.classList.add('tw-hidden');
+        }
+      }
+    });
+  }
+  if (avatarUrlInput && avatarPreview) {
+    avatarUrlInput.addEventListener('input', () => {
+      if (avatarUrlInput.value) {
+        avatarPreview.src = avatarUrlInput.value;
+        avatarPreview.classList.remove('tw-hidden');
+      } else if (!avatarInput || !avatarInput.files[0]) {
         avatarPreview.classList.add('tw-hidden');
       }
     });

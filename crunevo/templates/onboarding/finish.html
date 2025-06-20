@@ -1,19 +1,35 @@
 {% extends 'base.html' %}
-{% import 'components/input.html' as forms %}
-{% import 'components/button.html' as btn %}
 {% import 'components/csrf.html' as csrf %}
 {% block content %}
-<div class="tw-max-w-lg tw-mx-auto tw-my-16 card">
-  <h2>Completa tu perfil</h2>
-  <form method="post" class="tw-space-y-4">
-    {{ csrf.csrf_field() }}
-    {{ forms.input('alias', placeholder='Alias') }}
-    {{ forms.input('avatar', placeholder='URL del avatar') }}
-    <div>
-      <textarea name="bio" class="form-control" placeholder="Biografía"></textarea>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-4">👤 Completa tu perfil</h2>
+          <form method="post" enctype="multipart/form-data">
+            {{ csrf.csrf_field() }}
+            <div class="mb-3">
+              <label for="aliasInput" class="form-label">Nombre para mostrar</label>
+              <input type="text" class="form-control" id="aliasInput" name="alias" placeholder="ej. ProfeRogger">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Foto de perfil</label>
+              <input class="form-control mb-2" type="file" id="avatarFileInput" name="avatar_file" accept="image/*">
+              <span class="form-text">o pega un enlace de imagen:</span>
+              <input class="form-control" type="url" id="avatarUrlInput" name="avatar_url" placeholder="https://...">
+            </div>
+            <img id="avatarPreview" src="#" alt="Preview" class="tw-hidden mb-2 rounded-circle" width="96" height="96">
+            <div class="mb-3">
+              <label for="bioInput" class="form-label">Biografía</label>
+              <textarea class="form-control" id="bioInput" name="bio" rows="3" placeholder="Cuéntanos sobre ti"></textarea>
+            </div>
+            <button class="btn btn-primary w-100 mt-3" type="submit">Guardar mi perfil</button>
+          </form>
+          <a class="btn btn-secondary w-100 mt-3" href="{{ url_for('feed.index') }}">Ir al feed</a>
+        </div>
+      </div>
     </div>
-    {{ btn.button('Guardar', type='submit') }}
-  </form>
-  {{ btn.button('Ir al feed', href=url_for('feed.index'), class='mt-4') }}
+  </div>
 </div>
 {% endblock %}
