@@ -3,8 +3,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
-from .extensions import db, login_manager, migrate, mail, csrf, limiter
-from flask_talisman import Talisman
+from .extensions import db, login_manager, migrate, mail, csrf, limiter, talisman
 from flask_wtf.csrf import CSRFError
 
 DEFAULT_CSP = {
@@ -36,7 +35,7 @@ def create_app():
         csp = app.config.get("TALISMAN_CSP", DEFAULT_CSP)
         if app.config.get("ENABLE_CSP_OVERRIDE"):
             csp = None
-        Talisman(
+        talisman.init_app(
             app,
             content_security_policy=csp,
             force_https=True,
