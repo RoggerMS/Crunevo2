@@ -30,10 +30,13 @@ function showToast(message, options = {}) {
 
 function initDropdowns(scope = document) {
   scope.querySelectorAll('[data-bs-toggle="dropdown"]').forEach((el) => {
-    if (!el.dataset.dropdownInitialized) {
-      bootstrap.Dropdown.getOrCreateInstance(el);
-      if (el.title) new bootstrap.Tooltip(el);
-      el.dataset.dropdownInitialized = 'true';
+    bootstrap.Dropdown.getOrCreateInstance(el);
+    if (el.title) {
+      const tip = bootstrap.Tooltip.getOrCreateInstance(el);
+      if (!el.dataset.dropdownTooltipBound) {
+        el.addEventListener('show.bs.dropdown', () => tip.hide());
+        el.dataset.dropdownTooltipBound = 'true';
+      }
     }
   });
 }
@@ -44,14 +47,14 @@ function initDataTables() {
     const dt = new simpleDatatables.DataTable(table);
     const refresh = () => initDropdowns(table.parentElement);
     ['datatable.init', 'datatable.page', 'datatable.update', 'datatable.sort', 'datatable.search'].forEach((e) => dt.on(e, refresh));
+    refresh();
   });
 }
 
 function updateThemeIcons() {
   const dark = document.documentElement.dataset.bsTheme === 'dark';
   document.querySelectorAll('[data-theme-toggle] i').forEach((icon) => {
-    icon.classList.remove('bi-sun', 'bi-moon');
-    icon.classList.add(dark ? 'bi-moon' : 'bi-sun');
+    icon.className = 'bi ' + (dark ? 'bi-moon' : 'bi-sun');
   });
 }
 

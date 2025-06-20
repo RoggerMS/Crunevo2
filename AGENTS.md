@@ -137,3 +137,5 @@
 - Fixed inactive dropdowns on admin tables by initializing via main.js and adding tooltips (PR admin-dropdowns-init).
 - Mejorado diseño visual del panel admin: contraste, colores y botones en modo claro/oscuro (PR admin-ui-polish).
 - Sidebar dark theme polished and dropdowns reinitialized after DataTable events, with theme toggle icon updates (PR admin-dark-dropdown-fix).
+- Arreglados dropdowns en tablas con getOrCreateInstance y fondo oscuro uniforme en main y tarjetas (PR admin-dropdown-dark-bg).
+- Mejorados badges de rol, icono de tema, padding inferior y estilos de main según tema (PR admin-ui-accessibility-fix).

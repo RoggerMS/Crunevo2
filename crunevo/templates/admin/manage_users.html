@@ -19,14 +19,14 @@
         <tr>
           <td>{{ user.username }}</td>
           <td>{{ user.email }}</td>
-          <td><span class="badge bg-{{ 'purple' if user.role == 'admin' else 'blue' }}">{{ 'Admin' if user.role == 'admin' else 'Estudiante' }}</span></td>
+          <td><span class="badge text-white fw-semibold bg-{{ 'purple' if user.role == 'admin' else 'blue' }}">{{ 'Admin' if user.role == 'admin' else 'Estudiante' }}</span></td>
           <td>{{ user.credits }}</td>
           <td>
             <span class="status-dot status-dot-{{ 'green' if user.activated else 'red' }}"></span>
           </td>
           <td class="text-end">
             <div class="dropdown">
-              <button class="btn btn-sm admin-dropdown-btn dropdown-toggle" data-bs-toggle="dropdown" title="Más opciones">
+              <button class="btn btn-sm admin-dropdown-btn dropdown-toggle" data-bs-toggle="dropdown" title="Más opciones" aria-label="Más opciones de {{ user.username }}" aria-haspopup="true" aria-expanded="false">
                 ⋮
               </button>
               <ul class="dropdown-menu shadow-sm">
