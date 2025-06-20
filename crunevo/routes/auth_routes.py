@@ -19,6 +19,7 @@ from crunevo.models import User
 from crunevo.utils import spend_credit, record_login
 from crunevo.constants import CreditReasons
 from sqlalchemy.exc import IntegrityError
+from crunevo.routes.onboarding_routes import send_confirmation_email
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -42,8 +43,8 @@ def register():
             current_app.logger.warning("IntegrityError: %s", e)
             flash("Usuario o correo ya registrado", "danger")
             return render_template("auth/register.html"), 400
-        flash("Registro exitoso. Inicia sesión")
-        return redirect(url_for("auth.login"))
+        send_confirmation_email(user)
+        return render_template("onboarding/confirm.html")
     return render_template("auth/register.html")
 
 

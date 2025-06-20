@@ -67,8 +67,9 @@ def get_weekly_ranking():
 
     recent_achievements = (
         db.session.query(User.username, Achievement.title)
-        .join(UserAchievement)
-        .join(Achievement)
+        .select_from(UserAchievement)
+        .join(User, User.id == UserAchievement.user_id)
+        .join(Achievement, Achievement.id == UserAchievement.achievement_id)
         .order_by(UserAchievement.timestamp.desc())
         .limit(5)
         .all()
