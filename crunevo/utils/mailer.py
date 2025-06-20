@@ -22,6 +22,14 @@ def send_email(to, subject, html):
                 timeout=5,
             )
             current_app.logger.info("Resend response: %s", resp.text)
+            if resp.status_code != 200:
+                flash(
+                    "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
+                    "danger",
+                )
+                current_app.logger.warning(
+                    "Resend failed with status %s", resp.status_code
+                )
             return resp.status_code == 200
         except Exception as e:
             current_app.logger.error("Email error: %s", e)

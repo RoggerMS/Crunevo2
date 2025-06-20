@@ -1,19 +1,31 @@
 {% extends 'base.html' %}
-{% import 'components/input.html' as forms %}
-{% import 'components/button.html' as btn %}
 {% import 'components/csrf.html' as csrf %}
 {% block content %}
-<div class="tw-max-w-md tw-mx-auto tw-my-16 card">
-  <h2>Registro</h2>
-  <form method="post" class="tw-space-y-4">
-    {{ csrf.csrf_field() }}
-    {{ forms.input('email', type='email', placeholder='Email') }}
-    {{ forms.input('password', type='password', placeholder='Contraseña') }}
-    {{ btn.button('Crear cuenta', type='submit') }}
-  </form>
-  <p class="mt-4 tw-text-center tw-text-sm">
-    ¿Ya tienes cuenta?
-    <a href="{{ url_for('auth.login') }}" class="tw-text-[var(--primary)] tw-underline">Inicia sesión</a>
-  </p>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow">
+        <div class="card-body p-4 p-md-5">
+          <h2 class="text-center mb-4">Registro</h2>
+          <form method="post">
+            {{ csrf.csrf_field() }}
+            <div class="input-group mb-3">
+              <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+              <input type="email" class="form-control" name="email" placeholder="Correo electrónico" required>
+            </div>
+            <div class="input-group mb-4">
+              <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+              <input type="password" class="form-control" name="password" placeholder="Contraseña" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Crear cuenta</button>
+          </form>
+          <p class="mt-4 text-center small">
+            ¿Ya tienes cuenta?
+            <a href="{{ url_for('auth.login') }}" class="tw-text-[var(--primary)] tw-underline">Inicia sesión</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
