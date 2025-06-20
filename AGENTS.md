@@ -134,3 +134,5 @@
 - Enlaces de perfil y productos en plantillas admin ahora usan PUBLIC_BASE_URL para apuntar al dominio público (PR admin-absolute-links2).
 - Implementados logs de productos, notificaciones internas y rol de moderador con modo lectura en admin (PR admin-logs-moderator).
 - Health check no redirige a HTTPS para pasar comprobaciones HTTP (PR health-check-http).
+- Fixed inactive dropdowns on admin tables by initializing via main.js and adding tooltips (PR admin-dropdowns-init).
+- Mejorado diseño visual del panel admin: contraste, colores y botones en modo claro/oscuro (PR admin-ui-polish).

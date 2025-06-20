@@ -28,6 +28,27 @@ function showToast(message, options = {}) {
   new bootstrap.Toast(div).show();
 }
 
+function initDropdowns(scope = document) {
+  scope.querySelectorAll('.dropdown-toggle').forEach((el) => {
+    if (!el.dataset.dropdownInitialized) {
+      new bootstrap.Dropdown(el);
+      new bootstrap.Tooltip(el, { title: 'Más opciones' });
+      el.dataset.dropdownInitialized = 'true';
+    }
+  });
+}
+
+function initDataTables() {
+  if (typeof simpleDatatables === 'undefined') return;
+  document.querySelectorAll('[data-datatable]').forEach((table) => {
+    const dt = new simpleDatatables.DataTable(table);
+    const refresh = () => initDropdowns(table.parentElement);
+    dt.on('datatable.init', refresh);
+    dt.on('datatable.page', refresh);
+    dt.on('datatable.update', refresh);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // theme persistence
   const saved = localStorage.getItem('theme');
@@ -35,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.dataset.bsTheme = saved;
   }
   document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
+    new bootstrap.Tooltip(btn);
     btn.addEventListener('click', () => {
       const html = document.documentElement;
       const next = html.dataset.bsTheme === 'dark' ? 'light' : 'dark';
@@ -91,6 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initAdminCharts === 'function') {
     initAdminCharts();
   }
+
+  initDataTables();
+  initDropdowns();
 
   // Bootstrap collapse handles the mobile menu
 

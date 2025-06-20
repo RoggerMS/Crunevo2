@@ -1,11 +1,13 @@
 {% extends 'admin/base_admin.html' %}
 {% block admin_content %}
 <h2 class="page-title mb-4">Gestión de usuarios</h2>
-<a href="{{ url_for('admin.export_users') }}" class="btn btn-outline-primary btn-sm mb-3">Exportar a CSV</a>
+<a href="{{ url_for('admin.export_users') }}" class="btn btn-outline-primary btn-sm mb-3">
+  <i class="bi bi-download me-1"></i>Exportar a CSV
+</a>
 <div class="card shadow-sm">
   <div class="card-body p-0">
     <div class="table-responsive">
-      <table id="tablaUsuarios" class="table table-vcenter card-table">
+      <table id="tablaUsuarios" class="table table-vcenter card-table" data-datatable>
       <thead>
         <tr>
           <th>Nombre</th><th>Email</th><th>Rol</th>
@@ -24,7 +26,7 @@
           </td>
           <td class="text-end">
             <div class="dropdown">
-              <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
+              <button class="btn btn-sm admin-dropdown-btn dropdown-toggle" data-bs-toggle="dropdown" title="Más opciones">
                 ⋮
               </button>
               <ul class="dropdown-menu shadow-sm">
@@ -46,10 +48,4 @@
     </div>
   </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  new simpleDatatables.DataTable('#tablaUsuarios');
-});
-</script>
 {% endblock %}
