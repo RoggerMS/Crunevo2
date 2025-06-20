@@ -144,3 +144,4 @@
 - Contraste de hover en el sidebar oscuro, min-height para page-content y textos muted claros; funciones de dropdowns y datatables movidas a admin_ui.js (PR admin-layout-tweak).
 - Reparado dropdown de "Más opciones" en tablas admin, corrigiendo conflictos con DataTables y tooltips (PR admin-dropdown-final-fix).
 - Ajustado soporte de modo oscuro en feed, apuntes y tienda (PR dark-theme-fix)
+- Ensured dropdown containers use position-relative to properly render menus (QA admin-dropdown-container).
