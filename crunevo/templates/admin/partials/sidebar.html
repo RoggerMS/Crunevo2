@@ -12,6 +12,9 @@
   <a class="nav-link {% if request.endpoint == 'admin.manage_store' %}active{% endif %}" href="{{ url_for('admin.manage_store') }}">
     <i class="ti ti-building-store me-2"></i> Tienda
   </a>
+  <a class="nav-link {% if request.endpoint == 'admin.product_history' %}active{% endif %}" href="{{ url_for('admin.product_history') }}">
+    <i class="ti ti-history me-2"></i> Historial tienda
+  </a>
   <a class="nav-link {% if request.endpoint == 'admin.manage_credits' %}active{% endif %}" href="{{ url_for('admin.manage_credits') }}">
     <i class="ti ti-coin me-2"></i> Créditos
   </a>

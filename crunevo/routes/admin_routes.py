@@ -10,13 +10,26 @@ from flask import (
     Response,
     abort,
 )
-from flask_login import login_required
-from crunevo.utils.helpers import activated_required, admin_required
+from flask_login import login_required, current_user
+from crunevo.utils.helpers import (
+    activated_required,
+    admin_required,
+    full_admin_required,
+)
 import csv
 from io import StringIO
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
-from crunevo.models import User, Product, Report, Note, Credit, Comment
+from crunevo.models import (
+    User,
+    Product,
+    Report,
+    Note,
+    Credit,
+    Comment,
+    ProductLog,
+    AdminNotification,
+)
 from crunevo.utils.ranking import calculate_weekly_ranking
 from crunevo.utils.audit import record_auth_event
 from crunevo.utils.stats import (
@@ -43,7 +56,14 @@ def restrict_to_subdomain():
 @login_required
 @admin_required
 def before_admin():
-    pass
+    unread = AdminNotification.query.filter_by(
+        admin_id=current_user.id, read=False
+    ).all()
+    for note in unread:
+        flash(note.message)
+        note.read = True
+    if unread:
+        db.session.commit()
 
 
 @admin_bp.route("/")
@@ -82,6 +102,8 @@ def dashboard():
 @activated_required
 def manage_users():
     if request.method == "POST":
+        if current_user.role != "admin":
+            abort(403)
         user_id = request.form.get("user_id", type=int)
         user = User.query.get_or_404(user_id)
         user.role = request.form.get("role", user.role)
@@ -109,6 +131,7 @@ def manage_store():
 
 @admin_bp.route("/products/new", methods=["GET", "POST"])
 @activated_required
+@full_admin_required
 def add_product():
     if request.method == "POST":
         name = request.form["name"]
@@ -138,13 +161,24 @@ def add_product():
         )
         db.session.add(product)
         db.session.commit()
+        log = ProductLog(
+            product_id=product.id, action="created", admin_id=current_user.id
+        )
+        db.session.add(log)
+        notif = AdminNotification(
+            admin_id=current_user.id,
+            title="Producto agregado",
+            message=f"Se agregó {product.name}",
+        )
+        db.session.add(notif)
+        db.session.commit()
         flash("Producto agregado")
         return redirect(url_for("admin.manage_store"))
     return render_template("admin/add_edit_product.html")
 
 
 @admin_bp.route("/products/<int:product_id>/edit", methods=["GET", "POST"])
-@admin_required
+@full_admin_required
 def edit_product(product_id):
     product = Product.query.get_or_404(product_id)
     if request.method == "POST":
@@ -166,16 +200,30 @@ def edit_product(product_id):
                 file.save(filepath)
                 product.image = filepath
         db.session.commit()
+        log = ProductLog(
+            product_id=product.id, action="edited", admin_id=current_user.id
+        )
+        db.session.add(log)
+        notif = AdminNotification(
+            admin_id=current_user.id,
+            title="Producto actualizado",
+            message=f"Se actualizó {product.name}",
+        )
+        db.session.add(notif)
+        db.session.commit()
         flash("Producto actualizado correctamente")
         return redirect(url_for("admin.manage_store"))
     return render_template("admin/add_edit_product.html", product=product)
 
 
 @admin_bp.route("/products/<int:product_id>/delete", methods=["POST"])
-@admin_required
+@full_admin_required
 def delete_product(product_id):
     product = Product.query.get_or_404(product_id)
     db.session.delete(product)
+    db.session.commit()
+    log = ProductLog(product_id=product.id, action="deleted", admin_id=current_user.id)
+    db.session.add(log)
     db.session.commit()
     flash("Producto eliminado correctamente")
     return redirect(url_for("admin.manage_store"))
@@ -190,6 +238,7 @@ def manage_reports():
 
 @admin_bp.route("/run-ranking")
 @activated_required
+@full_admin_required
 def run_ranking():
     calculate_weekly_ranking()
     flash("Ranking recalculado")
@@ -215,7 +264,7 @@ def approve_user(user_id):
 
 
 @admin_bp.route("/user/<int:user_id>/role", methods=["POST"])
-@admin_required
+@full_admin_required
 def update_user_role(user_id):
     user = User.query.get_or_404(user_id)
     new_role = request.form.get("role")
@@ -227,7 +276,7 @@ def update_user_role(user_id):
 
 
 @admin_bp.route("/user/<int:user_id>/toggle_status")
-@admin_required
+@full_admin_required
 def toggle_user_status(user_id):
     user = User.query.get_or_404(user_id)
     user.activated = not user.activated
@@ -321,3 +370,16 @@ def export_products():
         )
     headers = {"Content-Disposition": "attachment; filename=products.csv"}
     return Response(output.getvalue(), mimetype="text/csv", headers=headers)
+
+
+@admin_bp.route("/store/history")
+@activated_required
+def product_history():
+    logs = (
+        db.session.query(ProductLog, Product)
+        .join(Product, ProductLog.product_id == Product.id)
+        .order_by(ProductLog.timestamp.desc())
+        .limit(200)
+        .all()
+    )
+    return render_template("admin/product_history.html", logs=logs)

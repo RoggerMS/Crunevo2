@@ -132,3 +132,4 @@
 - Health check blueprint registered globally and Fly admin HTTP checks configured. Added console log for instance mode (PR admin-health-check).
 - Agregado PUBLIC_BASE_URL en config, context processor e enlace absoluto en manage_store para acceder a la tienda pública desde admin.
 - Enlaces de perfil y productos en plantillas admin ahora usan PUBLIC_BASE_URL para apuntar al dominio público (PR admin-absolute-links2).
+- Implementados logs de productos, notificaciones internas y rol de moderador con modo lectura en admin (PR admin-logs-moderator).
