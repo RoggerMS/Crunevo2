@@ -19,6 +19,7 @@ import cloudinary.uploader
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
 from crunevo.models import User
+from crunevo.models.user import DEFAULT_AVATAR_URL
 from crunevo.utils import spend_credit, record_login
 from crunevo.constants import CreditReasons
 from sqlalchemy.exc import IntegrityError
@@ -39,7 +40,7 @@ def register():
         if len(password) < 12 or zxcvbn(password)["score"] < 2:
             flash("Contraseña débil", "danger")
             return render_template("auth/register.html"), 400
-        avatar_url = None
+        avatar_url = DEFAULT_AVATAR_URL
         f = request.files.get("avatar_file")
         if f and f.filename:
             cloud_url = current_app.config.get("CLOUDINARY_URL")

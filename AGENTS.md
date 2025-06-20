@@ -154,3 +154,4 @@
 - Updated profile templates to use a.badge_code and redesigned personal profile with activity dashboard (PR profile-redesign).
 - Fixed slice syntax in perfil.html loops by assigning sorted lists before slicing to avoid TemplateSyntaxError (PR profile-slice-fix).
 - Registro permite subir avatar opcional y username único; perfil muestra @username y acepta nueva foto (PR profile-avatar-upload).
+- Avatar por defecto se asigna automáticamente si no se sube imagen en el registro (PR default-avatar).
