@@ -1,45 +1,129 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
+
 {% block content %}
-<h2>Mi perfil</h2>
-<div class="mb-3 text-center">
-  <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle" width="100" height="100" alt="avatar">
-  <p class="mt-2">{{ current_user.username }}
-  {% if current_user.role == 'moderator' %}
-    <span class="badge text-bg-secondary">Modo lectura</span>
-  {% endif %}
-  </p>
-  <p>💰 Créditos: {{ current_user.credits }}</p>
-</div>
-<form method="post" class="tw-space-y-4">
-  {{ csrf.csrf_field() }}
-  <div>
-    <textarea class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none" name="about" placeholder="Sobre mí">{{ current_user.about }}</textarea>
-  </div>
-  <div>
-    <input type="text" class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none" name="avatar_url" placeholder="URL del avatar" value="{{ current_user.avatar_url }}">
-  </div>
-  <button class="tw-rounded tw-bg-[var(--primary)] tw-text-white tw-px-4 tw-py-2 tw-transition tw-duration-200 hover:tw-bg-[var(--primary)]/80" type="submit">Guardar</button>
-</form>
-<h5>Historial de Créditos</h5>
-<ul>
-  {% for c in current_user.credit_history %}
-    <li>{{ '+' if c.amount > 0 else '' }}{{ c.amount }} – {{ c.reason }} ({{ c.timestamp.strftime('%Y-%m-%d') }})</li>
-  {% endfor %}
-</ul>
-<h5>🎖️ Logros desbloqueados</h5>
-<div class="row row-cols-2 row-cols-md-3 g-2">
-  {% for a in current_user.achievements %}
-    {% set info = ACHIEVEMENT_DETAILS.get(a.achievement.code, {}) %}
-    <div class="col">
-      {% set icon = info.icon %}
-      {% set title = info.title %}
-      {% set timestamp = a.timestamp %}
-      {% include 'components/achievement_card.html' %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card text-center">
+      <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle mx-auto mt-3" width="120" height="120" alt="avatar">
+      <h3 class="mt-2">{{ current_user.username }}</h3>
+      <p class="text-muted">{{ current_user.role|title }}</p>
+      <form method="post" class="mt-3 tw-space-y-2">
+        {{ csrf.csrf_field() }}
+        <textarea name="about" class="form-control" placeholder="Sobre mí">{{ current_user.about }}</textarea>
+        <input name="avatar_url" type="text" class="form-control" placeholder="URL del avatar" value="{{ current_user.avatar_url }}">
+        <button class="btn btn-primary" type="submit">Guardar</button>
+      </form>
+      <div class="mt-3">
+        {% if current_user.chat_enabled %}
+        <span class="badge bg-success">🟢 Activo</span>
+        {% else %}
+        <span class="badge bg-danger">🔴 Inactivo</span>
+        {% endif %}
+      </div>
     </div>
-  {% else %}
-    <div class="col">Aún no tienes logros desbloqueados.</div>
-  {% endfor %}
+
+    <div class="card mt-4">
+      <div class="card-header">💳 Créditos</div>
+      <div class="card-body text-center">
+        <h4>{{ current_user.credits }}</h4>
+      </div>
+      <ul class="list-group list-group-flush">
+        {% for c in current_user.credit_history|sort(attribute='timestamp', reverse=True)[:5] %}
+        <li class="list-group-item small">{{ c.timestamp.strftime('%Y-%m-%d') }} – {{ c.reason }} <strong>{{ '+' if c.amount > 0 else '' }}{{ c.amount }}</strong></li>
+        {% endfor %}
+      </ul>
+      <div class="card-footer text-center">
+        <a href="#" class="btn btn-sm btn-outline-primary">Enviar créditos</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="row g-3">
+      <div class="col-12">
+        <h4>Resumen de actividad</h4>
+        <div class="row row-cols-2 row-cols-md-3 g-2">
+          <div class="col">
+            <div class="card text-center p-3">
+              <div class="h4 mb-0">{{ current_user.notes|length }}</div>
+              <div class="small text-muted">Apuntes subidos</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card text-center p-3">
+              <div class="h4 mb-0">{{ current_user.post_comments|length }}</div>
+              <div class="small text-muted">Respuestas foro</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card text-center p-3">
+              <div class="h4 mb-0">{{ current_user.credits }}</div>
+              <div class="small text-muted">Créditos ganados</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card text-center p-3">
+              <div class="h4 mb-0">{{ current_user.notes|map(attribute='likes')|sum }}</div>
+              <div class="small text-muted">Votos positivos</div>
+            </div>
+          </div>
+          <div class="col">
+            {% set first_event = current_user.auth_events|sort(attribute='timestamp')|first %}
+            <div class="card text-center p-3">
+              <div class="h4 mb-0">{{ first_event.timestamp.strftime('%b %Y') if first_event else '' }}</div>
+              <div class="small text-muted">Miembro desde</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <h4>Apuntes recientes</h4>
+        <div class="row row-cols-1 row-cols-md-2 g-3">
+          {% for note in current_user.notes|sort(attribute='created_at', reverse=True)[:3] %}
+          <div class="col">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <h6 class="card-title">{{ note.title }}</h6>
+                <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d') }}</small>
+                <div class="mt-2">{{ note.views }} vistas</div>
+                <a href="{{ url_for('notes.view_note', id=note.id) }}" class="btn btn-sm btn-outline-primary mt-2">Ver</a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="text-end"><a href="{{ url_for('notes.list_notes') }}">Ver todos</a></div>
+      </div>
+
+      <div class="col-12">
+        <h4>Participaciones recientes</h4>
+        <ul class="list-group">
+          {% for c in current_user.post_comments|sort(attribute='timestamp', reverse=True)[:5] %}
+          <li class="list-group-item">
+            <small class="text-muted">{{ c.timestamp.strftime('%Y-%m-%d') }}</small><br>
+            {{ c.body }}
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="col-12">
+        <h4>🎖️ Logros e insignias</h4>
+        <div class="row row-cols-2 row-cols-md-3 g-2">
+          {% for a in current_user.achievements %}
+            {% set info = ACHIEVEMENT_DETAILS.get(a.badge_code, {}) %}
+            {% set icon = info.icon %}
+            {% set title = info.title %}
+            {% set timestamp = a.timestamp %}
+            {% include 'components/achievement_card.html' %}
+          {% else %}
+            <div class="col">Aún no tienes logros desbloqueados.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
-

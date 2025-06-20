@@ -33,10 +33,10 @@
   <h5 class="mt-4">🎖️ Logros desbloqueados</h5>
   <div class="row row-cols-2 row-cols-md-3 g-2">
     {% for a in user.achievements %}
-      {% set info = ACHIEVEMENT_DETAILS.get(a.achievement.code, {}) %}
-      <div class="col">
-        {% include 'components/achievement_card.html' with icon=info.icon title=info.title timestamp=a.timestamp %}
-      </div>
+        {% set info = ACHIEVEMENT_DETAILS.get(a.badge_code, {}) %}
+        <div class="col">
+          {% include 'components/achievement_card.html' with icon=info.icon title=info.title timestamp=a.timestamp %}
+        </div>
     {% else %}
       <div class="col">Aún no tiene logros.</div>
     {% endfor %}
