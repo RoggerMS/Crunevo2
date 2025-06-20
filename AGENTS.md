@@ -147,3 +147,4 @@
 - Ensured dropdown containers use position-relative to properly render menus (QA admin-dropdown-container).
 - Prevented duplicate dropdown instances by checking getInstance first (QA admin-dropdown-instance-check).
 - Avoided tooltip duplication by verifying getInstance and binding show event once (QA admin-tooltip-instance-fix).
+- Implemented ranking with tabs and achievements section (PR ranking-achievements).

@@ -204,6 +204,8 @@ def like_note(note_id):
         vote = NoteVote(user_id=current_user.id, note_id=note.id)
         db.session.add(vote)
         add_credit(note.author, 1, CreditReasons.VOTO_POSITIVO, related_id=note.id)
+        if note.likes >= 100:
+            unlock_achievement(note.author, AchievementCodes.LIKE_100)
         action = "liked"
 
     db.session.commit()

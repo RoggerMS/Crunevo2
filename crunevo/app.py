@@ -23,7 +23,12 @@ def create_app():
 
     @app.context_processor
     def inject_globals():
-        return {"PUBLIC_BASE_URL": app.config.get("PUBLIC_BASE_URL")}
+        from .constants import ACHIEVEMENT_DETAILS
+
+        return {
+            "PUBLIC_BASE_URL": app.config.get("PUBLIC_BASE_URL"),
+            "ACHIEVEMENT_DETAILS": ACHIEVEMENT_DETAILS,
+        }
 
     db.init_app(app)
     login_manager.init_app(app)
