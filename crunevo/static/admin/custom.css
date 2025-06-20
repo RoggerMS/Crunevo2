@@ -156,3 +156,12 @@ main > section.page-content {
 [data-bs-theme='dark'] .table th {
   background-color: #1f1f1f;
 }
+
+/* admin-dropdown-final-fix */
+.table-responsive {
+  overflow: visible;
+}
+
+.dropdown-menu {
+  z-index: 1055;
+}
