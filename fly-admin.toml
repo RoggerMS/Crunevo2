@@ -29,12 +29,12 @@ primary_region = "bog"
     handlers = ["tls", "http"]
 
   [[services.http_checks]]
-    interval     = 10000
-    timeout      = 2000
-    grace_period = "30s"
+    interval     = "10s"
+    timeout      = "2s"
+    grace_period = "5s"
     method       = "get"
     path         = "/healthz"
-    protocol     = "https"
+    protocol     = "http"
 
 [[vm]]
   memory = "1gb"
