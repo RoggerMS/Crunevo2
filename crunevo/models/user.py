@@ -2,6 +2,11 @@ from flask_login import UserMixin
 from crunevo.security.passwords import generate_hash, verify_hash
 from crunevo.extensions import db, login_manager
 
+# Default avatar used when no image is uploaded
+DEFAULT_AVATAR_URL = (
+    "https://res.cloudinary.com/dnp9trhfx/image/upload/v1750458582/avatar_h8okpo.png"
+)
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,7 +19,7 @@ class User(UserMixin, db.Model):
     chat_enabled = db.Column(db.Boolean, default=True)
     activated = db.Column(db.Boolean, default=False)
     verification_level = db.Column(db.SmallInteger, default=0)
-    avatar_url = db.Column(db.String(255))
+    avatar_url = db.Column(db.String(255), default=DEFAULT_AVATAR_URL)
     about = db.Column(db.Text)
     credit_history = db.relationship("Credit", back_populates="user", lazy=True)
     notes = db.relationship("Note", backref="author", lazy=True)
