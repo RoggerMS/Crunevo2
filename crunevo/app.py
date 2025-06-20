@@ -22,6 +22,10 @@ def create_app():
 
     app.config.from_object(Config)
 
+    @app.context_processor
+    def inject_globals():
+        return {"PUBLIC_BASE_URL": app.config.get("PUBLIC_BASE_URL")}
+
     db.init_app(app)
     login_manager.init_app(app)
     mail.init_app(app)
