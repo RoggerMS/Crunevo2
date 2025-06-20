@@ -1,11 +1,13 @@
 function initDropdowns(scope = document) {
   scope.querySelectorAll('[data-bs-toggle="dropdown"]').forEach((el) => {
-    bootstrap.Dropdown.getOrCreateInstance(el);
-    if (el.title) {
+    if (!bootstrap.Dropdown.getInstance(el)) {
+      bootstrap.Dropdown.getOrCreateInstance(el);
+    }
+
+    if (el.title && !bootstrap.Tooltip.getInstance(el)) {
       bootstrap.Tooltip.getOrCreateInstance(el);
     }
-    const tip = bootstrap.Tooltip.getInstance(el);
-    if (tip) tip.hide();
+
     if (!el.dataset.dropdownTooltipBound) {
       el.addEventListener('show.bs.dropdown', () => {
         const t = bootstrap.Tooltip.getInstance(el);
