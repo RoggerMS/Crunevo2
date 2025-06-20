@@ -22,8 +22,6 @@ from crunevo.models import (
     Note,
     User,
     UserAchievement,
-    Achievement,
-    LoginHistory,
 )
 from crunevo.forms import FeedNoteForm, FeedImageForm
 from crunevo.utils import create_feed_item_for_all, unlock_achievement
@@ -51,31 +49,18 @@ def get_featured_posts():
     return top_notes, top_posts, top_users
 
 
-def get_weekly_ranking():
-    """Return top users of the week and recently earned achievements."""
-    from datetime import timedelta, date
-
-    one_week_ago = date.today() - timedelta(days=7)
-    top_users = (
-        User.query.join(LoginHistory)
-        .filter(LoginHistory.login_date >= one_week_ago)
-        .group_by(User.id)
-        .order_by(User.credits.desc())
-        .limit(3)
-        .all()
-    )
-
+def get_weekly_ranking(limit=5):
+    """Return recent achievements for the feed."""
     recent_achievements = (
-        db.session.query(User.username, Achievement.title)
-        .select_from(UserAchievement)
+        db.session.query(
+            User.username, UserAchievement.badge_code, UserAchievement.timestamp
+        )
         .join(User, User.id == UserAchievement.user_id)
-        .join(Achievement, Achievement.id == UserAchievement.achievement_id)
         .order_by(UserAchievement.timestamp.desc())
-        .limit(5)
+        .limit(limit)
         .all()
     )
-
-    return top_users, recent_achievements
+    return [], recent_achievements
 
 
 @feed_bp.route("/feed", methods=["GET", "POST"])

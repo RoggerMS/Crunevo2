@@ -15,6 +15,4 @@ def test_calculate_weekly_ranking(client, test_user):
     ranking = RankingCache.query.filter_by(user_id=test_user.id).first()
     assert ranking is not None
     assert ranking.score >= 0
-    assert any(
-        a.achievement.code == AchievementCodes.TOP_3 for a in test_user.achievements
-    )
+    assert any(a.badge_code == AchievementCodes.TOP_3 for a in test_user.achievements)

@@ -17,6 +17,5 @@ def test_100_likes_unlocks_badge(client, db_session, test_user, another_user):
 
     db_session.refresh(another_user)
     assert any(
-        a.achievement.code == AchievementCodes.LIKE_100
-        for a in another_user.achievements
+        a.badge_code == AchievementCodes.LIKE_100 for a in another_user.achievements
     )
