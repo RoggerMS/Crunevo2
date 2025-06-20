@@ -111,6 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initDropdowns();
   }
 
+  if (typeof initEmailPreview === 'function') {
+    initEmailPreview();
+  }
+
   const avatarInput = document.getElementById('avatarFileInput');
   const avatarPreview = document.getElementById('avatarPreview');
   if (avatarInput && avatarPreview) {
