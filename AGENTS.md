@@ -146,3 +146,4 @@
 - Ajustado soporte de modo oscuro en feed, apuntes y tienda (PR dark-theme-fix)
 - Ensured dropdown containers use position-relative to properly render menus (QA admin-dropdown-container).
 - Prevented duplicate dropdown instances by checking getInstance first (QA admin-dropdown-instance-check).
+- Avoided tooltip duplication by verifying getInstance and binding show event once (QA admin-tooltip-instance-fix).

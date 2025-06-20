@@ -4,9 +4,8 @@ function initDropdowns(scope = document) {
       bootstrap.Dropdown.getOrCreateInstance(el);
     }
 
-    if (el.title && !el.dataset.tooltipInitialized) {
+    if (el.title && !bootstrap.Tooltip.getInstance(el)) {
       bootstrap.Tooltip.getOrCreateInstance(el);
-      el.dataset.tooltipInitialized = 'true';
     }
 
     if (!el.dataset.dropdownTooltipBound) {
