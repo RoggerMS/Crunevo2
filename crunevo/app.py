@@ -58,6 +58,7 @@ def create_app():
     from .routes.chat_routes import chat_bp
     from .routes.admin_routes import admin_bp
     from .routes.admin_blocker import admin_blocker_bp
+    from .routes.admin.email_routes import admin_email_bp
     from .routes.ranking_routes import ranking_bp
     from .routes.errors import errors_bp
     from .routes.health_routes import health_bp
@@ -72,6 +73,7 @@ def create_app():
     if is_admin:
         app.register_blueprint(auth_bp)
         app.register_blueprint(admin_bp)
+        app.register_blueprint(admin_email_bp)
         app.register_blueprint(errors_bp)
     else:
         app.register_blueprint(onboarding_bp)
@@ -85,6 +87,7 @@ def create_app():
         app.register_blueprint(admin_blocker_bp)
         if testing_env:
             app.register_blueprint(admin_bp)
+            app.register_blueprint(admin_email_bp)
 
     @app.errorhandler(CSRFError)
     def handle_csrf_error(e):

@@ -156,3 +156,4 @@
 - Registro permite subir avatar opcional y username único; perfil muestra @username y acepta nueva foto (PR profile-avatar-upload).
 - Avatar por defecto se asigna automáticamente si no se sube imagen en el registro (PR default-avatar).
 - Registro renovado con tarjeta responsiva, vista previa de avatar y aviso si falla Resend (PR registro-ui-email-fix).
+- Implemented secure admin route to send custom emails with preview and sidebar link (PR admin-email-sender).
