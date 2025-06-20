@@ -22,4 +22,4 @@ COPY migrations/versions /app/migrations/versions
 # Run gunicorn using the FLASK_APP environment variable. Default to the
 # public instance if FLASK_APP is not set (e.g. during local builds).
 # Ejecuta la app usando el valor de FLASK_APP o usa wsgi:app por defecto
-CMD exec gunicorn -b 0.0.0.0:$PORT ${FLASK_APP:-crunevo.wsgi:app}
+CMD ["sh", "-c", "exec gunicorn -b 0.0.0.0:8080 ${FLASK_APP:-crunevo.wsgi:app}"]
