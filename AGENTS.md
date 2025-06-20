@@ -139,3 +139,6 @@
 - Sidebar dark theme polished and dropdowns reinitialized after DataTable events, with theme toggle icon updates (PR admin-dark-dropdown-fix).
 - Arreglados dropdowns en tablas con getOrCreateInstance y fondo oscuro uniforme en main y tarjetas (PR admin-dropdown-dark-bg).
 - Mejorados badges de rol, icono de tema, padding inferior y estilos de main según tema (PR admin-ui-accessibility-fix).
+- Ajustados estilos oscuros de cards y badges, y se forzó fondo oscuro en sidebar para cubrir franjas blancas (PR admin-dark-ui-tweak).
+- Dropdown de "Más opciones" ocultando tooltip activo y reinicializado tras DataTables; fondo oscuro global en body y container (PR admin-dropdown-tooltip-fix).
+- Contraste de hover en el sidebar oscuro, min-height para page-content y textos muted claros; funciones de dropdowns y datatables movidas a admin_ui.js (PR admin-layout-tweak).

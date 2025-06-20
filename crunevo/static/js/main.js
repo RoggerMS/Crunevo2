@@ -28,28 +28,7 @@ function showToast(message, options = {}) {
   new bootstrap.Toast(div).show();
 }
 
-function initDropdowns(scope = document) {
-  scope.querySelectorAll('[data-bs-toggle="dropdown"]').forEach((el) => {
-    bootstrap.Dropdown.getOrCreateInstance(el);
-    if (el.title) {
-      const tip = bootstrap.Tooltip.getOrCreateInstance(el);
-      if (!el.dataset.dropdownTooltipBound) {
-        el.addEventListener('show.bs.dropdown', () => tip.hide());
-        el.dataset.dropdownTooltipBound = 'true';
-      }
-    }
-  });
-}
 
-function initDataTables() {
-  if (typeof simpleDatatables === 'undefined') return;
-  document.querySelectorAll('[data-datatable]').forEach((table) => {
-    const dt = new simpleDatatables.DataTable(table);
-    const refresh = () => initDropdowns(table.parentElement);
-    ['datatable.init', 'datatable.page', 'datatable.update', 'datatable.sort', 'datatable.search'].forEach((e) => dt.on(e, refresh));
-    refresh();
-  });
-}
 
 function updateThemeIcons() {
   const dark = document.documentElement.dataset.bsTheme === 'dark';
@@ -125,8 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
     initAdminCharts();
   }
 
-  initDataTables();
-  initDropdowns();
+  if (typeof initDataTables === 'function') {
+    initDataTables();
+  }
+  if (typeof initDropdowns === 'function') {
+    initDropdowns();
+  }
 
   // Bootstrap collapse handles the mobile menu
 
