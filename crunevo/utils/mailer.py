@@ -1,24 +1,20 @@
-import os
 import requests
 from flask_mail import Message
 from flask import current_app, flash
 from crunevo.extensions import mail
 
 
-RESEND_API_KEY = os.getenv("RESEND_API_KEY")
-
-
 def send_email(to, subject, html):
-    if RESEND_API_KEY:
+    key = current_app.config.get("RESEND_API_KEY")
+    provider = current_app.config.get("MAIL_PROVIDER")
+    if provider == "resend" and key:
+        sender = current_app.config.get("MAIL_USERNAME", "noreply@crunevo.com")
         try:
             resp = requests.post(
                 "https://api.resend.com/emails",
-                headers={
-                    "Authorization": f"Bearer {RESEND_API_KEY}",
-                    "Content-Type": "application/json",
-                },
+                headers={"Authorization": f"Bearer {key}"},
                 json={
-                    "from": current_app.config.get("MAIL_DEFAULT_SENDER"),
+                    "from": f"CRUNEVO <{sender}>",
                     "to": [to],
                     "subject": subject,
                     "html": html,
@@ -26,22 +22,23 @@ def send_email(to, subject, html):
                 timeout=5,
             )
             current_app.logger.info("Resend response: %s", resp.text)
-            resp.raise_for_status()
-            return
+            return resp.status_code == 200
         except Exception as e:
             current_app.logger.error("Email error: %s", e)
             flash(
-                "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
+                "No se pudo enviar el correo de confirmaci\u00f3n. Int\u00e9ntalo m\u00e1s tarde.",
                 "danger",
             )
-            return
+            return False
 
     msg = Message(subject=subject, recipients=[to], html=html)
     try:
         mail.send(msg)
+        return True
     except Exception as e:
         current_app.logger.error("Email error: %s", e)
         flash(
-            "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
+            "No se pudo enviar el correo de confirmaci\u00f3n. Int\u00e9ntalo m\u00e1s tarde.",
             "danger",
         )
+        return False

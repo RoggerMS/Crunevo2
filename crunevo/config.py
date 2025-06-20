@@ -31,12 +31,13 @@ class Config:
     MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.gmail.com")
     MAIL_PORT = int(os.getenv("MAIL_PORT", 587))
     MAIL_USE_TLS = True
-    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME", "noreply@crunevo.com")
     MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
-    MAIL_DEFAULT_SENDER = os.getenv("MAIL_SENDER", "Crunevo <no-reply@crunevo.io>")
+    MAIL_DEFAULT_SENDER = os.getenv("MAIL_SENDER", f"Crunevo <{MAIL_USERNAME}>")
 
     RESEND_API_KEY = os.getenv("RESEND_API_KEY")
-    USE_RESEND = RESEND_API_KEY is not None
+    MAIL_PROVIDER = os.getenv("MAIL_PROVIDER", "smtp")
+    USE_RESEND = MAIL_PROVIDER == "resend" or RESEND_API_KEY is not None
     MAIL_SUPPRESS_SEND = (
         not (MAIL_SERVER and MAIL_USERNAME and MAIL_PASSWORD) and not USE_RESEND
     )
