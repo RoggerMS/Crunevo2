@@ -16,13 +16,16 @@
     <!-- Main con topbar y contenido -->
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pb-5">
       {% include "admin/partials/topbar.html" %}
-      {% block admin_content %}{% endblock %}
+      <section class="page-content">
+        {% block admin_content %}{% endblock %}
+      </section>
     </main>
   </div>
 </div>
 {% endblock %}
 
-{% block body_end %}
-  {{ super() }}
-  <script src="{{ url_for('static', filename='js/admin_stats.js') }}" defer></script>
-{% endblock %}
+  {% block body_end %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/admin_ui.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin_stats.js') }}" defer></script>
+  {% endblock %}
