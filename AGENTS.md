@@ -143,3 +143,4 @@
 - Dropdown de "Más opciones" ocultando tooltip activo y reinicializado tras DataTables; fondo oscuro global en body y container (PR admin-dropdown-tooltip-fix).
 - Contraste de hover en el sidebar oscuro, min-height para page-content y textos muted claros; funciones de dropdowns y datatables movidas a admin_ui.js (PR admin-layout-tweak).
 - Reparado dropdown de "Más opciones" en tablas admin, corrigiendo conflictos con DataTables y tooltips (PR admin-dropdown-final-fix).
+- Ajustado soporte de modo oscuro en feed, apuntes y tienda (PR dark-theme-fix)
