@@ -29,10 +29,10 @@ function showToast(message, options = {}) {
 }
 
 function initDropdowns(scope = document) {
-  scope.querySelectorAll('.dropdown-toggle').forEach((el) => {
+  scope.querySelectorAll('[data-bs-toggle="dropdown"]').forEach((el) => {
     if (!el.dataset.dropdownInitialized) {
-      new bootstrap.Dropdown(el);
-      new bootstrap.Tooltip(el, { title: 'Más opciones' });
+      bootstrap.Dropdown.getOrCreateInstance(el);
+      if (el.title) new bootstrap.Tooltip(el);
       el.dataset.dropdownInitialized = 'true';
     }
   });
@@ -43,9 +43,15 @@ function initDataTables() {
   document.querySelectorAll('[data-datatable]').forEach((table) => {
     const dt = new simpleDatatables.DataTable(table);
     const refresh = () => initDropdowns(table.parentElement);
-    dt.on('datatable.init', refresh);
-    dt.on('datatable.page', refresh);
-    dt.on('datatable.update', refresh);
+    ['datatable.init', 'datatable.page', 'datatable.update', 'datatable.sort', 'datatable.search'].forEach((e) => dt.on(e, refresh));
+  });
+}
+
+function updateThemeIcons() {
+  const dark = document.documentElement.dataset.bsTheme === 'dark';
+  document.querySelectorAll('[data-theme-toggle] i').forEach((icon) => {
+    icon.classList.remove('bi-sun', 'bi-moon');
+    icon.classList.add(dark ? 'bi-moon' : 'bi-sun');
   });
 }
 
@@ -55,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (saved) {
     document.documentElement.dataset.bsTheme = saved;
   }
+  updateThemeIcons();
   document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
     new bootstrap.Tooltip(btn);
     btn.addEventListener('click', () => {
@@ -62,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const next = html.dataset.bsTheme === 'dark' ? 'light' : 'dark';
       html.dataset.bsTheme = next;
       localStorage.setItem('theme', next);
+      updateThemeIcons();
     });
   });
 

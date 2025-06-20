@@ -27,6 +27,19 @@
   border-right: 1px solid #e0e0e0;
 }
 
+[data-bs-theme='dark'] .sidebar {
+  background-color: #1f1f1f;
+  border-color: #333;
+}
+
+[data-bs-theme='dark'] .sidebar .nav-link {
+  color: #ddd;
+}
+
+[data-bs-theme='dark'] .sidebar .nav-item.text-muted {
+  color: #aaa;
+}
+
 .sidebar .nav-link {
   color: #333;
   padding: 0.75rem 1rem;
@@ -41,8 +54,17 @@
   border-radius: 0.375rem;
 }
 
+[data-bs-theme='dark'] .sidebar .nav-link.active {
+  background-color: #7b3aed;
+  color: #fff;
+}
+
 .sidebar .nav-link.disabled {
   color: #ccc;
+}
+
+[data-bs-theme='dark'] .sidebar .nav-link.disabled {
+  color: #555;
 }
 /* admin-ui-polish */
 .admin-dropdown-btn {
