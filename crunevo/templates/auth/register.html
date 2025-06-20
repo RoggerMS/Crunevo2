@@ -2,15 +2,20 @@
 {% import 'components/input.html' as forms %}
 {% import 'components/button.html' as btn %}
 {% import 'components/csrf.html' as csrf %}
+{% block head_extra %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+{% endblock %}
 {% block content %}
-<div class="tw-max-w-md tw-mx-auto tw-my-16 tw-rounded-2xl tw-shadow-sm tw-bg-white dark:tw-bg-gray-900 tw-p-4 tw-space-y-4">
-  <h2>Registro</h2>
-  <form method="post" class="tw-space-y-4">
+<div class="tw-max-w-md tw-mx-auto tw-my-16 card tw-p-4 tw-space-y-4">
+  <h2 class="text-center">Registro</h2>
+  <form method="post" enctype="multipart/form-data" class="tw-space-y-4">
     {{ csrf.csrf_field() }}
-    {{ forms.input('username', placeholder='Usuario') }}
+    {{ forms.input('username', placeholder='Nombre de usuario') }}
     {{ forms.input('email', type='email', placeholder='Email') }}
     {{ forms.input('password', type='password', placeholder='Contraseña') }}
-    {{ btn.button('Registrar', type='submit') }}
+    <input type="file" name="avatar_file" accept="image/*" class="form-control" />
+    {{ btn.button('Registrar', type='submit', class='w-100') }}
   </form>
 </div>
 {% endblock %}
