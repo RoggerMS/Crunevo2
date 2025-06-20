@@ -9,8 +9,7 @@ def test_login_streak_unlocks(db_session, test_user):
         record_login(test_user, start + timedelta(days=i))
 
     assert any(
-        a.achievement.code == AchievementCodes.CONECTADO_7D
-        for a in test_user.achievements
+        a.badge_code == AchievementCodes.CONECTADO_7D for a in test_user.achievements
     )
 
 
@@ -20,6 +19,5 @@ def test_login_streak_not_enough(db_session, test_user):
         record_login(test_user, start + timedelta(days=i))
 
     assert not any(
-        a.achievement.code == AchievementCodes.CONECTADO_7D
-        for a in test_user.achievements
+        a.badge_code == AchievementCodes.CONECTADO_7D for a in test_user.achievements
     )

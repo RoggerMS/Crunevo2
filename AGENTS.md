@@ -149,3 +149,4 @@
 - Avoided tooltip duplication by verifying getInstance and binding show event once (QA admin-tooltip-instance-fix).
 - Implemented ranking with tabs and achievements section (PR ranking-achievements).
 - Integrado Resend como proveedor de emails y verificación en registro (PR resend-email-provider).
+- Fixed feed weekly ranking query removing nonexistent achievement join (PR achievement-table-fix).
