@@ -32,7 +32,10 @@
   {% for a in current_user.achievements %}
     {% set info = ACHIEVEMENT_DETAILS.get(a.achievement.code, {}) %}
     <div class="col">
-      {% include 'components/achievement_card.html' with icon=info.icon title=info.title timestamp=a.timestamp %}
+      {% set icon = info.icon %}
+      {% set title = info.title %}
+      {% set timestamp = a.timestamp %}
+      {% include 'components/achievement_card.html' %}
     </div>
   {% else %}
     <div class="col">Aún no tienes logros desbloqueados.</div>
