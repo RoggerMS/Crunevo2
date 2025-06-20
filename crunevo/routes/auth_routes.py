@@ -64,7 +64,11 @@ def register():
             current_app.logger.warning("IntegrityError: %s", e)
             flash("Usuario o correo ya registrado", "danger")
             return render_template("auth/register.html"), 400
-        send_confirmation_email(user)
+        if not send_confirmation_email(user):
+            flash(
+                "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
+                "danger",
+            )
         return render_template("onboarding/confirm.html")
     return render_template("auth/register.html")
 

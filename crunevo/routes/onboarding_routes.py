@@ -31,7 +31,7 @@ def send_confirmation_email(user):
     db.session.add(EmailToken(token=token, email=user.email, user_id=user.id))
     db.session.commit()
     html = render_template("emails/confirm.html", token=token)
-    send_email(user.email, "Confirma tu cuenta", html)
+    return send_email(user.email, "Confirma tu cuenta", html)
 
 
 def _user_key():
@@ -57,7 +57,11 @@ def register():
             current_app.logger.warning("IntegrityError: %s", e)
             flash("Usuario o correo ya registrado", "danger")
             return render_template("onboarding/register.html"), 400
-        send_confirmation_email(user)
+        if not send_confirmation_email(user):
+            flash(
+                "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
+                "danger",
+            )
         return render_template("onboarding/confirm.html")
     return render_template("onboarding/register.html")
 
@@ -107,7 +111,11 @@ def pending():
 def resend():
     if current_user.activated:
         return redirect(url_for("feed.index"))
-    send_confirmation_email(current_user)
+    if not send_confirmation_email(current_user):
+        flash(
+            "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
+            "danger",
+        )
     record_auth_event(current_user, "resend_email")
     flash("Correo reenviado")
     return redirect(url_for("onboarding.pending"))

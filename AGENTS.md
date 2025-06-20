@@ -155,3 +155,4 @@
 - Fixed slice syntax in perfil.html loops by assigning sorted lists before slicing to avoid TemplateSyntaxError (PR profile-slice-fix).
 - Registro permite subir avatar opcional y username único; perfil muestra @username y acepta nueva foto (PR profile-avatar-upload).
 - Avatar por defecto se asigna automáticamente si no se sube imagen en el registro (PR default-avatar).
+- Registro renovado con tarjeta responsiva, vista previa de avatar y aviso si falla Resend (PR registro-ui-email-fix).

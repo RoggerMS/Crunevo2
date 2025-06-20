@@ -111,6 +111,20 @@ document.addEventListener('DOMContentLoaded', () => {
     initDropdowns();
   }
 
+  const avatarInput = document.getElementById('avatarFileInput');
+  const avatarPreview = document.getElementById('avatarPreview');
+  if (avatarInput && avatarPreview) {
+    avatarInput.addEventListener('change', () => {
+      const file = avatarInput.files[0];
+      if (file) {
+        avatarPreview.src = URL.createObjectURL(file);
+        avatarPreview.classList.remove('tw-hidden');
+      } else {
+        avatarPreview.classList.add('tw-hidden');
+      }
+    });
+  }
+
   // Bootstrap collapse handles the mobile menu
 
 });
