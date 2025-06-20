@@ -26,7 +26,7 @@
         <td>{{ product.name }}</td>
         <td>{{ product.stock }}</td>
         <td class="text-end">
-          <div class="dropdown">
+          <div class="dropdown position-relative">
             <button class="btn btn-sm admin-dropdown-btn dropdown-toggle" data-bs-toggle="dropdown" title="Más opciones" aria-label="Más opciones de {{ product.name }}" aria-haspopup="true" aria-expanded="false">⋮</button>
             <ul class="dropdown-menu shadow-sm">
               <li><a class="dropdown-item" href="{{ PUBLIC_BASE_URL }}/store/{{ product.id }}" target="_blank">Ver en tienda</a></li>
