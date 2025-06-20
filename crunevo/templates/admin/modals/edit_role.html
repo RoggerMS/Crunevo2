@@ -11,6 +11,7 @@
         <div class="modal-body">
           <select name="role" class="form-select">
             <option value="student" {% if user.role == 'student' %}selected{% endif %}>Estudiante</option>
+            <option value="moderator" {% if user.role == 'moderator' %}selected{% endif %}>Moderador</option>
             <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Administrador</option>
           </select>
         </div>
