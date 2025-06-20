@@ -22,13 +22,25 @@
     </div>
     <h5>Últimos apuntes</h5>
     <ul class="list-group">
-      {% for note in user.notes|sort(attribute='created_at', reverse=True)[:5] %}
-      <li class="list-group-item d-flex justify-content-between align-items-start">
-        <a href="{{ url_for('notes.view_note', id=note.id) }}">{{ note.title }}</a>
-        <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d') }}</small>
-      </li>
-      {% endfor %}
-    </ul>
+  {% for note in user.notes|sort(attribute='created_at', reverse=True)[:5] %}
+  <li class="list-group-item d-flex justify-content-between align-items-start">
+    <a href="{{ url_for('notes.view_note', id=note.id) }}">{{ note.title }}</a>
+    <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d') }}</small>
+  </li>
+  {% endfor %}
+  </ul>
+
+  <h5 class="mt-4">🎖️ Logros desbloqueados</h5>
+  <div class="row row-cols-2 row-cols-md-3 g-2">
+    {% for a in user.achievements %}
+      {% set info = ACHIEVEMENT_DETAILS.get(a.achievement.code, {}) %}
+      <div class="col">
+        {% include 'components/achievement_card.html' with icon=info.icon title=info.title timestamp=a.timestamp %}
+      </div>
+    {% else %}
+      <div class="col">Aún no tiene logros.</div>
+    {% endfor %}
   </div>
+</div>
 </div>
 {% endblock %}

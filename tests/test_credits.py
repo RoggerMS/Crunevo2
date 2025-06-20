@@ -29,4 +29,6 @@ def test_spend_insufficient(db_session, test_user):
 def test_donor_achievement(db_session, test_user, another_user):
     add_credit(test_user, 5, CreditReasons.DONACION)
     spend_credit(test_user, 5, CreditReasons.DONACION, related_id=another_user.id)
-    assert any(a.badge_code == AchievementCodes.DONADOR for a in test_user.achievements)
+    assert any(
+        a.achievement.code == AchievementCodes.DONADOR for a in test_user.achievements
+    )

@@ -1,0 +1,8 @@
+<div class="card text-center tw-bg-gradient-to-r tw-from-purple-500/20 tw-to-indigo-500/20">
+  <div class="card-body p-2">
+    <i class="bi {{ icon }} fs-3"></i>
+    <div class="fw-bold">{{ title }}</div>
+    {% if timestamp %}<small class="text-muted">{{ timestamp.strftime('%Y-%m-%d') }}</small>{% endif %}
+  </div>
+</div>
+

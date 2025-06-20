@@ -8,7 +8,7 @@ from .post_comment import PostComment  # noqa: F401
 from .post import Post  # noqa: F401
 from .credit import Credit  # noqa: F401
 from .ranking import RankingCache  # noqa: F401
-from .achievement import UserAchievement  # noqa: F401
+from .achievement import Achievement, UserAchievement  # noqa: F401
 from .login_history import LoginHistory  # noqa: F401
 from .note_vote import NoteVote  # noqa: F401
 from .feed_item import FeedItem  # noqa: F401

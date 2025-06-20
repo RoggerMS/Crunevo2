@@ -22,6 +22,7 @@ from crunevo.models import (
     Note,
     User,
     UserAchievement,
+    Achievement,
     LoginHistory,
 )
 from crunevo.forms import FeedNoteForm, FeedImageForm
@@ -43,7 +44,7 @@ def get_featured_posts():
         db.session.query(User)
         .join(UserAchievement)
         .group_by(User.id)
-        .order_by(func.max(UserAchievement.earned_at).desc())
+        .order_by(func.max(UserAchievement.timestamp).desc())
         .limit(3)
         .all()
     )
@@ -65,9 +66,10 @@ def get_weekly_ranking():
     )
 
     recent_achievements = (
-        db.session.query(User.username, UserAchievement.badge_code)
+        db.session.query(User.username, Achievement.title)
         .join(UserAchievement)
-        .order_by(UserAchievement.earned_at.desc())
+        .join(Achievement)
+        .order_by(UserAchievement.timestamp.desc())
         .limit(5)
         .all()
     )

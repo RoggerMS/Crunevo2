@@ -1,29 +1,37 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2 class="mb-4">🏆 Ranking Semanal</h2>
-{% if last_update %}
-<p class="text-muted">Última actualización: {{ last_update.strftime('%Y-%m-%d %H:%M') }}</p>
-{% endif %}
+<h2 class="mb-4">🏆 Ranking</h2>
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item">
+    <a class="nav-link {% if range == 'week' %}active{% endif %}" href="{{ url_for('ranking.show_ranking', range='week') }}">Semanal</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if range == 'month' %}active{% endif %}" href="{{ url_for('ranking.show_ranking', range='month') }}">Mensual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if range == 'all' %}active{% endif %}" href="{{ url_for('ranking.show_ranking', range='all') }}">Histórico</a>
+  </li>
+</ul>
 <div class="table-responsive">
 <table class="table table-hover align-middle">
   <thead>
     <tr>
       <th class="text-center">#</th>
       <th>Usuario</th>
-      <th class="text-end">Puntaje</th>
+      <th class="text-end">Créditos</th>
     </tr>
   </thead>
   <tbody>
-    {% for r in ranking %}
+    {% for user, total in ranking %}
     <tr class="{% if loop.index == 1 %}table-warning border-gold{% elif loop.index == 2 %}table-secondary border-silver{% elif loop.index == 3 %}table-bronze border-bronze{% endif %}">
       <td class="text-center fs-4">
         {% if loop.index == 1 %}<i class="bi bi-trophy-fill text-warning"></i>{% elif loop.index == 2 %}<i class="bi bi-trophy-fill text-secondary"></i>{% elif loop.index == 3 %}<i class="bi bi-trophy-fill text-brown"></i>{% else %}{{ loop.index }}{% endif %}
       </td>
       <td>
-        <img src="{{ r.user.avatar_url or url_for('static', filename='img/default.png') }}" width="32" height="32" class="rounded-circle me-1">
-        {{ r.user.username }} <small class="text-muted">({{ r.user.carrera or '' }})</small>
+        <img src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" width="32" height="32" class="rounded-circle me-1">
+        {{ user.username }}
       </td>
-      <td class="text-end"><strong>{{ r.score }}</strong></td>
+      <td class="text-end"><strong>{{ '%.0f'|format(total) }}</strong></td>
     </tr>
     {% endfor %}
   </tbody>

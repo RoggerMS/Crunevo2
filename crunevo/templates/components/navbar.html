@@ -14,6 +14,7 @@
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('feed.trending') }}"><i class="bi bi-fire me-1"></i>Tendencias</a></li>
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('notes.list_notes') }}"><i class="bi bi-journal-text me-1"></i>Apuntes</a></li>
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('store.store_index') }}"><i class="bi bi-bag me-1"></i>Tienda</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('ranking.show_ranking') }}"><i class="bi bi-trophy me-1"></i>Ranking</a></li>
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('chat.chat_index') }}"><i class="bi bi-chat-dots me-1"></i>Chat</a></li>
         {% if config.ADMIN_INSTANCE and current_user.is_authenticated and current_user.role == 'admin' %}
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-1"></i>Admin</a></li>
