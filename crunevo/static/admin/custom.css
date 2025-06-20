@@ -101,3 +101,31 @@
   background-color: var(--tblr-primary);
   border-color: var(--tblr-primary);
 }
+
+main {
+  padding-bottom: 2rem;
+}
+
+[data-bs-theme='light'] main {
+  background-color: #f8f9fa;
+}
+
+/* dark mode backgrounds */
+[data-bs-theme='dark'] main {
+  background-color: #121212;
+}
+
+[data-bs-theme='light'] .card,
+[data-bs-theme='light'] .table {
+  background-color: #fff;
+}
+
+[data-bs-theme='dark'] .card,
+[data-bs-theme='dark'] .table {
+  background-color: #181818;
+  color: #e9e9e9;
+}
+
+[data-bs-theme='dark'] .table th {
+  background-color: #1f1f1f;
+}
