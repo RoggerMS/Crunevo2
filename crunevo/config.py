@@ -80,3 +80,5 @@ class Config:
     RATELIMIT_STORAGE_URI = os.getenv(
         "RATELIMIT_STORAGE_URI", os.getenv("REDIS_URL", "memory://")
     )
+
+    PUBLIC_BASE_URL = os.getenv("PUBLIC_BASE_URL", "https://www.crunevo.com")
