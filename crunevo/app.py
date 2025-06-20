@@ -58,11 +58,13 @@ def create_app():
     testing_env = os.environ.get("PYTEST_CURRENT_TEST") is not None
     app.config["ADMIN_INSTANCE"] = is_admin
 
+    app.register_blueprint(health_bp)
+    app.logger.info("Running in ADMIN mode" if is_admin else "Running in PUBLIC mode")
+
     if is_admin:
         app.register_blueprint(auth_bp)
         app.register_blueprint(admin_bp)
         app.register_blueprint(errors_bp)
-        app.register_blueprint(health_bp)
     else:
         app.register_blueprint(onboarding_bp)
         app.register_blueprint(auth_bp)
@@ -72,7 +74,6 @@ def create_app():
         app.register_blueprint(chat_bp)
         app.register_blueprint(ranking_bp)
         app.register_blueprint(errors_bp)
-        app.register_blueprint(health_bp)
         app.register_blueprint(admin_blocker_bp)
         if testing_env:
             app.register_blueprint(admin_bp)
