@@ -178,9 +178,9 @@
     <div class="card">
       <div class="card-header bg-info text-white">🧩 Logros recientes</div>
       <ul class="list-group list-group-flush">
-        {% for user, logros in recent_achievements %}
+        {% for username, badge_code, timestamp in recent_achievements %}
         <li class="list-group-item">
-          <strong>{{ user }}</strong>: {{ logros }}
+          <strong>{{ username }}</strong>: {{ badge_code }} <span class="text-muted">{{ timestamp.strftime('%Y-%m-%d') }}</span>
         </li>
         {% endfor %}
       </ul>
