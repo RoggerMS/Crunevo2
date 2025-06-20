@@ -38,7 +38,8 @@ def test_finish_profile_persists(client, db_session):
     db_session.commit()
     login(client, user.username, "StrongPassw0rd!")
     client.post(
-        "/onboarding/finish", data={"alias": "alias", "avatar": "url", "bio": "bio"}
+        "/onboarding/finish",
+        data={"alias": "alias", "avatar_url": "url", "bio": "bio"},
     )
     db_session.refresh(user)
     assert user.username == "alias"

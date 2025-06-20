@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import os
 from flask import (
     Blueprint,
     render_template,
@@ -10,6 +11,9 @@ from flask import (
 )
 from flask_login import login_user, current_user, login_required
 import secrets
+
+import cloudinary.uploader
+from werkzeug.utils import secure_filename
 
 from crunevo.extensions import db, limiter, csrf
 from flask_limiter.util import get_remote_address
@@ -88,7 +92,22 @@ def confirm(token):
 def finish():
     if request.method == "POST":
         current_user.username = request.form.get("alias")
-        current_user.avatar_url = request.form.get("avatar")
+        avatar_url = request.form.get("avatar_url")
+        avatar_file = request.files.get("avatar_file")
+        if avatar_file and avatar_file.filename:
+            cloud_url = current_app.config.get("CLOUDINARY_URL")
+            if cloud_url:
+                res = cloudinary.uploader.upload(avatar_file, resource_type="auto")
+                current_user.avatar_url = res["secure_url"]
+            else:
+                filename = secure_filename(avatar_file.filename)
+                upload_folder = current_app.config["UPLOAD_FOLDER"]
+                os.makedirs(upload_folder, exist_ok=True)
+                filepath = os.path.join(upload_folder, filename)
+                avatar_file.save(filepath)
+                current_user.avatar_url = filepath
+        elif avatar_url:
+            current_user.avatar_url = avatar_url
         current_user.about = request.form.get("bio")
         db.session.commit()
         return redirect(url_for("feed.index"))
