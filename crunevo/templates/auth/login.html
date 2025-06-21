@@ -17,7 +17,7 @@
       <div class="mb-3 password-group">
         <label for="password" class="form-label">Contraseña</label>
         <input type="password" class="form-control" id="password" name="password" required>
-        <button type="button" tabindex="0" aria-label="Mostrar contraseña" class="toggle-password">🙈</button>
+        <button type="button" class="toggle-password">👁️</button>
       </div>
       <button type="submit" class="btn btn-crunevo w-100">Iniciar sesión</button>
     </form>
@@ -32,7 +32,8 @@
   <div class="brand-block right-panel mt-lg-0">
     <img src="https://res.cloudinary.com/dnp9trhfx/image/upload/v1750494930/a642d206-74ab-4361-adf4-0ec41cb013d2_nxqy63.png" alt="Logo CRUNEVO" class="brand-img">
     <h1 class="brand-title">Bienvenido a CRUNEVO</h1>
-    <p id="frase-bienvenida" class="welcome-phrase"></p>
+    <p class="welcome-phrase">Crunevo une a jóvenes que se esfuerzan cada día por construir un futuro mejor.</p>
+    <p class="brand-subtitle promo-text">Una red educativa para compartir, aprender y avanzar juntos.</p>
   </div>
 </div>
 <div class="access-links">
@@ -44,28 +45,25 @@
 {% block body_end %}
   {{ super() }}
   <script>
-    document.querySelectorAll('.toggle-password').forEach((btn) => {
+    document.querySelectorAll('.toggle-password').forEach(btn => {
       btn.addEventListener('click', () => {
         const input = btn.previousElementSibling;
-        const hide = input.type === 'text';
-        input.type = hide ? 'password' : 'text';
-        btn.innerHTML = hide ? '🙈' : '🙊';
-        btn.setAttribute('aria-label', hide ? 'Mostrar contraseña' : 'Ocultar contraseña');
+        input.type = input.type === 'password' ? 'text' : 'password';
+        btn.innerHTML = input.type === 'password' ? '👁️' : '🙈';
       });
     });
     const frases = [
-      'Inspírate, aprende y deja huella con tus apuntes.',
       'Crunevo une a jóvenes que se esfuerzan cada día por construir un futuro mejor.',
-      'Aquí tu conocimiento vale y se comparte.'
+      'Una red educativa para compartir, aprender y avanzar juntos.',
+      'Inspírate, aprende, y deja huella con tus apuntes.'
     ];
-    let i = 0;
-    const fraseEl = document.getElementById('frase-bienvenida');
-    if (fraseEl) fraseEl.textContent = frases[0];
+    let index = 0;
     setInterval(() => {
-      if (fraseEl) {
-        i = (i + 1) % frases.length;
-        fraseEl.textContent = frases[i];
+      const el = document.querySelector('.welcome-phrase');
+      if (el) {
+        el.textContent = frases[index];
+        index = (index + 1) % frases.length;
       }
-    }, 8000);
+    }, 5000);
   </script>
 {% endblock %}
