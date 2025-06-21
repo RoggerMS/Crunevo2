@@ -34,8 +34,9 @@ def send_confirmation_email(user):
     token = generate_token()
     db.session.add(EmailToken(token=token, email=user.email, user_id=user.id))
     db.session.commit()
-    html = render_template("emails/confirm.html", token=token)
-    return send_email(user.email, "Confirma tu cuenta", html)
+    confirm_url = url_for("onboarding.confirm", token=token, _external=True)
+    html = render_template("emails/confirm.html", confirm_url=confirm_url)
+    return send_email(user.email, "¡Confirma tu cuenta en CRUNEVO!", html)
 
 
 def _user_key():

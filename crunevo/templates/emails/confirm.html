@@ -1,2 +1,58 @@
-<p>Haz clic en el siguiente enlace para confirmar tu cuenta:</p>
-<p><a href="{{ url_for('onboarding.confirm', token=token, _external=True) }}">Confirmar cuenta</a></p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirma tu cuenta en CRUNEVO</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f7f8fc;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .button {
+            background-color: #7b3ea0;
+            color: #ffffff;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .button:hover {
+            background-color: #65159a;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+        }
+        img.logo {
+            width: 120px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://www.crunevo.com/static/img/crunevo_logo.png" alt="CRUNEVO Logo" class="logo">
+        <h1>¡Estás a un paso de unirte a CRUNEVO!</h1>
+        <p>Gracias por registrarte en <strong>CRUNEVO</strong>, la comunidad educativa donde compartes, aprendes y avanzas.</p>
+        <p>Para completar tu registro y activar tu cuenta, haz clic en el siguiente botón:</p>
+        <a href="{{ confirm_url }}" class="button">Confirmar mi cuenta</a>
+        <p class="footer">Si no solicitaste este registro, simplemente ignora este correo.</p>
+        <p class="footer">El enlace caducará en 24 horas por motivos de seguridad.</p>
+    </div>
+</body>
+</html>
