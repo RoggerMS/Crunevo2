@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
 <div class="register-wrapper container-fluid d-flex justify-content-center align-items-center min-vh-100">
-  <div class="register-card">
+  <div class="register-card fade-in">
     <h2 class="register-title">Crea una cuenta</h2>
     <p class="register-subtitle">Es rápido y fácil.</p>
     <form method="post">
@@ -25,8 +25,9 @@
       <div class="mb-3">
         <input type="email" class="form-control" name="email" placeholder="Correo electrónico" required>
       </div>
-      <div class="mb-3">
+      <div class="mb-3 password-group">
         <input type="password" class="form-control" name="password" placeholder="Contraseña nueva" required>
+        <button type="button" class="toggle-password">👁️</button>
       </div>
       <div class="row g-2 mb-3">
         <label class="form-label">Fecha de nacimiento</label>
@@ -84,4 +85,21 @@
     </form>
   </div>
 </div>
+<div class="access-links">
+  <a href="/tienda">Ver tienda</a>
+  <a href="/apuntes">Explorar apuntes</a>
+</div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script>
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = btn.previousElementSibling;
+        input.type = input.type === 'password' ? 'text' : 'password';
+        btn.innerHTML = input.type === 'password' ? '👁️' : '🙈';
+      });
+    });
+  </script>
 {% endblock %}
