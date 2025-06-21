@@ -16,9 +16,17 @@ body {
   display: none;
 }
 
-[data-bs-theme="dark"] body {
+[data-bs-theme="dark"] body,
+[data-bs-theme="dark"] html {
   background: #000 !important;
+  background-color: #000 !important;
   background-image: none !important;
+}
+[data-bs-theme="dark"] body::before,
+[data-bs-theme="dark"] body::after,
+[data-bs-theme="dark"] html::before,
+[data-bs-theme="dark"] html::after {
+  background: none !important;
 }
 
 
@@ -227,6 +235,7 @@ body {
   padding: 0.25rem 0.6rem;
   font-size: 1.25rem;
   cursor: pointer;
+  z-index: 1060;
   transition: background-color 0.3s ease;
 }
 [data-bs-theme="dark"] .theme-toggle-btn {
