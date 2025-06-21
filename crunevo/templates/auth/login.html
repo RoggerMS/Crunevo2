@@ -1,15 +1,58 @@
 {% extends 'base.html' %}
-{% import 'components/input.html' as forms %}
-{% import 'components/button.html' as btn %}
 {% import 'components/csrf.html' as csrf %}
+{% block head_extra %}
+  {{ super() }}
+  <style>
+    body.login-page {
+      background: linear-gradient(to bottom right, #ede556, #f3e5f5);
+    }
+    [data-bs-theme='dark'] body.login-page {
+      background: radial-gradient(circle at center, #2e1a47, #412d1d, #000);
+    }
+    .login-card {
+      background-color: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(100,50,150,0.15);
+    }
+    [data-bs-theme='dark'] .login-card {
+      background-color: #1c1c1e;
+    }
+    .login-link:hover { text-decoration: underline; }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.classList.add('login-page');
+    });
+  </script>
+{% endblock %}
 {% block content %}
-<div class="tw-max-w-md tw-mx-auto tw-my-16 tw-rounded-2xl tw-shadow-sm tw-bg-white dark:tw-bg-gray-900 tw-p-4 tw-space-y-4">
-  <h2>Iniciar sesión</h2>
-  <form method="post" class="tw-space-y-4">
-    {{ csrf.csrf_field() }}
-    {{ forms.input('username', placeholder='Usuario') }}
-    {{ forms.input('password', type='password', placeholder='Contraseña') }}
-    {{ btn.button('Entrar', type='submit') }}
-  </form>
+<div class="row g-0 min-vh-100">
+  <div class="col-lg-6 d-flex align-items-center justify-content-center p-4">
+    <div class="login-card p-4 p-md-5 w-100" style="max-width:420px;">
+      <h2 class="text-center mb-4">Iniciar sesión</h2>
+      <form method="post">
+        {{ csrf.csrf_field() }}
+        <div class="mb-3">
+          <label for="username" class="form-label">Correo electrónico o usuario</label>
+          <input type="text" class="form-control" id="username" name="username" placeholder="Tu correo o usuario" required>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Contraseña</label>
+          <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
+        <div class="text-center mt-2">
+          <a href="#" class="login-link" style="color:#6a1b9a;">&#191;Olvidaste tu contraseña?</a>
+        </div>
+      </form>
+      <hr class="my-4">
+      <a href="{{ url_for('onboarding.register') }}" class="btn btn-outline-secondary w-100">Crear cuenta nueva</a>
+    </div>
+  </div>
+  <div class="col-lg-6 d-none d-lg-flex flex-column align-items-center justify-content-center text-center p-5 text-light">
+    <img src="{{ url_for('static', filename='img/crunevo_logo.png') }}" alt="CRUNEVO" class="img-fluid mb-4" style="max-width:200px;" onerror="this.onerror=null;this.src='{{ url_for('static', filename='img/placeholder.svg') }}'">
+    <h2 class="mb-3" style="color:#65159a;">Bienvenido a CRUNEVO</h2>
+    <p class="lead">Una red educativa para compartir, aprender y avanzar.</p>
+  </div>
 </div>
 {% endblock %}

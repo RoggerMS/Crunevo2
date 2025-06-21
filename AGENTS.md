@@ -159,3 +159,4 @@
 - Implemented secure admin route to send custom emails with preview and sidebar link (PR admin-email-sender).
 - Onboarding finish page redesigned with avatar file/url preview and card layout (PR onboarding-finish-ui).
 - Ruta /register no se registra en la instancia admin; el registro sólo está disponible en /onboarding/register del dominio público y el login del admin sigue limitado a roles admin o moderador (PR remove-admin-register).
+- Login p\u00fablico redise\u00f1ado con tarjeta centrada, fondo gradiente y branding lateral (PR login-ui-refresh).
