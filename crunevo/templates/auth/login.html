@@ -1,15 +1,37 @@
 {% extends 'base.html' %}
-{% import 'components/input.html' as forms %}
-{% import 'components/button.html' as btn %}
 {% import 'components/csrf.html' as csrf %}
+{% block head_extra %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock %}
 {% block content %}
-<div class="tw-max-w-md tw-mx-auto tw-my-16 tw-rounded-2xl tw-shadow-sm tw-bg-white dark:tw-bg-gray-900 tw-p-4 tw-space-y-4">
-  <h2>Iniciar sesión</h2>
-  <form method="post" class="tw-space-y-4">
-    {{ csrf.csrf_field() }}
-    {{ forms.input('username', placeholder='Usuario') }}
-    {{ forms.input('password', type='password', placeholder='Contraseña') }}
-    {{ btn.button('Entrar', type='submit') }}
-  </form>
+<div class="login-wrapper">
+  <div class="login-card">
+    <h2 class="login-title">Iniciar sesión</h2>
+    <form method="post">
+      {{ csrf.csrf_field() }}
+      <div class="mb-3">
+        <label for="username" class="form-label">Correo o usuario</label>
+        <input type="text" class="form-control" id="username" name="username">
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" class="form-control" id="password" name="password">
+      </div>
+      <button type="submit" class="btn btn-crunevo w-100">Iniciar sesión</button>
+    </form>
+    <div class="text-center mt-3">
+      <a href="/forgot" class="link-sm">¿Olvidaste tu contraseña?</a>
+    </div>
+    <hr>
+    <div class="text-center">
+      <a href="/onboarding/register" class="btn btn-outline-secondary w-100">Crear nueva cuenta</a>
+    </div>
+  </div>
+  <div class="brand-block tw-mt-6 mt-lg-0">
+    <img src="{{ url_for('static', filename='img/crunevo_logo.png') }}" alt="Logo CRUNEVO" class="brand-img">
+    <h1 class="brand-title">Bienvenido a CRUNEVO</h1>
+    <p class="brand-subtitle">Una red educativa para compartir, aprender y avanzar. Inspira con tus apuntes.</p>
+  </div>
 </div>
 {% endblock %}
