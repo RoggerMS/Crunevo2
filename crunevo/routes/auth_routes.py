@@ -10,7 +10,6 @@ from flask import (
 from flask_login import login_user, logout_user, current_user
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import limiter
-from zxcvbn import zxcvbn
 from crunevo.utils.audit import record_auth_event
 from urllib.parse import urlparse  # ✅ Corrección aquí
 import json
@@ -19,62 +18,12 @@ import cloudinary.uploader
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
 from crunevo.models import User
-from crunevo.models.user import DEFAULT_AVATAR_URL
 from crunevo.utils import spend_credit, record_login
 from crunevo.constants import CreditReasons
-from sqlalchemy.exc import IntegrityError
-from crunevo.routes.onboarding_routes import send_confirmation_email
 
 IS_ADMIN = os.environ.get("ADMIN_INSTANCE") == "1"
 
 auth_bp = Blueprint("auth", __name__)
-
-
-if not IS_ADMIN:
-
-    @auth_bp.route("/register", methods=["GET", "POST"])
-    def register():
-        if request.method == "POST":
-            username = request.form["username"]
-            email = request.form["email"]
-            password = request.form["password"]
-            if User.query.filter_by(username=username).first():
-                flash("Nombre de usuario ya registrado", "danger")
-                return render_template("auth/register.html"), 400
-            if len(password) < 12 or zxcvbn(password)["score"] < 2:
-                flash("Contraseña débil", "danger")
-                return render_template("auth/register.html"), 400
-            avatar_url = DEFAULT_AVATAR_URL
-            f = request.files.get("avatar_file")
-            if f and f.filename:
-                cloud_url = current_app.config.get("CLOUDINARY_URL")
-                if cloud_url:
-                    result = cloudinary.uploader.upload(f, resource_type="auto")
-                    avatar_url = result["secure_url"]
-                else:
-                    filename = secure_filename(f.filename)
-                    upload_folder = current_app.config["UPLOAD_FOLDER"]
-                    os.makedirs(upload_folder, exist_ok=True)
-                    filepath = os.path.join(upload_folder, filename)
-                    f.save(filepath)
-                    avatar_url = filepath
-            user = User(username=username, email=email, avatar_url=avatar_url)
-            user.set_password(password)
-            db.session.add(user)
-            try:
-                db.session.commit()
-            except IntegrityError as e:
-                db.session.rollback()
-                current_app.logger.warning("IntegrityError: %s", e)
-                flash("Usuario o correo ya registrado", "danger")
-                return render_template("auth/register.html"), 400
-            if not send_confirmation_email(user):
-                flash(
-                    "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
-                    "danger",
-                )
-            return render_template("onboarding/confirm.html")
-        return render_template("auth/register.html")
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
