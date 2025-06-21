@@ -163,3 +163,5 @@
 - Login page updated with transparent card and centered mobile layout (PR login-transparent-blur).
 - Register page redesigned with transparent card and additional fields (PR register-redesign).
 - Unified registration under /onboarding/register and removed /register route (PR register-unification).
+- Login y registro comparten fondo degradado, tarjetas traslúcidas centradas y soporte de modo oscuro (PR login-register-theme).
+- Se corrigió el fondo oscuro en login y registro y se actualizó el logo en login (PR login-register-dark-logo).

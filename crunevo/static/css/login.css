@@ -1,12 +1,16 @@
 body {
   margin: 0;
   font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(to bottom right, #ede7f6, #ffffff);
+  background: linear-gradient(to bottom right, #f4ebff, #ffffff);
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+[data-bs-theme="dark"] body {
+  background: #121212;
+}
+
 
 .login-wrapper {
   display: flex;
@@ -21,11 +25,11 @@ body {
 
 .login-card {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 20px;
   padding: 40px;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 0.5rem rgba(0,0,0,0.2);
   width: 100%;
   max-width: 400px;
 }
@@ -91,6 +95,18 @@ body {
   color: #555;
 }
 
+[data-bs-theme="dark"] .login-card, [data-bs-theme="dark"] .register-card {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  box-shadow: 0 0 0.5rem rgba(255,255,255,0.1);
+}
+[data-bs-theme="dark"] .login-card input, [data-bs-theme="dark"] .register-card input, [data-bs-theme="dark"] .login-card select, [data-bs-theme="dark"] .register-card select, [data-bs-theme="dark"] .login-card .form-control, [data-bs-theme="dark"] .register-card .form-control {
+  background: #111 !important;
+  color: #fff !important;
+  border-color: #333 !important;
+}
+
 @media (max-width: 768px) {
   body {
     padding: 40px 10px;
@@ -102,10 +118,8 @@ body {
   }
 
   .login-card {
-    background: transparent;
-    border: none;
-    padding: 0;
-    box-shadow: none;
+    max-width: 90vw;
+    padding: 1.5rem;
   }
 
   .brand-block {
@@ -122,9 +136,5 @@ body {
 
   .btn-crunevo {
     width: 100%;
-  }
-
-  .form-control {
-    background-color: #fff;
   }
 }
