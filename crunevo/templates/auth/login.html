@@ -12,11 +12,11 @@
       {{ csrf.csrf_field() }}
       <div class="mb-3">
         <label for="username" class="form-label">Correo o usuario</label>
-        <input type="text" class="form-control" id="username" name="username">
+        <input type="text" class="form-control" id="username" name="username" required>
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" id="password" name="password">
+        <input type="password" class="form-control" id="password" name="password" required>
       </div>
       <button type="submit" class="btn btn-crunevo w-100">Iniciar sesión</button>
     </form>
@@ -28,7 +28,7 @@
       <a href="/onboarding/register" class="btn btn-outline-secondary w-100">Crear nueva cuenta</a>
     </div>
   </div>
-  <div class="brand-block tw-mt-6 mt-lg-0">
+  <div class="brand-block mt-lg-0">
     <img src="{{ url_for('static', filename='img/crunevo_logo.png') }}" alt="Logo CRUNEVO" class="brand-img">
     <h1 class="brand-title">Bienvenido a CRUNEVO</h1>
     <p class="brand-subtitle">Una red educativa para compartir, aprender y avanzar. Inspira con tus apuntes.</p>

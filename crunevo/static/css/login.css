@@ -1,5 +1,7 @@
 body {
-  background: linear-gradient(to bottom, #f9f9f9, #ffffff);
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(to bottom right, #ede7f6, #ffffff);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -7,34 +9,36 @@ body {
 }
 
 .login-wrapper {
-  max-width: 1100px;
-  width: 100%;
   display: flex;
-  gap: 40px;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
+  gap: 40px;
+  max-width: 1100px;
+  width: 100%;
   padding: 20px;
 }
 
 .login-card {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
   padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 420px;
+  max-width: 400px;
 }
 
 .login-title {
-  font-size: 26px;
-  font-weight: 800;
-  color: #333;
+  font-weight: bold;
+  color: #2c2c2c;
+  margin-bottom: 30px;
   text-align: center;
-  margin-bottom: 24px;
 }
 
 .form-label {
-  color: #333;
+  font-weight: 600;
 }
 
 .form-control:focus {
@@ -50,13 +54,16 @@ body {
 }
 
 .btn-crunevo:hover {
-  background-color: #7e3aa4;
+  background-color: #7b3ea0;
 }
+
 
 .link-sm {
   font-size: 14px;
   color: #6c63ff;
   text-decoration: none;
+  display: block;
+  text-align: center;
 }
 
 .link-sm:hover {
@@ -64,8 +71,13 @@ body {
 }
 
 .brand-block {
-  max-width: 500px;
   text-align: left;
+  max-width: 500px;
+}
+
+.brand-block img {
+  max-width: 180px;
+  margin-bottom: 20px;
 }
 
 .brand-title {
@@ -75,21 +87,44 @@ body {
 }
 
 .brand-subtitle {
-  font-size: 18px;
+  font-size: 16px;
   color: #555;
-  margin-top: 12px;
-}
-
-.brand-img {
-  max-width: 180px;
-  margin-bottom: 20px;
 }
 
 @media (max-width: 768px) {
-  .login-wrapper {
-    flex-direction: column-reverse;
+  body {
+    padding: 40px 10px;
   }
+
+  .login-wrapper {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .login-card {
+    background: transparent;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+  }
+
   .brand-block {
     text-align: center;
+  }
+
+  .brand-block img {
+    margin: 0 auto 20px;
+  }
+
+  .brand-title {
+    font-size: 24px;
+  }
+
+  .btn-crunevo {
+    width: 100%;
+  }
+
+  .form-control {
+    background-color: #fff;
   }
 }
