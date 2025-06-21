@@ -7,7 +7,7 @@ body {
   align-items: center;
   justify-content: center;
 }
-[data-bs-theme="dark"] body {
+body[data-bs-theme="dark"] {
   background: #121212;
 }
 
