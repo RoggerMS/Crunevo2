@@ -27,7 +27,7 @@
       </div>
       <div class="mb-3 password-group">
         <input type="password" class="form-control" name="password" placeholder="Contraseña nueva" required>
-        <button type="button" tabindex="0" aria-label="Mostrar contraseña" class="toggle-password">🙈</button>
+        <button type="button" class="toggle-password">👁️</button>
       </div>
       <div class="row g-2 mb-3">
         <label class="form-label">Fecha de nacimiento</label>
@@ -94,13 +94,11 @@
 {% block body_end %}
   {{ super() }}
   <script>
-    document.querySelectorAll('.toggle-password').forEach((btn) => {
+    document.querySelectorAll('.toggle-password').forEach(btn => {
       btn.addEventListener('click', () => {
         const input = btn.previousElementSibling;
-        const hide = input.type === 'text';
-        input.type = hide ? 'password' : 'text';
-        btn.innerHTML = hide ? '🙈' : '🙊';
-        btn.setAttribute('aria-label', hide ? 'Mostrar contraseña' : 'Ocultar contraseña');
+        input.type = input.type === 'password' ? 'text' : 'password';
+        btn.innerHTML = input.type === 'password' ? '👁️' : '🙈';
       });
     });
   </script>

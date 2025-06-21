@@ -7,8 +7,7 @@ body {
   align-items: center;
   justify-content: center;
   padding-top: 0 !important;
-  overflow: hidden;
-  transition: all 0.3s ease;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 .navbar-crunevo {
@@ -40,7 +39,7 @@ body {
   width: 100%;
   max-width: 500px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
 }
 
 .login-title {
@@ -52,11 +51,6 @@ body {
 
 .form-label {
   font-weight: 600;
-}
-
-.form-control,
-.btn {
-  transition: all 0.3s ease;
 }
 
 .form-control:focus {
@@ -102,18 +96,6 @@ body {
   font-size: 32px;
   font-weight: 800;
   color: #65159a;
-}
-
-.welcome-phrase {
-  transition: all 0.3s ease;
-}
-
-[data-bs-theme="dark"] .welcome-phrase {
-  color: #ccc;
-}
-
-[data-bs-theme="light"] .welcome-phrase {
-  color: #444;
 }
 
 .brand-subtitle {
@@ -187,7 +169,6 @@ body {
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .fade-in {
