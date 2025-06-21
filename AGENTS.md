@@ -171,3 +171,4 @@
 - Adjusted dark theme backgrounds to true black, improved password toggle alignment and link contrast, added fading welcome phrase rotation and disabled page scrolling (PR login-register-tweak).
 - Added theme toggle button on login and register pages, refined dark mode card translucency, extended welcome phrase interval and improved link contrast (PR login-register-theme-toggle).
 - Fixed dark theme backgrounds on login and register: body black, wrappers transparent, cards darker (PR login-register-dark-fix).
+- Ensured gradient removed in dark mode on login and register, toggle icon updates with stored preference (PR login-register-gradient-fix).
