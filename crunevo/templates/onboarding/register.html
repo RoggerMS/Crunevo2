@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
 {% endblock %}
 {% block content %}
+<button id="toggle-theme" class="theme-toggle-btn">🌙</button>
 <div class="register-wrapper container-fluid d-flex justify-content-center align-items-center min-vh-100">
   <div class="register-card fade-in">
     <h2 class="register-title">Crea una cuenta</h2>
@@ -102,6 +103,18 @@
         btn.innerHTML = hide ? '🙈' : '🙊';
         btn.setAttribute('aria-label', hide ? 'Mostrar contraseña' : 'Ocultar contraseña');
       });
+    });
+
+    document.getElementById('toggle-theme').addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-bs-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-bs-theme', next);
+      localStorage.setItem('theme', next);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const stored = localStorage.getItem('theme');
+      if (stored) document.documentElement.setAttribute('data-bs-theme', stored);
     });
   </script>
 {% endblock %}
