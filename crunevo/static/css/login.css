@@ -1,3 +1,4 @@
+html,
 body {
   margin: 0;
   font-family: "Segoe UI", sans-serif;
@@ -7,7 +8,8 @@ body {
   align-items: center;
   justify-content: center;
   padding-top: 0 !important;
-  transition: background-color 0.4s ease, color 0.4s ease;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .navbar-crunevo {
@@ -39,7 +41,7 @@ body {
   width: 100%;
   max-width: 500px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.4s ease;
+  transition: all 0.3s ease;
 }
 
 .login-title {
@@ -51,6 +53,11 @@ body {
 
 .form-label {
   font-weight: 600;
+}
+
+.form-control,
+.btn {
+  transition: all 0.3s ease;
 }
 
 .form-control:focus {
@@ -69,6 +76,11 @@ body {
   background-color: #7b3ea0;
 }
 
+[data-bs-theme="dark"] .btn-outline-secondary {
+  color: #f2f2f2;
+  border-color: #888;
+}
+
 
 .link-sm {
   font-size: 14px;
@@ -76,6 +88,10 @@ body {
   text-decoration: none;
   display: block;
   text-align: center;
+}
+
+[data-bs-theme="dark"] .link-sm {
+  color: #b79aff;
 }
 
 .link-sm:hover {
@@ -98,6 +114,19 @@ body {
   color: #65159a;
 }
 
+.welcome-phrase {
+  opacity: 1;
+  transition: opacity 0.6s ease;
+}
+
+[data-bs-theme="dark"] .welcome-phrase {
+  color: #ccc;
+}
+
+[data-bs-theme="light"] .welcome-phrase {
+  color: #444;
+}
+
 .brand-subtitle {
   font-size: 16px;
   color: #555;
@@ -105,7 +134,7 @@ body {
 
 [data-bs-theme="dark"] .login-card,
 [data-bs-theme="dark"] .register-card {
-  background: rgba(30, 30, 30, 0.6);
+  background-color: #000;
   border: 1px solid #333;
   color: #f2f2f2;
 }
@@ -160,6 +189,10 @@ body {
   position: relative;
 }
 
+.password-group input {
+  padding-right: 2.5rem;
+}
+
 .toggle-password {
   position: absolute;
   right: 12px;
@@ -169,6 +202,7 @@ body {
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .fade-in {
