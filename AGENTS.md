@@ -164,3 +164,4 @@
 - Register page redesigned with transparent card and additional fields (PR register-redesign).
 - Unified registration under /onboarding/register and removed /register route (PR register-unification).
 - Login y registro comparten fondo degradado, tarjetas traslúcidas centradas y soporte de modo oscuro (PR login-register-theme).
+- Nuevo correo de confirmación con plantilla HTML y confirm_url externo; asunto actualizado (PR confirm-email-html).
