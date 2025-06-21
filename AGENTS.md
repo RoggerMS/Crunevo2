@@ -169,3 +169,4 @@
 - Mejorado login y registro con tarjeta translúcida, ocultar navbar, alternar contraseña y soporte móvil (PR login-register-ux).
 - Optimized login and register pages with smoother theme transitions, rotating welcome phrases and accessible password toggles using 🙊/🙈 icons. Dark mode styling fixed (PR login-register-polish).
 - Adjusted dark theme backgrounds to true black, improved password toggle alignment and link contrast, added fading welcome phrase rotation and disabled page scrolling (PR login-register-tweak).
+- Added theme toggle button on login and register pages, refined dark mode card translucency, extended welcome phrase interval and improved link contrast (PR login-register-theme-toggle).

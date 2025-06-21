@@ -9,7 +9,7 @@ body {
   justify-content: center;
   padding-top: 0 !important;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: background-color 0.4s ease;
 }
 
 .navbar-crunevo {
@@ -17,7 +17,7 @@ body {
 }
 
 [data-bs-theme="dark"] body {
-  background-color: #0a0a0a !important;
+  background-color: #000 !important;
 }
 
 
@@ -134,8 +134,9 @@ body {
 
 [data-bs-theme="dark"] .login-card,
 [data-bs-theme="dark"] .register-card {
-  background-color: #000;
-  border: 1px solid #333;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: #f2f2f2;
 }
 
@@ -210,6 +211,24 @@ body {
   animation: fadeIn 1s ease forwards;
 }
 
+.theme-toggle-btn {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(4px);
+  border: none;
+  border-radius: 50%;
+  padding: 0.25rem 0.6rem;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+[data-bs-theme="dark"] .theme-toggle-btn {
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+}
+
 @keyframes fadeIn {
   to {
     opacity: 1;
@@ -223,7 +242,7 @@ a, .text-muted {
 
 [data-bs-theme="dark"] a,
 [data-bs-theme="dark"] .text-muted {
-  color: #bbb;
+  color: #ddd;
 }
 
 .access-links {
@@ -240,5 +259,5 @@ a, .text-muted {
 }
 
 [data-bs-theme="dark"] .access-links a {
-  color: #b79aff;
+  color: #d5c7ff;
 }

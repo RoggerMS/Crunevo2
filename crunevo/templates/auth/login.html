@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 {% endblock %}
 {% block content %}
+<button id="toggle-theme" class="theme-toggle-btn">🌙</button>
 <div class="login-wrapper container-fluid d-flex justify-content-center align-items-center min-vh-100">
   <div class="login-card fade-in">
     <h2 class="login-title">Iniciar sesión</h2>
@@ -70,6 +71,18 @@
           fraseEl.style.opacity = 1;
         }, 500);
       }
-    }, 5000);
+    }, 8000);
+
+    document.getElementById('toggle-theme').addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-bs-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-bs-theme', next);
+      localStorage.setItem('theme', next);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const stored = localStorage.getItem('theme');
+      if (stored) document.documentElement.setAttribute('data-bs-theme', stored);
+    });
   </script>
 {% endblock %}
