@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
 <div class="login-wrapper container-fluid d-flex justify-content-center align-items-center min-vh-100">
-  <div class="login-card">
+  <div class="login-card fade-in">
     <h2 class="login-title">Iniciar sesión</h2>
     <form method="post">
       {{ csrf.csrf_field() }}
@@ -14,9 +14,10 @@
         <label for="username" class="form-label">Correo o usuario</label>
         <input type="text" class="form-control" id="username" name="username" required>
       </div>
-      <div class="mb-3">
+      <div class="mb-3 password-group">
         <label for="password" class="form-label">Contraseña</label>
         <input type="password" class="form-control" id="password" name="password" required>
+        <button type="button" class="toggle-password">👁️</button>
       </div>
       <button type="submit" class="btn btn-crunevo w-100">Iniciar sesión</button>
     </form>
@@ -28,10 +29,41 @@
       <a href="/onboarding/register" class="btn btn-outline-secondary w-100">Crear nueva cuenta</a>
     </div>
   </div>
-  <div class="brand-block mt-lg-0">
+  <div class="brand-block right-panel mt-lg-0">
     <img src="https://res.cloudinary.com/dnp9trhfx/image/upload/v1750494930/a642d206-74ab-4361-adf4-0ec41cb013d2_nxqy63.png" alt="Logo CRUNEVO" class="brand-img">
     <h1 class="brand-title">Bienvenido a CRUNEVO</h1>
-    <p class="brand-subtitle">Una red educativa para compartir, aprender y avanzar. Inspira con tus apuntes.</p>
+    <p class="welcome-phrase">Crunevo une a jóvenes que se esfuerzan cada día por construir un futuro mejor.</p>
+    <p class="brand-subtitle promo-text">Una red educativa para compartir, aprender y avanzar juntos.</p>
   </div>
 </div>
+<div class="access-links">
+  <a href="/tienda">Ver tienda</a>
+  <a href="/apuntes">Explorar apuntes</a>
+</div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script>
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = btn.previousElementSibling;
+        input.type = input.type === 'password' ? 'text' : 'password';
+        btn.innerHTML = input.type === 'password' ? '👁️' : '🙈';
+      });
+    });
+    const frases = [
+      'Crunevo une a jóvenes que se esfuerzan cada día por construir un futuro mejor.',
+      'Una red educativa para compartir, aprender y avanzar juntos.',
+      'Inspírate, aprende, y deja huella con tus apuntes.'
+    ];
+    let index = 0;
+    setInterval(() => {
+      const el = document.querySelector('.welcome-phrase');
+      if (el) {
+        el.textContent = frases[index];
+        index = (index + 1) % frases.length;
+      }
+    }, 5000);
+  </script>
 {% endblock %}

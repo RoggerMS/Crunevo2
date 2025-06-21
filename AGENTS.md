@@ -166,3 +166,4 @@
 - Login y registro comparten fondo degradado, tarjetas traslúcidas centradas y soporte de modo oscuro (PR login-register-theme).
 - Se corrigió el fondo oscuro en login y registro y se actualizó el logo en login (PR login-register-dark-logo).
 - Nuevo correo de confirmación con plantilla HTML y confirm_url externo; asunto actualizado (PR confirm-email-html).
+- Mejorado login y registro con tarjeta translúcida, ocultar navbar, alternar contraseña y soporte móvil (PR login-register-ux).

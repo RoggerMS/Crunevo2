@@ -6,9 +6,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-top: 0 !important;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
+
+.navbar-crunevo {
+  display: none;
+}
+
 [data-bs-theme="dark"] body {
-  background: #121212;
+  background-color: #0a0a0a !important;
 }
 
 
@@ -26,12 +33,13 @@ body {
 .login-card {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-  padding: 40px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 0 0.5rem rgba(0,0,0,0.2);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 32px;
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s ease;
 }
 
 .login-title {
@@ -95,16 +103,22 @@ body {
   color: #555;
 }
 
-[data-bs-theme="dark"] .login-card, [data-bs-theme="dark"] .register-card {
-  background: rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  box-shadow: 0 0 0.5rem rgba(255,255,255,0.1);
+[data-bs-theme="dark"] .login-card,
+[data-bs-theme="dark"] .register-card {
+  background: rgba(30, 30, 30, 0.6);
+  border: 1px solid #333;
+  color: #f2f2f2;
 }
-[data-bs-theme="dark"] .login-card input, [data-bs-theme="dark"] .register-card input, [data-bs-theme="dark"] .login-card select, [data-bs-theme="dark"] .register-card select, [data-bs-theme="dark"] .login-card .form-control, [data-bs-theme="dark"] .register-card .form-control {
-  background: #111 !important;
-  color: #fff !important;
-  border-color: #333 !important;
+
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] select {
+  background-color: #111;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+[data-bs-theme="dark"] ::placeholder {
+  color: #aaa;
 }
 
 @media (max-width: 768px) {
@@ -120,6 +134,9 @@ body {
   .login-card {
     max-width: 90vw;
     padding: 1.5rem;
+  }
+  .right-panel, .promo-text {
+    display: none !important;
   }
 
   .brand-block {
@@ -137,4 +154,57 @@ body {
   .btn-crunevo {
     width: 100%;
   }
+}
+
+.password-group {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 1s ease forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+a, .text-muted {
+  color: #666;
+  transition: color 0.4s ease;
+}
+
+[data-bs-theme="dark"] a,
+[data-bs-theme="dark"] .text-muted {
+  color: #bbb;
+}
+
+.access-links {
+  margin-top: 20px;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.access-links a {
+  text-decoration: none;
+  color: #6c63ff;
+  font-weight: 600;
+}
+
+[data-bs-theme="dark"] .access-links a {
+  color: #b79aff;
 }
