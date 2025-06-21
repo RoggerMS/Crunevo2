@@ -7,6 +7,10 @@ body {
   align-items: center;
   justify-content: center;
 }
+[data-bs-theme="dark"] body {
+  background: #121212;
+}
+
 
 .login-wrapper {
   display: flex;
@@ -132,4 +136,5 @@ body {
 
   .btn-crunevo {
     width: 100%;
-  }}
+  }
+}
