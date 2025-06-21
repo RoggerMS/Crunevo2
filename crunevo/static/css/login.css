@@ -1,25 +1,29 @@
 html,
 body {
   margin: 0;
+  padding: 0;
   font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(to bottom right, #f4ebff, #ffffff);
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding-top: 0 !important;
   overflow: hidden;
+  width: 100vw;
   transition: background-color 0.4s ease;
+}
+
+[data-bs-theme="light"] body {
+  background: linear-gradient(to bottom right, #f4ebff, #ffffff);
 }
 
 .navbar-crunevo {
   display: none;
 }
 
-[data-bs-theme="dark"] body,
-[data-bs-theme="dark"] html {
+[data-bs-theme="dark"] html,
+[data-bs-theme="dark"] body {
   background: #000 !important;
-  background-color: #000 !important;
   background-image: none !important;
 }
 [data-bs-theme="dark"] body::before,
@@ -35,6 +39,7 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  min-height: 100vh;
   gap: 40px;
   max-width: 1100px;
   width: 100%;
@@ -128,6 +133,14 @@ body {
 }
 
 .welcome-phrase {
+  min-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 500;
   opacity: 1;
   transition: opacity 0.6s ease;
 }
