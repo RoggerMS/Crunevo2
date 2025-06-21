@@ -110,19 +110,18 @@
       themeBtn.textContent = theme === 'dark' ? '🌙' : '☀️';
     }
 
+    document.addEventListener('DOMContentLoaded', () => {
+      const stored = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-bs-theme', stored);
+      setThemeIcon(stored);
+    });
+
     themeBtn.addEventListener('click', () => {
       const html = document.documentElement;
       const next = html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
       html.setAttribute('data-bs-theme', next);
       localStorage.setItem('theme', next);
       setThemeIcon(next);
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const stored = localStorage.getItem('theme');
-      const theme = stored || document.documentElement.getAttribute('data-bs-theme');
-      document.documentElement.setAttribute('data-bs-theme', theme);
-      setThemeIcon(theme);
     });
   </script>
 {% endblock %}
