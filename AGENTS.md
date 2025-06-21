@@ -161,3 +161,4 @@
 - Ruta /register no se registra en la instancia admin; el registro sólo está disponible en /onboarding/register del dominio público y el login del admin sigue limitado a roles admin o moderador (PR remove-admin-register).
 - Pantalla de login renovada con tarjeta doble y estilos responsive; se añadió login.css (PR login-page-redesign).
 - Login page updated with transparent card and centered mobile layout (PR login-transparent-blur).
+- Register page redesigned with transparent card and additional fields (PR register-redesign).

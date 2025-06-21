@@ -5,36 +5,82 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
 {% endblock %}
 {% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6 col-xl-5">
-      <div class="card shadow">
-        <div class="card-body p-4 p-md-5">
-          <h2 class="text-center mb-4">Crear cuenta</h2>
-          <form method="post" enctype="multipart/form-data">
-            {{ csrf.csrf_field() }}
-            <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-              <input type="text" class="form-control" id="username" name="username" placeholder="Nombre de usuario" required>
-            </div>
-            <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-              <input type="email" class="form-control" id="email" name="email" placeholder="Correo electrónico" required>
-            </div>
-            <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-              <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
-            </div>
-            <div class="mb-3 text-center">
-              <img id="avatarPreview" class="rounded-circle tw-hidden mb-2" width="96" height="96" alt="avatar">
-              <input class="form-control" type="file" id="avatarFileInput" name="avatar_file" accept="image/*">
-            </div>
-            <button class="btn btn-primary w-100" type="submit">Registrarme</button>
-          </form>
-          <p class="text-muted small mt-3 text-center">Recibirás un correo para activar tu cuenta.</p>
+<div class="register-card">
+  <h2 class="register-title">Crea una cuenta</h2>
+  <p class="register-subtitle">Es rápido y fácil.</p>
+  <form method="post" enctype="multipart/form-data">
+    {{ csrf.csrf_field() }}
+    <div class="row g-2 mb-3">
+      <div class="col">
+        <input type="text" class="form-control" name="nombre" placeholder="Nombre" required>
+      </div>
+      <div class="col">
+        <input type="text" class="form-control" name="apellido" placeholder="Apellido" required>
+      </div>
+    </div>
+    <div class="mb-3">
+      <input type="text" class="form-control" name="username" placeholder="Nombre de usuario único" required>
+    </div>
+    <div class="mb-3">
+      <input type="email" class="form-control" name="email" placeholder="Correo electrónico" required>
+    </div>
+    <div class="mb-3">
+      <input type="password" class="form-control" name="password" placeholder="Contraseña nueva" required>
+    </div>
+    <div class="row g-2 mb-3">
+      <label class="form-label">Fecha de nacimiento</label>
+      <div class="col-4">
+        <select class="form-select" name="dia" required>
+          {% for i in range(1, 32) %}
+          <option value="{{ i }}">{{ i }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-4">
+        <select class="form-select" name="mes" required>
+          <option value="ene">ene</option><option value="feb">feb</option><option value="mar">mar</option>
+          <option value="abr">abr</option><option value="may">may</option><option value="jun">jun</option>
+          <option value="jul">jul</option><option value="ago">ago</option><option value="sep">sep</option>
+          <option value="oct">oct</option><option value="nov">nov</option><option value="dic">dic</option>
+        </select>
+      </div>
+      <div class="col-4">
+        <select class="form-select" name="anio" required>
+          {% for i in range(2025, 1900, -1) %}
+          <option value="{{ i }}">{{ i }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Género</label>
+      <div class="d-flex gap-3">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="genero" value="Mujer" required>
+          <label class="form-check-label">Mujer</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="genero" value="Hombre" required>
+          <label class="form-check-label">Hombre</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="genero" value="Personalizado" required>
+          <label class="form-check-label">Personalizado</label>
         </div>
       </div>
     </div>
-  </div>
+    <button type="submit" class="btn btn-crunevo w-100">Registrarte</button>
+
+    <div class="legal-text mt-3">
+      Es posible que las personas que usan nuestro servicio hayan subido tu información de contacto a CRUNEVO. <a href="#">Más información</a>.
+      <br><br>
+      Al hacer clic en "Registrarte", aceptas nuestras <a href="/terminos">Condiciones</a>, la <a href="/privacidad">Política de privacidad</a> y la <a href="/cookies">Política de cookies</a>. 
+      Es posible que te enviemos notificaciones por correo o sistema, que puedes desactivar cuando quieras.
+    </div>
+
+    <div class="text-center mt-3">
+      <a href="{{ url_for('auth.login') }}" class="link-sm">¿Ya tienes una cuenta?</a>
+    </div>
+  </form>
 </div>
 {% endblock %}
