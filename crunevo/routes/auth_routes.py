@@ -17,7 +17,7 @@ import os
 import cloudinary.uploader
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
-from crunevo.models import User
+from crunevo.models import User, Note
 from crunevo.utils import spend_credit, record_login
 from crunevo.constants import CreditReasons
 
@@ -112,6 +112,15 @@ def public_profile(user_id):
 def profile_by_username(username: str):
     user = User.query.filter_by(username=username).first_or_404()
     return render_template("perfil_publico.html", user=user)
+
+
+@auth_bp.route("/perfil/<username>/apuntes")
+@activated_required
+def notes_by_username(username: str):
+    """Display all notes from a user by username."""
+    user = User.query.filter_by(username=username).first_or_404()
+    notes = Note.query.filter_by(user_id=user.id).order_by(Note.created_at.desc()).all()
+    return render_template("perfil_notas.html", user=user, notes=notes)
 
 
 @auth_bp.route("/agradecer/<int:user_id>", methods=["POST"])

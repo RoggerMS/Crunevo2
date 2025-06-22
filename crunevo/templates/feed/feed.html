@@ -84,7 +84,7 @@
         {% endif %}
         <a href="{{ url_for('feed.view_post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary mb-2">Ver publicación</a>
         {% if author %}
-        <a href="/perfil/{{ author.username }}" class="btn btn-sm btn-outline-info mb-2">Ver perfil</a>
+        <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="btn btn-sm btn-outline-info mb-2">Ver perfil</a>
         {% endif %}
         <p class="text-muted small mb-2">
             <strong>Likes:</strong>

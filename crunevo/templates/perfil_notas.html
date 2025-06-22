@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Apuntes de {{ user.username }}{% endblock %}
+{% block content %}
+<div class="container my-4">
+  <h2 class="mb-4">Apuntes de {{ user.username }}</h2>
+  <div class="row row-cols-1 row-cols-md-2 g-3">
+    {% for note in notes %}
+    <div class="col">
+      {% include 'components/note_card.html' %}
+    </div>
+    {% else %}
+    <p class="text-muted">No hay apuntes.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -43,7 +43,7 @@
           <i class="bi bi-share"></i> Compartir
         </button>
         {% if author %}
-        <a href="/perfil/{{ author.username }}" class="btn btn-outline-info btn-sm">Ver perfil</a>
+        <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="btn btn-outline-info btn-sm">Ver perfil</a>
         <a href="{{ url_for('feed.user_posts', user_id=author.id) }}" class="btn btn-outline-primary btn-sm">
           Ver más publicaciones de este usuario
         </a>
