@@ -188,3 +188,4 @@
 - Checkout real crea registros en Purchase y descuenta stock; botón "Comprar ahora" en productos (PR real-checkout).
 - Corregido enlace de eliminar del carrito para usar store.remove_item y evitar BuildError (PR fix-cart-remove-link).
 - Agregados alias price_paid y credits_used en Purchase, página de éxito para checkout y botones de tienda deshabilitados si no hay stock o créditos insuficientes (PR checkout-success-ui).
+- Botón 'Más opciones' en /admin/store permite editar y eliminar productos con modal de confirmación (QA admin-store-options).
