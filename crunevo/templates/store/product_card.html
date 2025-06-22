@@ -24,7 +24,9 @@
     {% endif %}
   </div>
   <div class="card-footer bg-white border-0">
-    {% if product.price_credits and current_user.is_authenticated %}
+    {% if product.stock <= 0 %}
+      <button class="btn btn-outline-secondary w-100" disabled>Sin stock</button>
+    {% elif product.price_credits and current_user.is_authenticated %}
       {% if current_user.credits >= product.price_credits %}
         <form method="post" action="{{ url_for('store.redeem_product', product_id=product.id) }}">
           {{ csrf.csrf_field() }}

@@ -195,8 +195,7 @@ def checkout():
 
     db.session.commit()
     session.pop("cart", None)
-    flash("Compra realizada exitosamente", "success")
-    return redirect(url_for("store.view_purchases"))
+    return render_template("store/checkout_success.html")
 
 
 @store_bp.route("/favorite/<int:product_id>", methods=["POST"])

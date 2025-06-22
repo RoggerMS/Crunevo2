@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5 text-center">
+  <h2 class="mb-4">¡Compra completada!</h2>
+  <p>Tu pedido se ha registrado correctamente.</p>
+  <a href="{{ url_for('store.view_purchases') }}" class="btn btn-primary mt-3">Ver historial de compras</a>
+</div>
+{% endblock %}
