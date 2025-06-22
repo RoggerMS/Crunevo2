@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, flash
 from flask import request
+from datetime import datetime
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
@@ -98,6 +99,28 @@ def redeem_product(product_id):
     return redirect(url_for("store.store_index"))
 
 
+@store_bp.route("/buy/<int:product_id>", methods=["POST"])
+@activated_required
+def buy_product(product_id):
+    product = Product.query.get_or_404(product_id)
+    if product.stock < 1:
+        flash(f"Stock insuficiente para {product.name}", "danger")
+        return redirect(url_for("store.view_product", product_id=product.id))
+
+    purchase = Purchase(
+        user_id=current_user.id,
+        product_id=product.id,
+        quantity=1,
+        price_soles=product.price,
+        timestamp=datetime.utcnow(),
+    )
+    db.session.add(purchase)
+    product.stock -= 1
+    db.session.commit()
+    flash("Producto comprado exitosamente", "success")
+    return redirect(url_for("store.view_purchases"))
+
+
 @store_bp.route("/cart/increase/<int:product_id>", methods=["POST"])
 @activated_required
 def increase_item(product_id):
@@ -138,21 +161,42 @@ def remove_item(product_id):
 @activated_required
 def view_cart():
     cart = get_cart()
-    products = []
-    total = 0
+    cart_items = []
     for pid, qty in cart.items():
         product = Product.query.get(int(pid))
-        products.append((product, qty))
-        total += float(product.price) * qty
-    return render_template("store/carrito.html", products=products, total=total)
+        if product:
+            cart_items.append({"product": product, "quantity": qty})
+    return render_template("store/carrito.html", cart_items=cart_items)
 
 
 @store_bp.route("/checkout")
 @activated_required
 def checkout():
+    cart = get_cart()
+    if not cart:
+        flash("Tu carrito está vacío", "warning")
+        return redirect(url_for("store.view_cart"))
+
+    for pid_str, qty in cart.items():
+        pid = int(pid_str)
+        product = Product.query.get(pid)
+        if not product or product.stock < qty:
+            flash(f"Stock insuficiente para {product.name}", "danger")
+            continue
+        purchase = Purchase(
+            user_id=current_user.id,
+            product_id=product.id,
+            quantity=qty,
+            price_soles=product.price,
+            timestamp=datetime.utcnow(),
+        )
+        db.session.add(purchase)
+        product.stock -= qty
+
+    db.session.commit()
     session.pop("cart", None)
-    flash("Compra realizada (simulada)")
-    return redirect(url_for("store.store_index"))
+    flash("Compra realizada exitosamente", "success")
+    return redirect(url_for("store.view_purchases"))
 
 
 @store_bp.route("/favorite/<int:product_id>", methods=["POST"])

@@ -185,3 +185,4 @@
 - Sistema de favoritos funcional con modelo FavoriteProduct, rutas y iconos de corazón (PR store-favorites).
 - Filtros por categoría y precio habilitados en la tienda (PR store-filters).
 - Historial de compras accesible en /store/compras con tarjetas de detalle y opción de descarga (PR store-purchases-page).
+- Checkout real crea registros en Purchase y descuenta stock; botón "Comprar ahora" en productos (PR real-checkout).
