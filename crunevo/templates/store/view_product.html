@@ -7,7 +7,14 @@
       <img src="{{ product.image }}" class="img-fluid rounded shadow-sm" alt="{{ product.name }}">
     </div>
     <div class="col-md-6">
-      <h2>{{ product.name }}</h2>
+      <h2>{{ product.name }}
+        <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="d-inline ms-2">
+          {{ csrf.csrf_field() }}
+          <button class="btn btn-sm btn-light border-0" type="submit">
+            <i class="bi {% if is_favorite %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
+          </button>
+        </form>
+      </h2>
       <p class="text-muted">S/ {{ '%.2f'|format(product.price) }}{% if product.price_credits %} <br><small>o {{ product.price_credits }} créditos</small>{% endif %}</p>
       <p>{{ product.description or "Sin descripción detallada." }}</p>
       {% if product.stock > 0 %}
