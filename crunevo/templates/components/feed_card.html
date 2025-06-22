@@ -13,6 +13,9 @@
     <li>#{{ tag }}</li>
     {% endfor %}
   </ul>
-  <div class="tw-text-xs tw-text-gray-500">{{ note.author.username }} · {{ note.created_at.strftime('%Y-%m-%d') }}</div>
+  <div class="tw-text-xs tw-text-gray-500">{{ note.author.username }} · {{ note.created_at|timesince }}</div>
+  <div class="tw-flex tw-gap-3 tw-text-xs tw-text-gray-500">
+    <span><i class="bi bi-star-fill"></i> {{ note.downloads }}</span>
+  </div>
   <a href="{{ url_for('notes.view_note', id=note.id) }}" class="tw-text-sm tw-underline">Ver detalle</a>
 </article>

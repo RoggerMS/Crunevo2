@@ -30,6 +30,10 @@ def create_app():
             "ACHIEVEMENT_DETAILS": ACHIEVEMENT_DETAILS,
         }
 
+    from .utils.helpers import timesince
+
+    app.jinja_env.filters["timesince"] = timesince
+
     db.init_app(app)
     login_manager.init_app(app)
     mail.init_app(app)

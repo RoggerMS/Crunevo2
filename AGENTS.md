@@ -200,3 +200,4 @@
 - En edición de productos se sube imagen a Cloudinary y el enlace "Ver en tienda" apunta a /store/product/<id> (PR product-cloudinary-fix).
 - Implementado sistema de reseñas y preguntas en productos con filtros en favoritos y visual especial para Packs (PR store-reviews-qa).
 - Corregida vista de tienda para mostrar product.image_url con imagen por defecto si falta (PR store-image-url)
+- Feed redesign: avatar en formulario de publicación, filtros como pestañas y fechas relativas (PR feed-v1-improved)
