@@ -211,3 +211,4 @@
 - Added share buttons, dynamic comments via AJAX and bottom-right toasts with Open Graph meta (PR feed-share-toasts).
 - Sidebar right now highlights weekly top posts and shows achievements on mobile; posts include "Ver publicación" button and badge restyled (PR feed-highlights).
 - Public profile links now use usernames, new profile page lists notes, posts and achievements, and feed posts include a "Ver perfil" button. Added user notes route (PR feed-profile-links).
+- Redesigned public profile with larger avatar, achievements grid and posts/notes sections. Added /perfil/<username>/apuntes route and updated templates to use profile_by_username links (PR public-profile-redesign).
