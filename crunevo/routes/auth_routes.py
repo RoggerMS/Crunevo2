@@ -120,7 +120,7 @@ def agradecer(user_id):
     target = User.query.get_or_404(user_id)
     if target.id == current_user.id:
         flash("No puedes agradecerte a ti mismo", "warning")
-        return redirect(url_for("auth.public_profile", user_id=user_id))
+        return redirect(url_for("auth.profile_by_username", username=target.username))
     try:
         spend_credit(
             current_user, 1, CreditReasons.AGRADECIMIENTO, related_id=target.id
@@ -128,4 +128,4 @@ def agradecer(user_id):
         flash("¡Gracias enviado!")
     except ValueError:
         flash("No tienes créditos suficientes", "danger")
-    return redirect(url_for("auth.public_profile", user_id=user_id))
+    return redirect(url_for("auth.profile_by_username", username=target.username))

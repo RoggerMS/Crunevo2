@@ -65,7 +65,7 @@
           {% set author = post.author %}
           {% if author %}
           <img src="{{ author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
-          <a href="{{ url_for('auth.public_profile', user_id=author.id) }}" class="me-auto text-decoration-none">
+          <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="me-auto text-decoration-none">
             <strong>{{ author.username }}</strong>
           </a>
           {% else %}
@@ -83,6 +83,9 @@
           {% endif %}
         {% endif %}
         <a href="{{ url_for('feed.view_post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary mb-2">Ver publicación</a>
+        {% if author %}
+        <a href="/perfil/{{ author.username }}" class="btn btn-sm btn-outline-info mb-2">Ver perfil</a>
+        {% endif %}
         <p class="text-muted small mb-2">
             <strong>Likes:</strong>
             <span id="likeCount{{ post.id }}">{{ post.likes or 0 }}</span>
@@ -113,7 +116,7 @@
                 <img src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
                 <div>
                   <div class="small text-muted">
-                    <a href="{{ url_for('auth.public_profile', user_id=c.author.id) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.timestamp|timesince }}
+                    <a href="{{ url_for('auth.profile_by_username', username=c.author.username) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.timestamp|timesince }}
                   </div>
                   <div>{{ c.body }}</div>
                 </div>

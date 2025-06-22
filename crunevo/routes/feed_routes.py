@@ -271,6 +271,23 @@ def user_posts(user_id: int):
     )
 
 
+@feed_bp.route("/apuntes/user/<int:user_id>")
+@activated_required
+def user_notes(user_id: int):
+    """List notes from a specific user."""
+    user = User.query.get_or_404(user_id)
+    page = request.args.get("page", 1, type=int)
+    pagination = (
+        Note.query.filter_by(user_id=user.id)
+        .order_by(Note.created_at.desc())
+        .paginate(page=page, per_page=10)
+    )
+    notes = pagination.items
+    return render_template(
+        "feed/user_notes.html", user=user, notes=notes, pagination=pagination
+    )
+
+
 # Alias route for backwards compatibility
 feed_bp.add_url_rule("/posts/<int:post_id>", endpoint="view_post", view_func=view_post)
 

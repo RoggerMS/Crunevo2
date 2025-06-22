@@ -210,3 +210,4 @@
 - Vista individual de post ahora incluye botón de compartir y enlace a más publicaciones del autor; se añadió ruta feed.user_posts y se muestran 0 likes por defecto (PR post-page-share).
 - Added share buttons, dynamic comments via AJAX and bottom-right toasts with Open Graph meta (PR feed-share-toasts).
 - Sidebar right now highlights weekly top posts and shows achievements on mobile; posts include "Ver publicación" button and badge restyled (PR feed-highlights).
+- Public profile links now use usernames, new profile page lists notes, posts and achievements, and feed posts include a "Ver perfil" button. Added user notes route (PR feed-profile-links).

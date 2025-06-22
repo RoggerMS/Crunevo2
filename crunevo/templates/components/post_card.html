@@ -3,7 +3,7 @@
     {% set author = post.author %}
     <img src="{{ (author and author.avatar_url) or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
     {% if author %}
-    <a href="{{ url_for('auth.public_profile', user_id=author.id) }}" class="me-auto text-decoration-none"><strong>{{ author.username }}</strong></a>
+    <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="me-auto text-decoration-none"><strong>{{ author.username }}</strong></a>
     {% else %}
     <span class="me-auto text-muted">Usuario eliminado</span>
     {% endif %}
@@ -18,6 +18,9 @@
     {% endif %}
   {% endif %}
   <a href="{{ url_for('feed.view_post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary">Ver publicación</a>
+  {% if author %}
+  <a href="/perfil/{{ author.username }}" class="btn btn-sm btn-outline-info">Ver perfil</a>
+  {% endif %}
   <div class="tw-flex tw-gap-3 tw-text-xs tw-text-gray-500 dark:tw-text-gray-400">
     <span><i class="bi bi-star-fill"></i> {{ post.likes or 0 }}</span>
     <span><i class="bi bi-chat"></i> {{ post.comments|length }}</span>
