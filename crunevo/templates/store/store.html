@@ -53,7 +53,7 @@
                       {% if product.credits_only %}<span class="badge bg-warning text-dark">Solo créditos</span>{% endif %}
                       {% if product.is_featured %}<span class="badge bg-purple text-white">Destacado</span>{% endif %}
                     </div>
-                    <a href="{{ url_for('store.product_detail', product_id=product.id) }}" class="btn btn-outline-primary mt-auto">Ver detalle</a>
+                    <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary mt-auto">Ver detalle</a>
                   </div>
                 </div>
               </div>
