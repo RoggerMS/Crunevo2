@@ -28,7 +28,12 @@
       {% for product in products %}
       <tr>
         <td>{{ product.id }}</td>
-        <td>{{ product.name }}</td>
+        <td>
+          {{ product.name }}
+          {% if product.is_popular %}<span class="badge bg-warning text-dark ms-1">Popular</span>{% endif %}
+          {% if product.is_new %}<span class="badge bg-success ms-1">Nuevo</span>{% endif %}
+          {% if product.credits_only %}<span class="badge bg-info text-dark ms-1">Solo créditos</span>{% endif %}
+        </td>
         <td>{{ '%.2f'|format(product.price) }}</td>
         <td>{{ product.price_credits or '' }}</td>
         <td>{{ product.stock }}</td>
