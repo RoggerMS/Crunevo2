@@ -183,36 +183,42 @@ def index():
         flash("Publicación creada")
         return redirect(url_for("feed.index"))
 
-    filter_opt = request.args.get("filter", "recientes")
-
-    query = Post.query
-    if filter_opt == "populares":
-        query = query.order_by(Post.likes.desc())
-    else:  # recientes por defecto
-        query = query.order_by(Post.created_at.desc())
-
-    posts = query.limit(10).all()
-    top_notes, top_posts, top_users = get_featured_posts()
+    page = request.args.get("page", 1, type=int)
+    pagination = Post.query.order_by(Post.created_at.desc()).paginate(
+        page=page, per_page=10
+    )
+    posts = pagination.items
     top_ranked, recent_achievements = get_weekly_ranking()
     latest_notes = Note.query.order_by(Note.created_at.desc()).limit(5).all()
     return render_template(
         "feed/feed.html",
         posts=posts,
-        top_notes=top_notes,
-        top_posts=top_posts,
-        top_users=top_users,
+        pagination=pagination,
         top_ranked=top_ranked,
         recent_achievements=recent_achievements,
         latest_notes=latest_notes,
-        filter=filter_opt,
     )
 
 
 @feed_bp.route("/trending")
 @activated_required
 def trending():
-    posts = Post.query.order_by(Post.created_at.desc()).limit(10).all()
-    return render_template("feed/feed.html", posts=posts, trending=True)
+    page = request.args.get("page", 1, type=int)
+    pagination = Post.query.order_by(Post.created_at.desc()).paginate(
+        page=page, per_page=10
+    )
+    posts = pagination.items
+    top_ranked, recent_achievements = get_weekly_ranking()
+    latest_notes = Note.query.order_by(Note.created_at.desc()).limit(5).all()
+    return render_template(
+        "feed/feed.html",
+        posts=posts,
+        pagination=pagination,
+        top_ranked=top_ranked,
+        recent_achievements=recent_achievements,
+        latest_notes=latest_notes,
+        trending=True,
+    )
 
 
 @feed_bp.route("/post/<int:post_id>", endpoint="view_post")
