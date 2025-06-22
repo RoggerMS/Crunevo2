@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, session, redirect, url_for, flash
+from flask_login import current_user
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
-from crunevo.models import Product, ProductLog
+from crunevo.models import Product, ProductLog, Purchase
+from crunevo.utils.credits import spend_credit
+from crunevo.constants import CreditReasons
 
 store_bp = Blueprint("store", __name__, url_prefix="/store")
 
@@ -36,6 +39,36 @@ def add_to_cart(product_id):
     db.session.add(ProductLog(product_id=product_id, action="cart"))
     db.session.commit()
     flash("Producto agregado al carrito")
+    return redirect(url_for("store.store_index"))
+
+
+@store_bp.route("/redeem/<int:product_id>", methods=["POST"])
+@activated_required
+def redeem_product(product_id):
+    product = Product.query.get_or_404(product_id)
+    if product.price_credits is None:
+        flash("Este producto no está disponible para canje", "warning")
+        return redirect(url_for("store.view_product", product_id=product.id))
+    try:
+        spend_credit(
+            current_user,
+            product.price_credits,
+            CreditReasons.COMPRA,
+            related_id=product.id,
+        )
+    except ValueError:
+        flash("Créditos insuficientes", "danger")
+        return redirect(url_for("store.view_product", product_id=product.id))
+    purchase = Purchase(
+        user_id=current_user.id,
+        product_id=product.id,
+        quantity=1,
+        price_credits=product.price_credits,
+    )
+    db.session.add(purchase)
+    db.session.add(ProductLog(product_id=product.id, action="redeem"))
+    db.session.commit()
+    flash("Producto canjeado")
     return redirect(url_for("store.store_index"))
 
 
