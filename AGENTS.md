@@ -209,4 +209,3 @@
 - Rediseñada página /trending con vista propia y posts ordenados por likes (PR trending-redesign)
 - Vista individual de post ahora incluye botón de compartir y enlace a más publicaciones del autor; se añadió ruta feed.user_posts y se muestran 0 likes por defecto (PR post-page-share).
 - Added share buttons, dynamic comments via AJAX and bottom-right toasts with Open Graph meta (PR feed-share-toasts).
-- Sidebar right now highlights weekly top posts and shows achievements on mobile; posts include "Ver publicación" button and badge restyled (PR feed-highlights).
