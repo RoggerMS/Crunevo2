@@ -181,3 +181,4 @@
 - Documentada propuesta integral de rediseño de la tienda en docs/store_proposal.md.
 - Vista de tienda rediseñada completamente con panel lateral de filtros (categoría, precio, créditos), cuadrícula moderna de productos y layout limpio centrado en e-commerce educativo (PR store-redesign-ux).
 - Sidebar de tienda reemplazado por menú exclusivo con enlaces de carrito, compras y filtros rápidos (PR store-sidebar).
+- Ficha de producto modernizada con sección de características y stock (PR store-product-detail-redesign).

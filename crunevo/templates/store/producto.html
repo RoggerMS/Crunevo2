@@ -1,26 +1,34 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
+
+{% block head_extra %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/store_detail.css') }}">
+{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-  <div class="row">
-    <div class="col-md-6 text-center mb-3 mb-md-0">
-      <img src="{{ product.image_url or product.image }}" class="img-fluid rounded shadow" alt="{{ product.name }}">
+<div class="container my-5">
+  <div class="row g-4 align-items-start">
+    <div class="col-lg-6 text-center">
+      <img src="{{ product.image_url or product.image or '/static/img/producto-default.png' }}" class="img-fluid rounded shadow-sm big-product-img" alt="{{ product.name }}">
     </div>
-    <div class="col-md-6">
-      <h2>{{ product.name }}</h2>
+    <div class="col-lg-6">
+      <h1 class="h3 fw-bold mb-3">{{ product.name }}</h1>
       <p class="text-muted">{{ product.description or 'Sin descripción detallada.' }}</p>
       {% if product.price_soles %}
-        <p><strong>Precio: </strong><span class="text-primary">S/ {{ '%.2f' | format(product.price_soles) }}</span></p>
+        <p class="h5"><strong class="text-primary">S/ {{ '%.2f' | format(product.price_soles) }}</strong></p>
       {% endif %}
       {% if product.price_credits %}
-        <p><strong>O por créditos: </strong><span class="text-warning">{{ product.price_credits }} créditos</span></p>
+        <p class="h5"><strong class="text-warning">{{ product.price_credits }} créditos</strong></p>
       {% endif %}
-      <div class="mb-3">
-        {% if product.is_new %}<span class="badge bg-success">Nuevo</span>{% endif %}
-        {% if product.is_popular %}<span class="badge bg-danger">Popular</span>{% endif %}
-        {% if product.credits_only %}<span class="badge bg-warning text-dark">Solo créditos</span>{% endif %}
-        {% if product.is_featured %}<span class="badge bg-purple text-white">Destacado</span>{% endif %}
+      <div class="mb-2">
+        {% if product.is_new %}<span class="badge bg-success me-1">Nuevo</span>{% endif %}
+        {% if product.is_popular %}<span class="badge bg-danger me-1">Popular</span>{% endif %}
+        {% if product.credits_only %}<span class="badge bg-warning text-dark me-1">Solo créditos</span>{% endif %}
+        {% if product.is_featured %}<span class="badge bg-purple text-white me-1">Destacado</span>{% endif %}
       </div>
+      {% if product.stock %}
+        <p class="small text-muted">{{ product.stock }} en stock</p>
+      {% endif %}
       {% if product.price_credits and current_user.is_authenticated %}
       <form method="post" action="{{ url_for('store.redeem_product', product_id=product.id) }}" class="d-inline">
         {{ csrf.csrf_field() }}
@@ -35,6 +43,11 @@
       <a href="{{ url_for('store.view_cart') }}" class="btn btn-outline-success me-2 mb-2">Ver Carrito</a>
       <hr>
       <a href="{{ url_for('store.store_index') }}" class="btn btn-link">← Volver a la tienda</a>
+      {% if product.features %}
+        <hr>
+        <h4 class="mt-4">Características</h4>
+        <p>{{ product.features }}</p>
+      {% endif %}
     </div>
   </div>
 </div>
