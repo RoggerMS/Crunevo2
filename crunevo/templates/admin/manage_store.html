@@ -41,7 +41,7 @@
           <div class="dropdown position-relative">
             <button class="btn btn-sm admin-dropdown-btn dropdown-toggle" data-bs-toggle="dropdown" title="Más opciones" aria-label="Más opciones de {{ product.name }}" aria-haspopup="true" aria-expanded="false">⋮</button>
             <ul class="dropdown-menu shadow-sm">
-              <li><a class="dropdown-item" href="{{ PUBLIC_BASE_URL }}/store/{{ product.id }}" target="_blank">Ver en tienda</a></li>
+              <li><a class="dropdown-item" href="{{ PUBLIC_BASE_URL }}/store/product/{{ product.id }}" target="_blank">Ver en tienda</a></li>
               {% if current_user.role == 'admin' %}
               <li><a class="dropdown-item" href="{{ url_for('admin.edit_product', product_id=product.id) }}">Editar</a></li>
               <li><button class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteProductModal{{ product.id }}">Eliminar</button></li>

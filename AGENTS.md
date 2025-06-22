@@ -192,3 +192,4 @@
 - Botón 'Más opciones' en /admin/store permite editar y eliminar productos con modal de confirmación (QA admin-store-options).
 - Eliminadas duplicaciones de Bootstrap quitando tabler.min.js y moviendo modales fuera de las tablas (PR admin-dropdown-conflict-fix).
 - Historial de compras permite descargar comprobante en PDF y compartir enlace; productos comprados muestran badge "Adquirido" y deshabilitan compra/canje si no se permiten duplicados. Tras comprar o canjear se ofrece descarga directa cuando hay archivo (PR purchased-badge-download).
+- Corregido enlace 'Ver en tienda' en manage_store.html a /store/product/<id> para evitar redirección rota (PR admin-store-view-link-fix).
