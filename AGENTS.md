@@ -175,3 +175,4 @@
 - Corrigidos estilos de login y registro: fondo negro sólido en modo oscuro, frase estable y tema guardado en localStorage (PR login-register-stability-fix).
 - Tienda actualizada: precios en soles, canje con créditos y modelo Purchase; panel admin gestiona precio_creditos y flags (PR store-credits).
 - Lista de productos rediseñada con tarjetas responsive y badges; agregado store.css para estilos de tienda (PR store-layout).
+- Vista de producto rediseñada con imagen grande, badges y botones (PR store-product-page).
