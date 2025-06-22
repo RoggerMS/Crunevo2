@@ -206,3 +206,4 @@
 - Añadido soporte de tema oscuro para textos grises en tarjetas del feed (PR dark-text-support).
 - Feed principal reorganizado para mostrar solo publicaciones recientes con paginación básica y sin secciones de apuntes (PR feed-wall-redesign).
 - Restaurado sistema de pestañas en el feed con secciones dinámicas y etiqueta "📢 Publicación" en lugar de "📝 Apunte" (PR feed-tabs-restore).
+- Rediseñada página /trending con vista propia y posts ordenados por likes (PR trending-redesign)

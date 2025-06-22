@@ -209,24 +209,24 @@ def index():
 @activated_required
 def trending():
     page = request.args.get("page", 1, type=int)
-    pagination = Post.query.order_by(Post.created_at.desc()).paginate(
-        page=page, per_page=10
-    )
+
+    # Mostrar publicaciones más populares (ordenadas por likes)
+    pagination = Post.query.order_by(Post.likes.desc()).paginate(page=page, per_page=10)
     posts = pagination.items
+
+    # Cargar usuarios con más créditos y notas destacadas
     top_ranked, recent_achievements = get_weekly_ranking()
-    latest_notes = Note.query.order_by(Note.created_at.desc()).limit(5).all()
     top_notes, top_posts, top_users = get_featured_posts()
+
     return render_template(
-        "feed/feed.html",
+        "feed/trending.html",
         posts=posts,
         pagination=pagination,
         top_ranked=top_ranked,
         recent_achievements=recent_achievements,
-        latest_notes=latest_notes,
         top_notes=top_notes,
         top_posts=top_posts,
         top_users=top_users,
-        news=[],
         trending=True,
     )
 
