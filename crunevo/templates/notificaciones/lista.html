@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-4">
+  <h3>🔔 Notificaciones</h3>
+  <ul class="list-group">
+    {% for n in notificaciones %}
+    <li class="list-group-item {% if not n.is_read %}list-group-item-info{% endif %}">
+      <a href="{{ n.url or '#' }}">{{ n.message }}</a>
+      <small class="text-muted d-block">{{ n.timestamp|timesince }} atrás</small>
+    </li>
+    {% else %}
+    <li class="list-group-item">No tienes notificaciones.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+

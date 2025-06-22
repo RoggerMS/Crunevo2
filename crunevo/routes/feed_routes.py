@@ -24,7 +24,11 @@ from crunevo.models import (
     UserAchievement,
 )
 from crunevo.forms import FeedNoteForm, FeedImageForm
-from crunevo.utils import create_feed_item_for_all, unlock_achievement
+from crunevo.utils import (
+    create_feed_item_for_all,
+    unlock_achievement,
+    send_notification,
+)
 from crunevo.utils.credits import add_credit, spend_credit
 from crunevo.constants import CreditReasons, AchievementCodes
 import redis
@@ -299,6 +303,12 @@ def like_post(post_id):
     if post.likes is None:
         post.likes = 0
     post.likes += 1
+    if post.author_id != current_user.id:
+        send_notification(
+            post.author_id,
+            f"{current_user.username} le dio like a tu publicación",
+            url_for("feed.view_post", post_id=post.id),
+        )
     db.session.commit()
     return jsonify({"likes": post.likes})
 
