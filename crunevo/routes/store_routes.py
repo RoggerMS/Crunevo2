@@ -13,7 +13,15 @@ from datetime import datetime, timedelta
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
-from crunevo.models import Product, ProductLog, Purchase, FavoriteProduct
+from crunevo.models import (
+    Product,
+    ProductLog,
+    Purchase,
+    FavoriteProduct,
+    Review,
+    Question,
+    Answer,
+)
 from crunevo.utils.credits import spend_credit
 from crunevo.constants import CreditReasons
 
@@ -62,6 +70,13 @@ def store_index():
         query = query.filter_by(category="Pack")
 
     products = query.all()
+    from sqlalchemy import func
+
+    ratings = dict(
+        db.session.query(Review.product_id, func.avg(Review.rating))
+        .group_by(Review.product_id)
+        .all()
+    )
     categories = [
         c[0] for c in db.session.query(Product.category).distinct().all() if c[0]
     ]
@@ -77,6 +92,7 @@ def store_index():
         categories=categories,
         categoria=categoria,
         precio_max=precio_max,
+        ratings=ratings,
     )
 
 
@@ -92,6 +108,23 @@ def view_product(product_id):
         is not None
     )
     purchased = has_purchased(current_user.id, product.id)
+    from sqlalchemy import func
+
+    avg_rating = (
+        db.session.query(func.avg(Review.rating))
+        .filter_by(product_id=product.id)
+        .scalar()
+    )
+    reviews = (
+        Review.query.filter_by(product_id=product.id)
+        .order_by(Review.timestamp.desc())
+        .all()
+    )
+    questions = (
+        Question.query.filter_by(product_id=product.id)
+        .order_by(Question.timestamp.desc())
+        .all()
+    )
     db.session.add(ProductLog(product_id=product.id, action="view"))
     db.session.commit()
     return render_template(
@@ -99,7 +132,63 @@ def view_product(product_id):
         product=product,
         is_favorite=is_favorite,
         purchased=purchased,
+        avg_rating=avg_rating or 0,
+        reviews=reviews,
+        questions=questions,
     )
+
+
+@store_bp.route("/product/<int:product_id>/review", methods=["POST"])
+@activated_required
+def add_review(product_id: int):
+    """Allow a user to leave a review for a purchased product."""
+    if not has_purchased(current_user.id, product_id):
+        flash("Debes adquirir el producto para reseñarlo", "warning")
+        return redirect(url_for("store.view_product", product_id=product_id))
+    rating = int(request.form.get("rating", 0))
+    comment = request.form.get("comment", "")
+    if rating < 1 or rating > 5:
+        flash("Calificación inválida", "danger")
+        return redirect(url_for("store.view_product", product_id=product_id))
+    review = Review(
+        user_id=current_user.id,
+        product_id=product_id,
+        rating=rating,
+        comment=comment,
+    )
+    db.session.add(review)
+    db.session.commit()
+    flash("Reseña agregada", "success")
+    return redirect(url_for("store.view_product", product_id=product_id))
+
+
+@store_bp.route("/product/<int:product_id>/question", methods=["POST"])
+@activated_required
+def add_question(product_id: int):
+    body = request.form.get("body", "").strip()
+    if not body:
+        flash("Pregunta vacía", "warning")
+        return redirect(url_for("store.view_product", product_id=product_id))
+    q = Question(user_id=current_user.id, product_id=product_id, body=body)
+    db.session.add(q)
+    db.session.commit()
+    flash("Pregunta publicada", "success")
+    return redirect(url_for("store.view_product", product_id=product_id))
+
+
+@store_bp.route("/answer/<int:question_id>", methods=["POST"])
+@activated_required
+def add_answer(question_id: int):
+    body = request.form.get("body", "").strip()
+    if not body:
+        flash("Respuesta vacía", "warning")
+        return redirect(request.referrer or url_for("store.store_index"))
+    ans = Answer(question_id=question_id, user_id=current_user.id, body=body)
+    db.session.add(ans)
+    db.session.commit()
+    flash("Respuesta publicada", "success")
+    q = Question.query.get_or_404(question_id)
+    return redirect(url_for("store.view_product", product_id=q.product_id))
 
 
 @store_bp.route("/add/<int:product_id>")
@@ -300,15 +389,36 @@ def toggle_favorite(product_id):
 @activated_required
 def view_favorites():
     """Display the user's favorite products."""
+    categoria = request.args.get("categoria")
+    tipo = request.args.get("tipo")
     favorites = FavoriteProduct.query.filter_by(user_id=current_user.id).all()
     product_ids = [fav.product_id for fav in favorites]
-    products = (
-        Product.query.filter(Product.id.in_(product_ids)).all() if product_ids else []
+    query = (
+        Product.query.filter(Product.id.in_(product_ids))
+        if product_ids
+        else Product.query.filter(False)
     )
+    if categoria:
+        query = query.filter_by(category=categoria)
+    if tipo == "pack":
+        query = query.filter_by(category="Pack")
+    if tipo == "gratis":
+        query = query.filter((Product.price == 0) | (Product.price_credits == 0))
+    if tipo == "nuevo":
+        query = query.filter_by(is_new=True)
+    products = query.all()
     purchased = Purchase.query.filter_by(user_id=current_user.id).all()
     purchased_ids = [p.product_id for p in purchased]
+    categories = [
+        c[0] for c in db.session.query(Product.category).distinct().all() if c[0]
+    ]
     return render_template(
-        "store/favorites.html", products=products, purchased_ids=purchased_ids
+        "store/favorites.html",
+        products=products,
+        purchased_ids=purchased_ids,
+        categoria=categoria,
+        tipo=tipo,
+        categories=categories,
     )
 
 

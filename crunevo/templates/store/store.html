@@ -64,12 +64,15 @@
     <!-- Contenido central -->
     <div class="col-lg-7">
       <h2 class="mb-4">Tienda</h2>
+      {% if request.args.get('free') %}
+        <div class="alert alert-success">Recursos Gratuitos</div>
+      {% endif %}
       <div class="row">
         <div class="col-12">
           <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
             {% for product in products %}
               <div class="col">
-                <div class="card position-relative h-100 shadow-sm border-0 {% if product.is_featured %}bg-light border-purple{% endif %}">
+                <div class="card position-relative h-100 shadow-sm border-0 {% if product.is_featured %}bg-light border-purple{% endif %} {% if product.category == 'Pack' %}tw-scale-[1.03]{% endif %}">
                   <img src="{{ product.image_url or '/static/img/producto-default.png' }}" class="card-img-top" alt="{{ product.name }}">
                   <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="position-absolute top-0 end-0 m-2">
                     {{ csrf.csrf_field() }}
@@ -79,6 +82,12 @@
                   </form>
                   <div class="card-body d-flex flex-column">
                     <h5 class="card-title">{{ product.name }}</h5>
+                    {% set r = ratings.get(product.id, 0) %}
+                    <div class="mb-1">
+                      {% for _ in range(r|round(0,'floor')|int) %}<i class="bi bi-star-fill text-warning"></i>{% endfor %}
+                      {% for _ in range(5 - r|round(0,'floor')|int) %}<i class="bi bi-star text-warning"></i>{% endfor %}
+                      <small class="text-muted">{{ '%.1f'|format(r) }}</small>
+                    </div>
                     <p class="card-text small text-muted mb-1">{{ product.description }}</p>
                     {% if product.price_soles %}
                       <p class="mb-1 text-primary fw-bold">S/ {{ '%.2f' | format(product.price_soles) }}</p>

@@ -30,6 +30,31 @@
     </div>
     <div class="col-lg-7">
       <h2 class="mb-4">Mis favoritos</h2>
+      <form method="get" class="mb-3">
+        <div class="row g-2 align-items-end">
+          <div class="col">
+            <label for="categoria" class="form-label small">Categoría</label>
+            <select id="categoria" name="categoria" class="form-select form-select-sm">
+              <option value="">Todas</option>
+              {% for cat in categories %}
+                <option value="{{ cat }}" {% if categoria==cat %}selected{% endif %}>{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col">
+            <label for="tipo" class="form-label small">Tipo</label>
+            <select id="tipo" name="tipo" class="form-select form-select-sm">
+              <option value="">Todos</option>
+              <option value="pack" {% if tipo=='pack' %}selected{% endif %}>Pack</option>
+              <option value="gratis" {% if tipo=='gratis' %}selected{% endif %}>Gratuitos</option>
+              <option value="nuevo" {% if tipo=='nuevo' %}selected{% endif %}>Nuevos</option>
+            </select>
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-primary btn-sm" type="submit">Filtrar</button>
+          </div>
+        </div>
+      </form>
       <div class="row">
         <div class="col-12">
           <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
