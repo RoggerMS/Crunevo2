@@ -197,3 +197,4 @@
 - Sidebar de tienda muestra categorías dinámicas y filtros rápidos Top/Free/Pack; ruta store_index admite ?top=1, ?free=1 y ?pack=1 (PR store-sidebar-filters).
 - Botón de descarga disponible en tarjetas de tienda, favoritos y página de producto si ya fue adquirido (PR store-download-btn).
 - Historial de compras filtrable por fecha (7 días, mes actual, 3 meses) (PR purchases-date-filter).
+- En edición de productos se sube imagen a Cloudinary y el enlace "Ver en tienda" apunta a /store/product/<id> (PR product-cloudinary-fix).
