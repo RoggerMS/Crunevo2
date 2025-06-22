@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, session, redirect, url_for, flash
+from flask import request
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
-from crunevo.models import Product, ProductLog, Purchase
+from crunevo.models import Product, ProductLog, Purchase, FavoriteProduct
 from crunevo.utils.credits import spend_credit
 from crunevo.constants import CreditReasons
 
@@ -16,8 +17,25 @@ def get_cart():
 @store_bp.route("/")
 @activated_required
 def store_index():
-    products = Product.query.all()
-    return render_template("store/store.html", products=products)
+    categoria = request.args.get("categoria")
+    precio_max = request.args.get("precio_max", type=float)
+
+    query = Product.query
+    if categoria:
+        query = query.filter_by(category=categoria)
+    if precio_max is not None:
+        query = query.filter(Product.price <= precio_max)
+
+    products = query.all()
+    favorites = FavoriteProduct.query.filter_by(user_id=current_user.id).all()
+    favorite_ids = [fav.product_id for fav in favorites]
+    return render_template(
+        "store/store.html",
+        products=products,
+        favorite_ids=favorite_ids,
+        categoria=categoria,
+        precio_max=precio_max,
+    )
 
 
 @store_bp.route("/product/<int:product_id>")
@@ -25,9 +43,17 @@ def store_index():
 def view_product(product_id):
     """Show detailed information for a single product."""
     product = Product.query.get_or_404(product_id)
+    is_favorite = (
+        FavoriteProduct.query.filter_by(
+            user_id=current_user.id, product_id=product.id
+        ).first()
+        is not None
+    )
     db.session.add(ProductLog(product_id=product.id, action="view"))
     db.session.commit()
-    return render_template("store/view_product.html", product=product)
+    return render_template(
+        "store/view_product.html", product=product, is_favorite=is_favorite
+    )
 
 
 @store_bp.route("/add/<int:product_id>")
@@ -127,3 +153,32 @@ def checkout():
     session.pop("cart", None)
     flash("Compra realizada (simulada)")
     return redirect(url_for("store.store_index"))
+
+
+@store_bp.route("/favorite/<int:product_id>", methods=["POST"])
+@activated_required
+def toggle_favorite(product_id):
+    """Add or remove a product from the user's favorites."""
+    fav = FavoriteProduct.query.filter_by(
+        user_id=current_user.id, product_id=product_id
+    ).first()
+    if fav:
+        db.session.delete(fav)
+        flash("Producto eliminado de favoritos")
+    else:
+        db.session.add(FavoriteProduct(user_id=current_user.id, product_id=product_id))
+        flash("Producto agregado a favoritos")
+    db.session.commit()
+    return redirect(request.referrer or url_for("store.store_index"))
+
+
+@store_bp.route("/favorites")
+@activated_required
+def view_favorites():
+    """Display the user's favorite products."""
+    favorites = FavoriteProduct.query.filter_by(user_id=current_user.id).all()
+    product_ids = [fav.product_id for fav in favorites]
+    products = (
+        Product.query.filter(Product.id.in_(product_ids)).all() if product_ids else []
+    )
+    return render_template("store/favorites.html", products=products)
