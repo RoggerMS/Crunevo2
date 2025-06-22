@@ -9,7 +9,7 @@ from flask import (
     send_file,
 )
 import io
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
@@ -37,14 +37,34 @@ def get_cart():
 def store_index():
     categoria = request.args.get("categoria")
     precio_max = request.args.get("precio_max", type=float)
+    top = request.args.get("top", type=int)
+    free = request.args.get("free", type=int)
+    pack = request.args.get("pack", type=int)
 
     query = Product.query
     if categoria:
         query = query.filter_by(category=categoria)
+    if free:
+        query = query.filter((Product.price == 0) | (Product.price_credits == 0))
     if precio_max is not None:
         query = query.filter(Product.price <= precio_max)
 
+    if top:
+        from sqlalchemy import func
+
+        query = (
+            query.outerjoin(Purchase)
+            .group_by(Product.id)
+            .order_by(func.count(Purchase.id).desc())
+            .limit(10)
+        )
+    elif pack:
+        query = query.filter_by(category="Pack")
+
     products = query.all()
+    categories = [
+        c[0] for c in db.session.query(Product.category).distinct().all() if c[0]
+    ]
     favorites = FavoriteProduct.query.filter_by(user_id=current_user.id).all()
     favorite_ids = [fav.product_id for fav in favorites]
     purchased = Purchase.query.filter_by(user_id=current_user.id).all()
@@ -54,6 +74,7 @@ def store_index():
         products=products,
         favorite_ids=favorite_ids,
         purchased_ids=purchased_ids,
+        categories=categories,
         categoria=categoria,
         precio_max=precio_max,
     )
@@ -294,12 +315,21 @@ def view_favorites():
 @store_bp.route("/compras")
 @activated_required
 def view_purchases():
-    compras = (
-        Purchase.query.filter_by(user_id=current_user.id)
-        .order_by(Purchase.timestamp.desc())
-        .all()
-    )
-    return render_template("store/compras.html", compras=compras)
+    rango = request.args.get("r")
+    query = Purchase.query.filter_by(user_id=current_user.id)
+    now = datetime.utcnow()
+    if rango == "7d":
+        start = now - timedelta(days=7)
+        query = query.filter(Purchase.timestamp >= start)
+    elif rango == "1m":
+        start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        query = query.filter(Purchase.timestamp >= start)
+    elif rango == "3m":
+        start = now - timedelta(days=90)
+        query = query.filter(Purchase.timestamp >= start)
+
+    compras = query.order_by(Purchase.timestamp.desc()).all()
+    return render_template("store/compras.html", compras=compras, rango=rango)
 
 
 @store_bp.route("/comprobante/<int:purchase_id>")
