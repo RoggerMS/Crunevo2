@@ -8,13 +8,13 @@
   {% endif %}
   <h3 class="tw-text-lg tw-font-semibold">{{ note.title }}</h3>
   <p class="tw-text-sm tw-text-gray-600 dark:tw-text-gray-400">{{ note.description }}</p>
-  <ul class="tw-flex tw-flex-wrap tw-gap-1 tw-text-xs tw-text-gray-500">
+  <ul class="tw-flex tw-flex-wrap tw-gap-1 tw-text-xs tw-text-gray-500 dark:tw-text-gray-400">
     {% for tag in (note.tags or '').split(',') if tag %}
     <li>#{{ tag }}</li>
     {% endfor %}
   </ul>
-  <div class="tw-text-xs tw-text-gray-500">{{ note.author.username }} · {{ note.created_at|timesince }}</div>
-  <div class="tw-flex tw-gap-3 tw-text-xs tw-text-gray-500">
+  <div class="tw-text-xs tw-text-gray-500 dark:tw-text-gray-400">{{ note.author.username }} · {{ note.created_at|timesince }}</div>
+  <div class="tw-flex tw-gap-3 tw-text-xs tw-text-gray-500 dark:tw-text-gray-400">
     <span><i class="bi bi-star-fill"></i> {{ note.downloads }}</span>
   </div>
   <a href="{{ url_for('notes.view_note', id=note.id) }}" class="tw-text-sm tw-underline">Ver detalle</a>
