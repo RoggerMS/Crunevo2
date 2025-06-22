@@ -73,7 +73,11 @@
             {% for product in products %}
               <div class="col">
                 <div class="card position-relative h-100 shadow-sm border-0 {% if product.is_featured %}bg-light border-purple{% endif %} {% if product.category == 'Pack' %}tw-scale-[1.03]{% endif %}">
-                  <img src="{{ product.image_url or '/static/img/producto-default.png' }}" class="card-img-top" alt="{{ product.name }}">
+                  {% if product.image_url %}
+                    <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+                  {% else %}
+                    <img src="{{ url_for('static', filename='img/default_product.png') }}" class="card-img-top" alt="Sin imagen">
+                  {% endif %}
                   <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="position-absolute top-0 end-0 m-2">
                     {{ csrf.csrf_field() }}
                     <button class="btn btn-sm btn-light border-0" type="submit">

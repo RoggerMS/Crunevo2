@@ -199,3 +199,4 @@
 - Historial de compras filtrable por fecha (7 días, mes actual, 3 meses) (PR purchases-date-filter).
 - En edición de productos se sube imagen a Cloudinary y el enlace "Ver en tienda" apunta a /store/product/<id> (PR product-cloudinary-fix).
 - Implementado sistema de reseñas y preguntas en productos con filtros en favoritos y visual especial para Packs (PR store-reviews-qa).
+- Corregida vista de tienda para mostrar product.image_url con imagen por defecto si falta (PR store-image-url)
