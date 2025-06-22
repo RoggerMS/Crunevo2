@@ -79,7 +79,7 @@ def search_notes():
     )
 
 
-@notes_bp.route("/upload", methods=["GET", "POST"])
+@notes_bp.route("/upload", methods=["GET", "POST"], endpoint="upload_note")
 @activated_required
 def upload_note():
     if request.method == "POST":
@@ -147,6 +147,11 @@ def upload_note():
         return redirect(url_for("notes.list_notes"))
 
     return render_template("notes/upload.html")
+
+
+notes_bp.add_url_rule(
+    "/upload", endpoint="upload", view_func=upload_note, methods=["GET", "POST"]
+)
 
 
 @notes_bp.route("/<int:note_id>")

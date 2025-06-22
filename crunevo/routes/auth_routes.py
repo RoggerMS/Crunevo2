@@ -93,7 +93,11 @@ def perfil():
                 current_user.avatar_url = filepath
         db.session.commit()
         flash("Perfil actualizado")
-    return render_template("auth/perfil.html")
+    from crunevo.models import SavedPost, Post
+
+    saved = SavedPost.query.filter_by(user_id=current_user.id).all()
+    posts = [Post.query.get(sp.post_id) for sp in saved if Post.query.get(sp.post_id)]
+    return render_template("auth/perfil.html", saved_posts=posts)
 
 
 @auth_bp.route("/user/<int:user_id>")

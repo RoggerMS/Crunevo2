@@ -115,6 +115,8 @@
     {% for post in posts %}
     <div class="card mb-3 shadow-sm">
       <div class="card-body">
+        {% set badge = '💬 Debate' if post.type == 'foro' else '🏅 Logro' if post.type == 'logro' else '📝 Apunte' %}
+        <span class="badge bg-secondary mb-2">{{ badge }}</span>
         <div class="d-flex align-items-center mb-2">
           {% set author = post.author %}
           {% if author %}
@@ -136,19 +138,26 @@
           <img src="{{ post.file_url }}" class="img-fluid rounded mb-2">
           {% endif %}
         {% endif %}
-          <p class="text-muted small mb-2">
+        <p class="text-muted small mb-2">
             <strong>Likes:</strong>
             <span id="likeCount{{ post.id }}">{{ post.likes }}</span>
-          </p>
-          <form
+        </p>
+        <form
             class="like-form mb-3"
             method="post"
             action="{{ url_for('feed.like_post', post_id=post.id) }}"
             data-target="likeCount{{ post.id }}"
-          >
+        >
             {{ csrf.csrf_field() }}
             <button class="btn btn-outline-success btn-sm" type="submit">👍 Me gusta</button>
+        </form>
+        <div class="d-flex gap-2 mb-3">
+          <form class="save-post-form" method="post" action="{{ url_for('feed.toggle_save', post_id=post.id) }}">
+            {{ csrf.csrf_field() }}
+            <button class="btn btn-outline-secondary btn-sm" type="submit"><i class="bi bi-bookmark"></i></button>
           </form>
+          <button class="btn btn-outline-primary btn-sm donate-btn" data-post="{{ post.id }}" type="button"><i class="bi bi-coin"></i></button>
+        </div>
 
           <h6 class="mb-2">Comentarios</h6>
           <div id="comments{{ post.id }}">
@@ -253,6 +262,26 @@ document.querySelectorAll('.comment-form').forEach(form => {
   });
 });
 
+document.querySelectorAll('.save-post-form').forEach(form => {
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const btn = form.querySelector('button');
+    btn.disabled = true;
+    csrfFetch(form.action, { method: 'POST' })
+      .then(r => r.json())
+      .then(() => { showToast('Guardado actualizado'); })
+      .finally(() => { btn.disabled = false; });
+  });
+});
+
+const donateModal = new bootstrap.Modal(document.getElementById('donateModal'));
+document.querySelectorAll('.donate-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    donateModal._element.querySelector('form').action = `/donate/${btn.dataset.post}`;
+    donateModal.show();
+  });
+});
+
 const sectionButtons = document.querySelectorAll('[data-section-btn]');
 const sections = document.querySelectorAll('[data-section]');
 sectionButtons.forEach(btn => {
@@ -265,4 +294,43 @@ sectionButtons.forEach(btn => {
   });
 });
 </script>
+<div class="modal fade" id="donateModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post">
+        {{ csrf.csrf_field() }}
+        <div class="modal-header">
+          <h5 class="modal-title">Enviar créditos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <select name="amount" class="form-select">
+            {% for i in range(1,6) %}
+            <option value="{{ i }}">{{ i }} crédito{{ 's' if i>1 }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Enviar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<nav class="navbar fixed-bottom d-md-none navbar-light bg-light border-top">
+  <div class="container-fluid justify-content-around">
+    <a class="nav-link text-center" href="{{ url_for('feed.index') }}">
+      <i class="bi bi-house"></i><br>Feed
+    </a>
+    <a class="nav-link text-center" href="{{ url_for('notes.list_notes') }}">
+      <i class="bi bi-book"></i><br>Apuntes
+    </a>
+    <a class="nav-link text-center" href="{{ url_for('store.store_index') }}">
+      <i class="bi bi-shop"></i><br>Tienda
+    </a>
+    <a class="nav-link text-center" href="{{ url_for('auth.perfil') }}">
+      <i class="bi bi-person"></i><br>Perfil
+    </a>
+  </div>
+</nav>
 {% endblock %}

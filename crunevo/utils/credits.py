@@ -70,6 +70,7 @@ def spend_credit(user, amount, reason, related_id=None):
 
     voluntary_reasons = {
         CreditReasons.DONACION,
+        CreditReasons.DONACION_FEED,
         CreditReasons.AGRADECIMIENTO,
         "donacion",
         "agradecimiento",
