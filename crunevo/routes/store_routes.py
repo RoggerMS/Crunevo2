@@ -1,5 +1,14 @@
-from flask import Blueprint, render_template, session, redirect, url_for, flash
-from flask import request
+from flask import (
+    Blueprint,
+    render_template,
+    session,
+    redirect,
+    url_for,
+    flash,
+    request,
+    send_file,
+)
+import io
 from datetime import datetime
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required
@@ -38,10 +47,13 @@ def store_index():
     products = query.all()
     favorites = FavoriteProduct.query.filter_by(user_id=current_user.id).all()
     favorite_ids = [fav.product_id for fav in favorites]
+    purchased = Purchase.query.filter_by(user_id=current_user.id).all()
+    purchased_ids = [p.product_id for p in purchased]
     return render_template(
         "store/store.html",
         products=products,
         favorite_ids=favorite_ids,
+        purchased_ids=purchased_ids,
         categoria=categoria,
         precio_max=precio_max,
     )
@@ -58,10 +70,14 @@ def view_product(product_id):
         ).first()
         is not None
     )
+    purchased = has_purchased(current_user.id, product.id)
     db.session.add(ProductLog(product_id=product.id, action="view"))
     db.session.commit()
     return render_template(
-        "store/view_product.html", product=product, is_favorite=is_favorite
+        "store/view_product.html",
+        product=product,
+        is_favorite=is_favorite,
+        purchased=purchased,
     )
 
 
@@ -111,7 +127,9 @@ def redeem_product(product_id):
     db.session.add(ProductLog(product_id=product.id, action="redeem"))
     db.session.commit()
     flash("Producto canjeado", "success")
-    return render_template("store/checkout_success.html")
+    return render_template(
+        "store/checkout_success.html", download_url=product.download_url
+    )
 
 
 @store_bp.route("/buy/<int:product_id>", methods=["POST"])
@@ -136,7 +154,9 @@ def buy_product(product_id):
     product.stock -= 1
     db.session.commit()
     flash("Producto comprado exitosamente", "success")
-    return redirect(url_for("store.view_purchases"))
+    return render_template(
+        "store/checkout_success.html", download_url=product.download_url
+    )
 
 
 @store_bp.route("/cart/increase/<int:product_id>", methods=["POST"])
@@ -211,6 +231,7 @@ def checkout():
             total_soles=total_soles,
         )
 
+    download_url = None
     for item in cart_items:
         product = item["product"]
         qty = item["quantity"]
@@ -229,10 +250,12 @@ def checkout():
         )
         db.session.add(purchase)
         product.stock -= qty
+        if qty == 1 and product.download_url and not download_url:
+            download_url = product.download_url
 
     db.session.commit()
     session.pop("cart", None)
-    return render_template("store/checkout_success.html")
+    return render_template("store/checkout_success.html", download_url=download_url)
 
 
 @store_bp.route("/favorite/<int:product_id>", methods=["POST"])
@@ -261,7 +284,11 @@ def view_favorites():
     products = (
         Product.query.filter(Product.id.in_(product_ids)).all() if product_ids else []
     )
-    return render_template("store/favorites.html", products=products)
+    purchased = Purchase.query.filter_by(user_id=current_user.id).all()
+    purchased_ids = [p.product_id for p in purchased]
+    return render_template(
+        "store/favorites.html", products=products, purchased_ids=purchased_ids
+    )
 
 
 @store_bp.route("/compras")
@@ -273,3 +300,42 @@ def view_purchases():
         .all()
     )
     return render_template("store/compras.html", compras=compras)
+
+
+@store_bp.route("/comprobante/<int:purchase_id>")
+@activated_required
+def download_receipt(purchase_id: int):
+    purchase = Purchase.query.filter_by(
+        id=purchase_id, user_id=current_user.id
+    ).first_or_404()
+    buffer = io.BytesIO()
+    from reportlab.lib.pagesizes import letter
+    from reportlab.pdfgen import canvas
+
+    c = canvas.Canvas(buffer, pagesize=letter)
+    c.setFont("Helvetica", 14)
+    c.drawString(100, 750, "Comprobante de compra")
+    c.setFont("Helvetica", 12)
+    c.drawString(100, 720, f"Producto: {purchase.product.name}")
+    if purchase.price_soles:
+        precio = f"S/ {float(purchase.price_soles):.2f}"
+    elif purchase.price_credits:
+        precio = f"{purchase.price_credits} créditos"
+    else:
+        precio = "—"
+    c.drawString(100, 700, f"Precio: {precio}")
+    c.drawString(
+        100,
+        680,
+        f"Fecha: {purchase.timestamp.strftime('%d/%m/%Y %H:%M')}",
+    )
+    c.drawString(100, 660, f"Código de transacción: {purchase.id}")
+    c.showPage()
+    c.save()
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"comprobante_{purchase.id}.pdf",
+    )
