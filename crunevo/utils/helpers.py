@@ -1,4 +1,5 @@
 from functools import wraps
+from datetime import datetime
 from flask import redirect, url_for
 from flask_login import current_user, login_required
 
@@ -53,3 +54,24 @@ def verified_required(f):
         return f(*args, **kwargs)
 
     return decorated
+
+
+def timesince(dt):
+    """Return human readable delta from now in Spanish."""
+    if not dt:
+        return ""
+    now = datetime.utcnow()
+    if dt.tzinfo is not None:
+        now = now.replace(tzinfo=dt.tzinfo)
+    delta = now - dt
+    seconds = int(delta.total_seconds())
+    if seconds < 60:
+        return "hace unos segundos"
+    minutes = seconds // 60
+    if minutes < 60:
+        return f"hace {minutes} minuto{'s' if minutes != 1 else ''}"
+    hours = minutes // 60
+    if hours < 24:
+        return f"hace {hours} hora{'s' if hours != 1 else ''}"
+    days = hours // 24
+    return f"hace {days} d\u00eda{'s' if days != 1 else ''}"

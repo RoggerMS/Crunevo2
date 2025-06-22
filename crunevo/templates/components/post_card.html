@@ -1,8 +1,13 @@
 <article class="tw-rounded-2xl tw-shadow-sm tw-bg-white dark:tw-bg-gray-900 tw-p-4 tw-space-y-2">
   <div class="tw-flex tw-items-center tw-mb-2">
-    <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
-    <a href="{{ url_for('auth.public_profile', user_id=post.author.id) }}" class="me-auto text-decoration-none"><strong>{{ post.author.username }}</strong></a>
-    <small class="text-muted">{{ post.created_at.strftime('%Y-%m-%d') }}</small>
+    {% set author = post.author %}
+    <img src="{{ (author and author.avatar_url) or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+    {% if author %}
+    <a href="{{ url_for('auth.public_profile', user_id=author.id) }}" class="me-auto text-decoration-none"><strong>{{ author.username }}</strong></a>
+    {% else %}
+    <span class="me-auto text-muted">Usuario eliminado</span>
+    {% endif %}
+    <small class="text-muted">{{ post.created_at|timesince }}</small>
   </div>
   <p class="tw-text-base">{{ post.content }}</p>
   {% if post.file_url %}
@@ -12,5 +17,8 @@
       <img src="{{ post.file_url }}" alt="imagen" class="tw-rounded tw-w-full">
     {% endif %}
   {% endif %}
-  <div class="tw-text-xs tw-text-gray-500">{{ post.likes }} likes</div>
+  <div class="tw-flex tw-gap-3 tw-text-xs tw-text-gray-500">
+    <span><i class="bi bi-star-fill"></i> {{ post.likes }}</span>
+    <span><i class="bi bi-chat"></i> {{ post.comments|length }}</span>
+  </div>
 </article>
