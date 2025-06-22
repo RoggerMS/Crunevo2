@@ -5,7 +5,7 @@
     <img src="{{ url_for('static', filename='img/placeholder.svg') }}" alt="preview" class="tw-rounded mb-4 tw-w-full">
   {% endif %}
   <h3 class="tw-text-lg tw-font-semibold mb-2">{{ note.title }}</h3>
-  <ul class="tw-flex tw-flex-wrap tw-gap-1 tw-text-sm tw-text-gray-500 mb-4">
+  <ul class="tw-flex tw-flex-wrap tw-gap-1 tw-text-sm tw-text-gray-500 dark:tw-text-gray-400 mb-4">
     {% for tag in (note.tags or '').split(',') %}
       <li>#{{ tag }}</li>
     {% endfor %}

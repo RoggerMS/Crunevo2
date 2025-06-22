@@ -203,3 +203,4 @@
 - Feed redesign: avatar en formulario de publicación, filtros como pestañas y fechas relativas (PR feed-v1-improved)
 - Corregida plantilla store.html para usar product.image si existe, con alt y title; botón "Ver detalle" evita desbordes con tw-whitespace-nowrap (PR store-image-check)
 - Added SavedPost model, donation endpoints and mobile nav.
+- Añadido soporte de tema oscuro para textos grises en tarjetas del feed (PR dark-text-support).
