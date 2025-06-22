@@ -64,6 +64,7 @@ def create_app():
     from .routes.admin_blocker import admin_blocker_bp
     from .routes.admin.email_routes import admin_email_bp
     from .routes.ranking_routes import ranking_bp
+    from .routes.notifications_routes import noti_bp
     from .routes.errors import errors_bp
     from .routes.health_routes import health_bp
 
@@ -86,6 +87,7 @@ def create_app():
         app.register_blueprint(feed_bp)
         app.register_blueprint(store_bp)
         app.register_blueprint(chat_bp)
+        app.register_blueprint(noti_bp)
         app.register_blueprint(ranking_bp)
         app.register_blueprint(errors_bp)
         app.register_blueprint(admin_blocker_bp)

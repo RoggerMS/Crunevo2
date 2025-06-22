@@ -18,7 +18,7 @@ import cloudinary.uploader
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
 from crunevo.models import User, Note
-from crunevo.utils import spend_credit, record_login
+from crunevo.utils import spend_credit, record_login, send_notification
 from crunevo.constants import CreditReasons
 
 IS_ADMIN = os.environ.get("ADMIN_INSTANCE") == "1"
@@ -133,6 +133,9 @@ def agradecer(user_id):
     try:
         spend_credit(
             current_user, 1, CreditReasons.AGRADECIMIENTO, related_id=target.id
+        )
+        send_notification(
+            target.id, f"{current_user.username} te ha agradecido con 1 crédito."
         )
         flash("¡Gracias enviado!")
     except ValueError:

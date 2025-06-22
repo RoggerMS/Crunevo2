@@ -28,6 +28,9 @@ class User(UserMixin, db.Model):
     )
     comments = db.relationship("Comment", backref="author", lazy=True)
     post_comments = db.relationship("PostComment", backref="author", lazy=True)
+    notifications = db.relationship(
+        "Notification", back_populates="user", lazy="dynamic"
+    )
 
     def set_password(self, password):
         self.password_hash = generate_hash(password)
