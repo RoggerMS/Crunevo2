@@ -49,10 +49,13 @@
                     {% if product.price_soles %}
                       <p class="mb-1 text-primary fw-bold">S/ {{ '%.2f' | format(product.price_soles) }}</p>
                     {% endif %}
-                    {% if product.price_credits %}
-                      <p class="mb-1 text-warning fw-bold">{{ product.price_credits }} créditos</p>
-                    {% endif %}
-                    <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary mt-auto">Ver detalle</a>
+                      {% if product.price_credits %}
+                        <p class="mb-1 text-warning fw-bold">{{ product.price_credits }} créditos</p>
+                      {% endif %}
+                      {% if product.id in purchased_ids %}
+                        <span class="badge bg-secondary">Adquirido</span>
+                      {% endif %}
+                      <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary mt-auto">Ver detalle</a>
                   </div>
                 </div>
               </div>

@@ -160,6 +160,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  document.querySelectorAll('.share-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const url = btn.dataset.shareUrl || window.location.href;
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('Enlace copiado');
+      });
+    });
+  });
+
   // Bootstrap collapse handles the mobile menu
 
 });

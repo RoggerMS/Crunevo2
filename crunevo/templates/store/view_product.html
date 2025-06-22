@@ -31,8 +31,13 @@
       {% else %}
         <span class="badge bg-secondary mb-3">Sin stock</span>
       {% endif %}
+      {% if purchased and not product.allow_multiple %}
+        <span class="badge bg-secondary mb-3">Adquirido</span>
+      {% endif %}
       {% if product.price_credits and current_user.is_authenticated %}
-        {% if current_user.credits >= product.price_credits %}
+        {% if not product.allow_multiple and purchased %}
+          <button class="btn btn-outline-secondary w-100 mb-2" disabled data-bs-toggle="tooltip" title="Ya tienes este producto">Canjear</button>
+        {% elif current_user.credits >= product.price_credits %}
           <form method="post" action="{{ url_for('store.redeem_product', product_id=product.id) }}" class="mb-2">
             {{ csrf.csrf_field() }}
             <button class="btn btn-primary w-100" type="submit">Canjear</button>
@@ -45,11 +50,16 @@
       {% endif %}
       {% if not product.credits_only %}
         {% if product.stock > 0 %}
-          <form method="post" action="{{ url_for('store.buy_product', product_id=product.id) }}" class="mb-2">
-            {{ csrf.csrf_field() }}
-            <button class="btn btn-success w-100" type="submit">Comprar ahora</button>
-          </form>
-          <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-primary w-100">Agregar al carrito</a>
+          {% if not product.allow_multiple and purchased %}
+            <button class="btn btn-outline-secondary w-100 mb-2" disabled data-bs-toggle="tooltip" title="Ya tienes este producto">Comprar ahora</button>
+            <a class="btn btn-primary w-100 disabled" tabindex="-1" aria-disabled="true" data-bs-toggle="tooltip" title="Ya tienes este producto">Agregar al carrito</a>
+          {% else %}
+            <form method="post" action="{{ url_for('store.buy_product', product_id=product.id) }}" class="mb-2">
+              {{ csrf.csrf_field() }}
+              <button class="btn btn-success w-100" type="submit">Comprar ahora</button>
+            </form>
+            <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-primary w-100">Agregar al carrito</a>
+          {% endif %}
         {% else %}
           <button class="btn btn-outline-secondary w-100" disabled>Sin stock</button>
         {% endif %}
