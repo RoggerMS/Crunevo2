@@ -67,6 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initFeedToggle === 'function') {
     initFeedToggle();
   }
+  if (typeof initFeedInteractions === 'function') {
+    initFeedInteractions();
+  }
 
   // simple AJAX search suggestions
   const input = document.getElementById('globalSearchInput');

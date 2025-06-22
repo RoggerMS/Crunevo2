@@ -20,6 +20,9 @@
   <div class="tw-flex tw-gap-3 tw-text-xs tw-text-gray-500 dark:tw-text-gray-400">
     <span><i class="bi bi-star-fill"></i> {{ post.likes or 0 }}</span>
     <span><i class="bi bi-chat"></i> {{ post.comments|length }}</span>
+    <button type="button" class="btn btn-sm btn-outline-secondary share-btn" data-share-url="{{ url_for('feed.view_post', post_id=post.id, _external=True) }}">
+      <i class="bi bi-share"></i>
+    </button>
     <a href="{{ url_for('feed.view_post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary tw-ml-auto">Ver detalle</a>
   </div>
 </article>

@@ -51,23 +51,29 @@
 
       <h6 class="mt-3 mb-2">Comentarios</h6>
       <div id="comments{{ post.id }}">
-        {% for c in post.comments|sort(attribute='timestamp', reverse=True) %}
-        <div class="d-flex mb-3 comment">
-          <img src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
-          <div>
-            <div class="small text-muted">
-              <a href="{{ url_for('auth.public_profile', user_id=c.author.id) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.timestamp.strftime('%Y-%m-%d %H:%M') }}
+        {% if post.comments %}
+          {% for c in post.comments|sort(attribute='timestamp', reverse=True) %}
+          <div class="d-flex mb-3 comment">
+            <img src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+            <div>
+              <div class="small text-muted">
+                <a href="{{ url_for('auth.public_profile', user_id=c.author.id) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.timestamp.strftime('%Y-%m-%d %H:%M') }}
+              </div>
+              <div>{{ c.body }}</div>
             </div>
-            <div>{{ c.body }}</div>
           </div>
-        </div>
-        {% endfor %}
+          {% endfor %}
+        {% else %}
+          <p class="text-muted" data-empty-msg>Sé el primero en comentar esta publicación.</p>
+        {% endif %}
       </div>
       <form
         id="commentForm"
         method="post"
         action="{{ url_for('feed.comment_post', post_id=post.id) }}"
         data-container="comments{{ post.id }}"
+        data-avatar="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}"
+        data-username="{{ current_user.username }}"
       >
         {{ csrf.csrf_field() }}
         <div class="input-group mb-2">
@@ -80,40 +86,5 @@
 {% endblock %}
 
 {% block body_end %}
-<script>
-document.getElementById('likeForm')?.addEventListener('submit', function (e) {
-  e.preventDefault();
-  const btn = this.querySelector('button');
-  btn.disabled = true;
-  csrfFetch(this.action, { method: 'POST' })
-    .then(r => r.json())
-    .then(data => {
-      const target = document.getElementById(this.dataset.target);
-      if (target) target.textContent = data.likes;
-      showToast('¡Gracias por tu reacción!');
-    })
-    .finally(() => { btn.disabled = false; });
-});
-
-document.getElementById('commentForm')?.addEventListener('submit', function (e) {
-  e.preventDefault();
-  const btn = this.querySelector('button');
-  btn.disabled = true;
-  const data = new FormData(this);
-  csrfFetch(this.action, { method: 'POST', body: data })
-    .then(r => r.json())
-    .then(c => {
-      const container = document.getElementById(this.dataset.container);
-      if (container) {
-        const div = document.createElement('div');
-        div.className = 'd-flex mb-3 comment';
-        div.innerHTML = `<img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar"><div><div class=\"small text-muted\">{{ current_user.username }} • ${c.timestamp}</div><div>${c.body}</div></div>`;
-        container.prepend(div);
-      }
-      this.reset();
-      showToast('Comentario agregado');
-    })
-    .finally(() => { btn.disabled = false; });
-});
-</script>
+{{ super() }}
 {% endblock %}
