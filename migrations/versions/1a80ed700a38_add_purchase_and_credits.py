@@ -17,7 +17,6 @@ depends_on = None
 
 
 def upgrade():
-    # Crear tabla de logros
     op.create_table(
         "achievement",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -28,14 +27,13 @@ def upgrade():
         sa.UniqueConstraint("code"),
     )
 
-    # Crear tabla de compras
     op.create_table(
         "purchase",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("product_id", sa.Integer(), nullable=False),
         sa.Column("quantity", sa.Integer(), nullable=True),
-        sa.Column("price_soles", sa.Numeric(precision=10, scale=2), nullable=True),
+        sa.Column("price_soles", sa.Numeric(10, 2), nullable=True),
         sa.Column("price_credits", sa.Integer(), nullable=True),
         sa.Column("timestamp", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(["product_id"], ["product.id"]),
@@ -43,26 +41,24 @@ def upgrade():
         sa.PrimaryKeyConstraint("id"),
     )
 
-    # Agregar columnas a producto
-    with op.batch_alter_table("product", schema=None) as batch_op:
+    with op.batch_alter_table("product") as batch_op:
         batch_op.add_column(sa.Column("price_credits", sa.Integer(), nullable=True))
         batch_op.add_column(sa.Column("is_featured", sa.Boolean(), nullable=True))
         batch_op.add_column(sa.Column("credits_only", sa.Boolean(), nullable=True))
         batch_op.add_column(sa.Column("is_popular", sa.Boolean(), nullable=True))
         batch_op.add_column(sa.Column("is_new", sa.Boolean(), nullable=True))
 
-    # Evitar fallos: no eliminar ni crear columnas si ya están
-    with op.batch_alter_table("user_achievement", schema=None) as batch_op:
-        # Solo modificar si realmente necesitas agregar o quitar algo que no existe aún
-        pass
+    with op.batch_alter_table("user_achievement") as batch_op:
+        # Solo agregar timestamp si no existe. No eliminamos earned_at aquí.
+        batch_op.add_column(sa.Column("timestamp", sa.DateTime(), nullable=True))
 
 
 def downgrade():
-    # Downgrade seguro (no eliminar timestamp si ya estaba)
-    with op.batch_alter_table("user_achievement", schema=None) as batch_op:
-        pass
+    with op.batch_alter_table("user_achievement") as batch_op:
+        batch_op.drop_column("timestamp")
+        # No re-agregamos earned_at porque nunca se eliminó
 
-    with op.batch_alter_table("product", schema=None) as batch_op:
+    with op.batch_alter_table("product") as batch_op:
         batch_op.drop_column("is_new")
         batch_op.drop_column("is_popular")
         batch_op.drop_column("credits_only")
@@ -71,5 +67,3 @@ def downgrade():
 
     op.drop_table("purchase")
     op.drop_table("achievement")
-
-    # ### end Alembic commands ###
