@@ -190,6 +190,7 @@ def index():
     posts = pagination.items
     top_ranked, recent_achievements = get_weekly_ranking()
     latest_notes = Note.query.order_by(Note.created_at.desc()).limit(5).all()
+    top_notes, top_posts, top_users = get_featured_posts()
     return render_template(
         "feed/feed.html",
         posts=posts,
@@ -197,6 +198,10 @@ def index():
         top_ranked=top_ranked,
         recent_achievements=recent_achievements,
         latest_notes=latest_notes,
+        top_notes=top_notes,
+        top_posts=top_posts,
+        top_users=top_users,
+        news=[],
     )
 
 
@@ -210,6 +215,7 @@ def trending():
     posts = pagination.items
     top_ranked, recent_achievements = get_weekly_ranking()
     latest_notes = Note.query.order_by(Note.created_at.desc()).limit(5).all()
+    top_notes, top_posts, top_users = get_featured_posts()
     return render_template(
         "feed/feed.html",
         posts=posts,
@@ -217,6 +223,10 @@ def trending():
         top_ranked=top_ranked,
         recent_achievements=recent_achievements,
         latest_notes=latest_notes,
+        top_notes=top_notes,
+        top_posts=top_posts,
+        top_users=top_users,
+        news=[],
         trending=True,
     )
 

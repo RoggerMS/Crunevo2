@@ -9,8 +9,27 @@
 
   <!-- Contenido central -->
   <div class="col-lg-7 col-md-12">
-    <h5 class="mb-3">Publicaciones recientes</h5>
-    <form method="post" enctype="multipart/form-data" class="mb-4">
+    <ul class="nav nav-pills justify-content-center mb-3" id="feedTabs">
+      <li class="nav-item">
+        <button class="nav-link active" data-feed-tab="publicaciones">🟦 Publicaciones</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-feed-tab="apuntes">📘 Apuntes</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-feed-tab="populares">🔥 Populares</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-feed-tab="usuarios">🏅 Usuarios destacados</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-feed-tab="noticias">📰 Noticias</button>
+      </li>
+    </ul>
+
+    <div data-section="publicaciones" class="feed-section">
+      <h5 class="mb-3">Publicaciones recientes</h5>
+      <form method="post" enctype="multipart/form-data" class="mb-4">
       {{ csrf.csrf_field() }}
       <div class="d-flex mb-2">
         <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
@@ -36,7 +55,7 @@
     {% for post in posts %}
     <div class="card mb-3 shadow-sm">
       <div class="card-body">
-        {% set badge = '💬 Debate' if post.type == 'foro' else '🏅 Logro' if post.type == 'logro' else '📝 Apunte' %}
+        {% set badge = '💬 Debate' if post.type == 'foro' else '🏅 Logro' if post.type == 'logro' else '📢 Publicación' %}
         <span class="badge bg-secondary mb-2">{{ badge }}</span>
         <div class="d-flex align-items-center mb-2">
           {% set author = post.author %}
@@ -134,6 +153,50 @@
       </ul>
     </div>
   </div> <!-- Fin row de publicaciones -->
+  </div> <!-- cierre feed-section publicaciones -->
+
+  <div data-section="apuntes" class="feed-section d-none">
+    <h5 class="mb-3">Últimos apuntes</h5>
+    <div class="row">
+      {% for note in latest_notes %}
+      <div class="col-md-6 mb-3">
+        {% include 'components/note_card.html' %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div data-section="populares" class="feed-section d-none">
+    <h5 class="mb-3">Publicaciones populares</h5>
+    {% for post in top_posts %}
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        {% set badge = '💬 Debate' if post.type == 'foro' else '🏅 Logro' if post.type == 'logro' else '📢 Publicación' %}
+        <span class="badge bg-secondary mb-2">{{ badge }}</span>
+        <p class="card-text">{{ post.content }}</p>
+        <small class="text-muted">{{ post.likes }} likes</small>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div data-section="usuarios" class="feed-section d-none">
+    <h5 class="mb-3">Usuarios destacados</h5>
+    <ul class="list-group mb-3">
+      {% for u in top_users %}
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <span>{{ u.username }}</span>
+        <span class="badge bg-success">{{ u.credits }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div data-section="noticias" class="feed-section d-none">
+    <h5 class="mb-3">Noticias</h5>
+    <p class="text-muted">No hay noticias.</p>
+  </div>
+
   </div> <!-- Fin contenido central -->
   <!-- Zona derecha (destacados, ranking, etc.) -->
   <div class="col-lg-3 d-none d-lg-block">
@@ -200,6 +263,19 @@ document.querySelectorAll('.donate-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     donateModal._element.querySelector('form').action = `/donate/${btn.dataset.post}`;
     donateModal.show();
+  });
+});
+
+document.querySelectorAll('[data-feed-tab]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.feedTab;
+    document.querySelectorAll('.feed-section').forEach(section => {
+      section.classList.toggle('d-none', section.dataset.section !== target);
+    });
+    document.querySelectorAll('[data-feed-tab]').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    btn.classList.add('active');
   });
 });
 
