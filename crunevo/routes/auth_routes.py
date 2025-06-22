@@ -107,6 +107,13 @@ def public_profile(user_id):
     return render_template("perfil_publico.html", user=user)
 
 
+@auth_bp.route("/perfil/<username>")
+@activated_required
+def profile_by_username(username: str):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template("perfil_publico.html", user=user)
+
+
 @auth_bp.route("/agradecer/<int:user_id>", methods=["POST"])
 @activated_required
 def agradecer(user_id):
