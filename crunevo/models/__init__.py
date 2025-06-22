@@ -18,3 +18,6 @@ from .product_log import ProductLog  # noqa: F401
 from .admin_notification import AdminNotification  # noqa: F401
 from .purchase import Purchase  # noqa: F401
 from .favorite import FavoriteProduct  # noqa: F401
+from .review import Review  # noqa: F401
+from .question import Question  # noqa: F401
+from .answer import Answer  # noqa: F401
