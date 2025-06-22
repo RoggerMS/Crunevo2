@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Mis compras</h2>
+  {% for compra in compras %}
+    <div class="card mb-3">
+      <div class="row g-0">
+        <div class="col-md-2 text-center">
+          <img src="{{ compra.product.image_url or '/static/img/producto-default.png' }}" class="img-fluid rounded-start">
+        </div>
+        <div class="col-md-10">
+          <div class="card-body">
+            <h5 class="card-title">{{ compra.product.name }}</h5>
+            <p class="card-text text-muted">Comprado el {{ compra.timestamp.strftime('%d/%m/%Y') }}</p>
+            {% if compra.price_soles %}
+              <p class="card-text text-primary">S/ {{ '%.2f'|format(compra.price_soles) }}</p>
+            {% elif compra.price_credits %}
+              <p class="card-text text-warning">{{ compra.price_credits }} créditos</p>
+            {% endif %}
+            {% if compra.product.download_url %}
+              <a href="{{ compra.product.download_url }}" target="_blank" class="btn btn-success btn-sm">Descargar</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-muted">Aún no has comprado nada.</p>
+  {% endfor %}
+</div>
+{% endblock %}
