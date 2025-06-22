@@ -31,7 +31,11 @@
       <a href="{{ url_for('auth.login') }}" class="btn btn-primary w-100 mb-2">Inicia sesión</a>
       {% endif %}
       {% if not product.credits_only %}
-      <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-primary w-100">Comprar</a>
+      <form method="post" action="{{ url_for('store.buy_product', product_id=product.id) }}" class="mb-2">
+        {{ csrf.csrf_field() }}
+        <button class="btn btn-success w-100" type="submit">Comprar ahora</button>
+      </form>
+      <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-primary w-100">Agregar al carrito</a>
       {% endif %}
     </div>
   </div>
