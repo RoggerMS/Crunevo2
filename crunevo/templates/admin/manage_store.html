@@ -16,7 +16,12 @@
       <table id="tablaProductos" class="table table-vcenter card-table" data-datatable>
       <thead>
         <tr>
-          <th>ID</th><th>Nombre</th><th>Stock</th><th></th>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Precio S/</th>
+          <th>Créditos</th>
+          <th>Stock</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -24,6 +29,8 @@
       <tr>
         <td>{{ product.id }}</td>
         <td>{{ product.name }}</td>
+        <td>{{ '%.2f'|format(product.price) }}</td>
+        <td>{{ product.price_credits or '' }}</td>
         <td>{{ product.stock }}</td>
         <td class="text-end">
           <div class="dropdown position-relative">

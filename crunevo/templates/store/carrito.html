@@ -23,7 +23,7 @@
           </td>
           <td>
             <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="text-decoration-none">{{ product.name }}</a>
-            <div class="text-muted">${{ product.price }}</div>
+            <div class="text-muted">S/ {{ '%.2f'|format(product.price) }}</div>
           </td>
           <td class="text-center">
             <form method="post" action="{{ url_for('store.decrease_item', product_id=product.id) }}" class="d-inline">
@@ -36,7 +36,7 @@
               <button class="btn btn-sm btn-outline-secondary" aria-label="Sumar">+</button>
             </form>
           </td>
-          <td class="text-end">${{ product.price * qty }}</td>
+          <td class="text-end">S/ {{ '%.2f'|format(product.price * qty) }}</td>
           <td>
             <form method="post" action="{{ url_for('store.remove_item', product_id=product.id) }}" class="d-inline">
               {{ csrf.csrf_field() }}
@@ -49,7 +49,7 @@
     </table>
   </div>
   <div class="text-end mb-3">
-    <strong>Total: ${{ total }}</strong>
+    <strong>Total: S/ {{ '%.2f'|format(total) }}</strong>
   </div>
   <div class="text-end">
     <a href="{{ url_for('store.checkout') }}" class="btn btn-success">Finalizar compra</a>

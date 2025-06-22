@@ -137,7 +137,12 @@ def add_product():
         name = request.form["name"]
         description = request.form.get("description")
         price = float(request.form["price"])
+        price_credits = request.form.get("price_credits", type=int)
         stock = int(request.form.get("stock", 0))
+        is_featured = bool(request.form.get("is_featured"))
+        credits_only = bool(request.form.get("credits_only"))
+        is_popular = bool(request.form.get("is_popular"))
+        is_new = bool(request.form.get("is_new"))
         file = request.files.get("image")
         image_url = None
         if file and file.filename:
@@ -156,8 +161,13 @@ def add_product():
             name=name,
             description=description,
             price=price,
+            price_credits=price_credits,
             stock=stock,
             image=image_url,
+            is_featured=is_featured,
+            credits_only=credits_only,
+            is_popular=is_popular,
+            is_new=is_new,
         )
         db.session.add(product)
         db.session.commit()
@@ -185,7 +195,12 @@ def edit_product(product_id):
         product.name = request.form["name"]
         product.description = request.form.get("description")
         product.price = float(request.form["price"])
+        product.price_credits = request.form.get("price_credits", type=int)
         product.stock = int(request.form["stock"])
+        product.is_featured = bool(request.form.get("is_featured"))
+        product.credits_only = bool(request.form.get("credits_only"))
+        product.is_popular = bool(request.form.get("is_popular"))
+        product.is_new = bool(request.form.get("is_new"))
         file = request.files.get("image")
         if file and file.filename:
             cloud_url = current_app.config.get("CLOUDINARY_URL")
@@ -357,13 +372,23 @@ def export_credits():
 def export_products():
     output = StringIO()
     writer = csv.writer(output)
-    writer.writerow(["ID", "Nombre", "Precio", "Stock", "URL de imagen"])
+    writer.writerow(
+        [
+            "ID",
+            "Nombre",
+            "Precio S/",
+            "Créditos",
+            "Stock",
+            "URL de imagen",
+        ]
+    )
     for product in Product.query.all():
         writer.writerow(
             [
                 product.id,
                 product.name,
                 product.price,
+                product.price_credits,
                 product.stock,
                 product.image,
             ]
