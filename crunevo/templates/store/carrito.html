@@ -35,7 +35,7 @@
             <td class="text-end">S/ {{ '%.2f'|format(item.product.price_soles or 0) }}</td>
             <td class="text-end">{{ item.product.price_credits or '—' }}</td>
             <td class="text-end">
-              <a href="{{ url_for('store.remove_from_cart', product_id=item.product.id) }}" class="btn btn-sm btn-outline-danger">
+              <a href="{{ url_for('store.remove_item', product_id=item.product.id) }}" class="btn btn-sm btn-outline-danger">
                 <i class="bi bi-trash"></i>
               </a>
             </td>
