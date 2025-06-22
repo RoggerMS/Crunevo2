@@ -28,8 +28,9 @@
       {% if user.posts %}
       <div class="row row-cols-1 g-3">
         {% for p in user.posts|sort(attribute='created_at', reverse=True) %}
+        {% set post = p %}
         <div class="col">
-          {% include 'components/post_card.html' with post=p %}
+          {% include 'components/post_card.html' %}
         </div>
         {% else %}
         <p class="text-muted">Aún no ha publicado.</p>
@@ -45,8 +46,11 @@
       <div class="row row-cols-2 g-2 mb-4">
         {% for a in user.achievements|sort(attribute='timestamp', reverse=True) %}
         {% set info = ACHIEVEMENT_DETAILS.get(a.badge_code, {}) %}
+        {% set icon = info.icon %}
+        {% set title = info.title %}
+        {% set timestamp = a.timestamp %}
         <div class="col">
-          {% include 'components/achievement_card.html' with icon=info.icon title=info.title timestamp=a.timestamp %}
+          {% include 'components/achievement_card.html' %}
         </div>
         {% endfor %}
       </div>
