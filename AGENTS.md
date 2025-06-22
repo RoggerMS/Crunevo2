@@ -201,3 +201,4 @@
 - Implementado sistema de reseñas y preguntas en productos con filtros en favoritos y visual especial para Packs (PR store-reviews-qa).
 - Corregida vista de tienda para mostrar product.image_url con imagen por defecto si falta (PR store-image-url)
 - Feed redesign: avatar en formulario de publicación, filtros como pestañas y fechas relativas (PR feed-v1-improved)
+- Corregida plantilla store.html para usar product.image si existe, con alt y title; botón "Ver detalle" evita desbordes con tw-whitespace-nowrap (PR store-image-check)

@@ -73,11 +73,12 @@
             {% for product in products %}
               <div class="col">
                 <div class="card position-relative h-100 shadow-sm border-0 {% if product.is_featured %}bg-light border-purple{% endif %} {% if product.category == 'Pack' %}tw-scale-[1.03]{% endif %}">
-                  {% if product.image_url %}
-                    <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
-                  {% else %}
-                    <img src="{{ url_for('static', filename='img/default_product.png') }}" class="card-img-top" alt="Sin imagen">
-                  {% endif %}
+                  <img
+                    src="{{ product.image if product.image else url_for('static', filename='img/default_product.png') }}"
+                    class="card-img-top"
+                    alt="{{ product.name }}"
+                    title="Ver {{ product.name }}"
+                  >
                   <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="position-absolute top-0 end-0 m-2">
                     {{ csrf.csrf_field() }}
                     <button class="btn btn-sm btn-light border-0" type="submit">
@@ -109,7 +110,7 @@
                     {% if product.id in purchased_ids and product.download_url %}
                       <a href="{{ product.download_url }}" class="btn btn-success w-100 mb-2" target="_blank">Descargar</a>
                     {% endif %}
-                    <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary mt-auto">Ver detalle</a>
+                    <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary mt-auto tw-whitespace-nowrap">Ver detalle</a>
                   </div>
                 </div>
               </div>
