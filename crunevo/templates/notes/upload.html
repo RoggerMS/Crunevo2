@@ -34,12 +34,44 @@
               <label for="file" class="form-label">Archivo PDF</label>
               <input class="form-control" type="file" id="file" name="file" accept="application/pdf" required>
             </div>
+            <canvas id="pdfPreview" class="w-100 border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;"></canvas>
 
             <button type="submit" class="btn btn-primary w-100">Subir</button>
           </form>
         </div>
       </div>
-    </div>
-  </div>
 </div>
+</div>
+</div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='pdfjs/pdf.min.js') }}"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";
+    const fileInput = document.getElementById('file');
+    const canvas = document.getElementById('pdfPreview');
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const loadingTask = pdfjsLib.getDocument({ data: e.target.result });
+        loadingTask.promise.then((pdf) => {
+          pdf.getPage(1).then((page) => {
+            const viewport = page.getViewport({ scale: 1.2 });
+            const ctx = canvas.getContext('2d');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            page.render({ canvasContext: ctx, viewport });
+            canvas.classList.remove('tw-hidden');
+          });
+        }).catch(() => {
+          canvas.classList.add('tw-hidden');
+        });
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  </script>
 {% endblock %}

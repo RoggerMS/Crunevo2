@@ -53,6 +53,7 @@ body {
   border-radius: 1rem;
   margin-bottom: 0.5rem;
   max-width: 75%;
+  background-color: #f8f9fa;
 }
 
 .message.sent {
@@ -63,6 +64,10 @@ body {
 
 .message.received {
   background-color: #e9ecef;
+}
+
+body[data-bs-theme="dark"] .message {
+  background-color: #1f1f1f;
 }
 
 #searchSuggestions {

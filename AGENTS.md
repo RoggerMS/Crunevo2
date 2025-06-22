@@ -215,3 +215,5 @@
 - Fixed public profile template to avoid Jinja 'with' syntax (PR profile-jinja-fix).
 - Implemented basic user notification system with model, utility, routes and navbar indicator (PR notifications-basic).
 - Added migration for notifications table to fix runtime errors (QA notifications-migration).
+
+- Added quick filter sidebar on feed, PDF preview on upload form, chat messages with timestamps and notifications on comments/messages (PR feed-sidebar-chat-preview).
