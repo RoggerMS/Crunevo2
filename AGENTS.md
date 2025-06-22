@@ -178,3 +178,4 @@
 - Vista de producto rediseñada con imagen grande, badges y botones (PR store-product-page).
 - Corregido enlace a detalle de producto en store.html usando 'store.view_product' para evitar BuildError (PR store-detail-link-fix).
 - Vista del carrito modernizada con tabla responsive, totales y botones de acción (PR cart-ui-update).
+- Documentada propuesta integral de rediseño de la tienda en docs/store_proposal.md.
