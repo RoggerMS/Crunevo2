@@ -1,61 +1,67 @@
 {% extends 'base.html' %}
-{% import 'components/csrf.html' as csrf %}
 {% block content %}
-<div class="container py-4">
-  <h2 class="mb-4">Carrito</h2>
-  {% if products %}
-  <div class="table-responsive">
-    <table class="table align-middle">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Producto</th>
-          <th class="text-center">Cantidad</th>
-          <th class="text-end">Subtotal</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for product, qty in products %}
-        <tr>
-          <td style="width: 80px;">
-            <img src="{{ product.image }}" class="img-fluid rounded" style="max-height: 60px; object-fit: cover;" alt="imagen">
-          </td>
-          <td>
-            <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="text-decoration-none">{{ product.name }}</a>
-            <div class="text-muted">S/ {{ '%.2f'|format(product.price) }}</div>
-          </td>
-          <td class="text-center">
-            <form method="post" action="{{ url_for('store.decrease_item', product_id=product.id) }}" class="d-inline">
-              {{ csrf.csrf_field() }}
-              <button class="btn btn-sm btn-outline-secondary" aria-label="Restar">-</button>
-            </form>
-            <span class="mx-2">{{ qty }}</span>
-            <form method="post" action="{{ url_for('store.increase_item', product_id=product.id) }}" class="d-inline">
-              {{ csrf.csrf_field() }}
-              <button class="btn btn-sm btn-outline-secondary" aria-label="Sumar">+</button>
-            </form>
-          </td>
-          <td class="text-end">S/ {{ '%.2f'|format(product.price * qty) }}</td>
-          <td>
-            <form method="post" action="{{ url_for('store.remove_item', product_id=product.id) }}" class="d-inline">
-              {{ csrf.csrf_field() }}
-              <button class="btn btn-sm btn-link text-danger">Eliminar</button>
-            </form>
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  <div class="text-end mb-3">
-    <strong>Total: S/ {{ '%.2f'|format(total) }}</strong>
-  </div>
-  <div class="text-end">
-    <a href="{{ url_for('store.checkout') }}" class="btn btn-success">Finalizar compra</a>
-  </div>
+<div class="container mt-5">
+  <h2 class="mb-4"><i class="bi bi-cart-fill me-2"></i>Tu carrito</h2>
+  {% if not cart_items %}
+    <div class="alert alert-info text-center">
+      <i class="bi bi-cart-x-fill fs-3"></i><br>
+      Tu carrito está vacío. <a href="{{ url_for('store.store_index') }}">Volver a la tienda</a>
+    </div>
   {% else %}
-  <p>No hay productos en el carrito.</p>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th class="text-end">Precio (S/)</th>
+            <th class="text-end">Créditos</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set total_soles = 0 %}
+          {% set total_credits = 0 %}
+          {% for item in cart_items %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center">
+                <img src="{{ item.product.image_url or '/static/img/producto-default.png' }}" alt="{{ item.product.name }}" class="me-3 rounded" width="60">
+                <div>
+                  <strong>{{ item.product.name }}</strong><br>
+                  <small class="text-muted">{{ item.product.description[:60] }}</small>
+                </div>
+              </div>
+            </td>
+            <td class="text-end">S/ {{ '%.2f'|format(item.product.price_soles or 0) }}</td>
+            <td class="text-end">{{ item.product.price_credits or '—' }}</td>
+            <td class="text-end">
+              <a href="{{ url_for('store.remove_from_cart', product_id=item.product.id) }}" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i>
+              </a>
+            </td>
+          </tr>
+          {% set total_soles = total_soles + (item.product.price_soles or 0) %}
+          {% set total_credits = total_credits + (item.product.price_credits or 0) %}
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr class="fw-bold">
+            <td class="text-end" colspan="2">Total:</td>
+            <td class="text-end text-primary">S/ {{ '%.2f'|format(total_soles) }}</td>
+            <td class="text-end text-warning">{{ total_credits }} créditos</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="d-flex justify-content-between mt-4">
+      <a href="{{ url_for('store.store_index') }}" class="btn btn-outline-secondary">
+        ← Seguir comprando
+      </a>
+      <div>
+        <a href="#" class="btn btn-outline-success me-2 disabled">Finalizar compra</a>
+        <a href="#" class="btn btn-primary disabled">Canjear con créditos</a>
+      </div>
+    </div>
   {% endif %}
 </div>
 {% endblock %}
