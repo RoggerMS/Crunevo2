@@ -50,11 +50,13 @@
           </div>
         </td>
       </tr>
-      {% include 'admin/modals/delete_product.html' %}
       {% endfor %}
       </tbody>
       </table>
     </div>
   </div>
 </div>
+{% for product in products %}
+  {% include 'admin/modals/delete_product.html' %}
+{% endfor %}
 {% endblock %}
