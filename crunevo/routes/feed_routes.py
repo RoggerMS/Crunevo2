@@ -25,7 +25,7 @@ from crunevo.models import (
 )
 from crunevo.forms import FeedNoteForm, FeedImageForm
 from crunevo.utils import create_feed_item_for_all, unlock_achievement
-from crunevo.utils.credits import add_credit
+from crunevo.utils.credits import add_credit, spend_credit
 from crunevo.constants import CreditReasons, AchievementCodes
 import redis
 from crunevo.cache.feed_cache import fetch as cache_fetch, push_items as cache_push
@@ -194,6 +194,7 @@ def index():
     posts = query.limit(10).all()
     top_notes, top_posts, top_users = get_featured_posts()
     top_ranked, recent_achievements = get_weekly_ranking()
+    latest_notes = Note.query.order_by(Note.created_at.desc()).limit(5).all()
     return render_template(
         "feed/feed.html",
         posts=posts,
@@ -202,6 +203,7 @@ def index():
         top_users=top_users,
         top_ranked=top_ranked,
         recent_achievements=recent_achievements,
+        latest_notes=latest_notes,
         filter=filter_opt,
     )
 
@@ -253,6 +255,40 @@ def comment_post(post_id):
             "timestamp": comment.timestamp.strftime("%Y-%m-%d %H:%M"),
         }
     )
+
+
+@feed_bp.route("/save/<int:post_id>", methods=["POST"])
+@activated_required
+def toggle_save(post_id):
+    """Add or remove a post from the user's saved list."""
+    post = Post.query.get_or_404(post_id)
+    from crunevo.models import SavedPost
+
+    saved = SavedPost.query.filter_by(user_id=current_user.id, post_id=post.id).first()
+    if saved:
+        db.session.delete(saved)
+        db.session.commit()
+        return jsonify({"saved": False})
+    db.session.add(SavedPost(user_id=current_user.id, post_id=post.id))
+    db.session.commit()
+    return jsonify({"saved": True})
+
+
+@feed_bp.route("/donate/<int:post_id>", methods=["POST"])
+@activated_required
+def donate_post(post_id):
+    """Transfer credits to the author of a post."""
+    post = Post.query.get_or_404(post_id)
+    amount = request.form.get("amount", type=int, default=1)
+    amount = max(1, min(5, amount))
+    try:
+        spend_credit(
+            current_user, amount, CreditReasons.DONACION_FEED, related_id=post.id
+        )
+        add_credit(post.author, amount, CreditReasons.DONACION_FEED, related_id=post.id)
+    except ValueError:
+        return jsonify({"error": "Créditos insuficientes"}), 400
+    return jsonify({"success": True})
 
 
 @feed_bp.route("/api/chat", methods=["POST"])

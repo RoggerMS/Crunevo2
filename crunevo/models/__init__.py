@@ -21,3 +21,4 @@ from .favorite import FavoriteProduct  # noqa: F401
 from .review import Review  # noqa: F401
 from .question import Question  # noqa: F401
 from .answer import Answer  # noqa: F401
+from .saved_post import SavedPost  # noqa: F401
