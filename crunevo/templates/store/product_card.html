@@ -2,7 +2,7 @@
 {% import 'components/csrf.html' as csrf %}
 <div class="card h-100 shadow-sm position-relative">
   <a href="{{ url_for('store.view_product', product_id=product.id) }}">
-    <img src="{{ product.image }}" class="card-img-top img-fluid" style="max-height: 180px; object-fit: cover;" alt="imagen">
+    <img src="{{ product.first_image or '/static/img/producto-default.png' }}" class="card-img-top img-fluid" style="max-height: 180px; object-fit: cover;" alt="imagen">
   </a>
   <div class="position-absolute top-0 start-0 m-2 tw-space-x-1">
     {% if product.is_new %}<span class="badge bg-primary">Nuevo</span>{% endif %}

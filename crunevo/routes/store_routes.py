@@ -11,6 +11,14 @@ from crunevo.constants import CreditReasons
 store_bp = Blueprint("store", __name__, url_prefix="/store")
 
 
+def has_purchased(user_id: int, product_id: int) -> bool:
+    """Return True if the user already bought the product."""
+    return (
+        Purchase.query.filter_by(user_id=user_id, product_id=product_id).first()
+        is not None
+    )
+
+
 def get_cart():
     return session.setdefault("cart", {})
 
@@ -76,6 +84,12 @@ def redeem_product(product_id):
     if product.price_credits is None:
         flash("Este producto no está disponible para canje", "warning")
         return redirect(url_for("store.view_product", product_id=product.id))
+    if product.stock < 1:
+        flash("Producto sin stock", "danger")
+        return redirect(url_for("store.view_product", product_id=product.id))
+    if not product.allow_multiple and has_purchased(current_user.id, product.id):
+        flash("Ya adquiriste este producto", "warning")
+        return redirect(url_for("store.view_product", product_id=product.id))
     try:
         spend_credit(
             current_user,
@@ -93,10 +107,11 @@ def redeem_product(product_id):
         price_credits=product.price_credits,
     )
     db.session.add(purchase)
+    product.stock -= 1
     db.session.add(ProductLog(product_id=product.id, action="redeem"))
     db.session.commit()
-    flash("Producto canjeado")
-    return redirect(url_for("store.store_index"))
+    flash("Producto canjeado", "success")
+    return render_template("store/checkout_success.html")
 
 
 @store_bp.route("/buy/<int:product_id>", methods=["POST"])
@@ -105,6 +120,9 @@ def buy_product(product_id):
     product = Product.query.get_or_404(product_id)
     if product.stock < 1:
         flash(f"Stock insuficiente para {product.name}", "danger")
+        return redirect(url_for("store.view_product", product_id=product.id))
+    if not product.allow_multiple and has_purchased(current_user.id, product.id):
+        flash("Ya adquiriste este producto", "warning")
         return redirect(url_for("store.view_product", product_id=product.id))
 
     purchase = Purchase(
@@ -169,7 +187,7 @@ def view_cart():
     return render_template("store/carrito.html", cart_items=cart_items)
 
 
-@store_bp.route("/checkout")
+@store_bp.route("/checkout", methods=["GET", "POST"])
 @activated_required
 def checkout():
     cart = get_cart()
@@ -177,11 +195,30 @@ def checkout():
         flash("Tu carrito está vacío", "warning")
         return redirect(url_for("store.view_cart"))
 
+    cart_items = []
+    total_soles = 0
     for pid_str, qty in cart.items():
         pid = int(pid_str)
         product = Product.query.get(pid)
-        if not product or product.stock < qty:
+        if product:
+            cart_items.append({"product": product, "quantity": qty})
+            total_soles += float(product.price) * qty
+
+    if request.method == "GET":
+        return render_template(
+            "store/checkout_confirm.html",
+            cart_items=cart_items,
+            total_soles=total_soles,
+        )
+
+    for item in cart_items:
+        product = item["product"]
+        qty = item["quantity"]
+        if product.stock < qty:
             flash(f"Stock insuficiente para {product.name}", "danger")
+            continue
+        if not product.allow_multiple and has_purchased(current_user.id, product.id):
+            flash(f"Ya adquiriste {product.name}", "warning")
             continue
         purchase = Purchase(
             user_id=current_user.id,
