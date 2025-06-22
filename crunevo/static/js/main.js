@@ -142,6 +142,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const mainImage = document.getElementById('mainImage');
+  if (mainImage) {
+    document.querySelectorAll('.product-thumb').forEach((img) => {
+      img.addEventListener('click', () => {
+        mainImage.src = img.dataset.src || img.src;
+      });
+    });
+  }
+
+  const shareBtn = document.getElementById('shareBtn');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        showToast('Enlace copiado');
+      });
+    });
+  }
+
   // Bootstrap collapse handles the mobile menu
 
 });
