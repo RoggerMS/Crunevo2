@@ -6,34 +6,59 @@
 {% block content %}
 <div class="container mt-4">
   <div class="row">
-    <!-- Lado izquierdo (menú lateral) -->
-    <div class="col-lg-2 d-none d-lg-block">
-      {% include 'components/sidebar_left.html' %}
+    <!-- Sidebar izquierdo exclusivo para tienda -->
+    <div class="col-lg-2">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h6 class="text-uppercase text-muted mb-3">Explorar tienda</h6>
+          <ul class="nav flex-column small">
+            <li class="nav-item mb-2">
+              <a class="nav-link px-0" href="{{ url_for('store.store_index') }}">
+                🏠 Inicio de tienda
+              </a>
+            </li>
+            <li class="nav-item mb-2">
+              <a class="nav-link px-0" href="{{ url_for('store.view_cart') }}">
+                🛒 Mi carrito
+              </a>
+            </li>
+            <li class="nav-item mb-2">
+              <span class="nav-link px-0 disabled">
+                💸 Mis compras
+              </span>
+            </li>
+            <li class="nav-item mb-2">
+              <span class="nav-link px-0 disabled">
+                ⭐ Favoritos
+              </span>
+            </li>
+          </ul>
+          <hr>
+          <h6 class="text-uppercase text-muted mb-2">Filtrar por:</h6>
+          <div class="mb-3">
+            <label class="form-label small mb-1">Categoría</label>
+            <select class="form-select form-select-sm">
+              <option>Todos</option>
+              <option>Libros</option>
+              <option>Herramientas</option>
+              <option>Recursos digitales</option>
+              <option>Ofertas estudiantiles</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small mb-1">Precio máximo</label>
+            <input type="range" class="form-range" min="0" max="100" step="5">
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Contenido central -->
-    <div class="col-lg-7 col-md-12">
+    <div class="col-lg-7">
       <h2 class="mb-4">Tienda</h2>
-      <div class="row d-flex justify-content-between">
-        <aside class="col-md-3 mb-4 d-none d-md-block">
-          <div class="tw-rounded-2xl tw-shadow-sm tw-bg-white dark:tw-bg-gray-900 tw-p-4">
-              <h6 class="card-title">Filtros</h6>
-              <hr>
-              <div class="mb-3">
-                <strong>Categorías</strong>
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="cat1">
-                  <label class="form-check-label" for="cat1">General</label>
-                </div>
-              </div>
-              <div class="mb-3">
-                <strong>Precio</strong>
-                <input type="range" class="form-range" min="0" max="100">
-              </div>
-            </div>
-        </aside>
-        <div class="col-md-9">
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+      <div class="row">
+        <div class="col-12">
+          <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
             {% for product in products %}
               <div class="col">
                 <div class="card h-100 shadow-sm border-0 {% if product.is_featured %}bg-light border-purple{% endif %}">
@@ -66,10 +91,23 @@
       </div>
     </div>
 
-    <!-- Zona derecha (destacados, ranking, etc.) -->
+    <!-- Zona derecha para destacados -->
     <div class="col-lg-3 d-none d-lg-block">
-      {% include 'components/sidebar_right.html' %}
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Productos destacados</h5>
+          <ul class="list-unstyled">
+            <li><a href="#">Pack estudiante</a></li>
+            <li><a href="#">Más vendidos</a></li>
+            <li><a href="#">Ofertas de la semana</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
 {% endblock %}
