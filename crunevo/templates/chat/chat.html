@@ -11,7 +11,7 @@
     </ul>
   </div>
   <div class="col-lg-8">
-    <div id="chatBox" class="border rounded p-2 mb-2 chat-container"></div>
+    <div id="chatBox" class="border rounded p-2 mb-2 chat-container bg-light dark:tw-bg-gray-800"></div>
     <form id="chatForm" class="tw-space-y-2">
       {{ csrf.csrf_field() }}
       <input type="hidden" name="receiver_id" id="receiver_id">
@@ -23,9 +23,12 @@
   </div>
 </div>
 <script>
-  document.querySelectorAll('#userList li').forEach(li=>{
-    li.addEventListener('click',()=>{
+  document.querySelectorAll('#userList li').forEach(li => {
+    li.addEventListener('click', () => {
+      document.querySelectorAll('#userList li').forEach(el => el.classList.remove('active'));
+      li.classList.add('active');
       document.getElementById('receiver_id').value = li.dataset.user;
+      document.getElementById('chatBox').innerHTML = '';
     });
   });
   document.getElementById('chatForm').addEventListener('submit', e=>{
@@ -33,16 +36,15 @@
     csrfFetch('{{ url_for('chat.send_message') }}', {
       method:'POST',
       body:new FormData(e.target)
-    })
-      .then(r=>r.json()).then(()=>{
-        const box = document.getElementById('chatBox');
-        const div = document.createElement('div');
-        div.className = 'message sent';
-        div.textContent = e.target.content.value;
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
-        e.target.content.value='';
-      });
+    }).then(r => r.json()).then(data => {
+      const box = document.getElementById('chatBox');
+      const div = document.createElement('div');
+      div.className = 'message sent';
+      div.innerHTML = `<div>${e.target.content.value}</div><small class="text-muted d-block text-end">${data.timestamp}</small>`;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+      e.target.content.value = '';
+    });
   });
 </script>
 {% endblock %}

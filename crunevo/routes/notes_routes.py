@@ -16,7 +16,7 @@ from werkzeug.utils import secure_filename
 from crunevo.extensions import db
 from crunevo.models import Note, Comment, NoteVote
 from crunevo.utils.credits import add_credit
-from crunevo.utils import unlock_achievement
+from crunevo.utils import unlock_achievement, send_notification
 from crunevo.utils.scoring import update_feed_score
 from crunevo.constants import CreditReasons, AchievementCodes
 import cloudinary.uploader
@@ -177,6 +177,12 @@ def add_comment(note_id):
     db.session.add(comment)
     note.comments_count += 1
     db.session.commit()
+    if note.user_id != current_user.id:
+        send_notification(
+            note.user_id,
+            f"{current_user.username} comentó tu apunte",
+            url_for("notes.view_note", id=note.id),
+        )
     update_feed_score(note.id)
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return jsonify(
@@ -215,6 +221,13 @@ def like_note(note_id):
 
     db.session.commit()
     update_feed_score(note.id)
+
+    if action == "liked" and note.user_id != current_user.id:
+        send_notification(
+            note.user_id,
+            f"{current_user.username} reaccionó a tu apunte",
+            url_for("notes.view_note", id=note.id),
+        )
 
     return jsonify({"likes": note.likes, "status": action})
 

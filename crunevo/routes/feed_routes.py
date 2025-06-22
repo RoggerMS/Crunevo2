@@ -323,6 +323,12 @@ def comment_post(post_id):
     comment = PostComment(body=body, author=current_user, post=post)
     db.session.add(comment)
     db.session.commit()
+    if post.author_id != current_user.id:
+        send_notification(
+            post.author_id,
+            f"{current_user.username} comentó tu publicación",
+            url_for("feed.view_post", post_id=post.id),
+        )
     return jsonify(
         {
             "body": comment.body,

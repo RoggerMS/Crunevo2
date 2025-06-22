@@ -10,5 +10,8 @@
       <li>#{{ tag }}</li>
     {% endfor %}
   </ul>
-  <a href="{{ url_for('notes.view_note', id=note.id) }}" class="tw-inline-block tw-bg-[var(--primary)] tw-text-white tw-px-3 tw-py-1 tw-rounded">Ver apunte</a>
+  <div class="tw-flex tw-gap-2">
+    <a href="{{ url_for('notes.view_note', id=note.id) }}" class="tw-inline-block tw-bg-[var(--primary)] tw-text-white tw-px-3 tw-py-1 tw-rounded">Ver apunte</a>
+    <button type="button" class="btn btn-sm btn-outline-secondary share-btn" data-share-url="{{ url_for('notes.view_note', id=note.id, _external=True) }}"><i class="bi bi-share"></i></button>
+  </div>
 </article>
