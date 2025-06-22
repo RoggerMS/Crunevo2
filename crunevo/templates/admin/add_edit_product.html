@@ -38,7 +38,7 @@
   <div class="mb-3"><input type="file" name="image" class="form-control"></div>
   <button class="btn btn-primary" type="submit">Guardar</button>
   {% if product %}
-  <a href="{{ PUBLIC_BASE_URL }}/store/{{ product.id }}" target="_blank" class="btn btn-outline-info ms-2">Ver en tienda</a>
+  <a href="{{ PUBLIC_BASE_URL }}/store/product/{{ product.id }}" target="_blank" class="btn btn-outline-info ms-2">Ver en tienda</a>
   {% endif %}
 </form>
 <a href="{{ url_for('admin.manage_store') }}" class="btn btn-link mt-2">&larr; Volver a tienda</a>

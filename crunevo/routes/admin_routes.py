@@ -143,20 +143,21 @@ def add_product():
         credits_only = bool(request.form.get("credits_only"))
         is_popular = bool(request.form.get("is_popular"))
         is_new = bool(request.form.get("is_new"))
-        file = request.files.get("image")
         image_url = None
-        if file and file.filename:
-            cloud_url = current_app.config.get("CLOUDINARY_URL")
-            if cloud_url:
-                res = cloudinary.uploader.upload(file)
-                image_url = res["secure_url"]
-            else:
-                filename = secure_filename(file.filename)
-                upload_folder = current_app.config["UPLOAD_FOLDER"]
-                os.makedirs(upload_folder, exist_ok=True)
-                filepath = os.path.join(upload_folder, filename)
-                file.save(filepath)
-                image_url = filepath
+        if "image" in request.files:
+            image_file = request.files["image"]
+            if image_file and image_file.filename != "":
+                cloud_url = current_app.config.get("CLOUDINARY_URL")
+                if cloud_url:
+                    res = cloudinary.uploader.upload(image_file)
+                    image_url = res["secure_url"]
+                else:
+                    filename = secure_filename(image_file.filename)
+                    upload_folder = current_app.config["UPLOAD_FOLDER"]
+                    os.makedirs(upload_folder, exist_ok=True)
+                    filepath = os.path.join(upload_folder, filename)
+                    image_file.save(filepath)
+                    image_url = filepath
         product = Product(
             name=name,
             description=description,
@@ -201,19 +202,20 @@ def edit_product(product_id):
         product.credits_only = bool(request.form.get("credits_only"))
         product.is_popular = bool(request.form.get("is_popular"))
         product.is_new = bool(request.form.get("is_new"))
-        file = request.files.get("image")
-        if file and file.filename:
-            cloud_url = current_app.config.get("CLOUDINARY_URL")
-            if cloud_url:
-                res = cloudinary.uploader.upload(file)
-                product.image = res["secure_url"]
-            else:
-                filename = secure_filename(file.filename)
-                upload_folder = current_app.config["UPLOAD_FOLDER"]
-                os.makedirs(upload_folder, exist_ok=True)
-                filepath = os.path.join(upload_folder, filename)
-                file.save(filepath)
-                product.image = filepath
+        if "image" in request.files:
+            image_file = request.files["image"]
+            if image_file and image_file.filename != "":
+                cloud_url = current_app.config.get("CLOUDINARY_URL")
+                if cloud_url:
+                    res = cloudinary.uploader.upload(image_file)
+                    product.image = res["secure_url"]
+                else:
+                    filename = secure_filename(image_file.filename)
+                    upload_folder = current_app.config["UPLOAD_FOLDER"]
+                    os.makedirs(upload_folder, exist_ok=True)
+                    filepath = os.path.join(upload_folder, filename)
+                    image_file.save(filepath)
+                    product.image = filepath
         db.session.commit()
         log = ProductLog(
             product_id=product.id, action="edited", admin_id=current_user.id
