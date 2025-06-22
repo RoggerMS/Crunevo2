@@ -182,3 +182,14 @@ def view_favorites():
         Product.query.filter(Product.id.in_(product_ids)).all() if product_ids else []
     )
     return render_template("store/favorites.html", products=products)
+
+
+@store_bp.route("/compras")
+@activated_required
+def view_purchases():
+    compras = (
+        Purchase.query.filter_by(user_id=current_user.id)
+        .order_by(Purchase.timestamp.desc())
+        .all()
+    )
+    return render_template("store/compras.html", compras=compras)

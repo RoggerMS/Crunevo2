@@ -184,3 +184,4 @@
 - Ficha de producto modernizada con sección de características y stock (PR store-product-detail-redesign).
 - Sistema de favoritos funcional con modelo FavoriteProduct, rutas y iconos de corazón (PR store-favorites).
 - Filtros por categoría y precio habilitados en la tienda (PR store-filters).
+- Historial de compras accesible en /store/compras con tarjetas de detalle y opción de descarga (PR store-purchases-page).
