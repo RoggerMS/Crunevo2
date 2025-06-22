@@ -214,3 +214,4 @@
 - Redesigned public profile with larger avatar, achievements grid and posts/notes sections. Added /perfil/<username>/apuntes route and updated templates to use profile_by_username links (PR public-profile-redesign).
 - Fixed public profile template to avoid Jinja 'with' syntax (PR profile-jinja-fix).
 - Implemented basic user notification system with model, utility, routes and navbar indicator (PR notifications-basic).
+- Added migration for notifications table to fix runtime errors (QA notifications-migration).
