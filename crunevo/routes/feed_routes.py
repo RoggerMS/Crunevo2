@@ -239,6 +239,23 @@ def view_post(post_id: int):
     return render_template("feed/post_detail.html", post=post)
 
 
+@feed_bp.route("/user/<int:user_id>/posts")
+@activated_required
+def user_posts(user_id: int):
+    """List posts from a specific user."""
+    user = User.query.get_or_404(user_id)
+    page = request.args.get("page", 1, type=int)
+    pagination = (
+        Post.query.filter_by(author_id=user.id)
+        .order_by(Post.created_at.desc())
+        .paginate(page=page, per_page=10)
+    )
+    posts = pagination.items
+    return render_template(
+        "feed/user_posts.html", user=user, posts=posts, pagination=pagination
+    )
+
+
 # Alias route for backwards compatibility
 feed_bp.add_url_rule("/posts/<int:post_id>", endpoint="view_post", view_func=view_post)
 

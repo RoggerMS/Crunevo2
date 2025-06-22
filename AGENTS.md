@@ -207,3 +207,4 @@
 - Feed principal reorganizado para mostrar solo publicaciones recientes con paginación básica y sin secciones de apuntes (PR feed-wall-redesign).
 - Restaurado sistema de pestañas en el feed con secciones dinámicas y etiqueta "📢 Publicación" en lugar de "📝 Apunte" (PR feed-tabs-restore).
 - Rediseñada página /trending con vista propia y posts ordenados por likes (PR trending-redesign)
+- Vista individual de post ahora incluye botón de compartir y enlace a más publicaciones del autor; se añadió ruta feed.user_posts y se muestran 0 likes por defecto (PR post-page-share).

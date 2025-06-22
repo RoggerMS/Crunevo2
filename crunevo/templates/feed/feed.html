@@ -80,7 +80,7 @@
         {% endif %}
         <p class="text-muted small mb-2">
             <strong>Likes:</strong>
-            <span id="likeCount{{ post.id }}">{{ post.likes }}</span>
+            <span id="likeCount{{ post.id }}">{{ post.likes or 0 }}</span>
         </p>
         <form
             class="like-form mb-3"
