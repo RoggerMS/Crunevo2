@@ -44,7 +44,7 @@
             <img src="{{ post.file_url }}" class="img-fluid rounded mb-2">
             {% endif %}
           {% endif %}
-          <p class="fs-5 fw-bold text-danger mb-0"><i class="bi bi-heart-fill me-1"></i>{{ post.likes }}</p>
+          <p class="fs-5 fw-bold text-danger mb-0"><i class="bi bi-heart-fill me-1"></i>{{ post.likes or 0 }}</p>
         </div>
       </div>
       {% endfor %}
