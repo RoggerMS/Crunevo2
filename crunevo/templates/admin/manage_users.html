@@ -40,12 +40,14 @@
             </div>
           </td>
         </tr>
-        {% include 'admin/modals/user_actions.html' %}
-        {% include 'admin/modals/edit_role.html' %}
         {% endfor %}
       </tbody>
       </table>
     </div>
   </div>
 </div>
+{% for user in users %}
+  {% include 'admin/modals/user_actions.html' %}
+  {% include 'admin/modals/edit_role.html' %}
+{% endfor %}
 {% endblock %}
