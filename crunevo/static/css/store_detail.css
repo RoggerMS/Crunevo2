@@ -1,0 +1,10 @@
+.big-product-img {
+  max-height: 450px;
+  object-fit: contain;
+}
+
+@media (min-width: 768px) {
+  .big-product-img {
+    max-height: 550px;
+  }
+}
