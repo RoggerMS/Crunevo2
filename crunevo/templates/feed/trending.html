@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+{% block title %}Tendencias{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-lg-2 d-none d-lg-block">
+    {% include 'components/sidebar_left.html' %}
+  </div>
+  <div class="col-lg-7 col-md-12">
+    <h2 class="mb-4"><i class="bi bi-fire"></i> Publicaciones populares esta semana</h2>
+    <ul class="nav nav-pills justify-content-center mb-3">
+      <li class="nav-item">
+        <button class="nav-link active" data-trend-tab="posts">🔥 Publicaciones</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-trend-tab="notes">📘 Apuntes</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-trend-tab="users">🏅 Usuarios</button>
+      </li>
+    </ul>
+
+    <div data-section="posts" class="trend-section">
+      {% for post in posts %}
+      <div class="card mb-3 position-relative">
+        <span class="position-absolute top-0 start-0 tw-bg-red-600 tw-text-white tw-px-2 tw-rounded-bottom-right">🔥 Tendencia</span>
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            {% set author = post.author %}
+            {% if author %}
+            <img src="{{ author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+            <a href="{{ url_for('auth.public_profile', user_id=author.id) }}" class="me-auto text-decoration-none"><strong>{{ author.username }}</strong></a>
+            {% else %}
+            <img src="{{ url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+            <span class="me-auto text-muted">Usuario eliminado</span>
+            {% endif %}
+            <small class="text-muted">{{ post.created_at|timesince }}</small>
+          </div>
+          <p class="card-text">{{ post.content }}</p>
+          {% if post.file_url %}
+            {% if post.file_url.endswith('.pdf') %}
+            <a href="{{ post.file_url }}" target="_blank" class="btn btn-sm btn-outline-primary mb-2">Ver PDF</a>
+            {% else %}
+            <img src="{{ post.file_url }}" class="img-fluid rounded mb-2">
+            {% endif %}
+          {% endif %}
+          <p class="fs-5 fw-bold text-danger mb-0"><i class="bi bi-heart-fill me-1"></i>{{ post.likes }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div data-section="notes" class="trend-section d-none">
+      <div class="row">
+        {% for note in top_notes %}
+        <div class="col-md-6 mb-3">
+          {% include 'components/note_card.html' %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div data-section="users" class="trend-section d-none">
+      <ul class="list-group mb-3">
+        {% for u in top_users %}
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <span>{{ u.username }}</span>
+          <span class="badge bg-success">{{ u.credits }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="col-lg-3 d-none d-lg-block">
+    <div class="mb-4">
+      <h6 class="text-danger"><i class="bi bi-fire"></i> Más votados hoy</h6>
+      <ul class="list-group small">
+        {% for p in top_posts %}
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <span>{{ p.content|truncate(30) }}</span>
+          <span class="badge bg-danger">{{ p.likes }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="mb-4">
+      <h6 class="text-muted">🏅 Usuarios que más crecieron</h6>
+      <ul class="list-group small">
+        {% for u in top_ranked %}
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <span>{{ u.username }}</span>
+          <span class="badge bg-success">{{ u.credits }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="mb-4">
+      <h6 class="text-muted">🧩 Logros impactantes</h6>
+      <ul class="list-group small">
+        {% for username, badge_code, timestamp in recent_achievements %}
+        <li class="list-group-item">
+          <strong>{{ username }}</strong> – {{ badge_code }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block body_end %}
+<script>
+  document.querySelectorAll('[data-trend-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.trendTab;
+      document.querySelectorAll('.trend-section').forEach(section => {
+        section.classList.toggle('d-none', section.dataset.section !== target);
+      });
+      document.querySelectorAll('[data-trend-tab]').forEach(tab => tab.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+{% endblock %}
