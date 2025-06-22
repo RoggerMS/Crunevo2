@@ -49,6 +49,19 @@ def get_featured_posts():
     return top_notes, top_posts, top_users
 
 
+def get_weekly_top_posts(limit=3):
+    """Return posts with most likes from the last week."""
+    from datetime import datetime, timedelta
+
+    last_week = datetime.utcnow() - timedelta(days=7)
+    return (
+        Post.query.filter(Post.created_at > last_week)
+        .order_by(Post.likes.desc())
+        .limit(limit)
+        .all()
+    )
+
+
 def get_weekly_ranking(limit=5):
     """Return recent achievements for the feed."""
     recent_achievements = (
@@ -191,6 +204,7 @@ def index():
     top_ranked, recent_achievements = get_weekly_ranking()
     latest_notes = Note.query.order_by(Note.created_at.desc()).limit(5).all()
     top_notes, top_posts, top_users = get_featured_posts()
+    weekly_top_posts = get_weekly_top_posts()
     return render_template(
         "feed/feed.html",
         posts=posts,
@@ -200,6 +214,7 @@ def index():
         latest_notes=latest_notes,
         top_notes=top_notes,
         top_posts=top_posts,
+        weekly_top_posts=weekly_top_posts,
         top_users=top_users,
         news=[],
     )
@@ -253,6 +268,23 @@ def user_posts(user_id: int):
     posts = pagination.items
     return render_template(
         "feed/user_posts.html", user=user, posts=posts, pagination=pagination
+    )
+
+
+@feed_bp.route("/apuntes/user/<int:user_id>")
+@activated_required
+def user_notes(user_id: int):
+    """List notes from a specific user."""
+    user = User.query.get_or_404(user_id)
+    page = request.args.get("page", 1, type=int)
+    pagination = (
+        Note.query.filter_by(user_id=user.id)
+        .order_by(Note.created_at.desc())
+        .paginate(page=page, per_page=10)
+    )
+    notes = pagination.items
+    return render_template(
+        "feed/user_notes.html", user=user, notes=notes, pagination=pagination
     )
 
 
