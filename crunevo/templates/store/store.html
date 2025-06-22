@@ -35,22 +35,26 @@
             </li>
           </ul>
           <hr>
+          <h6 class="text-uppercase text-muted mb-2">Categorías</h6>
+          <ul class="nav flex-column small mb-3">
+            <li class="nav-item mb-1"><a class="nav-link px-0 {% if not categoria %}fw-bold{% endif %}" href="{{ url_for('store.store_index') }}">Todas</a></li>
+            {% for cat in categories %}
+              <li class="nav-item mb-1"><a class="nav-link px-0 {% if categoria == cat %}fw-bold{% endif %}" href="{{ url_for('store.store_index', categoria=cat) }}">{{ cat }}</a></li>
+            {% endfor %}
+          </ul>
+          <h6 class="text-uppercase text-muted mb-2">Vistas rápidas</h6>
+          <ul class="nav flex-column small mb-3">
+            <li class="nav-item mb-1"><a class="nav-link px-0" href="{{ url_for('store.store_index', top=1) }}">Más vendidos</a></li>
+            <li class="nav-item mb-1"><a class="nav-link px-0" href="{{ url_for('store.store_index', free=1) }}">Top 10 gratuitos</a></li>
+            <li class="nav-item mb-1"><a class="nav-link px-0" href="{{ url_for('store.store_index', pack=1) }}">Pack estudiantil</a></li>
+          </ul>
           <form method="get">
-            <h6 class="text-uppercase text-muted mb-2">Filtrar por:</h6>
-            <div class="mb-3">
-              <label for="categoria" class="form-label small mb-1">Categoría</label>
-              <select class="form-select form-select-sm" id="categoria" name="categoria">
-                <option value="" {% if request.args.get('categoria','') == '' %}selected{% endif %}>Todos</option>
-                <option value="libros" {% if request.args.get('categoria') == 'libros' %}selected{% endif %}>Libros</option>
-                <option value="herramientas" {% if request.args.get('categoria') == 'herramientas' %}selected{% endif %}>Herramientas</option>
-                <option value="recursos" {% if request.args.get('categoria') == 'recursos' %}selected{% endif %}>Recursos digitales</option>
-                <option value="ofertas" {% if request.args.get('categoria') == 'ofertas' %}selected{% endif %}>Ofertas estudiantiles</option>
-              </select>
-            </div>
+            <h6 class="text-uppercase text-muted mb-2">Filtrar por precio</h6>
             <div class="mb-3">
               <label for="precio_max" class="form-label small mb-1">Precio máximo</label>
               <input type="number" step="0.01" class="form-control form-control-sm" id="precio_max" name="precio_max" value="{{ request.args.get('precio_max', '') }}">
             </div>
+            <input type="hidden" name="categoria" value="{{ categoria }}">
             <button type="submit" class="btn btn-primary btn-sm w-100">Aplicar</button>
           </form>
         </div>
@@ -89,6 +93,9 @@
                       {% if product.is_featured %}<span class="badge bg-purple text-white">Destacado</span>{% endif %}
                       {% if product.id in purchased_ids %}<span class="badge bg-secondary">Adquirido</span>{% endif %}
                     </div>
+                    {% if product.id in purchased_ids and product.download_url %}
+                      <a href="{{ product.download_url }}" class="btn btn-success w-100 mb-2" target="_blank">Descargar</a>
+                    {% endif %}
                     <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary mt-auto">Ver detalle</a>
                   </div>
                 </div>

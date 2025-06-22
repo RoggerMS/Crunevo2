@@ -2,6 +2,12 @@
 {% block content %}
 <div class="container mt-4">
   <h2 class="mb-4">Mis compras</h2>
+  <ul class="nav nav-pills mb-3">
+    <li class="nav-item"><a class="nav-link {% if not rango %}active{% endif %}" href="{{ url_for('store.view_purchases') }}">Todos</a></li>
+    <li class="nav-item"><a class="nav-link {% if rango == '7d' %}active{% endif %}" href="{{ url_for('store.view_purchases', r='7d') }}">Últimos 7 días</a></li>
+    <li class="nav-item"><a class="nav-link {% if rango == '1m' %}active{% endif %}" href="{{ url_for('store.view_purchases', r='1m') }}">Este mes</a></li>
+    <li class="nav-item"><a class="nav-link {% if rango == '3m' %}active{% endif %}" href="{{ url_for('store.view_purchases', r='3m') }}">Últimos 3 meses</a></li>
+  </ul>
   {% for compra in compras %}
     <div class="card mb-3">
       <div class="row g-0">
