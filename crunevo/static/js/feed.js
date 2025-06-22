@@ -85,3 +85,90 @@ function renderMensajeCard(data) {
 
 loadMore.addEventListener('click', loadFeed);
 
+function initFeedInteractions() {
+  document.querySelectorAll('.like-form').forEach((form) => {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const btn = this.querySelector('button');
+      btn.disabled = true;
+      csrfFetch(this.action, { method: 'POST' })
+        .then((r) => r.json())
+        .then((data) => {
+          const target = document.getElementById(this.dataset.target);
+          if (target) target.textContent = data.likes;
+          showToast('¡Gracias por tu reacción!');
+        })
+        .finally(() => {
+          btn.disabled = false;
+        });
+    });
+  });
+
+  document.querySelectorAll('.comment-form').forEach((form) => {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const btn = this.querySelector('button');
+      btn.disabled = true;
+      const data = new FormData(this);
+      csrfFetch(this.action, { method: 'POST', body: data })
+        .then((r) => r.json())
+        .then((c) => {
+          const container = document.getElementById(this.dataset.container);
+          if (container) {
+            const div = document.createElement('div');
+            div.className = 'd-flex mb-3 comment';
+            div.innerHTML = `<img src="${this.dataset.avatar}" class="rounded-circle me-2" width="32" height="32" alt="avatar"><div><div class="small text-muted">${this.dataset.username} • ${c.timestamp}</div><div>${c.body}</div></div>`;
+            container.prepend(div);
+            const emptyMsg = container.querySelector('[data-empty-msg]');
+            if (emptyMsg) emptyMsg.remove();
+          }
+          form.reset();
+          showToast('Comentario agregado');
+        })
+        .finally(() => {
+          btn.disabled = false;
+        });
+    });
+  });
+
+  document.querySelectorAll('.save-post-form').forEach((form) => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button');
+      btn.disabled = true;
+      csrfFetch(form.action, { method: 'POST' })
+        .then((r) => r.json())
+        .then(() => {
+          showToast('Guardado actualizado');
+        })
+        .finally(() => {
+          btn.disabled = false;
+        });
+    });
+  });
+
+  const donateModalEl = document.getElementById('donateModal');
+  if (donateModalEl) {
+    const donateModal = new bootstrap.Modal(donateModalEl);
+    document.querySelectorAll('.donate-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        donateModalEl.querySelector('form').action = `/donate/${btn.dataset.post}`;
+        donateModal.show();
+      });
+    });
+  }
+
+  document.querySelectorAll('[data-feed-tab]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.feedTab;
+      document.querySelectorAll('.feed-section').forEach((section) => {
+        section.classList.toggle('d-none', section.dataset.section !== target);
+      });
+      document.querySelectorAll('[data-feed-tab]').forEach((tab) => {
+        tab.classList.remove('active');
+      });
+      btn.classList.add('active');
+    });
+  });
+}
+
