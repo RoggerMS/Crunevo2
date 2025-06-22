@@ -48,7 +48,7 @@
       </div>
     </form>
     <hr>
-    <p class="text-center">Explora publicaciones de estudiantes</p>
+    <h5 class="mb-3 text-muted text-center">📢 Explora las publicaciones más recientes de estudiantes</h5>
 
   <div class="row">
     <div class="col-lg-8">
@@ -56,12 +56,16 @@
     <div class="card mb-3 shadow-sm">
       <div class="card-body">
         {% set badge = '💬 Debate' if post.type == 'foro' else '🏅 Logro' if post.type == 'logro' else '📢 Publicación' %}
-        <span class="badge bg-secondary mb-2">{{ badge }}</span>
         <div class="d-flex align-items-center mb-2">
+          {% if badge == '📢 Publicación' %}
+          <span class="badge bg-primary me-2">{{ badge }}</span>
+          {% else %}
+          <span class="badge bg-secondary me-2">{{ badge }}</span>
+          {% endif %}
           {% set author = post.author %}
           {% if author %}
           <img src="{{ author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
-          <a href="{{ url_for('auth.public_profile', user_id=author.id) }}" class="me-auto text-decoration-none">
+          <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="me-auto text-decoration-none">
             <strong>{{ author.username }}</strong>
           </a>
           {% else %}
@@ -77,6 +81,10 @@
           {% else %}
           <img src="{{ post.file_url }}" class="img-fluid rounded mb-2">
           {% endif %}
+        {% endif %}
+        <a href="{{ url_for('feed.view_post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary mb-2">Ver publicación</a>
+        {% if author %}
+        <a href="/perfil/{{ author.username }}" class="btn btn-sm btn-outline-info mb-2">Ver perfil</a>
         {% endif %}
         <p class="text-muted small mb-2">
             <strong>Likes:</strong>
@@ -108,7 +116,7 @@
                 <img src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
                 <div>
                   <div class="small text-muted">
-                    <a href="{{ url_for('auth.public_profile', user_id=c.author.id) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.timestamp|timesince }}
+                    <a href="{{ url_for('auth.profile_by_username', username=c.author.username) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.timestamp|timesince }}
                   </div>
                   <div>{{ c.body }}</div>
                 </div>
@@ -136,14 +144,14 @@
       </div>
       {% endfor %}
   </div>
-  <div class="col-lg-4 mt-4 mt-lg-0">
+  <div class="col-lg-4 mt-4 mt-lg-0 d-none d-lg-block">
     <div class="card mb-3">
-      <div class="card-header bg-success text-white">🏆 Top de la semana</div>
+      <div class="card-header bg-primary text-white">💡 Publicaciones destacadas</div>
       <ul class="list-group list-group-flush">
-        {% for user in top_ranked %}
-        <li class="list-group-item">
-          <strong>{{ user.username }}</strong><br>
-          Créditos: {{ user.credits }}
+        {% for p in weekly_top_posts %}
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <a href="{{ url_for('feed.view_post', post_id=p.id) }}">{{ p.content|truncate(40) }}</a>
+          <span class="badge bg-primary">{{ p.likes or 0 }}</span>
         </li>
         {% endfor %}
       </ul>
@@ -162,6 +170,31 @@
   </div> <!-- Fin row de publicaciones -->
   </div> <!-- cierre feed-section publicaciones -->
 
+  <div class="d-lg-none mt-4">
+    <h5 class="text-center">🏆 Ranking y logros</h5>
+    <div class="card mb-3">
+      <div class="card-header bg-primary text-white">💡 Publicaciones destacadas</div>
+      <ul class="list-group list-group-flush">
+        {% for p in weekly_top_posts %}
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <a href="{{ url_for('feed.view_post', post_id=p.id) }}">{{ p.content|truncate(40) }}</a>
+          <span class="badge bg-primary">{{ p.likes or 0 }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header bg-info text-white">🧩 Logros recientes</div>
+      <ul class="list-group list-group-flush">
+        {% for username, badge_code, timestamp in recent_achievements %}
+        <li class="list-group-item">
+          <strong>{{ username }}</strong>: {{ badge_code }} <span class="text-muted">{{ timestamp.strftime('%Y-%m-%d') }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
   <div data-section="apuntes" class="feed-section d-none">
     <h5 class="mb-3">Últimos apuntes</h5>
     <div class="row">
@@ -179,7 +212,11 @@
     <div class="card mb-3 shadow-sm">
       <div class="card-body">
         {% set badge = '💬 Debate' if post.type == 'foro' else '🏅 Logro' if post.type == 'logro' else '📢 Publicación' %}
-        <span class="badge bg-secondary mb-2">{{ badge }}</span>
+        {% if badge == '📢 Publicación' %}
+        <span class="badge bg-primary me-2">{{ badge }}</span>
+        {% else %}
+        <span class="badge bg-secondary me-2">{{ badge }}</span>
+        {% endif %}
         <p class="card-text">{{ post.content }}</p>
         <small class="text-muted">{{ post.likes }} likes</small>
       </div>

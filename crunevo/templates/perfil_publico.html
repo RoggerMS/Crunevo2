@@ -1,46 +1,77 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
 {% block content %}
-<div class="row g-4">
-  <div class="col-md-4 text-center">
-    <img src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle mb-3" width="150" height="150" alt="avatar">
+<div class="container">
+  <div class="text-center mb-4">
+    <img src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle mb-2" width="160" height="160" alt="avatar">
+    <h2 class="mb-1">@{{ user.username }}</h2>
+    {% if user.about %}
+    <p class="text-muted">{{ user.about }}</p>
+    {% endif %}
+    {% if user.career %}
+    <p class="text-muted">{{ user.career }}</p>
+    {% endif %}
+    <div class="mb-3">
+      <span class="badge bg-success me-1"><i class="bi bi-coin me-1"></i>{{ user.credits }}</span>
+      <span class="badge bg-secondary me-1">{{ user.points }} pts</span>
+    </div>
     {% if current_user.is_authenticated and current_user.id != user.id %}
-    <button class="btn btn-primary btn-sm">Seguir</button>
     <form method="post" action="{{ url_for('auth.agradecer', user_id=user.id) }}" class="d-inline">
       {{ csrf.csrf_field() }}
       <button class="btn btn-success btn-sm" type="submit">Agradecer con 1 crédito</button>
     </form>
     {% endif %}
   </div>
-  <div class="col-md-8">
-    <h3 class="mb-0">{{ user.username }}</h3>
-    <p class="text-muted">{{ user.about or '' }}</p>
-    <div class="mb-3">
-      <span class="badge bg-success me-1"><i class="bi bi-coin me-1"></i>{{ user.credits }}</span>
-      <span class="badge bg-secondary me-1">{{ user.points }} pts</span>
-      <span class="badge bg-info text-dark">{{ user.notes|length }} apuntes</span>
-    </div>
-    <h5>Últimos apuntes</h5>
-    <ul class="list-group">
-  {% for note in user.notes|sort(attribute='created_at', reverse=True)[:5] %}
-  <li class="list-group-item d-flex justify-content-between align-items-start">
-    <a href="{{ url_for('notes.view_note', id=note.id) }}">{{ note.title }}</a>
-    <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d') }}</small>
-  </li>
-  {% endfor %}
-  </ul>
 
-  <h5 class="mt-4">🎖️ Logros desbloqueados</h5>
-  <div class="row row-cols-2 row-cols-md-3 g-2">
-    {% for a in user.achievements %}
-        {% set info = ACHIEVEMENT_DETAILS.get(a.badge_code, {}) %}
-        <div class="col">
-          {% include 'components/achievement_card.html' with icon=info.icon title=info.title timestamp=a.timestamp %}
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-header">📚 Apuntes subidos</div>
+        <ul class="list-group list-group-flush">
+          {% for note in user.notes|sort(attribute='created_at', reverse=True)[:5] %}
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <a href="{{ url_for('notes.view_note', id=note.id) }}">{{ note.title }}</a>
+            <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d') }}</small>
+          </li>
+          {% else %}
+          <li class="list-group-item text-muted">Aún no ha subido apuntes.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-header">📝 Publicaciones recientes</div>
+        <ul class="list-group list-group-flush">
+          {% for p in user.posts|sort(attribute='created_at', reverse=True)[:5] %}
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <a href="{{ url_for('feed.view_post', post_id=p.id) }}">{{ p.content[:40] }}</a>
+            <small class="text-muted">{{ p.created_at.strftime('%Y-%m-%d') }}</small>
+          </li>
+          {% else %}
+          <li class="list-group-item text-muted">Aún no ha publicado.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-header">🏆 Logros obtenidos</div>
+        <div class="card-body">
+          <div class="row row-cols-2 g-2">
+            {% for a in user.achievements %}
+              {% set info = ACHIEVEMENT_DETAILS.get(a.badge_code, {}) %}
+              <div class="col">
+                {% include 'components/achievement_card.html' with icon=info.icon title=info.title timestamp=a.timestamp %}
+              </div>
+            {% else %}
+              <div class="col text-muted">Aún no tiene logros.</div>
+            {% endfor %}
+          </div>
         </div>
-    {% else %}
-      <div class="col">Aún no tiene logros.</div>
-    {% endfor %}
+      </div>
+    </div>
   </div>
 </div>
-</div>
 {% endblock %}
+
