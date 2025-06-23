@@ -111,7 +111,7 @@ def finish():
             current_user.avatar_url = avatar_url
         current_user.about = request.form.get("bio")
         db.session.commit()
-        return redirect(url_for("feed.index"))
+        return redirect(url_for("feed.feed_home"))
     return render_template("onboarding/finish.html")
 
 
@@ -119,7 +119,7 @@ def finish():
 @login_required
 def pending():
     if current_user.activated:
-        return redirect(url_for("feed.index"))
+        return redirect(url_for("feed.feed_home"))
     return render_template("onboarding/pending.html")
 
 
@@ -130,7 +130,7 @@ def pending():
 )
 def resend():
     if current_user.activated:
-        return redirect(url_for("feed.index"))
+        return redirect(url_for("feed.feed_home"))
     if not send_confirmation_email(current_user):
         flash(
             "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",

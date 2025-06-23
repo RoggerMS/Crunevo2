@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for, flash
+from flask import Flask, request, redirect, url_for, flash, current_app
 from flask_login import current_user
 import logging
 from logging.handlers import RotatingFileHandler
@@ -38,6 +38,7 @@ def create_app():
             "ACHIEVEMENT_DETAILS": ACHIEVEMENT_DETAILS,
             "SIDEBAR_LATEST_NOTES": latest_sidebar_notes,
             "Notification": Notification,
+            "current_app": current_app,
         }
 
     from .utils.helpers import timesince
@@ -67,7 +68,16 @@ def create_app():
     from .routes.onboarding_routes import bp as onboarding_bp
     from .routes.auth_routes import auth_bp, login as login_view
     from .routes.notes_routes import notes_bp
-    from .routes.feed_routes import feed_bp, index as feed_index
+    from .routes.feed_routes import (
+        feed_bp,
+        feed_home,
+        api_feed,
+        view_post,
+        like_post,
+        comment_post,
+        toggle_save,
+        donate_post,
+    )
     from .routes.store_routes import store_bp
     from .routes.chat_routes import chat_bp
     from .routes.ia_routes import ia_bp
@@ -83,7 +93,7 @@ def create_app():
     @app.route("/")
     def home_redirect():
         if current_user.is_authenticated:
-            return feed_index()
+            return feed_home()
         return login_view()
 
     is_admin = os.environ.get("ADMIN_INSTANCE") == "1"
@@ -103,6 +113,45 @@ def create_app():
         app.register_blueprint(auth_bp)
         app.register_blueprint(notes_bp)
         app.register_blueprint(feed_bp)
+        app.add_url_rule(
+            "/api/feed",
+            endpoint="feed.api_feed_alias",
+            view_func=api_feed,
+        )
+        app.add_url_rule(
+            "/post/<int:post_id>",
+            endpoint="feed.view_post",
+            view_func=view_post,
+        )
+        app.add_url_rule(
+            "/posts/<int:post_id>",
+            endpoint="feed.view_post_alias",
+            view_func=view_post,
+        )
+        app.add_url_rule(
+            "/like/<int:post_id>",
+            endpoint="feed.like_post",
+            view_func=like_post,
+            methods=["POST"],
+        )
+        app.add_url_rule(
+            "/comment/<int:post_id>",
+            endpoint="feed.comment_post",
+            view_func=comment_post,
+            methods=["POST"],
+        )
+        app.add_url_rule(
+            "/save/<int:post_id>",
+            endpoint="feed.toggle_save",
+            view_func=toggle_save,
+            methods=["POST"],
+        )
+        app.add_url_rule(
+            "/donate/<int:post_id>",
+            endpoint="feed.donate_post",
+            view_func=donate_post,
+            methods=["POST"],
+        )
         app.register_blueprint(store_bp)
         app.register_blueprint(chat_bp)
         app.register_blueprint(ia_bp)
@@ -118,7 +167,7 @@ def create_app():
     @app.errorhandler(CSRFError)
     def handle_csrf_error(e):
         flash("La sesión expiró, vuelve a intentarlo.", "danger")
-        return redirect(request.referrer or url_for("feed.index")), 302
+        return redirect(request.referrer or url_for("feed.feed_home")), 302
 
     if os.getenv("SCHEDULER") == "1":
         from apscheduler.schedulers.background import BackgroundScheduler

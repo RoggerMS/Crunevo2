@@ -36,7 +36,7 @@ from crunevo.constants import CreditReasons, AchievementCodes
 import redis
 from crunevo.cache.feed_cache import fetch as cache_fetch, push_items as cache_push
 
-feed_bp = Blueprint("feed", __name__)
+feed_bp = Blueprint("feed", __name__, url_prefix="/feed")
 csrf.exempt(feed_bp)
 
 
@@ -96,7 +96,7 @@ def get_weekly_ranking(limit=5):
     return top_ranked, recent_achievements
 
 
-@feed_bp.route("/feed", methods=["GET", "POST"])
+@feed_bp.route("/list", methods=["GET", "POST"])
 @activated_required
 def edu_feed():
     note_form = FeedNoteForm()
@@ -182,12 +182,12 @@ def edu_feed():
 
 @feed_bp.route("/", methods=["GET", "POST"])
 @activated_required
-def index():
+def feed_home():
     if request.method == "POST":
         content = request.form.get("content", "").strip()
         if not content:
             flash("Debes escribir algo", "danger")
-            return redirect(url_for("feed.index"))
+            return redirect(url_for("feed.feed_home"))
 
         file = request.files.get("file")
         file_url = None
@@ -207,14 +207,14 @@ def index():
             except Exception:
                 current_app.logger.exception("Error al subir archivo")
                 flash("Ocurrió un problema al subir el archivo", "danger")
-                return redirect(url_for("feed.index"))
+                return redirect(url_for("feed.feed_home"))
 
         post = Post(content=content, file_url=file_url, author=current_user)
         db.session.add(post)
         db.session.commit()
         create_feed_item_for_all("post", post.id)
         flash("Publicación creada")
-        return redirect(url_for("feed.index"))
+        return redirect(url_for("feed.feed_home"))
 
     page = request.args.get("page", 1, type=int)
     pagination = Post.query.order_by(Post.created_at.desc()).paginate(
@@ -226,7 +226,7 @@ def index():
     top_notes, top_posts, top_users = get_featured_posts()
     weekly_top_posts = get_weekly_top_posts()
     return render_template(
-        "feed/feed.html",
+        "feed/index.html",
         posts=posts,
         pagination=pagination,
         top_ranked=top_ranked,
@@ -258,7 +258,7 @@ def trending():
     )
 
 
-@feed_bp.route("/post/<int:post_id>", endpoint="view_post")
+@feed_bp.route("/post/<int:post_id>", endpoint="view_post_bp")
 @activated_required
 def view_post(post_id: int):
     """Display a single post."""
@@ -301,7 +301,9 @@ def user_notes(user_id: int):
 
 
 # Alias route for backwards compatibility
-feed_bp.add_url_rule("/posts/<int:post_id>", endpoint="view_post", view_func=view_post)
+feed_bp.add_url_rule(
+    "/posts/<int:post_id>", endpoint="view_post_bp", view_func=view_post
+)
 
 
 @feed_bp.route("/like/<int:post_id>", methods=["POST"])

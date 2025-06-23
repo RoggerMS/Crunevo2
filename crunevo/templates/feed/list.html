@@ -8,7 +8,7 @@
 {% block content %}
 <div class="row">
   <div class="col-lg-2 d-none d-lg-block">
-    {% include 'components/sidebar_left_feed.html' %}
+    {% include 'feed/sidebar_left_feed.html' %}
     {% include 'components/feed_sidebar.html' %}
   </div>
   <div class="col-lg-7">
@@ -45,7 +45,7 @@
           {% include 'components/feed_card.html' %}
         {% elif item.type == 'post' %}
           {% set post = item.data %}
-          {% include 'components/post_card.html' %}
+          {% include 'feed/post_card.html' %}
         {% endif %}
       {% endfor %}
     </div>
