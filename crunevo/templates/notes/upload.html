@@ -7,7 +7,7 @@
       <div class="card shadow-lg border-0">
         <div class="card-body p-4 p-md-5">
           <h3 class="card-title mb-4 text-center">Subir nuevo apunte</h3>
-          <form method="post" enctype="multipart/form-data">
+          <form method="post" enctype="multipart/form-data" id="noteUploadForm">
             {{ csrf.csrf_field() }}
 
             <div class="form-floating mb-3">
@@ -31,12 +31,13 @@
             </div>
 
             <div class="mb-4">
-              <label for="file" class="form-label">Archivo PDF</label>
-              <input class="form-control" type="file" id="file" name="file" accept="application/pdf" required>
+              <label for="file" class="form-label">Archivo</label>
+              <input class="form-control" type="file" id="file" name="file" accept="application/pdf,image/*" required>
             </div>
             <canvas id="pdfPreview" class="w-100 border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;"></canvas>
+            <img id="imgPreview" class="img-fluid border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;" />
 
-            <button type="submit" class="btn btn-primary w-100">Subir</button>
+            <button type="submit" class="btn btn-primary w-100" id="uploadBtn">Subir</button>
           </form>
         </div>
       </div>
@@ -52,26 +53,44 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";
     const fileInput = document.getElementById('file');
     const canvas = document.getElementById('pdfPreview');
+    const imgPrev = document.getElementById('imgPreview');
+    const form = document.getElementById('noteUploadForm');
+    const btn = document.getElementById('uploadBtn');
+
     fileInput.addEventListener('change', () => {
       const file = fileInput.files[0];
+      canvas.classList.add('tw-hidden');
+      imgPrev.classList.add('tw-hidden');
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const loadingTask = pdfjsLib.getDocument({ data: e.target.result });
-        loadingTask.promise.then((pdf) => {
-          pdf.getPage(1).then((page) => {
-            const viewport = page.getViewport({ scale: 1.2 });
-            const ctx = canvas.getContext('2d');
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            page.render({ canvasContext: ctx, viewport });
-            canvas.classList.remove('tw-hidden');
-          });
-        }).catch(() => {
-          canvas.classList.add('tw-hidden');
-        });
-      };
-      reader.readAsArrayBuffer(file);
+      if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const task = pdfjsLib.getDocument({ data: e.target.result });
+          task.promise
+            .then((pdf) => pdf.getPage(1))
+            .then((page) => {
+              const viewport = page.getViewport({ scale: 1.2 });
+              const ctx = canvas.getContext('2d');
+              canvas.width = viewport.width;
+              canvas.height = viewport.height;
+              page.render({ canvasContext: ctx, viewport });
+              canvas.classList.remove('tw-hidden');
+            })
+            .catch(() => {
+              canvas.classList.add('tw-hidden');
+            });
+        };
+        reader.readAsArrayBuffer(file);
+      } else if (file.type.startsWith('image/')) {
+        imgPrev.src = URL.createObjectURL(file);
+        imgPrev.onload = () => URL.revokeObjectURL(imgPrev.src);
+        imgPrev.classList.remove('tw-hidden');
+      }
+    });
+
+    form.addEventListener('submit', () => {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Subiendo...';
     });
   </script>
 {% endblock %}

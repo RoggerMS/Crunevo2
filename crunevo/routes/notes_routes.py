@@ -95,8 +95,9 @@ def upload_note():
             return redirect(url_for("notes.upload_note"))
 
         ext = os.path.splitext(f.filename)[1].lower()
-        if ext != ".pdf":
-            flash("El archivo debe ser un PDF", "danger")
+        allowed_exts = {".pdf", ".jpg", ".jpeg", ".png"}
+        if ext not in allowed_exts:
+            flash("El archivo debe ser un PDF o imagen (JPG/PNG)", "danger")
             return redirect(url_for("notes.upload_note"))
 
         cloud_url = current_app.config.get("CLOUDINARY_URL")
@@ -104,18 +105,26 @@ def upload_note():
             if cloud_url:
                 filename = secure_filename(f.filename)
                 public_id = os.path.splitext(filename)[0]
-                _ = cloudinary.uploader.upload(
-                    f,
-                    resource_type="auto",
-                    public_id=f"notes/{public_id}",
-                    format="pdf",
-                )
-                view_url, _ = cloudinary.utils.cloudinary_url(
-                    f"notes/{public_id}.pdf",
-                    resource_type="image",
-                    secure=True,
-                )
-                filepath = view_url
+                if ext == ".pdf":
+                    _ = cloudinary.uploader.upload(
+                        f,
+                        resource_type="auto",
+                        public_id=f"notes/{public_id}",
+                        format="pdf",
+                    )
+                    view_url, _ = cloudinary.utils.cloudinary_url(
+                        f"notes/{public_id}.pdf",
+                        resource_type="image",
+                        secure=True,
+                    )
+                    filepath = view_url
+                else:
+                    result = cloudinary.uploader.upload(
+                        f,
+                        resource_type="image",
+                        public_id=f"notes/{public_id}",
+                    )
+                    filepath = result["secure_url"]
             else:
                 filename = secure_filename(f.filename)
                 upload_folder = current_app.config["UPLOAD_FOLDER"]
@@ -124,7 +133,7 @@ def upload_note():
                 f.save(filepath)
         except Exception:
             current_app.logger.exception("Error al subir el archivo")
-            flash("Ocurrió un problema al subir el PDF", "danger")
+            flash("Ocurrió un problema al subir el archivo", "danger")
             return redirect(url_for("notes.upload_note"))
 
         note = Note(
