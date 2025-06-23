@@ -23,3 +23,4 @@ from .question import Question  # noqa: F401
 from .answer import Answer  # noqa: F401
 from .saved_post import SavedPost  # noqa: F401
 from .notification import Notification  # noqa: F401
+from .mission import Mission, UserMission  # noqa: F401
