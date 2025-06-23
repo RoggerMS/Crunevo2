@@ -101,6 +101,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initFeedInteractions === 'function') {
     initFeedInteractions();
   }
+  if (typeof initQuickFilters === 'function') {
+    initQuickFilters();
+  }
 
   // simple AJAX search suggestions
   const input = document.getElementById('globalSearchInput');

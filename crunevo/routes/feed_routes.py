@@ -422,3 +422,27 @@ def api_feed():
             ],
         )
     return jsonify(items)
+
+
+@feed_bp.route("/api/quickfeed")
+@activated_required
+def api_quickfeed():
+    """Return feed items filtered for quick toggles."""
+    filter_opt = request.args.get("filter", "recientes")
+    if filter_opt == "apuntes":
+        notes = Note.query.order_by(Note.created_at.desc()).limit(20).all()
+        html = render_template("feed/_notes.html", notes=notes)
+        return jsonify({"html": html, "count": len(notes)})
+
+    query = Post.query
+    if filter_opt == "populares":
+        query = query.order_by(Post.likes.desc())
+    elif filter_opt == "relevantes":
+        week_start = datetime.utcnow() - timedelta(days=7)
+        query = query.filter(Post.created_at >= week_start).order_by(Post.likes.desc())
+    else:  # recientes or publicaciones
+        query = query.order_by(Post.created_at.desc())
+
+    posts = query.limit(20).all()
+    html = render_template("feed/_posts.html", posts=posts)
+    return jsonify({"html": html, "count": len(posts)})

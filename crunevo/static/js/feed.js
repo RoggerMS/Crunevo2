@@ -172,3 +172,32 @@ function initFeedInteractions() {
   });
 }
 
+function initQuickFilters() {
+  const container = document.getElementById('quickFilters');
+  const feedBox = document.getElementById('feed');
+  if (!container || !feedBox) return;
+  container.querySelectorAll('button[data-filter]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+      container.querySelectorAll('button[data-filter]').forEach((b) => {
+        b.classList.remove('btn-primary', 'active');
+        b.classList.add('btn-outline-primary');
+      });
+      btn.classList.add('btn-primary', 'active');
+      btn.classList.remove('btn-outline-primary');
+
+      fetch(`/api/quickfeed?filter=${filter}`)
+        .then((r) => r.json())
+        .then((data) => {
+          feedBox.innerHTML = data.html;
+          const countSpan = btn.querySelector('.count');
+          if (countSpan) {
+            countSpan.textContent = data.count;
+            countSpan.classList.toggle('tw-hidden', data.count === 0);
+          }
+          initFeedInteractions();
+        });
+    });
+  });
+}
+

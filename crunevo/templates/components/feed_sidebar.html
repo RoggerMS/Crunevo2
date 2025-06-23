@@ -1,9 +1,12 @@
 <div class="card shadow-sm border-0 mb-4 sidebar">
   <div class="card-body">
     <h6 class="text-uppercase text-muted mb-3">Filtros rápidos</h6>
-    <div class="d-grid gap-2">
-      <a class="btn btn-outline-primary btn-sm" href="{{ url_for('feed.index') }}"><i class="bi bi-clock-history"></i> Recientes</a>
-      <a class="btn btn-outline-primary btn-sm" href="{{ url_for('feed.trending') }}"><i class="bi bi-fire"></i> Más votados</a>
+    <div id="quickFilters" class="d-flex gap-2 overflow-auto">
+      <button class="btn btn-primary btn-sm" data-filter="recientes" data-label="🆕 Recientes">🆕 Recientes <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
+      <button class="btn btn-outline-primary btn-sm" data-filter="populares" data-label="📈 Populares">📈 Populares <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
+      <button class="btn btn-outline-primary btn-sm" data-filter="relevantes" data-label="📌 Relevantes">📌 Relevantes <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
+      <button class="btn btn-outline-primary btn-sm" data-filter="apuntes" data-label="🧪 Apuntes">🧪 Apuntes <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
+      <button class="btn btn-outline-primary btn-sm" data-filter="publicaciones" data-label="🗨️ Publicaciones">🗨️ Publicaciones <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
     </div>
   </div>
 </div>

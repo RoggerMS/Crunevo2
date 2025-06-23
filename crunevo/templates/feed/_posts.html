@@ -1,0 +1,5 @@
+{% for post in posts %}
+  {% include 'components/post_card.html' %}
+{% else %}
+  <p class="tw-text-center tw-text-muted">No se encontraron publicaciones.</p>
+{% endfor %}
