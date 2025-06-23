@@ -15,7 +15,6 @@
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('notes.list_notes') }}"><i class="bi bi-journal-text me-1"></i>Apuntes</a></li>
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('store.store_index') }}"><i class="bi bi-bag me-1"></i>Tienda</a></li>
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('ranking.show_ranking') }}"><i class="bi bi-trophy me-1"></i>Ranking</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('missions.list_missions') }}"><i class="bi bi-check2-circle me-1"></i>Misiones</a></li>
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('chat.chat_index') }}"><i class="bi bi-chat-dots me-1"></i>Chat</a></li>
         {% if config.ADMIN_INSTANCE and current_user.is_authenticated and current_user.role == 'admin' %}
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-1"></i>Admin</a></li>
@@ -46,9 +45,6 @@
             <li><a id="markAllRead" class="dropdown-item text-center" href="#">Marcar todo como leído</a></li>
           </ul>
         </li>
-        {% if current_user.verification_level >= 2 %}
-          {% include 'components/edu_badge.html' %}
-        {% endif %}
         {% else %}
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión</a></li>
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('onboarding.register') }}"><i class="bi bi-person-plus me-1"></i>Registrarse</a></li>

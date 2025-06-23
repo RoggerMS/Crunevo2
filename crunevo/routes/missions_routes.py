@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template
+from flask import Blueprint, redirect, url_for
 from flask_login import current_user
 from sqlalchemy import func
 from crunevo.models import Mission, UserMission, Note, PostComment, Post
@@ -10,13 +10,9 @@ from crunevo.constants import CreditReasons
 missions_bp = Blueprint("missions", __name__, url_prefix="/misiones")
 
 
-@missions_bp.route("/")
-def list_missions():
-    if not current_user.is_authenticated:
-        return render_template("misiones/index.html", missions=[])
-
+def compute_mission_states(user):
+    """Return mission progress info for a user."""
     one_week_ago = datetime.utcnow() - timedelta(days=7)
-
     # Ensure default missions exist
     defaults = [
         {
@@ -49,30 +45,28 @@ def list_missions():
         progress = 0
         if m.code == "upload_note":
             progress = (
-                Note.query.filter_by(user_id=current_user.id)
+                Note.query.filter_by(user_id=user.id)
                 .filter(Note.created_at >= one_week_ago)
                 .count()
             )
         elif m.code == "comment_posts":
             progress = (
-                PostComment.query.filter_by(author_id=current_user.id)
+                PostComment.query.filter_by(author_id=user.id)
                 .filter(PostComment.timestamp >= one_week_ago)
                 .count()
             )
         elif m.code == "receive_likes":
             progress = (
                 db.session.query(func.coalesce(func.sum(Post.likes), 0))
-                .filter_by(author_id=current_user.id)
+                .filter_by(author_id=user.id)
                 .scalar()
                 or 0
             )
         completed = progress >= m.goal
-        record = UserMission.query.filter_by(
-            user_id=current_user.id, mission_id=m.id
-        ).first()
-        if completed and not record:
-            db.session.add(UserMission(user_id=current_user.id, mission_id=m.id))
-            add_credit(current_user, m.credit_reward, CreditReasons.DONACION)
+        record = UserMission.query.filter_by(user_id=user.id, mission_id=m.id).first()
+        if user == current_user and completed and not record:
+            db.session.add(UserMission(user_id=user.id, mission_id=m.id))
+            add_credit(user, m.credit_reward, CreditReasons.DONACION)
             db.session.commit()
         mission_states.append(
             {
@@ -81,4 +75,10 @@ def list_missions():
                 "completed": completed or record is not None,
             }
         )
-    return render_template("misiones/index.html", missions=mission_states)
+    return mission_states
+
+
+@missions_bp.route("/")
+def list_missions():
+    """Legacy route; redirect to profile missions tab."""
+    return redirect(url_for("auth.perfil", tab="misiones"))
