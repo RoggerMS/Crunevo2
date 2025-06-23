@@ -24,6 +24,12 @@ import cloudinary.uploader
 notes_bp = Blueprint("notes", __name__, url_prefix="/notes")
 
 
+@notes_bp.route("/populares")
+@activated_required
+def popular_notes():
+    return redirect(url_for("notes.list_notes", filter="vistos"))
+
+
 @notes_bp.route("/")
 @activated_required
 def list_notes():

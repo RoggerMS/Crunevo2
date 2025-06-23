@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+{% block content %}
+<div class="tw-bg-gray-900 d-flex justify-content-center align-items-center py-5" style="min-height: calc(100vh - 56px);">
+  <div class="card tw-bg-gray-800 text-white w-100" style="max-width: 600px;">
+    <div class="card-body">
+      <h4 class="card-title text-center mb-3">ChatCrunevo</h4>
+      <div id="aiHistory" class="border rounded p-3 mb-3" style="height: 300px; overflow-y:auto;"></div>
+      <form id="aiForm">
+        {{ csrf.csrf_field() }}
+        <div class="input-group">
+          <input id="aiInput" class="form-control" placeholder="Escribe tu pregunta..." autocomplete="off">
+          <button class="btn btn-primary" type="submit">Enviar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block body_end %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/chatia.js') }}"></script>
+{% endblock %}
