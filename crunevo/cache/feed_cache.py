@@ -51,3 +51,22 @@ def fetch(user_id, start=0, stop=19):
         else:
             log.debug("feed cache MISS %s %s-%s", user_id, start, stop)
     return [json.loads(x) for x in res]
+
+
+def remove_item(user_id, item_type, ref_id):
+    """Remove a specific item from a user's cached feed."""
+    cli = _client()
+    if not cli:
+        return
+    key = FEED_KEY.format(user_id=user_id)
+    try:
+        items = cli.zrange(key, 0, -1)
+    except redis.RedisError:
+        return
+    for raw in items:
+        try:
+            data = json.loads(raw)
+        except Exception:
+            continue
+        if data.get("item_type") == item_type and data.get("ref_id") == ref_id:
+            cli.zrem(key, raw)
