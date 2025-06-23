@@ -13,7 +13,8 @@ from flask import (
 )
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required
-from sqlalchemy import func
+from sqlalchemy import func, desc
+from datetime import datetime, timedelta
 from crunevo.extensions import db, csrf
 from crunevo.models import (
     Post,
@@ -22,6 +23,7 @@ from crunevo.models import (
     Note,
     User,
     UserAchievement,
+    Credit,
 )
 from crunevo.forms import FeedNoteForm, FeedImageForm
 from crunevo.utils import (
@@ -67,7 +69,21 @@ def get_weekly_top_posts(limit=3):
 
 
 def get_weekly_ranking(limit=5):
-    """Return recent achievements for the feed."""
+    now = datetime.utcnow()
+    week_start = now - timedelta(days=7)
+    top_ranked = (
+        db.session.query(
+            User.username,
+            func.coalesce(func.sum(Credit.amount), 0).label("credits"),
+        )
+        .join(Credit, Credit.user_id == User.id)
+        .filter(Credit.timestamp >= week_start)
+        .group_by(User.id)
+        .order_by(desc("credits"))
+        .limit(limit)
+        .all()
+    )
+
     recent_achievements = (
         db.session.query(
             User.username, UserAchievement.badge_code, UserAchievement.timestamp
@@ -77,7 +93,7 @@ def get_weekly_ranking(limit=5):
         .limit(limit)
         .all()
     )
-    return [], recent_achievements
+    return top_ranked, recent_achievements
 
 
 @feed_bp.route("/feed", methods=["GET", "POST"])

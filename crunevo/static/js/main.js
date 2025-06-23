@@ -84,6 +84,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initPdfPreviews();
 
+  document.querySelectorAll('.achievement-card').forEach((el) => {
+    if (el.title && !bootstrap.Tooltip.getInstance(el)) {
+      bootstrap.Tooltip.getOrCreateInstance(el);
+    }
+  });
+
   // load feed on feed page
   if (typeof loadFeed === 'function' && document.getElementById('feed')) {
     loadFeed();

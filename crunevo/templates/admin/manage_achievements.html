@@ -1,0 +1,25 @@
+{% extends 'admin/base_admin.html' %}
+{% import 'components/csrf.html' as csrf %}
+{% block admin_content %}
+<h2 class="page-title mb-4">Logros</h2>
+<form method="post" class="card p-3 mb-4">
+  {{ csrf.csrf_field() }}
+  <div class="row g-2">
+    <div class="col-md-3"><input name="code" class="form-control" placeholder="Código"></div>
+    <div class="col-md-3"><input name="title" class="form-control" placeholder="Título"></div>
+    <div class="col-md-3"><input name="icon" class="form-control" placeholder="Icono"></div>
+    <div class="col-md-3"><input name="description" class="form-control" placeholder="Descripción"></div>
+  </div>
+  <button class="btn btn-primary mt-2">Crear</button>
+</form>
+<table class="table table-sm table-hover">
+  <thead><tr><th>ID</th><th>Código</th><th>Título</th><th>Descripción</th><th>Icono</th></tr></thead>
+  <tbody>
+    {% for a in achievements %}
+    <tr>
+      <td>{{ a.id }}</td><td>{{ a.code }}</td><td>{{ a.title }}</td><td>{{ a.description }}</td><td><i class="bi {{ a.icon }}"></i></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

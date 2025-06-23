@@ -23,7 +23,8 @@ from crunevo.models import (
     Answer,
 )
 from crunevo.utils.credits import spend_credit
-from crunevo.constants import CreditReasons
+from crunevo.constants import CreditReasons, AchievementCodes
+from crunevo.utils import unlock_achievement
 
 store_bp = Blueprint("store", __name__, url_prefix="/store")
 
@@ -186,6 +187,7 @@ def add_answer(question_id: int):
     ans = Answer(question_id=question_id, user_id=current_user.id, body=body)
     db.session.add(ans)
     db.session.commit()
+    unlock_achievement(current_user, AchievementCodes.TUTOR_ACTIVO)
     flash("Respuesta publicada", "success")
     q = Question.query.get_or_404(question_id)
     return redirect(url_for("store.view_product", product_id=q.product_id))

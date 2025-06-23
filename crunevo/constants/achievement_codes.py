@@ -6,3 +6,5 @@ class AchievementCodes:
     COMPARTIDOR = "compartidor"
     DESCARGA_100 = "100_descargas"
     LIKE_100 = "100_likes"
+    CREDITOS_100 = "100_creditos"
+    TUTOR_ACTIVO = "tutor_activo"

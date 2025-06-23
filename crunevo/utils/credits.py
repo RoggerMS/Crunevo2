@@ -15,6 +15,8 @@ def add_credit(user, amount, reason, related_id=None):
     user.credits += amount
     db.session.add(credit)
     db.session.commit()
+    if user.credits >= 100:
+        unlock_achievement(user, AchievementCodes.CREDITOS_100)
     if (
         amount > 0
         and has_request_context()
