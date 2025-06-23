@@ -2,7 +2,7 @@
   <div class="card-body p-2">
     <i class="bi {{ icon }} fs-3"></i>
     <div class="fw-bold">{{ title }}</div>
-    {% if timestamp %}<small class="text-muted">{{ timestamp.strftime('%Y-%m-%d') }}</small>{% endif %}
+    {% if timestamp %}<small class="text-muted">{{ timestamp|timesince }}</small>{% endif %}
   </div>
 </div>
 

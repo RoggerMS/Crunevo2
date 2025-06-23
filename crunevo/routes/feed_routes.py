@@ -243,26 +243,18 @@ def index():
 @feed_bp.route("/trending")
 @activated_required
 def trending():
-    page = request.args.get("page", 1, type=int)
-
-    # Mostrar publicaciones más populares (ordenadas por likes)
-    pagination = Post.query.order_by(Post.likes.desc()).paginate(page=page, per_page=10)
-    posts = pagination.items
-
-    # Cargar usuarios con más créditos y notas destacadas
+    weekly_posts = get_weekly_top_posts(limit=10)
     top_ranked, recent_achievements = get_weekly_ranking()
     top_notes, top_posts, top_users = get_featured_posts()
 
     return render_template(
         "feed/trending.html",
-        posts=posts,
-        pagination=pagination,
+        weekly_posts=weekly_posts,
         top_ranked=top_ranked,
         recent_achievements=recent_achievements,
         top_notes=top_notes,
         top_posts=top_posts,
         top_users=top_users,
-        trending=True,
     )
 
 

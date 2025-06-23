@@ -134,8 +134,14 @@
 
       <div class="col-12">
         <h4>🎖️ Logros e insignias</h4>
+        <div class="mb-3">
+          <a href="{{ url_for('auth.perfil') }}" class="btn btn-outline-primary btn-sm {% if not ach_type %}active{% endif %}">Todos</a>
+          <a href="{{ url_for('auth.perfil', tipo='aportes') }}" class="btn btn-outline-primary btn-sm {% if ach_type == 'aportes' %}active{% endif %}">Aportes</a>
+          <a href="{{ url_for('auth.perfil', tipo='colaboracion') }}" class="btn btn-outline-primary btn-sm {% if ach_type == 'colaboracion' %}active{% endif %}">Colaboración</a>
+          <a href="{{ url_for('auth.perfil', tipo='actividad') }}" class="btn btn-outline-primary btn-sm {% if ach_type == 'actividad' %}active{% endif %}">Actividad</a>
+        </div>
         <div class="row row-cols-2 row-cols-md-3 g-2">
-          {% for a in current_user.achievements %}
+          {% for a in achievements %}
             {% set info = ACHIEVEMENT_DETAILS.get(a.badge_code, {}) %}
             {% set icon = info.icon %}
             {% set title = info.title %}

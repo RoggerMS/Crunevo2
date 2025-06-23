@@ -94,10 +94,26 @@ def perfil():
         db.session.commit()
         flash("Perfil actualizado")
     from crunevo.models import SavedPost, Post
+    from crunevo.constants import ACHIEVEMENT_CATEGORIES
 
     saved = SavedPost.query.filter_by(user_id=current_user.id).all()
     posts = [Post.query.get(sp.post_id) for sp in saved if Post.query.get(sp.post_id)]
-    return render_template("auth/perfil.html", saved_posts=posts)
+
+    ach_type = request.args.get("tipo")
+    achievements = current_user.achievements
+    if ach_type:
+        achievements = [
+            a
+            for a in achievements
+            if ACHIEVEMENT_CATEGORIES.get(a.badge_code) == ach_type
+        ]
+
+    return render_template(
+        "auth/perfil.html",
+        saved_posts=posts,
+        achievements=achievements,
+        ach_type=ach_type,
+    )
 
 
 @auth_bp.route("/user/<int:user_id>")
