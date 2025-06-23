@@ -1,12 +1,60 @@
 {% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
+{% endblock %}
+
 {% block content %}
-{% for item in items %}
-  {% if item.item_type == "apunte" %}
-    {% include 'components/note_card.html' with context %}
-  {% elif item.item_type == "post" %}
-    {% include 'components/post_card.html' with context %}
-  {% elif item.item_type == "question" %}
-    {% include 'components/question_card.html' with context %}
-  {% endif %}
-{% endfor %}
+<div class="row">
+  <div class="col-lg-2 d-none d-lg-block">
+    {% include 'components/sidebar_left_feed.html' %}
+    {% include 'components/feed_sidebar.html' %}
+  </div>
+  <div class="col-lg-7">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <div class="d-flex mb-3">
+          <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
+          <textarea name="content" form="postForm" class="form-control" rows="2" placeholder="¿Qué deseas compartir?" required></textarea>
+        </div>
+        <form id="postForm" method="post" enctype="multipart/form-data">
+          {{ csrf.csrf_field() }}
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="btn-group">
+              <a href="{{ url_for('notes.upload') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-plus"></i> Apunte</a>
+              <label class="btn btn-outline-secondary btn-sm mb-0">
+                <i class="bi bi-image"></i> Imagen
+                <input type="file" name="file" id="postImageInput" accept="image/*,.pdf" class="d-none">
+              </label>
+              <button type="button" class="btn btn-outline-secondary btn-sm" disabled><i class="bi bi-trophy"></i> Logro</button>
+            </div>
+            <button class="btn btn-primary btn-sm" type="submit">Publicar</button>
+          </div>
+          <img id="postImagePreview" class="img-fluid mt-3 rounded d-none" alt="preview">
+        </form>
+      </div>
+    </div>
+    <div class="d-lg-none mb-3">
+      {% include 'components/feed_sidebar.html' %}
+    </div>
+    <div id="feed" class="tw-space-y-4">
+      {% for item in feed_items %}
+        {% if item.type == 'note' %}
+          {% set note = item.data %}
+          {% include 'components/feed_card.html' %}
+        {% elif item.type == 'post' %}
+          {% set post = item.data %}
+          {% include 'components/post_card.html' %}
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% if not feed_items %}
+      <div class="text-center my-5 text-muted">No se encontraron resultados aquí aún.</div>
+    {% endif %}
+  </div>
+  <div class="col-lg-3 d-none d-lg-block">
+    {% include 'components/sidebar_right.html' %}
+  </div>
+</div>
 {% endblock %}
