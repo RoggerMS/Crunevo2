@@ -17,7 +17,7 @@
   <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('ranking.index') if 'ranking.index' in current_app.view_functions else '#' }}" data-bs-toggle="tooltip" title="Ranking">
     <i class="bi bi-bar-chart"></i><span>Ranking</span>
   </a>
-  <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('missions.index') if 'missions.index' in current_app.view_functions else '#' }}" data-bs-toggle="tooltip" title="Misiones">
+  <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('auth.perfil', tab='misiones') }}" data-bs-toggle="tooltip" title="Misiones">
     <i class="bi bi-bullseye"></i><span>Misiones</span>
   </a>
   <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('ia.chat') if 'ia.chat' in current_app.view_functions else '#' }}" data-bs-toggle="tooltip" title="Crubot">

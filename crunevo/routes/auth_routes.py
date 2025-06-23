@@ -77,6 +77,7 @@ def logout():
 @auth_bp.route("/perfil", methods=["GET", "POST"])
 @activated_required
 def perfil():
+    tab = request.args.get("tab")
     if request.method == "POST":
         current_user.about = request.form.get("about")
         file = request.files.get("avatar_file")
@@ -109,11 +110,19 @@ def perfil():
             if ACHIEVEMENT_CATEGORIES.get(a.badge_code) == ach_type
         ]
 
+    missions = None
+    if tab == "misiones":
+        from crunevo.routes.missions_routes import compute_mission_states
+
+        missions = compute_mission_states(current_user)
+
     return render_template(
         "auth/perfil.html",
         saved_posts=posts,
         achievements=achievements,
         ach_type=ach_type,
+        tab=tab,
+        missions=missions,
     )
 
 

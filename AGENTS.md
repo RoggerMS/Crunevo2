@@ -236,3 +236,4 @@
 - Rediseño del feed con barra lateral de iconos, filtros móviles y tarjetas de publicaciones mejoradas (PR feed-redesign-v2).
 - Feed index moved to /feed with new sidebar and post card templates (PR modern-feed).
 - Corregido view_feed para retornar feed_items y sidebar derecho simplificado (PR feed-view-feed-fix).
+- Navbar cleaned removing missions link and verification badge; missions now reside under /perfil with new tab and verification check shown next to usernames (PR profile-missions-verification).
