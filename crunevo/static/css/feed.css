@@ -1,0 +1,23 @@
+.sidebar-left-feed .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+.sidebar-left-feed .nav-link i {
+  width: 1rem;
+}
+#quickFilters {
+  overflow-x: auto;
+  white-space: nowrap;
+  z-index: 0;
+}
+#quickFilters button {
+  flex-shrink: 0;
+}
+[data-bs-theme="dark"] .sidebar-left-feed .nav-link:hover {
+  background-color: #333;
+}
+[data-bs-theme="light"] .sidebar-left-feed .nav-link:hover {
+  background-color: #f8f9fa;
+}

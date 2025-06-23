@@ -1,55 +1,60 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
 
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
+{% endblock %}
+
 {% block content %}
-<div class="tw-rounded-2xl tw-shadow-sm tw-bg-white dark:tw-bg-gray-900 tw-p-4 tw-space-y-4">
-  <input type="text" class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none" placeholder="¿Qué deseas compartir hoy?" readonly>
-  <div class="tw-flex tw-gap-2">
-    <button id="toggleNote" type="button" class="tw-rounded tw-bg-gray-200 dark:tw-bg-gray-700 tw-text-gray-900 dark:tw-text-gray-100 tw-px-4 tw-py-2 tw-transition tw-duration-200 hover:tw-bg-gray-300 dark:hover:tw-bg-gray-600">Subir Apunte</button>
-    <button id="toggleImage" type="button" class="tw-rounded tw-bg-gray-200 dark:tw-bg-gray-700 tw-text-gray-900 dark:tw-text-gray-100 tw-px-4 tw-py-2 tw-transition tw-duration-200 hover:tw-bg-gray-300 dark:hover:tw-bg-gray-600">Compartir Imagen</button>
+<div class="row">
+  <div class="col-lg-2 d-none d-lg-block">
+    {% include 'components/sidebar_left_feed.html' %}
+    {% include 'components/feed_sidebar.html' %}
   </div>
-  <form id="noteForm" method="post" enctype="multipart/form-data" class="tw-space-y-2 tw-hidden">
-    {{ csrf.csrf_field() }}
-    <input type="hidden" name="form_type" value="note">
-    <input type="text" name="title" class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none" placeholder="Título" required>
-    <textarea name="summary" class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none" placeholder="Resumen"></textarea>
-    <input type="text" name="tags" class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none" placeholder="Etiquetas">
-    <input type="file" name="file" class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none">
-    <button type="submit" class="tw-rounded tw-bg-[var(--primary)] tw-text-white tw-px-4 tw-py-2 tw-transition tw-duration-200 hover:tw-bg-[var(--primary)]/80">Publicar</button>
-  </form>
-  <form id="imageForm" method="post" enctype="multipart/form-data" class="tw-space-y-2 tw-hidden">
-    {{ csrf.csrf_field() }}
-    <input type="hidden" name="form_type" value="image">
-    <input type="text" name="title" class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none" placeholder="Descripción">
-    <input type="file" name="image" class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none">
-    <button type="submit" class="tw-rounded tw-bg-[var(--primary)] tw-text-white tw-px-4 tw-py-2 tw-transition tw-duration-200 hover:tw-bg-[var(--primary)]/80">Compartir</button>
-  </form>
-</div>
-
-<div id="quickFilters" class="tw-flex tw-gap-2 tw-overflow-x-auto tw-my-4">
-  <button class="btn btn-primary btn-sm" data-filter="recientes" data-label="🆕 Recientes">🆕 Recientes <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
-  <button class="btn btn-outline-primary btn-sm" data-filter="populares" data-label="📈 Populares">📈 Populares <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
-  <button class="btn btn-outline-primary btn-sm" data-filter="relevantes" data-label="📌 Relevantes">📌 Relevantes <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
-  <button class="btn btn-outline-primary btn-sm" data-filter="apuntes" data-label="🧪 Apuntes">🧪 Apuntes <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
-  <button class="btn btn-outline-primary btn-sm" data-filter="publicaciones" data-label="🗨️ Publicaciones">🗨️ Publicaciones <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
-</div>
-
-<div id="feed" class="tw-mt-6 tw-grid tw-gap-6 md:tw-grid-cols-2">
-  {% for item in feed_items %}
-    {% if item.type == 'note' %}
-      {% set note = item.data %}
-      {% include 'components/feed_card.html' %}
-    {% elif item.type == 'post' %}
-      {% set post = item.data %}
-      {% include 'components/post_card.html' %}
+  <div class="col-lg-7">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <div class="d-flex mb-3">
+          <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
+          <textarea name="content" form="postForm" class="form-control" rows="2" placeholder="¿Qué deseas compartir?" required></textarea>
+        </div>
+        <form id="postForm" method="post" enctype="multipart/form-data">
+          {{ csrf.csrf_field() }}
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="btn-group">
+              <a href="{{ url_for('notes.upload') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-plus"></i> Apunte</a>
+              <label class="btn btn-outline-secondary btn-sm mb-0">
+                <i class="bi bi-image"></i> Imagen
+                <input type="file" name="file" id="postImageInput" accept="image/*,.pdf" class="d-none">
+              </label>
+              <button type="button" class="btn btn-outline-secondary btn-sm" disabled><i class="bi bi-trophy"></i> Logro</button>
+            </div>
+            <button class="btn btn-primary btn-sm" type="submit">Publicar</button>
+          </div>
+        <img id="postImagePreview" class="img-fluid mt-3 rounded d-none" alt="preview">
+        </form>
+      </div>
+    </div>
+    <div class="d-lg-none mb-3">
+      {% include 'components/feed_sidebar.html' %}
+    </div>
+    <div id="feed" class="tw-space-y-4">
+      {% for item in feed_items %}
+        {% if item.type == 'note' %}
+          {% set note = item.data %}
+          {% include 'components/feed_card.html' %}
+        {% elif item.type == 'post' %}
+          {% set post = item.data %}
+          {% include 'components/post_card.html' %}
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% if not feed_items %}
+      <div class="text-center my-5 text-muted">No se encontraron resultados aquí aún.</div>
     {% endif %}
-  {% endfor %}
-</div>
-
-{% if not feed_items %}
-  <div class="tw-text-center tw-my-10">
-    <i class="bi bi-rss tw-text-4xl tw-text-gray-400"></i>
-    <p>No se encontraron resultados aquí aún.</p>
   </div>
-{% endif %}
+  <div class="col-lg-3 d-none d-lg-block">
+    {% include 'components/sidebar_right.html' %}
+  </div>
+</div>
 {% endblock %}

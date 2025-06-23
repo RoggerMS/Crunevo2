@@ -201,3 +201,19 @@ function initQuickFilters() {
   });
 }
 
+function initImagePreview() {
+  const input = document.getElementById('postImageInput');
+  const preview = document.getElementById('postImagePreview');
+  if (!input || !preview) return;
+  input.addEventListener('change', () => {
+    const file = input.files[0];
+    if (file) {
+      preview.src = URL.createObjectURL(file);
+      preview.classList.remove('d-none');
+    } else {
+      preview.classList.add('d-none');
+      preview.removeAttribute('src');
+    }
+  });
+}
+

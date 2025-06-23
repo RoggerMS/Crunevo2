@@ -104,6 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initQuickFilters === 'function') {
     initQuickFilters();
   }
+  if (typeof initImagePreview === 'function') {
+    initImagePreview();
+  }
 
   // simple AJAX search suggestions
   const input = document.getElementById('globalSearchInput');
