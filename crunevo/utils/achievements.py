@@ -1,4 +1,4 @@
-from crunevo.models import UserAchievement
+from crunevo.models import UserAchievement, Achievement
 from crunevo.extensions import db
 from crunevo.utils.feed import create_feed_item_for_all
 
@@ -11,7 +11,12 @@ def unlock_achievement(user, badge_code):
     if exists:
         return
 
-    new = UserAchievement(user_id=user.id, badge_code=badge_code)
+    achievement = Achievement.query.filter_by(code=badge_code).first()
+    new = UserAchievement(
+        user_id=user.id,
+        badge_code=badge_code,
+        achievement_id=achievement.id if achievement else None,
+    )
     db.session.add(new)
     db.session.commit()
     meta_dict = {

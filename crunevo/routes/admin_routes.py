@@ -26,11 +26,13 @@ from crunevo.models import (
     Report,
     Note,
     Credit,
+    Achievement,
     Comment,
     ProductLog,
     AdminNotification,
 )
 from crunevo.utils.ranking import calculate_weekly_ranking
+from crunevo.utils import unlock_achievement
 from crunevo.utils.audit import record_auth_event
 from crunevo.utils.stats import (
     user_registrations_last_7_days,
@@ -319,6 +321,35 @@ def manage_credits():
         .all()
     )
     return render_template("admin/manage_credits.html", credits=credits)
+
+
+@admin_bp.route("/achievements", methods=["GET", "POST"])
+@activated_required
+def manage_achievements():
+    if request.method == "POST":
+        code = request.form.get("code")
+        title = request.form.get("title")
+        description = request.form.get("description")
+        icon = request.form.get("icon")
+        ach = Achievement(code=code, title=title, description=description, icon=icon)
+        db.session.add(ach)
+        db.session.commit()
+        flash("Logro creado")
+        return redirect(url_for("admin.manage_achievements"))
+    achievements = Achievement.query.all()
+    return render_template("admin/manage_achievements.html", achievements=achievements)
+
+
+@admin_bp.route("/achievements/assign", methods=["POST"])
+@activated_required
+def assign_achievement():
+    user_id = request.form.get("user_id", type=int)
+    ach_id = request.form.get("achievement_id", type=int)
+    user = User.query.get_or_404(user_id)
+    ach = Achievement.query.get_or_404(ach_id)
+    unlock_achievement(user, ach.code)
+    flash("Logro asignado")
+    return redirect(url_for("admin.manage_achievements"))
 
 
 @admin_bp.route("/users/export")

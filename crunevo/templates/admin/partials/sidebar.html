@@ -24,7 +24,9 @@
 
   <span class="text-muted fw-bold small mt-4 mb-2">🏅 Comunidad</span>
   <a class="nav-link disabled"><i class="ti ti-check me-2"></i> Verificaciones</a>
-  <a class="nav-link disabled"><i class="ti ti-award me-2"></i> Logros</a>
+  <a class="nav-link {% if request.endpoint == 'admin.manage_achievements' %}active{% endif %}" href="{{ url_for('admin.manage_achievements') }}">
+    <i class="ti ti-award me-2"></i> Logros
+  </a>
   <a class="nav-link disabled"><i class="ti ti-calendar-event me-2"></i> Eventos</a>
 
   <span class="text-muted fw-bold small mt-4 mb-2">⚙️ Sistema</span>

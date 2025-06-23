@@ -225,3 +225,4 @@
 
 - Corrigio plantillas de tienda para usar `product.price` en lugar de `price_soles` evitando UndefinedError (PR store-price-fix).
 - Se movió la sección "Últimos apuntes" del feed a /apuntes y se mejoró el sidebar con botones. Las tarjetas de apuntes cargan vista previa PDF usando PDF.js. Productos de la tienda muestran "Desde S/ 0", badge de categoría y botón de compartir (PR feed-store-pdf-preview).
+- Implementado sistema completo de ranking y logros con página /ranking, asignación automática y panel admin (PR achievements-ranking-v1).
