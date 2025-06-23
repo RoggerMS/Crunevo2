@@ -219,3 +219,4 @@
 - Added quick filter sidebar on feed, PDF preview on upload form, chat messages with timestamps and notifications on comments/messages (PR feed-sidebar-chat-preview).
 - Sidebar derecho unificado: apuntes, logros y ranking en una sola card; se eliminó bloque duplicado de logros en el feed (PR sidebar-right-unify).
 - Removed mobile duplicate notes/achievements block from feed (PR feed-mobile-cleanup).
+- Added weekly missions feature with models, routes, template and navbar link (PR missions-basic).
