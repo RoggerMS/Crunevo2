@@ -24,7 +24,7 @@ def create_app():
     @app.context_processor
     def inject_globals():
         from .constants import ACHIEVEMENT_DETAILS
-        from .models import Note
+        from .models import Note, Notification
 
         latest_sidebar_notes = (
             Note.query.order_by(Note.created_at.desc()).limit(3).all()
@@ -36,6 +36,7 @@ def create_app():
             "PUBLIC_BASE_URL": app.config.get("PUBLIC_BASE_URL"),
             "ACHIEVEMENT_DETAILS": ACHIEVEMENT_DETAILS,
             "SIDEBAR_LATEST_NOTES": latest_sidebar_notes,
+            "Notification": Notification,
         }
 
     from .utils.helpers import timesince

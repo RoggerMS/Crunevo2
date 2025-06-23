@@ -227,3 +227,4 @@
 - Se movió la sección "Últimos apuntes" del feed a /apuntes y se mejoró el sidebar con botones. Las tarjetas de apuntes cargan vista previa PDF usando PDF.js. Productos de la tienda muestran "Desde S/ 0", badge de categoría y botón de compartir (PR feed-store-pdf-preview).
 - Implementado sistema completo de ranking y logros con página /ranking, asignación automática y panel admin (PR achievements-ranking-v1).
 - Reestructurado el feed con sección de apuntes en la barra lateral, logros con iconos y /trending mostrando publicaciones destacadas de la semana (PR feed-restructure-notes).
+- Añadido dropdown de notificaciones con actualización AJAX y botón "Marcar todo como leído" (PR dynamic-notifications).
