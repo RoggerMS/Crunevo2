@@ -26,6 +26,14 @@
   </form>
 </div>
 
+<div id="quickFilters" class="tw-flex tw-gap-2 tw-overflow-x-auto tw-my-4">
+  <button class="btn btn-primary btn-sm" data-filter="recientes" data-label="🆕 Recientes">🆕 Recientes <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
+  <button class="btn btn-outline-primary btn-sm" data-filter="populares" data-label="📈 Populares">📈 Populares <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
+  <button class="btn btn-outline-primary btn-sm" data-filter="relevantes" data-label="📌 Relevantes">📌 Relevantes <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
+  <button class="btn btn-outline-primary btn-sm" data-filter="apuntes" data-label="🧪 Apuntes">🧪 Apuntes <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
+  <button class="btn btn-outline-primary btn-sm" data-filter="publicaciones" data-label="🗨️ Publicaciones">🗨️ Publicaciones <span class="badge bg-light text-dark ms-1 count tw-hidden"></span></button>
+</div>
+
 <div id="feed" class="tw-mt-6 tw-grid tw-gap-6 md:tw-grid-cols-2">
   {% for item in feed_items %}
     {% if item.type == 'note' %}

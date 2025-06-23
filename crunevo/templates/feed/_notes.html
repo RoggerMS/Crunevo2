@@ -1,0 +1,5 @@
+{% for note in notes %}
+  {% include 'components/note_card.html' %}
+{% else %}
+  <p class="tw-text-center tw-text-muted">No se encontraron apuntes.</p>
+{% endfor %}
