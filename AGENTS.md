@@ -230,3 +230,4 @@
 - Añadido dropdown de notificaciones con actualización AJAX y botón "Marcar todo como leído" (PR dynamic-notifications).
 - Mejora de subida de apuntes: admite imágenes, vista previa y spinner en el botón (PR notes-upload-preview).
 - Mejorados filtros rápidos del feed con botones toggle y carga AJAX (PR feed-toggle-filters)
+- Added ChatCrunevo page using OpenRouter API, shortcut /notes/populares and share link button on note detail (PR ia-chat-popular-notes).
