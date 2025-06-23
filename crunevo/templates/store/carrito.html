@@ -32,7 +32,7 @@
                 </div>
               </div>
             </td>
-            <td class="text-end">S/ {{ '%.2f'|format(item.product.price_soles or 0) }}</td>
+              <td class="text-end">S/ {{ '%.2f'|format(item.product.price or 0) }}</td>
             <td class="text-end">{{ item.product.price_credits or '—' }}</td>
             <td class="text-end">
               <a href="{{ url_for('store.remove_item', product_id=item.product.id) }}" class="btn btn-sm btn-outline-danger">
@@ -40,7 +40,7 @@
               </a>
             </td>
           </tr>
-          {% set total_soles = total_soles + (item.product.price_soles or 0) %}
+            {% set total_soles = total_soles + (item.product.price or 0) %}
           {% set total_credits = total_credits + (item.product.price_credits or 0) %}
           {% endfor %}
         </tbody>
