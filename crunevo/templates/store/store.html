@@ -94,12 +94,12 @@
                       <small class="text-muted">{{ '%.1f'|format(r) }}</small>
                     </div>
                     <p class="card-text small text-muted mb-1">{{ product.description }}</p>
-                    {% if product.price_soles is not none %}
+                    {% if product.price is not none %}
                       <p class="mb-1 text-primary fw-bold">
-                        {% if product.price_soles == 0 %}
+                        {% if product.price == 0 %}
                           S/ 0
                         {% else %}
-                          S/ {{ '%.2f' | format(product.price_soles) }}
+                          S/ {{ '%.2f' | format(product.price) }}
                         {% endif %}
                       </p>
                     {% endif %}

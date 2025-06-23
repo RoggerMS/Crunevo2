@@ -21,8 +21,8 @@
         </form>
       </h1>
       <p class="text-muted">{{ product.description or 'Sin descripción detallada.' }}</p>
-      {% if product.price_soles %}
-        <p class="h5"><strong class="text-primary">S/ {{ '%.2f' | format(product.price_soles) }}</strong></p>
+      {% if product.price %}
+        <p class="h5"><strong class="text-primary">S/ {{ '%.2f' | format(product.price) }}</strong></p>
       {% endif %}
       {% if product.price_credits %}
         <p class="h5"><strong class="text-warning">{{ product.price_credits }} créditos</strong></p>
