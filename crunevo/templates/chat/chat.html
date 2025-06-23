@@ -1,50 +1,7 @@
 {% extends 'base.html' %}
-{% import 'components/csrf.html' as csrf %}
 {% block content %}
-<h2 class="mb-3">Chat</h2>
-<div class="row">
-  <div class="col-lg-4 mb-3">
-    <ul class="list-group" id="userList">
-      {% for u in users %}
-      <li class="list-group-item" data-user="{{ u.id }}">{{ u.username }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-  <div class="col-lg-8">
-    <div id="chatBox" class="border rounded p-2 mb-2 chat-container bg-light dark:tw-bg-gray-800"></div>
-    <form id="chatForm" class="tw-space-y-2">
-      {{ csrf.csrf_field() }}
-      <input type="hidden" name="receiver_id" id="receiver_id">
-      <div class="tw-flex tw-gap-2">
-        <input type="text" name="content" class="tw-rounded tw-border tw-border-gray-300 dark:tw-border-gray-700 tw-w-full tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-[var(--primary)] focus:tw-outline-none" placeholder="Mensaje">
-        <button class="tw-rounded tw-bg-[var(--primary)] tw-text-white tw-px-4 tw-py-2 tw-transition tw-duration-200 hover:tw-bg-[var(--primary)]/80" type="submit">Enviar</button>
-      </div>
-    </form>
-  </div>
+<div class="container my-5">
+  <h2 class="mb-3"><i class="bi bi-chat-dots me-2"></i>Chat en construcción</h2>
+  <p>Estamos trabajando en el chat global educativo. Pronto podrás comunicarte en tiempo real con otros usuarios.</p>
 </div>
-<script>
-  document.querySelectorAll('#userList li').forEach(li => {
-    li.addEventListener('click', () => {
-      document.querySelectorAll('#userList li').forEach(el => el.classList.remove('active'));
-      li.classList.add('active');
-      document.getElementById('receiver_id').value = li.dataset.user;
-      document.getElementById('chatBox').innerHTML = '';
-    });
-  });
-  document.getElementById('chatForm').addEventListener('submit', e=>{
-    e.preventDefault();
-    csrfFetch('{{ url_for('chat.send_message') }}', {
-      method:'POST',
-      body:new FormData(e.target)
-    }).then(r => r.json()).then(data => {
-      const box = document.getElementById('chatBox');
-      const div = document.createElement('div');
-      div.className = 'message sent';
-      div.innerHTML = `<div>${e.target.content.value}</div><small class="text-muted d-block text-end">${data.timestamp}</small>`;
-      box.appendChild(div);
-      box.scrollTop = box.scrollHeight;
-      e.target.content.value = '';
-    });
-  });
-</script>
 {% endblock %}
