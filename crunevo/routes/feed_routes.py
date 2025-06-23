@@ -180,14 +180,14 @@ def edu_feed():
     )
 
 
-@feed_bp.route("/", methods=["GET", "POST"])
+@feed_bp.route("/", methods=["GET", "POST"], endpoint="view_feed")
 @activated_required
-def feed_home():
+def view_feed():
     if request.method == "POST":
         content = request.form.get("content", "").strip()
         if not content:
             flash("Debes escribir algo", "danger")
-            return redirect(url_for("feed.feed_home"))
+            return redirect(url_for("feed.view_feed"))
 
         file = request.files.get("file")
         file_url = None
@@ -207,37 +207,43 @@ def feed_home():
             except Exception:
                 current_app.logger.exception("Error al subir archivo")
                 flash("Ocurrió un problema al subir el archivo", "danger")
-                return redirect(url_for("feed.feed_home"))
+                return redirect(url_for("feed.view_feed"))
 
         post = Post(content=content, file_url=file_url, author=current_user)
         db.session.add(post)
         db.session.commit()
         create_feed_item_for_all("post", post.id)
         flash("Publicación creada")
-        return redirect(url_for("feed.feed_home"))
+        return redirect(url_for("feed.view_feed"))
+        return redirect(url_for("feed.view_feed"))
 
-    page = request.args.get("page", 1, type=int)
-    pagination = Post.query.order_by(Post.created_at.desc()).paginate(
-        page=page, per_page=10
+    feed_items_raw = (
+        FeedItem.query.filter_by(owner_id=current_user.id)
+        .order_by(FeedItem.created_at.desc())
+        .limit(20)
+        .all()
     )
-    posts = pagination.items
-    top_ranked, recent_achievements = get_weekly_ranking()
-    latest_notes = Note.query.order_by(Note.created_at.desc()).limit(5).all()
-    top_notes, top_posts, top_users = get_featured_posts()
-    weekly_top_posts = get_weekly_top_posts()
-    return render_template(
-        "feed/index.html",
-        posts=posts,
-        pagination=pagination,
-        top_ranked=top_ranked,
-        recent_achievements=recent_achievements,
-        latest_notes=latest_notes,
-        top_notes=top_notes,
-        top_posts=top_posts,
-        weekly_top_posts=weekly_top_posts,
-        top_users=top_users,
-        news=[],
-    )
+    feed_items = []
+    for item in feed_items_raw:
+        if item.item_type == "apunte":
+            note = Note.query.get(item.ref_id)
+            if note:
+                feed_items.append({"type": "note", "data": note})
+        elif item.item_type == "post":
+            post = Post.query.get(item.ref_id)
+            if post:
+                feed_items.append({"type": "post", "data": post})
+
+    return render_template("feed/index.html", feed_items=feed_items)
+
+
+# Alias route for backwards compatibility
+feed_bp.add_url_rule(
+    "/", endpoint="feed_home", view_func=view_feed, methods=["GET", "POST"]
+)
+
+# Expose alias for imports
+feed_home = view_feed
 
 
 @feed_bp.route("/trending")
