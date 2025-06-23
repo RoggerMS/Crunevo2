@@ -151,3 +151,28 @@ def test_url_for_view_post(app):
     with app.app_context():
         with app.test_request_context():
             assert url_for("feed.view_post", post_id=42) == "/post/42"
+
+
+def test_eliminar_post_authorized(client, db_session, test_user):
+    post = Post(content="del", author=test_user)
+    db_session.add(post)
+    db_session.commit()
+    create_feed_item_for_all("post", post.id)
+
+    login(client, test_user.username, "secret")
+    resp = client.post(f"/feed/post/eliminar/{post.id}")
+    assert resp.status_code == 302
+    assert Post.query.get(post.id) is None
+    assert not any(i.get("ref_id") == post.id for i in feed_cache.fetch(test_user.id))
+
+
+def test_eliminar_post_forbidden(client, db_session, test_user, another_user):
+    post = Post(content="del", author=test_user)
+    db_session.add(post)
+    db_session.commit()
+    create_feed_item_for_all("post", post.id)
+
+    login(client, another_user.username, "secret")
+    resp = client.post(f"/feed/post/eliminar/{post.id}")
+    assert resp.status_code == 403
+    assert Post.query.get(post.id) is not None

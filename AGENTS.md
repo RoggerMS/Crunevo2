@@ -242,3 +242,4 @@
 
 - Verificada ruta view_feed y plantillas para usar solo feed_items sin apuntes extra (QA feed-view-feed-admin-check).
 - Filtrado de "apuntes" en FeedItem: el feed y la API ahora omiten notas antiguas incluso para administradores (PR feed-skip-notes).
+- Se añadió opción para eliminar publicaciones propias en el feed, removiendo FeedItem y cache (PR post-delete).

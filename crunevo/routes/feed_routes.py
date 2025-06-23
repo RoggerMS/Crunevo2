@@ -10,6 +10,7 @@ from flask import (
     url_for,
     flash,
     current_app,
+    abort,
 )
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required
@@ -34,7 +35,11 @@ from crunevo.utils import (
 from crunevo.utils.credits import add_credit, spend_credit
 from crunevo.constants import CreditReasons, AchievementCodes
 import redis
-from crunevo.cache.feed_cache import fetch as cache_fetch, push_items as cache_push
+from crunevo.cache.feed_cache import (
+    fetch as cache_fetch,
+    push_items as cache_push,
+    remove_item,
+)
 
 feed_bp = Blueprint("feed", __name__, url_prefix="/feed")
 csrf.exempt(feed_bp)
@@ -384,6 +389,27 @@ def donate_post(post_id):
     except ValueError:
         return jsonify({"error": "Créditos insuficientes"}), 400
     return jsonify({"success": True})
+
+
+@feed_bp.route("/post/eliminar/<int:post_id>", methods=["POST"])
+@activated_required
+def eliminar_post(post_id):
+    """Delete a post and related feed items."""
+    post = Post.query.get_or_404(post_id)
+    if post.author_id != current_user.id:
+        abort(403)
+    feed_items = FeedItem.query.filter_by(item_type="post", ref_id=post.id).all()
+    owner_ids = [fi.owner_id for fi in feed_items]
+    FeedItem.query.filter_by(item_type="post", ref_id=post.id).delete()
+    db.session.delete(post)
+    db.session.commit()
+    for uid in owner_ids:
+        try:
+            remove_item(uid, "post", post.id)
+        except Exception:
+            pass
+    flash("Publicación eliminada correctamente", "success")
+    return redirect(url_for("feed.view_feed"))
 
 
 @feed_bp.route("/api/chat", methods=["POST"])
