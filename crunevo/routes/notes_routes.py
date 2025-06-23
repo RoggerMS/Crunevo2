@@ -30,6 +30,12 @@ def popular_notes():
     return redirect(url_for("notes.list_notes", filter="vistos"))
 
 
+@notes_bp.route("/tag/<string:tag>")
+@activated_required
+def notes_by_tag(tag):
+    return redirect(url_for("notes.list_notes", tag=tag))
+
+
 @notes_bp.route("/")
 @activated_required
 def list_notes():
@@ -42,6 +48,8 @@ def list_notes():
 
     if filter_opt == "vistos":
         query = query.order_by(Note.views.desc())
+    elif filter_opt == "gustados":
+        query = query.order_by(Note.likes.desc())
     else:  # recientes por defecto
         query = query.order_by(Note.created_at.desc())
 
@@ -79,6 +87,9 @@ def search_notes():
                 "title": n.title,
                 "description": n.description,
                 "tags": n.tags,
+                "filename": n.filename,
+                "views": n.views,
+                "likes": n.likes,
             }
             for n in results
         ]

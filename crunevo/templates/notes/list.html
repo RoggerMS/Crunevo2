@@ -7,14 +7,14 @@
   </div>
   <!-- Contenido central -->
   <div class="col-lg-7 col-md-12">
-    <h2>Apuntes</h2>
-    <h5 class="text-muted">📚 Últimos apuntes</h5>
-    <div class="d-flex justify-content-center gap-2 mb-3">
+    <h2 class="mb-3">Apuntes</h2>
+    <div class="d-flex flex-wrap gap-2 mb-3 justify-content-center">
       <a href="{{ url_for('notes.list_notes', filter='recientes', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'recientes' %}active{% endif %}">📅 Recientes</a>
       <a href="{{ url_for('notes.list_notes', filter='vistos', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'vistos' %}active{% endif %}">🔥 Más vistos</a>
+      <a href="{{ url_for('notes.list_notes', filter='gustados', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'gustados' %}active{% endif %}">👍 Más gustados</a>
       <div class="dropdown">
         <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-          {% if selected_tag %}{{ selected_tag }}{% else %}🎓 Categorías{% endif %}
+          {% if selected_tag %}{{ selected_tag }}{% else %}🏷️ Etiquetas{% endif %}
         </button>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" href="{{ url_for('notes.list_notes', filter=filter) }}">Todas</a></li>
@@ -29,25 +29,13 @@
         <input type="text" id="noteSearch" class="form-control" placeholder="Buscar...">
       </div>
       <div class="col-auto">
-        <a href="{{ url_for('notes.upload_note') }}" class="btn btn-success">Subir nuevo</a>
+        <a href="{{ url_for('notes.upload_note') }}" class="btn btn-success">Subir apunte</a>
       </div>
     </div>
-    <div class="row row-cols-1 row-cols-md-2 g-3" id="notesList">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3" id="notesList">
 {% for note in notes %}
   <div class="col">
-    <div class="card h-100 shadow-sm">
-      <div class="card-body d-flex flex-column">
-        <div class="text-center text-danger fs-2 mb-2"><i class="bi bi-file-earmark-pdf-fill"></i></div>
-        <h6 class="card-title">{{ note.title }}</h6>
-        <p class="card-text flex-grow-1">{{ note.description or '' }}</p>
-        <div class="mb-2">
-          {% for tag in (note.tags or '').split(',') %}
-          <span class="badge bg-secondary me-1">{{ tag }}</span>
-          {% endfor %}
-        </div>
-        <a href="{{ url_for('notes.view_note', id=note.id) }}" class="btn btn-primary mt-auto">Ver</a>
-      </div>
-    </div>
+    {% include 'components/note_card.html' %}
   </div>
 {% endfor %}
 </div>
@@ -68,23 +56,19 @@ function createNoteCard(n) {
   const col = document.createElement('div');
   col.className = 'col';
 
-  const card = document.createElement('div');
+  const card = document.createElement('article');
   card.className = 'card h-100 shadow-sm';
+
+  const canvas = document.createElement('canvas');
+  canvas.className = 'pdf-thumb card-img-top';
+  canvas.dataset.pdf = n.filename;
 
   const body = document.createElement('div');
   body.className = 'card-body d-flex flex-column';
 
-  const icon = document.createElement('div');
-  icon.className = 'text-center text-danger fs-2 mb-2';
-  icon.innerHTML = '<i class="bi bi-file-earmark-pdf-fill"></i>';
-
   const title = document.createElement('h6');
   title.className = 'card-title';
   title.textContent = n.title;
-
-  const desc = document.createElement('p');
-  desc.className = 'card-text flex-grow-1';
-  desc.textContent = n.description || '';
 
   const tagDiv = document.createElement('div');
   tagDiv.className = 'mb-2';
@@ -97,25 +81,32 @@ function createNoteCard(n) {
     tagDiv.appendChild(span);
   });
 
-  const link = document.createElement('a');
-  link.className = 'btn btn-primary mt-auto';
-  link.href = `/notes/${n.id}`;
-  link.textContent = 'Ver';
+  const footer = document.createElement('div');
+  footer.className = 'mt-auto d-flex justify-content-between align-items-center';
 
-  body.appendChild(icon);
+  const link = document.createElement('a');
+  link.className = 'btn btn-primary btn-sm';
+  link.href = `/notes/${n.id}`;
+  link.textContent = 'Ver detalle';
+
+  const info = document.createElement('div');
+  info.className = 'text-muted small';
+  info.innerHTML = `<i class="bi bi-eye"></i> ${n.views || 0}` + (n.likes ? ` &nbsp;<i class="bi bi-hand-thumbs-up"></i> ${n.likes}` : '');
+
+  footer.appendChild(link);
+  footer.appendChild(info);
+
   body.appendChild(title);
-  body.appendChild(desc);
   body.appendChild(tagDiv);
-  body.appendChild(link);
+  body.appendChild(footer);
+
+  card.appendChild(canvas);
   card.appendChild(body);
   col.appendChild(card);
   return col;
 }
 </script>
   </div> <!-- Fin contenido central -->
-  <div class="col-lg-3 d-none d-lg-block">
-    {% include 'components/sidebar_right.html' %}
-  </div>
 </div>
 {% endblock %}
 
