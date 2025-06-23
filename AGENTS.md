@@ -217,3 +217,4 @@
 - Added migration for notifications table to fix runtime errors (QA notifications-migration).
 
 - Added quick filter sidebar on feed, PDF preview on upload form, chat messages with timestamps and notifications on comments/messages (PR feed-sidebar-chat-preview).
+- Sidebar derecho unificado: apuntes, logros y ranking en una sola card; se eliminó bloque duplicado de logros en el feed (PR sidebar-right-unify).
