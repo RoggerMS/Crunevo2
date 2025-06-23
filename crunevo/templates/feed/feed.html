@@ -158,16 +158,6 @@
       </ul>
     </div>
 
-    <div class="card">
-      <div class="card-header bg-info text-white">🧩 Logros recientes</div>
-      <ul class="list-group list-group-flush">
-        {% for username, badge_code, timestamp in recent_achievements %}
-        <li class="list-group-item">
-          <strong>{{ username }}</strong>: {{ badge_code }} <span class="text-muted">{{ timestamp.strftime('%Y-%m-%d') }}</span>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
   </div> <!-- Fin row de publicaciones -->
   </div> <!-- cierre feed-section publicaciones -->
 
@@ -184,16 +174,7 @@
         {% endfor %}
       </ul>
     </div>
-    <div class="card">
-      <div class="card-header bg-info text-white">🧩 Logros recientes</div>
-      <ul class="list-group list-group-flush">
-        {% for username, badge_code, timestamp in recent_achievements %}
-        <li class="list-group-item">
-          <strong>{{ username }}</strong>: {{ badge_code }} <span class="text-muted">{{ timestamp.strftime('%Y-%m-%d') }}</span>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
+    {% include 'components/sidebar_right.html' %}
   </div>
 
   <div data-section="apuntes" class="feed-section d-none">

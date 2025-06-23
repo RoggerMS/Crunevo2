@@ -1,33 +1,33 @@
-<div class="sidebar">
-  <div class="mb-4">
-    <h6 class="text-muted">🏆 Ranking semanal</h6>
-    <ul class="list-group small">
-      {% for u in top_ranked or [] %}
-      <li class="list-group-item d-flex justify-content-between align-items-start">
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-body">
+    <h6 class="text-uppercase text-muted mb-3">📚 Últimos apuntes</h6>
+    <ul class="list-group list-group-flush mb-3">
+      {% for n in latest_notes or [] %}
+      <li class="list-group-item px-0">
+        <a href="{{ url_for('notes.view_note', id=n.id) }}">{{ n.title }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+    <hr>
+    <h6 class="text-uppercase text-muted mb-3">🧩 Logros recientes</h6>
+    <ul class="list-group list-group-flush mb-3">
+      {% for username, badge_code, timestamp in recent_achievements or [] %}
+      <li class="list-group-item px-0">
+        <strong>{{ username }}</strong> – {{ badge_code }}
+      </li>
+      {% endfor %}
+    </ul>
+    {% if top_ranked %}
+    <hr>
+    <h6 class="text-uppercase text-muted mb-3">🏆 Ranking semanal</h6>
+    <ul class="list-group list-group-flush">
+      {% for u in top_ranked %}
+      <li class="list-group-item d-flex justify-content-between align-items-start px-0">
         <span>{{ u.username }}</span>
         <span class="badge bg-success">{{ u.credits }}</span>
       </li>
       {% endfor %}
     </ul>
-  </div>
-  <div class="mb-4">
-    <h6 class="text-muted">📚 Últimos apuntes</h6>
-    <ul class="list-group small">
-      {% for n in latest_notes or [] %}
-      <li class="list-group-item">
-        <a href="{{ url_for('notes.view_note', id=n.id) }}">{{ n.title }}</a>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
-  <div class="mb-4">
-    <h6 class="text-muted">🧩 Logros recientes</h6>
-    <ul class="list-group small">
-      {% for username, badge_code, timestamp in recent_achievements or [] %}
-      <li class="list-group-item">
-        <strong>{{ username }}</strong> – {{ badge_code }}
-      </li>
-      {% endfor %}
-    </ul>
+    {% endif %}
   </div>
 </div>
