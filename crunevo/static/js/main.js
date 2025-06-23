@@ -209,6 +209,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  const postInput = document.getElementById('postImageInput');
+  const postPreview = document.getElementById('postImagePreview');
+  if (postInput && postPreview) {
+    postInput.addEventListener('change', () => {
+      const file = postInput.files[0];
+      if (file && file.type.startsWith('image/')) {
+        postPreview.src = URL.createObjectURL(file);
+        postPreview.classList.remove('d-none');
+      } else {
+        postPreview.classList.add('d-none');
+        postPreview.removeAttribute('src');
+      }
+    });
+  }
+
+  const postForm = document.getElementById('postForm');
+  const postBtn = document.getElementById('postSubmitBtn');
+  if (postForm && postBtn) {
+    postForm.addEventListener('submit', () => {
+      postBtn.disabled = true;
+      postBtn.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Publicando...';
+    });
+  }
+
   initNotifications();
 
   // Bootstrap collapse handles the mobile menu
