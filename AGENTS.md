@@ -231,3 +231,4 @@
 - Mejora de subida de apuntes: admite imágenes, vista previa y spinner en el botón (PR notes-upload-preview).
 - Mejorados filtros rápidos del feed con botones toggle y carga AJAX (PR feed-toggle-filters)
 - Added ChatCrunevo page using OpenRouter API, shortcut /notes/populares and share link button on note detail (PR ia-chat-popular-notes).
+- Feed principal limpiado quitando secciones de apuntes, logros y ranking; /notes rediseñado como catálogo con tarjetas de vista previa, filtros por likes y ruta /notes/tag/<tag> (PR notes-catalog-redesign).
