@@ -5,7 +5,7 @@
       <button id="mobileMenuToggle" class="btn btn-link text-white d-md-none" type="button" aria-label="Menú">
         <i class="bi bi-list"></i>
       </button>
-      <a class="navbar-brand ms-2" href="{{ url_for('feed.index') }}">Crunevo</a>
+      <a class="navbar-brand ms-2" href="{{ url_for('feed.feed_home') }}">Crunevo</a>
     </div>
 
     <form class="d-none d-md-flex mx-3 flex-grow-1 position-relative" id="globalSearchForm">
@@ -14,7 +14,7 @@
     </form>
 
     <ul id="navLinks" class="navbar-nav flex-row align-items-center gap-3 d-none d-md-flex">
-      <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.index') }}"><i class="bi bi-house-door"></i></a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.feed_home') }}"><i class="bi bi-house-door"></i></a></li>
       <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.trending') }}"><i class="bi bi-fire"></i></a></li>
       <li class="nav-item"><a class="nav-link" href="{{ url_for('notes.list_notes') }}"><i class="bi bi-journal-text"></i></a></li>
       <li class="nav-item"><a class="nav-link" href="{{ url_for('store.store_index') }}"><i class="bi bi-bag"></i></a></li>

@@ -9,7 +9,7 @@ def admin_required(f):
     @login_required
     def decorated_function(*args, **kwargs):
         if current_user.role not in ("admin", "moderator"):
-            return redirect(url_for("feed.index"))
+            return redirect(url_for("feed.feed_home"))
         return f(*args, **kwargs)
 
     return decorated_function
@@ -20,7 +20,7 @@ def full_admin_required(f):
     @login_required
     def decorated_function(*args, **kwargs):
         if current_user.role != "admin":
-            return redirect(url_for("feed.index"))
+            return redirect(url_for("feed.feed_home"))
         return f(*args, **kwargs)
 
     return decorated_function
@@ -50,7 +50,7 @@ def verified_required(f):
                 "Necesitas verificación de estudiante para descargar apuntes",
                 "warning",
             )
-            return redirect(url_for("feed.index"))
+            return redirect(url_for("feed.feed_home"))
         return f(*args, **kwargs)
 
     return decorated

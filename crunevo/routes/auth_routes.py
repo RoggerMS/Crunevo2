@@ -58,7 +58,7 @@ def login():
                 return redirect(url_for("admin.dashboard"))
             next_page = request.args.get("next")
             if not next_page or urlparse(next_page).netloc != "":
-                next_page = url_for("feed.index")
+                next_page = url_for("feed.feed_home")
             return redirect(next_page)
         record_auth_event(user, "login_fail", extra=json.dumps({"username": username}))
         flash("Credenciales inválidas")

@@ -8,6 +8,6 @@
     {{ csrf.csrf_field() }}
     {{ btn.button('Reenviar correo', type='submit') }}
   </form>
-  {{ btn.button('Volver al inicio', href=url_for('feed.index')) }}
+  {{ btn.button('Volver al inicio', href=url_for('feed.feed_home')) }}
 </div>
 {% endblock %}
