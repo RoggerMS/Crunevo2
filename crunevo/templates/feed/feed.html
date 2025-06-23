@@ -161,21 +161,7 @@
   </div> <!-- Fin row de publicaciones -->
   </div> <!-- cierre feed-section publicaciones -->
 
-  <div class="d-lg-none mt-4">
-    <h5 class="text-center">🏆 Ranking y logros</h5>
-    <div class="card mb-3">
-      <div class="card-header bg-primary text-white">💡 Publicaciones destacadas</div>
-      <ul class="list-group list-group-flush">
-        {% for p in weekly_top_posts %}
-        <li class="list-group-item d-flex justify-content-between align-items-start">
-          <a href="{{ url_for('feed.view_post', post_id=p.id) }}">{{ p.content|truncate(40) }}</a>
-          <span class="badge bg-primary">{{ p.likes or 0 }}</span>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% include 'components/sidebar_right.html' %}
-  </div>
+
 
   <div data-section="apuntes" class="feed-section d-none">
     <h5 class="mb-3">Últimos apuntes</h5>
