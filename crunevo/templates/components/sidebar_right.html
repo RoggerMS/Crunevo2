@@ -1,11 +1,27 @@
 <div class="card shadow-sm border-0 mb-4">
   <div class="card-body">
-  {# sección de últimos apuntes trasladada a /apuntes #}
+    {% if SIDEBAR_LATEST_NOTES %}
+    <h6 class="text-uppercase text-muted mb-3">📚 Últimos apuntes</h6>
+    <ul class="list-group list-group-flush mb-3">
+      {% for note in SIDEBAR_LATEST_NOTES %}
+      <li class="list-group-item px-0 d-flex align-items-center">
+        <canvas class="pdf-thumb me-2" data-pdf="{{ note.filename }}" width="40" height="40"></canvas>
+        <a href="{{ url_for('notes.view_note', id=note.id) }}" class="tw-truncate">{{ note.title }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
     <h6 class="text-uppercase text-muted mb-3">🧩 Logros recientes</h6>
     <ul class="list-group list-group-flush mb-3">
       {% for username, badge_code, timestamp in recent_achievements or [] %}
-      <li class="list-group-item px-0">
-        <strong>{{ username }}</strong> – {{ badge_code }}
+      {% set info = ACHIEVEMENT_DETAILS.get(badge_code, {}) %}
+      <li class="list-group-item px-0 d-flex align-items-center" data-bs-toggle="tooltip" title="{{ info.description }}">
+        <i class="bi {{ info.icon }} me-2"></i>
+        <div>
+          <strong>{{ username }}</strong> – {{ info.title }}<br>
+          <small class="text-muted">{{ timestamp|timesince }}</small>
+        </div>
       </li>
       {% endfor %}
     </ul>

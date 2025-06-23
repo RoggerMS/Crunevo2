@@ -21,3 +21,16 @@ ACHIEVEMENT_DETAILS = {
         "description": "Ayudaste a otro usuario en el foro",
     },
 }
+
+# Mapping of achievement codes to simple categories used for filtering
+ACHIEVEMENT_CATEGORIES = {
+    "primer_apunte": "aportes",
+    "100_descargas": "aportes",
+    "100_likes": "aportes",
+    "100_creditos": "aportes",
+    "donador": "colaboracion",
+    "compartidor": "colaboracion",
+    "tutor_activo": "colaboracion",
+    "conectado_7d": "actividad",
+    "top_3": "actividad",
+}
