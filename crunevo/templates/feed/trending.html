@@ -115,9 +115,10 @@
 {% endblock %}
 
 {% block body_end %}
+{{ super() }}
 <script>
   document.querySelectorAll('[data-trend-tab]').forEach(btn => {
-    btn.addEventListener('click', () => {
+  btn.addEventListener('click', () => {
       const target = btn.dataset.trendTab;
       document.querySelectorAll('.trend-section').forEach(section => {
         section.classList.toggle('d-none', section.dataset.section !== target);
@@ -126,5 +127,10 @@
       btn.classList.add('active');
     });
   });
+</script>
+<script src="{{ url_for('static', filename='pdfjs/pdf.min.js') }}"></script>
+<script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";
+  initPdfPreviews();
 </script>
 {% endblock %}

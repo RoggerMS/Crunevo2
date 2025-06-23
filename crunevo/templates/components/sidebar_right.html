@@ -1,14 +1,6 @@
 <div class="card shadow-sm border-0 mb-4">
   <div class="card-body">
-    <h6 class="text-uppercase text-muted mb-3">📚 Últimos apuntes</h6>
-    <ul class="list-group list-group-flush mb-3">
-      {% for n in latest_notes or [] %}
-      <li class="list-group-item px-0">
-        <a href="{{ url_for('notes.view_note', id=n.id) }}">{{ n.title }}</a>
-      </li>
-      {% endfor %}
-    </ul>
-    <hr>
+  {# sección de últimos apuntes trasladada a /apuntes #}
     <h6 class="text-uppercase text-muted mb-3">🧩 Logros recientes</h6>
     <ul class="list-group list-group-flush mb-3">
       {% for username, badge_code, timestamp in recent_achievements or [] %}

@@ -1,9 +1,7 @@
 <article class="tw-rounded-2xl tw-shadow-sm tw-bg-white dark:tw-bg-gray-900 tw-p-4 tw-space-y-2 mb-6">
-  {% if note.thumbnail_url %}
-    <img src="{{ note.thumbnail_url }}" alt="preview" class="tw-rounded mb-4 tw-w-full">
-  {% else %}
-    <img src="{{ url_for('static', filename='img/placeholder.svg') }}" alt="preview" class="tw-rounded mb-4 tw-w-full">
-  {% endif %}
+  <div class="pdf-thumb-container">
+    <canvas class="pdf-thumb tw-w-full tw-rounded mb-3" data-pdf="{{ note.filename }}"></canvas>
+  </div>
   <h3 class="tw-text-lg tw-font-semibold mb-2">{{ note.title }}</h3>
   <ul class="tw-flex tw-flex-wrap tw-gap-1 tw-text-sm tw-text-gray-500 dark:tw-text-gray-400 mb-4">
     {% for tag in (note.tags or '').split(',') %}
