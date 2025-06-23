@@ -228,3 +228,4 @@
 - Implementado sistema completo de ranking y logros con página /ranking, asignación automática y panel admin (PR achievements-ranking-v1).
 - Reestructurado el feed con sección de apuntes en la barra lateral, logros con iconos y /trending mostrando publicaciones destacadas de la semana (PR feed-restructure-notes).
 - Añadido dropdown de notificaciones con actualización AJAX y botón "Marcar todo como leído" (PR dynamic-notifications).
+- Mejora de subida de apuntes: admite imágenes, vista previa y spinner en el botón (PR notes-upload-preview).
