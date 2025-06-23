@@ -221,3 +221,4 @@
 - Removed mobile duplicate notes/achievements block from feed (PR feed-mobile-cleanup).
 - Added weekly missions feature with models, routes, template and navbar link (PR missions-basic).
 - Chat page now shows an 'En construcción' message and no longer provides messaging UI (PR chat-placeholder).
+- Precios en store.html ahora muestran "S/ 0" cuando el producto es gratuito (PR store-free-price).
