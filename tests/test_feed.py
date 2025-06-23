@@ -1,5 +1,5 @@
 from flask import url_for
-from crunevo.models import Note, FeedItem, Post
+from crunevo.models import FeedItem, Post
 from crunevo.utils.feed import create_feed_item_for_all
 from crunevo.cache import feed_cache
 from crunevo.utils.achievements import unlock_achievement
@@ -11,18 +11,18 @@ def login(client, username, password):
     return client.post("/login", data={"username": username, "password": password})
 
 
-def test_feed_shows_note_for_other_user(client, db_session, test_user, another_user):
-    note = Note(title="Feed note", author=test_user)
-    db_session.add(note)
+def test_feed_shows_post_for_other_user(client, db_session, test_user, another_user):
+    post = Post(content="Feed post", author=test_user)
+    db_session.add(post)
     db_session.commit()
-    create_feed_item_for_all("apunte", note.id)
+    create_feed_item_for_all("post", post.id)
 
     login(client, another_user.username, "secret")
     resp = client.get("/api/feed")
     assert resp.status_code == 200
     data = resp.get_json()[0]
-    assert data["item_type"] == "apunte"
-    assert data["title"] == "Feed note"
+    assert data["item_type"] == "post"
+    assert data["content"] == "Feed post"
 
 
 def test_feed_includes_achievement_event(client, db_session, test_user, another_user):
@@ -85,6 +85,9 @@ def test_feed_cache_hit_after_warmup(fake_redis, client, test_user, monkeypatch)
         def filter_by(self, *a, **k):
             return self
 
+        def filter(self, *a, **k):
+            return self
+
         def order_by(self, *a, **k):
             return self
 
@@ -107,18 +110,18 @@ def test_feed_cache_hit_after_warmup(fake_redis, client, test_user, monkeypatch)
 
 
 def test_feed_ordering(fake_redis, client, db_session, test_user, another_user):
-    note1 = Note(title="A", author=test_user)
-    note2 = Note(title="B", author=test_user)
-    db_session.add_all([note1, note2])
+    post1 = Post(content="A", author=test_user)
+    post2 = Post(content="B", author=test_user)
+    db_session.add_all([post1, post2])
     db_session.commit()
-    create_feed_item_for_all("apunte", note1.id)
-    create_feed_item_for_all("apunte", note2.id)
+    create_feed_item_for_all("post", post1.id)
+    create_feed_item_for_all("post", post2.id)
 
     login(client, another_user.username, "secret")
-    client.post(f"/notes/{note1.id}/like")
+    client.post(f"/feed/like/{post1.id}")
     resp = client.get("/api/feed")
-    titles = [it["title"] for it in resp.get_json() if it["item_type"] == "apunte"]
-    assert titles[0] == "A"
+    contents = [it["content"] for it in resp.get_json() if it["item_type"] == "post"]
+    assert contents == ["B", "A"]
 
 
 def test_view_post(client, db_session, test_user):

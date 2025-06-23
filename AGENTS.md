@@ -239,3 +239,6 @@
 - Navbar cleaned removing missions link and verification badge; missions now reside under /perfil with new tab and verification check shown next to usernames (PR profile-missions-verification).
 - Mejorada subida de imágenes en el feed con vista previa y spinner; filtros rápidos rediseñados y se eliminó HTML obsoleto al final del feed (PR feed-todo-fix).
 - Corregido tamaño del preview de imágenes, se ajustaron las publicadas y se limpiaron restos de HTML en el feed (PR feed-image-preview-fix).
+
+- Verificada ruta view_feed y plantillas para usar solo feed_items sin apuntes extra (QA feed-view-feed-admin-check).
+- Filtrado de "apuntes" en FeedItem: el feed y la API ahora omiten notas antiguas incluso para administradores (PR feed-skip-notes).
