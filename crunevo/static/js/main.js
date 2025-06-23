@@ -203,6 +203,47 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  initNotifications();
+
   // Bootstrap collapse handles the mobile menu
 
 });
+
+let notifCount = 0;
+function initNotifications() {
+  const list = document.getElementById('notifList');
+  const badge = document.getElementById('notifBadge');
+  const markAll = document.getElementById('markAllRead');
+  if (!list || !badge) return;
+
+  function refresh() {
+    fetch('/api/notifications')
+      .then((r) => r.json())
+      .then((items) => {
+        if (items.length > notifCount) {
+          items.slice(0, items.length - notifCount).forEach((n) => {
+            showToast(n.message);
+          });
+        }
+        notifCount = items.length;
+        badge.textContent = notifCount;
+        badge.classList.toggle('tw-hidden', notifCount === 0);
+        list.innerHTML = '';
+        items.forEach((n) => {
+          const li = document.createElement('li');
+          li.innerHTML = `<a class="dropdown-item fw-bold" href="${n.url || '#'}">${n.message}</a>`;
+          list.appendChild(li);
+        });
+      });
+  }
+
+  refresh();
+  setInterval(refresh, 30000);
+
+  if (markAll) {
+    markAll.addEventListener('click', (e) => {
+      e.preventDefault();
+      csrfFetch('/notifications/read_all', { method: 'POST' }).then(refresh);
+    });
+  }
+}

@@ -2,6 +2,11 @@
 {% block content %}
 <div class="container my-4">
   <h3>🔔 Notificaciones</h3>
+  <form method="post" action="{{ url_for('noti.marcar_leidas') }}" class="mb-3">
+    {% import 'components/csrf.html' as csrf %}
+    {{ csrf.csrf_field() }}
+    <button class="btn btn-sm btn-outline-secondary">Marcar todo como leído</button>
+  </form>
   <ul class="list-group">
     {% for n in notificaciones %}
     <li class="list-group-item {% if not n.is_read %}list-group-item-info{% endif %}">

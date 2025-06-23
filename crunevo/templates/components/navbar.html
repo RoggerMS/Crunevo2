@@ -24,13 +24,27 @@
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('auth.perfil') }}"><i class="bi bi-person-circle me-1"></i>Perfil</a></li>
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right me-1"></i>Salir</a></li>
         <li class="nav-item text-white mx-2"><i class="bi bi-coin"></i> {{ current_user.credits }}</li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="{{ url_for('noti.ver_notificaciones') }}">
+        <li class="nav-item dropdown">
+          {% set unread = current_user.notifications.filter_by(is_read=False).count() %}
+          <a class="nav-link text-white position-relative" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-bell"></i>
-            {% if current_user.notifications.filter_by(is_read=False).count() > 0 %}
-              <span class="badge bg-danger">{{ current_user.notifications.filter_by(is_read=False).count() }}</span>
-            {% endif %}
+            <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {% if unread == 0 %}tw-hidden{% endif %}">
+              {{ unread }}
+            </span>
           </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifDropdown" style="min-width:20rem;">
+            <li class="dropdown-header">Notificaciones</li>
+            <div id="notifList">
+              {% for n in current_user.notifications.order_by(Notification.timestamp.desc()).limit(5) %}
+              <li>
+                <a class="dropdown-item {% if not n.is_read %}fw-bold{% endif %}" href="{{ n.url or '#' }}">{{ n.message }}</a>
+              </li>
+              {% endfor %}
+            </div>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-center" href="{{ url_for('noti.ver_notificaciones') }}">Ver todas</a></li>
+            <li><a id="markAllRead" class="dropdown-item text-center" href="#">Marcar todo como leído</a></li>
+          </ul>
         </li>
         {% if current_user.verification_level >= 2 %}
           {% include 'components/edu_badge.html' %}
