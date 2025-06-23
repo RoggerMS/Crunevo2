@@ -220,3 +220,4 @@
 - Sidebar derecho unificado: apuntes, logros y ranking en una sola card; se eliminó bloque duplicado de logros en el feed (PR sidebar-right-unify).
 - Removed mobile duplicate notes/achievements block from feed (PR feed-mobile-cleanup).
 - Added weekly missions feature with models, routes, template and navbar link (PR missions-basic).
+- Chat page now shows an 'En construcción' message and no longer provides messaging UI (PR chat-placeholder).
