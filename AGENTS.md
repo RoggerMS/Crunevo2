@@ -232,3 +232,4 @@
 - Mejorados filtros rápidos del feed con botones toggle y carga AJAX (PR feed-toggle-filters)
 - Added ChatCrunevo page using OpenRouter API, shortcut /notes/populares and share link button on note detail (PR ia-chat-popular-notes).
 - Feed principal limpiado quitando secciones de apuntes, logros y ranking; /notes rediseñado como catálogo con tarjetas de vista previa, filtros por likes y ruta /notes/tag/<tag> (PR notes-catalog-redesign).
+- SEO meta description actualizada y ruta '/' muestra login o feed seg\u00fan autenticaci\u00f3n (PR root-login-seo-fix).
