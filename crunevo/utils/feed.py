@@ -39,14 +39,15 @@ def create_feed_item_for_all(
     if items:
         db.session.add_all(items)
         db.session.commit()
-        for it in items:
-            push_items(
-                it.owner_id,
-                [
-                    {
-                        "score": it.score,
-                        "created_at": it.created_at,
-                        "payload": it.to_dict(),
-                    }
-                ],
-            )
+        if item_type != "apunte":
+            for it in items:
+                push_items(
+                    it.owner_id,
+                    [
+                        {
+                            "score": it.score,
+                            "created_at": it.created_at,
+                            "payload": it.to_dict(),
+                        }
+                    ],
+                )

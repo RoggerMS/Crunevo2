@@ -160,17 +160,18 @@ def edu_feed():
         flash("Publicación creada")
         return redirect(url_for("feed.edu_feed"))
 
-    feed_items_raw = FeedItem.query.order_by(FeedItem.created_at.desc()).limit(20).all()
+    feed_items_raw = (
+        FeedItem.query.filter_by(owner_id=current_user.id)
+        .filter(FeedItem.item_type != "apunte")
+        .order_by(FeedItem.created_at.desc())
+        .limit(20)
+        .all()
+    )
     feed_items = []
     for item in feed_items_raw:
-        if item.item_type == "apunte":
-            note = Note.query.get(item.ref_id)
-            if note:
-                feed_items.append({"type": "note", "data": note})
-        elif item.item_type == "post":
-            post = Post.query.get(item.ref_id)
-            if post:
-                feed_items.append({"type": "post", "data": post})
+        post = Post.query.get(item.ref_id)
+        if post:
+            feed_items.append({"type": "post", "data": post})
 
     return render_template(
         "feed/list.html",
@@ -219,17 +220,14 @@ def view_feed():
 
     feed_items_raw = (
         FeedItem.query.filter_by(owner_id=current_user.id)
+        .filter(FeedItem.item_type != "apunte")
         .order_by(FeedItem.created_at.desc())
         .limit(20)
         .all()
     )
     feed_items = []
     for item in feed_items_raw:
-        if item.item_type == "apunte":
-            note = Note.query.get(item.ref_id)
-            if note:
-                feed_items.append({"type": "note", "data": note})
-        elif item.item_type == "post":
+        if item.item_type == "post":
             post = Post.query.get(item.ref_id)
             if post:
                 feed_items.append({"type": "post", "data": post})
@@ -410,12 +408,17 @@ def api_feed():
     start = (page - 1) * 10
     stop = start + 9
     try:
-        items = cache_fetch(current_user.id, start, stop)
+        items = [
+            i
+            for i in cache_fetch(current_user.id, start, stop)
+            if i.get("item_type") != "apunte"
+        ]
     except redis.RedisError:
         items = []
     if not items:
         q = (
             FeedItem.query.filter_by(owner_id=current_user.id)
+            .filter(FeedItem.item_type != "apunte")
             .order_by(FeedItem.score.desc(), FeedItem.created_at.desc())
             .offset(start)
             .limit(10)
