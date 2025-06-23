@@ -1,4 +1,5 @@
 from flask import Flask, request, redirect, url_for, flash
+from flask_login import current_user
 import logging
 from logging.handlers import RotatingFileHandler
 import os
@@ -59,14 +60,14 @@ def create_app():
             force_https=True,
             strict_transport_security=True,
         )
-    login_manager.login_view = "onboarding.register"
+    login_manager.login_view = "auth.login"
 
     migrate.init_app(app, db)
 
     from .routes.onboarding_routes import bp as onboarding_bp
-    from .routes.auth_routes import auth_bp
+    from .routes.auth_routes import auth_bp, login as login_view
     from .routes.notes_routes import notes_bp
-    from .routes.feed_routes import feed_bp
+    from .routes.feed_routes import feed_bp, index as feed_index
     from .routes.store_routes import store_bp
     from .routes.chat_routes import chat_bp
     from .routes.ia_routes import ia_bp
@@ -78,6 +79,12 @@ def create_app():
     from .routes.errors import errors_bp
     from .routes.missions_routes import missions_bp
     from .routes.health_routes import health_bp
+
+    @app.route("/")
+    def home_redirect():
+        if current_user.is_authenticated:
+            return feed_index()
+        return login_view()
 
     is_admin = os.environ.get("ADMIN_INSTANCE") == "1"
     testing_env = os.environ.get("PYTEST_CURRENT_TEST") is not None
