@@ -28,6 +28,29 @@ function showToast(message, options = {}) {
   new bootstrap.Toast(div).show();
 }
 
+function initPdfPreviews() {
+  if (typeof pdfjsLib === 'undefined') return;
+  document.querySelectorAll('canvas.pdf-thumb').forEach((canvas) => {
+    const url = canvas.dataset.pdf;
+    if (!url) return;
+    pdfjsLib
+      .getDocument(url)
+      .promise.then((pdf) => pdf.getPage(1))
+      .then((page) => {
+        const viewport = page.getViewport({ scale: 0.5 });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        page.render({ canvasContext: canvas.getContext('2d'), viewport });
+      })
+      .catch(() => {
+        const div = document.createElement('div');
+        div.className = 'text-center text-muted small';
+        div.textContent = 'Vista previa no disponible';
+        canvas.replaceWith(div);
+      });
+  });
+}
+
 
 
 function updateThemeIcons() {
@@ -58,6 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.toast').forEach((t) => {
     new bootstrap.Toast(t).show();
   });
+
+  initPdfPreviews();
 
   // load feed on feed page
   if (typeof loadFeed === 'function' && document.getElementById('feed')) {

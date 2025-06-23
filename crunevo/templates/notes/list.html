@@ -8,6 +8,7 @@
   <!-- Contenido central -->
   <div class="col-lg-7 col-md-12">
     <h2>Apuntes</h2>
+    <h5 class="text-muted">📚 Últimos apuntes</h5>
     <div class="d-flex justify-content-center gap-2 mb-3">
       <a href="{{ url_for('notes.list_notes', filter='recientes', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'recientes' %}active{% endif %}">📅 Recientes</a>
       <a href="{{ url_for('notes.list_notes', filter='vistos', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'vistos' %}active{% endif %}">🔥 Más vistos</a>
@@ -116,4 +117,13 @@ function createNoteCard(n) {
     {% include 'components/sidebar_right.html' %}
   </div>
 </div>
+{% endblock %}
+
+{% block body_end %}
+{{ super() }}
+<script src="{{ url_for('static', filename='pdfjs/pdf.min.js') }}"></script>
+<script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";
+  initPdfPreviews();
+</script>
 {% endblock %}

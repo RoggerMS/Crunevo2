@@ -97,7 +97,7 @@
                     {% if product.price is not none %}
                       <p class="mb-1 text-primary fw-bold">
                         {% if product.price == 0 %}
-                          S/ 0
+                          Desde S/ 0
                         {% else %}
                           S/ {{ '%.2f' | format(product.price) }}
                         {% endif %}
@@ -113,6 +113,7 @@
                       </p>
                     {% endif %}
                     <div class="mb-2">
+                      {% if product.category %}<span class="badge bg-info text-dark">{{ product.category }}</span>{% endif %}
                       {% if product.is_new %}<span class="badge bg-success">Nuevo</span>{% endif %}
                       {% if product.is_popular %}<span class="badge bg-danger">Popular</span>{% endif %}
                       {% if product.credits_only %}<span class="badge bg-warning text-dark">Solo créditos</span>{% endif %}
@@ -123,6 +124,7 @@
                       <a href="{{ product.download_url }}" class="btn btn-success w-100 mb-2" target="_blank">Descargar</a>
                     {% endif %}
                     <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary mt-auto tw-whitespace-nowrap">Ver detalle</a>
+                    <button type="button" class="btn btn-outline-secondary btn-sm mt-2 share-btn" data-share-url="{{ url_for('store.view_product', product_id=product.id, _external=True) }}"><i class="bi bi-share"></i> Compartir</button>
                   </div>
                 </div>
               </div>

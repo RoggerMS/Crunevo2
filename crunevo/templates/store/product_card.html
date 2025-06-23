@@ -5,6 +5,7 @@
     <img src="{{ product.first_image or '/static/img/producto-default.png' }}" class="card-img-top img-fluid" style="max-height: 180px; object-fit: cover;" alt="imagen">
   </a>
   <div class="position-absolute top-0 start-0 m-2 tw-space-x-1">
+    {% if product.category %}<span class="badge bg-info text-dark">{{ product.category }}</span>{% endif %}
     {% if product.is_new %}<span class="badge bg-primary">Nuevo</span>{% endif %}
     {% if product.is_popular %}<span class="badge bg-warning text-dark">Popular</span>{% endif %}
     {% if product.credits_only %}<span class="badge bg-info text-dark">Solo con créditos</span>{% endif %}
@@ -16,7 +17,14 @@
         {{ product.name }}
       </a>
     </h5>
-    <p class="card-text">S/ {{ '%.2f'|format(product.price) }}{% if product.price_credits %} <br><small class="text-muted">o {{ product.price_credits }} créditos</small>{% endif %}</p>
+    <p class="card-text">
+      {% if product.price == 0 %}
+        Desde S/ 0
+      {% else %}
+        S/ {{ '%.2f'|format(product.price) }}
+      {% endif %}
+      {% if product.price_credits %} <br><small class="text-muted">o {{ product.price_credits }} créditos</small>{% endif %}
+    </p>
     {% if product.stock > 0 %}
       <span class="badge bg-success mb-2">En stock</span>
     {% else %}
@@ -40,5 +48,6 @@
     {% else %}
       <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-outline-primary w-100">Comprar</a>
     {% endif %}
+    <button type="button" class="btn btn-outline-secondary btn-sm mt-2 share-btn" data-share-url="{{ url_for('store.view_product', product_id=product.id, _external=True) }}"><i class="bi bi-share"></i></button>
   </div>
 </div>
