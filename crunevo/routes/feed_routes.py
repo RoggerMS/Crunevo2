@@ -25,6 +25,7 @@ from crunevo.models import (
     User,
     UserAchievement,
     Credit,
+    Report,
 )
 from crunevo.forms import FeedNoteForm, FeedImageForm
 from crunevo.utils import (
@@ -429,6 +430,27 @@ def eliminar_post(post_id):
             pass
     flash("Publicación eliminada correctamente", "success")
     return redirect(url_for("feed.view_feed"))
+
+
+@feed_bp.route("/post/reportar/<int:post_id>", methods=["POST"], endpoint="report_post")
+@activated_required
+def report_post(post_id):
+    """Allow users to report a post."""
+    post = Post.query.get_or_404(post_id)
+    if post.author_id == current_user.id:
+        abort(403)
+    reason = request.form.get("reason", "").strip()
+    report = Report(
+        user_id=current_user.id,
+        description=f"Post {post_id}: {reason}",
+    )
+    db.session.add(report)
+    admin = User.query.filter_by(role="admin").first()
+    if admin:
+        send_notification(admin.id, f"Nuevo reporte de post {post_id}")
+    db.session.commit()
+    flash("Publicación reportada", "success")
+    return redirect(url_for("feed.view_post", post_id=post.id))
 
 
 @feed_bp.route("/api/chat", methods=["POST"])

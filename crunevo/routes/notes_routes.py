@@ -14,7 +14,7 @@ from flask_login import current_user
 from crunevo.utils.helpers import activated_required, verified_required
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
-from crunevo.models import Note, Comment, NoteVote, FeedItem, Credit
+from crunevo.models import Note, Comment, NoteVote, FeedItem, Credit, Report, User
 from crunevo.utils.credits import add_credit
 from crunevo.utils import unlock_achievement, send_notification
 from crunevo.utils.scoring import update_feed_score
@@ -320,3 +320,51 @@ def delete_note(note_id):
 
     flash("Apunte eliminado correctamente", "success")
     return redirect(url_for("notes.list_notes"))
+
+
+@notes_bp.route("/edit/<int:note_id>", methods=["GET", "POST"], endpoint="edit_note")
+@activated_required
+def edit_note(note_id):
+    """Allow authors to edit title, description, category and tags."""
+    note = Note.query.get_or_404(note_id)
+    if note.user_id != current_user.id:
+        abort(403)
+
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        description = request.form.get("description", "").strip()
+        category = request.form.get("category", "").strip()
+        tags = request.form.get("tags", "").strip()
+        if not title:
+            flash("El título es obligatorio", "danger")
+            return redirect(url_for("notes.edit_note", note_id=note.id))
+        note.title = title
+        note.description = description
+        note.category = category
+        note.tags = tags
+        db.session.commit()
+        flash("Apunte actualizado", "success")
+        return redirect(url_for("notes.view_note", id=note.id))
+
+    return render_template("notes/edit.html", note=note)
+
+
+@notes_bp.route("/report/<int:note_id>", methods=["POST"], endpoint="report_note")
+@activated_required
+def report_note(note_id):
+    """Create a report for a note."""
+    note = Note.query.get_or_404(note_id)
+    if note.user_id == current_user.id:
+        abort(403)
+    reason = request.form.get("reason", "").strip()
+    report = Report(
+        user_id=current_user.id,
+        description=f"Note {note_id}: {reason}",
+    )
+    db.session.add(report)
+    admin = User.query.filter_by(role="admin").first()
+    if admin:
+        send_notification(admin.id, f"Nuevo reporte de apunte {note_id}")
+    db.session.commit()
+    flash("Apunte reportado", "success")
+    return redirect(url_for("notes.view_note", id=note.id))
