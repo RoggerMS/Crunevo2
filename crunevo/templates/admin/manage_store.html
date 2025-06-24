@@ -18,6 +18,7 @@
         <tr>
           <th>ID</th>
           <th>Nombre</th>
+          <th>Etiquetas</th>
           <th>Precio S/</th>
           <th>Créditos</th>
           <th>Stock</th>
@@ -28,11 +29,23 @@
       {% for product in products %}
       <tr>
         <td>{{ product.id }}</td>
+        <td>{{ product.name }}</td>
         <td>
-          {{ product.name }}
-          {% if product.is_popular %}<span class="badge bg-warning text-dark ms-1">Popular</span>{% endif %}
-          {% if product.is_new %}<span class="badge bg-success ms-1">Nuevo</span>{% endif %}
-          {% if product.credits_only %}<span class="badge bg-info text-dark ms-1">Solo créditos</span>{% endif %}
+          {% if product.is_popular %}
+            <span class="badge bg-warning text-dark me-1" data-bs-toggle="tooltip" title="Muy solicitado por los estudiantes">Popular</span>
+          {% endif %}
+          {% if product.is_new %}
+            <span class="badge bg-success me-1" data-bs-toggle="tooltip" title="Producto recientemente agregado">Nuevo</span>
+          {% endif %}
+          {% if product.is_featured %}
+            <span class="badge bg-purple text-white me-1" data-bs-toggle="tooltip" title="Aparece en la sección de productos destacados">Destacado</span>
+          {% endif %}
+          {% if product.credits_only %}
+            <span class="badge bg-info text-dark me-1" data-bs-toggle="tooltip" title="No se puede comprar con dinero">Solo créditos</span>
+          {% endif %}
+          {% if product.stock <= 3 %}
+            <span class="badge bg-danger me-1" data-bs-toggle="tooltip" title="Stock bajo">Stock bajo</span>
+          {% endif %}
         </td>
         <td>{{ '%.2f'|format(product.price) }}</td>
         <td>{{ product.price_credits or '' }}</td>

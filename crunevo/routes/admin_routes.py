@@ -128,6 +128,10 @@ def manage_users():
 @activated_required
 def manage_store():
     products = Product.query.all()
+    products.sort(
+        key=lambda p: (p.is_featured, p.is_popular, p.is_new),
+        reverse=True,
+    )
     return render_template("admin/manage_store.html", products=products)
 
 
