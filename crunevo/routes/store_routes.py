@@ -85,6 +85,7 @@ def store_index():
     favorite_ids = [fav.product_id for fav in favorites]
     purchased = Purchase.query.filter_by(user_id=current_user.id).all()
     purchased_ids = [p.product_id for p in purchased]
+    featured_products = Product.query.filter_by(is_featured=True).limit(3).all()
     return render_template(
         "store/store.html",
         products=products,
@@ -94,6 +95,7 @@ def store_index():
         categoria=categoria,
         precio_max=precio_max,
         ratings=ratings,
+        featured_products=featured_products,
     )
 
 
