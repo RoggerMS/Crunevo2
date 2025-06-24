@@ -9,7 +9,7 @@
 <div class="row">
   <div class="col-lg-2 d-none d-lg-block">
     {% include 'feed/sidebar_left_feed.html' %}
-    {% include 'components/feed_sidebar.html' %}
+    {% include 'components/feed_sidebar.html' with categoria=categoria %}
   </div>
   <div class="col-lg-7">
     <div class="card shadow-sm mb-3">
@@ -36,9 +36,9 @@
       </div>
     </div>
     <div class="d-lg-none mb-3">
-      {% include 'components/feed_sidebar.html' %}
+      {% include 'components/feed_sidebar.html' with categoria=categoria %}
     </div>
-    <div id="feed" class="tw-space-y-4">
+    <div id="feed" class="tw-space-y-4" data-categoria="{{ categoria or '' }}">
       {% for item in feed_items %}
         {% if item.type == 'note' %}
           {% set note = item.data %}
@@ -58,6 +58,17 @@
   </div>
   <div class="col-lg-3 d-none d-lg-block">
     {% include 'components/sidebar_right.html' %}
+  </div>
+</div>
+<button class="btn btn-primary rounded-circle position-fixed bottom-0 start-0 m-3 d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"><i class="bi bi-list"></i></button>
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="mobileSidebarLabel">Menú</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    {% include 'feed/sidebar_left_feed.html' %}
+    {% include 'components/feed_sidebar.html' with categoria=categoria %}
   </div>
 </div>
 {% endblock %}

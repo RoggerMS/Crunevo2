@@ -224,21 +224,32 @@ def view_feed():
         return redirect(url_for("feed.view_feed"))
         return redirect(url_for("feed.view_feed"))
 
-    feed_items_raw = (
-        FeedItem.query.filter_by(owner_id=current_user.id)
-        .filter(FeedItem.item_type != "apunte")
-        .order_by(FeedItem.created_at.desc())
-        .limit(20)
-        .all()
-    )
+    categoria = request.args.get("categoria")
+    query = FeedItem.query.filter_by(owner_id=current_user.id)
+    if categoria == "apuntes":
+        query = query.filter_by(item_type="apunte")
+    else:
+        query = query.filter(FeedItem.item_type != "apunte")
+    feed_items_raw = query.order_by(FeedItem.created_at.desc()).limit(20).all()
+
     feed_items = []
     for item in feed_items_raw:
         if item.item_type == "post":
             post = Post.query.get(item.ref_id)
+            if categoria == "imagen" and (
+                not post or not post.file_url or post.file_url.endswith(".pdf")
+            ):
+                continue
             if post:
                 feed_items.append({"type": "post", "data": post})
+        elif item.item_type == "apunte" and categoria == "apuntes":
+            note = Note.query.get(item.ref_id)
+            if note:
+                feed_items.append({"type": "note", "data": note})
 
-    return render_template("feed/index.html", feed_items=feed_items)
+    return render_template(
+        "feed/index.html", feed_items=feed_items, categoria=categoria
+    )
 
 
 # Alias route for backwards compatibility
@@ -472,6 +483,7 @@ def api_analizar():
 @activated_required
 def api_feed():
     page = int(request.args.get("page", 1))
+    categoria = request.args.get("categoria")
     start = (page - 1) * 10
     stop = start + 9
     try:
@@ -499,6 +511,16 @@ def api_feed():
                 for fi, item in zip(q, items)
             ],
         )
+    if categoria == "apuntes":
+        items = [i for i in items if i.get("item_type") == "apunte"]
+    elif categoria == "imagen":
+        items = [
+            i
+            for i in items
+            if i.get("item_type") == "post"
+            and i.get("file_url")
+            and not i.get("file_url", "").endswith(".pdf")
+        ]
     return jsonify(items)
 
 
@@ -524,3 +546,18 @@ def api_quickfeed():
     posts = query.limit(20).all()
     html = render_template("feed/_posts.html", posts=posts)
     return jsonify({"html": html, "count": len(posts)})
+
+
+@feed_bp.route("/search")
+@activated_required
+def search_posts():
+    q = request.args.get("q", "").strip()
+    if not q:
+        return jsonify([])
+    posts = (
+        Post.query.filter(Post.content.ilike(f"%{q}%"))
+        .order_by(Post.created_at.desc())
+        .limit(20)
+        .all()
+    )
+    return jsonify([{"id": p.id, "content": p.content[:100]} for p in posts])

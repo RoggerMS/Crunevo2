@@ -8,57 +8,8 @@
 <div class="container-fluid mt-4">
   <div class="row">
     <!-- Sidebar izquierdo exclusivo para tienda -->
-    <div class="col-lg-2">
-      <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
-          <h6 class="text-uppercase text-muted mb-3">Explorar tienda</h6>
-          <ul class="nav flex-column small">
-            <li class="nav-item mb-2">
-              <a class="nav-link px-0" href="{{ url_for('store.store_index') }}">
-                🏠 Inicio de tienda
-              </a>
-            </li>
-            <li class="nav-item mb-2">
-              <a class="nav-link px-0" href="{{ url_for('store.view_cart') }}">
-                🛒 Mi carrito
-              </a>
-            </li>
-            <li class="nav-item mb-2">
-              <a class="nav-link px-0" href="{{ url_for('store.view_purchases') }}">
-                💸 Mis compras
-              </a>
-            </li>
-            <li class="nav-item mb-2">
-              <a class="nav-link px-0" href="{{ url_for('store.view_favorites') }}">
-                ⭐ Favoritos
-              </a>
-            </li>
-          </ul>
-          <hr>
-          <h6 class="text-uppercase text-muted mb-2">Categorías</h6>
-          <ul class="nav flex-column small mb-3">
-            <li class="nav-item mb-1"><a class="nav-link px-0 {% if not categoria %}fw-bold{% endif %}" href="{{ url_for('store.store_index') }}">Todas</a></li>
-            {% for cat in categories %}
-              <li class="nav-item mb-1"><a class="nav-link px-0 {% if categoria == cat %}fw-bold{% endif %}" href="{{ url_for('store.store_index', categoria=cat) }}">{{ cat }}</a></li>
-            {% endfor %}
-          </ul>
-          <h6 class="text-uppercase text-muted mb-2">Vistas rápidas</h6>
-          <ul class="nav flex-column small mb-3">
-            <li class="nav-item mb-1"><a class="nav-link px-0" href="{{ url_for('store.store_index', top=1) }}">Más vendidos</a></li>
-            <li class="nav-item mb-1"><a class="nav-link px-0" href="{{ url_for('store.store_index', free=1) }}">Top 10 gratuitos</a></li>
-            <li class="nav-item mb-1"><a class="nav-link px-0" href="{{ url_for('store.store_index', pack=1) }}">Pack estudiantil</a></li>
-          </ul>
-          <form method="get">
-            <h6 class="text-uppercase text-muted mb-2">Filtrar por precio</h6>
-            <div class="mb-3">
-              <label for="precio_max" class="form-label small mb-1">Precio máximo</label>
-              <input type="number" step="0.01" class="form-control form-control-sm" id="precio_max" name="precio_max" value="{{ request.args.get('precio_max', '') }}">
-            </div>
-            <input type="hidden" name="categoria" value="{{ categoria }}">
-            <button type="submit" class="btn btn-primary btn-sm w-100">Aplicar</button>
-          </form>
-        </div>
-      </div>
+    <div class="col-lg-2 d-none d-lg-block">
+      {% include 'store/sidebar.html' %}
     </div>
 
     <!-- Contenido central -->
@@ -103,6 +54,7 @@
               <div class="col">
                 <div class="card product-card position-relative h-100 border border-primary p-2 {% if product.is_featured %}bg-light border-purple{% endif %} {% if product.category == 'Pack' %}tw-scale-[1.03]{% endif %}">
                   <img
+                    loading="lazy"
                     src="{{ product.image if product.image else url_for('static', filename='img/default_product.png') }}"
                     class="card-img-top rounded mb-2"
                     alt="{{ product.name }}"
@@ -168,6 +120,16 @@
       </div>
     </div>
 
+  </div>
+</div>
+<button class="btn btn-primary rounded-circle position-fixed bottom-0 start-0 m-3 d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#storeSidebar"><i class="bi bi-list"></i></button>
+<div class="offcanvas offcanvas-start" tabindex="-1" id="storeSidebar" aria-labelledby="storeSidebarLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="storeSidebarLabel">Menú</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    {% include 'store/sidebar.html' %}
   </div>
 </div>
 {% endblock %}
