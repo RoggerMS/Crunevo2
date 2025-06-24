@@ -32,7 +32,7 @@
     {% endif %}
   </div>
   <div class="card-footer bg-white border-0 pt-0 d-flex justify-content-between align-items-center">
-    <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary btn-sm tw-whitespace-nowrap">Ver detalle</a>
-    <button type="button" class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('store.view_product', product_id=product.id, _external=True) }}"><i class="bi bi-share"></i></button>
+    <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary btn-sm tw-whitespace-nowrap"><i class="bi bi-search me-1"></i>Ver detalle</a>
+    <button type="button" class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('store.view_product', product_id=product.id, _external=True) }}" title="Compartir este producto"><i class="bi bi-share"></i></button>
   </div>
 </div>

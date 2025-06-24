@@ -125,8 +125,8 @@
                     {% if product.id in purchased_ids and product.download_url %}
                       <a href="{{ product.download_url }}" class="btn btn-success btn-sm" target="_blank">Descargar</a>
                     {% endif %}
-                    <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary btn-sm tw-whitespace-nowrap">Ver detalle</a>
-                    <button type="button" class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('store.view_product', product_id=product.id, _external=True) }}"><i class="bi bi-share"></i></button>
+                    <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary btn-sm tw-whitespace-nowrap"><i class="bi bi-search me-1"></i>Ver detalle</a>
+                    <button type="button" class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('store.view_product', product_id=product.id, _external=True) }}" title="Compartir este producto"><i class="bi bi-share"></i></button>
                   </div>
                 </div>
               </div>
@@ -144,11 +144,30 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">Productos destacados</h5>
-          <ul class="list-unstyled">
-            <li><a href="#">Pack estudiante</a></li>
-            <li><a href="#">Más vendidos</a></li>
-            <li><a href="#">Ofertas de la semana</a></li>
-          </ul>
+          {% if featured_products %}
+            <div class="row row-cols-1 row-cols-sm-2 g-2">
+              {% for fp in featured_products %}
+                <div class="col">
+                  <div class="card h-100">
+                    <img src="{{ fp.image if fp.image else url_for('static', filename='img/default_product.png') }}" class="card-img-top" alt="{{ fp.name }}">
+                    <div class="card-body p-2">
+                      <h6 class="product-name mb-1">{{ fp.name }}</h6>
+                      <p class="mb-1 text-primary fw-bold">
+                        {% if fp.price == 0 %}
+                          S/ 0
+                        {% else %}
+                          S/ {{ '%.2f' | format(fp.price) }}
+                        {% endif %}
+                      </p>
+                      <a href="{{ url_for('store.view_product', product_id=fp.id) }}" class="btn btn-primary btn-sm">Ver</a>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted">Aún no hay destacados esta semana</p>
+          {% endif %}
         </div>
       </div>
     </div>
