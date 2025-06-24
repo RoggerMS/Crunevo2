@@ -257,3 +257,4 @@
 - Sección de destacados en la tienda convertida en carrusel horizontal con scroll y sin límite de productos (PR store-featured-carousel).
 - Eliminado límite de 3 productos destacados en admin; ahora se pueden marcar todos los que se deseen (PR admin-featured-limit-removed).
 - Carrusel de destacados movido antes del título de tienda y tarjetas más compactas (PR store-featured-move-reduce).
+- Corrección de ordenamiento en admin/manage_store para manejar valores None (PR admin-store-sort-none-fix).
