@@ -254,3 +254,4 @@
 - Nombres de productos con hasta 3 líneas y tamaño 1rem; sección derecha muestra tarjetas de destacados con mensaje vacío y botón "Ver" (PR store-featured-redesign)
 - Límite de 3 productos destacados con aviso en add_edit_product y verificación al guardar (PR featured-limit).
 - Página de administración de tienda muestra badges de Destacado, Popular, Nuevo y Stock bajo en una columna "Etiquetas" con tooltips. Productos se ordenan por etiquetas (PR admin-store-badges-enhancement).
+- Sección de destacados en la tienda convertida en carrusel horizontal con scroll y sin límite de productos (PR store-featured-carousel).

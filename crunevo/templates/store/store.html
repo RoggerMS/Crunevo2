@@ -64,6 +64,40 @@
     <!-- Contenido central -->
     <div class="col-lg-7">
       <h2 class="mb-4">Tienda</h2>
+      {% if featured_products %}
+        <div class="card p-3 shadow-sm mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="mb-0 text-primary fw-bold">🎖 Productos destacados</h5>
+            <div class="carousel-controls d-none d-md-flex gap-2">
+              <button id="scrollLeft" class="btn btn-sm btn-outline-secondary">&larr;</button>
+              <button id="scrollRight" class="btn btn-sm btn-outline-secondary">&rarr;</button>
+            </div>
+          </div>
+          <div id="featured-carousel" class="d-flex overflow-auto gap-3" style="scroll-behavior: smooth;">
+            {% for product in featured_products %}
+              <div class="card border border-purple" style="min-width: 200px;">
+                <img src="{{ product.image if product.image else url_for('static', filename='img/default_product.png') }}" class="card-img-top" alt="{{ product.name }}">
+                <div class="card-body">
+                  <h6 class="card-title text-truncate">{{ product.name }}</h6>
+                  <p class="text-muted small">
+                    {% if product.price == 0 %}
+                      S/ 0
+                    {% else %}
+                      S/ {{ '%.2f'|format(product.price) }}
+                    {% endif %}
+                  </p>
+                  <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-sm btn-outline-primary w-100">Ver</a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% else %}
+        <div class="card p-3 shadow-sm mb-4">
+          <h5 class="mb-0 text-primary fw-bold mb-2">🎖 Productos destacados</h5>
+          <p class="text-muted mb-0">Aún no hay destacados esta semana</p>
+        </div>
+      {% endif %}
       {% if request.args.get('free') %}
         <div class="alert alert-success">Recursos Gratuitos</div>
       {% endif %}
@@ -139,42 +173,21 @@
       </div>
     </div>
 
-    <!-- Zona derecha para destacados -->
-    <div class="col-lg-3 d-none d-lg-block">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Productos destacados</h5>
-          {% if featured_products %}
-            <div class="row row-cols-1 row-cols-sm-2 g-2">
-              {% for fp in featured_products %}
-                <div class="col">
-                  <div class="card h-100">
-                    <img src="{{ fp.image if fp.image else url_for('static', filename='img/default_product.png') }}" class="card-img-top" alt="{{ fp.name }}">
-                    <div class="card-body p-2">
-                      <h6 class="product-name mb-1">{{ fp.name }}</h6>
-                      <p class="mb-1 text-primary fw-bold">
-                        {% if fp.price == 0 %}
-                          S/ 0
-                        {% else %}
-                          S/ {{ '%.2f' | format(fp.price) }}
-                        {% endif %}
-                      </p>
-                      <a href="{{ url_for('store.view_product', product_id=fp.id) }}" class="btn btn-primary btn-sm">Ver</a>
-                    </div>
-                  </div>
-                </div>
-              {% endfor %}
-            </div>
-          {% else %}
-            <p class="text-muted">Aún no hay destacados esta semana</p>
-          {% endif %}
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 {% endblock %}
 
 {% block body_end %}
   {{ super() }}
+  <script>
+    const carousel = document.getElementById('featured-carousel');
+    if (carousel) {
+      document.getElementById('scrollLeft')?.addEventListener('click', () => {
+        carousel.scrollBy({ left: -300, behavior: 'smooth' });
+      });
+      document.getElementById('scrollRight')?.addEventListener('click', () => {
+        carousel.scrollBy({ left: 300, behavior: 'smooth' });
+      });
+    }
+  </script>
 {% endblock %}
