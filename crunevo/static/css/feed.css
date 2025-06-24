@@ -21,3 +21,9 @@
 [data-bs-theme="light"] .sidebar-left-feed .nav-link:hover {
   background-color: #f8f9fa;
 }
+
+.feed-image {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

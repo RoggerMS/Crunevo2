@@ -14,10 +14,11 @@ from flask_login import current_user
 from crunevo.utils.helpers import activated_required, verified_required
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
-from crunevo.models import Note, Comment, NoteVote
+from crunevo.models import Note, Comment, NoteVote, FeedItem, Credit
 from crunevo.utils.credits import add_credit
 from crunevo.utils import unlock_achievement, send_notification
 from crunevo.utils.scoring import update_feed_score
+from crunevo.cache.feed_cache import remove_item
 from crunevo.constants import CreditReasons, AchievementCodes
 import cloudinary.uploader
 
@@ -279,3 +280,43 @@ def download_note(note_id):
         unlock_achievement(note.author, AchievementCodes.DESCARGA_100)
 
     return redirect(note.filename)
+
+
+@notes_bp.route("/delete/<int:note_id>", methods=["POST"], endpoint="delete_note")
+@activated_required
+def delete_note(note_id):
+    """Allow authors to delete their own notes."""
+    note = Note.query.get_or_404(note_id)
+    if note.user_id != current_user.id:
+        abort(403)
+
+    feed_items = FeedItem.query.filter_by(item_type="apunte", ref_id=note.id).all()
+    owner_ids = [fi.owner_id for fi in feed_items]
+    FeedItem.query.filter_by(item_type="apunte", ref_id=note.id).delete()
+    Credit.query.filter_by(
+        user_id=current_user.id, related_id=note.id, reason=CreditReasons.APUNTE_SUBIDO
+    ).delete()
+
+    if note.filename.startswith("http") and current_app.config.get("CLOUDINARY_URL"):
+        public_id = os.path.splitext(note.filename.rsplit("/", 1)[-1])[0]
+        try:
+            cloudinary.uploader.destroy(
+                f"notes/{public_id}", invalidate=True, resource_type="image"
+            )
+            cloudinary.uploader.destroy(
+                f"notes/{public_id}", invalidate=True, resource_type="raw"
+            )
+        except Exception:
+            current_app.logger.exception("Error deleting Cloudinary file")
+
+    db.session.delete(note)
+    db.session.commit()
+
+    for uid in owner_ids:
+        try:
+            remove_item(uid, "apunte", note.id)
+        except Exception:
+            pass
+
+    flash("Apunte eliminado correctamente", "success")
+    return redirect(url_for("notes.list_notes"))

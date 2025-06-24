@@ -9,7 +9,7 @@
       {% else %}
       <span class="text-muted">Usuario eliminado</span><br>
       {% endif %}
-      <small class="text-muted">{{ post.created_at|timesince }}</small>
+      <small class="text-muted">{{ post.created_at|timesince }}{% if post.edited %} • Editado{% endif %}</small>
     </div>
     <div class="dropdown">
       <button class="btn btn-sm btn-light" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots"></i></button>
@@ -24,7 +24,7 @@
       {% if post.file_url.endswith('.pdf') %}
         <a href="{{ post.file_url }}" target="_blank" class="btn btn-sm btn-outline-primary mb-2">Ver PDF</a>
       {% else %}
-        <img src="{{ post.file_url }}" class="img-fluid rounded mt-2" style="max-height: 400px; width: auto;" alt="imagen">
+        <img src="{{ post.file_url }}" class="feed-image img-fluid rounded mt-2" style="max-height: 400px; width: auto;" alt="imagen">
       {% endif %}
     {% endif %}
     <div class="d-flex align-items-center gap-2 mb-2">
@@ -36,6 +36,7 @@
       <button class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('feed.view_post', post_id=post.id, _external=True) }}"><i class="bi bi-share"></i></button>
       <a href="{{ url_for('feed.view_post', post_id=post.id) }}" class="btn btn-outline-primary btn-sm">Ver publicación</a>
       {% if post.author_id == current_user.id %}
+      <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ post.id }}">Editar</button>
       <form action="{{ url_for('feed.eliminar_post', post_id=post.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar esta publicación?');">
         {{ csrf.csrf_field() }}
         <button type="submit" class="btn btn-outline-danger btn-sm">🗑️ Eliminar</button>
@@ -68,3 +69,25 @@
     </form>
   </div>
 </article>
+{% if post.author_id == current_user.id %}
+<div class="modal fade" id="editModal{{ post.id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{{ url_for('feed.editar_post', post_id=post.id) }}">
+        {{ csrf.csrf_field() }}
+        <div class="modal-header">
+          <h5 class="modal-title">Editar publicación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <textarea name="content" class="form-control" rows="3" required>{{ post.content }}</textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}

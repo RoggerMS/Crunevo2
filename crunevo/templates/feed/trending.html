@@ -29,7 +29,7 @@
           {% if post.file_url.endswith('.pdf') %}
           <a href="{{ post.file_url }}" target="_blank" class="btn btn-sm btn-outline-primary mb-2">Ver PDF</a>
           {% else %}
-          <img src="{{ post.file_url }}" class="img-fluid rounded mb-2">
+          <img src="{{ post.file_url }}" class="feed-image img-fluid rounded mb-2">
           {% endif %}
         {% endif %}
         {% if author %}
