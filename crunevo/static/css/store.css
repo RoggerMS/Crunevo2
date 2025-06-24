@@ -25,18 +25,33 @@
 
 /* Featured products carousel */
 .featured-card {
-  min-width: 160px;
+  min-width: 140px;
+  max-width: 160px;
+  border: 1px solid #6f42c1;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out;
+}
+
+.featured-card:hover {
+  transform: scale(1.03);
 }
 
 .featured-card .card-img-top {
-  height: 120px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
+  height: auto;
+  border-radius: 8px;
 }
 
 .featured-title {
+  font-size: 0.85rem;
+  font-weight: 500;
   overflow: hidden;
+  text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  font-size: 0.875rem;
+  min-height: 2.8em;
 }
