@@ -264,3 +264,4 @@
 - Ajustado modo oscuro en tienda y feed: bg-light adaptativo, botones claros y navbar inferior con bg-body (PR dark-mode-fixes).
 - Feed mejorado: filtros por categoría, buscador interno y sidebar móvil en offcanvas con botón flotante. Animaciones desactivadas en dispositivos lentos y carga infinita usando categoría. (PR feed-mobile-overlay)
 - Corregido include en feed/index.html eliminando 'with categoria=categoria' para evitar TemplateSyntaxError (PR feed-sidebar-with-fix).
+- Menú móvil del navbar ahora usa fondo morado con clase `offcanvas-crunevo` y los dropdowns comparten ese color. Botones flotantes de sidebar móvil cambian a icono de filtro y clase `mobile-overlay-btn` (PR overlay-menu-color).
