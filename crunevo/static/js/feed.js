@@ -202,17 +202,21 @@ function initQuickFilters() {
 }
 
 function initImagePreview() {
-  const input = document.getElementById('postImageInput');
-  const preview = document.getElementById('postImagePreview');
+  const input = document.getElementById('feedImageInput');
+  const preview = document.getElementById('previewContainer');
   if (!input || !preview) return;
   input.addEventListener('change', () => {
     const file = input.files[0];
-    if (file) {
-      preview.src = URL.createObjectURL(file);
-      preview.classList.remove('d-none');
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.innerHTML = `
+          <img src="${e.target.result}" alt="preview" class="img-fluid rounded" style="max-height: 300px;" />
+        `;
+      };
+      reader.readAsDataURL(file);
     } else {
-      preview.classList.add('d-none');
-      preview.removeAttribute('src');
+      preview.innerHTML = "<p class='text-danger'>Archivo no válido</p>";
     }
   });
 }

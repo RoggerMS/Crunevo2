@@ -20,13 +20,13 @@
               <a href="{{ url_for('notes.upload') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-plus"></i> Apunte</a>
               <label class="btn btn-outline-secondary btn-sm mb-0">
                 <i class="bi bi-image"></i> Imagen
-                <input type="file" name="file" id="postImageInput" accept="image/*,.pdf" class="d-none">
+                <input type="file" name="file" id="feedImageInput" accept="image/*" class="d-none">
               </label>
               <button type="button" class="btn btn-outline-secondary btn-sm" disabled><i class="bi bi-trophy"></i> Logro</button>
             </div>
             <button id="postSubmitBtn" class="btn btn-primary btn-sm" type="submit">Publicar</button>
           </div>
-          <img id="postImagePreview" class="img-thumbnail mt-2 d-none" style="max-height: 150px;" alt="preview">
+          <div id="previewContainer" class="mt-2"></div>
         </form>
       </div>
     </div>
