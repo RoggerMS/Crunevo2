@@ -128,8 +128,13 @@ def manage_users():
 @activated_required
 def manage_store():
     products = Product.query.all()
+    # Sort products by tags ensuring None values don't cause errors
     products.sort(
-        key=lambda p: (p.is_featured, p.is_popular, p.is_new),
+        key=lambda p: (
+            bool(p.is_featured),
+            bool(p.is_popular),
+            bool(p.is_new),
+        ),
         reverse=True,
     )
     return render_template("admin/manage_store.html", products=products)
