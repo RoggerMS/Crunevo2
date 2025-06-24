@@ -57,11 +57,11 @@
       </form>
       <div class="row">
         <div class="col-12">
-          <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
+          <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
             {% for product in products %}
               <div class="col">
-                <div class="card position-relative h-100 border border-primary p-2">
-                  <img src="{{ product.image_url or '/static/img/producto-default.png' }}" class="card-img-top rounded mb-2" alt="{{ product.name }}">
+                <div class="card position-relative h-100 shadow-sm border-0">
+                  <img src="{{ product.image_url or '/static/img/producto-default.png' }}" class="card-img-top" alt="{{ product.name }}">
                   <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="position-absolute top-0 end-0 m-2">
                     {{ csrf.csrf_field() }}
                     <button class="btn btn-sm btn-light border-0" type="submit">
@@ -84,16 +84,20 @@
                       {% if product.is_featured %}<span class="badge bg-purple text-white">Destacado</span>{% endif %}
                       {% if product.id in purchased_ids %}<span class="badge bg-secondary">Adquirido</span>{% endif %}
                     </div>
-                  </div>
-                  <div class="card-footer bg-white border-0 pt-0 d-flex justify-content-between align-items-center">
-                    {% if product.id in purchased_ids and product.download_url %}
-                      <a href="{{ product.download_url }}" class="btn btn-success btn-sm" target="_blank">Descargar</a>
+                    {% if product.id in purchased_ids %}
+                      {% if product.download_url %}
+                        <a href="{{ product.download_url }}" class="btn btn-success w-100 mb-2" target="_blank">Descargar</a>
+                      {% endif %}
                     {% elif product.stock > 0 %}
-                      <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-primary btn-sm">Agregar al carrito</a>
+                      <form method="post" action="{{ url_for('store.buy_product', product_id=product.id) }}" class="mb-2">
+                        {{ csrf.csrf_field() }}
+                        <button class="btn btn-success w-100" type="submit">Comprar ahora</button>
+                      </form>
+                      <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-primary w-100 mb-2">Agregar al carrito</a>
                     {% else %}
-                      <span class="text-muted small">Sin stock</span>
+                      <button class="btn btn-outline-secondary w-100 mb-2" disabled>Sin stock</button>
                     {% endif %}
-                    <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary btn-sm tw-whitespace-nowrap">Ver detalle</a>
+                    <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary mt-auto">Ver detalle</a>
                   </div>
                 </div>
               </div>

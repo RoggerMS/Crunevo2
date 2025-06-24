@@ -249,4 +249,3 @@
 - Se añadió botón "Reportar" en apuntes y publicaciones con modal y notificación al admin. Se habilitó ruta /notes/edit/<id> para editar título, descripción, categoría y etiquetas (PR note-edit-report).
 - Sidebar de /feed/trending simplificado: solo filtros rápidos, formulario de publicación igual al feed y filtros móviles (PR trending-sidebar-cleanup).
 - Ajustado ancho de detalle de apunte con container-xl y botón de descarga centrado (PR note-detail-width-fix).
-- Actualizado diseño de la tienda con grilla responsiva y tarjetas con borde morado; footer incluye acciones de detalle y compartir (PR store-grid)
