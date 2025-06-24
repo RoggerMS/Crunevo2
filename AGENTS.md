@@ -256,3 +256,4 @@
 - Página de administración de tienda muestra badges de Destacado, Popular, Nuevo y Stock bajo en una columna "Etiquetas" con tooltips. Productos se ordenan por etiquetas (PR admin-store-badges-enhancement).
 - Sección de destacados en la tienda convertida en carrusel horizontal con scroll y sin límite de productos (PR store-featured-carousel).
 - Eliminado límite de 3 productos destacados en admin; ahora se pueden marcar todos los que se deseen (PR admin-featured-limit-removed).
+- Carrusel de destacados movido antes del título de tienda y tarjetas más compactas (PR store-featured-move-reduce).

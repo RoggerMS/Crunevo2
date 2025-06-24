@@ -22,3 +22,21 @@
 .product-desc {
   -webkit-line-clamp: 2;
 }
+
+/* Featured products carousel */
+.featured-card {
+  min-width: 160px;
+}
+
+.featured-card .card-img-top {
+  height: 120px;
+  object-fit: cover;
+}
+
+.featured-title {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 0.875rem;
+}
