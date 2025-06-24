@@ -246,3 +246,4 @@
 - Añadida funcionalidad para que los usuarios eliminen sus propios apuntes desde /notes y /perfil (PR notes-delete-user).
 - Botón "Editar" agregado en publicaciones del feed con marca visual (Editado) y control de permisos (PR post-edit).
 - Estilo CSS actualizado para centrar imágenes del feed y mejorar visualización móvil (PR feed-image-center).
+- Se añadió botón "Reportar" en apuntes y publicaciones con modal y notificación al admin. Se habilitó ruta /notes/edit/<id> para editar título, descripción, categoría y etiquetas (PR note-edit-report).

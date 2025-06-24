@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-4 p-md-5">
+          <h3 class="card-title mb-4 text-center">Editar apunte</h3>
+          <form method="post" id="noteEditForm">
+            {{ csrf.csrf_field() }}
+
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="title" name="title" placeholder="Título" value="{{ note.title }}" required>
+              <label for="title">Título</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <textarea class="form-control" placeholder="Descripción" id="description" name="description" style="height: 120px">{{ note.description }}</textarea>
+              <label for="description">Descripción</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="tags" name="tags" placeholder="Etiquetas (separadas por coma)" value="{{ note.tags }}">
+              <label for="tags">Etiquetas (ej. mate, física)</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="category" name="category" placeholder="Categoría" value="{{ note.category }}">
+              <label for="category">Categoría</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Guardar cambios</button>
+          </form>
+        </div>
+      </div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+

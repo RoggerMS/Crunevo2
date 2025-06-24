@@ -28,12 +28,14 @@
       </form>
       <button type="button" class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('notes.view_note', id=note.id, _external=True) }}">Copiar enlace</button>
       {% if current_user.is_authenticated and note.user_id == current_user.id %}
+      <a href="{{ url_for('notes.edit_note', note_id=note.id) }}" class="btn btn-outline-secondary btn-sm">Editar</a>
       <form action="{{ url_for('notes.delete_note', note_id=note.id) }}" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este apunte?');">
         {{ csrf.csrf_field() }}
         <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
       </form>
       {% endif %}
       {% if current_user.is_authenticated and current_user.id != note.author.id %}
+      <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#reportNoteModal">Reportar</button>
       <form id="likeForm" method="post" action="{{ url_for('notes.like_note', note_id=note.id) }}" style="display:inline;">
         {{ csrf.csrf_field() }}
         <button class="btn btn-outline-success btn-sm" type="submit">👍 Me gusta</button>
@@ -66,6 +68,28 @@
     </form>
     {% endif %}
 </article>
+{% if current_user.is_authenticated and current_user.id != note.author.id %}
+<div class="modal fade" id="reportNoteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{{ url_for('notes.report_note', note_id=note.id) }}">
+        {{ csrf.csrf_field() }}
+        <div class="modal-header">
+          <h5 class="modal-title">Reportar apunte</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <textarea name="reason" class="form-control" rows="3" placeholder="Motivo" required></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Enviar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
 <script>
 
 
