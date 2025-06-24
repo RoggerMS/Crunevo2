@@ -30,6 +30,13 @@
                   <img loading="lazy" src="{{ product.image if product.image else url_for('static', filename='img/default_product.png') }}" class="card-img-top" alt="{{ product.name }}">
                   <div class="card-body p-2 text-center">
                     <p class="featured-title mb-1">{{ product.name }}</p>
+                    {% if product.price is not none %}
+                      <span class="badge bg-info text-dark d-block mb-1">S/ {{ '%.2f'|format(product.price) }}</span>
+                    {% endif %}
+                    {% if product.price_credits is not none %}
+                      <span class="badge bg-warning text-dark d-block mb-1">{{ product.price_credits }} créditos</span>
+                    {% endif %}
+                    <button class="btn btn-sm btn-primary add-cart-btn d-block mx-auto mb-1" data-product-id="{{ product.id }}">+ Carrito</button>
                     <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary btn-sm d-block mx-auto">Ver</a>
                   </div>
                 </div>
@@ -67,7 +74,7 @@
                     </button>
                   </form>
                   <div class="card-body d-flex flex-column">
-                    <h5 class="card-title product-name">{{ product.name }}</h5>
+                    <h5 class="card-title product-name" title="{{ product.name }}">{{ product.name }}</h5>
                     {% set r = ratings.get(product.id, 0) %}
                     <div class="mb-1">
                       {% for _ in range(r|round(0,'floor')|int) %}<i class="bi bi-star-fill text-warning"></i>{% endfor %}
@@ -113,10 +120,24 @@
               </div>
             {% endfor %}
           </div>
-          <div class="mt-4 text-end">
-            {{ btn.button('Ver Carrito', href=url_for('store.view_cart'), variant='secondary') }}
+          <div class="mt-4 text-center">
+            {{ btn.button('<i class="bi bi-cart-fill me-1"></i> Ver carrito', href=url_for('store.view_cart'), variant='secondary') }}
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Sidebar derecho -->
+    <div class="col-lg-3 d-none d-lg-block">
+      <div class="card mb-3">
+        <div class="card-header">🔥 Top más vendidos</div>
+        <ul class="list-group list-group-flush">
+          {% for p in top_sellers %}
+          <li class="list-group-item py-1">
+            <a href="{{ url_for('store.view_product', product_id=p.id) }}">{{ p.name }}</a>
+          </li>
+          {% endfor %}
+        </ul>
       </div>
     </div>
 

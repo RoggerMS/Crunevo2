@@ -26,6 +26,7 @@ def create_app():
     def inject_globals():
         from .constants import ACHIEVEMENT_DETAILS
         from .models import Note, Notification
+        from flask import session
 
         latest_sidebar_notes = (
             Note.query.order_by(Note.created_at.desc()).limit(3).all()
@@ -39,6 +40,7 @@ def create_app():
             "SIDEBAR_LATEST_NOTES": latest_sidebar_notes,
             "Notification": Notification,
             "current_app": current_app,
+            "CART_COUNT": sum(session.get("cart", {}).values()),
         }
 
     from .utils.helpers import timesince

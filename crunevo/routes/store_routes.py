@@ -7,6 +7,7 @@ from flask import (
     flash,
     request,
     send_file,
+    jsonify,
 )
 import io
 from datetime import datetime, timedelta
@@ -86,6 +87,16 @@ def store_index():
     purchased = Purchase.query.filter_by(user_id=current_user.id).all()
     purchased_ids = [p.product_id for p in purchased]
     featured_products = Product.query.filter_by(is_featured=True).all()
+    from sqlalchemy import func
+
+    top_sellers = (
+        db.session.query(Product)
+        .join(Purchase)
+        .group_by(Product.id)
+        .order_by(func.count(Purchase.id).desc())
+        .limit(5)
+        .all()
+    )
     return render_template(
         "store/store.html",
         products=products,
@@ -96,6 +107,7 @@ def store_index():
         precio_max=precio_max,
         ratings=ratings,
         featured_products=featured_products,
+        top_sellers=top_sellers,
     )
 
 
@@ -195,7 +207,7 @@ def add_answer(question_id: int):
     return redirect(url_for("store.view_product", product_id=q.product_id))
 
 
-@store_bp.route("/add/<int:product_id>")
+@store_bp.route("/add/<int:product_id>", methods=["GET", "POST"])
 @activated_required
 def add_to_cart(product_id):
     cart = get_cart()
@@ -203,6 +215,8 @@ def add_to_cart(product_id):
     session["cart"] = cart
     db.session.add(ProductLog(product_id=product_id, action="cart"))
     db.session.commit()
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return jsonify({"count": sum(cart.values())})
     flash("Producto agregado al carrito")
     return redirect(url_for("store.store_index"))
 
@@ -319,6 +333,13 @@ def view_cart():
         if product:
             cart_items.append({"product": product, "quantity": qty})
     return render_template("store/carrito.html", cart_items=cart_items)
+
+
+@store_bp.route("/api/cart_count")
+@activated_required
+def cart_count_api():
+    cart = get_cart()
+    return jsonify({"count": sum(cart.values())})
 
 
 @store_bp.route("/checkout", methods=["GET", "POST"])

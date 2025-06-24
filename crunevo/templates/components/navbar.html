@@ -21,6 +21,12 @@
           <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('store.store_index') }}"><i class="bi bi-bag me-1"></i>Tienda</a></li>
           <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('ranking.show_ranking') }}"><i class="bi bi-trophy me-1"></i>Ranking</a></li>
           <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('chat.chat_index') }}"><i class="bi bi-chat-dots me-1"></i>Chat</a></li>
+          <li class="nav-item">
+            <a class="nav-link text-white position-relative" href="{{ url_for('store.view_cart') }}">
+              <i class="bi bi-cart"></i>
+              <span id="cartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {% if CART_COUNT == 0 %}tw-hidden{% endif %}">{{ CART_COUNT }}</span>
+            </a>
+          </li>
           {% if config.ADMIN_INSTANCE and current_user.is_authenticated and current_user.role == 'admin' %}
           <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-1"></i>Admin</a></li>
           {% endif %}
@@ -74,6 +80,12 @@
             <li><a class="dropdown-item text-center" href="{{ url_for('noti.ver_notificaciones') }}">Ver todas</a></li>
             <li><a id="markAllRead" class="dropdown-item text-center" href="#">Marcar todo como leído</a></li>
           </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white position-relative" href="{{ url_for('store.view_cart') }}">
+            <i class="bi bi-cart"></i>
+            <span id="cartBadgeDesktop" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {% if CART_COUNT == 0 %}tw-hidden{% endif %}">{{ CART_COUNT }}</span>
+          </a>
         </li>
         {% else %}
         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión</a></li>
