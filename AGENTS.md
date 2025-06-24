@@ -252,3 +252,4 @@
 - Actualizado diseño de la tienda con grilla responsiva y tarjetas con borde morado; footer incluye acciones de detalle y compartir (PR store-grid)
 - Mejorado layout de tienda y favoritos usando container-fluid, textos truncados con line-clamp y tarjetas pulidas (PR store-layout-polish)
 - Nombres de productos con hasta 3 líneas y tamaño 1rem; sección derecha muestra tarjetas de destacados con mensaje vacío y botón "Ver" (PR store-featured-redesign)
+- Límite de 3 productos destacados con aviso en add_edit_product y verificación al guardar (PR featured-limit).
