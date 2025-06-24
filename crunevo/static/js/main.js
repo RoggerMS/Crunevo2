@@ -247,6 +247,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  refreshCartCount();
+  document.querySelectorAll('.add-cart-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const pid = btn.dataset.productId;
+      fetch(`/store/add/${pid}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then((r) => r.json())
+        .then((data) => {
+          showToast('Producto agregado');
+          updateCartBadge(data.count);
+        });
+    });
+  });
+
   initNotifications();
 
   // Bootstrap collapse handles the mobile menu
@@ -290,4 +304,17 @@ function initNotifications() {
       csrfFetch('/notifications/read_all', { method: 'POST' }).then(refresh);
     });
   }
+}
+
+function updateCartBadge(count) {
+  document.querySelectorAll('#cartBadge, #cartBadgeDesktop, #mobileCartBadge').forEach((b) => {
+    b.textContent = count;
+    b.classList.toggle('tw-hidden', count === 0);
+  });
+}
+
+function refreshCartCount() {
+  fetch('/store/api/cart_count')
+    .then((r) => r.json())
+    .then((data) => updateCartBadge(data.count));
 }
