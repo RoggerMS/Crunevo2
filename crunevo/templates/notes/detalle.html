@@ -5,7 +5,7 @@
 <div class="container-xl my-4">
   <article class="card mx-auto p-4">
     <div class="d-flex align-items-center mb-3">
-      <img src="{{ note.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
+      <img loading="lazy" src="{{ note.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
       <div>
         <a href="{{ url_for('auth.profile_by_username', username=note.author.username) }}" class="text-decoration-none">
           <strong>{{ note.author.username }}</strong>
@@ -51,7 +51,7 @@
     <div id="comments">
       {% for c in note.comments|sort(attribute='created_at', reverse=True) %}
       <div class="d-flex mb-3 comment">
-        <img src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+        <img loading="lazy" src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
         <div>
           <div class="small text-muted">
             <a href="{{ url_for('auth.profile_by_username', username=c.author.username) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.created_at.strftime('%Y-%m-%d %H:%M') }}
@@ -108,7 +108,7 @@
     }).then(r => r.json()).then(c => {
       const div = document.createElement('div');
       div.className = 'd-flex mb-3 comment';
-      div.innerHTML = `<img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar"><div><div class=\"small text-muted\">${c.author} • ${c.timestamp}</div><div>${c.body}</div></div>`;
+      div.innerHTML = `<img loading="lazy" src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar"><div><div class=\"small text-muted\">${c.author} • ${c.timestamp}</div><div>${c.body}</div></div>`;
       document.getElementById('comments').prepend(div);
       e.target.reset();
       showToast('Comentario agregado');

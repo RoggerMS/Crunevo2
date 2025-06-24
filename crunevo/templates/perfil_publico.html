@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container my-4">
   <div class="text-center mb-5">
-    <img src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle mb-3" width="120" height="120" alt="avatar">
+    <img loading="lazy" src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle mb-3" width="120" height="120" alt="avatar">
     <h1 class="fw-bold mb-0">@{{ user.username }}
       {% if user.verification_level >= 2 %}
       <i class="bi bi-patch-check-fill ms-1" style="color:#4e7fff" data-bs-toggle="tooltip" title="Cuenta verificada por Crunevo"></i>

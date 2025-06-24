@@ -2,7 +2,7 @@
 <article class="card shadow-sm mb-3">
   <div class="card-header bg-transparent d-flex align-items-center gap-2">
     {% set author = post.author %}
-    <img src="{{ (author and author.avatar_url) or url_for('static', filename='img/default.png') }}" class="rounded-circle" width="40" height="40" alt="avatar">
+    <img loading="lazy" src="{{ (author and author.avatar_url) or url_for('static', filename='img/default.png') }}" class="rounded-circle" width="40" height="40" alt="avatar">
     <div class="flex-grow-1">
       {% if author %}
       <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="fw-bold text-decoration-none">{{ author.username }}</a><br>
@@ -24,7 +24,7 @@
       {% if post.file_url.endswith('.pdf') %}
         <a href="{{ post.file_url }}" target="_blank" class="btn btn-sm btn-outline-primary mb-2">Ver PDF</a>
       {% else %}
-        <img src="{{ post.file_url }}" class="feed-image img-fluid rounded mt-2" style="max-height: 400px; width: auto;" alt="imagen">
+        <img loading="lazy" src="{{ post.file_url }}" class="feed-image img-fluid rounded mt-2" style="max-height: 400px; width: auto;" alt="imagen">
       {% endif %}
     {% endif %}
     <div class="d-flex align-items-center gap-2 mb-2">
@@ -49,7 +49,7 @@
       {% if post.comments %}
         {% for c in post.comments|sort(attribute='timestamp', reverse=True) %}
         <div class="d-flex mb-2">
-          <img src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+          <img loading="lazy" src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
           <div>
             <div class="small text-muted">
               <a href="{{ url_for('auth.profile_by_username', username=c.author.username) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.timestamp|timesince }}

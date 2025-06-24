@@ -2,18 +2,18 @@
 {% import 'components/csrf.html' as csrf %}
 <div class="card h-100 border border-primary p-2 position-relative">
   <a href="{{ url_for('store.view_product', product_id=product.id) }}">
-    <img src="{{ product.first_image or '/static/img/producto-default.png' }}" class="card-img-top rounded mb-2 img-fluid" style="max-height: 180px; object-fit: cover;" alt="imagen">
+    <img loading="lazy" src="{{ product.first_image or '/static/img/producto-default.png' }}" class="card-img-top rounded mb-2 img-fluid" style="max-height: 180px; object-fit: cover;" alt="imagen">
   </a>
   <div class="position-absolute top-0 start-0 m-2 tw-space-x-1">
-    {% if product.category %}<span class="badge bg-info text-dark">{{ product.category }}</span>{% endif %}
+    {% if product.category %}<span class="badge bg-info text-body">{{ product.category }}</span>{% endif %}
     {% if product.is_new %}<span class="badge bg-primary">Nuevo</span>{% endif %}
-    {% if product.is_popular %}<span class="badge bg-warning text-dark">Popular</span>{% endif %}
-    {% if product.credits_only %}<span class="badge bg-info text-dark">Solo con créditos</span>{% endif %}
+    {% if product.is_popular %}<span class="badge bg-warning text-body">Popular</span>{% endif %}
+    {% if product.credits_only %}<span class="badge bg-info text-body">Solo con créditos</span>{% endif %}
     {% if product.is_featured %}<span class="badge bg-success">Destacado</span>{% endif %}
   </div>
   <div class="card-body d-flex flex-column">
     <h5 class="card-title product-name">
-      <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="text-decoration-none text-dark">
+      <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="text-decoration-none text-body">
         {{ product.name }}
       </a>
     </h5>
@@ -31,7 +31,7 @@
       <span class="badge bg-secondary mb-2">Próximamente</span>
     {% endif %}
   </div>
-  <div class="card-footer bg-white border-0 pt-0 d-flex justify-content-between align-items-center">
+  <div class="card-footer bg-body border-0 pt-0 d-flex justify-content-between align-items-center">
     <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary btn-sm tw-whitespace-nowrap"><i class="bi bi-search me-1"></i>Ver detalle</a>
     <button type="button" class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('store.view_product', product_id=product.id, _external=True) }}" title="Compartir este producto"><i class="bi bi-share"></i></button>
   </div>

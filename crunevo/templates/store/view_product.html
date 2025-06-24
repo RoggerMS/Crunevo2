@@ -6,11 +6,11 @@
 <div class="container py-4">
   <div class="row">
     <div class="col-md-6">
-      <img id="mainImage" src="{{ product.first_image or '/static/img/producto-default.png' }}" class="img-fluid rounded shadow-sm mb-2" alt="{{ product.name }}">
+      <img loading="lazy" id="mainImage" src="{{ product.first_image or '/static/img/producto-default.png' }}" class="img-fluid rounded shadow-sm mb-2" alt="{{ product.name }}">
       {% if product.image_urls %}
         <div class="d-flex gap-2">
           {% for url in product.image_urls %}
-            <img src="{{ url }}" data-src="{{ url }}" class="img-thumbnail product-thumb" style="width: 70px; cursor: pointer;">
+            <img loading="lazy" src="{{ url }}" data-src="{{ url }}" class="img-thumbnail product-thumb" style="width: 70px; cursor: pointer;">
           {% endfor %}
         </div>
       {% endif %}

@@ -64,7 +64,7 @@
     <!-- Contenido central -->
     <div class="col-lg-7">
       {% if featured_products %}
-        <div class="card shadow-sm border-0 mb-4 px-3 py-2 bg-white">
+        <div class="card shadow-sm border-0 mb-4 px-3 py-2 bg-body">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <h6 class="mb-0 fw-bold text-muted">🎖 Productos destacados</h6>
             <div class="carousel-controls d-none d-md-flex gap-2">
@@ -76,7 +76,7 @@
             {% for product in featured_products %}
               <div class="col">
                 <div class="card border-purple featured-card">
-                  <img src="{{ product.image if product.image else url_for('static', filename='img/default_product.png') }}" class="card-img-top" alt="{{ product.name }}">
+                  <img loading="lazy" src="{{ product.image if product.image else url_for('static', filename='img/default_product.png') }}" class="card-img-top" alt="{{ product.name }}">
                   <div class="card-body p-2 text-center">
                     <p class="featured-title mb-1">{{ product.name }}</p>
                     <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary btn-sm d-block mx-auto">Ver</a>
@@ -87,7 +87,7 @@
           </div>
         </div>
       {% else %}
-        <div class="card shadow-sm border-0 mb-4 px-3 py-2 bg-white">
+        <div class="card shadow-sm border-0 mb-4 px-3 py-2 bg-body">
           <h6 class="fw-bold text-muted mb-1">🎖 Productos destacados</h6>
           <p class="text-muted mb-0">Aún no hay destacados esta semana</p>
         </div>
@@ -150,7 +150,7 @@
                       {% if product.id in purchased_ids %}<span class="badge bg-secondary">Adquirido</span>{% endif %}
                     </div>
                   </div>
-                  <div class="card-footer bg-white border-0 pt-0 d-flex justify-content-between align-items-center">
+                  <div class="card-footer bg-body border-0 pt-0 d-flex justify-content-between align-items-center">
                     {% if product.id in purchased_ids and product.download_url %}
                       <a href="{{ product.download_url }}" class="btn btn-success btn-sm" target="_blank">Descargar</a>
                     {% endif %}
