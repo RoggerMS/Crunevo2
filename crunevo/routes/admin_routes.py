@@ -135,6 +135,7 @@ def manage_store():
 @activated_required
 @full_admin_required
 def add_product():
+    featured_count = Product.query.filter_by(is_featured=True).count()
     if request.method == "POST":
         name = request.form["name"]
         description = request.form.get("description")
@@ -142,6 +143,9 @@ def add_product():
         price_credits = request.form.get("price_credits", type=int)
         stock = int(request.form.get("stock", 0))
         is_featured = bool(request.form.get("is_featured"))
+        if is_featured and featured_count >= 3:
+            flash("Ya hay 3 productos destacados. Desmarca uno antes de añadir otro.")
+            return redirect(url_for("admin.add_product"))
         credits_only = bool(request.form.get("credits_only"))
         is_popular = bool(request.form.get("is_popular"))
         is_new = bool(request.form.get("is_new"))
@@ -187,20 +191,25 @@ def add_product():
         db.session.commit()
         flash("Producto agregado")
         return redirect(url_for("admin.manage_store"))
-    return render_template("admin/add_edit_product.html")
+    return render_template("admin/add_edit_product.html", featured_count=featured_count)
 
 
 @admin_bp.route("/products/<int:product_id>/edit", methods=["GET", "POST"])
 @full_admin_required
 def edit_product(product_id):
     product = Product.query.get_or_404(product_id)
+    featured_count = Product.query.filter_by(is_featured=True).count()
     if request.method == "POST":
         product.name = request.form["name"]
         product.description = request.form.get("description")
         product.price = float(request.form["price"])
         product.price_credits = request.form.get("price_credits", type=int)
         product.stock = int(request.form["stock"])
-        product.is_featured = bool(request.form.get("is_featured"))
+        new_featured = bool(request.form.get("is_featured"))
+        if new_featured and not product.is_featured and featured_count >= 3:
+            flash("Ya hay 3 productos destacados. Desmarca uno antes de añadir otro.")
+            return redirect(url_for("admin.edit_product", product_id=product.id))
+        product.is_featured = new_featured
         product.credits_only = bool(request.form.get("credits_only"))
         product.is_popular = bool(request.form.get("is_popular"))
         product.is_new = bool(request.form.get("is_new"))
@@ -232,7 +241,9 @@ def edit_product(product_id):
         db.session.commit()
         flash("Producto actualizado correctamente")
         return redirect(url_for("admin.manage_store"))
-    return render_template("admin/add_edit_product.html", product=product)
+    return render_template(
+        "admin/add_edit_product.html", product=product, featured_count=featured_count
+    )
 
 
 @admin_bp.route("/products/<int:product_id>/delete", methods=["POST"])

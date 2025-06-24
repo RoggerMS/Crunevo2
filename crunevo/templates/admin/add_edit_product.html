@@ -19,21 +19,33 @@
   <div class="mb-3">
     <input type="number" name="stock" class="form-control" placeholder="Stock" value="{{ product.stock if product else 0 }}">
   </div>
-  <div class="form-check mb-2">
-    <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured" {% if product and product.is_featured %}checked{% endif %}>
-    <label class="form-check-label" for="is_featured">Destacado</label>
-  </div>
-  <div class="form-check mb-2">
-    <input class="form-check-input" type="checkbox" name="credits_only" id="credits_only" {% if product and product.credits_only %}checked{% endif %}>
-    <label class="form-check-label" for="credits_only">Solo con créditos</label>
-  </div>
-  <div class="form-check mb-2">
-    <input class="form-check-input" type="checkbox" name="is_popular" id="is_popular" {% if product and product.is_popular %}checked{% endif %}>
-    <label class="form-check-label" for="is_popular">Popular</label>
-  </div>
-  <div class="form-check mb-3">
-    <input class="form-check-input" type="checkbox" name="is_new" id="is_new" {% if product and product.is_new %}checked{% endif %}>
-    <label class="form-check-label" for="is_new">Nuevo</label>
+  <div class="mb-3">
+    <label class="form-label">Etiquetas</label>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured"
+        {% if product and product.is_featured %}checked{% endif %}
+        {% if featured_count >= 3 and not (product and product.is_featured) %}disabled{% endif %}>
+      <label class="form-check-label" for="is_featured">Destacado</label>
+    </div>
+    {% if featured_count >= 3 and not (product and product.is_featured) %}
+    <div class="alert alert-warning small mt-2">
+      Ya hay 3 productos destacados. Desmarca uno para añadir otro.
+    </div>
+    {% else %}
+    <small class="text-muted">Actualmente hay {{ featured_count }} / 3 destacados</small>
+    {% endif %}
+    <div class="form-check form-switch mt-2">
+      <input class="form-check-input" type="checkbox" name="credits_only" id="credits_only" {% if product and product.credits_only %}checked{% endif %}>
+      <label class="form-check-label" for="credits_only">Solo con créditos</label>
+    </div>
+    <div class="form-check form-switch mt-2">
+      <input class="form-check-input" type="checkbox" name="is_popular" id="is_popular" {% if product and product.is_popular %}checked{% endif %}>
+      <label class="form-check-label" for="is_popular">Popular</label>
+    </div>
+    <div class="form-check form-switch mt-2">
+      <input class="form-check-input" type="checkbox" name="is_new" id="is_new" {% if product and product.is_new %}checked{% endif %}>
+      <label class="form-check-label" for="is_new">Nuevo</label>
+    </div>
   </div>
   <div class="mb-3"><input type="file" name="image" class="form-control"></div>
   <button class="btn btn-primary" type="submit">Guardar</button>
