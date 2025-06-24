@@ -3,6 +3,11 @@ html {
   transition: background-color 0.3s, color 0.3s;
 }
 
+.no-anim *, .no-anim *::before, .no-anim *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
 body[data-bs-theme="dark"] {
   background-color: #121212;
   color: #f8f9fa;

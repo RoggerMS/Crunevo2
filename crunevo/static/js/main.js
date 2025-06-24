@@ -61,6 +61,9 @@ function updateThemeIcons() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
+    document.body.classList.add('no-anim');
+  }
   // theme persistence
   const saved = localStorage.getItem('theme');
   if (saved) {
@@ -109,6 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (typeof initImagePreview === 'function') {
     initImagePreview();
+  }
+  if (typeof initFeedSearch === 'function') {
+    initFeedSearch();
   }
 
   // simple AJAX search suggestions

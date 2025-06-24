@@ -1,9 +1,10 @@
 let page = 1;
 const feed = document.getElementById('feed');
+const feedCategory = feed ? feed.dataset.categoria : '';
 const sentinel = document.getElementById('feedEnd');
 
 async function loadFeed() {
-  const resp = await fetch(`/api/feed?page=${page}`);
+  const resp = await fetch(`/api/feed?page=${page}&categoria=${feedCategory}`);
   const items = await resp.json();
   items.forEach(item => {
     let html = '';
@@ -229,5 +230,30 @@ function setupInfiniteScroll() {
     }
   });
   observer.observe(sentinel);
+}
+
+function initFeedSearch() {
+  const input = document.getElementById('feedSearch');
+  const results = document.getElementById('feedSearchResults');
+  if (!input || !results) return;
+  input.addEventListener('input', () => {
+    const q = input.value.trim();
+    if (q.length < 2) {
+      results.innerHTML = '';
+      return;
+    }
+    fetch(`/feed/search?q=${encodeURIComponent(q)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        results.innerHTML = '';
+        data.forEach((p) => {
+          const a = document.createElement('a');
+          a.className = 'list-group-item list-group-item-action';
+          a.href = `/posts/${p.id}`;
+          a.textContent = p.content;
+          results.appendChild(a);
+        });
+      });
+  });
 }
 
