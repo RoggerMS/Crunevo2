@@ -101,7 +101,7 @@
           <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
             {% for product in products %}
               <div class="col">
-                <div class="card position-relative h-100 border border-primary p-2 {% if product.is_featured %}bg-light border-purple{% endif %} {% if product.category == 'Pack' %}tw-scale-[1.03]{% endif %}">
+                <div class="card product-card position-relative h-100 border border-primary p-2 {% if product.is_featured %}bg-light border-purple{% endif %} {% if product.category == 'Pack' %}tw-scale-[1.03]{% endif %}">
                   <img
                     src="{{ product.image if product.image else url_for('static', filename='img/default_product.png') }}"
                     class="card-img-top rounded mb-2"
