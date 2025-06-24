@@ -2,7 +2,8 @@
 {% import 'components/button.html' as btn %}
 {% import 'components/csrf.html' as csrf %}
 {% block content %}
-<article class="prose lg:prose-lg mx-auto card">
+<div class="container-xl my-4">
+  <article class="card mx-auto p-4">
     <div class="d-flex align-items-center mb-3">
       <img src="{{ note.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
       <div>
@@ -21,7 +22,9 @@
       <span class="badge bg-secondary me-1">{{ tag }}</span>
       {% endfor %}
     </div>
-      <a class="btn btn-primary mb-3" href="{{ note.filename }}" target="_blank">Descargar</a>
+    <div class="text-center mb-3">
+      <a class="btn btn-primary" href="{{ note.filename }}" target="_blank">Descargar</a>
+    </div>
       <form id="shareForm" action="{{ url_for('notes.share_note', note_id=note.id) }}" method="post" style="display:inline;">
         {{ csrf.csrf_field() }}
         <button class="btn btn-outline-primary btn-sm" type="submit">🔗 Compartir</button>
@@ -67,7 +70,8 @@
       </div>
     </form>
     {% endif %}
-</article>
+  </article>
+</div>
 {% if current_user.is_authenticated and current_user.id != note.author.id %}
 <div class="modal fade" id="reportNoteModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
