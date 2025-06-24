@@ -209,17 +209,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  const postInput = document.getElementById('postImageInput');
-  const postPreview = document.getElementById('postImagePreview');
-  if (postInput && postPreview) {
-    postInput.addEventListener('change', () => {
-      const file = postInput.files[0];
+  const imgInput = document.getElementById('feedImageInput');
+  const previewBox = document.getElementById('previewContainer');
+  if (imgInput && previewBox) {
+    imgInput.addEventListener('change', () => {
+      const file = imgInput.files[0];
       if (file && file.type.startsWith('image/')) {
-        postPreview.src = URL.createObjectURL(file);
-        postPreview.classList.remove('d-none');
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewBox.innerHTML = `
+            <img src="${e.target.result}" alt="preview" class="img-fluid rounded" style="max-height: 300px;" />
+          `;
+        };
+        reader.readAsDataURL(file);
       } else {
-        postPreview.classList.add('d-none');
-        postPreview.removeAttribute('src');
+        previewBox.innerHTML = "<p class='text-danger'>Archivo no válido</p>";
       }
     });
   }
