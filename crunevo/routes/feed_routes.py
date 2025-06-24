@@ -391,6 +391,25 @@ def donate_post(post_id):
     return jsonify({"success": True})
 
 
+@feed_bp.route("/post/editar/<int:post_id>", methods=["POST"], endpoint="editar_post")
+@activated_required
+def editar_post(post_id):
+    """Edit a post's content if the current user is the author."""
+    post = Post.query.get_or_404(post_id)
+    if post.author_id != current_user.id:
+        abort(403)
+    content = request.form.get("content", "").strip()
+    if not content:
+        flash("El contenido no puede estar vacío", "danger")
+        return redirect(url_for("feed.view_post", post_id=post.id))
+    if content != post.content:
+        post.content = content
+        post.edited = True
+        db.session.commit()
+    flash("Publicación actualizada", "success")
+    return redirect(url_for("feed.view_post", post_id=post.id))
+
+
 @feed_bp.route("/post/eliminar/<int:post_id>", methods=["POST"])
 @activated_required
 def eliminar_post(post_id):

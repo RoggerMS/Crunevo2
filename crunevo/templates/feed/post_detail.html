@@ -14,14 +14,14 @@
       <img src="{{ url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
       <span class="me-auto text-muted">Usuario eliminado</span>
       {% endif %}
-      <small class="text-muted">{{ post.created_at.strftime('%Y-%m-%d') }}</small>
+      <small class="text-muted">{{ post.created_at.strftime('%Y-%m-%d') }}{% if post.edited %} • Editado{% endif %}</small>
     </div>
     <p class="card-text">{{ post.content }}</p>
       {% if post.file_url %}
         {% if post.file_url.endswith('.pdf') %}
         <a href="{{ post.file_url }}" target="_blank" class="btn btn-outline-primary mb-2">Ver PDF</a>
         {% else %}
-        <img src="{{ post.file_url }}" class="img-fluid rounded mb-2">
+        <img src="{{ post.file_url }}" class="feed-image img-fluid rounded mb-2">
         {% endif %}
       {% endif %}
       <p class="text-muted small mb-2">

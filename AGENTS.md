@@ -243,3 +243,6 @@
 - Verificada ruta view_feed y plantillas para usar solo feed_items sin apuntes extra (QA feed-view-feed-admin-check).
 - Filtrado de "apuntes" en FeedItem: el feed y la API ahora omiten notas antiguas incluso para administradores (PR feed-skip-notes).
 - Se añadió opción para eliminar publicaciones propias en el feed, removiendo FeedItem y cache (PR post-delete).
+- Añadida funcionalidad para que los usuarios eliminen sus propios apuntes desde /notes y /perfil (PR notes-delete-user).
+- Botón "Editar" agregado en publicaciones del feed con marca visual (Editado) y control de permisos (PR post-edit).
+- Estilo CSS actualizado para centrar imágenes del feed y mejorar visualización móvil (PR feed-image-center).

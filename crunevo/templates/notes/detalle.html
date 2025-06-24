@@ -27,6 +27,12 @@
         <button class="btn btn-outline-primary btn-sm" type="submit">🔗 Compartir</button>
       </form>
       <button type="button" class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('notes.view_note', id=note.id, _external=True) }}">Copiar enlace</button>
+      {% if current_user.is_authenticated and note.user_id == current_user.id %}
+      <form action="{{ url_for('notes.delete_note', note_id=note.id) }}" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este apunte?');">
+        {{ csrf.csrf_field() }}
+        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+      </form>
+      {% endif %}
       {% if current_user.is_authenticated and current_user.id != note.author.id %}
       <form id="likeForm" method="post" action="{{ url_for('notes.like_note', note_id=note.id) }}" style="display:inline;">
         {{ csrf.csrf_field() }}
