@@ -263,3 +263,4 @@
 - Implementado modo oscuro en feed y tienda, scroll infinito e overlay móvil con offcanvas. Añadidas imágenes lazy (PR dark-scroll-overlay).
 - Ajustado modo oscuro en tienda y feed: bg-light adaptativo, botones claros y navbar inferior con bg-body (PR dark-mode-fixes).
 - Feed mejorado: filtros por categoría, buscador interno y sidebar móvil en offcanvas con botón flotante. Animaciones desactivadas en dispositivos lentos y carga infinita usando categoría. (PR feed-mobile-overlay)
+- Corregido include en feed/index.html eliminando 'with categoria=categoria' para evitar TemplateSyntaxError (PR feed-sidebar-with-fix).

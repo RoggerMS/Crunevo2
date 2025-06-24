@@ -9,7 +9,7 @@
 <div class="row">
   <div class="col-lg-2 d-none d-lg-block">
     {% include 'feed/sidebar_left_feed.html' %}
-    {% include 'components/feed_sidebar.html' with categoria=categoria %}
+    {% include 'components/feed_sidebar.html' %}
   </div>
   <div class="col-lg-7">
     <div class="card shadow-sm mb-3">
@@ -36,7 +36,7 @@
       </div>
     </div>
     <div class="d-lg-none mb-3">
-      {% include 'components/feed_sidebar.html' with categoria=categoria %}
+      {% include 'components/feed_sidebar.html' %}
     </div>
     <div id="feed" class="tw-space-y-4" data-categoria="{{ categoria or '' }}">
       {% for item in feed_items %}
@@ -68,7 +68,7 @@
   </div>
   <div class="offcanvas-body">
     {% include 'feed/sidebar_left_feed.html' %}
-    {% include 'components/feed_sidebar.html' with categoria=categoria %}
+    {% include 'components/feed_sidebar.html' %}
   </div>
 </div>
 {% endblock %}
