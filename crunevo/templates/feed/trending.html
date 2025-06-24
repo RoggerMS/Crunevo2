@@ -4,10 +4,35 @@
 {% block content %}
 <div class="row">
   <div class="col-lg-2 d-none d-lg-block">
-    {% include 'components/sidebar_left.html' %}
     {% include 'components/feed_sidebar.html' %}
   </div>
   <div class="col-lg-7 col-md-12">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <div class="d-flex mb-3">
+          <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
+          <textarea name="content" form="postForm" class="form-control" rows="2" placeholder="¿Qué deseas compartir?" required></textarea>
+        </div>
+        <form id="postForm" method="post" action="{{ url_for('feed.view_feed') }}" enctype="multipart/form-data">
+          {{ csrf.csrf_field() }}
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="btn-group">
+              <a href="{{ url_for('notes.upload') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-plus"></i> Apunte</a>
+              <label class="btn btn-outline-secondary btn-sm mb-0">
+                <i class="bi bi-image"></i> Imagen
+                <input type="file" name="file" id="postImageInput" accept="image/*,.pdf" class="d-none">
+              </label>
+              <button type="button" class="btn btn-outline-secondary btn-sm" disabled><i class="bi bi-trophy"></i> Logro</button>
+            </div>
+            <button id="postSubmitBtn" class="btn btn-primary btn-sm" type="submit">Publicar</button>
+          </div>
+          <img id="postImagePreview" class="img-thumbnail mt-2 d-none" style="max-height: 150px;" alt="preview">
+        </form>
+      </div>
+    </div>
+    <div class="d-lg-none mb-3">
+      {% include 'components/feed_sidebar.html' %}
+    </div>
     <h2 class="mb-4">💡 Publicaciones destacadas</h2>
     {% for post in weekly_posts %}
     <div class="card mb-3 position-relative">
