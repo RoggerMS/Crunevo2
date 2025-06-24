@@ -93,6 +93,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // load feed on feed page
   if (typeof loadFeed === 'function' && document.getElementById('feed')) {
     loadFeed();
+    if (typeof setupInfiniteScroll === 'function') {
+      setupInfiniteScroll();
+    }
   }
 
   if (typeof initFeedToggle === 'function') {

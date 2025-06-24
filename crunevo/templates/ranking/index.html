@@ -28,7 +28,7 @@
         {% if loop.index == 1 %}<i class="bi bi-trophy-fill text-warning"></i>{% elif loop.index == 2 %}<i class="bi bi-trophy-fill text-secondary"></i>{% elif loop.index == 3 %}<i class="bi bi-trophy-fill text-brown"></i>{% else %}{{ loop.index }}{% endif %}
       </td>
       <td>
-        <img src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" width="32" height="32" class="rounded-circle me-1">
+        <img loading="lazy" src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" width="32" height="32" class="rounded-circle me-1">
         {{ user.username }}
       </td>
       <td class="text-end"><strong>{{ '%.0f'|format(total) }}</strong></td>

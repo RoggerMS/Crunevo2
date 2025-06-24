@@ -1,6 +1,6 @@
 let page = 1;
 const feed = document.getElementById('feed');
-const loadMore = document.getElementById('loadMore');
+const sentinel = document.getElementById('feedEnd');
 
 async function loadFeed() {
   const resp = await fetch(`/api/feed?page=${page}`);
@@ -24,8 +24,9 @@ async function loadFeed() {
       feed.insertAdjacentHTML('beforeend', html);
     }
   });
-  if (items.length < 10) {
-    loadMore.style.display = 'none';
+  if (items.length < 10 && observer) {
+    observer.disconnect();
+    sentinel.remove();
   }
   page++;
 }
@@ -82,8 +83,6 @@ function renderMensajeCard(data) {
   const highlight = data.is_highlight ? ' feed-card--highlight' : '';
   return `<div class="feed-card${highlight}">💬 ${data.text || ''}</div>`;
 }
-
-loadMore.addEventListener('click', loadFeed);
 
 function initFeedInteractions() {
   document.querySelectorAll('.like-form').forEach((form) => {
@@ -219,5 +218,16 @@ function initImagePreview() {
       preview.innerHTML = "<p class='text-danger'>Archivo no válido</p>";
     }
   });
+}
+
+let observer;
+function setupInfiniteScroll() {
+  if (!sentinel) return;
+  observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      loadFeed();
+    }
+  });
+  observer.observe(sentinel);
 }
 

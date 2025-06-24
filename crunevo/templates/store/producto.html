@@ -9,7 +9,7 @@
 <div class="container my-5">
   <div class="row g-4 align-items-start">
     <div class="col-lg-6 text-center">
-      <img src="{{ product.image_url or product.image or '/static/img/producto-default.png' }}" class="img-fluid rounded shadow-sm big-product-img" alt="{{ product.name }}">
+      <img loading="lazy" src="{{ product.image_url or product.image or '/static/img/producto-default.png' }}" class="img-fluid rounded shadow-sm big-product-img" alt="{{ product.name }}">
     </div>
     <div class="col-lg-6">
       <h1 class="h3 fw-bold mb-3">{{ product.name }}

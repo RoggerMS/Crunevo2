@@ -260,3 +260,4 @@
 - Corrección de ordenamiento en admin/manage_store para manejar valores None (PR admin-store-sort-none-fix).
 - Mejorado carrusel de destacados con tarjetas modernas, imágenes cuadradas y contenedor con sombra (PR store-featured-card-style).
 - Input de imagen del feed usa id "feedImageInput" y contenedor "previewContainer" con vista previa instantánea (PR feed-image-preview-fix).
+- Implementado modo oscuro en feed y tienda, scroll infinito e overlay móvil con offcanvas. Añadidas imágenes lazy (PR dark-scroll-overlay).
