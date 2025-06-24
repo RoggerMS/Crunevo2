@@ -55,3 +55,6 @@
   -webkit-line-clamp: 2;
   min-height: 2.8em;
 }
+[data-bs-theme="dark"] .product-card.bg-light {
+  background-color: #1f1f1f !important;
+}
