@@ -1,8 +1,8 @@
 {% import 'components/button.html' as btn %}
 {% import 'components/csrf.html' as csrf %}
-<div class="card h-100 shadow-sm position-relative">
+<div class="card h-100 border border-primary p-2 position-relative">
   <a href="{{ url_for('store.view_product', product_id=product.id) }}">
-    <img src="{{ product.first_image or '/static/img/producto-default.png' }}" class="card-img-top img-fluid" style="max-height: 180px; object-fit: cover;" alt="imagen">
+    <img src="{{ product.first_image or '/static/img/producto-default.png' }}" class="card-img-top rounded mb-2 img-fluid" style="max-height: 180px; object-fit: cover;" alt="imagen">
   </a>
   <div class="position-absolute top-0 start-0 m-2 tw-space-x-1">
     {% if product.category %}<span class="badge bg-info text-dark">{{ product.category }}</span>{% endif %}
@@ -31,23 +31,8 @@
       <span class="badge bg-secondary mb-2">Próximamente</span>
     {% endif %}
   </div>
-  <div class="card-footer bg-white border-0">
-    {% if product.stock <= 0 %}
-      <button class="btn btn-outline-secondary w-100" disabled>Sin stock</button>
-    {% elif product.price_credits and current_user.is_authenticated %}
-      {% if current_user.credits >= product.price_credits %}
-        <form method="post" action="{{ url_for('store.redeem_product', product_id=product.id) }}">
-          {{ csrf.csrf_field() }}
-          <button class="btn btn-outline-primary w-100" type="submit">Canjear</button>
-        </form>
-      {% else %}
-        <button class="btn btn-outline-secondary w-100" disabled>Requiere {{ product.price_credits }} créditos</button>
-      {% endif %}
-    {% elif product.price_credits and not current_user.is_authenticated %}
-      <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary w-100">Inicia sesión</a>
-    {% else %}
-      <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-outline-primary w-100">Comprar</a>
-    {% endif %}
-    <button type="button" class="btn btn-outline-secondary btn-sm mt-2 share-btn" data-share-url="{{ url_for('store.view_product', product_id=product.id, _external=True) }}"><i class="bi bi-share"></i></button>
+  <div class="card-footer bg-white border-0 pt-0 d-flex justify-content-between align-items-center">
+    <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary btn-sm tw-whitespace-nowrap">Ver detalle</a>
+    <button type="button" class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('store.view_product', product_id=product.id, _external=True) }}"><i class="bi bi-share"></i></button>
   </div>
 </div>
