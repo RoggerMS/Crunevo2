@@ -114,4 +114,8 @@ body[data-bs-theme="dark"] .message {
   transition: .15s ease;
 }
 
+.mobile-overlay-btn {
+  z-index: 1040;
+}
+
 
