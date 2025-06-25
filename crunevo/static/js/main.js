@@ -264,18 +264,25 @@ document.addEventListener('DOMContentLoaded', () => {
   initNotifications();
 
   // Auto hide navbar on scroll for all viewports
-  let lastScrollTop = window.pageYOffset;
+  let lastScrollTop = 0;
   const navbar = document.querySelector('.navbar-crunevo');
-  window.addEventListener('scroll', () => {
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  function handleScroll() {
     if (!navbar) return;
-    const current = window.pageYOffset;
-    if (lastScrollTop > current || current <= 0) {
-      navbar.style.top = '0';
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    if (scrollTop > lastScrollTop) {
+      navbar.classList.add('navbar-hidden');
     } else {
-      navbar.style.top = '-100px';
+      navbar.classList.remove('navbar-hidden');
     }
-    lastScrollTop = current;
-  });
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+  }
+
+  window.addEventListener('scroll', handleScroll);
+  if (isMobile) {
+    window.addEventListener('touchmove', handleScroll, { passive: true });
+  }
 
   // Bootstrap collapse handles the mobile menu
 
