@@ -143,3 +143,13 @@ body[data-bs-theme='dark'] .bottom-nav-active {
     padding-right: 0.5rem;
   }
 }
+
+@media (max-height: 400px) {
+  .fixed-bottom {
+    height: 50px !important;
+    padding: 0.25rem 0 !important;
+  }
+  .fixed-bottom i {
+    font-size: 1.2rem !important;
+  }
+}

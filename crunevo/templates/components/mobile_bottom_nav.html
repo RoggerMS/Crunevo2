@@ -1,21 +1,21 @@
 <div class="d-md-none fixed-bottom bg-white bg-body border-top shadow-sm py-1">
   <div class="bottom-nav-wrapper d-flex justify-content-around align-items-center">
-    <a href="{{ url_for('feed.feed_home') }}" role="link" tabindex="0" aria-label="Inicio" class="text-center {% if request.path.startswith('/feed') %}bottom-nav-active{% else %}text-primary{% endif %}">
+    <a href="{{ url_for('feed.feed_home') }}" role="link" tabindex="0" aria-label="Inicio" title="Inicio" class="text-center {% if request.path.startswith('/feed') %}bottom-nav-active{% else %}text-primary{% endif %}">
       <i class="bi bi-house fs-4 bottom-nav-icon"></i>
     </a>
-    <a href="{{ url_for('notes.list_notes') }}" role="link" tabindex="0" aria-label="Apuntes" class="text-center {% if request.path.startswith('/notes') %}bottom-nav-active{% else %}text-primary{% endif %}">
+    <a href="{{ url_for('notes.list_notes') }}" role="link" tabindex="0" aria-label="Apuntes" title="Apuntes" class="text-center {% if request.path.startswith('/notes') %}bottom-nav-active{% else %}text-primary{% endif %}">
       <i class="bi bi-journal-text fs-4 bottom-nav-icon"></i>
     </a>
-    <a href="{{ url_for('store.store_index') }}" role="link" tabindex="0" aria-label="Tienda" class="text-center {% if request.path.startswith('/store') %}bottom-nav-active{% else %}text-primary{% endif %}">
+    <a href="{{ url_for('store.store_index') }}" role="link" tabindex="0" aria-label="Tienda" title="Tienda" class="text-center {% if request.path.startswith('/store') %}bottom-nav-active{% else %}text-primary{% endif %}">
       <i class="bi bi-bag fs-4 bottom-nav-icon"></i>
     </a>
-    <a href="{{ url_for('ranking.show_ranking') }}" role="link" tabindex="0" aria-label="Ranking" class="text-center {% if request.path.startswith('/ranking') %}bottom-nav-active{% else %}text-primary{% endif %}">
+    <a href="{{ url_for('ranking.show_ranking') }}" role="link" tabindex="0" aria-label="Ranking" title="Ranking" class="text-center {% if request.path.startswith('/ranking') %}bottom-nav-active{% else %}text-primary{% endif %}">
       <i class="bi bi-trophy fs-4 bottom-nav-icon"></i>
     </a>
-    <a href="{{ url_for('chat.chat_index') }}" role="link" tabindex="0" aria-label="Chat" class="text-center {% if request.path.startswith('/chat') %}bottom-nav-active{% else %}text-primary{% endif %}">
+    <a href="{{ url_for('chat.chat_index') }}" role="link" tabindex="0" aria-label="Chat" title="Chat" class="text-center {% if request.path.startswith('/chat') %}bottom-nav-active{% else %}text-primary{% endif %}">
       <i class="bi bi-chat fs-4 bottom-nav-icon"></i>
     </a>
-    <a href="{{ url_for('auth.perfil') }}" role="link" tabindex="0" aria-label="Perfil" class="text-center {% if request.path.startswith('/perfil') %}bottom-nav-active{% else %}text-primary{% endif %}">
+    <a href="{{ url_for('auth.perfil') }}" role="link" tabindex="0" aria-label="Perfil" title="Perfil" class="text-center {% if request.path.startswith('/perfil') %}bottom-nav-active{% else %}text-primary{% endif %}">
       <i class="bi bi-person-circle fs-4 bottom-nav-icon"></i>
     </a>
   </div>
