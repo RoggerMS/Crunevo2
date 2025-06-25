@@ -276,3 +276,5 @@
 - Navbar superior ahora se oculta al hacer scroll y reaparece al subir, implementado en main.js y transición CSS (PR navbar-autohide).
 - Corregido selector de autohide para '.navbar-crunevo' y botón flotante movido sobre el navbar inferior con bottom:72px (PR overlay-autohide-fix).
 
+- Navbar ajustada a top:0 con CSS y botón de tema añadido en perfil (PR navbar-top-fix-theme).
+- Autohide del navbar funciona en todas las vistas y se quitó el botón de tema del navbar, moviéndolo solo al perfil (PR navbar-autohide-mobile).

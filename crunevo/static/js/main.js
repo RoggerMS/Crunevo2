@@ -263,22 +263,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initNotifications();
 
-  // Auto hide navbar on scroll for md and up
-  let prevScrollPos = window.pageYOffset;
+  // Auto hide navbar on scroll for all viewports
+  let lastScrollTop = window.pageYOffset;
   const navbar = document.querySelector('.navbar-crunevo');
   window.addEventListener('scroll', () => {
     if (!navbar) return;
-    if (window.innerWidth < 768) {
-      navbar.style.top = '0';
-      return;
-    }
-    const currentScrollPos = window.pageYOffset;
-    if (prevScrollPos > currentScrollPos || currentScrollPos <= 0) {
+    const current = window.pageYOffset;
+    if (lastScrollTop > current || current <= 0) {
       navbar.style.top = '0';
     } else {
       navbar.style.top = '-100px';
     }
-    prevScrollPos = currentScrollPos;
+    lastScrollTop = current;
   });
 
   // Bootstrap collapse handles the mobile menu
