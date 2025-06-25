@@ -117,6 +117,7 @@ body[data-bs-theme="dark"] .message {
 
 .mobile-overlay-btn {
   z-index: 1040;
+  bottom: 72px !important;
 }
 
 

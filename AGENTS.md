@@ -274,4 +274,5 @@
 - Navbar inferior móvil mejorado con ícono activo, animación de toque y scroll horizontal en pantallas pequeñas (PR bottom-nav-enhanced).
 - Altura reducida y tooltips añadidos al navbar inferior, con espacio inferior global para que no tape contenido (PR bottom-nav-improvements).
 - Navbar superior ahora se oculta al hacer scroll y reaparece al subir, implementado en main.js y transición CSS (PR navbar-autohide).
+- Corregido selector de autohide para '.navbar-crunevo' y botón flotante movido sobre el navbar inferior con bottom:72px (PR overlay-autohide-fix).
 
