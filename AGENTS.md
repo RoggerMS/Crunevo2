@@ -272,3 +272,4 @@
 - Menú hamburguesa y offcanvas del navbar eliminados en móviles; botones ocultos con CSS y marcado retirado. (PR remove-mobile-offcanvas)
 - Navbar inferior móvil implementado con mobile_bottom_nav.html e incluido en base.html. (PR bottom-nav-mobile)
 - Navbar inferior móvil mejorado con ícono activo, animación de toque y scroll horizontal en pantallas pequeñas (PR bottom-nav-enhanced).
+- Altura reducida y tooltips añadidos al navbar inferior, con espacio inferior global para que no tape contenido (PR bottom-nav-improvements).
