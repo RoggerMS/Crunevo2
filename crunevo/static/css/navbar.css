@@ -11,40 +11,15 @@
   .navbar-crunevo {
     min-height: 56px;
   }
+  .navbar-toggler {
+    display: none !important;
+  }
 }
 
 [data-bs-theme="dark"] .navbar-crunevo {
   background-color: rgba(115, 86, 255, 0.4);
 }
 
-.offcanvas-crunevo {
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 9999;
-  background-color: rgba(94, 45, 145, 0.95);
-  color: #f0f0f0;
-  transition: all 0.3s ease-in-out;
-  overflow-y: auto;
-}
-.offcanvas-crunevo .offcanvas-body {
-  background-color: rgba(94, 45, 145, 0.95);
-  font-size: 1.1rem;
-  padding: 1rem 1.5rem;
-}
-.offcanvas-crunevo .nav-link,
-.offcanvas-crunevo .btn,
-.offcanvas-crunevo .offcanvas-title {
-  color: #f0f0f0 !important;
-}
-.offcanvas-crunevo .btn-close {
-  filter: invert(1);
-}
-.offcanvas-crunevo .navbar-nav .nav-item {
-  margin-bottom: 1rem;
-}
 
 .navbar-crunevo .dropdown-menu {
   background-color: var(--primary);
