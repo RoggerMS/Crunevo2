@@ -1,29 +1,65 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container my-5">
-  <h1 class="mb-4 text-center">TÉRMINOS Y CONDICIONES DE USO DE CRUNEVO</h1>
-  <p class="text-muted">Última actualización: 25 de junio de 2025</p>
-  <p><strong>1. INTRODUCCIÓN</strong></p>
-  <p>Bienvenido a Crunevo. Al registrarte, iniciar sesión o usar cualquier función de esta plataforma, aceptas cumplir con los presentes Términos y Condiciones. Este documento regula el uso de los servicios ofrecidos por Crunevo a estudiantes y usuarios en general.</p>
-  <p><strong>2. RESPONSABILIDAD SOBRE EL CONTENIDO</strong></p>
-  <p>Todo contenido subido por los usuarios (apuntes, comentarios, imágenes, etc.) es de exclusiva responsabilidad de quien lo publica. Al subir un documento, el usuario declara tener derechos sobre el material y/o contar con la debida autorización para compartirlo.</p>
-  <p>Queda prohibido subir contenido que infrinja derechos de autor, promueva el odio, la violencia, la discriminación, o que vulnere la ley.</p>
-  <p><strong>3. DERECHOS DE AUTOR Y USO DE DOCUMENTOS</strong></p>
-  <p>Crunevo es una plataforma de uso educativo. El contenido compartido por los usuarios es para fines formativos y no debe ser comercializado fuera del sitio sin autorización.</p>
-  <p>Los usuarios conservan los derechos de autor sobre sus documentos, pero otorgan a Crunevo una licencia no exclusiva para mostrar, almacenar y distribuir el contenido dentro de la plataforma.</p>
-  <p><strong>4. PRIVACIDAD Y PROTECCIÓN DE DATOS</strong></p>
-  <p>Crunevo protege tus datos personales conforme a la legislación peruana vigente. Al registrarte, aceptas que tus datos puedan ser usados para mejorar el servicio, enviar notificaciones o realizar estadísticas, sin ser compartidos con terceros sin tu consentimiento.</p>
-  <p>Puedes modificar tu información desde tu perfil o solicitar la eliminación total de tu cuenta.</p>
-  <p><strong>5. CONDICIONES DE USO DE LA PLATAFORMA</strong></p>
-  <p>Está prohibido el uso de bots o automatizaciones sin autorización.</p>
-  <p>Está prohibida la suplantación de identidad o el uso de perfiles falsos.</p>
-  <p>El incumplimiento de estas reglas podrá implicar la suspensión temporal o permanente de la cuenta.</p>
-  <p><strong>6. COMENTARIOS Y PARTICIPACIÓN</strong></p>
-  <p>Los comentarios y respuestas deben ser respetuosos. No se tolerará lenguaje ofensivo, insultos o ataques personales. Los administradores podrán eliminar contenido o suspender cuentas si se vulneran estas reglas.</p>
-  <p><strong>7. MODIFICACIONES Y AVISOS</strong></p>
-  <p>Crunevo podrá modificar estos Términos en cualquier momento. Se notificará a los usuarios sobre los cambios mediante la plataforma. El uso continuo de Crunevo implica la aceptación de las nuevas condiciones.</p>
-  <p><strong>8. CONTACTO</strong></p>
-  <p>Para dudas, consultas o denuncias, puedes escribirnos a <a href="mailto:soporte@crunevo.com">soporte@crunevo.com</a>.</p>
-  <a href="{{ request.referrer or url_for('feed.feed_home') }}" class="btn btn-secondary mt-4">Volver</a>
+  <h1 class="mb-4 text-center fw-bold text-primary">TÉRMINOS Y CONDICIONES DE USO DE CRUNEVO</h1>
+  <p class="text-muted text-center">Última actualización: 25 de junio de 2025</p>
+
+  <h4 class="mt-5">1. INTRODUCCIÓN</h4>
+  <p>Crunevo es una plataforma educativa peruana dedicada a conectar estudiantes mediante el intercambio de apuntes, recursos, foros de ayuda, tienda estudiantil y herramientas de inteligencia artificial. Al acceder a cualquier servicio de Crunevo, aceptas estos términos y condiciones en su totalidad. Si no estás de acuerdo, te pedimos no utilizar la plataforma.</p>
+
+  <h4 class="mt-4">2. REQUISITOS DE USO</h4>
+  <p>Para usar Crunevo debes tener al menos 13 años o contar con el permiso de tus padres o tutores si eres menor de edad. No debes usar la plataforma con fines ilegales ni violar ninguna normativa nacional o internacional.</p>
+
+  <h4 class="mt-4">3. REGISTRO Y CUENTAS</h4>
+  <p>Al crear una cuenta, aceptas proporcionar información verídica, mantener tu contraseña segura y notificar cualquier uso no autorizado. Estás prohibido de crear múltiples cuentas para obtener ventajas indebidas.</p>
+
+  <h4 class="mt-4">4. SUBIDA DE CONTENIDOS</h4>
+  <p>Los usuarios pueden subir apuntes, imágenes, comentarios y archivos educativos. Aceptas que:</p>
+  <ul>
+    <li>Eres titular de los derechos o tienes permiso para compartir el contenido.</li>
+    <li>No vulneras derechos de autor ni compartes contenido privado o ilegal.</li>
+    <li>No usas Crunevo para publicar spam, lenguaje ofensivo, odio, violencia o acoso.</li>
+  </ul>
+  <p>Crunevo puede eliminar cualquier contenido que infrinja estas reglas sin previo aviso.</p>
+
+  <h4 class="mt-4">5. SISTEMA DE CRÉDITOS Y RECOMPENSAS</h4>
+  <p>Crunevo otorga créditos por subir apuntes, comentar, recibir votos positivos, participar en misiones y actividades. Estos créditos pueden canjearse por productos en la tienda, agradecer a otros usuarios o acceder a contenido exclusivo.</p>
+  <p>Los créditos no son dinero real y no se pueden transferir fuera de la plataforma. Cualquier intento de manipulación (bots, multicuentas, hackeo) causará suspensión inmediata de la cuenta.</p>
+
+  <h4 class="mt-4">6. FUNCIONALIDAD DE LA TIENDA</h4>
+  <p>La tienda permite comprar productos digitales o físicos con créditos o dinero. Todos los precios se muestran en soles peruanos (S/). No se admiten devoluciones de productos digitales ya descargados. Los productos físicos serán enviados según disponibilidad y logística anunciada.</p>
+
+  <h4 class="mt-4">7. USO DEL CHAT Y LA COMUNIDAD</h4>
+  <p>El chat entre usuarios es opcional y está sujeto a moderación por parte del equipo de Crunevo. Está prohibido enviar mensajes de odio, acosar, hacer publicidad no autorizada o violar la privacidad de otros. Las conversaciones pueden ser denunciadas, y el equipo tomará medidas según corresponda.</p>
+
+  <h4 class="mt-4">8. INTELIGENCIA ARTIFICIAL Y LIMITACIONES</h4>
+  <p>Crunevo incluye un asistente académico basado en IA. Esta herramienta es solo con fines educativos y no reemplaza a un docente, especialista legal o médico. Cualquier mal uso de la IA con fines fraudulentos será sancionado.</p>
+
+  <h4 class="mt-4">9. PRIVACIDAD Y PROTECCIÓN DE DATOS</h4>
+  <p>Crunevo respeta tu privacidad. Los datos que recopilamos se usan únicamente para mejorar tu experiencia educativa. No vendemos ni compartimos tu información con terceros sin tu consentimiento. Puedes eliminar tu cuenta en cualquier momento o modificar tus datos desde el perfil.</p>
+
+  <h4 class="mt-4">10. SEGURIDAD Y RESPONSABILIDADES</h4>
+  <p>Crunevo toma medidas de seguridad como cifrado y verificación por correo. No obstante, el usuario es responsable de mantener protegida su cuenta. No nos hacemos responsables por pérdidas de acceso si no has protegido adecuadamente tu información.</p>
+
+  <h4 class="mt-4">11. SUSPENSIÓN Y TERMINACIÓN</h4>
+  <p>Podemos suspender o eliminar cuentas que violen estos términos, promuevan el plagio, usen lenguaje ofensivo o pongan en riesgo a la comunidad. Las suspensiones pueden ser temporales o permanentes, según la gravedad.</p>
+
+  <h4 class="mt-4">12. CAMBIOS EN LA PLATAFORMA</h4>
+  <p>Crunevo puede modificar sus servicios, interfaz o funcionalidades en cualquier momento. También podemos cambiar estos Términos y Condiciones, notificándote por correo o mediante avisos dentro del sistema.</p>
+
+  <h4 class="mt-4">13. LIMITACIÓN DE RESPONSABILIDAD</h4>
+  <p>Crunevo no garantiza que todos los contenidos sean 100% correctos. No somos responsables de decisiones que tomes basadas en los recursos compartidos por otros usuarios. Usas la plataforma bajo tu propio criterio.</p>
+
+  <h4 class="mt-4">14. DONACIONES Y PLANES OPCIONALES</h4>
+  <p>Crunevo ofrece acceso gratuito para todos. Sin embargo, puedes apoyar la plataforma mediante donaciones o suscripciones simbólicas (Crunevo+), las cuales son completamente voluntarias y no generan relación contractual.</p>
+
+  <h4 class="mt-4">15. CONTACTO Y SOPORTE</h4>
+  <p>Para cualquier duda, problema técnico, denuncia o sugerencia, puedes escribirnos directamente a <a href="mailto:soporte@crunevo.com">soporte@crunevo.com</a>. Estamos comprometidos a mantener un espacio educativo justo y respetuoso.</p>
+
+  <div class="text-center mt-5">
+    <a href="{{ request.referrer or url_for('feed.feed_home') }}" class="btn btn-secondary">
+      <i class="bi bi-arrow-left"></i> Volver
+    </a>
+  </div>
 </div>
 {% endblock %}
