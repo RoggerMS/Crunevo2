@@ -18,8 +18,16 @@
 }
 
 .offcanvas-crunevo {
-  background-color: var(--primary);
+  background-color: #7356ff !important;
   color: #fff;
+}
+.offcanvas-crunevo .offcanvas-body {
+  background-color: #7356ff !important;
+}
+.offcanvas-crunevo .nav-link,
+.offcanvas-crunevo .btn,
+.offcanvas-crunevo .offcanvas-title {
+  color: #fff !important;
 }
 .offcanvas-crunevo .btn-close {
   filter: invert(1);
