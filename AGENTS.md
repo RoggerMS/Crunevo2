@@ -279,3 +279,4 @@
 - Navbar ajustada a top:0 con CSS y botón de tema añadido en perfil (PR navbar-top-fix-theme).
 - Autohide del navbar funciona en todas las vistas y se quitó el botón de tema del navbar, moviéndolo solo al perfil (PR navbar-autohide-mobile).
 - Autohide del navbar reescrito para detectar scroll táctil y se limpiaron márgenes globales. Se añadió clase .navbar-hidden (PR navbar-autohide-touch-fix).
+- Se añadió página /terms con los Términos y Condiciones y checkboxes obligatorios en registro y subida de apuntes (PR terms-conditions).

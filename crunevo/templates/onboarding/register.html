@@ -72,11 +72,15 @@
           </div>
         </div>
       </div>
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="acceptTerms" required>
+        <label class="form-check-label" for="acceptTerms">He leído y acepto los <a href="{{ url_for('main.terms') }}">Términos y Condiciones</a></label>
+      </div>
       <button type="submit" class="btn btn-crunevo w-100">Registrarte</button>
 
       <div class="legal-text mt-3">
         Es posible que las personas que usan nuestro servicio hayan subido tu información de contacto a CRUNEVO. <a href="#">Más información</a>.<br><br>
-        Al hacer clic en "Registrarte", aceptas nuestras <a href="/terminos">Condiciones</a>, la <a href="/privacidad">Política de privacidad</a> y la <a href="/cookies">Política de cookies</a>.
+        Al hacer clic en "Registrarte", aceptas nuestras <a href="{{ url_for('main.terms') }}">Condiciones</a>, la <a href="/privacidad">Política de privacidad</a> y la <a href="/cookies">Política de cookies</a>.
         Es posible que te enviemos notificaciones por correo o sistema, que puedes desactivar cuando quieras.
       </div>
 

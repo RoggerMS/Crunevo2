@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-5">
+  <h1 class="mb-4 text-center">TÉRMINOS Y CONDICIONES DE USO DE CRUNEVO</h1>
+  <p class="text-muted">Última actualización: 25 de junio de 2025</p>
+  <p><strong>1. INTRODUCCIÓN</strong></p>
+  <p>Bienvenido a Crunevo. Al registrarte, iniciar sesión o usar cualquier función de esta plataforma, aceptas cumplir con los presentes Términos y Condiciones. Este documento regula el uso de los servicios ofrecidos por Crunevo a estudiantes y usuarios en general.</p>
+  <p><strong>2. RESPONSABILIDAD SOBRE EL CONTENIDO</strong></p>
+  <p>Todo contenido subido por los usuarios (apuntes, comentarios, imágenes, etc.) es de exclusiva responsabilidad de quien lo publica. Al subir un documento, el usuario declara tener derechos sobre el material y/o contar con la debida autorización para compartirlo.</p>
+  <p>Queda prohibido subir contenido que infrinja derechos de autor, promueva el odio, la violencia, la discriminación, o que vulnere la ley.</p>
+  <p><strong>3. DERECHOS DE AUTOR Y USO DE DOCUMENTOS</strong></p>
+  <p>Crunevo es una plataforma de uso educativo. El contenido compartido por los usuarios es para fines formativos y no debe ser comercializado fuera del sitio sin autorización.</p>
+  <p>Los usuarios conservan los derechos de autor sobre sus documentos, pero otorgan a Crunevo una licencia no exclusiva para mostrar, almacenar y distribuir el contenido dentro de la plataforma.</p>
+  <p><strong>4. PRIVACIDAD Y PROTECCIÓN DE DATOS</strong></p>
+  <p>Crunevo protege tus datos personales conforme a la legislación peruana vigente. Al registrarte, aceptas que tus datos puedan ser usados para mejorar el servicio, enviar notificaciones o realizar estadísticas, sin ser compartidos con terceros sin tu consentimiento.</p>
+  <p>Puedes modificar tu información desde tu perfil o solicitar la eliminación total de tu cuenta.</p>
+  <p><strong>5. CONDICIONES DE USO DE LA PLATAFORMA</strong></p>
+  <p>Está prohibido el uso de bots o automatizaciones sin autorización.</p>
+  <p>Está prohibida la suplantación de identidad o el uso de perfiles falsos.</p>
+  <p>El incumplimiento de estas reglas podrá implicar la suspensión temporal o permanente de la cuenta.</p>
+  <p><strong>6. COMENTARIOS Y PARTICIPACIÓN</strong></p>
+  <p>Los comentarios y respuestas deben ser respetuosos. No se tolerará lenguaje ofensivo, insultos o ataques personales. Los administradores podrán eliminar contenido o suspender cuentas si se vulneran estas reglas.</p>
+  <p><strong>7. MODIFICACIONES Y AVISOS</strong></p>
+  <p>Crunevo podrá modificar estos Términos en cualquier momento. Se notificará a los usuarios sobre los cambios mediante la plataforma. El uso continuo de Crunevo implica la aceptación de las nuevas condiciones.</p>
+  <p><strong>8. CONTACTO</strong></p>
+  <p>Para dudas, consultas o denuncias, puedes escribirnos a <a href="mailto:soporte@crunevo.com">soporte@crunevo.com</a>.</p>
+  <a href="{{ request.referrer or url_for('feed.feed_home') }}" class="btn btn-secondary mt-4">Volver</a>
+</div>
+{% endblock %}
