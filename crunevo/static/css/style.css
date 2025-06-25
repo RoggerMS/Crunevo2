@@ -120,3 +120,26 @@ body[data-bs-theme="dark"] .message {
 }
 
 
+
+.bottom-nav-active {
+  color: var(--crunevo-primary, #7c3aed);
+  font-weight: 600;
+}
+body[data-bs-theme='dark'] .bottom-nav-active {
+  color: #fff;
+}
+.bottom-nav-icon {
+  transition: transform 0.15s ease;
+}
+.bottom-nav-icon:active {
+  transform: scale(0.93);
+}
+@media (max-width: 350px) {
+  .bottom-nav-wrapper {
+    justify-content: flex-start !important;
+    overflow-x: auto;
+    gap: 1rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}

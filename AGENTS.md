@@ -271,3 +271,4 @@
 - Menú móvil del navbar actualizado para cubrir toda la pantalla con fondo morado translúcido y texto legible; estilos en navbar.css. (PR mobile-offcanvas-fix)
 - Menú hamburguesa y offcanvas del navbar eliminados en móviles; botones ocultos con CSS y marcado retirado. (PR remove-mobile-offcanvas)
 - Navbar inferior móvil implementado con mobile_bottom_nav.html e incluido en base.html. (PR bottom-nav-mobile)
+- Navbar inferior móvil mejorado con ícono activo, animación de toque y scroll horizontal en pantallas pequeñas (PR bottom-nav-enhanced).
