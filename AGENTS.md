@@ -269,3 +269,4 @@
 - Fondo del offcanvas m\xc3\xb3vil del navbar ahora cubre todo el cuerpo y enlaces permanecen en blanco; clase ajustada en navbar.html (PR offcanvas-bg-full).
 
 - Menú móvil del navbar actualizado para cubrir toda la pantalla con fondo morado translúcido y texto legible; estilos en navbar.css. (PR mobile-offcanvas-fix)
+- Menú hamburguesa y offcanvas del navbar eliminados en móviles; botones ocultos con CSS y marcado retirado. (PR remove-mobile-offcanvas)
