@@ -45,3 +45,37 @@
   color: #fff !important;
   border-color: #555 !important;
 }
+
+/* Estilos para términos y condiciones */
+.container h1,
+.container h4 {
+  color: #5a3cc8;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.container p,
+.container li {
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+/* Ajustes para modo oscuro en terms.html */
+[data-bs-theme="dark"] .container h1,
+[data-bs-theme="dark"] .container h4 {
+  color: #b6a7ff !important;
+}
+
+[data-bs-theme="dark"] .container p,
+[data-bs-theme="dark"] .container li {
+  color: #e0e0e0 !important;
+}
+
+/* Enlace visible en ambos modos */
+.container a {
+  color: #5a3cc8;
+  text-decoration: underline;
+}
+[data-bs-theme="dark"] .container a {
+  color: #aad4ff;
+}
