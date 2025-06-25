@@ -6,7 +6,7 @@
   z-index: 1030;
   min-height: 64px;
   transition: top 0.3s ease-in-out;
-  top: 0;
+  top: 0 !important;
   position: sticky;
 }
 
