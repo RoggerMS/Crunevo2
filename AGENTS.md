@@ -266,3 +266,4 @@
 - Corregido include en feed/index.html eliminando 'with categoria=categoria' para evitar TemplateSyntaxError (PR feed-sidebar-with-fix).
 - Menú móvil del navbar ahora usa fondo morado con clase `offcanvas-crunevo` y los dropdowns comparten ese color. Botones flotantes de sidebar móvil cambian a icono de filtro y clase `mobile-overlay-btn` (PR overlay-menu-color).
 - Tienda muestra precios en destacados, botón "+ Carrito" con AJAX y contador en el navbar y botón flotante (PR store-cart-indicators).
+- Fondo del offcanvas m\xc3\xb3vil del navbar ahora cubre todo el cuerpo y enlaces permanecen en blanco; clase ajustada en navbar.html (PR offcanvas-bg-full).
