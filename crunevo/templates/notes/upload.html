@@ -37,6 +37,11 @@
             <canvas id="pdfPreview" class="w-100 border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;"></canvas>
             <img loading="lazy" id="imgPreview" class="img-fluid border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;" />
 
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="noteTerms" required>
+              <label class="form-check-label" for="noteTerms">Acepto los <a href="{{ url_for('main.terms') }}">Términos y Condiciones</a>, incluyendo que soy el autor del documento o tengo permiso para compartirlo.</label>
+            </div>
+
             <button type="submit" class="btn btn-primary w-100" id="uploadBtn">Subir</button>
           </form>
         </div>
