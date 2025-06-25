@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Auto hide navbar on scroll for md and up
   let prevScrollPos = window.pageYOffset;
-  const navbar = document.querySelector('.navbar');
+  const navbar = document.querySelector('.navbar-crunevo');
   window.addEventListener('scroll', () => {
     if (!navbar) return;
     if (window.innerWidth < 768) {
