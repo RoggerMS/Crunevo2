@@ -1,0 +1,22 @@
+<div class="d-md-none fixed-bottom bg-white bg-body border-top shadow-sm py-1">
+  <div class="d-flex justify-content-around align-items-center">
+    <a href="{{ url_for('feed.feed_home') }}" class="text-center text-primary" aria-label="Inicio">
+      <i class="bi bi-house fs-4"></i>
+    </a>
+    <a href="{{ url_for('notes.list_notes') }}" class="text-center text-primary" aria-label="Apuntes">
+      <i class="bi bi-journal-text fs-4"></i>
+    </a>
+    <a href="{{ url_for('store.store_index') }}" class="text-center text-primary" aria-label="Tienda">
+      <i class="bi bi-bag fs-4"></i>
+    </a>
+    <a href="{{ url_for('ranking.show_ranking') }}" class="text-center text-primary" aria-label="Ranking">
+      <i class="bi bi-trophy fs-4"></i>
+    </a>
+    <a href="{{ url_for('chat.chat_index') }}" class="text-center text-primary" aria-label="Chat">
+      <i class="bi bi-chat fs-4"></i>
+    </a>
+    <a href="{{ url_for('auth.perfil') }}" class="text-center text-primary" aria-label="Perfil">
+      <i class="bi bi-person-circle fs-4"></i>
+    </a>
+  </div>
+</div>
