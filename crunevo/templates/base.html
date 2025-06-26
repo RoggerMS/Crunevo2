@@ -44,6 +44,9 @@
         {% endwith %}
         {% block content %}{% endblock %}
     </div>
+    <footer class="text-center py-3 mt-auto">
+      <a href="{{ url_for('main.crolars') }}" class="link-secondary text-decoration-none">¿Qué son los Crolars?</a>
+    </footer>
     <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
     {% if request.path.startswith('/store') %}
     <a href="{{ url_for('store.view_cart') }}" class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-3 d-lg-none">

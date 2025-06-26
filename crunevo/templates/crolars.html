@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Crolars - Crunevo{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <h1 class="text-center fw-bold mb-4">💰 ¿Qué son los Crolars?</h1>
+  <p>Los <strong>Crolars</strong> son la moneda oficial de Crunevo. Puedes ganarlos al participar activamente como estudiante, y usarlos para canjear productos, recompensas simbólicas o participar en sorteos académicos.</p>
+
+  <h2 class="mt-5">📈 ¿Cómo ganar Crolars?</h2>
+  <ul>
+    <li>Sube un apunte útil y verificado → <strong>+500 Crolars</strong></li>
+    <li>Comenta aportes de otros con ideas útiles → <strong>+100 Crolars</strong></li>
+    <li>Invita a un amigo que suba su primer apunte → <strong>+500 Crolars</strong></li>
+    <li>Completa misiones semanales en tu cuenta → <strong>+200 a 1000 Crolars</strong></li>
+    <li>Completa tu perfil (foto + carrera) → <strong>+150 Crolars</strong></li>
+  </ul>
+
+  <h2 class="mt-5">⏰ Racha de inicio de sesión</h2>
+  <p>Si ingresas todos los días sin faltar, ganarás Crolars automáticamente:</p>
+  <table class="table w-auto mx-auto">
+    <thead>
+      <tr><th>Día</th><th>Crolars</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Día 1</td><td>+2</td></tr>
+      <tr><td>Día 2</td><td>+3</td></tr>
+      <tr><td>Día 3</td><td>+4</td></tr>
+      <tr><td>Día 4</td><td>+5</td></tr>
+      <tr><td>Día 5</td><td>+6</td></tr>
+      <tr><td>Día 6</td><td>+7</td></tr>
+      <tr><td><strong>Día 7</strong></td><td><strong>+10</strong> 🏆</td></tr>
+    </tbody>
+  </table>
+  <p>Si fallas un día, la racha se reinicia.</p>
+
+  <h2 class="mt-5">🛍️ ¿Cómo uso mis Crolars?</h2>
+  <p>Puedes canjear tus Crolars por productos escolares, artículos únicos o recompensas simbólicas dentro de Crunevo:</p>
+  <ul>
+    <li>🎓 Taza "Modo Examen Activado" → 5000 Crolars</li>
+    <li>📘 Llavero Crunevo en forma de libro → 4000 Crolars</li>
+    <li>🎨 Stickers escolares Crunevo → 3000 Crolars</li>
+    <li>📜 Certificados imprimibles → desde 2500 Crolars</li>
+  </ul>
+  <p><strong>Envío gratis</strong> desde 5000 Crolars acumulados.</p>
+
+  <h2 class="mt-5">💵 ¿Se pueden convertir en dinero real?</h2>
+  <p>Por ahora, los Crolars solo se pueden usar dentro de Crunevo.</p>
+  <p>En el futuro, usuarios verificados podrán canjear <strong>5000 Crolars por S/5.00</strong> como bonificación simbólica. Esto solo estará disponible si cumples con estas condiciones:</p>
+  <ul>
+    <li>Subiste al menos 5 apuntes verificados.</li>
+    <li>Tuviste actividad constante en el mes.</li>
+    <li>Activaste verificación en dos pasos (2FA).</li>
+  </ul>
+  <p><strong>Solo se podrá retirar una vez al mes.</strong></p>
+
+  <h2 class="mt-5">🛡️ Seguridad y validación</h2>
+  <p>Todos los Crolars que ganas pasan por validaciones automáticas o revisión manual. Si subes contenido copiado, spam o usas cuentas falsas, perderás acceso al sistema de Crolars.</p>
+  <p>Queremos recompensar el esfuerzo real, y tú puedes ayudarnos manteniendo la comunidad limpia.</p>
+
+  <div class="my-4 text-center">
+    <a class="btn btn-primary" href="/perfil">Ver mi saldo de Crolars</a>
+    <a class="btn btn-outline-success ms-2" href="/tienda">Canjear productos</a>
+  </div>
+</div>
+{% endblock %}

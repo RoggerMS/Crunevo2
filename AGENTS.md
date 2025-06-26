@@ -311,3 +311,4 @@
 - Filtros rápidos rediseñados como badges con scroll horizontal en móviles (PR feed-quickfilters-redesign).
 - Sistema de rachas de inicio de sesión que otorga créditos crecientes cada día (PR login-streak-rewards).
 - Recompensa de racha ahora se reclama manualmente con /api/reclamar-racha y widget flotante en el feed (PR login-streak-claim).
+- Página /crolars con explicación de la moneda y enlaces desde navbar y footer (PR crolars-info-page).

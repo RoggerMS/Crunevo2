@@ -12,3 +12,8 @@ def index():
 @main_bp.route("/terms")
 def terms():
     return render_template("terms.html")
+
+
+@main_bp.route("/crolars")
+def crolars():
+    return render_template("crolars.html")
