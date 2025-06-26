@@ -17,17 +17,40 @@
 
             <div class="form-floating mb-3">
               <textarea class="form-control" placeholder="Descripción" id="description" name="description" style="height: 120px"></textarea>
-              <label for="description">Descripción</label>
+              <label for="description">Descripción breve</label>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="category">Categoría</label>
+              <select class="form-select" id="category" name="category" required>
+                <option value="" selected>Seleccionar...</option>
+                <option>Matemática</option>
+                <option>Historia</option>
+                <option>Biología</option>
+                <option>Comunicación</option>
+              </select>
             </div>
 
             <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="tags" name="tags" placeholder="Etiquetas (separadas por coma)">
-              <label for="tags">Etiquetas (ej. mate, física)</label>
+              <input type="text" class="form-control" id="course" name="course" placeholder="Curso específico (opcional)">
+              <label for="course">Curso específico (opcional)</label>
             </div>
 
-            <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="category" name="category" placeholder="Categoría">
-              <label for="category">Categoría</label>
+            <div class="mb-3">
+              <label class="form-label" for="level">Nivel Académico</label>
+              <select class="form-select" id="level" name="level" required>
+                <option value="Primaria">Primaria</option>
+                <option value="Secundaria">Secundaria</option>
+                <option value="Universidad" selected>Universidad</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="tagsInput">Etiquetas</label>
+              <div id="tagsContainer" class="mb-2"></div>
+              <input type="text" class="form-control" id="tagsInput" placeholder="Añadir etiqueta">
+              <div class="dropdown-menu w-100" id="tagSuggestionBox"></div>
+              <input type="hidden" id="tagsHidden" name="tags">
             </div>
 
             <div class="mb-4">
@@ -36,6 +59,11 @@
             </div>
             <canvas id="pdfPreview" class="w-100 border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;"></canvas>
             <img loading="lazy" id="imgPreview" class="img-fluid border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;" />
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="privacyToggle" name="private" value="1">
+              <label class="form-check-label" for="privacyToggle">Privado</label>
+            </div>
 
             <div class="form-check mb-3">
               <input class="form-check-input" type="checkbox" id="noteTerms" required>
@@ -90,6 +118,79 @@
         imgPrev.src = URL.createObjectURL(file);
         imgPrev.onload = () => URL.revokeObjectURL(imgPrev.src);
         imgPrev.classList.remove('tw-hidden');
+      }
+    });
+
+    const suggestions = {{ suggestions|tojson }};
+    const tagInput = document.getElementById('tagsInput');
+    const tagBox = document.getElementById('tagSuggestionBox');
+    const tagContainer = document.getElementById('tagsContainer');
+    const hiddenTags = document.getElementById('tagsHidden');
+    const picked = [];
+
+    function renderTags() {
+      tagContainer.innerHTML = '';
+      picked.forEach((t, i) => {
+        const span = document.createElement('span');
+        span.className = 'badge bg-secondary me-1 mb-1 d-inline-flex align-items-center';
+        span.textContent = t;
+        const close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'btn-close btn-close-white btn-sm ms-1';
+        close.style.fontSize = '0.6rem';
+        close.addEventListener('click', () => {
+          picked.splice(i, 1);
+          renderTags();
+        });
+        span.appendChild(close);
+        tagContainer.appendChild(span);
+      });
+      hiddenTags.value = picked.join(',');
+    }
+
+    function showSuggestions(val) {
+      tagBox.innerHTML = '';
+      if (!val) return;
+      suggestions
+        .filter((s) => s.toLowerCase().startsWith(val.toLowerCase()) && !picked.includes(s))
+        .slice(0, 5)
+        .forEach((s) => {
+          const item = document.createElement('button');
+          item.type = 'button';
+          item.className = 'dropdown-item';
+          item.textContent = s;
+          item.addEventListener('click', () => {
+            picked.push(s);
+            renderTags();
+            tagBox.classList.remove('show');
+            tagInput.value = '';
+          });
+          tagBox.appendChild(item);
+        });
+      if (tagBox.children.length) {
+        tagBox.classList.add('show');
+      } else {
+        tagBox.classList.remove('show');
+      }
+    }
+
+    tagInput.addEventListener('input', () => {
+      showSuggestions(tagInput.value.trim());
+    });
+
+    tagInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && tagInput.value.trim()) {
+        e.preventDefault();
+        picked.push(tagInput.value.trim());
+        renderTags();
+        tagInput.value = '';
+        tagBox.classList.remove('show');
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!tagInput.contains(e.target)) {
+        tagBox.classList.remove('show');
       }
     });
 
