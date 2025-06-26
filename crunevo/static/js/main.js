@@ -161,6 +161,8 @@ function initReactions() {
     container.querySelectorAll('.reaction-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         const reaction = btn.dataset.reaction;
+        btn.classList.add('reaction-active');
+        setTimeout(() => btn.classList.remove('reaction-active'), 200);
         sendReaction(reaction);
         if (options) options.classList.add('d-none');
       });
@@ -390,11 +392,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const postForm = document.getElementById('postForm');
   const postBtn = document.getElementById('postSubmitBtn');
+  const uploadSpinner = document.getElementById('uploadSpinner');
   if (postForm && postBtn) {
     postForm.addEventListener('submit', () => {
       postBtn.disabled = true;
       postBtn.innerHTML =
         '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Publicando...';
+      if (uploadSpinner) {
+        uploadSpinner.classList.remove('tw-hidden');
+      }
     });
   }
 

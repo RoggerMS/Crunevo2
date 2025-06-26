@@ -306,3 +306,6 @@
 - Se documenta la hoja de ruta "Mejoras Fase 2": comentarios avanzados, transferencias de créditos, notificaciones ampliadas, logros y ranking, pulido móvil y pruebas de usabilidad.
 - Corregido icono de campana en lista de notificaciones usando emoji real para evitar UnicodeEncodeError (hotfix notifications-emoji).
 - Ajustado fondo del dropdown de notificaciones a colores neutros con modo oscuro y botón 'Marcar todo como leído' con estilo btn-outline-secondary. Se añadió flecha decorativa (PR notifications-bg-fix).
+- Añadida animación pop a los botones de reacciones y en cada emoji del panel (PR reactions-anim-pop).
+- Vista previa de imagen muestra spinner de subida en el modal de publicación (PR feed-upload-spinner).
+- Filtros rápidos rediseñados como badges con scroll horizontal en móviles (PR feed-quickfilters-redesign).
