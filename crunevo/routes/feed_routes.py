@@ -458,6 +458,31 @@ def comment_post(post_id):
     )
 
 
+@feed_bp.route("/api/comments/<int:post_id>")
+@activated_required
+def api_comments(post_id):
+    """Return recent comments for a post."""
+    post = Post.query.get_or_404(post_id)
+    comments = (
+        PostComment.query.filter_by(post_id=post.id)
+        .order_by(PostComment.timestamp.desc())
+        .limit(50)
+        .all()
+    )
+    return jsonify(
+        [
+            {
+                "body": c.body,
+                "author": c.author.username,
+                "avatar": c.author.avatar_url
+                or url_for("static", filename="img/default.png"),
+                "timestamp": c.timestamp.isoformat(),
+            }
+            for c in comments
+        ]
+    )
+
+
 @feed_bp.route("/save/<int:post_id>", methods=["POST"])
 @activated_required
 def toggle_save(post_id):

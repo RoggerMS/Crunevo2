@@ -7,11 +7,16 @@
     {{ csrf.csrf_field() }}
     <button class="btn btn-sm btn-outline-secondary">Marcar todo como leído</button>
   </form>
-  <ul class="list-group">
+  <ul class="list-group notification-page-list">
     {% for n in notificaciones %}
-    <li class="list-group-item {% if not n.is_read %}list-group-item-info{% endif %}">
-      <a href="{{ n.url or '#' }}">{{ n.message }}</a>
-      <small class="text-muted d-block">{{ n.timestamp|timesince }} atrás</small>
+    <li class="list-group-item border-0 p-2 {% if not n.is_read %}unread{% endif %}">
+      <div class="d-flex align-items-start">
+        <span class="noti-icon me-2">{{ '\ud83d\udd14' }}</span>
+        <div class="flex-grow-1">
+          <a class="stretched-link text-decoration-none" href="{{ n.url or '#' }}">{{ n.message }}</a>
+        </div>
+        <small class="text-muted ms-2 noti-time">{{ n.timestamp|timesince }}</small>
+      </div>
     </li>
     {% else %}
     <li class="list-group-item">No tienes notificaciones.</li>

@@ -85,6 +85,45 @@ function renderMensajeCard(data) {
   return `<div class="feed-card${highlight}">💬 ${data.text || ''}</div>`;
 }
 
+function timeAgo(ts) {
+  const d = new Date(ts);
+  const diff = Math.floor((Date.now() - d.getTime()) / 1000);
+  if (diff < 60) return 'hace unos segundos';
+  const m = Math.floor(diff / 60);
+  if (m < 60) return `hace ${m} min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `hace ${h} h`;
+  const dday = Math.floor(h / 24);
+  if (dday === 1) return 'ayer';
+  return `hace ${dday} d`;
+}
+
+function renderComment(data) {
+  const div = document.createElement('div');
+  div.className = 'd-flex mb-3 comment comment-item';
+  div.innerHTML = `
+    <img src="${data.avatar}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+    <div>
+      <div class="small text-muted">${data.author} • ${timeAgo(data.timestamp)}</div>
+      <div>${data.body}</div>
+    </div>`;
+  return div;
+}
+
+function loadComments(postId, container) {
+  fetch(`/api/comments/${postId}`)
+    .then((r) => r.json())
+    .then((items) => {
+      container.innerHTML = '';
+      items.forEach((c) => {
+        container.appendChild(renderComment(c));
+      });
+      if (items.length === 0) {
+        container.innerHTML = '<p class="text-muted" data-empty-msg>No hay comentarios.</p>';
+      }
+    });
+}
+
 function initFeedInteractions() {
   document.querySelectorAll('.like-form').forEach((form) => {
     form.addEventListener('submit', function (e) {
@@ -115,9 +154,12 @@ function initFeedInteractions() {
         .then((c) => {
           const container = document.getElementById(this.dataset.container);
           if (container) {
-            const div = document.createElement('div');
-            div.className = 'd-flex mb-3 comment';
-            div.innerHTML = `<img src="${this.dataset.avatar}" class="rounded-circle me-2" width="32" height="32" alt="avatar"><div><div class="small text-muted">${this.dataset.username} • ${c.timestamp}</div><div>${c.body}</div></div>`;
+            const div = renderComment({
+              avatar: this.dataset.avatar,
+              author: this.dataset.username,
+              body: c.body,
+              timestamp: c.timestamp,
+            });
             container.prepend(div);
             const emptyMsg = container.querySelector('[data-empty-msg]');
             if (emptyMsg) emptyMsg.remove();
@@ -128,6 +170,18 @@ function initFeedInteractions() {
         .finally(() => {
           btn.disabled = false;
         });
+    });
+  });
+
+  document.querySelectorAll('.comment-modal').forEach((modalEl) => {
+    modalEl.addEventListener('shown.bs.modal', () => {
+      const postId = modalEl.dataset.postId;
+      const container = modalEl.querySelector('.comment-container');
+      const input = modalEl.querySelector('input[name="body"]');
+      if (input) input.focus();
+      if (postId && container) {
+        loadComments(postId, container);
+      }
     });
   });
 
