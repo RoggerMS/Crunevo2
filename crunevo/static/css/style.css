@@ -49,6 +49,15 @@ body {
   padding-bottom: 0.5rem;
 }
 
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+.comment-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
 .chat-container {
   height: 300px;
   overflow-y: auto;

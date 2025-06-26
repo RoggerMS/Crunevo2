@@ -301,3 +301,4 @@
 - Se ignora el movimiento del cursor o la rueda para evitar reacciones accidentales (PR reaction-scroll-fix).
 - Long press fix for mobile reactions: preventDefault en touchstart y umbral de movimiento para mostrar panel correctamente (PR mobile-longpress-reactions-fix).
 - Rediseñado el sistema de notificaciones con dropdown claro, íconos por tipo, timestamps amigables y resaltado al abrir (PR notifications-redesign).
+- Sistema de comentarios mejorado con carga vía AJAX, enfoque automático en el modal y estilos modernos (PR comments-live-ui).
