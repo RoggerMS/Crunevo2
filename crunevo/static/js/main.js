@@ -109,21 +109,32 @@ function initReactions() {
     let longPress = false;
     let moved = false;
     let pressing = false;
+    let startX = 0;
+    let startY = 0;
 
-    function startPress() {
+    function startPress(e) {
+      e.preventDefault();
       moved = false;
       longPress = false;
       pressing = true;
+      const t = e.touches ? e.touches[0] : e;
+      startX = t.clientX;
+      startY = t.clientY;
       pressTimer = setTimeout(() => {
         longPress = true;
         showReactions(mainBtn);
       }, 600);
     }
 
-    function movePress() {
+    function movePress(e) {
       if (!pressing) return;
-      moved = true;
-      clearTimeout(pressTimer);
+      const t = e.touches ? e.touches[0] : e;
+      const dx = Math.abs(t.clientX - startX);
+      const dy = Math.abs(t.clientY - startY);
+      if (dx > 10 || dy > 10) {
+        moved = true;
+        clearTimeout(pressTimer);
+      }
     }
 
     function endPress() {
@@ -137,13 +148,15 @@ function initReactions() {
     }
 
     mainBtn.addEventListener('mousedown', startPress);
-    mainBtn.addEventListener('touchstart', startPress, { passive: true });
+    mainBtn.addEventListener('touchstart', startPress, { passive: false });
     mainBtn.addEventListener('touchmove', movePress);
     mainBtn.addEventListener('mousemove', movePress);
     mainBtn.addEventListener('wheel', movePress);
-    ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach((ev) => {
+    ['mouseup', 'mouseleave'].forEach((ev) => {
       mainBtn.addEventListener(ev, endPress);
     });
+    mainBtn.addEventListener('touchend', endPress);
+    mainBtn.addEventListener('touchcancel', endPress);
 
     container.querySelectorAll('.reaction-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
