@@ -11,7 +11,7 @@
     {% for n in notificaciones %}
     <li class="list-group-item border-0 p-2 {% if not n.is_read %}unread{% endif %}">
       <div class="d-flex align-items-start">
-        <span class="noti-icon me-2">{{ '\ud83d\udd14' }}</span>
+        <span class="noti-icon me-2">🔔</span>
         <div class="flex-grow-1">
           <a class="stretched-link text-decoration-none" href="{{ n.url or '#' }}">{{ n.message }}</a>
         </div>

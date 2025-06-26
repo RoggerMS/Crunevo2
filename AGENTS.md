@@ -304,3 +304,4 @@
 - Sistema de comentarios mejorado con carga vía AJAX, enfoque automático en el modal y estilos modernos (PR comments-live-ui).
 
 - Se documenta la hoja de ruta "Mejoras Fase 2": comentarios avanzados, transferencias de créditos, notificaciones ampliadas, logros y ranking, pulido móvil y pruebas de usabilidad.
+- Corregido icono de campana en lista de notificaciones usando emoji real para evitar UnicodeEncodeError (hotfix notifications-emoji).
