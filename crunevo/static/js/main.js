@@ -40,14 +40,22 @@ function showReactions(btn) {
 }
 
 function initReactions() {
-  document.querySelectorAll('.reaction-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const reaction = btn.dataset.reaction;
-      const container = btn.closest('.reaction-container');
-      const postId = container.dataset.postId;
-      const span = container.querySelector('.count');
-      const countsDiv = container.querySelector('.reaction-counts');
-      const options = container.querySelector('.reaction-options');
+  document.querySelectorAll('.reaction-container').forEach((container) => {
+    const mainBtn = container.querySelector('.btn-reaction');
+    const options = container.querySelector('.reaction-options');
+    const span = container.querySelector('.count');
+    const countsDiv = container.querySelector('.reaction-counts');
+    const postId = container.dataset.postId;
+
+    function sendReaction(reaction) {
+      const mainEmoji = container.querySelector('.main-emoji');
+      const prevEmoji = mainEmoji ? mainEmoji.textContent : '🔥';
+      const prevLikes = span ? parseInt(span.textContent) || 0 : 0;
+      if (mainEmoji) mainEmoji.textContent = reaction;
+      if (span) span.textContent = prevLikes + 1;
+      mainBtn.classList.add('reaction-active');
+      setTimeout(() => mainBtn.classList.remove('reaction-active'), 200);
+
       const data = new URLSearchParams();
       data.set('reaction', reaction);
       csrfFetch(`/like/${postId}`, { method: 'POST', body: data })
@@ -58,13 +66,48 @@ function initReactions() {
           if (countsDiv) {
             countsDiv.innerHTML = entries.map(([e, c]) => `${e} ${c}`).join(' ');
           }
-          const mainEmoji = container.querySelector('.main-emoji');
           if (mainEmoji) {
             mainEmoji.textContent = entries.length ? entries[0][0] : '🔥';
           }
-          if (options) options.classList.add('d-none');
-          showToast('¡Gracias por tu reacción!');
+        })
+        .catch(() => {
+          if (mainEmoji) mainEmoji.textContent = prevEmoji;
+          if (span) span.textContent = prevLikes;
+          showToast('No se pudo registrar tu reacción. Intenta nuevamente.');
         });
+    }
+
+    let pressTimer;
+    let longPress = false;
+
+    function startPress() {
+      longPress = false;
+      pressTimer = setTimeout(() => {
+        longPress = true;
+        showReactions(mainBtn);
+      }, 600);
+    }
+
+    function endPress() {
+      clearTimeout(pressTimer);
+      if (!longPress) {
+        const emoji = container.querySelector('.main-emoji');
+        sendReaction(emoji ? emoji.textContent.trim() : '🔥');
+      }
+    }
+
+    mainBtn.addEventListener('mousedown', startPress);
+    mainBtn.addEventListener('touchstart', startPress);
+    ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach((ev) => {
+      mainBtn.addEventListener(ev, endPress);
+    });
+
+    container.querySelectorAll('.reaction-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const reaction = btn.dataset.reaction;
+        sendReaction(reaction);
+        if (options) options.classList.add('d-none');
+      });
     });
   });
 }

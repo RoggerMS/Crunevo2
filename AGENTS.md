@@ -293,3 +293,5 @@
 - Manejo de IntegrityError en like_post para evitar fallas de logs por duplicados.
 - Corregido template de reacciones convirtiendo sorted_counts a lista para evitar UndefinedError (PR reaction-container-fix).
 - Filtros rápidos ocultos en móviles (<=768px) y disponibles solo en el menú flotante azul (PR feed-mobile-filters-hide).
+- Reacciones muestran el emoji seleccionado de inmediato y panel accesible con pulsación prolongada; campo "Escribe un comentario..." abre el modal y evita el ícono previo (PR feed-reactions-final-touch).
+- Feedback instantáneo al reaccionar: la interfaz actualiza al instante y revierte si falla la petición (PR feed-reactions-ux-instant-feedback).
