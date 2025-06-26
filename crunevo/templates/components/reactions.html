@@ -1,7 +1,7 @@
-{% macro reaction_container(post, counts=None, my=None) %}
+{% macro reaction_container(post, counts=None) %}
 {% set sorted_counts = counts|dictsort(false, 'value')|reverse|list if counts else [] %}
 {% set main = sorted_counts[0][0] if sorted_counts else '🔥' %}
-<div class="reaction-container position-relative d-inline-block" data-post-id="{{ post.id }}" data-my-reaction="{{ my or '' }}">
+<div class="reaction-container position-relative d-inline-block" data-post-id="{{ post.id }}">
   <button class="btn btn-reaction">
     <span class="main-emoji">{{ main }}</span> <span class="count">{{ post.likes or 0 }}</span>
   </button>
