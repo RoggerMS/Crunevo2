@@ -299,3 +299,4 @@
 - Reacciones mejoradas: panel 4x2 en móvil, estado del usuario en data-my-reaction y actualización instantánea con reversión (PR reactions-toggle-ux).
 - Se evitó que el scroll dispare reacciones; el panel siempre muestra las 8 opciones y se puede volver a abrir sin bloqueos (PR reactions-touch-fix).
 - Se ignora el movimiento del cursor o la rueda para evitar reacciones accidentales (PR reaction-scroll-fix).
+- Long press fix for mobile reactions: preventDefault en touchstart y umbral de movimiento para mostrar panel correctamente (PR mobile-longpress-reactions-fix).
