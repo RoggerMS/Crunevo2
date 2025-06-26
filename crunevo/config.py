@@ -88,3 +88,8 @@ class Config:
         "TAG_SUGGESTIONS",
         "álgebra,resumen,física,historia del Perú",
     ).split(",")
+
+    NOTE_CATEGORIES = os.getenv(
+        "NOTE_CATEGORIES",
+        "Matemática,Historia,Biología,Comunicación",
+    ).split(",")

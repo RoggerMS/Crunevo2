@@ -4,7 +4,7 @@
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
-      <div class="card shadow-lg border-0">
+      <div class="card shadow-lg border-0 mb-3">
         <div class="card-body p-4 p-md-5">
           <h3 class="card-title mb-4 text-center">Subir nuevo apunte</h3>
           <form method="post" enctype="multipart/form-data" id="noteUploadForm">
@@ -12,7 +12,7 @@
 
             <div class="form-floating mb-3">
               <input type="text" class="form-control" id="title" name="title" placeholder="Título" required>
-              <label for="title">Título</label>
+              <label for="title">Título *</label>
             </div>
 
             <div class="form-floating mb-3">
@@ -21,27 +21,23 @@
             </div>
 
             <div class="mb-3">
-              <label class="form-label" for="category">Categoría</label>
+              <label class="form-label" for="category">Categoría *</label>
               <select class="form-select" id="category" name="category" required>
                 <option value="" selected>Seleccionar...</option>
-                <option>Matemática</option>
-                <option>Historia</option>
-                <option>Biología</option>
-                <option>Comunicación</option>
+                {% for cat in categories %}
+                <option value="{{ cat }}">{{ cat }}</option>
+                {% endfor %}
               </select>
             </div>
 
-            <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="course" name="course" placeholder="Curso específico (opcional)">
-              <label for="course">Curso específico (opcional)</label>
-            </div>
 
             <div class="mb-3">
-              <label class="form-label" for="level">Nivel Académico</label>
+              <label class="form-label" for="level">Nivel Académico *</label>
               <select class="form-select" id="level" name="level" required>
-                <option value="Primaria">Primaria</option>
-                <option value="Secundaria">Secundaria</option>
-                <option value="Universidad" selected>Universidad</option>
+                <option value="Escolar">Escolar</option>
+                <option value="Pregrado">Pregrado</option>
+                <option value="Posgrado">Posgrado</option>
+                <option value="Libre">Libre</option>
               </select>
             </div>
 
@@ -54,15 +50,74 @@
             </div>
 
             <div class="mb-4">
-              <label for="file" class="form-label">Archivo</label>
+              <label for="file" class="form-label">Archivo *</label>
               <input class="form-control" type="file" id="file" name="file" accept="application/pdf,image/*" required>
             </div>
             <canvas id="pdfPreview" class="w-100 border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;"></canvas>
             <img loading="lazy" id="imgPreview" class="img-fluid border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;" />
 
-            <div class="form-check form-switch mb-3">
-              <input class="form-check-input" type="checkbox" id="privacyToggle" name="private" value="1">
-              <label class="form-check-label" for="privacyToggle">Privado</label>
+            <div class="mb-3">
+              <label class="form-label" for="privacy">Privacidad *</label>
+              <select class="form-select" id="privacy" name="privacy">
+                <option value="public">Público</option>
+                <option value="private">Solo visible para el usuario</option>
+              </select>
+            </div>
+
+            <div class="card mb-3">
+              <div class="card-header">
+                <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#moreSettings" aria-expanded="false">
+                  Más ajustes
+                </button>
+              </div>
+              <div id="moreSettings" class="collapse">
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label class="form-label" for="language">Idioma</label>
+                    <select class="form-select" id="language" name="language">
+                      <option value="">Seleccionar...</option>
+                      <option>Español</option>
+                      <option>Inglés</option>
+                      <option>Quechua</option>
+                      <option>Aymara</option>
+                      <option>Alemán</option>
+                      <option>Francés</option>
+                      <option>Otros</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="reading_time">Duración estimada de lectura (min)</label>
+                    <input type="number" class="form-control" id="reading_time" name="reading_time" min="1" step="1">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Tipo de contenido</label>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="content_type" id="typeTheory" value="theory" checked>
+                      <label class="form-check-label" for="typeTheory">Solo teoría</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="content_type" id="typeExercises" value="exercises">
+                      <label class="form-check-label" for="typeExercises">Solo ejercicios</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="content_type" id="typeBoth" value="both">
+                      <label class="form-check-label" for="typeBoth">Ambos</label>
+                    </div>
+                  </div>
+                  <div class="form-floating mb-3">
+                    <textarea class="form-control" id="summary" name="summary" placeholder="Resumen corto" maxlength="300" style="height: 100px"></textarea>
+                    <label for="summary">Resumen corto del apunte</label>
+                  </div>
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="course" name="course" placeholder="Curso o asignatura">
+                    <label for="course">Curso o asignatura</label>
+                  </div>
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="career" name="career" placeholder="Carrera">
+                    <label for="career">Carrera</label>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="form-check mb-3">
