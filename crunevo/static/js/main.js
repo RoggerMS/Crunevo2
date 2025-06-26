@@ -28,6 +28,37 @@ function showToast(message, options = {}) {
   new bootstrap.Toast(div).show();
 }
 
+function showReactions(btn) {
+  const container = btn.closest('.reaction-container');
+  const options = container.querySelector('.reaction-options');
+  if (!options) return;
+  options.classList.remove('d-none');
+  setTimeout(() => {
+    options.classList.add('d-none');
+  }, 4000);
+}
+
+function initReactions() {
+  document.querySelectorAll('.reaction-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const reaction = btn.dataset.reaction;
+      const container = btn.closest('.reaction-container');
+      const postId = container.dataset.postId;
+      const span = container.querySelector('.count');
+      const options = container.querySelector('.reaction-options');
+      const data = new URLSearchParams();
+      data.set('reaction', reaction);
+      csrfFetch(`/like/${postId}`, { method: 'POST', body: data })
+        .then((r) => r.json())
+        .then((d) => {
+          if (span) span.textContent = d.likes;
+          if (options) options.classList.add('d-none');
+          showToast('¡Gracias por tu reacción!');
+        });
+    });
+  });
+}
+
 function initPdfPreviews() {
   if (typeof pdfjsLib === 'undefined') return;
   document.querySelectorAll('canvas.pdf-thumb').forEach((canvas) => {
@@ -109,6 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (typeof initFeedInteractions === 'function') {
     initFeedInteractions();
+  }
+  if (typeof initReactions === 'function') {
+    initReactions();
   }
   if (typeof initQuickFilters === 'function') {
     initQuickFilters();
