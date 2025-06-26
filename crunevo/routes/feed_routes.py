@@ -42,7 +42,6 @@ from crunevo.cache.feed_cache import (
     push_items as cache_push,
     remove_item,
 )
-from sqlalchemy.exc import IntegrityError
 
 feed_bp = Blueprint("feed", __name__, url_prefix="/feed")
 csrf.exempt(feed_bp)
@@ -387,20 +386,7 @@ def like_post(post_id):
                 url_for("feed.view_post", post_id=post.id),
             )
 
-    try:
-        db.session.commit()
-    except IntegrityError:
-        db.session.rollback()
-        existing = PostReaction.query.filter_by(
-            user_id=current_user.id, post_id=post.id
-        ).first()
-        if existing:
-            if existing.reaction_type == reaction:
-                action = "added"
-            else:
-                existing.reaction_type = reaction
-                action = "changed"
-            db.session.commit()
+    db.session.commit()
 
     counts = dict(
         db.session.query(PostReaction.reaction_type, db.func.count())
