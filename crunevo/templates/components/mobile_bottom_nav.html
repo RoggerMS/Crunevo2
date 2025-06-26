@@ -12,6 +12,10 @@
     <a href="{{ url_for('ranking.show_ranking') }}" role="link" tabindex="0" aria-label="Ranking" title="Ranking" class="text-center {% if request.path.startswith('/ranking') %}bottom-nav-active{% else %}text-primary{% endif %}">
       <i class="bi bi-trophy fs-4 bottom-nav-icon"></i>
     </a>
+    <a href="{{ url_for('main.crolars') }}" role="link" tabindex="0" aria-label="Crolars" title="Crolars" class="text-center {% if request.path.startswith('/crolars') %}bottom-nav-active{% else %}text-primary{% endif %}">
+      <i class="bi bi-coin fs-4 bottom-nav-icon"></i>
+      {% if current_user.is_authenticated %}<span class="d-block small">{{ current_user.credits }}</span>{% endif %}
+    </a>
     <a href="{{ url_for('chat.chat_index') }}" role="link" tabindex="0" aria-label="Chat" title="Chat" class="text-center {% if request.path.startswith('/chat') %}bottom-nav-active{% else %}text-primary{% endif %}">
       <i class="bi bi-chat fs-4 bottom-nav-icon"></i>
     </a>
