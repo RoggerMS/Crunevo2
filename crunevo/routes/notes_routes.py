@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlparse
 from flask import (
     Blueprint,
     render_template,
@@ -196,7 +197,22 @@ def detail(note_id):
     note = Note.query.get_or_404(note_id)
     note.views += 1
     db.session.commit()
-    return render_template("notes/detalle.html", note=note)
+
+    def get_ext(path):
+        if path.startswith("http"):
+            path = urlparse(path).path
+        path = path.split("?")[0]
+        return os.path.splitext(path)[1].lower()
+
+    ext = get_ext(note.filename)
+    if ext == ".pdf":
+        ftype = "pdf"
+    elif ext in {".jpg", ".jpeg", ".png", ".webp"}:
+        ftype = "image"
+    else:
+        ftype = "other"
+
+    return render_template("notes/detalle.html", note=note, file_type=ftype)
 
 
 # Alias endpoint for backward compatibility with templates using
