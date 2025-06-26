@@ -281,3 +281,5 @@
 - Autohide del navbar reescrito para detectar scroll táctil y se limpiaron márgenes globales. Se añadió clase .navbar-hidden (PR navbar-autohide-touch-fix).
 - Se añadió página /terms con los Términos y Condiciones y checkboxes obligatorios en registro y subida de apuntes (PR terms-conditions).
 - Mejorado formulario de subida de apuntes con categoría, nivel académico, privacidad y etiquetas con sugerencias (PR notes-upload-enhanced).
+
+- wsgi.py importa create_app desde el paquete crunevo nuevamente y se actualiz\xF3 wsgi_admin para mantener consistencia.
