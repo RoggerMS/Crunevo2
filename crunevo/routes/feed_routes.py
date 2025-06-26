@@ -20,7 +20,6 @@ from crunevo.extensions import db, csrf
 from crunevo.models import (
     Post,
     PostComment,
-    PostReaction,
     FeedItem,
     Note,
     User,
@@ -331,49 +330,18 @@ feed_bp.add_url_rule(
 @feed_bp.route("/like/<int:post_id>", methods=["POST"])
 @activated_required
 def like_post(post_id):
-    """Handle reactions to a post allowing one per user."""
     post = Post.query.get_or_404(post_id)
-    reaction = request.form.get("reaction", "🔥")
-    existing = PostReaction.query.filter_by(
-        user_id=current_user.id, post_id=post.id
-    ).first()
-
-    if existing:
-        if existing.reaction_type == reaction:
-            # remove reaction
-            db.session.delete(existing)
-            post.likes = max((post.likes or 0) - 1, 0)
-            action = "removed"
-        else:
-            # change reaction type
-            existing.reaction_type = reaction
-            action = "changed"
-    else:
-        db.session.add(
-            PostReaction(
-                user_id=current_user.id,
-                post_id=post.id,
-                reaction_type=reaction,
-            )
+    if post.likes is None:
+        post.likes = 0
+    post.likes += 1
+    if post.author_id != current_user.id:
+        send_notification(
+            post.author_id,
+            f"{current_user.username} le dio like a tu publicación",
+            url_for("feed.view_post", post_id=post.id),
         )
-        post.likes = (post.likes or 0) + 1
-        action = "added"
-        if post.author_id != current_user.id:
-            send_notification(
-                post.author_id,
-                f"{current_user.username} reaccionó a tu publicación",
-                url_for("feed.view_post", post_id=post.id),
-            )
-
     db.session.commit()
-
-    counts = dict(
-        db.session.query(PostReaction.reaction_type, db.func.count())
-        .filter_by(post_id=post.id)
-        .group_by(PostReaction.reaction_type)
-        .all()
-    )
-    return jsonify({"likes": post.likes, "counts": counts, "status": action})
+    return jsonify({"likes": post.likes})
 
 
 @feed_bp.route("/comment/<int:post_id>", methods=["POST"])
