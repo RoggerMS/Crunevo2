@@ -204,6 +204,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
     document.body.classList.add('no-anim');
   }
+  if (sessionStorage.getItem('notifHighlight')) {
+    sessionStorage.removeItem('notifHighlight');
+    document.body.classList.add('notification-highlight');
+    setTimeout(() => document.body.classList.remove('notification-highlight'), 2000);
+  }
   // theme persistence
   const saved = localStorage.getItem('theme');
   if (saved) {
@@ -438,8 +443,31 @@ let notifCount = 0;
 function initNotifications() {
   const list = document.getElementById('notifList');
   const badge = document.getElementById('notifBadge');
+  const icon = document.getElementById('notifIcon');
   const markAll = document.getElementById('markAllRead');
   if (!list || !badge) return;
+
+  function getNotiIcon(msg) {
+    const m = msg.toLowerCase();
+    if (m.includes('reaccion')) return '🔥';
+    if (m.includes('coment')) return '💬';
+    if (m.includes('logro')) return '🧠';
+    if (m.includes('cr\u00e9dito')) return '👏';
+    return '🔔';
+  }
+
+  function timeAgo(ts) {
+    const d = new Date(ts);
+    const diff = Math.floor((Date.now() - d.getTime()) / 1000);
+    if (diff < 60) return 'hace unos segundos';
+    const m = Math.floor(diff / 60);
+    if (m < 60) return `hace ${m} min`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `hace ${h} h`;
+    const dday = Math.floor(h / 24);
+    if (dday === 1) return 'ayer';
+    return `hace ${dday} d`;
+  }
 
   function refresh() {
     fetch('/api/notifications')
@@ -451,12 +479,18 @@ function initNotifications() {
           });
         }
         notifCount = items.length;
-        badge.textContent = notifCount;
         badge.classList.toggle('tw-hidden', notifCount === 0);
+        if (icon) icon.classList.toggle('text-warning', notifCount > 0);
         list.innerHTML = '';
         items.forEach((n) => {
           const li = document.createElement('li');
-          li.innerHTML = `<a class="dropdown-item fw-bold" href="${n.url || '#'}">${n.message}</a>`;
+          const emoji = getNotiIcon(n.message);
+          const time = timeAgo(n.timestamp);
+          li.innerHTML = `<a class="dropdown-item d-flex align-items-start gap-2 noti-item" href="${n.url || '#'}"><span class="noti-icon">${emoji}</span><span class="flex-grow-1">${n.message}</span><small class="noti-time text-muted ms-2">${time}</small></a>`;
+          const a = li.querySelector('a');
+          a.addEventListener('click', () => {
+            sessionStorage.setItem('notifHighlight', '1');
+          });
           list.appendChild(li);
         });
       });

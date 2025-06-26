@@ -300,3 +300,4 @@
 - Se evitó que el scroll dispare reacciones; el panel siempre muestra las 8 opciones y se puede volver a abrir sin bloqueos (PR reactions-touch-fix).
 - Se ignora el movimiento del cursor o la rueda para evitar reacciones accidentales (PR reaction-scroll-fix).
 - Long press fix for mobile reactions: preventDefault en touchstart y umbral de movimiento para mostrar panel correctamente (PR mobile-longpress-reactions-fix).
+- Rediseñado el sistema de notificaciones con dropdown claro, íconos por tipo, timestamps amigables y resaltado al abrir (PR notifications-redesign).
