@@ -1,0 +1,17 @@
+{% macro reaction_container(post) %}
+<div class="reaction-container position-relative d-inline-block" data-post-id="{{ post.id }}">
+  <button class="btn btn-reaction" onmouseenter="showReactions(this)">
+    🔥 <span class="count">{{ post.likes or 0 }}</span>
+  </button>
+  <div class="reaction-options d-none position-absolute">
+    <button class="reaction-btn" data-reaction="🔥">🔥</button>
+    <button class="reaction-btn" data-reaction="🧠">🧠</button>
+    <button class="reaction-btn" data-reaction="💔">💔</button>
+    <button class="reaction-btn" data-reaction="😠">😠</button>
+    <button class="reaction-btn" data-reaction="🥶">🥶</button>
+    <button class="reaction-btn" data-reaction="😂">😂</button>
+    <button class="reaction-btn" data-reaction="🤡">🤡</button>
+    <button class="reaction-btn" data-reaction="😎">😎</button>
+  </div>
+</div>
+{% endmacro %}
