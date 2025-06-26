@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
+{% import 'components/reactions.html' as react %}
 {% block content %}
 <div class="card">
   <div class="card-body">
@@ -24,19 +25,8 @@
         <img loading="lazy" src="{{ post.file_url }}" class="feed-image img-fluid rounded mb-2">
         {% endif %}
       {% endif %}
-      <p class="text-muted small mb-2">
-        <strong>Likes:</strong>
-        <span id="likeCount{{ post.id }}">{{ post.likes or 0 }}</span>
-      </p>
-      <form
-        id="likeForm"
-        method="post"
-        action="{{ url_for('feed.like_post', post_id=post.id) }}"
-        data-target="likeCount{{ post.id }}"
-      >
-        {{ csrf.csrf_field() }}
-        <button class="btn btn-outline-success btn-sm" type="submit">👍 Me gusta</button>
-      </form>
+      {% set counts = reaction_counts %}
+      {{ react.reaction_container(post, counts) }}
 
       <div class="d-flex gap-2 my-3">
         <button type="button" class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('feed.view_post', post_id=post.id, _external=True) }}">
