@@ -46,13 +46,32 @@ function initReactions() {
     const span = container.querySelector('.count');
     const countsDiv = container.querySelector('.reaction-counts');
     const postId = container.dataset.postId;
+    let currentReaction = container.dataset.myReaction || null;
+
+    let isSending = false;
 
     function sendReaction(reaction) {
+      if (isSending) return;
+      isSending = true;
+      mainBtn.disabled = true;
       const mainEmoji = container.querySelector('.main-emoji');
       const prevEmoji = mainEmoji ? mainEmoji.textContent : '🔥';
       const prevLikes = span ? parseInt(span.textContent) || 0 : 0;
+
+      const prevReaction = currentReaction;
+      let predictedLikes = prevLikes;
+      if (currentReaction === reaction) {
+        predictedLikes = Math.max(prevLikes - 1, 0);
+        currentReaction = null;
+      } else if (currentReaction === null) {
+        predictedLikes = prevLikes + 1;
+        currentReaction = reaction;
+      } else {
+        currentReaction = reaction;
+      }
+
+      if (span) span.textContent = predictedLikes;
       if (mainEmoji) mainEmoji.textContent = reaction;
-      if (span) span.textContent = prevLikes + 1;
       mainBtn.classList.add('reaction-active');
       setTimeout(() => mainBtn.classList.remove('reaction-active'), 200);
 
@@ -69,11 +88,22 @@ function initReactions() {
           if (mainEmoji) {
             mainEmoji.textContent = entries.length ? entries[0][0] : '🔥';
           }
+          if (d.status === 'removed') {
+            currentReaction = null;
+          } else {
+            currentReaction = reaction;
+          }
+          container.dataset.myReaction = currentReaction || '';
         })
         .catch(() => {
           if (mainEmoji) mainEmoji.textContent = prevEmoji;
           if (span) span.textContent = prevLikes;
           showToast('No se pudo registrar tu reacción. Intenta nuevamente.');
+          currentReaction = prevReaction;
+        })
+        .finally(() => {
+          isSending = false;
+          mainBtn.disabled = false;
         });
     }
 

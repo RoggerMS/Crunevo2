@@ -33,3 +33,15 @@ class PostReaction(db.Model):
     @staticmethod
     def count_for_post(post_id):
         return PostReaction.counts_for_posts([post_id]).get(post_id, {})
+
+    @staticmethod
+    def reactions_for_user_posts(user_id, post_ids):
+        if not post_ids:
+            return {}
+        rows = (
+            db.session.query(PostReaction.post_id, PostReaction.reaction_type)
+            .filter(PostReaction.user_id == user_id)
+            .filter(PostReaction.post_id.in_(post_ids))
+            .all()
+        )
+        return {pid: rt for pid, rt in rows}

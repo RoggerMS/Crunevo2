@@ -184,11 +184,13 @@ def edu_feed():
             post_ids.append(post.id)
 
     reaction_map = PostReaction.counts_for_posts(post_ids)
+    user_reactions = PostReaction.reactions_for_user_posts(current_user.id, post_ids)
 
     return render_template(
         "feed/list.html",
         feed_items=feed_items,
         reaction_counts=reaction_map,
+        user_reactions=user_reactions,
         note_form=note_form,
         image_form=image_form,
     )
@@ -257,12 +259,14 @@ def view_feed():
                 feed_items.append({"type": "note", "data": note})
 
     reaction_map = PostReaction.counts_for_posts(post_ids)
+    user_reactions = PostReaction.reactions_for_user_posts(current_user.id, post_ids)
 
     return render_template(
         "feed/index.html",
         feed_items=feed_items,
         categoria=categoria,
         reaction_counts=reaction_map,
+        user_reactions=user_reactions,
     )
 
 
@@ -283,6 +287,9 @@ def trending():
     top_notes, top_posts, top_users = get_featured_posts()
 
     reaction_map = PostReaction.counts_for_posts([p.id for p in weekly_posts])
+    user_reactions = PostReaction.reactions_for_user_posts(
+        current_user.id, [p.id for p in weekly_posts]
+    )
 
     return render_template(
         "feed/trending.html",
@@ -293,6 +300,7 @@ def trending():
         top_posts=top_posts,
         top_users=top_users,
         reaction_counts=reaction_map,
+        user_reactions=user_reactions,
     )
 
 
@@ -302,7 +310,17 @@ def view_post(post_id: int):
     """Display a single post."""
     post = Post.query.get_or_404(post_id)
     counts = PostReaction.count_for_post(post.id)
-    return render_template("feed/post_detail.html", post=post, reaction_counts=counts)
+    my_reaction = (
+        PostReaction.query.with_entities(PostReaction.reaction_type)
+        .filter_by(user_id=current_user.id, post_id=post.id)
+        .scalar()
+    )
+    return render_template(
+        "feed/post_detail.html",
+        post=post,
+        reaction_counts=counts,
+        user_reaction=my_reaction,
+    )
 
 
 @feed_bp.route("/user/<int:user_id>/posts")
@@ -318,12 +336,16 @@ def user_posts(user_id: int):
     )
     posts = pagination.items
     reaction_map = PostReaction.counts_for_posts([p.id for p in posts])
+    user_reactions = PostReaction.reactions_for_user_posts(
+        current_user.id, [p.id for p in posts]
+    )
     return render_template(
         "feed/user_posts.html",
         user=user,
         posts=posts,
         pagination=pagination,
         reaction_counts=reaction_map,
+        user_reactions=user_reactions,
     )
 
 
