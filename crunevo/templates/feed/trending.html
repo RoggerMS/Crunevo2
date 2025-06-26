@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
+{% import 'components/reactions.html' as react %}
 {% block title %}Publicaciones destacadas{% endblock %}
 {% block content %}
 <div class="row">
@@ -40,11 +41,12 @@
           <img loading="lazy" src="{{ post.file_url }}" class="feed-image img-fluid rounded mb-2">
           {% endif %}
         {% endif %}
+        {% set counts = reaction_counts.get(post.id, {}) %}
         {% if author %}
         <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="btn btn-sm btn-outline-info mb-2">Ver perfil</a>
         <a href="{{ url_for('feed.view_post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary mb-2">Ver publicación</a>
         {% endif %}
-        <p class="fs-5 fw-bold text-danger mb-0"><i class="bi bi-heart-fill me-1"></i>{{ post.likes or 0 }}</p>
+        {{ react.reaction_container(post, counts) }}
       </div>
     </div>
     {% endfor %}

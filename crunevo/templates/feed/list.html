@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
+{% import 'components/reactions.html' as react %}
 
 {% block head_extra %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
@@ -28,6 +29,7 @@
           {% include 'components/feed_card.html' %}
         {% elif item.type == 'post' %}
           {% set post = item.data %}
+          {% set counts = reaction_counts.get(post.id, {}) %}
           {% include 'feed/post_card.html' %}
         {% endif %}
       {% endfor %}
