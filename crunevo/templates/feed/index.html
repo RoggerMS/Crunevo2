@@ -57,6 +57,18 @@
     {% include 'components/feed_sidebar.html' %}
   </div>
 </div>
+{% if show_streak_claim %}
+<div id="streakBox" class="card p-3 bg-light text-dark position-fixed shadow fade-in" style="bottom: 90px; right: 16px; z-index: 1050;">
+  <div class="d-flex align-items-center">
+    <div class="me-2 fs-3">🎉</div>
+    <div>
+      <strong>Día {{ streak_day }} de tu racha</strong><br>
+      <small class="text-muted">Reclama {{ streak_reward }} créditos</small>
+    </div>
+  </div>
+  <button class="btn btn-sm btn-primary mt-2 w-100" onclick="claimStreak()">Reclamar</button>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block body_end %}

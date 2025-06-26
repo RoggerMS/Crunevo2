@@ -17,6 +17,8 @@ from crunevo.utils.helpers import activated_required
 from sqlalchemy import func, desc
 from datetime import datetime, timedelta
 from crunevo.extensions import db, csrf
+from datetime import date
+from crunevo.utils.login_streak import streak_reward
 from crunevo.models import (
     Post,
     PostComment,
@@ -261,12 +263,23 @@ def view_feed():
     reaction_map = PostReaction.counts_for_posts(post_ids)
     user_reactions = PostReaction.reactions_for_user_posts(current_user.id, post_ids)
 
+    streak = current_user.login_streak
+    show_streak = (
+        streak
+        and streak.last_login == date.today()
+        and streak.claimed_today != date.today()
+    )
+    reward = streak_reward(streak.current_day) if streak else 0
+
     return render_template(
         "feed/index.html",
         feed_items=feed_items,
         categoria=categoria,
         reaction_counts=reaction_map,
         user_reactions=user_reactions,
+        show_streak_claim=show_streak,
+        streak_day=streak.current_day if streak else 1,
+        streak_reward=reward,
     )
 
 
