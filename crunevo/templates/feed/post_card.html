@@ -39,11 +39,9 @@
         <img loading="lazy" src="{{ post.file_url }}" class="feed-image img-fluid rounded mt-2" style="max-height: 400px; width: auto;" alt="imagen">
       {% endif %}
     {% endif %}
-    <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+    <div class="d-flex align-items-center gap-2 mb-2">
       {{ react.reaction_container(post, counts) }}
-      <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#postModal{{ post.id }}">
-        <i class="bi bi-chat-dots"></i>
-      </button>
+      <input type="text" class="form-control form-control-sm" placeholder="Escribe un comentario..." readonly data-bs-toggle="modal" data-bs-target="#postModal{{ post.id }}">
     </div>
   </div>
 </article>
