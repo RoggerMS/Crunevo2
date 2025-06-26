@@ -1,4 +1,5 @@
 {% import 'components/csrf.html' as csrf %}
+{% import 'components/reactions.html' as react %}
 <article class="card shadow-sm mb-3">
   <div class="card-header bg-transparent d-flex align-items-center gap-2">
     {% set author = post.author %}
@@ -15,6 +16,17 @@
       <button class="btn btn-sm btn-light" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots"></i></button>
       <ul class="dropdown-menu dropdown-menu-end">
         <li><a class="dropdown-item" href="{{ url_for('feed.view_post', post_id=post.id) }}">Ver publicación</a></li>
+        {% if post.author_id == current_user.id %}
+        <li><a class="dropdown-item" data-bs-toggle="modal" href="#editModal{{ post.id }}">Editar</a></li>
+        <li>
+          <form action="{{ url_for('feed.eliminar_post', post_id=post.id) }}" method="POST" onsubmit="return confirm('¿Eliminar esta publicación?');">
+            {{ csrf.csrf_field() }}
+            <button type="submit" class="dropdown-item text-danger">Eliminar</button>
+          </form>
+        </li>
+        {% else %}
+        <li><a class="dropdown-item text-warning" data-bs-toggle="modal" href="#reportPost{{ post.id }}">Reportar</a></li>
+        {% endif %}
       </ul>
     </div>
   </div>
@@ -27,48 +39,12 @@
         <img loading="lazy" src="{{ post.file_url }}" class="feed-image img-fluid rounded mt-2" style="max-height: 400px; width: auto;" alt="imagen">
       {% endif %}
     {% endif %}
-    <div class="d-flex align-items-center gap-2 mb-2">
-      <form class="like-form" method="post" action="{{ url_for('feed.like_post', post_id=post.id) }}" data-target="likeCount{{ post.id }}">
-        {{ csrf.csrf_field() }}
-        <button class="btn btn-outline-danger btn-sm" type="submit">🔥</button>
-      </form>
-      <span id="likeCount{{ post.id }}">{{ post.likes or 0 }}</span>
-      <button class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('feed.view_post', post_id=post.id, _external=True) }}"><i class="bi bi-share"></i></button>
-      <a href="{{ url_for('feed.view_post', post_id=post.id) }}" class="btn btn-outline-primary btn-sm">Ver publicación</a>
-      {% if post.author_id == current_user.id %}
-      <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ post.id }}">Editar</button>
-      <form action="{{ url_for('feed.eliminar_post', post_id=post.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar esta publicación?');">
-        {{ csrf.csrf_field() }}
-        <button type="submit" class="btn btn-outline-danger btn-sm">🗑️ Eliminar</button>
-      </form>
-      {% else %}
-      <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#reportPost{{ post.id }}">Reportar</button>
-      {% endif %}
+    <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+      {{ react.reaction_container(post, counts) }}
+      <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#postModal{{ post.id }}">
+        <i class="bi bi-chat-dots"></i>
+      </button>
     </div>
-    <div id="comments{{ post.id }}">
-      {% if post.comments %}
-        {% for c in post.comments|sort(attribute='timestamp', reverse=True) %}
-        <div class="d-flex mb-2">
-          <img loading="lazy" src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
-          <div>
-            <div class="small text-muted">
-              <a href="{{ url_for('auth.profile_by_username', username=c.author.username) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.timestamp|timesince }}
-            </div>
-            <div>{{ c.body }}</div>
-          </div>
-        </div>
-        {% endfor %}
-      {% else %}
-        <p class="text-muted" data-empty-msg>Sé el primero en comentar esta publicación.</p>
-      {% endif %}
-    </div>
-    <form class="comment-form" method="post" action="{{ url_for('feed.comment_post', post_id=post.id) }}" data-container="comments{{ post.id }}" data-avatar="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" data-username="{{ current_user.username }}">
-      {{ csrf.csrf_field() }}
-      <div class="input-group input-group-sm">
-        <input type="text" name="body" class="form-control" placeholder="Añadir comentario" required>
-        <button class="btn btn-primary" type="submit">Enviar</button>
-      </div>
-    </form>
   </div>
 </article>
 {% if post.author_id == current_user.id %}
@@ -115,3 +91,55 @@
   </div>
 </div>
 {% endif %}
+
+<div class="modal fade" id="postModal{{ post.id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="mb-2 d-flex align-items-center">
+          {% if post.author %}
+          <img loading="lazy" src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
+          <div>
+            <a href="{{ url_for('auth.profile_by_username', username=post.author.username) }}" class="text-decoration-none fw-bold">{{ post.author.username }}</a>
+            <div class="small text-muted">{{ post.created_at.strftime('%Y-%m-%d') }}{% if post.edited %} • Editado{% endif %}</div>
+          </div>
+          {% endif %}
+        </div>
+        <p>{{ post.content }}</p>
+        {% if post.file_url %}
+          {% if post.file_url.endswith('.pdf') %}
+          <a href="{{ post.file_url }}" target="_blank" class="btn btn-outline-primary mb-2">Ver PDF</a>
+          {% else %}
+          <img loading="lazy" src="{{ post.file_url }}" class="img-fluid rounded mb-2" alt="imagen">
+          {% endif %}
+        {% endif %}
+        {{ react.reaction_container(post, counts) }}
+        <h6 class="mt-3 mb-2">Comentarios</h6>
+        <div id="modalComments{{ post.id }}" class="mb-2" style="max-height:300px; overflow-y:auto;">
+          {% if post.comments %}
+            {% for c in post.comments|sort(attribute='timestamp', reverse=True) %}
+            <div class="d-flex mb-2">
+              <img loading="lazy" src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+              <div>
+                <div class="small text-muted">
+                  <a href="{{ url_for('auth.profile_by_username', username=c.author.username) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.timestamp|timesince }}
+                </div>
+                <div>{{ c.body }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <p class="text-muted" data-empty-msg>Sé el primero en comentar esta publicación.</p>
+          {% endif %}
+        </div>
+        <form class="comment-form" method="post" action="{{ url_for('feed.comment_post', post_id=post.id) }}" data-container="modalComments{{ post.id }}" data-avatar="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" data-username="{{ current_user.username }}">
+          {{ csrf.csrf_field() }}
+          <div class="input-group">
+            <input type="text" name="body" class="form-control" placeholder="Añadir comentario" required>
+            <button class="btn btn-primary" type="submit">Enviar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

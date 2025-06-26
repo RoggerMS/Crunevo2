@@ -20,6 +20,7 @@ from crunevo.extensions import db, csrf
 from crunevo.models import (
     Post,
     PostComment,
+    PostReaction,
     FeedItem,
     Note,
     User,
@@ -174,14 +175,19 @@ def edu_feed():
         .all()
     )
     feed_items = []
+    post_ids = []
     for item in feed_items_raw:
         post = Post.query.get(item.ref_id)
         if post:
             feed_items.append({"type": "post", "data": post})
+            post_ids.append(post.id)
+
+    reaction_map = PostReaction.counts_for_posts(post_ids)
 
     return render_template(
         "feed/list.html",
         feed_items=feed_items,
+        reaction_counts=reaction_map,
         note_form=note_form,
         image_form=image_form,
     )
@@ -233,6 +239,7 @@ def view_feed():
     feed_items_raw = query.order_by(FeedItem.created_at.desc()).limit(20).all()
 
     feed_items = []
+    post_ids = []
     for item in feed_items_raw:
         if item.item_type == "post":
             post = Post.query.get(item.ref_id)
@@ -242,13 +249,19 @@ def view_feed():
                 continue
             if post:
                 feed_items.append({"type": "post", "data": post})
+                post_ids.append(post.id)
         elif item.item_type == "apunte" and categoria == "apuntes":
             note = Note.query.get(item.ref_id)
             if note:
                 feed_items.append({"type": "note", "data": note})
 
+    reaction_map = PostReaction.counts_for_posts(post_ids)
+
     return render_template(
-        "feed/index.html", feed_items=feed_items, categoria=categoria
+        "feed/index.html",
+        feed_items=feed_items,
+        categoria=categoria,
+        reaction_counts=reaction_map,
     )
 
 
@@ -268,6 +281,8 @@ def trending():
     top_ranked, recent_achievements = get_weekly_ranking()
     top_notes, top_posts, top_users = get_featured_posts()
 
+    reaction_map = PostReaction.counts_for_posts([p.id for p in weekly_posts])
+
     return render_template(
         "feed/trending.html",
         weekly_posts=weekly_posts,
@@ -276,6 +291,7 @@ def trending():
         top_notes=top_notes,
         top_posts=top_posts,
         top_users=top_users,
+        reaction_counts=reaction_map,
     )
 
 
@@ -284,7 +300,8 @@ def trending():
 def view_post(post_id: int):
     """Display a single post."""
     post = Post.query.get_or_404(post_id)
-    return render_template("feed/post_detail.html", post=post)
+    counts = PostReaction.count_for_post(post.id)
+    return render_template("feed/post_detail.html", post=post, reaction_counts=counts)
 
 
 @feed_bp.route("/user/<int:user_id>/posts")
@@ -299,8 +316,13 @@ def user_posts(user_id: int):
         .paginate(page=page, per_page=10)
     )
     posts = pagination.items
+    reaction_map = PostReaction.counts_for_posts([p.id for p in posts])
     return render_template(
-        "feed/user_posts.html", user=user, posts=posts, pagination=pagination
+        "feed/user_posts.html",
+        user=user,
+        posts=posts,
+        pagination=pagination,
+        reaction_counts=reaction_map,
     )
 
 
@@ -330,18 +352,49 @@ feed_bp.add_url_rule(
 @feed_bp.route("/like/<int:post_id>", methods=["POST"])
 @activated_required
 def like_post(post_id):
+    """Handle reactions to a post allowing one per user."""
     post = Post.query.get_or_404(post_id)
-    if post.likes is None:
-        post.likes = 0
-    post.likes += 1
-    if post.author_id != current_user.id:
-        send_notification(
-            post.author_id,
-            f"{current_user.username} le dio like a tu publicación",
-            url_for("feed.view_post", post_id=post.id),
+    reaction = request.form.get("reaction", "🔥")
+    existing = PostReaction.query.filter_by(
+        user_id=current_user.id, post_id=post.id
+    ).first()
+
+    if existing:
+        if existing.reaction_type == reaction:
+            # remove reaction
+            db.session.delete(existing)
+            post.likes = max((post.likes or 0) - 1, 0)
+            action = "removed"
+        else:
+            # change reaction type
+            existing.reaction_type = reaction
+            action = "changed"
+    else:
+        db.session.add(
+            PostReaction(
+                user_id=current_user.id,
+                post_id=post.id,
+                reaction_type=reaction,
+            )
         )
+        post.likes = (post.likes or 0) + 1
+        action = "added"
+        if post.author_id != current_user.id:
+            send_notification(
+                post.author_id,
+                f"{current_user.username} reaccionó a tu publicación",
+                url_for("feed.view_post", post_id=post.id),
+            )
+
     db.session.commit()
-    return jsonify({"likes": post.likes})
+
+    counts = dict(
+        db.session.query(PostReaction.reaction_type, db.func.count())
+        .filter_by(post_id=post.id)
+        .group_by(PostReaction.reaction_type)
+        .all()
+    )
+    return jsonify({"likes": post.likes, "counts": counts, "status": action})
 
 
 @feed_bp.route("/comment/<int:post_id>", methods=["POST"])

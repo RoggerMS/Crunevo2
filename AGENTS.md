@@ -286,3 +286,7 @@
 - Redesigned note detail with two-column layout, PDF/image viewer via viewer.js and file type detection in notes_routes (PR note-detail-redesign).
 - Expanded notes model with language, reading_time, content_type, summary, course and career; upload form modernized with collapse "Más ajustes" (PR notes-upload-form-v2).
 - Formulario de publicación ahora usa un modal emergente activado por un botón estilo Facebook en el feed (PR fb-style-modal).
+- Refactorizada la sección inferior de los posts con dropdown y reacciones múltiples (PR reactions-ui).
+- Sistema de reacciones actualizado con conteo por emoji y compatibilidad móvil (PR reactions-ui-counts).
+- Reacciones optimizadas para móviles, con tooltip por emoji y reemplazo de 😎 por 😲 (PR reactions-ui-final).
+- Comentarios ahora se abren en un modal con la publicación centrada y las reacciones ordenadas; se eliminó el ícono de corazón (PR reactions-modal-update).
