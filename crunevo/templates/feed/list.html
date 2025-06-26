@@ -30,7 +30,6 @@
         {% elif item.type == 'post' %}
           {% set post = item.data %}
           {% set counts = reaction_counts.get(post.id, {}) %}
-          {% set my_reaction = user_reactions.get(post.id) %}
           {% include 'feed/post_card.html' %}
         {% endif %}
       {% endfor %}

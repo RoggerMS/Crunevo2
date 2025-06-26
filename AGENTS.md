@@ -295,5 +295,3 @@
 - Filtros rápidos ocultos en móviles (<=768px) y disponibles solo en el menú flotante azul (PR feed-mobile-filters-hide).
 - Reacciones muestran el emoji seleccionado de inmediato y panel accesible con pulsación prolongada; campo "Escribe un comentario..." abre el modal y evita el ícono previo (PR feed-reactions-final-touch).
 - Feedback instantáneo al reaccionar: la interfaz actualiza al instante y revierte si falla la petición (PR feed-reactions-ux-instant-feedback).
-- Sistema de reacciones final ajustado: un clic agrega o quita, conteo correcto y botón sin estilo visible (PR reaction-toggle-final).
-- Reacciones mejoradas: panel 4x2 en móvil, estado del usuario en data-my-reaction y actualización instantánea con reversión (PR reactions-toggle-ux).
