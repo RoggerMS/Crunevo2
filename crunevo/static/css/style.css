@@ -179,8 +179,30 @@ html {
 
 /* Notification dropdown */
 .notification-menu {
+  position: relative;
   border-radius: 0.5rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  color: #000;
+}
+
+body[data-bs-theme='dark'] .notification-menu {
+  background-color: #1e1e1e;
+  color: #fff;
+}
+
+.notification-menu::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 1.5rem;
+  border-width: 0 6px 6px 6px;
+  border-style: solid;
+  border-color: transparent transparent #f9f9f9 transparent;
+}
+
+body[data-bs-theme='dark'] .notification-menu::before {
+  border-color: transparent transparent #1e1e1e transparent;
 }
 .notification-menu .noti-item.unread {
   background-color: #f0f4ff;

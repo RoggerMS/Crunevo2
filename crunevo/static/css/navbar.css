@@ -24,17 +24,17 @@
 }
 
 
-.navbar-crunevo .dropdown-menu {
+.navbar-crunevo .dropdown-menu:not(.notification-menu) {
   background-color: var(--primary);
   color: #fff;
 }
-.navbar-crunevo .dropdown-menu .dropdown-item {
+.navbar-crunevo .dropdown-menu:not(.notification-menu) .dropdown-item {
   color: #fff;
 }
-.navbar-crunevo .dropdown-menu .dropdown-divider {
+.navbar-crunevo .dropdown-menu:not(.notification-menu) .dropdown-divider {
   border-color: rgba(255, 255, 255, 0.2);
 }
-.navbar-crunevo .dropdown-menu .dropdown-item:hover {
+.navbar-crunevo .dropdown-menu:not(.notification-menu) .dropdown-item:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
