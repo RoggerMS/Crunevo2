@@ -285,3 +285,4 @@
 - wsgi.py importa create_app desde el paquete crunevo nuevamente y se actualiz\xF3 wsgi_admin para mantener consistencia.
 - Redesigned note detail with two-column layout, PDF/image viewer via viewer.js and file type detection in notes_routes (PR note-detail-redesign).
 - Expanded notes model with language, reading_time, content_type, summary, course and career; upload form modernized with collapse "Más ajustes" (PR notes-upload-form-v2).
+- Formulario de publicación ahora usa un modal emergente activado por un botón estilo Facebook en el feed (PR fb-style-modal).
