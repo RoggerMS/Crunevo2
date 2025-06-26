@@ -10,6 +10,7 @@
   {% for post in posts %}
   <div class="col">
     {% set counts = reaction_counts.get(post.id, {}) %}
+    {% set my_reaction = user_reactions.get(post.id) %}
     {% include 'feed/post_card.html' %}
   </div>
   {% else %}
