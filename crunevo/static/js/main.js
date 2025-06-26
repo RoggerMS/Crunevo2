@@ -32,14 +32,11 @@ function showReactions(btn) {
   const container = btn.closest('.reaction-container');
   const options = container.querySelector('.reaction-options');
   if (!options) return;
-  if (options.classList.contains('d-none')) {
-    options.classList.remove('d-none');
-    setTimeout(() => {
-      options.classList.add('d-none');
-    }, 4000);
-  } else {
+  options.classList.remove('d-none');
+  clearTimeout(options._timeout);
+  options._timeout = setTimeout(() => {
     options.classList.add('d-none');
-  }
+  }, 4000);
 }
 
 function initReactions() {

@@ -11,12 +11,12 @@
     <button class="reaction-btn" data-reaction="🥶" title="Congelao">🥶</button>
     <button class="reaction-btn" data-reaction="😂" title="Vacilón">😂</button>
     <button class="reaction-btn" data-reaction="🤡" title="Cringe">🤡</button>
-    <button class="reaction-btn" data-reaction="😎" title="Bacán">😎</button>
+    <button class="reaction-btn" data-reaction="😲" title="Asu">😲</button>
   </div>
   {% if counts %}
   <div class="reaction-counts mt-1 small text-muted">
     {% for emoji, count in counts.items() %}
-      {{ emoji }} {{ count }}
+      {{ emoji }} {{ count }}&nbsp;
     {% endfor %}
   </div>
   {% endif %}
