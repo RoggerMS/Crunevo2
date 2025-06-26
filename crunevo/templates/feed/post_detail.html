@@ -26,7 +26,7 @@
         {% endif %}
       {% endif %}
       {% set counts = reaction_counts %}
-      {{ react.reaction_container(post, counts) }}
+      {{ react.reaction_container(post, counts, user_reaction) }}
 
       <div class="d-flex gap-2 my-3">
         <button type="button" class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('feed.view_post', post_id=post.id, _external=True) }}">
