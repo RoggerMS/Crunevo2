@@ -10,6 +10,7 @@ from .credit import Credit  # noqa: F401
 from .ranking import RankingCache  # noqa: F401
 from .achievement import Achievement, UserAchievement  # noqa: F401
 from .login_history import LoginHistory  # noqa: F401
+from .login_streak import LoginStreak  # noqa: F401
 from .note_vote import NoteVote  # noqa: F401
 from .feed_item import FeedItem  # noqa: F401
 from .email_token import EmailToken  # noqa: F401

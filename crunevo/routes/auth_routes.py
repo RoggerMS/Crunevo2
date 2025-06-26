@@ -53,7 +53,11 @@ def login():
                 login_user(user)
                 return redirect(url_for("onboarding.pending"))
             login_user(user)
-            record_login(user)
+            day, credits = record_login(user)
+            if credits:
+                flash(
+                    f"\ud83c\udf89 D\u00eda {day} de tu racha activa: has ganado {credits} cr\u00e9ditos."
+                )
             if admin_mode:
                 return redirect(url_for("admin.dashboard"))
             next_page = request.args.get("next")

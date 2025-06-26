@@ -309,3 +309,4 @@
 - Añadida animación pop a los botones de reacciones y en cada emoji del panel (PR reactions-anim-pop).
 - Vista previa de imagen muestra spinner de subida en el modal de publicación (PR feed-upload-spinner).
 - Filtros rápidos rediseñados como badges con scroll horizontal en móviles (PR feed-quickfilters-redesign).
+- Sistema de rachas de inicio de sesión que otorga créditos crecientes cada día (PR login-streak-rewards).
