@@ -66,3 +66,9 @@
   font-size: 0.875rem;
   color: #6c757d;
 }
+
+@media (max-width: 768px) {
+  #feed-filtros-principales {
+    display: none !important;
+  }
+}
