@@ -83,3 +83,8 @@ class Config:
     )
 
     PUBLIC_BASE_URL = os.getenv("PUBLIC_BASE_URL", "https://www.crunevo.com")
+
+    TAG_SUGGESTIONS = os.getenv(
+        "TAG_SUGGESTIONS",
+        "álgebra,resumen,física,historia del Perú",
+    ).split(",")

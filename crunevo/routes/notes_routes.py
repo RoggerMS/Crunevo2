@@ -173,12 +173,21 @@ def upload_note():
         flash("Apunte subido correctamente")
         return redirect(url_for("notes.list_notes"))
 
-    return render_template("notes/upload.html")
+    return render_template(
+        "notes/upload.html",
+        suggestions=current_app.config.get("TAG_SUGGESTIONS", []),
+    )
 
 
 notes_bp.add_url_rule(
     "/upload", endpoint="upload", view_func=upload_note, methods=["GET", "POST"]
 )
+
+
+@notes_bp.route("/api/tag_suggestions")
+def tag_suggestions():
+    """Return predefined tag suggestions."""
+    return jsonify(current_app.config.get("TAG_SUGGESTIONS", []))
 
 
 @notes_bp.route("/<int:note_id>")
