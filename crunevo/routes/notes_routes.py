@@ -161,6 +161,12 @@ def upload_note():
             filename=filepath,
             tags=request.form.get("tags"),
             category=request.form.get("category"),
+            language=request.form.get("language"),
+            reading_time=request.form.get("reading_time"),
+            content_type=request.form.get("content_type"),
+            summary=request.form.get("summary"),
+            course=request.form.get("course"),
+            career=request.form.get("career"),
             author=current_user,
         )
         db.session.add(note)
@@ -177,6 +183,7 @@ def upload_note():
     return render_template(
         "notes/upload.html",
         suggestions=current_app.config.get("TAG_SUGGESTIONS", []),
+        categories=current_app.config.get("NOTE_CATEGORIES", []),
     )
 
 
