@@ -6,6 +6,7 @@ from flask import (
     flash,
     request,
     current_app,
+    jsonify,
 )
 from flask_login import login_user, logout_user, current_user
 from crunevo.utils.helpers import activated_required
@@ -18,8 +19,10 @@ import cloudinary.uploader
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
 from crunevo.models import User, Note
-from crunevo.utils import spend_credit, record_login, send_notification
+from crunevo.utils import spend_credit, record_login, send_notification, add_credit
 from crunevo.constants import CreditReasons
+from crunevo.utils.login_streak import streak_reward
+from datetime import date
 
 IS_ADMIN = os.environ.get("ADMIN_INSTANCE") == "1"
 
@@ -167,3 +170,26 @@ def agradecer(user_id):
     except ValueError:
         flash("No tienes créditos suficientes", "danger")
     return redirect(url_for("auth.profile_by_username", username=target.username))
+
+
+@auth_bp.route("/api/reclamar-racha", methods=["POST"])
+@activated_required
+def reclamar_racha():
+    today = date.today()
+    streak = current_user.login_streak
+    if not streak or streak.last_login != today:
+        return jsonify({"success": False, "message": "No has iniciado sesión hoy"}), 400
+    if streak.claimed_today == today:
+        return jsonify({"success": False, "message": "Ya reclamaste hoy"}), 400
+    reward = streak_reward(streak.current_day)
+    add_credit(current_user, reward, CreditReasons.RACHA_LOGIN)
+    streak.claimed_today = today
+    db.session.commit()
+    return jsonify(
+        {
+            "success": True,
+            "credits": reward,
+            "day": streak.current_day,
+            "balance": current_user.credits,
+        }
+    )

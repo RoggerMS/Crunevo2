@@ -28,6 +28,30 @@ function showToast(message, options = {}) {
   new bootstrap.Toast(div).show();
 }
 
+function claimStreak() {
+  csrfFetch('/api/reclamar-racha', { method: 'POST' })
+    .then((r) => r.json())
+    .then((data) => {
+      if (data.success) {
+        showToast(`🎉 ¡Día ${data.day}! Has ganado ${data.credits} créditos`);
+        const box = document.getElementById('streakBox');
+        if (box) box.remove();
+        if (typeof updateCreditsDisplay === 'function') {
+          updateCreditsDisplay(data.balance);
+        }
+      } else {
+        alert(data.message);
+      }
+    });
+}
+
+function updateCreditsDisplay(balance) {
+  document.querySelectorAll('.bi-coin').forEach((icon) => {
+    const li = icon.closest('li');
+    if (li) li.innerHTML = `<i class="bi bi-coin"></i> ${balance}`;
+  });
+}
+
 function showReactions(btn) {
   const container = btn.closest('.reaction-container');
   const options = container.querySelector('.reaction-options');
