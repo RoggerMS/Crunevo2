@@ -40,7 +40,7 @@
       {% endif %}
     {% endif %}
     <div class="d-flex align-items-center gap-2 mb-2">
-      {{ react.reaction_container(post, counts) }}
+      {{ react.reaction_container(post, counts, my_reaction) }}
       <input type="text" class="form-control form-control-sm" placeholder="Escribe un comentario..." readonly data-bs-toggle="modal" data-bs-target="#postModal{{ post.id }}">
     </div>
   </div>
@@ -111,7 +111,7 @@
           <img loading="lazy" src="{{ post.file_url }}" class="img-fluid rounded mb-2" alt="imagen">
           {% endif %}
         {% endif %}
-        {{ react.reaction_container(post, counts) }}
+        {{ react.reaction_container(post, counts, my_reaction) }}
         <h6 class="mt-3 mb-2">Comentarios</h6>
         <div id="modalComments{{ post.id }}" class="mb-2" style="max-height:300px; overflow-y:auto;">
           {% if post.comments %}
