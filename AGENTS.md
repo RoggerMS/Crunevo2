@@ -283,3 +283,4 @@
 - Mejorado formulario de subida de apuntes con categoría, nivel académico, privacidad y etiquetas con sugerencias (PR notes-upload-enhanced).
 
 - wsgi.py importa create_app desde el paquete crunevo nuevamente y se actualiz\xF3 wsgi_admin para mantener consistencia.
+- Redesigned note detail with two-column layout, PDF/image viewer via viewer.js and file type detection in notes_routes (PR note-detail-redesign).

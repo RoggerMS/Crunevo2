@@ -86,6 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   initPdfPreviews();
+  if (typeof initNoteViewer === 'function') {
+    initNoteViewer();
+  }
 
   document.querySelectorAll('.achievement-card').forEach((el) => {
     if (el.title && !bootstrap.Tooltip.getInstance(el)) {
