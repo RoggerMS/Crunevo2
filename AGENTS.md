@@ -292,3 +292,4 @@
 - Comentarios ahora se abren en un modal con la publicación centrada y las reacciones ordenadas; se eliminó el ícono de corazón (PR reactions-modal-update).
 - Manejo de IntegrityError en like_post para evitar fallas de logs por duplicados.
 - Corregido template de reacciones convirtiendo sorted_counts a lista para evitar UndefinedError (PR reaction-container-fix).
+- Filtros rápidos ocultos en móviles (<=768px) y disponibles solo en el menú flotante azul (PR feed-mobile-filters-hide).
