@@ -290,3 +290,4 @@
 - Sistema de reacciones actualizado con conteo por emoji y compatibilidad móvil (PR reactions-ui-counts).
 - Reacciones optimizadas para móviles, con tooltip por emoji y reemplazo de 😎 por 😲 (PR reactions-ui-final).
 - Comentarios ahora se abren en un modal con la publicación centrada y las reacciones ordenadas; se eliminó el ícono de corazón (PR reactions-modal-update).
+- Manejo de IntegrityError en like_post para evitar fallas de logs por duplicados.
