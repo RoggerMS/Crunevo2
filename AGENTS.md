@@ -338,3 +338,4 @@
 - Added static /cookies page with footer links to cookies, privacidad and terminos (PR cookies-page).
 - Botón para eliminar apuntes por admin solo visible si ADMIN_INSTANCE está habilitado para evitar BuildError (PR note-delete-admin-fix).
 - Logros ahora otorgan crolars y muestran popup al desbloquear (PR achievements-credits-popup).
+- Post cards redesigned with hover effect, reaction panel animation and comment counts (PR post-ui-polish).
