@@ -34,6 +34,23 @@ def create_app():
             else []
         )
 
+        urgent_count = 0
+        if current_user.is_authenticated and current_user.role in [
+            "admin",
+            "moderator",
+        ]:
+            from .models import Report
+
+            counts = {}
+            for r in Report.query.filter_by(status="open").all():
+                if r.description.startswith("Post "):
+                    try:
+                        pid = int(r.description.split()[1].split(":")[0])
+                        counts[pid] = counts.get(pid, 0) + 1
+                    except Exception:
+                        pass
+            urgent_count = sum(1 for c in counts.values() if c >= 3)
+
         return {
             "PUBLIC_BASE_URL": app.config.get("PUBLIC_BASE_URL"),
             "ACHIEVEMENT_DETAILS": ACHIEVEMENT_DETAILS,
@@ -41,6 +58,7 @@ def create_app():
             "Notification": Notification,
             "current_app": current_app,
             "CART_COUNT": sum(session.get("cart", {}).values()),
+            "URGENT_REPORTS": urgent_count,
         }
 
     from .utils.helpers import timesince

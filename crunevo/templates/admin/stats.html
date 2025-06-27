@@ -1,0 +1,37 @@
+{% extends 'admin/base_admin.html' %}
+{% block admin_content %}
+<h2 class="page-title mb-4">Estadísticas</h2>
+<div class="row row-cards">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Ranking semanal</h3></div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-vcenter card-table">
+            <thead><tr><th>Usuario</th><th>Puntos</th></tr></thead>
+            <tbody>
+            {% for rc, user in ranking %}
+            <tr>
+              <td>{{ user.username }}</td>
+              <td>{{ rc.score }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Usuarios / día</h3></div>
+      <div class="card-body">
+        <canvas id="statsUsers" height="200" data-chart='{{ stats.users | tojson }}'></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+window.addEventListener('DOMContentLoaded', initAdminCharts);
+</script>
+{% endblock %}

@@ -32,8 +32,11 @@ from crunevo.models import (
     Mission,
     UserMission,
     Comment,
+    PostComment,
     ProductLog,
     AdminNotification,
+    AdminLog,
+    RankingCache,
 )
 from crunevo.utils.ranking import calculate_weekly_ranking
 from crunevo.utils import unlock_achievement
@@ -272,6 +275,61 @@ def manage_reports():
     return render_template("admin/manage_reports.html", reports=reports)
 
 
+@admin_bp.route("/comentarios")
+@activated_required
+def manage_comments():
+    rep_ids = []
+    for r in Report.query.filter_by(status="open").all():
+        if r.description.startswith("Comment "):
+            try:
+                cid = int(r.description.split()[1].split(":")[0])
+                rep_ids.append(cid)
+            except Exception:
+                pass
+    post_comments = (
+        db.session.query(PostComment, Post, User)
+        .join(Post, PostComment.post_id == Post.id)
+        .join(User, PostComment.author_id == User.id)
+        .filter(PostComment.id.in_(rep_ids))
+        .all()
+    )
+    note_comments = (
+        db.session.query(Comment, Note, User)
+        .join(Note, Comment.note_id == Note.id)
+        .join(User, Comment.user_id == User.id)
+        .filter(Comment.id.in_(rep_ids))
+        .all()
+    )
+    return render_template(
+        "admin/manage_comments.html",
+        post_comments=post_comments,
+        note_comments=note_comments,
+    )
+
+
+@admin_bp.route("/comentarios/<int:comment_id>/delete", methods=["POST"])
+@activated_required
+def delete_comment(comment_id):
+    pc = PostComment.query.get(comment_id)
+    c = Comment.query.get(comment_id)
+    target = pc or c
+    if not target:
+        abort(404)
+    db.session.delete(target)
+    db.session.commit()
+    db.session.add(
+        AdminLog(
+            admin_id=current_user.id,
+            action="delete_comment",
+            target_id=comment_id,
+            target_type="post" if pc else "note",
+        )
+    )
+    db.session.commit()
+    flash("Comentario eliminado")
+    return redirect(url_for("admin.manage_comments"))
+
+
 @admin_bp.route("/reports/<int:report_id>/resolve", methods=["POST"])
 @activated_required
 def resolve_report(report_id):
@@ -291,6 +349,24 @@ def run_ranking():
     calculate_weekly_ranking()
     flash("Ranking recalculado")
     return redirect(url_for("admin.dashboard"))
+
+
+@admin_bp.route("/estadisticas")
+@activated_required
+def stats_page():
+    ranking = (
+        db.session.query(RankingCache, User)
+        .join(User, RankingCache.user_id == User.id)
+        .filter(RankingCache.period == "semanal")
+        .order_by(RankingCache.score.desc())
+        .limit(10)
+        .all()
+    )
+    stats = {
+        "users": user_registrations_last_7_days(),
+        "notes": notes_last_4_weeks(),
+    }
+    return render_template("admin/stats.html", ranking=ranking, stats=stats)
 
 
 @admin_bp.route("/verificaciones")
@@ -497,6 +573,19 @@ def product_history():
     return render_template("admin/product_history.html", logs=logs)
 
 
+@admin_bp.route("/logs")
+@activated_required
+def admin_logs():
+    logs = (
+        db.session.query(AdminLog, User)
+        .join(User, AdminLog.admin_id == User.id)
+        .order_by(AdminLog.timestamp.desc())
+        .limit(200)
+        .all()
+    )
+    return render_template("admin/admin_logs.html", logs=logs)
+
+
 @admin_bp.route("/delete-note/<int:note_id>", methods=["POST"])
 @activated_required
 def delete_note_admin(note_id):
@@ -524,6 +613,14 @@ def delete_note_admin(note_id):
         message=f"Se elimin\u00f3 el apunte {note_id}",
     )
     db.session.add(notif)
+    db.session.add(
+        AdminLog(
+            admin_id=current_user.id,
+            action="delete_note",
+            target_id=note_id,
+            target_type="note",
+        )
+    )
     db.session.commit()
     flash("Apunte eliminado")
     return redirect(request.referrer or url_for("feed.view_feed"))
@@ -557,6 +654,14 @@ def delete_post_admin(post_id):
         message=f"Se elimin\u00f3 el post {post_id}",
     )
     db.session.add(notif)
+    db.session.add(
+        AdminLog(
+            admin_id=current_user.id,
+            action="delete_post",
+            target_id=post_id,
+            target_type="post",
+        )
+    )
     db.session.commit()
     flash("Publicaci\u00f3n eliminada")
     return redirect(request.referrer or url_for("feed.view_feed"))

@@ -17,6 +17,7 @@ from .email_token import EmailToken  # noqa: F401
 from .auth_event import AuthEvent  # noqa: F401
 from .product_log import ProductLog  # noqa: F401
 from .admin_notification import AdminNotification  # noqa: F401
+from .admin_log import AdminLog  # noqa: F401
 from .purchase import Purchase  # noqa: F401
 from .favorite import FavoriteProduct  # noqa: F401
 from .review import Review  # noqa: F401
