@@ -322,5 +322,8 @@
 - Se otorgan créditos por referido al confirmar el correo y la pestaña muestra tarjetas con total de créditos (PR referral-rewards).
 - Misiones de referidos detectan los completados, nuevos niveles y maratón añadidos. Se premia al invitado con créditos y se desbloquean insignias de "Embajador" y "Aliado". Ranking mensual opcional (PR referral-missions).
 - Se agregaron rutas de administrador para eliminar publicaciones y apuntes con notificación al autor y limpieza de feed. La página de reportes permite marcar como resuelto y eliminar posts reportados (PR admin-delete-post).
+- Se manejan consultas a Referidos con try/except para evitar errores cuando falta la tabla (PR referral-safe-query).
+- Botón 'Eliminar (admin)' en post_card solo se muestra si ADMIN_INSTANCE está habilitado para evitar BuildError (PR admin-delete-post-link-fix).
+
 - Ocultado enlace a /crolars en admin para evitar BuildError (PR admin-crolars-link-fix).
 - Renombrado el término 'cr\xc3\xa9ditos' a 'Crolars' en plantillas y mensajes visibles sin cambiar la base de datos (PR rename-credits-crolars).

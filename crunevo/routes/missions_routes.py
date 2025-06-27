@@ -61,18 +61,22 @@ def compute_mission_states(user):
 
         # 👥 Referidos activos
         elif m.code.startswith("referido_"):
-            completed_refs = Referral.query.filter_by(
-                invitador_id=user.id, completado=True
-            ).count()
-            if m.code == "referido_maraton":
-                week_ago = datetime.utcnow() - timedelta(days=7)
-                progress = (
-                    Referral.query.filter_by(invitador_id=user.id, completado=True)
-                    .filter(Referral.fecha_creacion >= week_ago)
-                    .count()
-                )
-            else:
-                progress = completed_refs
+            try:
+                completed_refs = Referral.query.filter_by(
+                    invitador_id=user.id, completado=True
+                ).count()
+                if m.code == "referido_maraton":
+                    week_ago = datetime.utcnow() - timedelta(days=7)
+                    progress = (
+                        Referral.query.filter_by(invitador_id=user.id, completado=True)
+                        .filter(Referral.fecha_creacion >= week_ago)
+                        .count()
+                    )
+                else:
+                    progress = completed_refs
+            except Exception:
+                db.session.rollback()
+                progress = 0
 
         # 🏆 Logros únicos
         elif m.code == "maraton_apuntes":
