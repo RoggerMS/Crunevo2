@@ -384,7 +384,7 @@ def assign_achievement():
 def export_users():
     output = StringIO()
     writer = csv.writer(output)
-    writer.writerow(["ID", "Nombre", "Email", "Rol", "Créditos", "Estado"])
+    writer.writerow(["ID", "Nombre", "Email", "Rol", "Crolars", "Estado"])
     for user in User.query.all():
         writer.writerow(
             [
@@ -437,7 +437,7 @@ def export_products():
             "ID",
             "Nombre",
             "Precio S/",
-            "Créditos",
+            "Crolars",
             "Stock",
             "URL de imagen",
         ]

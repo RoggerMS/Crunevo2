@@ -13,7 +13,7 @@ ACHIEVEMENT_DETAILS = {
     "100_creditos": {
         "title": "Colaborador destacado",
         "icon": "bi-star",
-        "description": "Has acumulado 100 créditos",
+        "description": "Has acumulado 100 crolars",
     },
     "tutor_activo": {
         "title": "Tutor activo",

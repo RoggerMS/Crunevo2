@@ -6,14 +6,14 @@
   <div class="card mb-3">
     <div class="card-body">
       <h5 class="card-title">{{ mision.description }}</h5>
-      <small class="text-muted">Meta: {{ mision.goal }} • Recompensa: +{{ mision.credit_reward }} créditos</small><br>
+      <small class="text-muted">Meta: {{ mision.goal }} • Recompensa: +{{ mision.credit_reward }} crolars</small><br>
       {% if progreso %}
         <progress value="{{ progreso.progreso }}" max="{{ mision.goal }}"></progress>
         <p>Progreso: {{ progreso.progreso }}/{{ mision.goal }}</p>
         <form method="post" action="{{ url_for('missions.reclamar_mision', mission_id=mision.id) }}">
           {{ csrf.csrf_field() }}
           {% if not progreso.reclamada and progreso.completada %}
-            <button class="btn btn-sm btn-success">Reclamar {{ mision.credit_reward }} créditos</button>
+            <button class="btn btn-sm btn-success">Reclamar {{ mision.credit_reward }} crolars</button>
           {% elif progreso.reclamada %}
             <span class="badge bg-secondary">Ya reclamada</span>
           {% else %}

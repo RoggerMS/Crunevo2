@@ -25,12 +25,12 @@
         <p class="h5"><strong class="text-primary">S/ {{ '%.2f' | format(product.price) }}</strong></p>
       {% endif %}
       {% if product.price_credits %}
-        <p class="h5"><strong class="text-warning">{{ product.price_credits }} créditos</strong></p>
+        <p class="h5"><strong class="text-warning">{{ product.price_credits }} crolars</strong></p>
       {% endif %}
       <div class="mb-2">
         {% if product.is_new %}<span class="badge bg-success me-1">Nuevo</span>{% endif %}
         {% if product.is_popular %}<span class="badge bg-danger me-1">Popular</span>{% endif %}
-        {% if product.credits_only %}<span class="badge bg-warning text-dark me-1">Solo créditos</span>{% endif %}
+        {% if product.credits_only %}<span class="badge bg-warning text-dark me-1">Solo crolars</span>{% endif %}
         {% if product.is_featured %}<span class="badge bg-purple text-white me-1">Destacado</span>{% endif %}
       </div>
       {% if product.stock %}

@@ -526,7 +526,7 @@ def donate_post(post_id):
         )
         add_credit(post.author, amount, CreditReasons.DONACION_FEED, related_id=post.id)
     except ValueError:
-        return jsonify({"error": "Créditos insuficientes"}), 400
+        return jsonify({"error": "Crolars insuficientes"}), 400
     return jsonify({"success": True})
 
 
