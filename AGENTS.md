@@ -330,3 +330,4 @@
 - Ocultado el menú inferior móvil en la instancia de administración para evitar BuildError al resolver 'feed.feed_home' (PR admin-bottom-nav-fix).
 - Botón de carrito y fetch de recuento condicionados a la existencia de rutas de tienda para evitar BuildError en la instancia admin (PR admin-store-route-check).
 - Agregadas vistas /admin/misiones y alias /admin/creditos; manage_credits admite filtros por usuario y razón y los usuarios muestran enlace a su historial (PR admin-missions-page).
+- Added device token header from localStorage via main.js and stored in auth events (PR device-token-logging).
