@@ -49,6 +49,7 @@
     {% endif %}
     <div class="d-flex align-items-center gap-2 mb-2">
       {{ react.reaction_container(post, counts, my_reaction) }}
+      <input type="text" class="form-control form-control-sm" placeholder="Escribe un comentario..." readonly data-bs-toggle="modal" data-bs-target="#postModal{{ post.id }}">
     </div>
     <hr class="my-2">
     <div class="d-flex justify-content-between align-items-center">
