@@ -334,3 +334,4 @@
 - Added AdminLog model, comentarios y estadísticas en admin con alerta de reportes urgentes (PR admin-logs-stats).
 
 - Added static /cookies page with footer links to cookies, privacidad and terminos (PR cookies-page).
+- Botón para eliminar apuntes por admin solo visible si ADMIN_INSTANCE está habilitado para evitar BuildError (PR note-delete-admin-fix).
