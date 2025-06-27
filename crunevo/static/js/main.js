@@ -66,12 +66,6 @@ function showReactions(btn) {
   const container = btn.closest('.reaction-container');
   const options = container.querySelector('.reaction-options');
   if (!options) return;
-  const current = container.dataset.myReaction;
-  if (current) {
-    options.querySelectorAll('.reaction-btn').forEach((b) => {
-      b.classList.toggle('active', b.dataset.reaction === current);
-    });
-  }
   options.classList.remove('d-none');
   clearTimeout(options._timeout);
   options._timeout = setTimeout(() => {
