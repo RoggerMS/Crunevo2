@@ -7,6 +7,7 @@ class Achievement(db.Model):
     code = db.Column(db.String(50), unique=True, nullable=False)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
+    credit_reward = db.Column(db.Integer, default=1)
     icon = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 

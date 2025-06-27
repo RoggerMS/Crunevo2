@@ -282,3 +282,28 @@ body[data-bs-theme='dark'] .notification-menu::before {
   color: #fff;
 }
 
+.achievement-popup {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+}
+
+.achievement-popup .popup-content {
+  animation: pop-in 0.3s ease forwards;
+}
+
+@keyframes pop-in {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
