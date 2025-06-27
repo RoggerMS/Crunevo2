@@ -113,11 +113,14 @@ def perfil():
             if ACHIEVEMENT_CATEGORIES.get(a.badge_code) == ach_type
         ]
 
-    missions = None
+    misiones = None
+    progresos = None
     if tab == "misiones":
         from crunevo.routes.missions_routes import compute_mission_states
+        from crunevo.models import Mission
 
-        missions = compute_mission_states(current_user)
+        misiones = Mission.query.all()
+        progresos = compute_mission_states(current_user)
 
     return render_template(
         "auth/perfil.html",
@@ -125,7 +128,8 @@ def perfil():
         achievements=achievements,
         ach_type=ach_type,
         tab=tab,
-        missions=missions,
+        misiones=misiones,
+        progresos=progresos,
     )
 
 
