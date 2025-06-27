@@ -28,3 +28,4 @@ from .notification import Notification  # noqa: F401
 from .mission import Mission, UserMission  # noqa: F401
 from .post_reaction import PostReaction  # noqa: F401
 from .referido import Referral  # noqa: F401
+from .device_claim import DeviceClaim  # noqa: F401

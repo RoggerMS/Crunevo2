@@ -22,7 +22,8 @@ from crunevo.models import User, Note
 from crunevo.utils import spend_credit, record_login, send_notification, add_credit
 from crunevo.constants import CreditReasons
 from crunevo.utils.login_streak import streak_reward
-from datetime import date
+from datetime import date, datetime, timedelta
+from crunevo.models import DeviceClaim
 
 IS_ADMIN = os.environ.get("ADMIN_INSTANCE") == "1"
 
@@ -217,9 +218,38 @@ def reclamar_racha():
         return jsonify({"success": False, "message": "No has iniciado sesión hoy"}), 400
     if streak.claimed_today == today:
         return jsonify({"success": False, "message": "Ya reclamaste hoy"}), 400
+
+    token = request.headers.get("X-Device-Token")
+    code = f"racha_dia_{streak.current_day}"
+    if token:
+        limit = datetime.utcnow() - timedelta(hours=24)
+        exists = (
+            DeviceClaim.query.filter_by(device_token=token, mission_code=code)
+            .filter(DeviceClaim.timestamp >= limit)
+            .first()
+        )
+        if exists:
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Este dispositivo ya canjeó esta recompensa recientemente.",
+                    }
+                ),
+                400,
+            )
+
     reward = streak_reward(streak.current_day)
     add_credit(current_user, reward, CreditReasons.RACHA_LOGIN)
     streak.claimed_today = today
+    if token:
+        db.session.add(
+            DeviceClaim(
+                device_token=token,
+                mission_code=code,
+                user_id=current_user.id,
+            )
+        )
     db.session.commit()
     return jsonify(
         {

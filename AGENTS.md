@@ -333,5 +333,7 @@
 - Added device token header from localStorage via main.js and stored in auth events (PR device-token-logging).
 - Added AdminLog model, comentarios y estadísticas en admin con alerta de reportes urgentes (PR admin-logs-stats).
 
+- Validación de token de dispositivo al reclamar misiones para evitar duplicados y tabla device_claims (PR device-claim-dup-check).
+
 - Added static /cookies page with footer links to cookies, privacidad and terminos (PR cookies-page).
 - Botón para eliminar apuntes por admin solo visible si ADMIN_INSTANCE está habilitado para evitar BuildError (PR note-delete-admin-fix).
