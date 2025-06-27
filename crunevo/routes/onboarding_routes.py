@@ -67,19 +67,23 @@ def register():
         ref = request.args.get("ref")
         if ref:
             from crunevo.models import Referral
+            from sqlalchemy.exc import ProgrammingError, OperationalError
 
             referidor = User.query.filter_by(username=ref).first()
             if referidor:
                 codigo = f"{referidor.username}-{user.username}"
-                if not Referral.query.filter_by(code=codigo).first():
-                    db.session.add(
-                        Referral(
-                            code=codigo,
-                            invitador_id=referidor.id,
-                            invitado_id=user.id,
+                try:
+                    if not Referral.query.filter_by(code=codigo).first():
+                        db.session.add(
+                            Referral(
+                                code=codigo,
+                                invitador_id=referidor.id,
+                                invitado_id=user.id,
+                            )
                         )
-                    )
-                    db.session.commit()
+                        db.session.commit()
+                except (ProgrammingError, OperationalError):
+                    db.session.rollback()
         if not send_confirmation_email(user):
             flash(
                 "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
@@ -104,8 +108,13 @@ def confirm(token):
     from crunevo.utils.credits import add_credit
     from crunevo.constants import CreditReasons, AchievementCodes
     from crunevo.utils.achievements import unlock_achievement
+    from sqlalchemy.exc import ProgrammingError, OperationalError
 
-    ref = Referral.query.filter_by(invitado_id=record.user.id).first()
+    ref = None
+    try:
+        ref = Referral.query.filter_by(invitado_id=record.user.id).first()
+    except (ProgrammingError, OperationalError):
+        db.session.rollback()
     if ref and not ref.completado:
         ref.completado = True
         existing = Credit.query.filter_by(
