@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
-from flask import Blueprint, redirect, url_for
-from flask_login import current_user
+from flask import Blueprint, redirect, url_for, flash
+from flask_login import current_user, login_required
 from sqlalchemy import func
 from crunevo.models import Mission, UserMission, Note, PostComment, Post
 from crunevo.extensions import db
@@ -11,7 +11,7 @@ missions_bp = Blueprint("missions", __name__, url_prefix="/misiones")
 
 
 def compute_mission_states(user):
-    """Return mission progress info for a user."""
+    """Return mission progress dict for a user without claiming."""
     one_week_ago = datetime.utcnow() - timedelta(days=7)
     # Ensure default missions exist
     defaults = [
@@ -40,7 +40,7 @@ def compute_mission_states(user):
     db.session.commit()
 
     missions = Mission.query.all()
-    mission_states = []
+    progress_dict = {}
     for m in missions:
         progress = 0
         if m.code == "upload_note":
@@ -64,18 +64,37 @@ def compute_mission_states(user):
             )
         completed = progress >= m.goal
         record = UserMission.query.filter_by(user_id=user.id, mission_id=m.id).first()
-        if user == current_user and completed and not record:
-            db.session.add(UserMission(user_id=user.id, mission_id=m.id))
-            add_credit(user, m.credit_reward, CreditReasons.DONACION)
-            db.session.commit()
-        mission_states.append(
-            {
-                "mission": m,
-                "progress": progress,
-                "completed": completed or record is not None,
-            }
-        )
-    return mission_states
+        progress_dict[m.id] = {
+            "progreso": progress,
+            "completada": completed,
+            "reclamada": record is not None,
+            "id": record.id if record else None,
+        }
+    return progress_dict
+
+
+@missions_bp.route("/reclamar_mision/<int:mission_id>", methods=["POST"])
+@login_required
+def reclamar_mision(mission_id):
+    """Allow the current user to claim a completed mission."""
+    mission = Mission.query.get_or_404(mission_id)
+    record = UserMission.query.filter_by(
+        user_id=current_user.id, mission_id=mission_id
+    ).first()
+    if record:
+        flash("Misión ya reclamada", "info")
+        return redirect(url_for("auth.perfil", tab="misiones"))
+
+    progress = compute_mission_states(current_user).get(mission_id)
+    if not progress or not progress["completada"]:
+        flash("Aún no has completado esta misión", "warning")
+        return redirect(url_for("auth.perfil", tab="misiones"))
+
+    db.session.add(UserMission(user_id=current_user.id, mission_id=mission_id))
+    add_credit(current_user, mission.credit_reward, CreditReasons.DONACION)
+    db.session.commit()
+    flash("¡Créditos reclamados!", "success")
+    return redirect(url_for("auth.perfil", tab="misiones"))
 
 
 @missions_bp.route("/")
