@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from flask import Blueprint, redirect, url_for, flash
+from flask import Blueprint, redirect, url_for, flash, request
 from flask_login import current_user, login_required
 from sqlalchemy import func
 from crunevo.models import (
@@ -10,6 +10,7 @@ from crunevo.models import (
     Post,
     Purchase,
     Referral,
+    DeviceClaim,
 )
 from crunevo.extensions import db
 from crunevo.utils.credits import add_credit
@@ -111,6 +112,20 @@ def reclamar_mision(mission_id):
         flash("Misi\u00f3n ya reclamada", "info")
         return redirect(url_for("auth.perfil", tab="misiones"))
 
+    token = request.headers.get("X-Device-Token")
+    if token:
+        limit = datetime.utcnow() - timedelta(hours=24)
+        exists = (
+            DeviceClaim.query.filter_by(device_token=token, mission_code=mission.code)
+            .filter(DeviceClaim.timestamp >= limit)
+            .first()
+        )
+        if exists:
+            flash(
+                "Este dispositivo ya canjeó esta recompensa recientemente.", "warning"
+            )
+            return redirect(url_for("auth.perfil", tab="misiones"))
+
     progress = compute_mission_states(current_user).get(mission_id)
     if not progress or not progress["completada"]:
         flash("A\u00fan no has completado esta misi\u00f3n", "warning")
@@ -118,6 +133,14 @@ def reclamar_mision(mission_id):
 
     db.session.add(UserMission(user_id=current_user.id, mission_id=mission_id))
     add_credit(current_user, mission.credit_reward, CreditReasons.DONACION)
+    if token:
+        db.session.add(
+            DeviceClaim(
+                device_token=token,
+                mission_code=mission.code,
+                user_id=current_user.id,
+            )
+        )
     db.session.commit()
     flash("\u00a1Cr\u00e9ditos reclamados!", "success")
     return redirect(url_for("auth.perfil", tab="misiones"))

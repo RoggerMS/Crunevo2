@@ -28,3 +28,16 @@ def test_streak_resets_after_break(db_session, client, test_user):
     resp = client.post("/api/reclamar-racha")
     assert resp.status_code == 200
     assert test_user.login_streak.current_day == 1
+
+
+def test_streak_device_token_block(db_session, client, test_user, another_user):
+    token = "abc123"
+    record_login(test_user, date.today())
+    login(client, test_user.username)
+    resp1 = client.post("/api/reclamar-racha", headers={"X-Device-Token": token})
+    assert resp1.status_code == 200
+
+    record_login(another_user, date.today())
+    login(client, another_user.username)
+    resp2 = client.post("/api/reclamar-racha", headers={"X-Device-Token": token})
+    assert resp2.status_code == 400
