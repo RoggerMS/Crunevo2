@@ -131,22 +131,18 @@ def perfil():
         from crunevo.models import Credit
         from crunevo.constants import CreditReasons
         from sqlalchemy import func
-        from sqlalchemy.exc import ProgrammingError, OperationalError
 
-        try:
-            referidos = Referral.query.filter_by(invitador_id=current_user.id).all()
-            total_referidos = len(referidos)
-            referidos_completados = sum(1 for r in referidos if r.completado)
-            creditos_referidos = (
-                db.session.query(func.coalesce(func.sum(Credit.amount), 0))
-                .filter_by(user_id=current_user.id, reason=CreditReasons.REFERIDO)
-                .scalar()
-                or 0
-            )
-        except (ProgrammingError, OperationalError):
-            db.session.rollback()
+        referidos = Referral.query.filter_by(invitador_id=current_user.id).all()
+        total_referidos = len(referidos)
+        referidos_completados = sum(1 for r in referidos if r.completado)
         enlace_referido = url_for(
             "onboarding.register", ref=current_user.username, _external=True
+        )
+        creditos_referidos = (
+            db.session.query(func.coalesce(func.sum(Credit.amount), 0))
+            .filter_by(user_id=current_user.id, reason=CreditReasons.REFERIDO)
+            .scalar()
+            or 0
         )
 
     return render_template(

@@ -186,13 +186,9 @@ def upload_note():
         create_feed_item_for_all("apunte", note.id)
         add_credit(current_user, 5, CreditReasons.APUNTE_SUBIDO, related_id=note.id)
         unlock_achievement(current_user, AchievementCodes.PRIMER_APUNTE)
-        ref = None
-        try:
-            ref = Referral.query.filter_by(
-                invitado_id=current_user.id, completado=True
-            ).first()
-        except Exception:
-            db.session.rollback()
+        ref = Referral.query.filter_by(
+            invitado_id=current_user.id, completado=True
+        ).first()
         if ref:
             unlock_achievement(ref.invitador, AchievementCodes.ALIADO_EDUCATIVO)
         flash("Apunte subido correctamente")
