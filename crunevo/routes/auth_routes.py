@@ -115,12 +115,25 @@ def perfil():
 
     misiones = None
     progresos = None
+    referidos = None
+    total_referidos = 0
+    referidos_completados = 0
+    enlace_referido = None
     if tab == "misiones":
         from crunevo.routes.missions_routes import compute_mission_states
         from crunevo.models import Mission
 
         misiones = Mission.query.all()
         progresos = compute_mission_states(current_user)
+    elif tab == "referidos":
+        from crunevo.models import Referral
+
+        referidos = Referral.query.filter_by(invitador_id=current_user.id).all()
+        total_referidos = len(referidos)
+        referidos_completados = sum(1 for r in referidos if r.completado)
+        enlace_referido = url_for(
+            "onboarding.register", ref=current_user.username, _external=True
+        )
 
     return render_template(
         "auth/perfil.html",
@@ -130,6 +143,10 @@ def perfil():
         tab=tab,
         misiones=misiones,
         progresos=progresos,
+        referidos=referidos,
+        total_referidos=total_referidos,
+        referidos_completados=referidos_completados,
+        enlace_referido=enlace_referido,
     )
 
 
