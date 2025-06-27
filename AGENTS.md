@@ -345,3 +345,4 @@
 - Added close listener for achievement popup with fade animations and accessibility tweaks (PR achievement-popup-fix).
 - Achievement popup hidden on admin instance, closes properly marking as shown and clearing state with button handler set dynamically (PR achievement-popup-bugfix).
 - Popup and window.NEW_ACHIEVEMENTS only load for authenticated users, injecting CURRENT_USER_ID and clearing achievements after successful mark-shown request (PR achievement-popup-login-check).
+- Achievement popup only triggered when backend response includes "new_achievement"; DOMContentLoaded check removed and csrfFetch now handles showing popup automatically (PR achievement-popup-runtime).

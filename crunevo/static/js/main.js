@@ -17,7 +17,22 @@ function csrfFetch(url, options = {}) {
     'X-Device-Token': getDeviceToken(),
     ...(options.headers || {}),
   };
-  return fetch(url, { ...options, headers });
+  return fetch(url, { ...options, headers }).then(async (resp) => {
+    if (
+      resp.ok &&
+      resp.headers.get('Content-Type')?.includes('application/json')
+    ) {
+      try {
+        const data = await resp.clone().json();
+        if (data.new_achievement) {
+          showAchievementPopup(data.new_achievement);
+        }
+      } catch {
+        // ignore parse errors
+      }
+    }
+    return resp;
+  });
 }
 
 function showToast(message, options = {}) {
@@ -272,9 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new bootstrap.Toast(t).show();
   });
 
-  if (window.NEW_ACHIEVEMENTS && window.NEW_ACHIEVEMENTS.length && window.CURRENT_USER_ID) {
-    showAchievementPopup(window.NEW_ACHIEVEMENTS[0]);
-  }
+
 
 
   initPdfPreviews();
