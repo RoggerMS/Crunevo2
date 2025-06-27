@@ -100,6 +100,20 @@ def confirm(token):
         return redirect(url_for("onboarding.register"))
     record.consumed_at = datetime.utcnow()
     record.user.activated = True
+    from crunevo.models import Referral, Credit
+    from crunevo.utils.credits import add_credit
+    from crunevo.constants import CreditReasons
+
+    ref = Referral.query.filter_by(invitado_id=record.user.id).first()
+    if ref and not ref.completado:
+        ref.completado = True
+        existing = Credit.query.filter_by(
+            user_id=ref.invitador_id,
+            reason=CreditReasons.REFERIDO,
+            related_id=ref.id,
+        ).first()
+        if not existing:
+            add_credit(ref.invitador, 100, CreditReasons.REFERIDO, related_id=ref.id)
     db.session.commit()
     record_auth_event(record.user, "confirm_email")
     login_user(record.user)

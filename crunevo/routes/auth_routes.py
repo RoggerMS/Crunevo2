@@ -119,6 +119,7 @@ def perfil():
     total_referidos = 0
     referidos_completados = 0
     enlace_referido = None
+    creditos_referidos = 0
     if tab == "misiones":
         from crunevo.routes.missions_routes import compute_mission_states
         from crunevo.models import Mission
@@ -127,12 +128,21 @@ def perfil():
         progresos = compute_mission_states(current_user)
     elif tab == "referidos":
         from crunevo.models import Referral
+        from crunevo.models import Credit
+        from crunevo.constants import CreditReasons
+        from sqlalchemy import func
 
         referidos = Referral.query.filter_by(invitador_id=current_user.id).all()
         total_referidos = len(referidos)
         referidos_completados = sum(1 for r in referidos if r.completado)
         enlace_referido = url_for(
             "onboarding.register", ref=current_user.username, _external=True
+        )
+        creditos_referidos = (
+            db.session.query(func.coalesce(func.sum(Credit.amount), 0))
+            .filter_by(user_id=current_user.id, reason=CreditReasons.REFERIDO)
+            .scalar()
+            or 0
         )
 
     return render_template(
@@ -147,6 +157,7 @@ def perfil():
         total_referidos=total_referidos,
         referidos_completados=referidos_completados,
         enlace_referido=enlace_referido,
+        creditos_referidos=creditos_referidos,
     )
 
 
