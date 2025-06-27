@@ -343,3 +343,8 @@
 - Fixed default boolean in achievement_popup migration using server_default="false" to prevent deployment failure (PR logs-migration-fix).
 - Restored comment input below reactions and kept reaction count line unchanged (PR post-comment-input-return).
 - Added close listener for achievement popup with fade animations and accessibility tweaks (PR achievement-popup-fix).
+- Achievement popup hidden on admin instance, closes properly marking as shown and clearing state with button handler set dynamically (PR achievement-popup-bugfix).
+- Popup and window.NEW_ACHIEVEMENTS only load for authenticated users, injecting CURRENT_USER_ID and clearing achievements after successful mark-shown request (PR achievement-popup-login-check).
+- Achievement popup only triggered when backend response includes "new_achievement"; DOMContentLoaded check removed and csrfFetch now handles showing popup automatically (PR achievement-popup-runtime).
+- Delegated close handler for achievement popup ensuring button works even if regenerated, and removing inline style on close (PR achievement-popup-delegate-close).
+- Popup overlay fully hidden with `d-none` when closed and restored on show to prevent blocking clicks (PR achievement-popup-display-fix).
