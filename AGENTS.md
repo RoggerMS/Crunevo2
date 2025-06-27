@@ -314,3 +314,5 @@
 - Página /crolars con explicación de la moneda y enlaces desde navbar y footer (PR crolars-info-page).
 - Añadido script scripts/generar_misiones.py para insertar misiones en lote.
 - compute_mission_states detecta dinámicamente el progreso según code y category (PR mission progress dynamic).
+- Perfil muestra misiones con progreso, estado y botón para reclamar créditos manualmente (PR missions-claim-ui).
+- Ruta /misiones/reclamar_mision permite reclamar créditos por misión (PR mission-reclaim-route).
