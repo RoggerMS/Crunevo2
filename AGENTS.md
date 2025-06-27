@@ -327,3 +327,4 @@
 
 - Ocultado enlace a /crolars en admin para evitar BuildError (PR admin-crolars-link-fix).
 - Renombrado el término 'cr\xc3\xa9ditos' a 'Crolars' en plantillas y mensajes visibles sin cambiar la base de datos (PR rename-credits-crolars).
+- Ocultado el menú inferior móvil en la instancia de administración para evitar BuildError al resolver 'feed.feed_home' (PR admin-bottom-nav-fix).
