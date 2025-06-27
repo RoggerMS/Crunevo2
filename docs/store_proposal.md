@@ -4,12 +4,12 @@ Objetivo General:
 Convertir la sección actual en una tienda completamente autónoma, centrada exclusivamente en la compra y canje de productos educativos físicos y digitales. Las funciones sociales se trasladarán a otras secciones.
 
 ## Navegación
-- Sidebar dedicado con enlaces a Inicio, Destacados, Combos, Sorteos, Favoritos, Mis compras, Créditos, Historial y Notificaciones.
-- Menú superior simplificado con buscador, carrito, notificaciones, saldo de créditos y perfil.
+- Sidebar dedicado con enlaces a Inicio, Destacados, Combos, Sorteos, Favoritos, Mis compras, Crolars, Historial y Notificaciones.
+- Menú superior simplificado con buscador, carrito, notificaciones, saldo de crolars y perfil.
 
 ## Páginas principales
 - **/store**: banner promocional, carrusel de destacados y filtro lateral.
-- **/store/product/:id**: galería de imágenes, precios en soles y créditos, stock, comentarios y recomendaciones.
+- **/store/product/:id**: galería de imágenes, precios en soles y crolars, stock, comentarios y recomendaciones.
 - **/store/cart**: interfaz moderna con actualización de cantidades y botón de compra.
 
 ## Funciones nuevas
@@ -24,5 +24,5 @@ Convertir la sección actual en una tienda completamente autónoma, centrada exc
 - Destacados: `#ec4899` rosa intenso.
 
 ## Panel de administración
-Gestión de productos, stock, precios, promociones, combos y sorteos, además de analíticas y control de créditos.
+Gestión de productos, stock, precios, promociones, combos y sorteos, además de analíticas y control de crolars.
 

@@ -34,7 +34,7 @@
                       <span class="badge bg-info text-dark d-block mb-1">S/ {{ '%.2f'|format(product.price) }}</span>
                     {% endif %}
                     {% if product.price_credits is not none %}
-                      <span class="badge bg-warning text-dark d-block mb-1">{{ product.price_credits }} créditos</span>
+                      <span class="badge bg-warning text-dark d-block mb-1">{{ product.price_credits }} crolars</span>
                     {% endif %}
                     <button class="btn btn-sm btn-primary add-cart-btn d-block mx-auto mb-1" data-product-id="{{ product.id }}">+ Carrito</button>
                     <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary btn-sm d-block mx-auto">Ver</a>
@@ -94,9 +94,9 @@
                     {% if product.price_credits is not none %}
                       <p class="mb-1 text-warning fw-bold">
                         {% if product.price_credits == 0 %}
-                          0 créditos
+                          0 crolars
                         {% else %}
-                          {{ product.price_credits }} créditos
+                          {{ product.price_credits }} crolars
                         {% endif %}
                       </p>
                     {% endif %}
@@ -104,7 +104,7 @@
                       {% if product.category %}<span class="badge bg-info text-dark">{{ product.category }}</span>{% endif %}
                       {% if product.is_new %}<span class="badge bg-success">Nuevo</span>{% endif %}
                       {% if product.is_popular %}<span class="badge bg-danger">Popular</span>{% endif %}
-                      {% if product.credits_only %}<span class="badge bg-warning text-dark">Solo créditos</span>{% endif %}
+                      {% if product.credits_only %}<span class="badge bg-warning text-dark">Solo crolars</span>{% endif %}
                       {% if product.is_featured %}<span class="badge bg-purple text-white">Destacado</span>{% endif %}
                       {% if product.id in purchased_ids %}<span class="badge bg-secondary">Adquirido</span>{% endif %}
                     </div>

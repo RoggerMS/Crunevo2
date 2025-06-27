@@ -8,7 +8,7 @@
     {% if product.category %}<span class="badge bg-info text-body">{{ product.category }}</span>{% endif %}
     {% if product.is_new %}<span class="badge bg-primary">Nuevo</span>{% endif %}
     {% if product.is_popular %}<span class="badge bg-warning text-body">Popular</span>{% endif %}
-    {% if product.credits_only %}<span class="badge bg-info text-body">Solo con créditos</span>{% endif %}
+    {% if product.credits_only %}<span class="badge bg-info text-body">Solo con crolars</span>{% endif %}
     {% if product.is_featured %}<span class="badge bg-success">Destacado</span>{% endif %}
   </div>
   <div class="card-body d-flex flex-column">
@@ -23,7 +23,7 @@
       {% else %}
         S/ {{ '%.2f'|format(product.price) }}
       {% endif %}
-      {% if product.price_credits %} <br><small class="text-muted">o {{ product.price_credits }} créditos</small>{% endif %}
+      {% if product.price_credits %} <br><small class="text-muted">o {{ product.price_credits }} crolars</small>{% endif %}
     </p>
     {% if product.stock > 0 %}
       <span class="badge bg-success mb-2">En stock</span>

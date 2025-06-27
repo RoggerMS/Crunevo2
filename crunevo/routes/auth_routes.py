@@ -200,11 +200,11 @@ def agradecer(user_id):
             current_user, 1, CreditReasons.AGRADECIMIENTO, related_id=target.id
         )
         send_notification(
-            target.id, f"{current_user.username} te ha agradecido con 1 crédito."
+            target.id, f"{current_user.username} te ha agradecido con 1 crolar."
         )
         flash("¡Gracias enviado!")
     except ValueError:
-        flash("No tienes créditos suficientes", "danger")
+        flash("No tienes crolars suficientes", "danger")
     return redirect(url_for("auth.profile_by_username", username=target.username))
 
 

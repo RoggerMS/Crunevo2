@@ -43,7 +43,7 @@ def spend_credit(user, amount, reason, related_id=None):
     if amount <= 0:
         raise ValueError("Amount must be positive")
     if user.credits < amount:
-        raise ValueError("Créditos insuficientes")
+        raise ValueError("Crolars insuficientes")
     credit = Credit(
         user_id=user.id, amount=-amount, reason=reason, related_id=related_id
     )

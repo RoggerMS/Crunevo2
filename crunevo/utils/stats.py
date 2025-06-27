@@ -64,7 +64,7 @@ def credits_last_4_weeks():
     )
     labels, values = _fill_series(start, 4, timedelta(weeks=1), rows)
     values = [float(v) for v in values]
-    return {"label": "Créditos", "labels": labels, "values": values}
+    return {"label": "Crolars", "labels": labels, "values": values}
 
 
 def _month_add(dt: date, months: int) -> date:
