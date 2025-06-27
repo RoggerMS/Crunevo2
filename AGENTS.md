@@ -349,3 +349,4 @@
 - Delegated close handler for achievement popup ensuring button works even if regenerated, and removing inline style on close (PR achievement-popup-delegate-close).
 - Popup overlay fully hidden with `d-none` when closed and restored on show to prevent blocking clicks (PR achievement-popup-display-fix).
 - Achievement popup clears `session['new_achievements']` on mark-shown and `base.html` only defines `NEW_ACHIEVEMENTS` for logged-in users (PR achievement-popup-session-clear).
+- Popup shown only once: JS waits for successful mark-shown response before clearing `window.NEW_ACHIEVEMENTS` and base template omits the variable when empty (PR achievement-popup-once).

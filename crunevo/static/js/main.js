@@ -654,8 +654,10 @@ function closeAchievementPopup() {
     popup.removeAttribute('style');
     popup.querySelector('#achievementTitle').textContent = '';
     popup.querySelector('.credit-gain').textContent = '';
-    csrfFetch('/api/achievement-popup/mark-shown', { method: 'POST' }).then(() =>
-      (window.NEW_ACHIEVEMENTS = [])
-    );
+    csrfFetch('/api/achievement-popup/mark-shown', { method: 'POST' }).then((r) => {
+      if (r.ok) {
+        window.NEW_ACHIEVEMENTS = [];
+      }
+    });
   }, 300);
 }
