@@ -1,4 +1,5 @@
 {% extends 'admin/base_admin.html' %}
+{% from 'components/csrf.html' import csrf_field %}
 {% block admin_content %}
 <h2 class="page-title mb-4">Reportes</h2>
 <div class="card shadow-sm">
@@ -17,13 +18,13 @@
           <td>{{ r.status }}</td>
           <td>
             <form action="{{ url_for('admin.resolve_report', report_id=r.id) }}" method="post" class="d-inline">
-              {{ csrf.csrf_field() }}
+              {{ csrf_field() }}
               <button class="btn btn-sm btn-success">Resolver</button>
             </form>
             {% if r.description.startswith('Post ') %}
               {% set pid = r.description.split()[1].split(':')[0] %}
               <form action="{{ url_for('admin.delete_post_admin', post_id=pid) }}" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar publicación?');">
-                {{ csrf.csrf_field() }}
+                {{ csrf_field() }}
                 <button class="btn btn-sm btn-danger">Eliminar post</button>
               </form>
             {% endif %}
