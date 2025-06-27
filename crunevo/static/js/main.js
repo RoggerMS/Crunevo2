@@ -275,6 +275,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.NEW_ACHIEVEMENTS && window.NEW_ACHIEVEMENTS.length) {
     showAchievementPopup(window.NEW_ACHIEVEMENTS[0]);
   }
+  const closeBtn = document.getElementById('closeAchievementBtn');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeAchievementPopup);
+  }
 
   initPdfPreviews();
   if (typeof initNoteViewer === 'function') {
@@ -607,10 +611,23 @@ function showAchievementPopup(data) {
   const popup = document.getElementById('achievementPopup');
   if (!popup) return;
   popup.querySelector('#achievementTitle').textContent = data.title || data.code;
-  popup.querySelector('.credit-gain').textContent = `+${data.credit_reward || 1} crolars`;
+  popup.querySelector('.credit-gain').textContent = `+${data.credit_reward || 1} Crolar`;
   popup.classList.remove('tw-hidden');
-  document.getElementById('closeAchievementBtn').addEventListener('click', () => {
+  const content = popup.querySelector('.popup-content');
+  content.classList.remove('animate-fade-out-up');
+  content.classList.add('animate-fade-in-down');
+}
+
+function closeAchievementPopup() {
+  const popup = document.getElementById('achievementPopup');
+  if (!popup) return;
+  const content = popup.querySelector('.popup-content');
+  content.classList.remove('animate-fade-in-down');
+  content.classList.add('animate-fade-out-up');
+  setTimeout(() => {
     popup.classList.add('tw-hidden');
+    popup.querySelector('#achievementTitle').textContent = '';
+    popup.querySelector('.credit-gain').textContent = '';
     csrfFetch('/api/achievement-popup/mark-shown', { method: 'POST' });
-  }, { once: true });
+  }, 300);
 }

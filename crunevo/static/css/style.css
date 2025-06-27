@@ -301,6 +301,14 @@ body[data-bs-theme='dark'] .notification-menu::before {
   animation: pop-in 0.3s ease forwards;
 }
 
+.animate-fade-in-down {
+  animation: fadeInDown 0.3s ease forwards;
+}
+
+.animate-fade-out-up {
+  animation: fadeOutUp 0.3s ease forwards;
+}
+
 @keyframes pop-in {
   from {
     transform: scale(0.8);
@@ -309,6 +317,28 @@ body[data-bs-theme='dark'] .notification-menu::before {
   to {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOutUp {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
   }
 }
 
