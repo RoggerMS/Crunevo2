@@ -29,7 +29,12 @@ def upgrade():
             sa.ForeignKey("achievement.id"),
             nullable=False,
         ),
-        sa.Column("shown", sa.Boolean(), nullable=False, server_default=sa.text("0")),
+        sa.Column(
+            "shown",
+            sa.Boolean(),
+            nullable=False,
+            server_default=sa.text("false"),
+        ),
     )
 
 
