@@ -272,10 +272,13 @@ document.addEventListener('DOMContentLoaded', () => {
     new bootstrap.Toast(t).show();
   });
 
-  if (window.NEW_ACHIEVEMENTS && window.NEW_ACHIEVEMENTS.length && window.CURRENT_USER_ID) {
+  if (window.NEW_ACHIEVEMENTS && window.NEW_ACHIEVEMENTS.length) {
     showAchievementPopup(window.NEW_ACHIEVEMENTS[0]);
   }
-
+  const closeBtn = document.getElementById('closeAchievementBtn');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeAchievementPopup);
+  }
 
   initPdfPreviews();
   if (typeof initNoteViewer === 'function') {
@@ -613,11 +616,6 @@ function showAchievementPopup(data) {
   const content = popup.querySelector('.popup-content');
   content.classList.remove('animate-fade-out-up');
   content.classList.add('animate-fade-in-down');
-
-  const closeBtn = popup.querySelector('#closeAchievementBtn');
-  if (closeBtn) {
-    closeBtn.onclick = () => closeAchievementPopup();
-  }
 }
 
 function closeAchievementPopup() {
@@ -630,8 +628,6 @@ function closeAchievementPopup() {
     popup.classList.add('tw-hidden');
     popup.querySelector('#achievementTitle').textContent = '';
     popup.querySelector('.credit-gain').textContent = '';
-    csrfFetch('/api/achievement-popup/mark-shown', { method: 'POST' }).then(() => {
-      window.NEW_ACHIEVEMENTS = [];
-    });
+    csrfFetch('/api/achievement-popup/mark-shown', { method: 'POST' });
   }, 300);
 }
