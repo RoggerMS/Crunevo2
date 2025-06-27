@@ -86,31 +86,3 @@
     display: none !important;
   }
 }
-
-.hover-scale {
-  transition: transform 0.15s ease;
-}
-.hover-scale:hover {
-  transform: scale(1.02);
-}
-
-.reaction-options {
-  animation: fadeInDown 0.2s ease;
-}
-
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.reaction-btn.active {
-  background-color: #f3f3ff;
-  border: 1px solid #8a2be2;
-  border-radius: 50%;
-}
