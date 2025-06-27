@@ -29,6 +29,8 @@ from crunevo.models import (
     FeedItem,
     Credit,
     Achievement,
+    Mission,
+    UserMission,
     Comment,
     ProductLog,
     AdminNotification,
@@ -338,15 +340,26 @@ def user_activity(user_id):
     return render_template("admin/user_activity.html", user=user)
 
 
+@admin_bp.route("/creditos")
+@admin_required
+def manage_creditos_alias():
+    """Alias spanish route that forwards to manage_credits."""
+    return redirect(url_for("admin.manage_credits"))
+
+
 @admin_bp.route("/credits")
 @admin_required
 def manage_credits():
-    credits = (
-        db.session.query(Credit, User)
-        .join(User, Credit.user_id == User.id)
-        .order_by(Credit.timestamp.desc())
-        .all()
-    )
+    user_id = request.args.get("user_id", type=int)
+    reason = request.args.get("reason")
+
+    query = db.session.query(Credit, User).join(User, Credit.user_id == User.id)
+    if user_id:
+        query = query.filter(Credit.user_id == user_id)
+    if reason:
+        query = query.filter(Credit.reason == reason)
+
+    credits = query.order_by(Credit.timestamp.desc()).all()
     return render_template("admin/manage_credits.html", credits=credits)
 
 
@@ -377,6 +390,20 @@ def assign_achievement():
     unlock_achievement(user, ach.code)
     flash("Logro asignado")
     return redirect(url_for("admin.manage_achievements"))
+
+
+@admin_bp.route("/misiones")
+@admin_required
+def manage_missions():
+    """Display claimed missions by users."""
+    records = (
+        db.session.query(UserMission, User, Mission)
+        .join(User, UserMission.user_id == User.id)
+        .join(Mission, UserMission.mission_id == Mission.id)
+        .order_by(UserMission.completed_at.desc())
+        .all()
+    )
+    return render_template("admin/manage_missions.html", records=records)
 
 
 @admin_bp.route("/users/export")

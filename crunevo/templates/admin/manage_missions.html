@@ -1,0 +1,35 @@
+{% extends 'admin/base_admin.html' %}
+{% block admin_content %}
+<h2 class="page-title mb-4">Misiones reclamadas</h2>
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table id="tablaMisiones" class="table table-vcenter card-table">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Misión</th>
+            <th>Créditos</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for record, user, mission in records %}
+          <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ mission.description }}</td>
+            <td>{{ mission.credit_reward }}</td>
+            <td>{{ record.completed_at.strftime('%d/%m/%Y %H:%M') }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  new simpleDatatables.DataTable('#tablaMisiones');
+});
+</script>
+{% endblock %}
