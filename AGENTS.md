@@ -317,3 +317,4 @@
 - Perfil muestra misiones con progreso, estado y botón para reclamar créditos manualmente (PR missions-claim-ui).
 - Ruta /misiones/reclamar_mision permite reclamar créditos por misión (PR mission-reclaim-route).
 - Añadido modelo Referral y pestaña de referidos en el perfil con registro básico en onboarding (PR referral-system).
+- Reimplementado endpoint /misiones/reclamar_mision y añadida prueba automática (PR mission-claim-route-test).

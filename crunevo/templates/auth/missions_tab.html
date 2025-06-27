@@ -10,16 +10,16 @@
       {% if progreso %}
         <progress value="{{ progreso.progreso }}" max="{{ mision.goal }}"></progress>
         <p>Progreso: {{ progreso.progreso }}/{{ mision.goal }}</p>
-        {% if progreso.completada and not progreso.reclamada %}
-          <form method="post" action="{{ url_for('missions.reclamar_mision', mission_id=mision.id) }}">
-            {{ csrf.csrf_field() }}
-            <button class="btn btn-success btn-sm mt-2">🎁 Reclamar créditos</button>
-          </form>
-        {% elif progreso.reclamada %}
-          <span class="badge bg-primary mt-2">Ya reclamada</span>
-        {% else %}
-          <span class="badge bg-secondary mt-2">❌ Pendiente</span>
-        {% endif %}
+        <form method="post" action="{{ url_for('missions.reclamar_mision', mission_id=mision.id) }}">
+          {{ csrf.csrf_field() }}
+          {% if not progreso.reclamada and progreso.completada %}
+            <button class="btn btn-sm btn-success">Reclamar {{ mision.credit_reward }} créditos</button>
+          {% elif progreso.reclamada %}
+            <span class="badge bg-secondary">Ya reclamada</span>
+          {% else %}
+            <span class="badge bg-warning text-dark">En progreso</span>
+          {% endif %}
+        </form>
       {% else %}
         <progress value="0" max="{{ mision.goal }}"></progress>
         <p>Progreso: 0/{{ mision.goal }}</p>
