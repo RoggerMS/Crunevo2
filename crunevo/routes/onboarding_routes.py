@@ -102,7 +102,8 @@ def confirm(token):
     record.user.activated = True
     from crunevo.models import Referral, Credit
     from crunevo.utils.credits import add_credit
-    from crunevo.constants import CreditReasons
+    from crunevo.constants import CreditReasons, AchievementCodes
+    from crunevo.utils.achievements import unlock_achievement
 
     ref = Referral.query.filter_by(invitado_id=record.user.id).first()
     if ref and not ref.completado:
@@ -114,6 +115,12 @@ def confirm(token):
         ).first()
         if not existing:
             add_credit(ref.invitador, 100, CreditReasons.REFERIDO, related_id=ref.id)
+            add_credit(record.user, 50, CreditReasons.REFERIDO, related_id=ref.id)
+        total_done = Referral.query.filter_by(
+            invitador_id=ref.invitador_id, completado=True
+        ).count()
+        if total_done >= 10:
+            unlock_achievement(ref.invitador, AchievementCodes.EMBAJADOR_CRUNEVO)
     db.session.commit()
     record_auth_event(record.user, "confirm_email")
     login_user(record.user)

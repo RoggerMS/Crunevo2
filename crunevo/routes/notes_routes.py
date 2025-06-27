@@ -15,7 +15,16 @@ from flask_login import current_user
 from crunevo.utils.helpers import activated_required, verified_required
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
-from crunevo.models import Note, Comment, NoteVote, FeedItem, Credit, Report, User
+from crunevo.models import (
+    Note,
+    Comment,
+    NoteVote,
+    FeedItem,
+    Credit,
+    Report,
+    User,
+    Referral,
+)
 from crunevo.utils.credits import add_credit
 from crunevo.utils import unlock_achievement, send_notification
 from crunevo.utils.scoring import update_feed_score
@@ -177,6 +186,11 @@ def upload_note():
         create_feed_item_for_all("apunte", note.id)
         add_credit(current_user, 5, CreditReasons.APUNTE_SUBIDO, related_id=note.id)
         unlock_achievement(current_user, AchievementCodes.PRIMER_APUNTE)
+        ref = Referral.query.filter_by(
+            invitado_id=current_user.id, completado=True
+        ).first()
+        if ref:
+            unlock_achievement(ref.invitador, AchievementCodes.ALIADO_EDUCATIVO)
         flash("Apunte subido correctamente")
         return redirect(url_for("notes.list_notes"))
 

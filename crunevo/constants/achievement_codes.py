@@ -8,3 +8,5 @@ class AchievementCodes:
     LIKE_100 = "100_likes"
     CREDITOS_100 = "100_creditos"
     TUTOR_ACTIVO = "tutor_activo"
+    EMBAJADOR_CRUNEVO = "embajador_crunevo"
+    ALIADO_EDUCATIVO = "aliado_educativo"

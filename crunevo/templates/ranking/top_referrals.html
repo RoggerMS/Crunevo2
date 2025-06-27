@@ -1,27 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2 class="mb-4">🏆 Ranking</h2>
-<ul class="nav nav-tabs mb-3">
-  <li class="nav-item">
-    <a class="nav-link {% if range == 'week' %}active{% endif %}" href="{{ url_for('ranking.show_ranking', range='week') }}">Semanal</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link {% if range == 'month' %}active{% endif %}" href="{{ url_for('ranking.show_ranking', range='month') }}">Mensual</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link {% if range == 'all' %}active{% endif %}" href="{{ url_for('ranking.show_ranking', range='all') }}">Histórico</a>
-  </li>
-  <li class="nav-item ms-auto">
-    <a class="nav-link" href="{{ url_for('ranking.top_referrers') }}">Top Referidores</a>
-  </li>
-</ul>
+<h2 class="mb-4">🌟 Top Referidores del mes</h2>
 <div class="table-responsive">
 <table class="table table-hover align-middle">
   <thead>
     <tr>
       <th class="text-center">#</th>
       <th>Usuario</th>
-      <th class="text-end">Créditos</th>
+      <th class="text-end">Referidos</th>
     </tr>
   </thead>
   <tbody>
@@ -34,7 +20,7 @@
         <img loading="lazy" src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" width="32" height="32" class="rounded-circle me-1">
         {{ user.username }}
       </td>
-      <td class="text-end"><strong>{{ '%.0f'|format(total) }}</strong></td>
+      <td class="text-end"><strong>{{ total }}</strong></td>
     </tr>
     {% endfor %}
   </tbody>

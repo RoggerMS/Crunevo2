@@ -57,6 +57,14 @@ def insertar_misiones():
     logros = [
         ("referido_1", "Invita a 1 amigo y que valide su cuenta", 1, 50),
         ("referido_5", "Invita a 5 amigos activos", 5, 100),
+        ("referido_10", "Invita a 10 amigos activos", 10, 300),
+        ("referido_20", "Invita a 20 amigos activos", 20, 600),
+        (
+            "referido_maraton",
+            "Invita a 5 amigos activos en una semana",
+            5,
+            500,
+        ),
         ("primer_apunte", "Sube tu primer apunte", 1, 20),
         ("primer_like", "Recibe tu primer like", 1, 10),
         ("maraton_apuntes", "Sube 10 apuntes en 1 día", 10, 80),
