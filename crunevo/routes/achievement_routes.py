@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, session, jsonify
 from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models import AchievementPopup
@@ -13,4 +13,5 @@ def mark_achievement_popup_seen():
         {"shown": True}
     )
     db.session.commit()
-    return "", 204
+    session["new_achievements"] = []
+    return jsonify({"success": True})
