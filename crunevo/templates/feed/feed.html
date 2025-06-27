@@ -175,13 +175,13 @@
       <form method="post">
         {{ csrf.csrf_field() }}
         <div class="modal-header">
-          <h5 class="modal-title">Enviar créditos</h5>
+          <h5 class="modal-title">Enviar crolars</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <select name="amount" class="form-select">
             {% for i in range(1,6) %}
-            <option value="{{ i }}">{{ i }} crédito{{ 's' if i>1 }}</option>
+            <option value="{{ i }}">{{ i }} crolar{{ 's' if i>1 }}</option>
             {% endfor %}
           </select>
         </div>

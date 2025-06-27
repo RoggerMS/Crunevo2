@@ -242,7 +242,7 @@ def redeem_product(product_id):
             related_id=product.id,
         )
     except ValueError:
-        flash("Créditos insuficientes", "danger")
+        flash("Crolars insuficientes", "danger")
         return redirect(url_for("store.view_product", product_id=product.id))
     purchase = Purchase(
         user_id=current_user.id,
@@ -485,7 +485,7 @@ def download_receipt(purchase_id: int):
     if purchase.price_soles:
         precio = f"S/ {float(purchase.price_soles):.2f}"
     elif purchase.price_credits:
-        precio = f"{purchase.price_credits} créditos"
+        precio = f"{purchase.price_credits} crolars"
     else:
         precio = "—"
     c.drawString(100, 700, f"Precio: {precio}")

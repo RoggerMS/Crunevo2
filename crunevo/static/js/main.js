@@ -33,7 +33,7 @@ function claimStreak() {
     .then((r) => r.json())
     .then((data) => {
       if (data.success) {
-        showToast(`🎉 ¡Día ${data.day}! Has ganado ${data.credits} créditos`);
+        showToast(`🎉 ¡Día ${data.day}! Has ganado ${data.credits} crolars`);
         const box = document.getElementById('streakBox');
         if (box) box.remove();
         if (typeof updateCreditsDisplay === 'function') {

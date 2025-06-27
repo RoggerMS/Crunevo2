@@ -20,7 +20,7 @@
           <th>Nombre</th>
           <th>Etiquetas</th>
           <th>Precio S/</th>
-          <th>Créditos</th>
+          <th>Crolars</th>
           <th>Stock</th>
           <th></th>
         </tr>
@@ -41,7 +41,7 @@
             <span class="badge bg-purple text-white me-1" data-bs-toggle="tooltip" title="Aparece en la sección de productos destacados">Destacado</span>
           {% endif %}
           {% if product.credits_only %}
-            <span class="badge bg-info text-dark me-1" data-bs-toggle="tooltip" title="No se puede comprar con dinero">Solo créditos</span>
+            <span class="badge bg-info text-dark me-1" data-bs-toggle="tooltip" title="No se puede comprar con dinero">Solo crolars</span>
           {% endif %}
           {% if product.stock <= 3 %}
             <span class="badge bg-danger me-1" data-bs-toggle="tooltip" title="Stock bajo">Stock bajo</span>

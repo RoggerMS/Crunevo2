@@ -324,3 +324,4 @@
 - Se agregaron rutas de administrador para eliminar publicaciones y apuntes con notificación al autor y limpieza de feed. La página de reportes permite marcar como resuelto y eliminar posts reportados (PR admin-delete-post).
 - Se manejan consultas a Referidos con try/except para evitar errores cuando falta la tabla (PR referral-safe-query).
 - Ocultado enlace a /crolars en admin para evitar BuildError (PR admin-crolars-link-fix).
+- Renombrado el término 'cr\xc3\xa9ditos' a 'Crolars' en plantillas y mensajes visibles sin cambiar la base de datos (PR rename-credits-crolars).

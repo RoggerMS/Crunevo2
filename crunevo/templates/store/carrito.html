@@ -14,7 +14,7 @@
           <tr>
             <th>Producto</th>
             <th class="text-end">Precio (S/)</th>
-            <th class="text-end">Créditos</th>
+            <th class="text-end">Crolars</th>
             <th></th>
           </tr>
         </thead>
@@ -48,7 +48,7 @@
           <tr class="fw-bold">
             <td class="text-end" colspan="2">Total:</td>
             <td class="text-end text-primary">S/ {{ '%.2f'|format(total_soles) }}</td>
-            <td class="text-end text-warning">{{ total_credits }} créditos</td>
+            <td class="text-end text-warning">{{ total_credits }} crolars</td>
           </tr>
         </tfoot>
       </table>
@@ -59,7 +59,7 @@
       </a>
       <div>
         <a href="{{ url_for('store.checkout') }}" class="btn btn-outline-success me-2">Comprar todo ahora</a>
-        <a href="#" class="btn btn-primary disabled">Canjear con créditos</a>
+        <a href="#" class="btn btn-primary disabled">Canjear con crolars</a>
       </div>
     </div>
   {% endif %}

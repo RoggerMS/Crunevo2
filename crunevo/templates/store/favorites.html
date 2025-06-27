@@ -57,12 +57,12 @@
                         <p class="mb-1 text-primary fw-bold">S/ {{ '%.2f' | format(product.price) }}</p>
                       {% endif %}
                     {% if product.price_credits %}
-                      <p class="mb-1 text-warning fw-bold">{{ product.price_credits }} créditos</p>
+                      <p class="mb-1 text-warning fw-bold">{{ product.price_credits }} crolars</p>
                     {% endif %}
                     <div class="mb-2">
                       {% if product.is_new %}<span class="badge bg-success">Nuevo</span>{% endif %}
                       {% if product.is_popular %}<span class="badge bg-danger">Popular</span>{% endif %}
-                      {% if product.credits_only %}<span class="badge bg-warning text-body">Solo créditos</span>{% endif %}
+                      {% if product.credits_only %}<span class="badge bg-warning text-body">Solo crolars</span>{% endif %}
                       {% if product.is_featured %}<span class="badge bg-purple text-white">Destacado</span>{% endif %}
                       {% if product.id in purchased_ids %}<span class="badge bg-secondary">Adquirido</span>{% endif %}
                     </div>
