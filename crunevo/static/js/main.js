@@ -629,6 +629,7 @@ function initNotificationFilters() {
 }
 
 function showAchievementPopup(data) {
+  if (!window.NEW_ACHIEVEMENTS || window.NEW_ACHIEVEMENTS.length === 0) return;
   const popup = document.getElementById('achievementPopup');
   if (!popup) return;
   popup.querySelector('#achievementTitle').textContent = data.title || data.code;
@@ -661,3 +662,9 @@ function closeAchievementPopup() {
     });
   }, 300);
 }
+
+window.addEventListener('beforeunload', () => {
+  window.NEW_ACHIEVEMENTS = [];
+  const popup = document.getElementById('achievementPopup');
+  if (popup) popup.classList.add('d-none', 'tw-hidden');
+});
