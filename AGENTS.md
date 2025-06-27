@@ -332,3 +332,5 @@
 - Agregadas vistas /admin/misiones y alias /admin/creditos; manage_credits admite filtros por usuario y razón y los usuarios muestran enlace a su historial (PR admin-missions-page).
 - Added device token header from localStorage via main.js and stored in auth events (PR device-token-logging).
 - Added AdminLog model, comentarios y estadísticas en admin con alerta de reportes urgentes (PR admin-logs-stats).
+
+- Added static /cookies page with footer links to cookies, privacidad and terminos (PR cookies-page).
