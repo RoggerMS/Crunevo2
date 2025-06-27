@@ -320,3 +320,4 @@
 - Reimplementado endpoint /misiones/reclamar_mision y añadida prueba automática (PR mission-claim-route-test).
 - Notificaciones ahora usan tarjetas con íconos por color y filtro rápido; se añadieron estilos y JS para filtrar (PR notifications-cards-filter).
 - Se otorgan créditos por referido al confirmar el correo y la pestaña muestra tarjetas con total de créditos (PR referral-rewards).
+- Misiones de referidos detectan los completados, nuevos niveles y maratón añadidos. Se premia al invitado con créditos y se desbloquean insignias de "Embajador" y "Aliado". Ranking mensual opcional (PR referral-missions).

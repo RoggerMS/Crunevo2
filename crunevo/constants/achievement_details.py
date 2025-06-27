@@ -20,6 +20,16 @@ ACHIEVEMENT_DETAILS = {
         "icon": "bi-chat-dots",
         "description": "Ayudaste a otro usuario en el foro",
     },
+    "embajador_crunevo": {
+        "title": "Embajador Crunevo \ud83c\udf3c",
+        "icon": "bi-people-fill",
+        "description": "Invitaste a 10 o m\u00e1s usuarios",
+    },
+    "aliado_educativo": {
+        "title": "Aliado educativo \ud83d\udcac",
+        "icon": "bi-chat-square-text",
+        "description": "Un referido subi\u00f3 apuntes",
+    },
 }
 
 # Mapping of achievement codes to simple categories used for filtering
@@ -31,6 +41,8 @@ ACHIEVEMENT_CATEGORIES = {
     "donador": "colaboracion",
     "compartidor": "colaboracion",
     "tutor_activo": "colaboracion",
+    "embajador_crunevo": "colaboracion",
+    "aliado_educativo": "colaboracion",
     "conectado_7d": "actividad",
     "top_3": "actividad",
 }
