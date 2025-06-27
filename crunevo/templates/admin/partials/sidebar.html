@@ -8,12 +8,24 @@
   </a>
   <a class="nav-link {% if request.endpoint == 'admin.manage_reports' %}active{% endif %}" href="{{ url_for('admin.manage_reports') }}">
     <i class="ti ti-flag me-2"></i> Reportes
+    {% if URGENT_REPORTS %}
+      <span class="badge bg-danger ms-1">{{ URGENT_REPORTS }}</span>
+    {% endif %}
+  </a>
+  <a class="nav-link {% if request.endpoint == 'admin.manage_comments' %}active{% endif %}" href="{{ url_for('admin.manage_comments') }}">
+    <i class="ti ti-message-dots me-2"></i> Comentarios
+  </a>
+  <a class="nav-link {% if request.endpoint == 'admin.admin_logs' %}active{% endif %}" href="{{ url_for('admin.admin_logs') }}">
+    <i class="ti ti-clipboard-list me-2"></i> Auditoría
   </a>
   <a class="nav-link {% if request.endpoint == 'admin.manage_store' %}active{% endif %}" href="{{ url_for('admin.manage_store') }}">
     <i class="ti ti-building-store me-2"></i> Tienda
   </a>
   <a class="nav-link {% if request.endpoint == 'admin.product_history' %}active{% endif %}" href="{{ url_for('admin.product_history') }}">
     <i class="ti ti-history me-2"></i> Historial tienda
+  </a>
+  <a class="nav-link {% if request.endpoint == 'admin.stats_page' %}active{% endif %}" href="{{ url_for('admin.stats_page') }}">
+    <i class="ti ti-chart-bar me-2"></i> Estadísticas
   </a>
   <a class="nav-link {% if request.endpoint == 'admin.manage_credits' %}active{% endif %}" href="{{ url_for('admin.manage_credits') }}">
     <i class="ti ti-coin me-2"></i> Crolars

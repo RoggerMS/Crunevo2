@@ -62,6 +62,17 @@
       </div>
     </div>
   </div>
+  {% if URGENT_REPORTS %}
+  <div class="col-12">
+    <div class="card border-danger">
+      <div class="card-body">
+        <h4 class="card-title text-danger">Moderación urgente</h4>
+        <p>Hay {{ URGENT_REPORTS }} publicaciones con muchos reportes.</p>
+        <a href="{{ url_for('admin.manage_reports') }}" class="btn btn-danger">Revisar</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 </div>
 
 <div class="row mt-4" id="chartsRow">
