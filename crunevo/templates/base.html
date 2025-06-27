@@ -49,7 +49,6 @@
       <a href="/privacidad" class="text-muted">Privacidad</a> ·
       <a href="/terminos" class="text-muted">Términos</a>
     </footer>
-    {% if not config.ADMIN_INSTANCE %}
     <div class="achievement-popup tw-hidden" id="achievementPopup" role="dialog" aria-modal="true">
       <div class="popup-content bg-dark bg-opacity-75 text-white p-4 rounded-3 text-center shadow-lg">
         <h3>🏆 ¡Logro desbloqueado!</h3>
@@ -58,7 +57,6 @@
         <button class="btn btn-primary" id="closeAchievementBtn" aria-label="Cerrar logro desbloqueado">OK</button>
       </div>
     </div>
-    {% endif %}
     <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
     {% if request.path.startswith('/store') and 'store.view_cart' in current_app.view_functions %}
     <a href="{{ url_for('store.view_cart') }}" class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-3 d-lg-none">
