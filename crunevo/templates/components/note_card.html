@@ -13,13 +13,19 @@
         <a href="{{ url_for('notes.view_note', id=note.id) }}" class="btn btn-primary btn-sm">Ver detalle</a>
         {% if current_user.is_authenticated %}
           {% if note.user_id == current_user.id %}
-          <a href="{{ url_for('notes.edit_note', note_id=note.id) }}" class="btn btn-outline-secondary btn-sm">Editar</a>
-          <form action="{{ url_for('notes.delete_note', note_id=note.id) }}" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este apunte?');">
-            {{ csrf.csrf_field() }}
-            <button type="submit" class="btn btn-outline-danger btn-sm">🗑️</button>
-          </form>
+            <a href="{{ url_for('notes.edit_note', note_id=note.id) }}" class="btn btn-outline-secondary btn-sm">Editar</a>
+            <form action="{{ url_for('notes.delete_note', note_id=note.id) }}" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este apunte?');">
+              {{ csrf.csrf_field() }}
+              <button type="submit" class="btn btn-outline-danger btn-sm">🗑️</button>
+            </form>
           {% else %}
-          <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#reportNote{{ note.id }}">Reportar</button>
+            <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#reportNote{{ note.id }}">Reportar</button>
+            {% if current_user.role == 'admin' %}
+            <form action="{{ url_for('admin.delete_note_admin', note_id=note.id) }}" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este apunte?');">
+              {{ csrf.csrf_field() }}
+              <button type="submit" class="btn btn-outline-danger btn-sm">🗑️</button>
+            </form>
+            {% endif %}
           {% endif %}
         {% endif %}
       </div>

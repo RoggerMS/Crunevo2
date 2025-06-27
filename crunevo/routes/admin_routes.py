@@ -25,6 +25,8 @@ from crunevo.models import (
     Product,
     Report,
     Note,
+    Post,
+    FeedItem,
     Credit,
     Achievement,
     Comment,
@@ -33,6 +35,7 @@ from crunevo.models import (
 )
 from crunevo.utils.ranking import calculate_weekly_ranking
 from crunevo.utils import unlock_achievement
+from crunevo.utils import send_notification
 from crunevo.utils.audit import record_auth_event
 from crunevo.utils.stats import (
     user_registrations_last_7_days,
@@ -40,6 +43,8 @@ from crunevo.utils.stats import (
     credits_last_4_weeks,
     products_last_3_months,
 )
+from crunevo.constants import CreditReasons
+from crunevo.cache.feed_cache import remove_item
 import cloudinary.uploader
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -261,8 +266,20 @@ def delete_product(product_id):
 @admin_bp.route("/reports")
 @activated_required
 def manage_reports():
-    reports = Report.query.all()
+    reports = Report.query.order_by(Report.created_at.desc()).all()
     return render_template("admin/manage_reports.html", reports=reports)
+
+
+@admin_bp.route("/reports/<int:report_id>/resolve", methods=["POST"])
+@activated_required
+def resolve_report(report_id):
+    if current_user.role != "admin":
+        abort(403)
+    report = Report.query.get_or_404(report_id)
+    report.status = "resolved"
+    db.session.commit()
+    flash("Reporte marcado como resuelto")
+    return redirect(url_for("admin.manage_reports"))
 
 
 @admin_bp.route("/run-ranking")
@@ -451,3 +468,68 @@ def product_history():
         .all()
     )
     return render_template("admin/product_history.html", logs=logs)
+
+
+@admin_bp.route("/delete-note/<int:note_id>", methods=["POST"])
+@activated_required
+def delete_note_admin(note_id):
+    """Allow an admin to delete a note from the feed."""
+    if current_user.role != "admin":
+        abort(403)
+    note = Note.query.get_or_404(note_id)
+    feed_items = FeedItem.query.filter_by(item_type="apunte", ref_id=note.id).all()
+    owner_ids = [fi.owner_id for fi in feed_items]
+    FeedItem.query.filter_by(item_type="apunte", ref_id=note.id).delete()
+    Credit.query.filter_by(
+        user_id=note.user_id, related_id=note.id, reason=CreditReasons.APUNTE_SUBIDO
+    ).delete()
+    db.session.delete(note)
+    db.session.commit()
+    for uid in owner_ids:
+        try:
+            remove_item(uid, "apunte", note.id)
+        except Exception:
+            pass
+    send_notification(note.user_id, "Un administrador elimin\u00f3 tu apunte")
+    notif = AdminNotification(
+        admin_id=current_user.id,
+        title="Apunte eliminado",
+        message=f"Se elimin\u00f3 el apunte {note_id}",
+    )
+    db.session.add(notif)
+    db.session.commit()
+    flash("Apunte eliminado")
+    return redirect(request.referrer or url_for("feed.view_feed"))
+
+
+@admin_bp.route("/delete-post/<int:post_id>", methods=["POST"])
+@activated_required
+def delete_post_admin(post_id):
+    """Allow an admin to delete a post from the feed."""
+    if current_user.role != "admin":
+        abort(403)
+    post = Post.query.get_or_404(post_id)
+    author_id = post.author_id
+    feed_items = FeedItem.query.filter_by(item_type="post", ref_id=post.id).all()
+    owner_ids = [fi.owner_id for fi in feed_items]
+    FeedItem.query.filter_by(item_type="post", ref_id=post.id).delete()
+    db.session.delete(post)
+    db.session.commit()
+    for uid in owner_ids:
+        try:
+            remove_item(uid, "post", post.id)
+        except Exception:
+            pass
+    if author_id:
+        send_notification(
+            author_id, "Un administrador elimin\u00f3 tu publicaci\u00f3n"
+        )
+    notif = AdminNotification(
+        admin_id=current_user.id,
+        title="Post eliminado",
+        message=f"Se elimin\u00f3 el post {post_id}",
+    )
+    db.session.add(notif)
+    db.session.commit()
+    flash("Publicaci\u00f3n eliminada")
+    return redirect(request.referrer or url_for("feed.view_feed"))
