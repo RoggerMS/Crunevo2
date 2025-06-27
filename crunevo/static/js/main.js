@@ -657,14 +657,14 @@ function closeAchievementPopup() {
     popup.querySelector('.credit-gain').textContent = '';
     csrfFetch('/api/achievement-popup/mark-shown', { method: 'POST' }).then((r) => {
       if (r.ok) {
-        window.NEW_ACHIEVEMENTS = [];
+        window.NEW_ACHIEVEMENTS = undefined;
       }
     });
   }, 300);
 }
 
 window.addEventListener('beforeunload', () => {
-  window.NEW_ACHIEVEMENTS = [];
+  window.NEW_ACHIEVEMENTS = undefined;
   const popup = document.getElementById('achievementPopup');
   if (popup) popup.classList.add('d-none', 'tw-hidden');
 });

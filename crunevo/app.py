@@ -25,7 +25,7 @@ def create_app():
     @app.context_processor
     def inject_globals():
         from .constants import ACHIEVEMENT_DETAILS
-        from .models import Note, Notification, AchievementPopup, Achievement
+        from .models import Note, Notification, AchievementPopup
         from flask import session
 
         latest_sidebar_notes = (
@@ -53,17 +53,24 @@ def create_app():
             urgent_count = sum(1 for c in counts.values() if c >= 3)
 
         if current_user.is_authenticated:
-            new_achievements = (
-                db.session.query(Achievement)
-                .join(
-                    AchievementPopup, Achievement.id == AchievementPopup.achievement_id
-                )
-                .filter(
-                    AchievementPopup.user_id == current_user.id,
-                    AchievementPopup.shown.is_(False),
-                )
-                .all()
-            )
+            popups = AchievementPopup.query.filter_by(
+                user_id=current_user.id, shown=False
+            ).all()
+            if popups:
+                new_achievements = [
+                    {
+                        "id": p.achievement.id,
+                        "code": p.achievement.code,
+                        "title": p.achievement.title,
+                        "credit_reward": p.achievement.credit_reward,
+                    }
+                    for p in popups
+                    if p.achievement
+                ]
+                session["new_achievements"] = new_achievements
+            else:
+                new_achievements = []
+                session.pop("new_achievements", None)
 
         return {
             "PUBLIC_BASE_URL": app.config.get("PUBLIC_BASE_URL"),
