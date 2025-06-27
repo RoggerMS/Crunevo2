@@ -342,3 +342,4 @@
 
 - Fixed default boolean in achievement_popup migration using server_default="false" to prevent deployment failure (PR logs-migration-fix).
 - Restored comment input below reactions and kept reaction count line unchanged (PR post-comment-input-return).
+- Added close listener for achievement popup with fade animations and accessibility tweaks (PR achievement-popup-fix).
