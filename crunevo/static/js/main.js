@@ -648,7 +648,7 @@ function closeAchievementPopup() {
   const popup = document.getElementById('achievementPopup');
   if (!popup) return;
   const content = popup.querySelector('.popup-content');
-  content.classList.replace('animate-fade-in-down', 'animate-fade-out-up');
+   content.classList.replace('animate-fade-in-down', 'animate-fade-out-up');
   setTimeout(() => {
     popup.classList.add('tw-hidden', 'd-none');
     popup.removeAttribute('style');
