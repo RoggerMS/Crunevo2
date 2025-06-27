@@ -443,6 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   initNotifications();
+  initNotificationFilters();
 
   // Auto hide navbar on scroll for all viewports
   let lastScrollTop = 0;
@@ -477,14 +478,20 @@ function initNotifications() {
   const markAll = document.getElementById('markAllRead');
   if (!list || !badge) return;
 
-  function getNotiIcon(msg) {
-    const m = msg.toLowerCase();
-    if (m.includes('reaccion')) return '🔥';
-    if (m.includes('coment')) return '💬';
-    if (m.includes('logro')) return '🧠';
-    if (m.includes('cr\u00e9dito')) return '👏';
-    return '🔔';
-  }
+function getNotiInfo(msg) {
+  const m = msg.toLowerCase();
+  if (m.includes('reaccion'))
+    return { icon: 'bi-hand-thumbs-up-fill text-warning', type: 'reaction' };
+  if (m.includes('coment'))
+    return { icon: 'bi-chat-left-dots-fill text-info', type: 'comment' };
+  if (m.includes('reporte'))
+    return { icon: 'bi-exclamation-circle-fill text-danger', type: 'report' };
+  if (m.includes('logro'))
+    return { icon: 'bi-trophy-fill text-purple', type: 'achievement' };
+  if (m.includes('seguidor'))
+    return { icon: 'bi-person-plus-fill text-success', type: 'follow' };
+  return { icon: 'bi-bell-fill text-secondary', type: 'other' };
+}
 
   function timeAgo(ts) {
     const d = new Date(ts);
@@ -514,9 +521,9 @@ function initNotifications() {
         list.innerHTML = '';
         items.forEach((n) => {
           const li = document.createElement('li');
-          const emoji = getNotiIcon(n.message);
+          const info = getNotiInfo(n.message);
           const time = timeAgo(n.timestamp);
-          li.innerHTML = `<a class="dropdown-item d-flex align-items-start gap-2 noti-item" href="${n.url || '#'}"><span class="noti-icon">${emoji}</span><span class="flex-grow-1">${n.message}</span><small class="noti-time text-muted ms-2">${time}</small></a>`;
+          li.innerHTML = `<a class="dropdown-item d-flex align-items-start gap-2 noti-item" href="${n.url || '#'}"><i class="${info.icon} me-2"></i><span class="flex-grow-1">${n.message}</span><small class="noti-time text-muted ms-2">${time}</small></a>`;
           const a = li.querySelector('a');
           a.addEventListener('click', () => {
             sessionStorage.setItem('notifHighlight', '1');
@@ -548,4 +555,21 @@ function refreshCartCount() {
   fetch('/store/api/cart_count')
     .then((r) => r.json())
     .then((data) => updateCartBadge(data.count));
+}
+
+function initNotificationFilters() {
+  const group = document.getElementById('notiFilterGroup');
+  if (!group) return;
+  const buttons = group.querySelectorAll('[data-noti-filter]');
+  const cards = document.querySelectorAll('.notification-card');
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const filter = btn.dataset.notiFilter;
+      buttons.forEach((b) => b.classList.toggle('active', b === btn));
+      cards.forEach((c) => {
+        c.classList.toggle('tw-hidden', filter !== 'all' && c.dataset.type !== filter);
+      });
+    });
+  });
 }

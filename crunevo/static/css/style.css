@@ -244,3 +244,41 @@ body[data-bs-theme='dark'] .notification-menu::before {
   }
 }
 
+/* Notification cards */
+.notification-card {
+  border-left: 0.25rem solid var(--bs-border-color);
+}
+.notification-card.unread {
+  border-left-width: 0.5rem;
+  background-color: var(--bs-light-bg-subtle);
+}
+.notification-card.reaction {
+  border-color: #ffc107;
+}
+.notification-card.comment {
+  border-color: #0dcaf0;
+}
+.notification-card.report {
+  border-color: #dc3545;
+}
+.notification-card.achievement {
+  border-color: #6f42c1;
+}
+.notification-card.follow {
+  border-color: #198754;
+}
+
+.text-purple {
+  color: #6f42c1 !important;
+}
+
+.btn-outline-purple {
+  color: #6f42c1;
+  border-color: #6f42c1;
+}
+.btn-outline-purple:hover,
+.btn-outline-purple:focus {
+  background-color: #6f42c1;
+  color: #fff;
+}
+
