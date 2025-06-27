@@ -633,7 +633,7 @@ function showAchievementPopup(data) {
   if (!popup) return;
   popup.querySelector('#achievementTitle').textContent = data.title || data.code;
   popup.querySelector('.credit-gain').textContent = `+${data.credit_reward || 1} Crolar`;
-  popup.classList.remove('tw-hidden');
+  popup.classList.remove('tw-hidden', 'd-none');
   const content = popup.querySelector('.popup-content');
   content.classList.remove('animate-fade-out-up');
   content.classList.add('animate-fade-in-down');
@@ -648,9 +648,9 @@ function closeAchievementPopup() {
   const popup = document.getElementById('achievementPopup');
   if (!popup) return;
   const content = popup.querySelector('.popup-content');
-  content.classList.replace('animate-fade-in-down', 'animate-fade-out-up');
+   content.classList.replace('animate-fade-in-down', 'animate-fade-out-up');
   setTimeout(() => {
-    popup.classList.add('tw-hidden');
+    popup.classList.add('tw-hidden', 'd-none');
     popup.removeAttribute('style');
     popup.querySelector('#achievementTitle').textContent = '';
     popup.querySelector('.credit-gain').textContent = '';

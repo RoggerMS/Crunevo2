@@ -347,3 +347,4 @@
 - Popup and window.NEW_ACHIEVEMENTS only load for authenticated users, injecting CURRENT_USER_ID and clearing achievements after successful mark-shown request (PR achievement-popup-login-check).
 - Achievement popup only triggered when backend response includes "new_achievement"; DOMContentLoaded check removed and csrfFetch now handles showing popup automatically (PR achievement-popup-runtime).
 - Delegated close handler for achievement popup ensuring button works even if regenerated, and removing inline style on close (PR achievement-popup-delegate-close).
+- Popup overlay fully hidden with `d-none` when closed and restored on show to prevent blocking clicks (PR achievement-popup-display-fix).
