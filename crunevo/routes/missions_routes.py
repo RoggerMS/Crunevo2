@@ -84,19 +84,3 @@ def compute_mission_states(user):
 def list_missions():
     """Legacy route; redirect to profile missions tab."""
     return redirect(url_for("auth.perfil", tab="misiones"))
-
-    progress = compute_mission_states(current_user).get(mission_id)
-    if not progress or not progress["completada"]:
-        flash("Aún no has completado esta misión", "warning")
-        return redirect(url_for("auth.perfil", tab="misiones"))
-
-    db.session.add(UserMission(user_id=current_user.id, mission_id=mission_id))
-    add_credit(current_user, mission.credit_reward, CreditReasons.DONACION)
-    db.session.commit()
-    flash("¡Créditos reclamados!", "success")
-    return redirect(url_for("auth.perfil", tab="misiones"))
-
-@missions_bp.route("/")
-def list_missions():
-    """Legacy route; redirect to profile missions tab."""
-    return redirect(url_for("auth.perfil", tab="misiones"))

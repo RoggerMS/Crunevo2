@@ -62,6 +62,24 @@ def register():
             current_app.logger.warning("IntegrityError: %s", e)
             flash("Usuario o correo ya registrado", "danger")
             return render_template("onboarding/register.html"), 400
+
+        # vincular referido si viene el código en la URL
+        ref = request.args.get("ref")
+        if ref:
+            from crunevo.models import Referral
+
+            referidor = User.query.filter_by(username=ref).first()
+            if referidor:
+                codigo = f"{referidor.username}-{user.username}"
+                if not Referral.query.filter_by(code=codigo).first():
+                    db.session.add(
+                        Referral(
+                            code=codigo,
+                            invitador_id=referidor.id,
+                            invitado_id=user.id,
+                        )
+                    )
+                    db.session.commit()
         if not send_confirmation_email(user):
             flash(
                 "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",

@@ -1,0 +1,29 @@
+<h3 class="mb-3">🎉 Invita amigos y gana Créditos</h3>
+<p>Comparte tu enlace:
+  <code>{{ enlace_referido }}</code>
+  <button class="btn btn-sm btn-outline-primary" onclick="copiarEnlace()">📋 Copiar</button>
+</p>
+<p><strong>{{ referidos_completados }}</strong> de {{ total_referidos }} completaron requisitos</p>
+<ul class="list-group mb-3">
+{% for ref in referidos %}
+  <li class="list-group-item">
+    {{ ref.invitado.username if ref.invitado else 'Pendiente' }} —
+    {% if ref.completado %}
+      <span class="text-success">✅ Completado</span>
+    {% else %}
+      <span class="text-muted">⏳ En progreso</span>
+    {% endif %}
+  </li>
+{% endfor %}
+</ul>
+<script>
+function copiarEnlace() {
+  navigator.clipboard.writeText("{{ enlace_referido }}").then(() => {
+    if (typeof showToast === 'function') {
+      showToast('Enlace copiado');
+    } else {
+      alert('Enlace copiado');
+    }
+  });
+}
+</script>

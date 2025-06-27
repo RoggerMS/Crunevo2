@@ -20,6 +20,9 @@
         <a class="nav-link {% if tab == 'misiones' %}active{% endif %}" href="{{ url_for('auth.perfil', tab='misiones') }}">🧠 Misiones</a>
       </li>
       <li class="nav-item">
+        <a class="nav-link {% if tab == 'referidos' %}active{% endif %}" href="{{ url_for('auth.perfil', tab='referidos') }}">👥 Referidos</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link {% if tab == 'verificacion' %}active{% endif %}" href="{{ url_for('auth.perfil', tab='verificacion') }}">Verificación</a>
       </li>
     </ul>
@@ -134,6 +137,8 @@
 
     {% if tab == 'misiones' %}
       {% include 'auth/missions_tab.html' %}
+    {% elif tab == 'referidos' %}
+      {% include 'auth/referrals_tab.html' %}
     {% elif tab == 'verificacion' %}
       <div class="card">
         <div class="card-body text-center">
