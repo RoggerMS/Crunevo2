@@ -1,10 +1,20 @@
 // Main entry point
 
+function getDeviceToken() {
+  let t = localStorage.getItem('crunevo_device_token');
+  if (!t) {
+    t = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now();
+    localStorage.setItem('crunevo_device_token', t);
+  }
+  return t;
+}
+
 function csrfFetch(url, options = {}) {
   const token = document.querySelector('meta[name="csrf-token"]').content;
   const headers = {
     'X-CSRFToken': token,
     'X-Requested-With': 'XMLHttpRequest',
+    'X-Device-Token': getDeviceToken(),
     ...(options.headers || {}),
   };
   return fetch(url, { ...options, headers });
@@ -304,7 +314,9 @@ document.addEventListener('DOMContentLoaded', () => {
         box.innerHTML = '';
         return;
       }
-      fetch(`/search?q=${encodeURIComponent(q)}`)
+      fetch(`/search?q=${encodeURIComponent(q)}`, {
+        headers: { 'X-Device-Token': getDeviceToken() },
+      })
         .then((r) => r.json())
         .then((data) => {
           box.innerHTML = '';
@@ -435,7 +447,12 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       const pid = btn.dataset.productId;
-      fetch(`/store/add/${pid}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      fetch(`/store/add/${pid}`, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-Device-Token': getDeviceToken(),
+        },
+      })
         .then((r) => r.json())
         .then((data) => {
           showToast('Producto agregado');
@@ -509,7 +526,7 @@ function getNotiInfo(msg) {
   }
 
   function refresh() {
-    fetch('/api/notifications')
+    fetch('/api/notifications', { headers: { 'X-Device-Token': getDeviceToken() } })
       .then((r) => r.json())
       .then((items) => {
         if (items.length > notifCount) {
@@ -554,7 +571,7 @@ function updateCartBadge(count) {
 }
 
 function refreshCartCount() {
-  fetch('/store/api/cart_count')
+  fetch('/store/api/cart_count', { headers: { 'X-Device-Token': getDeviceToken() } })
     .then((r) => r.json())
     .then((data) => updateCartBadge(data.count));
 }
