@@ -1,81 +1,83 @@
 from datetime import datetime, timedelta
 from flask import Blueprint, redirect, url_for
-from flask_login import current_user
 from sqlalchemy import func
-from crunevo.models import Mission, UserMission, Note, PostComment, Post
+from crunevo.models import (
+    Mission,
+    UserMission,
+    Note,
+    PostComment,
+    Post,
+    Purchase,
+)
 from crunevo.extensions import db
-from crunevo.utils.credits import add_credit
-from crunevo.constants import CreditReasons
 
 missions_bp = Blueprint("missions", __name__, url_prefix="/misiones")
 
 
 def compute_mission_states(user):
-    """Return mission progress info for a user."""
-    one_week_ago = datetime.utcnow() - timedelta(days=7)
-    # Ensure default missions exist
-    defaults = [
-        {
-            "code": "upload_note",
-            "description": "Subir 1 apunte esta semana",
-            "goal": 1,
-            "credit_reward": 5,
-        },
-        {
-            "code": "comment_posts",
-            "description": "Comentar en 3 publicaciones",
-            "goal": 3,
-            "credit_reward": 3,
-        },
-        {
-            "code": "receive_likes",
-            "description": "Recibir 5 likes en tus publicaciones",
-            "goal": 5,
-            "credit_reward": 3,
-        },
-    ]
-    for d in defaults:
-        if not Mission.query.filter_by(code=d["code"]).first():
-            db.session.add(Mission(**d))
-    db.session.commit()
+    """Return progress information for all missions of a user."""
+    one_day_ago = datetime.utcnow() - timedelta(days=1)
 
     missions = Mission.query.all()
-    mission_states = []
+    progress_dict = {}
+
     for m in missions:
         progress = 0
-        if m.code == "upload_note":
-            progress = (
-                Note.query.filter_by(user_id=user.id)
-                .filter(Note.created_at >= one_week_ago)
-                .count()
-            )
-        elif m.code == "comment_posts":
+
+        # 📝 Subir apuntes
+        if m.code.startswith("subir_apuntes_") or m.code == "primer_apunte":
+            progress = Note.query.filter_by(user_id=user.id).count()
+            if getattr(m, "category", None) == "diaria":
+                progress = (
+                    Note.query.filter_by(user_id=user.id)
+                    .filter(Note.created_at >= one_day_ago)
+                    .count()
+                )
+
+        # 💬 Comentar publicaciones
+        elif m.code.startswith("comentar_"):
             progress = (
                 PostComment.query.filter_by(author_id=user.id)
-                .filter(PostComment.timestamp >= one_week_ago)
+                .filter(PostComment.timestamp >= one_day_ago)
                 .count()
             )
-        elif m.code == "receive_likes":
+
+        # 👍 Recibir likes
+        elif m.code.startswith("likes_") or m.code == "primer_like":
             progress = (
                 db.session.query(func.coalesce(func.sum(Post.likes), 0))
                 .filter_by(author_id=user.id)
                 .scalar()
                 or 0
             )
+
+        # 🛒 Compras en tienda
+        elif m.code.startswith("comprar_producto_"):
+            progress = Purchase.query.filter_by(user_id=user.id).count()
+
+        # 👥 Referidos activos
+        elif m.code.startswith("referido_"):
+            progress = 0
+
+        # 🏆 Logros únicos
+        elif m.code == "maraton_apuntes":
+            progress = (
+                Note.query.filter_by(user_id=user.id)
+                .filter(Note.created_at >= one_day_ago)
+                .count()
+            )
+
         completed = progress >= m.goal
         record = UserMission.query.filter_by(user_id=user.id, mission_id=m.id).first()
-        if user == current_user and completed and not record:
-            db.session.add(UserMission(user_id=user.id, mission_id=m.id))
-            add_credit(user, m.credit_reward, CreditReasons.DONACION)
-            db.session.commit()
-        mission_states.append(
-            {
-                "mission": m,
-                "progress": progress,
-                "completed": completed or record is not None,
-            }
-        )
-    return mission_states
+
+        progress_dict[m.id] = {
+            "progreso": progress,
+            "completada": completed,
+            "reclamada": record is not None,
+            "id": record.id if record else None,
+        }
+
+    return progress_dict
 
 
 @missions_bp.route("/")
