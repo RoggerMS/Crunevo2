@@ -318,3 +318,4 @@
 - Ruta /misiones/reclamar_mision permite reclamar créditos por misión (PR mission-reclaim-route).
 - Añadido modelo Referral y pestaña de referidos en el perfil con registro básico en onboarding (PR referral-system).
 - Reimplementado endpoint /misiones/reclamar_mision y añadida prueba automática (PR mission-claim-route-test).
+- Notificaciones ahora usan tarjetas con íconos por color y filtro rápido; se añadieron estilos y JS para filtrar (PR notifications-cards-filter).

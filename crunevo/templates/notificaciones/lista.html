@@ -1,27 +1,51 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container my-4">
-  <h3>🔔 Notificaciones</h3>
+  <h3 class="mb-3">🔔 Notificaciones</h3>
   <form method="post" action="{{ url_for('noti.marcar_leidas') }}" class="mb-3">
     {% import 'components/csrf.html' as csrf %}
     {{ csrf.csrf_field() }}
     <button class="btn btn-sm btn-outline-secondary">Marcar todo como leído</button>
   </form>
-  <ul class="list-group notification-page-list">
-    {% for n in notificaciones %}
-    <li class="list-group-item border-0 p-2 {% if not n.is_read %}unread{% endif %}">
-      <div class="d-flex align-items-start">
-        <span class="noti-icon me-2">🔔</span>
-        <div class="flex-grow-1">
-          <a class="stretched-link text-decoration-none" href="{{ n.url or '#' }}">{{ n.message }}</a>
-        </div>
-        <small class="text-muted ms-2 noti-time">{{ n.timestamp|timesince }}</small>
+  <div class="btn-group mb-3" id="notiFilterGroup" role="group">
+    <button class="btn btn-outline-primary active" data-noti-filter="all">Todos</button>
+    <button class="btn btn-outline-warning" data-noti-filter="reaction">❤️ Reacciones</button>
+    <button class="btn btn-outline-info" data-noti-filter="comment">📝 Comentarios</button>
+    <button class="btn btn-outline-danger" data-noti-filter="report">⚠️ Reportes</button>
+    <button class="btn btn-outline-purple" data-noti-filter="achievement">🏆 Logros</button>
+  </div>
+  {% for n in notificaciones %}
+  {% set msg = n.message.lower() %}
+  {% if 'reaccion' in msg %}
+    {% set icon = 'bi-hand-thumbs-up-fill text-warning' %}
+    {% set typ = 'reaction' %}
+  {% elif 'coment' in msg %}
+    {% set icon = 'bi-chat-left-dots-fill text-info' %}
+    {% set typ = 'comment' %}
+  {% elif 'reporte' in msg %}
+    {% set icon = 'bi-exclamation-circle-fill text-danger' %}
+    {% set typ = 'report' %}
+  {% elif 'logro' in msg %}
+    {% set icon = 'bi-trophy-fill text-purple' %}
+    {% set typ = 'achievement' %}
+  {% elif 'seguidor' in msg %}
+    {% set icon = 'bi-person-plus-fill text-success' %}
+    {% set typ = 'follow' %}
+  {% else %}
+    {% set icon = 'bi-bell-fill text-secondary' %}
+    {% set typ = 'other' %}
+  {% endif %}
+  <div class="card notification-card mb-2 fade-in {{ typ }} {% if not n.is_read %}unread{% endif %}" data-type="{{ typ }}">
+    <div class="card-body d-flex">
+      <i class="bi {{ icon }} me-2"></i>
+      <div>
+        <a class="stretched-link text-decoration-none" href="{{ n.url or '#' }}">{{ n.message }}</a>
+        <div><small class="text-muted">{{ n.timestamp|timesince }}</small></div>
       </div>
-    </li>
-    {% else %}
-    <li class="list-group-item">No tienes notificaciones.</li>
-    {% endfor %}
-  </ul>
+    </div>
+  </div>
+  {% else %}
+  <p>No tienes notificaciones.</p>
+  {% endfor %}
 </div>
 {% endblock %}
-
