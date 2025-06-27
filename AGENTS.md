@@ -350,4 +350,3 @@
 - Popup overlay fully hidden with `d-none` when closed and restored on show to prevent blocking clicks (PR achievement-popup-display-fix).
 - Achievement popup clears `session['new_achievements']` on mark-shown and `base.html` only defines `NEW_ACHIEVEMENTS` for logged-in users (PR achievement-popup-session-clear).
 - Popup shown only once: JS waits for successful mark-shown response before clearing `window.NEW_ACHIEVEMENTS` and base template omits the variable when empty (PR achievement-popup-once).
-- Session cleanup reinforced: before_app_request clears `session['new_achievements']` when no pending records and mark-shown logs username (PR achievement-popup-session-cleanup).
