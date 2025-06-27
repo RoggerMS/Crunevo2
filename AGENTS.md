@@ -352,5 +352,3 @@
 - Popup shown only once: JS waits for successful mark-shown response before clearing `window.NEW_ACHIEVEMENTS` and base template omits the variable when empty (PR achievement-popup-once).
 - Session cleanup reinforced: before_app_request clears `session['new_achievements']` when no pending records and mark-shown logs username (PR achievement-popup-session-cleanup).
 - Popup state reset on `beforeunload` and `showAchievementPopup` checks `NEW_ACHIEVEMENTS`; session log prints current value (PR achievement-popup-beforeunload).
-- Backend mark-shown endpoint loops through each record and handles errors to ensure achievements are updated (PR achievement-popup-mark-shown-fix).
-- Context processor serializes pending achievements and returns an empty list when none to avoid regenerating `window.NEW_ACHIEVEMENTS` (PR achievement-popup-context-fix).

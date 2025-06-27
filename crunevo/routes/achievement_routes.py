@@ -23,19 +23,10 @@ def clear_session_new_achievements():
 @ach_bp.route("/api/achievement-popup/mark-shown", methods=["POST"])
 @login_required
 def mark_achievement_popup_seen():
-    """Mark all pending achievement popups as shown for the current user."""
-    try:
-        print("\U0001F9E0 Marcar logros como vistos para:", current_user.username)
-        popups = AchievementPopup.query.filter_by(
-            user_id=current_user.id, shown=False
-        ).all()
-        if not popups:
-            return jsonify({"success": True, "message": "No hay logros pendientes"})
-        for popup in popups:
-            popup.shown = True
-        db.session.commit()
-        session.pop("new_achievements", None)
-        return jsonify({"success": True})
-    except Exception as e:  # pragma: no cover - log unexpected errors
-        print("\u26a0\ufe0f Error al marcar logros como vistos:", e)
-        return jsonify({"success": False, "error": str(e)}), 500
+    print("\U0001F9E0 Marcar logros como vistos para:", current_user.username)
+    AchievementPopup.query.filter_by(user_id=current_user.id, shown=False).update(
+        {"shown": True}
+    )
+    db.session.commit()
+    session["new_achievements"] = []
+    return jsonify({"success": True})
