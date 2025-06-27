@@ -266,6 +266,10 @@ document.addEventListener('DOMContentLoaded', () => {
     new bootstrap.Toast(t).show();
   });
 
+  if (window.NEW_ACHIEVEMENTS && window.NEW_ACHIEVEMENTS.length) {
+    showAchievementPopup(window.NEW_ACHIEVEMENTS[0]);
+  }
+
   initPdfPreviews();
   if (typeof initNoteViewer === 'function') {
     initNoteViewer();
@@ -591,4 +595,16 @@ function initNotificationFilters() {
       });
     });
   });
+}
+
+function showAchievementPopup(data) {
+  const popup = document.getElementById('achievementPopup');
+  if (!popup) return;
+  popup.querySelector('#achievementTitle').textContent = data.title || data.code;
+  popup.querySelector('.credit-gain').textContent = `+${data.credit_reward || 1} crolars`;
+  popup.classList.remove('tw-hidden');
+  document.getElementById('closeAchievementBtn').addEventListener('click', () => {
+    popup.classList.add('tw-hidden');
+    csrfFetch('/api/achievement-popup/mark-shown', { method: 'POST' });
+  }, { once: true });
 }

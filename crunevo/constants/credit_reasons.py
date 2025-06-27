@@ -7,3 +7,4 @@ class CreditReasons:
     DONACION_FEED = "donación_feed"
     RACHA_LOGIN = "racha_login"
     REFERIDO = "referido"
+    LOGRO = "logro"

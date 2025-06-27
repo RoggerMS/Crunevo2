@@ -3,6 +3,9 @@
     <i class="bi {{ icon }} fs-3"></i>
     <div class="fw-bold">{{ title }}</div>
     {% if timestamp %}<small class="text-muted">{{ timestamp|timesince }}</small>{% endif %}
+    {% if a.achievement and a.achievement.credit_reward %}
+    <div class="text-success">+{{ a.achievement.credit_reward }} crolars</div>
+    {% endif %}
   </div>
 </div>
 

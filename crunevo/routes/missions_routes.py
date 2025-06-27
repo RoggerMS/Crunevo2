@@ -121,10 +121,11 @@ def reclamar_mision(mission_id):
             .first()
         )
         if exists:
-            flash(
-                "Este dispositivo ya canjeó esta recompensa recientemente.", "warning"
-            )
-            return redirect(url_for("auth.perfil", tab="misiones"))
+            message = "Este dispositivo ya canjeó esta recompensa recientemente."
+            flash(message, "warning")
+            resp = redirect(url_for("auth.perfil", tab="misiones"))
+            resp.set_data(message)
+            return resp
 
     progress = compute_mission_states(current_user).get(mission_id)
     if not progress or not progress["completada"]:

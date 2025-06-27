@@ -25,7 +25,7 @@ def create_app():
     @app.context_processor
     def inject_globals():
         from .constants import ACHIEVEMENT_DETAILS
-        from .models import Note, Notification
+        from .models import Note, Notification, AchievementPopup, Achievement
         from flask import session
 
         latest_sidebar_notes = (
@@ -35,6 +35,7 @@ def create_app():
         )
 
         urgent_count = 0
+        new_achievements = []
         if current_user.is_authenticated and current_user.role in [
             "admin",
             "moderator",
@@ -51,6 +52,19 @@ def create_app():
                         pass
             urgent_count = sum(1 for c in counts.values() if c >= 3)
 
+        if current_user.is_authenticated:
+            new_achievements = (
+                db.session.query(Achievement)
+                .join(
+                    AchievementPopup, Achievement.id == AchievementPopup.achievement_id
+                )
+                .filter(
+                    AchievementPopup.user_id == current_user.id,
+                    AchievementPopup.shown.is_(False),
+                )
+                .all()
+            )
+
         return {
             "PUBLIC_BASE_URL": app.config.get("PUBLIC_BASE_URL"),
             "ACHIEVEMENT_DETAILS": ACHIEVEMENT_DETAILS,
@@ -59,6 +73,7 @@ def create_app():
             "current_app": current_app,
             "CART_COUNT": sum(session.get("cart", {}).values()),
             "URGENT_REPORTS": urgent_count,
+            "NEW_ACHIEVEMENTS": new_achievements,
         }
 
     from .utils.helpers import timesince
@@ -106,6 +121,7 @@ def create_app():
     from .routes.admin.email_routes import admin_email_bp
     from .routes.ranking_routes import ranking_bp
     from .routes.notifications_routes import noti_bp
+    from .routes.achievement_routes import ach_bp
     from .routes.errors import errors_bp
     from .routes.missions_routes import missions_bp
     from .routes.health_routes import health_bp
@@ -176,6 +192,7 @@ def create_app():
         app.register_blueprint(chat_bp)
         app.register_blueprint(ia_bp)
         app.register_blueprint(noti_bp)
+        app.register_blueprint(ach_bp)
         app.register_blueprint(missions_bp)
         app.register_blueprint(ranking_bp)
         app.register_blueprint(errors_bp)

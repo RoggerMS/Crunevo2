@@ -49,6 +49,14 @@
       <a href="/privacidad" class="text-muted">Privacidad</a> ·
       <a href="/terminos" class="text-muted">Términos</a>
     </footer>
+    <div class="achievement-popup tw-hidden" id="achievementPopup">
+      <div class="popup-content bg-dark text-white p-4 rounded-3 text-center">
+        <h3>🎖 ¡Logro desbloqueado!</h3>
+        <p id="achievementTitle" class="mb-1"></p>
+        <p class="credit-gain mb-3">+1 crolar</p>
+        <button class="btn btn-primary" id="closeAchievementBtn">OK</button>
+      </div>
+    </div>
     <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
     {% if request.path.startswith('/store') and 'store.view_cart' in current_app.view_functions %}
     <a href="{{ url_for('store.view_cart') }}" class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-3 d-lg-none">
@@ -65,6 +73,7 @@
     <script src="{{ url_for('static', filename='js/feed_toggle.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/feed.js') }}"></script>
     <script>window.HAS_STORE = {{ 'true' if 'store.cart_count_api' in current_app.view_functions else 'false' }};</script>
+    <script>window.NEW_ACHIEVEMENTS = {{ NEW_ACHIEVEMENTS|tojson }};</script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block body_end %}{% endblock %}
 </body>
