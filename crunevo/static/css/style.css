@@ -281,6 +281,11 @@ body[data-bs-theme='dark'] .notification-menu::before {
   background-color: #6f42c1;
   color: #fff;
 }
+.btn-outline-purple.active {
+  background-color: #f3f3ff;
+  border-color: #8a2be2;
+  color: #6f42c1;
+}
 
 .achievement-popup {
   position: fixed;
