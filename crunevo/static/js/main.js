@@ -428,7 +428,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  refreshCartCount();
+  if (window.HAS_STORE) {
+    refreshCartCount();
+  }
   document.querySelectorAll('.add-cart-btn').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();

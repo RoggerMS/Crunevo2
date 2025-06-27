@@ -24,6 +24,10 @@ def test_post_forms_have_csrf_macro():
     missing = []
     for path in Path("crunevo/templates").rglob("*.html"):
         text = path.read_text()
-        if pattern.search(text) and "{{ csrf.csrf_field() }}" not in text:
+        if (
+            pattern.search(text)
+            and "{{ csrf.csrf_field() }}" not in text
+            and "{{ csrf_field() }}" not in text
+        ):
             missing.append(str(path))
     assert not missing, "Missing csrf_field in: " + ", ".join(missing)

@@ -50,7 +50,7 @@
       {% endif %}
     </footer>
     <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
-    {% if request.path.startswith('/store') %}
+    {% if request.path.startswith('/store') and 'store.view_cart' in current_app.view_functions %}
     <a href="{{ url_for('store.view_cart') }}" class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-3 d-lg-none">
       <i class="bi bi-cart"></i>
       <span id="mobileCartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {% if CART_COUNT == 0 %}tw-hidden{% endif %}">{{ CART_COUNT }}</span>
@@ -64,6 +64,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/feed_toggle.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/feed.js') }}"></script>
+    <script>window.HAS_STORE = {{ 'true' if 'store.cart_count_api' in current_app.view_functions else 'false' }};</script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block body_end %}{% endblock %}
 </body>
