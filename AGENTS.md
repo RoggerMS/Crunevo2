@@ -312,6 +312,5 @@
 - Sistema de rachas de inicio de sesión que otorga créditos crecientes cada día (PR login-streak-rewards).
 - Recompensa de racha ahora se reclama manualmente con /api/reclamar-racha y widget flotante en el feed (PR login-streak-claim).
 - Página /crolars con explicación de la moneda y enlaces desde navbar y footer (PR crolars-info-page).
-- Añadido script scripts/generar_misiones.py para insertar misiones en lote.
 - Perfil muestra misiones con progreso, estado y botón para reclamar créditos manualmente (PR missions-claim-ui).
 - Ruta /misiones/reclamar_mision permite reclamar créditos por misión (PR mission-reclaim-route).
