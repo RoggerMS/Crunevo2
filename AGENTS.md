@@ -388,3 +388,4 @@
 - Fixed notifications dropdown link to 'noti.ver_notificaciones' to resolve BuildError (hotfix notifications-dropdown-link).
 - Fixed navbar missions link to use 'auth.perfil' with tab to avoid BuildError (hotfix navbar-missions-link).
 - Fixed saved link to use 'saved.list_saved' and corrected notes detail endpoints in templates (hotfix endpoint-fixes).
+- Fixed forum link in feed sidebar and profile quick actions to use 'forum.ask_question' (hotfix forum-ask-link).
