@@ -7,3 +7,15 @@ packages = ["freetype", "glibcLocales"]
 
 [deployment]
 build = ["sh", "-c", "make"]
+
+[workflows]
+runButton = "Run Flask App"
+
+[[workflows.workflow]]
+name = "Run Flask App"
+author = 44279134
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python -m flask --app crunevo.app:create_app run --host=0.0.0.0 --port=5000"

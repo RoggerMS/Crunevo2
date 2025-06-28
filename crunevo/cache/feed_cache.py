@@ -8,7 +8,8 @@ log = logging.getLogger(__name__)
 r = redis.from_url(os.getenv("REDIS_URL", "redis://localhost:6379/0"))
 
 FEED_KEY = "feed:{user_id}"
-MAX_CACHE = 200  # keep most recent N items per user
+MAX_CACHE = 500  # Aumentar para mejor rendimiento
+CACHE_TTL = 3600  # 1 hora de TTL  # keep most recent N items per user
 
 
 def _client():

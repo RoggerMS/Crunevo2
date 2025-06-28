@@ -132,11 +132,13 @@ def view_product(product_id):
     )
     reviews = (
         Review.query.filter_by(product_id=product.id)
+        .options(db.joinedload(Review.user))
         .order_by(Review.timestamp.desc())
         .all()
     )
     questions = (
         Question.query.filter_by(product_id=product.id)
+        .options(db.joinedload(Question.user))
         .order_by(Question.timestamp.desc())
         .all()
     )
@@ -155,6 +157,7 @@ def view_product(product_id):
 
 @store_bp.route("/product/<int:product_id>/review", methods=["POST"])
 @activated_required
+@limiter.limit("5 per minute")
 def add_review(product_id: int):
     """Allow a user to leave a review for a purchased product."""
     if not has_purchased(current_user.id, product_id):
