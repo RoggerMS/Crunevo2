@@ -3,322 +3,654 @@
 
 {% block title %}Tienda - Crunevo{% endblock %}
 
+{% block head_extra %}
+<style>
+.store-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 24px;
+  padding: 3rem 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.store-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+}
+
+.store-hero h1 {
+  position: relative;
+  z-index: 1;
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin-bottom: 0.5rem;
+}
+
+.promotional-banner {
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.promotional-banner::before {
+  content: '✨';
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 1.5rem;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.store-filters {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+[data-bs-theme="dark"] .store-filters {
+  background: rgba(30, 30, 46, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.filter-section h6 {
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #667eea;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filter-chip {
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: #667eea;
+}
+
+.filter-chip:hover,
+.filter-chip.active {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.product-card {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+[data-bs-theme="dark"] .product-card {
+  background: rgba(30, 30, 46, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+}
+
+.product-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.05);
+}
+
+.product-badges {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.product-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-featured {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  color: white;
+}
+
+.badge-popular {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #1a202c;
+}
+
+.badge-new {
+  background: linear-gradient(135deg, #00d2ff 0%, #3a47d5 100%);
+  color: white;
+}
+
+.badge-sale {
+  background: linear-gradient(135deg, #ff4757 0%, #c44569 100%);
+  color: white;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.product-favorite {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: #ccc;
+}
+
+.product-favorite:hover,
+.product-favorite.active {
+  color: #ff6b6b;
+  background: white;
+  transform: scale(1.1);
+}
+
+.product-content {
+  padding: 1.5rem;
+}
+
+.product-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #1a202c;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+[data-bs-theme="dark"] .product-title {
+  color: #f1f5f9;
+}
+
+.product-description {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-price {
+  display: flex;
+  align-items: center;
+  justify-content: between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.price-current {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #667eea;
+}
+
+.price-original {
+  font-size: 1rem;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.price-crolars {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #1a202c;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.product-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-add-cart {
+  flex: 1;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-add-cart:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  color: white;
+}
+
+.btn-view-details {
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  color: #667eea;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-view-details:hover {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty-state i {
+  font-size: 4rem;
+  color: #ccc;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .store-filters {
+    padding: 1rem;
+  }
+
+  .filter-chips {
+    justify-content: center;
+  }
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid px-3 px-lg-5">
-  <!-- Store Header -->
-  <div class="store-header">
-    <h1 class="store-title display-5">
-      <i class="bi bi-shop me-2"></i>
-      Tienda Crunevo
-    </h1>
-    <p class="store-subtitle">Intercambia tus Crolars por increíbles productos educativos</p>
-    <div class="d-flex justify-content-center align-items-center gap-3 mt-3">
-      <div class="d-flex align-items-center gap-2">
-        <i class="bi bi-coin text-warning fs-4"></i>
-        <span class="fw-bold fs-5">{{ current_user.credits if current_user.is_authenticated else 0 }} Crolars</span>
-      </div>
-      {% if current_user.is_authenticated %}
-      <a href="{{ url_for('store.view_cart') }}" class="btn btn-outline-primary">
-        <i class="bi bi-cart"></i>
-        Carrito
-        <span class="badge cart-badge ms-1">{{ cart_count or 0 }}</span>
-      </a>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- Category Filters -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="d-flex flex-wrap justify-content-center gap-2">
-        <button class="category-filter active" data-category="all">
-          <i class="bi bi-grid"></i> Todos
-        </button>
-        <button class="category-filter" data-category="libros">
-          <i class="bi bi-book"></i> Libros
-        </button>
-        <button class="category-filter" data-category="papeleria">
-          <i class="bi bi-pencil"></i> Papelería
-        </button>
-        <button class="category-filter" data-category="tecnologia">
-          <i class="bi bi-laptop"></i> Tecnología
-        </button>
-        <button class="category-filter" data-category="accesorios">
-          <i class="bi bi-bag"></i> Accesorios
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Featured Products -->
-  {% if featured_products %}
-  <div class="row mb-5">
-    <div class="col-12">
-      <h3 class="mb-3 text-center">
-        <i class="bi bi-star-fill text-warning me-2"></i>
-        Productos Destacados
-      </h3>
-      <div class="d-flex gap-3 overflow-auto pb-3" style="scroll-snap-type: x mandatory;">
-        {% for product in featured_products %}
-        <div class="featured-card flex-shrink-0" style="scroll-snap-align: start;">
-          <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="text-decoration-none">
-            <img src="{{ product.image_url or url_for('static', filename='img/default_product.png') }}" 
-                 class="card-img-top" alt="{{ product.name }}" loading="lazy">
-            <div class="p-2">
-              <div class="featured-title">{{ product.name }}</div>
-              <div class="text-center">
-                <span class="product-price">{{ product.price }} <i class="bi bi-coin text-warning"></i></span>
-              </div>
-            </div>
-          </a>
+<div class="container-fluid px-3">
+  <div class="row">
+    <!-- Sidebar Filters (Desktop) -->
+    <div class="col-lg-3 d-none d-lg-block">
+      <div class="store-filters">
+        <div class="filter-section mb-4">
+          <h6><i class="bi bi-grid me-2"></i>Categorías</h6>
+          <div class="filter-chips">
+            <a href="{{ url_for('store.store_index') }}" class="filter-chip {% if not categoria %}active{% endif %}">
+              Todas
+            </a>
+            {% for cat in categories %}
+            <a href="{{ url_for('store.store_index', categoria=cat) }}" 
+               class="filter-chip {% if categoria == cat %}active{% endif %}">
+              {{ cat }}
+            </a>
+            {% endfor %}
+          </div>
         </div>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-  {% endif %}
 
-  <!-- Products Grid -->
-  <div class="row" id="productsContainer">
-    {% if products %}
-      {% for product in products %}
-      <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4 product-item" data-category="{{ product.category or 'general' }}">
-        <div class="card product-card h-100">
-          <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="text-decoration-none">
-            <img src="{{ product.image_url or url_for('static', filename='img/default_product.png') }}" 
-                 class="card-img-top" alt="{{ product.name }}" loading="lazy"
-                 style="height: 200px; object-fit: cover;">
-          </a>
-          <div class="card-body d-flex flex-column">
-            <h5 class="product-name mb-2">
-              <a href="{{ url_for('store.view_product', product_id=product.id) }}"
-                class="text-decoration-none">{{ product.name }}</a>
-            </h5>
-            <p class="product-desc text-muted flex-grow-1">{{ product.description or 'Sin descripción disponible' }}</p>
-            
-            <div class="mt-auto">
-              <div class="product-price mb-3">
-                {{ product.price }} <i class="bi bi-coin text-warning"></i>
-              </div>
-              
-              {% if current_user.is_authenticated %}
-                {% if current_user.credits >= product.price %}
-                  <button class="btn-add-cart" 
-                          onclick="addToCart({{ product.id }}, '{{ product.name }}', {{ product.price }})"
-                          data-product-id="{{ product.id }}">
-                    <i class="bi bi-cart-plus me-1"></i>
-                    Agregar
-                  </button>
-                {% else %}
-                  <button class="btn-add-cart" disabled>
-                    <i class="bi bi-coin me-1"></i>
-                    Insuficientes Crolars
-                  </button>
-                {% endif %}
-              {% else %}
-                <a href="{{ url_for('auth.login') }}" class="btn-add-cart text-decoration-none d-block text-center">
-                  <i class="bi bi-box-arrow-in-right me-1"></i>
-                  Inicia Sesión
-                </a>
-              {% endif %}
-            </div>
+        <div class="filter-section mb-4">
+          <h6><i class="bi bi-tags me-2"></i>Tipo</h6>
+          <div class="filter-chips">
+            <a href="{{ url_for('store.store_index', free=1) }}" class="filter-chip">
+              <i class="bi bi-gift me-1"></i>Gratis
+            </a>
+            <a href="{{ url_for('store.store_index', pack=1) }}" class="filter-chip">
+              <i class="bi bi-box me-1"></i>Packs
+            </a>
+            <a href="{{ url_for('store.store_index', top=1) }}" class="filter-chip">
+              <i class="bi bi-star me-1"></i>Populares
+            </a>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <h6><i class="bi bi-coin me-2"></i>Precio</h6>
+          <div class="filter-chips">
+            <a href="{{ url_for('store.store_index', precio_max=10) }}" class="filter-chip">
+              Hasta S/ 10
+            </a>
+            <a href="{{ url_for('store.store_index', precio_max=50) }}" class="filter-chip">
+              Hasta S/ 50
+            </a>
+            <a href="{{ url_for('store.store_index', precio_max=100) }}" class="filter-chip">
+              Hasta S/ 100
+            </a>
           </div>
         </div>
       </div>
-      {% endfor %}
-    {% else %}
-      <div class="col-12">
-        <div class="empty-state">
-          <i class="bi bi-shop"></i>
-          <h3>¡Pronto tendremos productos increíbles!</h3>
-          <p>Nuestro equipo está trabajando para traerte los mejores productos educativos.</p>
-          {% if current_user.is_authenticated and (current_user.is_admin or current_user.is_moderator) %}
-            <a href="{{ url_for('admin.manage_store') }}" class="btn btn-primary">
-              Agregar Productos
-            </a>
-          {% endif %}
-        </div>
-      </div>
-    {% endif %}
-  </div>
-
-  <!-- Load More Button -->
-  {% if products and products|length >= 12 %}
-  <div class="row">
-    <div class="col-12 text-center">
-      <button id="loadMoreBtn" class="btn btn-outline-primary">
-        <i class="bi bi-arrow-down-circle"></i>
-        Cargar más productos
-      </button>
     </div>
-  </div>
-  {% endif %}
-</div>
 
-<!-- Cart Added Modal -->
-<div class="modal fade" id="cartAddedModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header border-0">
-        <h5 class="modal-title">
-          <i class="bi bi-check-circle-fill text-success me-2"></i>
-          ¡Agregado al carrito!
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <!-- Main Content -->
+    <div class="col-lg-9 col-12">
+      <!-- Hero Section -->
+      <div class="store-hero">
+        <h1>🛍️ Tienda CRUNEVO</h1>
+        <p>Descubre recursos educativos, herramientas y productos exclusivos</p>
       </div>
-      <div class="modal-body text-center">
-        <div id="cartModalContent"></div>
-        <div class="mt-3">
-          <button type="button" class="btn btn-outline-primary me-2" data-bs-dismiss="modal">
-            Seguir comprando
-          </button>
-          <a href="{{ url_for('store.view_cart') }}" class="btn btn-primary">
-            <i class="bi bi-cart"></i> Ver carrito
+
+      <!-- Promotional Banner -->
+      <div class="promotional-banner">
+        <h4 class="fw-bold mb-2">🎉 ¡Ofertas Especiales de Temporada!</h4>
+        <p class="mb-0">Hasta 50% de descuento en productos seleccionados. ¡Últimos días!</p>
+      </div>
+
+      <!-- Mobile Filters -->
+      <div class="d-lg-none mb-3">
+        <div class="d-flex gap-2 overflow-auto pb-2">
+          <a href="{{ url_for('store.store_index') }}" class="btn btn-sm btn-outline-primary rounded-pill">
+            Todas
           </a>
+          {% for cat in categories[:4] %}
+          <a href="{{ url_for('store.store_index', categoria=cat) }}" 
+             class="btn btn-sm btn-outline-primary rounded-pill">
+            {{ cat }}
+          </a>
+          {% endfor %}
         </div>
       </div>
+
+      <!-- Featured Products Carousel -->
+      {% if featured_products %}
+      <div class="mb-4">
+        <h5 class="fw-bold mb-3">⭐ Productos Destacados</h5>
+        <div class="d-flex gap-3 overflow-auto pb-3" style="scroll-snap-type: x mandatory;">
+          {% for product in featured_products %}
+          <div class="card border-0 shadow-sm rounded-4" style="min-width: 280px; scroll-snap-align: start;">
+            <div class="position-relative">
+              {% if product.first_image %}
+              <img src="{{ product.first_image }}" class="card-img-top" style="height: 150px; object-fit: cover;">
+              {% else %}
+              <div class="bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                <i class="bi bi-image text-muted fs-1"></i>
+              </div>
+              {% endif %}
+              <span class="badge bg-danger position-absolute top-0 start-0 m-2">Destacado</span>
+            </div>
+            <div class="card-body p-3">
+              <h6 class="card-title fw-bold">{{ product.name|truncate(30) }}</h6>
+              <div class="d-flex justify-content-between align-items-center">
+                {% if product.price_credits %}
+                <span class="fw-bold text-warning">{{ product.price_credits }} 🪙</span>
+                {% else %}
+                <span class="fw-bold text-primary">S/ {{ product.price }}</span>
+                {% endif %}
+                <a href="{{ url_for('store.view_product', product_id=product.id) }}" 
+                   class="btn btn-sm btn-primary">Ver</a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Products Grid -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">
+          {% if categoria %}
+            Productos en {{ categoria }}
+          {% else %}
+            Todos los Productos
+          {% endif %}
+          <span class="badge bg-secondary">{{ products|length }}</span>
+        </h5>
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary dropdown-toggle btn-sm" data-bs-toggle="dropdown">
+            <i class="bi bi-sort-down me-1"></i>Ordenar
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Más recientes</a></li>
+            <li><a class="dropdown-item" href="#">Precio: menor a mayor</a></li>
+            <li><a class="dropdown-item" href="#">Precio: mayor a menor</a></li>
+            <li><a class="dropdown-item" href="#">Más populares</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
+          <div class="product-image">
+            {% if product.first_image %}
+            <img src="{{ product.first_image }}" alt="{{ product.name }}">
+            {% else %}
+            <div class="d-flex align-items-center justify-content-center h-100">
+              <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+            </div>
+            {% endif %}
+
+            <!-- Product Badges -->
+            <div class="product-badges">
+              {% if product.is_featured %}
+              <span class="product-badge badge-featured">Destacado</span>
+              {% endif %}
+              {% if product.is_popular %}
+              <span class="product-badge badge-popular">Popular</span>
+              {% endif %}
+              {% if product.is_new %}
+              <span class="product-badge badge-new">Nuevo</span>
+              {% endif %}
+              {% if product.price > 50 %}
+              <span class="product-badge badge-sale">20% OFF</span>
+              {% endif %}
+            </div>
+
+            <!-- Favorite Button -->
+            <button class="product-favorite {% if product.id in favorite_ids %}active{% endif %}" 
+                    data-product-id="{{ product.id }}">
+              <i class="bi bi-heart{% if product.id in favorite_ids %}-fill{% endif %}"></i>
+            </button>
+          </div>
+
+          <div class="product-content">
+            <h6 class="product-title">{{ product.name }}</h6>
+            
+            {% if product.description %}
+            <p class="product-description">{{ product.description|truncate(80) }}</p>
+            {% endif %}
+
+            <div class="product-price">
+              <div class="flex-grow-1">
+                {% if product.price_credits %}
+                <div class="price-crolars">
+                  <i class="bi bi-coin me-1"></i>{{ product.price_credits }} Crolars
+                </div>
+                {% else %}
+                <div class="price-current">S/ {{ product.price }}</div>
+                {% if product.price > 50 %}
+                <div class="price-original">S/ {{ '%.2f'|format(product.price * 1.25) }}</div>
+                {% endif %}
+                {% endif %}
+              </div>
+              
+              {% if ratings.get(product.id) %}
+              <div class="text-warning">
+                {% for i in range(5) %}
+                <i class="bi bi-star{% if i < ratings[product.id] %}-fill{% endif %}"></i>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="product-actions">
+              {% if product.id not in purchased_ids %}
+              <button class="btn-add-cart" data-product-id="{{ product.id }}">
+                <i class="bi bi-cart-plus me-1"></i>Agregar
+              </button>
+              {% else %}
+              <button class="btn btn-success" disabled>
+                <i class="bi bi-check me-1"></i>Adquirido
+              </button>
+              {% endif %}
+              
+              <a href="{{ url_for('store.view_product', product_id=product.id) }}" 
+                 class="btn-view-details">
+                <i class="bi bi-eye"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Empty State -->
+      {% if not products %}
+      <div class="empty-state">
+        <i class="bi bi-bag"></i>
+        <h4 class="text-muted">No hay productos disponibles</h4>
+        <p class="text-muted">Revisa los filtros o vuelve más tarde.</p>
+        <a href="{{ url_for('store.store_index') }}" class="btn btn-primary rounded-pill">
+          Ver todos los productos
+        </a>
+      </div>
+      {% endif %}
     </div>
   </div>
 </div>
-{% endblock %}
 
-{% block body_end %}
 <script>
-// Add to cart functionality
-function addToCart(productId, productName, productPrice) {
-    const button = document.querySelector(`[data-product-id="${productId}"]`);
-    const originalContent = button.innerHTML;
-    
-    // Show loading state
-    button.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Agregando...';
-    button.disabled = true;
-    
-    fetch('/store/add-to-cart', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': document.querySelector('[name=csrf_token]').value
-        },
-        body: JSON.stringify({
-            product_id: productId,
-            quantity: 1
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Update cart count
-            updateCartCount(data.cart_count);
-            
-            // Show success modal
-            document.getElementById('cartModalContent').innerHTML = `
-                <div class="d-flex align-items-center justify-content-center gap-3 mb-3">
-                    <div class="bg-success rounded-circle p-2">
-                        <i class="bi bi-check text-white fs-4"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-0">${productName}</h6>
-                        <small class="text-muted">${productPrice} Crolars</small>
-                    </div>
-                </div>
-            `;
-            
-            const modal = new bootstrap.Modal(document.getElementById('cartAddedModal'));
-            modal.show();
-            
-            // Reset button
-            button.innerHTML = '<i class="bi bi-check me-1"></i> Agregado';
-            button.classList.add('btn-success');
-            
-            setTimeout(() => {
-                button.innerHTML = originalContent;
-                button.classList.remove('btn-success');
-                button.disabled = false;
-            }, 2000);
-            
-        } else {
-            showToast(data.message || 'Error al agregar al carrito', 'error');
-            button.innerHTML = originalContent;
-            button.disabled = false;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showToast('Error al agregar al carrito', 'error');
-        button.innerHTML = originalContent;
-        button.disabled = false;
-    });
-}
-
-// Update cart count in navbar and other places
-function updateCartCount(count) {
-    const cartBadges = document.querySelectorAll('.cart-badge, #mobileCartBadge');
-    cartBadges.forEach(badge => {
-        badge.textContent = count;
-        badge.classList.toggle('d-none', count === 0);
-    });
-}
-
-// Category filtering
 document.addEventListener('DOMContentLoaded', function() {
-    const categoryButtons = document.querySelectorAll('.category-filter');
-    const productItems = document.querySelectorAll('.product-item');
-    
-    categoryButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const category = this.getAttribute('data-category');
-            
-            // Update active button
-            categoryButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Filter products
-            productItems.forEach(item => {
-                const itemCategory = item.getAttribute('data-category');
-                if (category === 'all' || itemCategory === category) {
-                    item.style.display = 'block';
-                    item.classList.add('fade-in');
-                } else {
-                    item.style.display = 'none';
-                    item.classList.remove('fade-in');
-                }
-            });
+  // Add to cart functionality
+  document.querySelectorAll('.btn-add-cart').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      const productId = this.dataset.productId;
+      const originalText = this.innerHTML;
+      
+      this.innerHTML = '<div class="spinner-border spinner-border-sm me-1"></div>Agregando...';
+      this.disabled = true;
+      
+      try {
+        const response = await fetch(`/store/add/${productId}`, {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
         });
+        
+        if (response.ok) {
+          this.innerHTML = '<i class="bi bi-check me-1"></i>Agregado';
+          this.classList.add('btn-success');
+          
+          // Update cart count if exists
+          const cartCount = document.querySelector('#cartCount');
+          if (cartCount) {
+            const data = await response.json();
+            cartCount.textContent = data.count;
+          }
+          
+          setTimeout(() => {
+            this.innerHTML = originalText;
+            this.disabled = false;
+            this.classList.remove('btn-success');
+          }, 2000);
+        }
+      } catch (error) {
+        this.innerHTML = originalText;
+        this.disabled = false;
+        console.error('Error:', error);
+      }
     });
-    
-    // Load more functionality
-    const loadMoreBtn = document.getElementById('loadMoreBtn');
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', function() {
-            // Implement load more logic here
-            console.log('Loading more products...');
-        });
-    }
-});
+  });
 
-// Toast notification function
-function showToast(message, type = 'info') {
-    const toastContainer = document.querySelector('.toast-container');
-    const toastId = 'toast-' + Date.now();
-    
-    const toastHTML = `
-        <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-body d-flex align-items-center">
-                <i class="bi bi-${type === 'error' ? 'exclamation-triangle' : 'check-circle'} me-2"></i>
-                ${message}
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="toast"></button>
-            </div>
-        </div>
-    `;
-    
-    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
-    const toast = new bootstrap.Toast(document.getElementById(toastId));
-    toast.show();
-    
-    // Remove toast element after it's hidden
-    document.getElementById(toastId).addEventListener('hidden.bs.toast', function() {
-        this.remove();
+  // Favorite functionality
+  document.querySelectorAll('.product-favorite').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      const productId = this.dataset.productId;
+      const icon = this.querySelector('i');
+      
+      try {
+        const response = await fetch(`/store/favorite/${productId}`, {
+          method: 'POST'
+        });
+        
+        if (response.ok) {
+          this.classList.toggle('active');
+          icon.classList.toggle('bi-heart');
+          icon.classList.toggle('bi-heart-fill');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
     });
-}
+  });
+});
 </script>
 {% endblock %}

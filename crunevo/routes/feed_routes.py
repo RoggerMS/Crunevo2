@@ -677,6 +677,47 @@ def api_quickfeed():
     return jsonify({"html": html, "count": len(posts)})
 
 
+@feed_bp.route("/api/trending")
+@activated_required
+def api_trending():
+    """Return trending content filtered by type."""
+    filter_opt = request.args.get("filter", "semana")
+    
+    if filter_opt == "semana":
+        from datetime import datetime, timedelta
+        last_week = datetime.utcnow() - timedelta(days=7)
+        posts = (
+            Post.query.filter(Post.created_at > last_week)
+            .order_by(Post.likes.desc())
+            .limit(10)
+            .all()
+        )
+    elif filter_opt == "mes":
+        from datetime import datetime, timedelta
+        last_month = datetime.utcnow() - timedelta(days=30)
+        posts = (
+            Post.query.filter(Post.created_at > last_month)
+            .order_by(Post.likes.desc())
+            .limit(10)
+            .all()
+        )
+    elif filter_opt == "populares":
+        posts = Post.query.order_by(Post.likes.desc()).limit(10).all()
+    elif filter_opt == "comentarios":
+        posts = (
+            Post.query.join(PostComment)
+            .group_by(Post.id)
+            .order_by(func.count(PostComment.id).desc())
+            .limit(10)
+            .all()
+        )
+    else:
+        posts = Post.query.order_by(Post.created_at.desc()).limit(10).all()
+    
+    html = render_template("feed/_trending_posts.html", posts=posts)
+    return jsonify({"html": html, "count": len(posts)})
+
+
 @feed_bp.route("/search")
 @activated_required
 def search_posts():

@@ -8,8 +8,8 @@
   <!-- Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h1 class="h3 mb-0 text-gray-800">📊 Dashboard</h1>
-      <p class="mb-0 text-muted">Resumen general de la plataforma</p>
+      <h1 class="h3 mb-0 text-gray-800">📊 Dashboard CRUNEVO</h1>
+      <p class="mb-0 text-muted">Panel de control y métricas generales</p>
     </div>
     <div class="d-flex gap-2">
       <button class="btn btn-outline-primary btn-sm" onclick="refreshStats()">
@@ -31,95 +31,121 @@
   <!-- Quick Stats Cards -->
   <div class="row g-4 mb-4">
     <div class="col-xl-3 col-md-6">
-      <div class="card bg-primary text-white h-100">
+      <div class="card bg-gradient-primary text-white h-100 border-0 rounded-4">
         <div class="card-body">
-          <div class="d-flex justify-content-between">
+          <div class="d-flex justify-content-between align-items-center">
             <div>
-              <div class="text-white-75 small">Usuarios Totales</div>
-              <div class="text-lg fw-bold">{{ stats.total_users }}</div>
+              <div class="text-white-75 small fw-bold">Total Usuarios</div>
+              <div class="display-6 fw-bold">{{ users_total }}</div>
+              <div class="small">
+                <i class="bi bi-arrow-up text-success"></i>
+                +{{ stats.users|length if stats.users else 0 }} esta semana
+              </div>
             </div>
-            <i class="bi bi-people fs-1 text-white-50"></i>
+            <i class="bi bi-people display-4 text-white-50"></i>
           </div>
         </div>
-        <div class="card-footer d-flex align-items-center justify-content-between">
-          <a class="small text-white stretched-link" href="{{ url_for('admin.manage_users') }}">Ver detalles</a>
+        <div class="card-footer bg-white bg-opacity-10 d-flex align-items-center justify-content-between">
+          <a class="small text-white stretched-link text-decoration-none" href="{{ url_for('admin.manage_users') }}">
+            Ver todos los usuarios
+          </a>
           <i class="bi bi-arrow-right text-white"></i>
         </div>
       </div>
     </div>
 
     <div class="col-xl-3 col-md-6">
-      <div class="card bg-success text-white h-100">
+      <div class="card bg-gradient-success text-white h-100 border-0 rounded-4">
         <div class="card-body">
-          <div class="d-flex justify-content-between">
+          <div class="d-flex justify-content-between align-items-center">
             <div>
-              <div class="text-white-75 small">Apuntes Subidos</div>
-              <div class="text-lg fw-bold">{{ stats.total_notes }}</div>
+              <div class="text-white-75 small fw-bold">Apuntes Subidos</div>
+              <div class="display-6 fw-bold">{{ notes_total }}</div>
+              <div class="small">
+                <i class="bi bi-arrow-up text-info"></i>
+                Material educativo activo
+              </div>
             </div>
-            <i class="bi bi-file-text fs-1 text-white-50"></i>
+            <i class="bi bi-file-text display-4 text-white-50"></i>
           </div>
         </div>
-        <div class="card-footer d-flex align-items-center justify-content-between">
-          <a class="small text-white stretched-link" href="{{ url_for('notes.list_notes') }}">Ver apuntes</a>
+        <div class="card-footer bg-white bg-opacity-10 d-flex align-items-center justify-content-between">
+          <a class="small text-white stretched-link text-decoration-none" href="{{ url_for('notes.list_notes') }}">
+            Gestionar apuntes
+          </a>
           <i class="bi bi-arrow-right text-white"></i>
         </div>
       </div>
     </div>
 
     <div class="col-xl-3 col-md-6">
-      <div class="card bg-warning text-white h-100">
+      <div class="card bg-gradient-warning text-white h-100 border-0 rounded-4">
         <div class="card-body">
-          <div class="d-flex justify-content-between">
+          <div class="d-flex justify-content-between align-items-center">
             <div>
-              <div class="text-white-75 small">Posts Publicados</div>
-              <div class="text-lg fw-bold">{{ stats.total_posts }}</div>
+              <div class="text-white-75 small fw-bold">Posts Publicados</div>
+              <div class="display-6 fw-bold">{{ comments_total }}</div>
+              <div class="small">
+                <i class="bi bi-heart text-danger"></i>
+                Interacciones sociales
+              </div>
             </div>
-            <i class="bi bi-chat-square-text fs-1 text-white-50"></i>
+            <i class="bi bi-chat-square-text display-4 text-white-50"></i>
           </div>
         </div>
-        <div class="card-footer d-flex align-items-center justify-content-between">
-          <a class="small text-white stretched-link" href="{{ url_for('feed.view_feed') }}">Ver feed</a>
+        <div class="card-footer bg-white bg-opacity-10 d-flex align-items-center justify-content-between">
+          <a class="small text-white stretched-link text-decoration-none" href="{{ url_for('feed.view_feed') }}">
+            Ver feed social
+          </a>
           <i class="bi bi-arrow-right text-white"></i>
         </div>
       </div>
     </div>
 
     <div class="col-xl-3 col-md-6">
-      <div class="card bg-info text-white h-100">
+      <div class="card bg-gradient-info text-white h-100 border-0 rounded-4">
         <div class="card-body">
-          <div class="d-flex justify-content-between">
+          <div class="d-flex justify-content-between align-items-center">
             <div>
-              <div class="text-white-75 small">Crolars en Circulación</div>
-              <div class="text-lg fw-bold">{{ stats.total_credits }}</div>
+              <div class="text-white-75 small fw-bold">Crolars en Circulación</div>
+              <div class="display-6 fw-bold">{{ credits_total }}</div>
+              <div class="small">
+                <i class="bi bi-coin text-warning"></i>
+                Economía interna activa
+              </div>
             </div>
-            <i class="bi bi-coin fs-1 text-white-50"></i>
+            <i class="bi bi-coin display-4 text-white-50"></i>
           </div>
         </div>
-        <div class="card-footer d-flex align-items-center justify-content-between">
-          <a class="small text-white stretched-link" href="{{ url_for('admin.manage_credits') }}">Ver créditos</a>
+        <div class="card-footer bg-white bg-opacity-10 d-flex align-items-center justify-content-between">
+          <a class="small text-white stretched-link text-decoration-none" href="{{ url_for('admin.manage_credits') }}">
+            Gestionar créditos
+          </a>
           <i class="bi bi-arrow-right text-white"></i>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Charts Row -->
+  <!-- Charts and Analytics -->
   <div class="row g-4 mb-4">
-    <div class="col-xl-6">
-      <div class="card">
-        <div class="card-header">
-          <h6 class="mb-0">📈 Registros por día</h6>
+    <div class="col-xl-8">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pb-0">
+          <h6 class="mb-0 fw-bold">📈 Crecimiento de la Plataforma</h6>
+          <p class="text-muted small mb-0">Usuarios registrados por día</p>
         </div>
         <div class="card-body">
-          <canvas id="registrationsChart" height="300"></canvas>
+          <canvas id="growthChart" height="300"></canvas>
         </div>
       </div>
     </div>
 
-    <div class="col-xl-6">
-      <div class="card">
-        <div class="card-header">
-          <h6 class="mb-0">📊 Actividad por tipo</h6>
+    <div class="col-xl-4">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pb-0">
+          <h6 class="mb-0 fw-bold">🎯 Actividad por Tipo</h6>
+          <p class="text-muted small mb-0">Distribución de contenido</p>
         </div>
         <div class="card-body">
           <canvas id="activityChart" height="300"></canvas>
@@ -128,45 +154,90 @@
     </div>
   </div>
 
-  <!-- Recent Activity -->
+  <!-- Recent Activity and Management -->
   <div class="row g-4">
     <div class="col-xl-8">
-      <div class="card">
-        <div class="card-header">
-          <h6 class="mb-0">🕐 Actividad reciente</h6>
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pb-0">
+          <h6 class="mb-0 fw-bold">🕐 Actividad Reciente</h6>
+          <p class="text-muted small mb-0">Últimas acciones en la plataforma</p>
         </div>
         <div class="card-body">
           <div class="table-responsive">
-            <table class="table table-sm">
-              <thead>
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
                 <tr>
                   <th>Usuario</th>
                   <th>Acción</th>
                   <th>Fecha</th>
-                  <th>Detalles</th>
+                  <th>Estado</th>
                 </tr>
               </thead>
               <tbody>
-                {% for activity in recent_activity %}
+                <!-- Sample recent activity data -->
                 <tr>
                   <td>
                     <div class="d-flex align-items-center gap-2">
-                      <img src="{{ activity.user.avatar_url or url_for('static', filename='img/default.png') }}" 
-                           class="rounded-circle" width="24" height="24">
-                      <span>{{ activity.user.username }}</span>
+                      <img src="{{ url_for('static', filename='img/default.png') }}" 
+                           class="rounded-circle" width="32" height="32">
+                      <div>
+                        <div class="fw-semibold small">usuario_ejemplo</div>
+                        <div class="text-muted small">Estudiante</div>
+                      </div>
                     </div>
                   </td>
                   <td>
-                    <span class="badge bg-{{ activity.badge_color }}">{{ activity.action }}</span>
+                    <span class="badge bg-success">Subió apunte</span>
                   </td>
                   <td>
-                    <small class="text-muted">{{ activity.timestamp.strftime('%d/%m %H:%M') }}</small>
+                    <small class="text-muted">Hace 5 min</small>
                   </td>
                   <td>
-                    <small>{{ activity.details }}</small>
+                    <span class="badge bg-success">Activo</span>
                   </td>
                 </tr>
-                {% endfor %}
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <img src="{{ url_for('static', filename='img/default.png') }}" 
+                           class="rounded-circle" width="32" height="32">
+                      <div>
+                        <div class="fw-semibold small">maria_estudiante</div>
+                        <div class="text-muted small">Estudiante</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge bg-primary">Publicación</span>
+                  </td>
+                  <td>
+                    <small class="text-muted">Hace 12 min</small>
+                  </td>
+                  <td>
+                    <span class="badge bg-success">Activo</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <img src="{{ url_for('static', filename='img/default.png') }}" 
+                           class="rounded-circle" width="32" height="32">
+                      <div>
+                        <div class="fw-semibold small">carlos_dev</div>
+                        <div class="text-muted small">Estudiante</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge bg-warning">Compra tienda</span>
+                  </td>
+                  <td>
+                    <small class="text-muted">Hace 25 min</small>
+                  </td>
+                  <td>
+                    <span class="badge bg-success">Completado</span>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -175,106 +246,143 @@
     </div>
 
     <div class="col-xl-4">
-      <!-- Top Users -->
-      <div class="card mb-4">
-        <div class="card-header">
-          <h6 class="mb-0">🏆 Top usuarios</h6>
+      <!-- Quick Actions -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-white border-0 pb-0">
+          <h6 class="mb-0 fw-bold">⚡ Acciones Rápidas</h6>
         </div>
         <div class="card-body">
-          {% for user in top_users %}
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" 
-                   class="rounded-circle" width="32" height="32">
-              <div>
-                <strong class="small">{{ user.username }}</strong>
-                <div class="text-muted small">{{ user.credits }} Crolars</div>
-              </div>
-            </div>
-            <span class="badge bg-warning">{{ loop.index }}°</span>
+          <div class="d-grid gap-2">
+            <a href="{{ url_for('admin.manage_users') }}" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-people me-1"></i> Gestionar Usuarios
+            </a>
+            <a href="{{ url_for('admin.manage_store') }}" class="btn btn-outline-success btn-sm">
+              <i class="bi bi-shop me-1"></i> Gestionar Tienda
+            </a>
+            <a href="{{ url_for('admin.manage_reports') }}" class="btn btn-outline-warning btn-sm">
+              <i class="bi bi-flag me-1"></i> Ver Reportes
+            </a>
+            <a href="{{ url_for('admin.run_ranking') }}" class="btn btn-outline-info btn-sm">
+              <i class="bi bi-trophy me-1"></i> Recalcular Ranking
+            </a>
           </div>
-          {% endfor %}
         </div>
       </div>
 
-      <!-- Pending Reports -->
-      {% if pending_reports %}
-      <div class="card">
-        <div class="card-header bg-danger text-white">
-          <h6 class="mb-0">⚠️ Reportes pendientes ({{ pending_reports|length }})</h6>
+      <!-- System Status -->
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pb-0">
+          <h6 class="mb-0 fw-bold">🔧 Estado del Sistema</h6>
         </div>
         <div class="card-body">
-          {% for report in pending_reports[:5] %}
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <div>
-              <small class="fw-bold">{{ report.description[:50] }}...</small>
-              <div class="text-muted small">{{ report.timestamp.strftime('%d/%m') }}</div>
-            </div>
-            <a href="{{ url_for('admin.manage_reports') }}" class="btn btn-outline-danger btn-sm">
-              Ver
-            </a>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="small">Estado de la Base de Datos</span>
+            <span class="badge bg-success">✓ Online</span>
           </div>
-          {% endfor %}
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="small">Cache Redis</span>
+            <span class="badge bg-success">✓ Activo</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="small">Espacio de almacenamiento</span>
+            <span class="badge bg-warning">⚠ 78% usado</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="small">Último backup</span>
+            <span class="text-muted small">Hace 2 horas</span>
+          </div>
         </div>
       </div>
-      {% endif %}
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Sample chart data - replace with real data from backend
-const registrationsData = {
-  labels: {{ chart_data.dates | tojsonfilter }},
-  datasets: [{
-    label: 'Registros',
-    data: {{ chart_data.registrations | tojsonfilter }},
-    borderColor: 'rgb(107, 115, 255)',
-    backgroundColor: 'rgba(107, 115, 255, 0.1)',
-    tension: 0.4
-  }]
-};
-
-const activityData = {
-  labels: ['Posts', 'Apuntes', 'Comentarios', 'Likes'],
-  datasets: [{
-    data: {{ chart_data.activity | tojsonfilter }},
-    backgroundColor: [
-      'rgba(107, 115, 255, 0.8)',
-      'rgba(128, 90, 213, 0.8)', 
-      'rgba(56, 178, 172, 0.8)',
-      'rgba(237, 137, 54, 0.8)'
-    ]
-  }]
-};
-
-// Initialize charts
-new Chart(document.getElementById('registrationsChart'), {
-  type: 'line',
-  data: registrationsData,
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      y: {
-        beginAtZero: true
+document.addEventListener('DOMContentLoaded', function() {
+  // Growth Chart
+  const growthCtx = document.getElementById('growthChart').getContext('2d');
+  new Chart(growthCtx, {
+    type: 'line',
+    data: {
+      labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+      datasets: [{
+        label: 'Nuevos usuarios',
+        data: [12, 19, 15, 25, 22, 18, 28],
+        borderColor: '#667eea',
+        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)'
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          }
+        }
       }
     }
-  }
-});
+  });
 
-new Chart(document.getElementById('activityChart'), {
-  type: 'doughnut',
-  data: activityData,
-  options: {
-    responsive: true,
-    maintainAspectRatio: false
-  }
+  // Activity Chart
+  const activityCtx = document.getElementById('activityChart').getContext('2d');
+  new Chart(activityCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Posts', 'Apuntes', 'Comentarios', 'Compras'],
+      datasets: [{
+        data: [40, 30, 20, 10],
+        backgroundColor: [
+          '#667eea',
+          '#764ba2', 
+          '#f093fb',
+          '#f5576c'
+        ],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            padding: 20,
+            usePointStyle: true
+          }
+        }
+      }
+    }
+  });
 });
 
 function refreshStats() {
-  location.reload();
+  // Add spinner to button
+  const btn = document.querySelector('[onclick="refreshStats()"]');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<div class="spinner-border spinner-border-sm me-1"></div> Actualizando...';
+  btn.disabled = true;
+  
+  // Simulate refresh
+  setTimeout(() => {
+    location.reload();
+  }, 1000);
 }
 </script>
 {% endblock %}

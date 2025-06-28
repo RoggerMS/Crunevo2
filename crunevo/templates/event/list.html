@@ -1,134 +1,499 @@
 
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Eventos Especiales - Crunevo{% endblock %}
+{% block title %}Eventos - Crunevo{% endblock %}
+
+{% block head_extra %}
+<style>
+.events-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 24px;
+  padding: 3rem 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.events-hero h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.event-tabs {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  padding: 0.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 0.25rem;
+}
+
+[data-bs-theme="dark"] .event-tabs {
+  background: rgba(30, 30, 46, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.event-tabs .nav-link {
+  border-radius: 16px;
+  font-weight: 600;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.event-tabs .nav-link.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.event-card {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+[data-bs-theme="dark"] .event-card {
+  background: rgba(30, 30, 46, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+}
+
+.event-image {
+  height: 200px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.event-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.event-date-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 0.75rem;
+  text-align: center;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.event-date-badge .day {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.event-date-badge .month {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.event-featured-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #1a202c;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.event-content {
+  padding: 2rem;
+}
+
+.event-category {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.event-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #1a202c;
+}
+
+[data-bs-theme="dark"] .event-title {
+  color: #f1f5f9;
+}
+
+.event-description {
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.event-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.event-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-register {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  padding: 0.75rem 2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-register:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  color: white;
+}
+
+.btn-register:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.participant-count {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6c757d;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .event-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .event-content {
+    padding: 1.5rem;
+  }
+  
+  .event-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-12">
-      <!-- Header -->
-      <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold gradient-text">🎫 Eventos Especiales</h1>
-        <p class="lead text-muted">Próximamente en Crunevo</p>
+<div class="container-fluid px-3">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <!-- Hero Section -->
+      <div class="events-hero">
+        <h1>📅 Eventos Educativos</h1>
+        <p>Talleres, webinars y actividades especiales para potenciar tu aprendizaje</p>
+      </div>
+
+      <!-- Event Tabs -->
+      <div class="event-tabs">
+        <a class="nav-link active" href="#upcoming" data-tab="upcoming">
+          <i class="bi bi-calendar-plus me-2"></i>Próximos
+        </a>
+        <a class="nav-link" href="#past" data-tab="past">
+          <i class="bi bi-calendar-check me-2"></i>Pasados
+        </a>
+        <a class="nav-link" href="#my-events" data-tab="my-events">
+          <i class="bi bi-person-check me-2"></i>Mis Eventos
+        </a>
       </div>
 
       <!-- Upcoming Events -->
-      {% if upcoming_events %}
-      <div class="mb-5">
-        <h2 class="h3 fw-bold mb-4">📅 Próximos eventos</h2>
-        <div class="row g-4">
+      <div id="upcoming-events" class="tab-content">
+        {% if upcoming_events %}
+        <div class="event-grid">
           {% for event in upcoming_events %}
-          <div class="col-md-6 col-lg-4">
-            <div class="card h-100 border-0 shadow-sm hover-lift">
+          <div class="event-card">
+            <div class="event-image">
               {% if event.image_url %}
-              <img src="{{ event.image_url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ event.title }}">
+              <img src="{{ event.image_url }}" alt="{{ event.title }}">
+              {% else %}
+              <div class="d-flex align-items-center justify-content-center h-100">
+                <i class="bi bi-calendar-event text-white" style="font-size: 4rem;"></i>
+              </div>
               {% endif %}
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <span class="badge bg-primary">{{ event.formatted_date }}</span>
-                  {% if event.is_featured %}
-                  <span class="badge bg-warning">⭐ Destacado</span>
-                  {% endif %}
-                </div>
-                <h5 class="card-title fw-bold">{{ event.title }}</h5>
-                <p class="card-text text-muted">{{ event.description }}</p>
+
+              <div class="event-date-badge">
+                <div class="day">{{ event.event_date.strftime('%d') }}</div>
+                <div class="month">{{ event.event_date.strftime('%b') }}</div>
+              </div>
+
+              {% if event.is_featured %}
+              <div class="event-featured-badge">Destacado</div>
+              {% endif %}
+            </div>
+
+            <div class="event-content">
+              {% if event.category %}
+              <span class="event-category">{{ event.category }}</span>
+              {% endif %}
+
+              <h3 class="event-title">{{ event.title }}</h3>
+
+              {% if event.description %}
+              <p class="event-description">{{ event.description }}</p>
+              {% endif %}
+
+              <div class="event-meta">
+                <span>
+                  <i class="bi bi-clock me-1"></i>
+                  {{ event.event_date.strftime('%H:%M') }}
+                </span>
+                <span>
+                  <i class="bi bi-calendar me-1"></i>
+                  {{ event.formatted_date }}
+                </span>
                 {% if event.rewards %}
-                <div class="mb-3">
-                  <small class="text-success">
-                    <i class="bi bi-gift"></i> {{ event.rewards }}
-                  </small>
-                </div>
+                <span>
+                  <i class="bi bi-gift me-1"></i>
+                  Con recompensas
+                </span>
                 {% endif %}
               </div>
-              <div class="card-footer bg-transparent border-0">
-                <a href="{{ url_for('event.view_event', event_id=event.id) }}" class="btn btn-outline-primary btn-sm w-100">
-                  Ver más detalles
+
+              <div class="event-actions">
+                {% if current_user.is_authenticated %}
+                  {% if event.id in user_participations %}
+                  <button class="btn-register" disabled>
+                    <i class="bi bi-check-circle me-1"></i>Inscrito
+                  </button>
+                  {% else %}
+                  <button class="btn-register" onclick="joinEvent({{ event.id }})">
+                    <i class="bi bi-calendar-plus me-1"></i>Inscribirse
+                  </button>
+                  {% endif %}
+                {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn-register">
+                  <i class="bi bi-person me-1"></i>Inicia sesión para inscribirte
                 </a>
+                {% endif %}
+
+                <div class="participant-count">
+                  <i class="bi bi-people"></i>
+                  <span id="participants-{{ event.id }}">
+                    {{ event.participant_count or 0 }} participantes
+                  </span>
+                </div>
               </div>
             </div>
           </div>
           {% endfor %}
         </div>
-      </div>
-      {% endif %}
-
-      <!-- Sample Event -->
-      <div class="mb-5">
-        <h2 class="h3 fw-bold mb-4">🎯 Evento destacado</h2>
-        <div class="card border-0 shadow-lg overflow-hidden">
-          <div class="row g-0">
-            <div class="col-md-4">
-              <div class="bg-gradient-primary h-100 d-flex align-items-center justify-content-center text-white">
-                <div class="text-center">
-                  <i class="bi bi-calendar-event display-1"></i>
-                  <h3 class="mt-2">15 JUL</h3>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-8">
-              <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                  <h3 class="card-title fw-bold">📚 Día del Apunte</h3>
-                  <span class="badge bg-warning">⭐ Evento especial</span>
-                </div>
-                <p class="card-text">Comparte tus mejores apuntes y gana Crolars extra. Durante todo el día, cada apunte subido te otorgará el doble de recompensas.</p>
-                <div class="row g-3 mt-3">
-                  <div class="col-sm-6">
-                    <div class="d-flex align-items-center">
-                      <i class="bi bi-coin text-warning me-2"></i>
-                      <span class="small">Doble Crolars por apunte</span>
-                    </div>
-                  </div>
-                  <div class="col-sm-6">
-                    <div class="d-flex align-items-center">
-                      <i class="bi bi-trophy text-warning me-2"></i>
-                      <span class="small">Logros especiales</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="mt-4">
-                  <button class="btn btn-primary" disabled>
-                    <i class="bi bi-calendar-plus"></i> Próximamente
-                  </button>
-                </div>
-              </div>
+        {% else %}
+        <div class="text-center py-5">
+          <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body py-5">
+              <i class="bi bi-calendar-x fs-1 text-muted mb-3 d-block"></i>
+              <h4 class="text-muted mb-3">No hay eventos próximos</h4>
+              <p class="text-muted">¡Mantente atento! Pronto tendremos nuevos eventos educativos.</p>
             </div>
           </div>
         </div>
+        {% endif %}
       </div>
 
       <!-- Past Events -->
-      {% if past_events %}
-      <div class="mb-5">
-        <h2 class="h3 fw-bold mb-4">📋 Eventos pasados</h2>
-        <div class="row g-3">
+      <div id="past-events" class="tab-content" style="display: none;">
+        {% if past_events %}
+        <div class="event-grid">
           {% for event in past_events %}
-          <div class="col-md-6">
-            <div class="card border-0 shadow-sm">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <h6 class="card-title mb-0">{{ event.title }}</h6>
-                  <small class="text-muted">{{ event.formatted_date }}</small>
-                </div>
-                <p class="card-text small text-muted">{{ event.description }}</p>
+          <div class="event-card opacity-75">
+            <div class="event-image">
+              {% if event.image_url %}
+              <img src="{{ event.image_url }}" alt="{{ event.title }}" style="filter: grayscale(50%);">
+              {% else %}
+              <div class="d-flex align-items-center justify-content-center h-100" style="filter: grayscale(50%);">
+                <i class="bi bi-calendar-check text-white" style="font-size: 4rem;"></i>
+              </div>
+              {% endif %}
+
+              <div class="event-date-badge">
+                <div class="day">{{ event.event_date.strftime('%d') }}</div>
+                <div class="month">{{ event.event_date.strftime('%b') }}</div>
+              </div>
+            </div>
+
+            <div class="event-content">
+              {% if event.category %}
+              <span class="event-category">{{ event.category }}</span>
+              {% endif %}
+
+              <h3 class="event-title">{{ event.title }}</h3>
+
+              {% if event.description %}
+              <p class="event-description">{{ event.description }}</p>
+              {% endif %}
+
+              <div class="event-meta">
+                <span>
+                  <i class="bi bi-check-circle text-success me-1"></i>
+                  Evento finalizado
+                </span>
+              </div>
+
+              <div class="event-actions">
+                <button class="btn btn-secondary" disabled>
+                  <i class="bi bi-clock-history me-1"></i>Finalizado
+                </button>
               </div>
             </div>
           </div>
           {% endfor %}
         </div>
+        {% else %}
+        <div class="text-center py-5">
+          <i class="bi bi-calendar fs-1 text-muted mb-3 d-block"></i>
+          <h4 class="text-muted">No hay eventos pasados</h4>
+        </div>
+        {% endif %}
       </div>
-      {% endif %}
-
-      <!-- Empty state -->
-      {% if not upcoming_events and not past_events %}
-      <div class="text-center py-5">
-        <i class="bi bi-calendar-event display-1 text-muted"></i>
-        <h3 class="mt-3 text-muted">Próximamente eventos especiales</h3>
-        <p class="text-muted">Mantente atento a nuestros anuncios para no perderte ningún evento</p>
-      </div>
-      {% endif %}
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Tab functionality
+  document.querySelectorAll('[data-tab]').forEach(tab => {
+    tab.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Update active tab
+      document.querySelectorAll('[data-tab]').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Show content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      
+      const targetId = this.dataset.tab === 'upcoming' ? 'upcoming-events' : 
+                       this.dataset.tab === 'past' ? 'past-events' : 'my-events';
+      document.getElementById(targetId).style.display = 'block';
+    });
+  });
+});
+
+async function joinEvent(eventId) {
+  const btn = document.querySelector(`button[onclick="joinEvent(${eventId})"]`);
+  const originalText = btn.innerHTML;
+  
+  btn.innerHTML = '<div class="spinner-border spinner-border-sm me-1"></div>Inscribiendo...';
+  btn.disabled = true;
+  
+  try {
+    const response = await fetch(`/evento/${eventId}/participar`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.querySelector('[name="csrf_token"]')?.value
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      btn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Inscrito';
+      btn.classList.add('btn-success');
+      
+      // Update participant count
+      const countEl = document.getElementById(`participants-${eventId}`);
+      if (countEl) {
+        const currentCount = parseInt(countEl.textContent.split(' ')[0]) || 0;
+        countEl.textContent = `${currentCount + 1} participantes`;
+      }
+      
+      // Show success message
+      showToast('¡Te has inscrito al evento exitosamente! 🎉', 'success');
+    } else {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      showToast(data.error || 'Error al inscribirse', 'error');
+    }
+  } catch (error) {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+    showToast('Error de conexión', 'error');
+  }
+}
+
+function showToast(message, type = 'info') {
+  // Create toast notification
+  const toast = document.createElement('div');
+  toast.className = `toast align-items-center text-bg-${type === 'error' ? 'danger' : type} border-0`;
+  toast.setAttribute('role', 'alert');
+  toast.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">${message}</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  `;
+  
+  // Add to page
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+    document.body.appendChild(container);
+  }
+  
+  container.appendChild(toast);
+  
+  // Show toast
+  const bsToast = new bootstrap.Toast(toast);
+  bsToast.show();
+  
+  // Remove after hide
+  toast.addEventListener('hidden.bs.toast', () => {
+    toast.remove();
+  });
+}
+</script>
 {% endblock %}
