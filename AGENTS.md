@@ -382,3 +382,5 @@
 
 - Replaced `checkfirst` with `if_not_exists` in create_table ops to fix deployment error (hotfix create-table-checkfirst).
 - Fixed missing `render_template` import in `__init__.py` causing 500 errors (hotfix render-template-import).
+- Added `if_not_exists=True` and `if_exists=True` to `add_courses_system` migration to avoid duplicate table errors (hotfix courses-migration-fix).
+- Fixed navbar store link to use 'store.store_index' and avoid BuildError (hotfix navbar-store-link)
