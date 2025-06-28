@@ -1,48 +1,221 @@
-<div class="d-md-none fixed-bottom bg-white bg-body border-top shadow-sm py-2" style="z-index: 1050;">
-  <div class="bottom-nav-wrapper d-flex justify-content-around align-items-center" style="min-height: 60px;">
-    <a href="{{ url_for('feed.feed_home') }}" role="link" tabindex="0" aria-label="Inicio" title="Inicio" class="text-center d-flex flex-column align-items-center justify-content-center {% if request.path.startswith('/feed') %}bottom-nav-active{% else %}text-primary{% endif %}" style="min-height: 48px; min-width: 48px;">
-      <i class="bi bi-house fs-5 bottom-nav-icon"></i>
-    </a>
-    <a href="{{ url_for('notes.list_notes') }}" role="link" tabindex="0" aria-label="Apuntes" title="Apuntes" class="text-center {% if request.path.startswith('/notes') %}bottom-nav-active{% else %}text-primary{% endif %}">
-      <i class="bi bi-journal-text fs-4 bottom-nav-icon"></i>
-    </a>
-    <div class="nav-item dropdown">
-      <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
-        <i class="bi bi-grid-3x3-gap fs-4 bottom-nav-icon"></i>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li><a class="dropdown-item" href="{{ url_for('club.list_clubs') }}">
-          <i class="bi bi-people me-2"></i>Clubes
-        </a></li>
-        <li><a class="dropdown-item" href="{{ url_for('forum.list_questions') }}">
-          <i class="bi bi-chat-dots me-2"></i>Foro
-        </a></li>
-        <li><a class="dropdown-item" href="{{ url_for('event.list_events') }}">
-          <i class="bi bi-calendar-event me-2"></i>Eventos
-        </a></li>
-      </ul>
+
+<div class="mobile-bottom-nav d-lg-none">
+  <nav class="navbar fixed-bottom bg-white border-top shadow-lg">
+    <div class="container-fluid px-3">
+      <div class="d-flex justify-content-around align-items-center w-100">
+        <!-- Home -->
+        <a href="{{ url_for('feed.view_feed') }}" 
+           class="nav-item {{ 'active' if request.endpoint == 'feed.view_feed' }}">
+          <div class="nav-icon">
+            <i class="bi bi-house{{ '-fill' if request.endpoint == 'feed.view_feed' }}"></i>
+          </div>
+          <span class="nav-label">Inicio</span>
+        </a>
+
+        <!-- Search -->
+        <a href="{{ url_for('search.index') }}" 
+           class="nav-item {{ 'active' if request.endpoint == 'search.index' }}">
+          <div class="nav-icon">
+            <i class="bi bi-search"></i>
+          </div>
+          <span class="nav-label">Buscar</span>
+        </a>
+
+        <!-- Notes -->
+        <a href="{{ url_for('notes.list') }}" 
+           class="nav-item {{ 'active' if request.endpoint == 'notes.list' }}">
+          <div class="nav-icon">
+            <i class="bi bi-journal{{ '-text-fill' if request.endpoint == 'notes.list' }}"></i>
+          </div>
+          <span class="nav-label">Apuntes</span>
+        </a>
+
+        <!-- Notifications -->
+        <a href="{{ url_for('notifications.lista') }}" 
+           class="nav-item position-relative {{ 'active' if request.endpoint == 'notifications.lista' }}">
+          <div class="nav-icon">
+            <i class="bi bi-bell{{ '-fill' if request.endpoint == 'notifications.lista' }}"></i>
+            {% if current_user.is_authenticated %}
+            <span id="mobileNotificationBadge" 
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge">
+              {{ current_user.unread_notifications_count or '' }}
+            </span>
+            {% endif %}
+          </div>
+          <span class="nav-label">Alertas</span>
+        </a>
+
+        <!-- Profile -->
+        <a href="{{ url_for('auth.profile') }}" 
+           class="nav-item {{ 'active' if request.endpoint == 'auth.profile' }}">
+          <div class="nav-icon">
+            {% if current_user.is_authenticated %}
+            <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                 class="rounded-circle border" 
+                 width="24" 
+                 height="24" 
+                 alt="Perfil">
+            {% else %}
+            <i class="bi bi-person-circle"></i>
+            {% endif %}
+          </div>
+          <span class="nav-label">Perfil</span>
+        </a>
+      </div>
     </div>
-    <a href="{{ url_for('store.store_index') }}" role="link" tabindex="0" aria-label="Tienda" title="Tienda" class="text-center {% if request.path.startswith('/store') %}bottom-nav-active{% else %}text-primary{% endif %}">
-      <i class="bi bi-bag fs-4 bottom-nav-icon"></i>
-    </a>
-    <a href="{{ url_for('ranking.show_ranking') }}" role="link" tabindex="0" aria-label="Ranking" title="Ranking" class="text-center {% if request.path.startswith('/ranking') %}bottom-nav-active{% else %}text-primary{% endif %}">
-      <i class="bi bi-trophy fs-4 bottom-nav-icon"></i>
-    </a>
-    <a href="{{ url_for('main.crolars') }}" role="link" tabindex="0" aria-label="Crolars" title="Crolars" class="text-center {% if request.path.startswith('/crolars') %}bottom-nav-active{% else %}text-primary{% endif %}">
-      <i class="bi bi-coin fs-4 bottom-nav-icon"></i>
-      {% if current_user.is_authenticated %}<span class="d-block small">{{ current_user.credits }}</span>{% endif %}
-    </a>
-    <a href="{{ url_for('search.search_page') }}" role="link" tabindex="0" aria-label="Buscar" title="Buscar" class="text-center {% if request.path.startswith('/search') %}bottom-nav-active{% else %}text-primary{% endif %}">
-        <i class="bi bi-search fs-4 bottom-nav-icon"></i>
-    </a>
-    <a href="{{ url_for('chat.chat_index') }}" role="link" tabindex="0" aria-label="Chat" title="Chat" class="text-center {% if request.path.startswith('/chat') %}bottom-nav-active{% else %}text-primary{% endif %}">
-      <i class="bi bi-chat fs-4 bottom-nav-icon"></i>
-    </a>
-    <a href="{{ url_for('saved.list_saved') }}" role="link" tabindex="0" aria-label="Guardados" title="Guardados" class="text-center {% if request.path.startswith('/saved') %}bottom-nav-active{% else %}text-primary{% endif %}">
-                    <i class="bi bi-bookmark fs-4 bottom-nav-icon"></i>
-                </a>
-    <a href="{{ url_for('auth.perfil') }}" role="link" tabindex="0" aria-label="Perfil" title="Perfil" class="text-center {% if request.path.startswith('/perfil') %}bottom-nav-active{% else %}text-primary{% endif %}">
-      <i class="bi bi-person-circle fs-4 bottom-nav-icon"></i>
-    </a>
-  </div>
+  </nav>
 </div>
+
+<style>
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.mobile-bottom-nav .navbar {
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(102, 126, 234, 0.1);
+  padding: 8px 0;
+  min-height: 60px;
+}
+
+[data-bs-theme="dark"] .mobile-bottom-nav .navbar {
+  background: rgba(31, 41, 55, 0.98) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-bottom-nav .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  padding: 8px 12px;
+  border-radius: 12px;
+  min-width: 60px;
+}
+
+[data-bs-theme="dark"] .mobile-bottom-nav .nav-item {
+  color: #9ca3af;
+}
+
+.mobile-bottom-nav .nav-item:hover,
+.mobile-bottom-nav .nav-item.active {
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+[data-bs-theme="dark"] .mobile-bottom-nav .nav-item:hover,
+[data-bs-theme="dark"] .mobile-bottom-nav .nav-item.active {
+  color: #7c95ff;
+  background: rgba(102, 126, 234, 0.15);
+}
+
+.mobile-bottom-nav .nav-icon {
+  position: relative;
+  font-size: 1.25rem;
+  margin-bottom: 2px;
+}
+
+.mobile-bottom-nav .nav-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.mobile-bottom-nav .notification-badge {
+  font-size: 0.6rem;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 2s infinite;
+}
+
+.mobile-bottom-nav .notification-badge:empty {
+  display: none;
+}
+
+/* Add bottom padding to body to account for fixed navbar */
+body {
+  padding-bottom: 80px;
+}
+
+@media (min-width: 992px) {
+  body {
+    padding-bottom: 0;
+  }
+}
+
+/* Safe area adjustments for iPhone X+ */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  body {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+  
+  @media (min-width: 992px) {
+    body {
+      padding-bottom: 0;
+    }
+  }
+}
+
+/* Pulse animation for notification badge */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Touch feedback */
+.mobile-bottom-nav .nav-item:active {
+  transform: translateY(0) scale(0.95);
+}
+
+/* Smooth transitions */
+.mobile-bottom-nav * {
+  transition: all 0.2s ease;
+}
+</style>
+
+<script>
+// Update notification badge via AJAX
+function updateMobileNotificationBadge() {
+  fetch('/notifications/api/count')
+    .then(response => response.json())
+    .then(data => {
+      const badge = document.getElementById('mobileNotificationBadge');
+      if (badge) {
+        badge.textContent = data.count > 0 ? data.count : '';
+        badge.style.display = data.count > 0 ? 'flex' : 'none';
+      }
+    })
+    .catch(error => console.error('Error updating notification badge:', error));
+}
+
+// Update every 30 seconds
+if (document.getElementById('mobileNotificationBadge')) {
+  setInterval(updateMobileNotificationBadge, 30000);
+}
+</script>

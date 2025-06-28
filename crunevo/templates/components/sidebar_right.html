@@ -1,5 +1,215 @@
-<div class="card shadow-sm border-0 mb-4">
-  <div class="card-body">
-    <p class="text-muted mb-0">Pronto contenido educativo recomendado.</p>
+
+<div class="sidebar-right">
+  <!-- Trending Topics -->
+  <div class="card mb-4 border-0 shadow-sm rounded-4">
+    <div class="card-header bg-white border-0 pb-0">
+      <h6 class="fw-bold text-dark mb-0">🔥 Tendencias</h6>
+    </div>
+    <div class="card-body pt-3">
+      <div class="trending-topics">
+        <div class="trending-item mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="fw-semibold small">#CalculoII</div>
+              <div class="text-muted" style="font-size: 0.75rem;">42 publicaciones</div>
+            </div>
+            <div class="trending-chart">📈</div>
+          </div>
+        </div>
+        
+        <div class="trending-item mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="fw-semibold small">#ExamenFinal</div>
+              <div class="text-muted" style="font-size: 0.75rem;">38 publicaciones</div>
+            </div>
+            <div class="trending-chart">📈</div>
+          </div>
+        </div>
+        
+        <div class="trending-item mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="fw-semibold small">#EstudioGrupal</div>
+              <div class="text-muted" style="font-size: 0.75rem;">25 publicaciones</div>
+            </div>
+            <div class="trending-chart">📈</div>
+          </div>
+        </div>
+        
+        <a href="#" class="btn btn-outline-primary btn-sm rounded-pill w-100">Ver más tendencias</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Contributors -->
+  <div class="card mb-4 border-0 shadow-sm rounded-4">
+    <div class="card-header bg-white border-0 pb-0">
+      <h6 class="fw-bold text-dark mb-0">⭐ Contribuidores destacados</h6>
+    </div>
+    <div class="card-body pt-3">
+      {% for i in range(1, 4) %}
+      <div class="contributor-item d-flex align-items-center gap-3 mb-3">
+        <div class="position-relative">
+          <img src="{{ url_for('static', filename='img/default.png') }}" 
+               class="rounded-circle" 
+               width="40" 
+               height="40">
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">{{ i }}</span>
+        </div>
+        <div class="flex-grow-1">
+          <div class="fw-semibold small">usuario_{{ i }}</div>
+          <div class="text-muted" style="font-size: 0.75rem;">{{ 150 - (i * 20) }} puntos esta semana</div>
+        </div>
+      </div>
+      {% endfor %}
+      
+      <a href="{{ url_for('ranking.index') }}" class="btn btn-outline-primary btn-sm rounded-pill w-100">Ver ranking completo</a>
+    </div>
+  </div>
+
+  <!-- Recent Achievements -->
+  <div class="card mb-4 border-0 shadow-sm rounded-4">
+    <div class="card-header bg-white border-0 pb-0">
+      <h6 class="fw-bold text-dark mb-0">🏆 Logros recientes</h6>
+    </div>
+    <div class="card-body pt-3">
+      <div class="achievement-item d-flex align-items-center gap-3 mb-3">
+        <div class="achievement-icon bg-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+          🎓
+        </div>
+        <div class="flex-grow-1">
+          <div class="fw-semibold small">Primer Apunte</div>
+          <div class="text-muted" style="font-size: 0.75rem;">usuario123 • hace 2h</div>
+        </div>
+      </div>
+      
+      <div class="achievement-item d-flex align-items-center gap-3 mb-3">
+        <div class="achievement-icon bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+          💬
+        </div>
+        <div class="flex-grow-1">
+          <div class="fw-semibold small">Comentarista Activo</div>
+          <div class="text-muted" style="font-size: 0.75rem;">maria_estudios • hace 4h</div>
+        </div>
+      </div>
+      
+      <div class="achievement-item d-flex align-items-center gap-3 mb-3">
+        <div class="achievement-icon bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+          🔥
+        </div>
+        <div class="flex-grow-1">
+          <div class="fw-semibold small">Racha de 7 días</div>
+          <div class="text-muted" style="font-size: 0.75rem;">carlos_ing • hace 6h</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Study Tips -->
+  <div class="card mb-4 border-0 shadow-sm rounded-4">
+    <div class="card-header bg-white border-0 pb-0">
+      <h6 class="fw-bold text-dark mb-0">💡 Tip de estudio</h6>
+    </div>
+    <div class="card-body pt-3">
+      <div class="tip-content">
+        <div class="tip-icon mb-2">📚</div>
+        <div class="small fw-semibold mb-2">Técnica Pomodoro</div>
+        <div class="small text-muted mb-3">Estudia 25 minutos, descansa 5. Después de 4 ciclos, toma un descanso de 15-30 minutos.</div>
+        <a href="#" class="btn btn-outline-primary btn-sm rounded-pill">Más tips</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-header bg-white border-0 pb-0">
+      <h6 class="fw-bold text-dark mb-0">🔗 Enlaces útiles</h6>
+    </div>
+    <div class="card-body pt-3">
+      <div class="d-grid gap-2">
+        <a href="{{ url_for('static_routes.terms') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+          <i class="bi bi-file-text"></i> Términos de uso
+        </a>
+        <a href="{{ url_for('static_routes.privacy') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+          <i class="bi bi-shield-check"></i> Privacidad
+        </a>
+        <a href="{{ url_for('about.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+          <i class="bi bi-info-circle"></i> Acerca de CRUNEVO
+        </a>
+        <a href="mailto:soporte@crunevo.com" class="btn btn-outline-secondary btn-sm rounded-pill">
+          <i class="bi bi-envelope"></i> Soporte
+        </a>
+      </div>
+    </div>
   </div>
 </div>
+
+<style>
+.sidebar-right {
+  padding: 1rem;
+  height: calc(100vh - 80px);
+  overflow-y: auto;
+  position: sticky;
+  top: 80px;
+}
+
+.sidebar-right .card {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+}
+
+[data-bs-theme="dark"] .sidebar-right .card {
+  background: rgba(31, 41, 55, 0.98);
+  color: #f3f4f6;
+}
+
+[data-bs-theme="dark"] .sidebar-right .card-header {
+  background: transparent !important;
+}
+
+.trending-item,
+.contributor-item,
+.achievement-item {
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.trending-item:hover,
+.contributor-item:hover,
+.achievement-item:hover {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+[data-bs-theme="dark"] .trending-item:hover,
+[data-bs-theme="dark"] .contributor-item:hover,
+[data-bs-theme="dark"] .achievement-item:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.tip-content {
+  text-align: center;
+}
+
+.tip-icon {
+  font-size: 2rem;
+}
+
+.sidebar-right::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-right::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-right::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.3);
+  border-radius: 2px;
+}
+
+.sidebar-right::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.5);
+}
+</style>

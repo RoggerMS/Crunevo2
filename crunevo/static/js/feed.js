@@ -1,313 +1,714 @@
-let page = 1;
-const feed = document.getElementById('feed');
-const feedCategory = feed ? feed.dataset.categoria : '';
-const sentinel = document.getElementById('feedEnd');
 
-async function loadFeed() {
-  const resp = await fetch(`/api/feed?page=${page}&categoria=${feedCategory}`);
-  const items = await resp.json();
-  items.forEach(item => {
-    let html = '';
-    if (item.item_type === 'apunte') {
-      html = renderApunteCard(item);
-    } else if (item.item_type === 'post') {
-      html = renderPostCard(item);
-    } else if (item.item_type === 'logro') {
-      html = renderBadgeCard(item);
-    } else if (item.item_type === 'movimiento') {
-      html = renderMovimientoCard(item);
-    } else if (item.item_type === 'evento') {
-      html = renderEventoCard(item);
-    } else if (item.item_type === 'mensaje') {
-      html = renderMensajeCard(item);
-    }
-    if (html) {
-      feed.insertAdjacentHTML('beforeend', html);
-    }
-  });
-  if (items.length < 10 && observer) {
-    observer.disconnect();
-    sentinel.remove();
+// Enhanced Feed JavaScript with modern interactions
+class FeedManager {
+  constructor() {
+    this.currentPage = 1;
+    this.isLoading = false;
+    this.currentFilter = 'recientes';
+    this.posts = new Map();
+    this.init();
   }
-  page++;
-}
 
-function renderApunteCard(data) {
-  const highlight = data.is_highlight ? ' feed-card--highlight' : '';
-  return `<div class="feed-card${highlight}">
-    <h5>${data.title}</h5>
-    <p>${data.summary || ''}</p>
-    <small class="text-muted">@${data.author_username} · ${data.downloads} descargas</small>
-    <div class="mt-2"><a class="btn btn-sm btn-primary" href="/notes/${data.ref_id}">Ver apunte</a></div>
-  </div>`;
-}
+  init() {
+    this.initFeedForm();
+    this.initImagePreview();
+    this.initFeedFilters();
+    this.initInfiniteScroll();
+    this.initPostInteractions();
+    this.initStreakClaim();
+    this.initModals();
+    this.initTooltips();
+  }
 
-function renderPostCard(data) {
-  const highlight = data.is_highlight ? ' feed-card--highlight' : '';
-  let fileHtml = '';
-  if (data.file_url) {
-    if (data.file_url.endsWith('.pdf')) {
-      fileHtml = `<a href="${data.file_url}" target="_blank" class="btn btn-sm btn-outline-primary mb-2">Ver PDF</a>`;
-    } else {
-      fileHtml = `<img src="${data.file_url}" class="img-fluid rounded mb-2">`;
+  initFeedForm() {
+    const form = document.getElementById('feedForm');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await this.submitPost(form);
+    });
+
+    // Auto-resize textarea
+    const textarea = form.querySelector('textarea[name="content"]');
+    if (textarea) {
+      textarea.addEventListener('input', this.autoResizeTextarea);
     }
   }
-  return `<div class="feed-card${highlight}">
-    <p>${data.content}</p>
-    ${fileHtml}
-    <small class="text-muted">@${data.author_username}</small>
-    <div class="mt-2"><a class="btn btn-sm btn-secondary" href="#comentarios">Comentar</a></div>
-  </div>`;
-}
 
-function renderBadgeCard(data) {
-  const highlight = data.is_highlight ? ' feed-card--highlight' : '';
-  return `<div class="feed-card${highlight}">
-    <span>🏅 ${data.badge_code} para ${data.username}</span>
-  </div>`;
-}
+  async submitPost(form) {
+    const submitBtn = form.querySelector('.feed-submit-btn');
+    const submitText = submitBtn.querySelector('.submit-text');
+    const spinner = submitBtn.querySelector('.spinner-border');
 
-function renderMovimientoCard(data) {
-  const highlight = data.is_highlight ? ' feed-card--highlight' : '';
-  return `<div class="feed-card${highlight}">
-    <span>💰 ${data.sender} → ${data.receiver}: ${data.amount}</span>
-    <div class="mt-2"><a class="btn btn-sm btn-outline-primary" href="/">Detalle</a></div>
-  </div>`;
-}
+    try {
+      // Show loading state
+      this.setButtonLoading(submitBtn, true);
 
-function renderEventoCard(data) {
-  const highlight = data.is_highlight ? ' feed-card--highlight' : '';
-  return `<div class="feed-card${highlight}">📅 ${data.title || 'Evento'}</div>`;
-}
-
-function renderMensajeCard(data) {
-  const highlight = data.is_highlight ? ' feed-card--highlight' : '';
-  return `<div class="feed-card${highlight}">💬 ${data.text || ''}</div>`;
-}
-
-function timeAgo(ts) {
-  const d = new Date(ts);
-  const diff = Math.floor((Date.now() - d.getTime()) / 1000);
-  if (diff < 60) return 'hace unos segundos';
-  const m = Math.floor(diff / 60);
-  if (m < 60) return `hace ${m} min`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `hace ${h} h`;
-  const dday = Math.floor(h / 24);
-  if (dday === 1) return 'ayer';
-  return `hace ${dday} d`;
-}
-
-function renderComment(data) {
-  const div = document.createElement('div');
-  div.className = 'd-flex mb-3 comment comment-item';
-  div.innerHTML = `
-    <img src="${data.avatar}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
-    <div>
-      <div class="small text-muted">${data.author} • ${timeAgo(data.timestamp)}</div>
-      <div>${data.body}</div>
-    </div>`;
-  return div;
-}
-
-function loadComments(postId, container) {
-  fetch(`/api/comments/${postId}`)
-    .then((r) => r.json())
-    .then((items) => {
-      container.innerHTML = '';
-      items.forEach((c) => {
-        container.appendChild(renderComment(c));
+      const formData = new FormData(form);
+      const response = await this.fetchWithCSRF(form.action || window.location.pathname, {
+        method: 'POST',
+        body: formData
       });
-      if (items.length === 0) {
-        container.innerHTML = '<p class="text-muted" data-empty-msg>No hay comentarios.</p>';
+
+      if (response.ok) {
+        this.showToast('¡Publicación creada exitosamente! 🎉', 'success');
+        form.reset();
+        this.clearImagePreview();
+        // Reload feed or add new post to top
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        const errorText = await response.text();
+        this.showToast('Error al publicar: ' + errorText, 'error');
+      }
+    } catch (error) {
+      console.error('Error submitting post:', error);
+      this.showToast('Error de conexión. Intenta nuevamente.', 'error');
+    } finally {
+      this.setButtonLoading(submitBtn, false);
+    }
+  }
+
+  initImagePreview() {
+    const input = document.getElementById('feedImageInput');
+    const preview = document.getElementById('previewContainer');
+
+    if (!input || !preview) return;
+
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file && file.type.startsWith('image/')) {
+        this.showImagePreview(file, preview);
+      } else if (file) {
+        this.showToast('Solo se permiten archivos de imagen', 'warning');
+        input.value = '';
       }
     });
-}
+  }
 
-function initFeedInteractions() {
-  document.querySelectorAll('.like-form').forEach((form) => {
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const btn = this.querySelector('button');
-      btn.disabled = true;
-      csrfFetch(this.action, { method: 'POST' })
-        .then((r) => r.json())
-        .then((data) => {
-          const target = document.getElementById(this.dataset.target);
-          if (target) target.textContent = data.likes;
-          showToast('¡Gracias por tu reacción!');
-        })
-        .finally(() => {
-          btn.disabled = false;
-        });
+  showImagePreview(file, container) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      container.innerHTML = `
+        <div class="image-preview position-relative d-inline-block">
+          <img src="${e.target.result}" 
+               class="img-fluid rounded-3 shadow-sm" 
+               style="max-height: 200px; max-width: 100%;">
+          <button type="button" 
+                  class="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 translate-middle"
+                  onclick="feedManager.clearImagePreview()"
+                  style="width: 24px; height: 24px; padding: 0;">
+            <i class="bi bi-x" style="font-size: 0.8rem;"></i>
+          </button>
+        </div>
+      `;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  clearImagePreview() {
+    const preview = document.getElementById('previewContainer');
+    const input = document.getElementById('feedImageInput');
+    if (preview) preview.innerHTML = '';
+    if (input) input.value = '';
+  }
+
+  initFeedFilters() {
+    document.querySelectorAll('[data-filter]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        this.setActiveFilter(btn);
+        this.loadFilteredFeed(btn.dataset.filter);
+      });
     });
-  });
+  }
 
-  document.querySelectorAll('.comment-form').forEach((form) => {
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const btn = this.querySelector('button');
-      btn.disabled = true;
-      const data = new FormData(this);
-      csrfFetch(this.action, { method: 'POST', body: data })
-        .then((r) => r.json())
-        .then((c) => {
-          const container = document.getElementById(this.dataset.container);
-          if (container) {
-            const div = renderComment({
-              avatar: this.dataset.avatar,
-              author: this.dataset.username,
-              body: c.body,
-              timestamp: c.timestamp,
-            });
-            container.prepend(div);
-            const emptyMsg = container.querySelector('[data-empty-msg]');
-            if (emptyMsg) emptyMsg.remove();
-          }
-          form.reset();
-          showToast('Comentario agregado');
-        })
-        .finally(() => {
-          btn.disabled = false;
-        });
+  setActiveFilter(activeBtn) {
+    document.querySelectorAll('[data-filter]').forEach(btn => {
+      btn.classList.remove('btn-primary', 'active');
+      btn.classList.add('btn-outline-primary');
     });
-  });
+    activeBtn.classList.remove('btn-outline-primary');
+    activeBtn.classList.add('btn-primary', 'active');
+  }
 
-  document.querySelectorAll('.comment-modal').forEach((modalEl) => {
-    modalEl.addEventListener('shown.bs.modal', () => {
-      const postId = modalEl.dataset.postId;
-      const container = modalEl.querySelector('.comment-container');
-      const input = modalEl.querySelector('input[name="body"]');
+  async loadFilteredFeed(filter) {
+    const container = document.getElementById('feedContainer');
+    const loading = document.getElementById('feedLoading');
+
+    if (!container) return;
+
+    try {
+      this.currentFilter = filter;
+      this.currentPage = 1;
+
+      // Show loading state
+      container.style.opacity = '0.5';
+      if (loading) loading.classList.remove('d-none');
+
+      const response = await fetch(`/feed/api/quickfeed?filter=${filter}`);
+      const data = await response.json();
+
+      container.innerHTML = data.html || '';
+      this.initPostInteractions();
+
+      this.showToast(`Filtro "${filter}" aplicado`, 'info');
+    } catch (error) {
+      console.error('Error loading filtered feed:', error);
+      this.showToast('Error al cargar contenido', 'error');
+    } finally {
+      container.style.opacity = '1';
+      if (loading) loading.classList.add('d-none');
+    }
+  }
+
+  initPostInteractions() {
+    // Like buttons
+    document.querySelectorAll('.like-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => this.handleLike(e));
+    });
+
+    // Comment buttons
+    document.querySelectorAll('.comment-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => this.openCommentModal(e));
+    });
+
+    // Share buttons
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => this.openShareModal(e));
+    });
+
+    // Save buttons
+    document.querySelectorAll('.save-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => this.toggleSavePost(e));
+    });
+  }
+
+  async handleLike(e) {
+    e.preventDefault();
+    const btn = e.currentTarget;
+    const postId = btn.dataset.postId;
+    const reaction = btn.dataset.reaction || '👍';
+
+    if (btn.disabled) return;
+
+    try {
+      btn.disabled = true;
+      
+      const formData = new FormData();
+      formData.append('reaction', reaction);
+      formData.append('csrf_token', this.getCSRFToken());
+
+      const response = await fetch(`/feed/like/${postId}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      // Update like count
+      const countEl = document.querySelector(`#likeCount${postId}`);
+      if (countEl) countEl.textContent = data.likes || 0;
+
+      // Update button state
+      const icon = btn.querySelector('i');
+      if (data.status === 'added') {
+        btn.classList.add('active');
+        if (icon) icon.classList.add('bi-heart-fill', 'text-danger');
+        if (icon) icon.classList.remove('bi-heart');
+        this.animateButton(btn, '❤️');
+      } else if (data.status === 'removed') {
+        btn.classList.remove('active');
+        if (icon) icon.classList.remove('bi-heart-fill', 'text-danger');
+        if (icon) icon.classList.add('bi-heart');
+      }
+
+      this.showToast(data.status === 'added' ? '¡Te gusta esta publicación!' : 'Ya no te gusta esta publicación', 'success');
+    } catch (error) {
+      console.error('Error handling like:', error);
+      this.showToast('Error al procesar reacción', 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  openCommentModal(e) {
+    const postId = e.currentTarget.dataset.postId;
+    this.loadComments(postId);
+    
+    const modal = new bootstrap.Modal(document.getElementById('commentModal'));
+    modal.show();
+    
+    // Focus on comment input
+    setTimeout(() => {
+      const input = document.querySelector('#commentForm input[name="body"]');
       if (input) input.focus();
-      if (postId && container) {
-        loadComments(postId, container);
+    }, 300);
+  }
+
+  async loadComments(postId) {
+    const container = document.getElementById('commentsContainer');
+    if (!container) return;
+
+    try {
+      container.innerHTML = '<div class="text-center p-3"><div class="spinner-border spinner-border-sm"></div></div>';
+      
+      const response = await fetch(`/feed/api/comments/${postId}`);
+      const comments = await response.json();
+
+      container.innerHTML = comments.map(comment => `
+        <div class="comment-item d-flex gap-3 mb-3">
+          <img src="${comment.avatar}" class="rounded-circle" width="32" height="32">
+          <div class="flex-grow-1">
+            <div class="bg-light rounded-3 p-3">
+              <div class="fw-semibold small mb-1">${comment.author}</div>
+              <div class="small">${comment.body}</div>
+            </div>
+            <div class="small text-muted mt-1">${this.timeAgo(comment.timestamp)}</div>
+          </div>
+        </div>
+      `).join('');
+
+      // Setup comment form
+      const form = document.getElementById('commentForm');
+      if (form) {
+        form.onsubmit = (e) => this.submitComment(e, postId);
+      }
+    } catch (error) {
+      console.error('Error loading comments:', error);
+      container.innerHTML = '<div class="text-center text-muted p-3">Error al cargar comentarios</div>';
+    }
+  }
+
+  async submitComment(e, postId) {
+    e.preventDefault();
+    const form = e.target;
+    const input = form.querySelector('input[name="body"]');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    if (!input.value.trim()) return;
+
+    try {
+      submitBtn.disabled = true;
+      
+      const formData = new FormData();
+      formData.append('body', input.value.trim());
+      formData.append('csrf_token', this.getCSRFToken());
+
+      const response = await fetch(`/feed/comment/${postId}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        const comment = await response.json();
+        this.addCommentToUI(comment);
+        input.value = '';
+        this.showToast('Comentario agregado', 'success');
+      } else {
+        this.showToast('Error al agregar comentario', 'error');
+      }
+    } catch (error) {
+      console.error('Error submitting comment:', error);
+      this.showToast('Error de conexión', 'error');
+    } finally {
+      submitBtn.disabled = false;
+    }
+  }
+
+  addCommentToUI(comment) {
+    const container = document.getElementById('commentsContainer');
+    if (!container) return;
+
+    const commentHtml = `
+      <div class="comment-item d-flex gap-3 mb-3">
+        <img src="${comment.avatar || '/static/img/default.png'}" class="rounded-circle" width="32" height="32">
+        <div class="flex-grow-1">
+          <div class="bg-light rounded-3 p-3">
+            <div class="fw-semibold small mb-1">${comment.author}</div>
+            <div class="small">${comment.body}</div>
+          </div>
+          <div class="small text-muted mt-1">ahora</div>
+        </div>
+      </div>
+    `;
+    
+    container.insertAdjacentHTML('afterbegin', commentHtml);
+  }
+
+  openShareModal(e) {
+    const shareUrl = e.currentTarget.dataset.shareUrl;
+    window.currentShareUrl = shareUrl;
+    
+    const modal = new bootstrap.Modal(document.getElementById('shareModal'));
+    modal.show();
+  }
+
+  async toggleSavePost(e) {
+    const btn = e.currentTarget;
+    const postId = btn.dataset.postId;
+
+    try {
+      btn.disabled = true;
+      
+      const response = await this.fetchWithCSRF(`/feed/save/${postId}`, {
+        method: 'POST'
+      });
+
+      const data = await response.json();
+      
+      const icon = btn.querySelector('i');
+      if (data.saved) {
+        icon.classList.add('bi-bookmark-fill');
+        icon.classList.remove('bi-bookmark');
+        this.showToast('Publicación guardada', 'success');
+      } else {
+        icon.classList.remove('bi-bookmark-fill');
+        icon.classList.add('bi-bookmark');
+        this.showToast('Publicación removida de guardados', 'info');
+      }
+    } catch (error) {
+      console.error('Error toggling save:', error);
+      this.showToast('Error al guardar', 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  initStreakClaim() {
+    const claimBtn = document.getElementById('claimStreakBtn');
+    if (!claimBtn) return;
+
+    claimBtn.addEventListener('click', async () => {
+      try {
+        claimBtn.disabled = true;
+        claimBtn.innerHTML = '<div class="spinner-border spinner-border-sm"></div>';
+
+        const response = await this.fetchWithCSRF('/auth/claim_streak', {
+          method: 'POST'
+        });
+
+        if (response.ok) {
+          const banner = document.getElementById('streakBanner');
+          if (banner) {
+            banner.style.animation = 'fadeOut 0.5s ease-out forwards';
+            setTimeout(() => banner.remove(), 500);
+          }
+          this.showToast('¡Crolars reclamados! 🎉', 'success');
+        } else {
+          this.showToast('Error al reclamar racha', 'error');
+        }
+      } catch (error) {
+        console.error('Error claiming streak:', error);
+        this.showToast('Error de conexión', 'error');
       }
     });
-  });
+  }
 
-  document.querySelectorAll('.save-post-form').forEach((form) => {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const btn = form.querySelector('button');
-      btn.disabled = true;
-      csrfFetch(form.action, { method: 'POST' })
-        .then((r) => r.json())
-        .then(() => {
-          showToast('Guardado actualizado');
-        })
-        .finally(() => {
-          btn.disabled = false;
-        });
+  initInfiniteScroll() {
+    const sentinel = document.getElementById('feedEnd');
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !this.isLoading) {
+        this.loadMorePosts();
+      }
+    }, {
+      rootMargin: '100px'
     });
-  });
 
-  const donateModalEl = document.getElementById('donateModal');
-  if (donateModalEl) {
-    const donateModal = new bootstrap.Modal(donateModalEl);
-    document.querySelectorAll('.donate-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        donateModalEl.querySelector('form').action = `/donate/${btn.dataset.post}`;
-        donateModal.show();
+    observer.observe(sentinel);
+  }
+
+  async loadMorePosts() {
+    if (this.isLoading) return;
+    this.isLoading = true;
+
+    try {
+      this.currentPage++;
+      const response = await fetch(`/feed/api/feed?page=${this.currentPage}&categoria=${this.currentFilter}`);
+      const items = await response.json();
+
+      if (items.length === 0) {
+        document.getElementById('feedEnd').style.display = 'none';
+        return;
+      }
+
+      const container = document.getElementById('feedContainer');
+      items.forEach(item => {
+        const html = this.renderFeedItem(item);
+        if (html) container.insertAdjacentHTML('beforeend', html);
+      });
+
+      this.initPostInteractions();
+    } catch (error) {
+      console.error('Error loading more posts:', error);
+      this.showToast('Error al cargar más publicaciones', 'error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  renderFeedItem(item) {
+    // Basic rendering - can be expanded based on item type
+    if (item.item_type === 'post') {
+      return `
+        <div class="card mb-4 shadow-sm border-0 rounded-4 post-card">
+          <div class="card-body p-4">
+            <p>${item.content || ''}</p>
+            <small class="text-muted">@${item.author_username}</small>
+          </div>
+        </div>
+      `;
+    }
+    return '';
+  }
+
+  initModals() {
+    // Initialize Bootstrap modals
+    document.querySelectorAll('.modal').forEach(modalEl => {
+      modalEl.addEventListener('hidden.bs.modal', () => {
+        // Clean up modal content when closed
+        const form = modalEl.querySelector('form');
+        if (form) form.reset();
       });
     });
   }
 
-  document.querySelectorAll('[data-feed-tab]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.feedTab;
-      document.querySelectorAll('.feed-section').forEach((section) => {
-        section.classList.toggle('d-none', section.dataset.section !== target);
-      });
-      document.querySelectorAll('[data-feed-tab]').forEach((tab) => {
-        tab.classList.remove('active');
-      });
-      btn.classList.add('active');
+  initTooltips() {
+    // Initialize Bootstrap tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(tooltipTriggerEl => {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
     });
-  });
-}
+  }
 
-function initQuickFilters() {
-  const container = document.getElementById('quickFilters');
-  const feedBox = document.getElementById('feed');
-  if (!container || !feedBox) return;
-  container.querySelectorAll('button[data-filter]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const filter = btn.dataset.filter;
-      container.querySelectorAll('button[data-filter]').forEach((b) => {
-        b.classList.remove('btn-primary', 'active');
-        b.classList.add('btn-outline-primary');
-      });
-      btn.classList.add('btn-primary', 'active');
-      btn.classList.remove('btn-outline-primary');
+  // Utility methods
+  autoResizeTextarea(e) {
+    const textarea = e.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
+  }
 
-      fetch(`/api/quickfeed?filter=${filter}`)
-        .then((r) => r.json())
-        .then((data) => {
-          feedBox.innerHTML = data.html;
-          const countSpan = btn.querySelector('.count');
-          if (countSpan) {
-            countSpan.textContent = data.count;
-            countSpan.classList.toggle('tw-hidden', data.count === 0);
-          }
-          initFeedInteractions();
-        });
-    });
-  });
-}
+  setButtonLoading(btn, isLoading) {
+    const text = btn.querySelector('.submit-text, .btn-text');
+    const spinner = btn.querySelector('.spinner-border');
 
-function initImagePreview() {
-  const input = document.getElementById('feedImageInput');
-  const preview = document.getElementById('previewContainer');
-  if (!input || !preview) return;
-  input.addEventListener('change', () => {
-    const file = input.files[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        preview.innerHTML = `
-          <img src="${e.target.result}" alt="preview" class="img-fluid rounded" style="max-height: 300px;" />
-        `;
-      };
-      reader.readAsDataURL(file);
+    if (isLoading) {
+      btn.disabled = true;
+      if (text) text.classList.add('d-none');
+      if (spinner) spinner.classList.remove('d-none');
     } else {
-      preview.innerHTML = "<p class='text-danger'>Archivo no válido</p>";
+      btn.disabled = false;
+      if (text) text.classList.remove('d-none');
+      if (spinner) spinner.classList.add('d-none');
     }
+  }
+
+  animateButton(btn, emoji) {
+    const rect = btn.getBoundingClientRect();
+    const animEl = document.createElement('div');
+    animEl.textContent = emoji;
+    animEl.style.cssText = `
+      position: fixed;
+      left: ${rect.left + rect.width / 2}px;
+      top: ${rect.top}px;
+      font-size: 1.5rem;
+      pointer-events: none;
+      z-index: 1000;
+      animation: floatUp 1s ease-out forwards;
+    `;
+    
+    document.body.appendChild(animEl);
+    setTimeout(() => animEl.remove(), 1000);
+  }
+
+  async fetchWithCSRF(url, options = {}) {
+    const headers = {
+      ...options.headers,
+      'X-CSRFToken': this.getCSRFToken()
+    };
+
+    return fetch(url, {
+      ...options,
+      headers
+    });
+  }
+
+  getCSRFToken() {
+    const token = document.querySelector('[name="csrf_token"]');
+    return token ? token.value : '';
+  }
+
+  timeAgo(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+
+    if (diffInSeconds < 60) return 'ahora';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;
+    return `${Math.floor(diffInSeconds / 86400)}d`;
+  }
+
+  showToast(message, type = 'info') {
+    const toastContainer = this.getOrCreateToastContainer();
+    
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-bg-${this.getBootstrapColorClass(type)} border-0`;
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body fw-semibold">${message}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    `;
+
+    toastContainer.appendChild(toast);
+
+    const bsToast = new bootstrap.Toast(toast, {
+      autohide: true,
+      delay: type === 'error' ? 5000 : 3000
+    });
+    
+    bsToast.show();
+
+    toast.addEventListener('hidden.bs.toast', () => {
+      toast.remove();
+    });
+  }
+
+  getOrCreateToastContainer() {
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toastContainer';
+      container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+      container.style.zIndex = '1060';
+      document.body.appendChild(container);
+    }
+    return container;
+  }
+
+  getBootstrapColorClass(type) {
+    const colorMap = {
+      success: 'success',
+      error: 'danger',
+      warning: 'warning',
+      info: 'info'
+    };
+    return colorMap[type] || 'info';
+  }
+}
+
+// Global share functions
+function shareToWhatsApp() {
+  const url = encodeURIComponent(window.currentShareUrl);
+  const text = encodeURIComponent('¡Mira esta publicación en CRUNEVO!');
+  window.open(`https://wa.me/?text=${text} ${url}`, '_blank');
+}
+
+function shareToTwitter() {
+  const url = encodeURIComponent(window.currentShareUrl);
+  const text = encodeURIComponent('¡Mira esta publicación en CRUNEVO!');
+  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+}
+
+function copyLink() {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(window.currentShareUrl).then(() => {
+      feedManager.showToast('¡Enlace copiado al portapapeles!', 'success');
+      bootstrap.Modal.getInstance(document.getElementById('shareModal')).hide();
+    });
+  } else {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = window.currentShareUrl;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    feedManager.showToast('¡Enlace copiado!', 'success');
+    bootstrap.Modal.getInstance(document.getElementById('shareModal')).hide();
+  }
+}
+
+// Global functions for post actions
+function editPost(postId) {
+  feedManager.showToast('Función de edición en desarrollo', 'info');
+}
+
+function deletePost(postId) {
+  if (confirm('¿Estás seguro de que quieres eliminar esta publicación?')) {
+    // Implement delete functionality
+    feedManager.showToast('Publicación eliminada', 'success');
+  }
+}
+
+function reportPost(postId) {
+  if (confirm('¿Quieres reportar esta publicación?')) {
+    // Implement report functionality
+    feedManager.showToast('Publicación reportada', 'info');
+  }
+}
+
+function copyPostLink(postId) {
+  const url = `${window.location.origin}/feed/post/${postId}`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      feedManager.showToast('¡Enlace copiado!', 'success');
+    });
+  }
+}
+
+function openImageModal(imageUrl) {
+  // Create image modal
+  const modal = document.createElement('div');
+  modal.className = 'modal fade';
+  modal.innerHTML = `
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content bg-transparent border-0">
+        <div class="modal-body p-0 text-center">
+          <img src="${imageUrl}" class="img-fluid rounded-3" style="max-height: 80vh;">
+          <button type="button" class="btn btn-secondary position-absolute top-0 end-0 m-3" data-bs-dismiss="modal">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  const bsModal = new bootstrap.Modal(modal);
+  bsModal.show();
+  
+  modal.addEventListener('hidden.bs.modal', () => {
+    modal.remove();
   });
 }
 
-let observer;
-function setupInfiniteScroll() {
-  if (!sentinel) return;
-  observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-      loadFeed();
+// CSS animations
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes floatUp {
+    0% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
     }
-  });
-  observer.observe(sentinel);
-}
-
-function initFeedSearch() {
-  const input = document.getElementById('feedSearch');
-  const results = document.getElementById('feedSearchResults');
-  if (!input || !results) return;
-  input.addEventListener('input', () => {
-    const q = input.value.trim();
-    if (q.length < 2) {
-      results.innerHTML = '';
-      return;
+    100% {
+      transform: translateY(-30px) scale(1.2);
+      opacity: 0;
     }
-    fetch(`/feed/search?q=${encodeURIComponent(q)}`)
-      .then((r) => r.json())
-      .then((data) => {
-        results.innerHTML = '';
-        data.forEach((p) => {
-          const a = document.createElement('a');
-          a.className = 'list-group-item list-group-item-action';
-          a.href = `/posts/${p.id}`;
-          a.textContent = p.content;
-          results.appendChild(a);
-        });
-      });
-  });
-}
+  }
+  
+  @keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); }
+  }
+`;
+document.head.appendChild(style);
 
+// Initialize feed manager when DOM is ready
+let feedManager;
+document.addEventListener('DOMContentLoaded', () => {
+  feedManager = new FeedManager();
+});

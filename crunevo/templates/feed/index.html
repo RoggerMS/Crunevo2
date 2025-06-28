@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 
 {% block title %}Feed - Crunevo{% endblock %}
@@ -15,34 +16,41 @@
       <div class="px-3 px-lg-4">
         <!-- Create Post Form -->
         {% if current_user.is_authenticated %}
-        <div class="card mb-4 feed-card-clean">
-          <div class="card-body">
-            <form id="feedForm" enctype="multipart/form-data">
+        <div class="card mb-4 shadow-sm border-0 rounded-4 feed-create-card">
+          <div class="card-body p-4">
+            <form method="post" enctype="multipart/form-data" id="feedForm">
               {{ csrf_token() }}
               <div class="d-flex gap-3 align-items-start">
                 <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
-                     alt="Tu avatar" class="feed-avatar">
+                     alt="Tu avatar" class="feed-avatar rounded-circle" width="48" height="48">
                 <div class="flex-grow-1">
                   <textarea 
                     name="content" 
                     id="content" 
-                    class="form-control border-0 bg-transparent resize-none" 
+                    class="form-control border-0 bg-light rounded-3 shadow-none resize-none" 
                     rows="3" 
                     placeholder="¿Qué quieres compartir con la comunidad educativa?"
-                    style="box-shadow: none;"></textarea>
+                    style="min-height: 80px;"></textarea>
 
-                  <div id="previewContainer" class="mt-2"></div>
+                  <div id="previewContainer" class="mt-3"></div>
 
                   <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="d-flex gap-2">
-                      <label for="image" class="btn btn-outline-primary btn-sm">
-                        <i class="bi bi-image"></i> Imagen
+                      <label class="btn btn-outline-primary btn-sm rounded-pill d-flex align-items-center gap-1 cursor-pointer">
+                        <i class="bi bi-image"></i>
+                        <span class="d-none d-sm-inline">Imagen</span>
+                        <input type="file" name="file" accept="image/*" class="d-none" id="feedImageInput">
                       </label>
-                      <input type="file" name="image" id="image" class="d-none" accept="image/*">
+                      <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill d-flex align-items-center gap-1" disabled>
+                        <i class="bi bi-camera-video"></i>
+                        <span class="d-none d-sm-inline">Video</span>
+                      </button>
                     </div>
-
-                    <button type="submit" class="btn btn-primary" disabled id="submitBtn">
-                      <i class="bi bi-send"></i> Publicar
+                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4 fw-semibold feed-submit-btn">
+                      <span class="submit-text">Publicar</span>
+                      <div class="spinner-border spinner-border-sm d-none" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                      </div>
                     </button>
                   </div>
                 </div>
@@ -52,48 +60,90 @@
         </div>
         {% endif %}
 
-        <!-- Quick Filters (Mobile) -->
-        <div class="d-lg-none mb-3">
-          <div id="quickFilters" class="d-flex gap-2 overflow-auto pb-2">
-            <button class="btn btn-sm btn-outline-primary active" data-filter="all">
-              <i class="bi bi-house"></i> Todo
-            </button>
-            <button class="btn btn-sm btn-outline-primary" data-filter="popular">
-              <i class="bi bi-fire"></i> Popular
-            </button>
-            <button class="btn btn-sm btn-outline-primary" data-filter="recent">
-              <i class="bi bi-clock"></i> Reciente
-            </button>
-            <button class="btn btn-sm btn-outline-primary" data-filter="following">
-              <i class="bi bi-people"></i> Siguiendo
+        <!-- Feed Filters -->
+        <div class="d-flex gap-2 mb-4 overflow-auto">
+          <button class="btn btn-primary btn-sm rounded-pill active" data-filter="recientes">
+            <i class="bi bi-clock"></i> Recientes
+          </button>
+          <button class="btn btn-outline-primary btn-sm rounded-pill" data-filter="populares">
+            <i class="bi bi-fire"></i> Populares
+          </button>
+          <button class="btn btn-outline-primary btn-sm rounded-pill" data-filter="imagen">
+            <i class="bi bi-image"></i> Imágenes
+          </button>
+          <button class="btn btn-outline-primary btn-sm rounded-pill" data-filter="apuntes">
+            <i class="bi bi-file-text"></i> Apuntes
+          </button>
+        </div>
+
+        <!-- Streak Claim Banner -->
+        {% if show_streak_claim %}
+        <div class="alert alert-success border-0 rounded-4 mb-4" id="streakBanner">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+              <div class="streak-icon">🔥</div>
+              <div>
+                <h6 class="mb-1">¡Racha de {{ streak_day }} días!</h6>
+                <p class="mb-0 small text-muted">Reclama tus {{ streak_reward }} Crolars por mantener la racha</p>
+              </div>
+            </div>
+            <button class="btn btn-success btn-sm rounded-pill" id="claimStreakBtn">
+              Reclamar
             </button>
           </div>
         </div>
+        {% endif %}
 
-        <!-- Feed Content -->
+        <!-- Feed Items -->
         <div id="feedContainer">
-          {% if posts %}
-            {% for post in posts %}
-              {% include 'components/post_card.html' %}
-            {% endfor %}
-          {% else %}
-            <div class="empty-state">
-              <i class="bi bi-chat-square-text"></i>
-              <h3>¡El feed está esperándote!</h3>
-              <p>Sé el primero en compartir algo con la comunidad educativa.</p>
-              {% if not current_user.is_authenticated %}
-                <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
-                  Únete a Crunevo
-                </a>
-              {% endif %}
-            </div>
-          {% endif %}
+          {% for item in feed_items %}
+            {% if item.type == 'post' %}
+              {% include 'components/post_card.html' with context %}
+            {% elif item.type == 'note' %}
+              {% include 'components/note_card.html' with context %}
+            {% endif %}
+          {% endfor %}
         </div>
 
-        <!-- Loading indicator -->
-        <div id="feedLoading" class="feed-loading d-none">
-          <i class="bi bi-arrow-clockwise"></i>
-          <p>Cargando más publicaciones...</p>
+        <!-- Loading shimmer -->
+        <div id="feedLoading" class="d-none">
+          {% for i in range(3) %}
+          <div class="card mb-4 shadow-sm border-0 rounded-4">
+            <div class="card-body p-4">
+              <div class="d-flex gap-3">
+                <div class="shimmer rounded-circle" style="width: 48px; height: 48px;"></div>
+                <div class="flex-grow-1">
+                  <div class="shimmer rounded" style="height: 20px; width: 60%; margin-bottom: 10px;"></div>
+                  <div class="shimmer rounded" style="height: 60px; width: 100%; margin-bottom: 15px;"></div>
+                  <div class="d-flex gap-2">
+                    <div class="shimmer rounded-pill" style="height: 32px; width: 80px;"></div>
+                    <div class="shimmer rounded-pill" style="height: 32px; width: 80px;"></div>
+                    <div class="shimmer rounded-pill" style="height: 32px; width: 80px;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Empty state -->
+        {% if not feed_items %}
+        <div class="empty-state text-center py-5">
+          <div class="empty-state-icon mb-3">📱</div>
+          <h4 class="text-muted mb-2">¡El feed está esperando por ti!</h4>
+          <p class="text-muted mb-4">Sé el primero en compartir algo increíble con la comunidad educativa</p>
+          <button class="btn btn-primary rounded-pill" onclick="document.getElementById('content').focus()">
+            Crear publicación
+          </button>
+        </div>
+        {% endif %}
+
+        <!-- Load more trigger -->
+        <div id="feedEnd" class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando más...</span>
+          </div>
         </div>
       </div>
     </div>
@@ -105,111 +155,371 @@
   </div>
 </div>
 
-<!-- Floating Action Button (Mobile) -->
-{% if current_user.is_authenticated %}
-<div class="d-lg-none">
-  <button class="btn btn-primary rounded-circle position-fixed shadow-lg mobile-overlay-btn" 
-          data-bs-toggle="modal" data-bs-target="#mobilePostModal"
-          style="bottom: 80px; right: 20px; width: 56px; height: 56px;">
-    <i class="bi bi-plus-lg"></i>
-  </button>
-</div>
-
-<!-- Mobile Post Modal -->
-<div class="modal fade" id="mobilePostModal" tabindex="-1">
-  <div class="modal-dialog modal-fullscreen-sm-down">
-    <div class="modal-content border-0">
-      <div class="modal-header border-bottom-0">
-        <h5 class="modal-title">Nueva publicación</h5>
+<!-- Comment Modal -->
+<div class="modal fade" id="commentModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title">💬 Comentarios</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form id="mobilePostForm" enctype="multipart/form-data">
+        <div id="commentsContainer" class="mb-3" style="max-height: 300px; overflow-y: auto;">
+          <!-- Comments will be loaded here -->
+        </div>
+        <form id="commentForm" class="d-flex gap-2">
           {{ csrf_token() }}
-          <div class="d-flex gap-3 align-items-start">
-            <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
-                 alt="Tu avatar" class="feed-avatar">
-            <div class="flex-grow-1">
-              <textarea 
-                name="content" 
-                class="form-control border-0 bg-transparent" 
-                rows="4" 
-                placeholder="¿Qué quieres compartir?"
-                style="box-shadow: none;"></textarea>
-
-              <div class="mt-3">
-                <label for="mobileImage" class="btn btn-outline-primary">
-                  <i class="bi bi-image"></i> Agregar imagen
-                </label>
-                <input type="file" name="image" id="mobileImage" class="d-none" accept="image/*">
-              </div>
-            </div>
-          </div>
+          <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
+               class="rounded-circle" width="32" height="32">
+          <input type="text" name="body" class="form-control rounded-pill" placeholder="Escribe un comentario..." required>
+          <button type="submit" class="btn btn-primary rounded-circle" style="width: 40px; height: 40px;">
+            <i class="bi bi-send"></i>
+          </button>
         </form>
-      </div>
-      <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" form="mobilePostForm" class="btn btn-primary">
-          <i class="bi bi-send"></i> Publicar
-        </button>
       </div>
     </div>
   </div>
 </div>
-{% endif %}
+
+<!-- Share Modal -->
+<div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 rounded-4">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title">🔗 Compartir</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div class="d-grid gap-2">
+          <button class="btn btn-outline-primary" onclick="shareToWhatsApp()">
+            <i class="bi bi-whatsapp"></i> WhatsApp
+          </button>
+          <button class="btn btn-outline-info" onclick="shareToTwitter()">
+            <i class="bi bi-twitter"></i> Twitter
+          </button>
+          <button class="btn btn-outline-secondary" onclick="copyLink()">
+            <i class="bi bi-link-45deg"></i> Copiar enlace
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block body_end %}
+{{ super() }}
 <script>
+// Enhanced feed interactions
 document.addEventListener('DOMContentLoaded', function() {
-    // Enable submit button when content is typed
-    const contentTextarea = document.getElementById('content');
-    const submitBtn = document.getElementById('submitBtn');
-
-    if (contentTextarea && submitBtn) {
-        contentTextarea.addEventListener('input', function() {
-            submitBtn.disabled = this.value.trim().length === 0;
-        });
-    }
-
-    // Image preview functionality
-    const imageInput = document.getElementById('image');
-    const previewContainer = document.getElementById('previewContainer');
-
-    if (imageInput && previewContainer) {
-        imageInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewContainer.innerHTML = `
-                        <div class="position-relative d-inline-block">
-                            <img src="${e.target.result}" class="img-fluid rounded" style="max-height: 200px;">
-                            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="this.parentElement.remove(); document.getElementById('image').value = '';">
-                                <i class="bi bi-x"></i>
-                            </button>
-                        </div>
-                    `;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    // Quick filters functionality
-    const filterButtons = document.querySelectorAll('#quickFilters button[data-filter]');
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove active class from all buttons
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            // Add active class to clicked button
-            this.classList.add('active');
-
-            // Here you would implement the filtering logic
-            const filter = this.getAttribute('data-filter');
-            console.log('Filtering by:', filter);
-        });
-    });
+  initFeedForm();
+  initImagePreview();
+  initFeedFilters();
+  initInfiniteScroll();
+  initPostInteractions();
+  initStreakClaim();
 });
+
+function initFeedForm() {
+  const form = document.getElementById('feedForm');
+  if (!form) return;
+  
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = form.querySelector('.feed-submit-btn');
+    const submitText = submitBtn.querySelector('.submit-text');
+    const spinner = submitBtn.querySelector('.spinner-border');
+    
+    // Show loading state
+    submitBtn.disabled = true;
+    submitText.classList.add('d-none');
+    spinner.classList.remove('d-none');
+    
+    try {
+      const formData = new FormData(form);
+      const response = await fetch(form.action || window.location.pathname, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        showToast('Error al publicar', 'error');
+      }
+    } catch (error) {
+      showToast('Error de conexión', 'error');
+    } finally {
+      submitBtn.disabled = false;
+      submitText.classList.remove('d-none');
+      spinner.classList.add('d-none');
+    }
+  });
+}
+
+function initImagePreview() {
+  const input = document.getElementById('feedImageInput');
+  const preview = document.getElementById('previewContainer');
+  
+  if (!input || !preview) return;
+  
+  input.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.innerHTML = `
+          <div class="position-relative d-inline-block">
+            <img src="${e.target.result}" class="img-fluid rounded-3 shadow-sm" style="max-height: 200px;">
+            <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 translate-middle" onclick="clearPreview()">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        `;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      clearPreview();
+    }
+  });
+}
+
+function clearPreview() {
+  document.getElementById('previewContainer').innerHTML = '';
+  document.getElementById('feedImageInput').value = '';
+}
+
+function initFeedFilters() {
+  document.querySelectorAll('[data-filter]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      // Update active state
+      document.querySelectorAll('[data-filter]').forEach(b => {
+        b.classList.remove('btn-primary', 'active');
+        b.classList.add('btn-outline-primary');
+      });
+      this.classList.remove('btn-outline-primary');
+      this.classList.add('btn-primary', 'active');
+      
+      // Load filtered content
+      loadFilteredFeed(this.dataset.filter);
+    });
+  });
+}
+
+async function loadFilteredFeed(filter) {
+  const container = document.getElementById('feedContainer');
+  const loading = document.getElementById('feedLoading');
+  
+  container.style.opacity = '0.5';
+  loading.classList.remove('d-none');
+  
+  try {
+    const response = await fetch(`/feed/api/quickfeed?filter=${filter}`);
+    const data = await response.json();
+    
+    container.innerHTML = data.html;
+    initPostInteractions();
+  } catch (error) {
+    showToast('Error al cargar contenido', 'error');
+  } finally {
+    container.style.opacity = '1';
+    loading.classList.add('d-none');
+  }
+}
+
+function initPostInteractions() {
+  // Like buttons
+  document.querySelectorAll('.like-btn').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      const postId = this.dataset.postId;
+      const reaction = this.dataset.reaction || '👍';
+      
+      try {
+        const formData = new FormData();
+        formData.append('reaction', reaction);
+        formData.append('csrf_token', document.querySelector('[name="csrf_token"]').value);
+        
+        const response = await fetch(`/feed/like/${postId}`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await response.json();
+        
+        // Update like count
+        const countEl = document.querySelector(`#likeCount${postId}`);
+        if (countEl) countEl.textContent = data.likes;
+        
+        // Update button state
+        this.classList.toggle('btn-primary');
+        this.classList.toggle('btn-outline-primary');
+        
+        showToast('¡Reacción actualizada!', 'success');
+      } catch (error) {
+        showToast('Error al reaccionar', 'error');
+      }
+    });
+  });
+  
+  // Comment buttons
+  document.querySelectorAll('.comment-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const postId = this.dataset.postId;
+      openCommentModal(postId);
+    });
+  });
+  
+  // Share buttons
+  document.querySelectorAll('.share-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const url = this.dataset.shareUrl;
+      openShareModal(url);
+    });
+  });
+}
+
+function openCommentModal(postId) {
+  const modal = new bootstrap.Modal(document.getElementById('commentModal'));
+  // Load comments logic here
+  modal.show();
+}
+
+function openShareModal(url) {
+  window.shareUrl = url;
+  const modal = new bootstrap.Modal(document.getElementById('shareModal'));
+  modal.show();
+}
+
+function initStreakClaim() {
+  const claimBtn = document.getElementById('claimStreakBtn');
+  if (!claimBtn) return;
+  
+  claimBtn.addEventListener('click', async function() {
+    this.disabled = true;
+    this.innerHTML = '<div class="spinner-border spinner-border-sm"></div>';
+    
+    try {
+      const response = await fetch('/auth/claim_streak', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name="csrf_token"]').value
+        }
+      });
+      
+      if (response.ok) {
+        document.getElementById('streakBanner').remove();
+        showToast('¡Crolars reclamados! 🎉', 'success');
+      }
+    } catch (error) {
+      showToast('Error al reclamar', 'error');
+    }
+  });
+}
+
+function initInfiniteScroll() {
+  const sentinel = document.getElementById('feedEnd');
+  if (!sentinel) return;
+  
+  const observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      loadMorePosts();
+    }
+  });
+  
+  observer.observe(sentinel);
+}
+
+let currentPage = 1;
+let isLoading = false;
+
+async function loadMorePosts() {
+  if (isLoading) return;
+  isLoading = true;
+  
+  try {
+    currentPage++;
+    const response = await fetch(`/feed/api/feed?page=${currentPage}`);
+    const items = await response.json();
+    
+    if (items.length === 0) {
+      document.getElementById('feedEnd').style.display = 'none';
+      return;
+    }
+    
+    // Append new items to feed
+    const container = document.getElementById('feedContainer');
+    items.forEach(item => {
+      // Render item based on type
+      const html = renderFeedItem(item);
+      container.insertAdjacentHTML('beforeend', html);
+    });
+    
+    initPostInteractions();
+  } catch (error) {
+    console.error('Error loading more posts:', error);
+  } finally {
+    isLoading = false;
+  }
+}
+
+function renderFeedItem(item) {
+  // Basic rendering logic - you can expand this
+  return `<div class="feed-item">${item.content || item.title}</div>`;
+}
+
+function showToast(message, type = 'info') {
+  // Create toast notification
+  const toast = document.createElement('div');
+  toast.className = `toast align-items-center text-bg-${type === 'error' ? 'danger' : type} border-0`;
+  toast.setAttribute('role', 'alert');
+  toast.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">${message}</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  `;
+  
+  // Add to page
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+    document.body.appendChild(container);
+  }
+  
+  container.appendChild(toast);
+  
+  // Show toast
+  const bsToast = new bootstrap.Toast(toast);
+  bsToast.show();
+  
+  // Remove after hide
+  toast.addEventListener('hidden.bs.toast', () => {
+    toast.remove();
+  });
+}
+
+// Share functions
+function shareToWhatsApp() {
+  const url = encodeURIComponent(window.shareUrl);
+  const text = encodeURIComponent('¡Mira esta publicación en CRUNEVO!');
+  window.open(`https://wa.me/?text=${text} ${url}`, '_blank');
+}
+
+function shareToTwitter() {
+  const url = encodeURIComponent(window.shareUrl);
+  const text = encodeURIComponent('¡Mira esta publicación en CRUNEVO!');
+  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(window.shareUrl).then(() => {
+    showToast('¡Enlace copiado!', 'success');
+    bootstrap.Modal.getInstance(document.getElementById('shareModal')).hide();
+  });
+}
 </script>
 {% endblock %}

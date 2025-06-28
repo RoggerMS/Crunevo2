@@ -1,32 +1,202 @@
-<nav class="nav flex-column sidebar-left-feed tw-text-gray-900 dark:tw-text-gray-100">
-  <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('auth.perfil') }}" data-bs-toggle="tooltip" title="Mi perfil">
-    <i class="bi bi-person"></i><span>Mi perfil</span>
-  </a>
-  <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('notes.list_notes') }}" data-bs-toggle="tooltip" title="Mis apuntes">
-    <i class="bi bi-journal-text"></i><span>Mis apuntes</span>
-  </a>
-  <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('auth.favorites') if 'auth.favorites' in current_app.view_functions else '#' }}" data-bs-toggle="tooltip" title="Favoritos">
-    <i class="bi bi-star"></i><span>Favoritos</span>
-  </a>
-  <a class="nav-link d-flex align-items-center gap-2" href="#" data-bs-toggle="tooltip" title="Clubes">
-    <i class="bi bi-people"></i><span>Clubes</span>
-  </a>
-  <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('store.store_index') }}" data-bs-toggle="tooltip" title="Tienda">
-    <i class="bi bi-bag"></i><span>Tienda</span>
-  </a>
-  <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('ranking.index') if 'ranking.index' in current_app.view_functions else '#' }}" data-bs-toggle="tooltip" title="Ranking">
-    <i class="bi bi-bar-chart"></i><span>Ranking</span>
-  </a>
-  <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('auth.perfil', tab='misiones') }}" data-bs-toggle="tooltip" title="Misiones">
-    <i class="bi bi-bullseye"></i><span>Misiones</span>
-  </a>
-  <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('ia.chat') if 'ia.chat' in current_app.view_functions else '#' }}" data-bs-toggle="tooltip" title="Crubot">
-    <i class="bi bi-robot"></i><span>Crubot</span>
-  </a>
-  <a class="nav-link d-flex align-items-center gap-2" href="#" data-bs-toggle="tooltip" title="Foro">
-    <i class="bi bi-globe"></i><span>Foro</span>
-  </a>
-  <a class="nav-link d-flex align-items-center gap-2" href="#" data-bs-toggle="tooltip" title="Eventos">
-    <i class="bi bi-calendar-event"></i><span>Eventos</span>
-  </a>
-</nav>
+
+<div class="sidebar-left bg-white rounded-4 shadow-sm border-0 h-100">
+  <div class="p-4">
+    <!-- User Profile Section -->
+    <div class="user-profile-section mb-4 pb-4 border-bottom">
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
+             alt="Tu avatar" 
+             class="rounded-circle border-2 border-primary" 
+             width="56" 
+             height="56">
+        <div class="flex-grow-1">
+          <h6 class="mb-1 fw-bold text-dark">{{ current_user.username }}</h6>
+          <p class="small text-muted mb-0">{{ current_user.career or 'Estudiante' }}</p>
+        </div>
+      </div>
+      
+      <!-- Profile Stats -->
+      <div class="profile-stats row g-2 text-center">
+        <div class="col-4">
+          <div class="stat-item">
+            <div class="fw-bold text-primary">{{ current_user.points or 0 }}</div>
+            <div class="small text-muted">Puntos</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="stat-item">
+            <div class="fw-bold text-success">{{ current_user.credits.filter_by(amount__gt=0).count() if current_user.credits else 0 }}</div>
+            <div class="small text-muted">Crolars</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="stat-item">
+            <div class="fw-bold text-info">{{ current_user.notes.count() if current_user.notes else 0 }}</div>
+            <div class="small text-muted">Apuntes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="sidebar-navigation">
+      <ul class="sidebar-nav">
+        <li>
+          <a href="{{ url_for('feed.view_feed') }}" class="nav-link {{ 'active' if request.endpoint == 'feed.view_feed' }}">
+            <i class="bi bi-house-fill"></i>
+            <span class="fw-semibold">Inicio</span>
+          </a>
+        </li>
+        
+        <li>
+          <a href="{{ url_for('auth.profile') }}" class="nav-link {{ 'active' if request.endpoint == 'auth.profile' }}">
+            <i class="bi bi-person-circle"></i>
+            <span class="fw-semibold">Mi Perfil</span>
+          </a>
+        </li>
+        
+        <li>
+          <a href="{{ url_for('notes.list') }}" class="nav-link {{ 'active' if request.endpoint == 'notes.list' }}">
+            <i class="bi bi-journal-text"></i>
+            <span class="fw-semibold">Apuntes</span>
+            <span class="badge bg-primary rounded-pill ms-auto">{{ current_user.notes.count() if current_user.notes else 0 }}</span>
+          </a>
+        </li>
+        
+        <li>
+          <a href="{{ url_for('forum.list') }}" class="nav-link {{ 'active' if request.endpoint == 'forum.list' }}">
+            <i class="bi bi-chat-square-dots"></i>
+            <span class="fw-semibold">Foro</span>
+          </a>
+        </li>
+        
+        <li>
+          <a href="{{ url_for('club.list') }}" class="nav-link {{ 'active' if request.endpoint == 'club.list' }}">
+            <i class="bi bi-people"></i>
+            <span class="fw-semibold">Clubes</span>
+          </a>
+        </li>
+        
+        <li>
+          <a href="{{ url_for('event.list') }}" class="nav-link {{ 'active' if request.endpoint == 'event.list' }}">
+            <i class="bi bi-calendar-event"></i>
+            <span class="fw-semibold">Eventos</span>
+          </a>
+        </li>
+        
+        <li>
+          <a href="{{ url_for('store.store') }}" class="nav-link {{ 'active' if request.endpoint == 'store.store' }}">
+            <i class="bi bi-shop"></i>
+            <span class="fw-semibold">Tienda</span>
+            {% if session.get('cart_count', 0) > 0 %}
+            <span class="badge bg-danger rounded-pill ms-auto">{{ session.cart_count }}</span>
+            {% endif %}
+          </a>
+        </li>
+        
+        <li>
+          <a href="{{ url_for('misiones.index') }}" class="nav-link {{ 'active' if request.endpoint == 'misiones.index' }}">
+            <i class="bi bi-trophy"></i>
+            <span class="fw-semibold">Misiones</span>
+          </a>
+        </li>
+        
+        <li>
+          <a href="{{ url_for('ranking.index') }}" class="nav-link {{ 'active' if request.endpoint == 'ranking.index' }}">
+            <i class="bi bi-award"></i>
+            <span class="fw-semibold">Ranking</span>
+          </a>
+        </li>
+        
+        <li>
+          <a href="{{ url_for('ia.chat') }}" class="nav-link {{ 'active' if request.endpoint == 'ia.chat' }}">
+            <i class="bi bi-robot"></i>
+            <span class="fw-semibold">IA Chat</span>
+            <span class="badge bg-success rounded-pill ms-auto">AI</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions mt-4 pt-4 border-top">
+      <h6 class="small text-muted mb-3 fw-bold">Acciones rápidas</h6>
+      <div class="d-grid gap-2">
+        <a href="{{ url_for('notes.upload') }}" class="btn btn-primary btn-sm rounded-pill">
+          <i class="bi bi-plus-circle"></i> Subir Apunte
+        </a>
+        <a href="{{ url_for('forum.ask') }}" class="btn btn-outline-primary btn-sm rounded-pill">
+          <i class="bi bi-question-circle"></i> Hacer Pregunta
+        </a>
+      </div>
+    </div>
+
+    <!-- Current Streak -->
+    {% if current_user.login_streak and current_user.login_streak.current_day > 0 %}
+    <div class="streak-section mt-4 pt-4 border-top">
+      <div class="d-flex align-items-center gap-2">
+        <div class="streak-icon">🔥</div>
+        <div>
+          <div class="small fw-bold text-primary">Racha: {{ current_user.login_streak.current_day }} días</div>
+          <div class="small text-muted">¡Sigue así!</div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+.sidebar-left {
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(10px);
+}
+
+[data-bs-theme="dark"] .sidebar-left {
+  background: rgba(31, 41, 55, 0.98) !important;
+  color: #f3f4f6 !important;
+}
+
+.sidebar-nav a {
+  color: #374151 !important;
+  font-weight: 500 !important;
+  border-radius: 12px !important;
+  transition: all 0.2s ease !important;
+  padding: 12px 16px !important;
+  margin-bottom: 4px !important;
+}
+
+[data-bs-theme="dark"] .sidebar-nav a {
+  color: #d1d5db !important;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  color: white !important;
+  transform: translateX(4px) !important;
+}
+
+.sidebar-nav a i {
+  width: 20px;
+  text-align: center;
+}
+
+.profile-stats .stat-item {
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+[data-bs-theme="dark"] .profile-stats .stat-item {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.streak-icon {
+  font-size: 1.5rem;
+}
+
+.quick-actions .btn {
+  font-weight: 500;
+}
+</style>
