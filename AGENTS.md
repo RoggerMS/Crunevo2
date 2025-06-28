@@ -360,3 +360,4 @@
 - Fixed missing endpoints for navbar links: added legacy aliases for feed and ranking blueprints and updated notifications link (PR feed-route-aliases).
 - Fixed indentation in create_app to resolve deployment error (hotfix indentation).
 - Updated enhanced_chat_system migration to set booleans using `false` instead of `0` to fix upgrade error (hotfix boolean-migration).
+- Sidebar feed links now use tailwind text color classes for better readability (PR feed-sidebar-color).
