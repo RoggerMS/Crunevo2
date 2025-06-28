@@ -378,3 +378,4 @@
 - Corregido feed: eliminado return duplicado, actualizado CSRF en index y enlaces en trending a feed.view_post (PR feed-fix-routes).
 - Fixed migration to avoid errors when columns or tables already exist by using `if_not_exists` and `checkfirst=True` (hotfix migration-transaction-failure).
 - Removed root '/' alias for auth.login to prevent infinite redirect (hotfix login-loop).
+- Updated templates to access current_app via url_for.__globals__ and replaced inspector.has_column with helper in migration (hotfix templates-current_app).
