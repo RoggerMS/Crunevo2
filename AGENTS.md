@@ -369,3 +369,4 @@
 - Fixed bottom nav notifications link to 'noti.ver_notificaciones' and used `|length` for notes count in sidebar (hotfix notifications-link-count).
 - Updated profile links to use 'auth.perfil' instead of deprecated 'auth.profile' to avoid BuildError (hotfix profile-link-fix).
 - Replaced forum sidebar link with 'forum.list_questions' and wrapped referral ranking query in try/except; achievement session log now uses logger (PR logs-bugfixes).
+- Corrected sidebar club link to use 'club.list_clubs' and avoid BuildError (hotfix club-link-fix).
