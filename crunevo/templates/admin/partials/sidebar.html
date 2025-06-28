@@ -12,9 +12,6 @@
       <span class="badge bg-danger ms-1">{{ URGENT_REPORTS }}</span>
     {% endif %}
   </a>
-  <a class="nav-link {% if request.endpoint == 'admin.manage_comments' %}active{% endif %}" href="{{ url_for('admin.manage_comments') }}">
-    <i class="ti ti-message-dots me-2"></i> Comentarios
-  </a>
   <a class="nav-link {% if request.endpoint == 'admin.admin_logs' %}active{% endif %}" href="{{ url_for('admin.admin_logs') }}">
     <i class="ti ti-clipboard-list me-2"></i> Auditoría
   </a>
