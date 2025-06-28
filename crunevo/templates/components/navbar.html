@@ -1,66 +1,148 @@
-<nav class="navbar navbar-dark navbar-crunevo navbar-expand-md fixed-top">
-  <div class="container-fluid">
-    {# Offcanvas mobile menu removed in favor of upcoming bottom bar #}
-    <a class="navbar-brand ms-2" href="{{ url_for('feed.feed_home') }}">Crunevo</a>
-    <form class="d-none d-md-flex mx-3 flex-grow-1 position-relative" id="globalSearchForm">
-      <input class="form-control" type="search" placeholder="Buscar" aria-label="Buscar" id="globalSearchInput" autocomplete="off">
-      <div id="searchSuggestions" class="position-absolute start-0 w-100 bg-white border rounded shadow"></div>
-    </form>
-    {# Mobile offcanvas markup removed #}
-    <div class="collapse navbar-collapse" id="navbarCrunevo">
-      <ul class="navbar-nav ms-auto d-flex flex-column flex-md-row align-items-center gap-2">
-        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('feed.feed_home') }}"><i class="bi bi-house-door me-1"></i>Inicio</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('feed.trending') }}"><i class="bi bi-fire me-1"></i>Tendencias</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('notes.list_notes') }}"><i class="bi bi-journal-text me-1"></i>Apuntes</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('store.store_index') }}"><i class="bi bi-bag me-1"></i>Tienda</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('ranking.show_ranking') }}"><i class="bi bi-trophy me-1"></i>Ranking</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('chat.chat_index') }}"><i class="bi bi-chat-dots me-1"></i>Chat</a></li>
-        {% if config.ADMIN_INSTANCE and current_user.is_authenticated and current_user.role == 'admin' %}
-        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-1"></i>Admin</a></li>
-        {% endif %}
-        {% if current_user.is_authenticated %}
-        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('auth.perfil') }}"><i class="bi bi-person-circle me-1"></i>Perfil</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right me-1"></i>Salir</a></li>
-        <li class="nav-item mx-2">
-          <a class="nav-link text-white" href="{{ url_for('main.crolars') }}">
-            <i class="bi bi-coin me-1"></i>{{ current_user.credits }}
+
+<nav class="navbar navbar-expand-lg navbar-crunevo fixed-top">
+  <div class="container-fluid px-3">
+    <!-- Brand -->
+    <a class="navbar-brand d-flex align-items-center fw-bold" href="{{ url_for('main.index') }}">
+      <span class="gradient-text">Crunevo</span>
+    </a>
+
+    <!-- Mobile toggle (hidden by CSS) -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <i class="bi bi-list text-white"></i>
+    </button>
+
+    <!-- Navigation -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('feed.feed') }}">
+            <i class="bi bi-house-fill me-1"></i>Feed
           </a>
-        </li>
-        <li class="nav-item dropdown">
-          {% set unread = current_user.notifications.filter_by(is_read=False).count() %}
-          <a class="nav-link text-white position-relative" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-bell" id="notifIcon"></i>
-            <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle {% if unread == 0 %}tw-hidden{% endif %}"></span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end notification-menu" aria-labelledby="notifDropdown" style="min-width:20rem;">
-            <li class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
-              <span class="fw-semibold">Notificaciones</span>
-              <a id="markAllRead" class="btn btn-sm btn-outline-secondary" href="#">Marcar todo como leído</a>
-            </li>
-            <div id="notifList" class="list-unstyled mb-0" style="max-height:300px;overflow-y:auto;">
-              {% for n in current_user.notifications.order_by(Notification.timestamp.desc()).limit(5) %}
-              <li>
-                <a class="dropdown-item d-flex align-items-start gap-2 noti-item {% if not n.is_read %}unread{% endif %}" href="{{ n.url or '#' }}">
-                  <span class="noti-icon">🔔</span>
-                  <span class="flex-grow-1">{{ n.message }}</span>
-                  <small class="noti-time text-muted ms-2">{{ n.timestamp|timesince }}</small>
-                </a>
-              </li>
-              {% endfor %}
-            </div>
-            <li><hr class="dropdown-divider m-0"></li>
-            <li><a class="dropdown-item text-center" href="{{ url_for('noti.ver_notificaciones') }}">Ver todas</a></li>
-          </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white position-relative" href="{{ url_for('store.view_cart') }}">
-            <i class="bi bi-cart"></i>
-            <span id="cartBadgeDesktop" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {% if CART_COUNT == 0 %}tw-hidden{% endif %}">{{ CART_COUNT }}</span>
+          <a class="nav-link" href="{{ url_for('notes.list_notes') }}">
+            <i class="bi bi-journal-text me-1"></i>Apuntes
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('feed.trending') }}">
+            <i class="bi bi-fire me-1"></i>Trending
+          </a>
+        </li>
+        {% if 'store.store' in current_app.view_functions %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('store.store') }}">
+            <i class="bi bi-shop me-1"></i>Tienda
+          </a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('ranking.index') }}">
+            <i class="bi bi-trophy-fill me-1"></i>Ranking
+          </a>
+        </li>
+      </ul>
+
+      <!-- Search -->
+      <div class="d-none d-lg-flex me-3 position-relative">
+        <input type="text" class="form-control form-control-sm" placeholder="Buscar..." 
+               id="globalSearchInput" style="width: 250px;">
+        <div class="dropdown-menu show" id="searchSuggestions" style="display: none;"></div>
+      </div>
+
+      <!-- User menu -->
+      <ul class="navbar-nav">
+        {% if current_user.is_authenticated %}
+          <!-- Notifications -->
+          <li class="nav-item dropdown me-2">
+            <a class="nav-link position-relative" href="#" role="button" 
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-bell-fill" id="notifIcon"></i>
+              <span class="badge bg-danger position-absolute top-0 start-100 translate-middle tw-hidden" 
+                    id="notifBadge">0</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end notification-menu" style="width: 320px;">
+              <li class="dropdown-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold">Notificaciones</span>
+                <a href="#" class="btn btn-sm btn-outline-primary" id="markAllRead">
+                  Marcar todas
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <div style="max-height: 300px; overflow-y: auto;" id="notifList"></div>
+              <li><hr class="dropdown-divider"></li>
+              <li class="text-center">
+                <a class="dropdown-item" href="{{ url_for('notifications.list_notifications') }}">
+                  Ver todas las notificaciones
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Credits -->
+          <li class="nav-item me-2">
+            <span class="nav-link">
+              <i class="bi bi-coin text-warning"></i>
+              <span class="fw-bold">{{ current_user.credits }}</span>
+            </span>
+          </li>
+
+          <!-- User dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" 
+               role="button" data-bs-toggle="dropdown">
+              <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                   alt="Avatar" class="avatar rounded-circle me-2" width="32" height="32">
+              <span class="d-none d-lg-inline">{{ current_user.username }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" href="{{ url_for('auth.perfil') }}">
+                  <i class="bi bi-person-fill me-2"></i>Mi Perfil
+                </a>
+              </li>
+              {% if 'store.favorites' in current_app.view_functions %}
+              <li>
+                <a class="dropdown-item" href="{{ url_for('store.favorites') }}">
+                  <i class="bi bi-heart-fill me-2"></i>Favoritos
+                </a>
+              </li>
+              {% endif %}
+              <li>
+                <a class="dropdown-item" href="/crolars">
+                  <i class="bi bi-coin me-2"></i>Sobre Crolars
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <button class="dropdown-item" data-theme-toggle>
+                  <i class="bi bi-moon me-2"></i>Cambiar tema
+                </button>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
+                  <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+                </a>
+              </li>
+            </ul>
+          </li>
         {% else %}
-        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('onboarding.register') }}"><i class="bi bi-person-plus me-1"></i>Registrarse</a></li>
+          <li class="nav-item me-2">
+            <button class="btn btn-sm btn-outline-light" data-theme-toggle>
+              <i class="bi bi-moon"></i>
+            </button>
+          </li>
+          <li class="nav-item me-2">
+            <a class="btn btn-outline-light btn-sm" href="{{ url_for('auth.login') }}">
+              Iniciar sesión
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-primary btn-sm" href="{{ url_for('onboarding.register') }}">
+              Registrarse
+            </a>
+          </li>
         {% endif %}
       </ul>
     </div>

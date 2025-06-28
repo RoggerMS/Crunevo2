@@ -1,11 +1,14 @@
-/* Modern educational navbar */
+
+/* Modern educational navbar with glassmorphism */
 .navbar-crunevo {
-  background-color: rgba(115, 86, 255, 0.75);
-  backdrop-filter: blur(6px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   z-index: 1030;
   min-height: 64px;
-  transition: transform 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
   top: 0 !important;
   position: sticky;
 }
@@ -13,6 +16,7 @@
 @media (max-width: 768px) {
   .navbar-crunevo {
     min-height: 56px;
+    background: rgba(255, 255, 255, 0.15);
   }
   .navbar-toggler {
     display: none !important;
@@ -20,26 +24,144 @@
 }
 
 [data-bs-theme="dark"] .navbar-crunevo {
-  background-color: rgba(115, 86, 255, 0.4);
+  background: rgba(30, 30, 46, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Enhanced navbar brand */
+.navbar-crunevo .navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #fff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
 
+/* Enhanced nav links */
+.navbar-crunevo .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.navbar-crunevo .nav-link:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Enhanced dropdown menus */
 .navbar-crunevo .dropdown-menu:not(.notification-menu) {
-  background-color: var(--primary);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  color: #333;
 }
+
+[data-bs-theme="dark"] .navbar-crunevo .dropdown-menu:not(.notification-menu) {
+  background: rgba(30, 30, 46, 0.95);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .navbar-crunevo .dropdown-menu:not(.notification-menu) .dropdown-item {
+  color: #333;
+  border-radius: 8px;
+  margin: 2px;
+  transition: all 0.3s ease;
+}
+
+[data-bs-theme="dark"] .navbar-crunevo .dropdown-menu:not(.notification-menu) .dropdown-item {
   color: #fff;
 }
+
 .navbar-crunevo .dropdown-menu:not(.notification-menu) .dropdown-divider {
+  border-color: rgba(0, 0, 0, 0.1);
+  margin: 0.5rem 0;
+}
+
+[data-bs-theme="dark"] .navbar-crunevo .dropdown-menu:not(.notification-menu) .dropdown-divider {
   border-color: rgba(255, 255, 255, 0.2);
 }
+
 .navbar-crunevo .dropdown-menu:not(.notification-menu) .dropdown-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  transform: translateX(3px);
 }
 
+[data-bs-theme="dark"] .navbar-crunevo .dropdown-menu:not(.notification-menu) .dropdown-item:hover {
+  background: rgba(102, 126, 234, 0.2);
+  color: #fff;
+}
 
+/* Hide/show navbar animation */
 .navbar-hidden {
   transform: translateY(-100%);
 }
 
+/* Enhanced navbar toggler */
+.navbar-crunevo .navbar-toggler {
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.navbar-crunevo .navbar-toggler:focus {
+  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
+}
+
+/* Enhanced search form */
+.navbar-crunevo .form-control {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 20px;
+}
+
+.navbar-crunevo .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.navbar-crunevo .form-control:focus {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
+}
+
+/* Enhanced notification badge */
+.navbar-crunevo .badge {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  border-radius: 10px;
+  font-size: 0.7rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Enhanced user avatar */
+.navbar-crunevo .avatar {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.navbar-crunevo .avatar:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(1.05);
+}
