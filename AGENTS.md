@@ -364,3 +364,4 @@
 - Fixed ambiguous join in chat global view to avoid AmbiguousForeignKeysError (hotfix chat-active-users-join).
 - Registered Crunebot and saved blueprints for public instance and removed unreachable code; added merge migration to unify heads (hotfix crunebot-blueprint).
 - Renamed the assistant blueprint to Crunebot across routes, templates and attachments (PR crunebot-rename).
+- Fixed sidebar credits display and search link endpoint to prevent template errors (PR feed-sidebar-credits-fix).
