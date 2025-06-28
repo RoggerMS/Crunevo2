@@ -1,7 +1,12 @@
+
 {% extends 'base.html' %}
 {% block content %}
+<script>
+window.location.href = "{{ url_for('chat.chat_index') }}";
+</script>
 <div class="container my-5">
-  <h2 class="mb-3"><i class="bi bi-chat-dots me-2"></i>Chat en construcción</h2>
-  <p>Estamos trabajando en el chat global educativo. Pronto podrás comunicarte en tiempo real con otros usuarios.</p>
+  <h2 class="mb-3"><i class="bi bi-chat-dots me-2"></i>Redirigiendo al chat...</h2>
+  <p>Te estamos llevando al nuevo chat global de Crunevo.</p>
+  <a href="{{ url_for('chat.chat_index') }}" class="btn btn-primary">Ir al Chat Global</a>
 </div>
 {% endblock %}

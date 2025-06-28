@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for
 from crunevo.routes.feed_routes import feed_home
 
 main_bp = Blueprint("main", __name__)
@@ -14,6 +14,21 @@ def terms():
     return render_template("terms.html")
 
 
+@main_bp.route("/terminos")
+def terminos():
+    return redirect(url_for("main.terms"))
+
+
 @main_bp.route("/crolars")
 def crolars():
     return render_template("crolars.html")
+
+
+@main_bp.route("/tienda")
+def tienda():
+    return redirect("/store")
+
+
+@main_bp.route("/privacidad")
+def privacidad():
+    return render_template("static/privacy.html")

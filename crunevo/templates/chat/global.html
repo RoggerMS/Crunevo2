@@ -1,0 +1,213 @@
+
+{% extends 'base.html' %}
+{% block title %}Chat Global - Crunevo{% endblock %}
+
+{% block head_extra %}
+<style>
+.chat-container {
+  height: 500px;
+  overflow-y: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  padding: 1rem;
+}
+
+.message-item {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.message-item.own {
+  flex-direction: row-reverse;
+}
+
+.message-content {
+  max-width: 70%;
+  padding: 0.75rem 1rem;
+  border-radius: 18px;
+  background: rgba(233, 236, 239, 0.9);
+  word-wrap: break-word;
+}
+
+.message-item.own .message-content {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.message-meta {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-top: 0.25rem;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.active-users {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.user-item:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="bi bi-chat-dots me-2"></i>Chat Global Educativo</h5>
+          <small>Comparte ideas y colabora con la comunidad</small>
+        </div>
+        
+        <div class="card-body p-0">
+          <div id="chatContainer" class="chat-container">
+            {% for message in messages %}
+            <div class="message-item {% if message.sender_id == current_user.id %}own{% endif %}">
+              <img src="{{ message.sender.avatar_url or '/static/img/default.png' }}" 
+                   alt="{{ message.sender.username }}" class="user-avatar">
+              <div class="message-content">
+                <div class="fw-bold small">{{ message.sender.username }}</div>
+                <div>{{ message.content }}</div>
+                <div class="message-meta">{{ message.timestamp.strftime('%H:%M') }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        
+        <div class="card-footer">
+          <form id="messageForm" class="d-flex gap-2">
+            <input type="text" id="messageInput" class="form-control" 
+                   placeholder="Escribe un mensaje..." maxlength="1000" required>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-send"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h6 class="mb-0"><i class="bi bi-people me-2"></i>Usuarios Activos</h6>
+        </div>
+        <div class="card-body p-2">
+          <div class="active-users">
+            {% for user in active_users %}
+            <div class="user-item">
+              <img src="{{ user.avatar_url or '/static/img/default.png' }}" 
+                   alt="{{ user.username }}" class="user-avatar">
+              <div class="flex-grow-1">
+                <div class="fw-bold">{{ user.username }}</div>
+                <small class="text-muted">{{ user.role|title }}</small>
+              </div>
+              <a href="{{ url_for('chat.private_chat', user_id=user.id) }}" 
+                 class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-chat"></i>
+              </a>
+            </div>
+            {% endfor %}
+          </div>
+          
+          <div class="mt-3">
+            <a href="{{ url_for('chat.private_chats') }}" class="btn btn-outline-primary w-100">
+              <i class="bi bi-envelope me-2"></i>Mis Conversaciones
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('messageForm');
+  const input = document.getElementById('messageInput');
+  const container = document.getElementById('chatContainer');
+  let lastMessageId = {{ messages[-1].id if messages else 0 }};
+  
+  // Scroll al final
+  container.scrollTop = container.scrollHeight;
+  
+  // Enviar mensaje
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const content = input.value.trim();
+    if (!content) return;
+    
+    fetch('/chat/enviar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content
+      },
+      body: JSON.stringify({
+        content: content,
+        is_global: true
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'ok') {
+        input.value = '';
+        addMessage(data.message, true);
+        lastMessageId = data.message.id;
+      }
+    })
+    .catch(console.error);
+  });
+  
+  // Polling para nuevos mensajes
+  setInterval(function() {
+    fetch(`/chat/mensajes/global?since_id=${lastMessageId}`)
+    .then(response => response.json())
+    .then(messages => {
+      messages.forEach(msg => {
+        addMessage(msg, false);
+        lastMessageId = Math.max(lastMessageId, msg.id);
+      });
+    })
+    .catch(console.error);
+  }, 3000);
+  
+  function addMessage(message, isOwn) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message-item ${isOwn ? 'own' : ''}`;
+    messageDiv.innerHTML = `
+      <img src="${message.sender_avatar || '/static/img/default.png'}" 
+           alt="${message.sender_username}" class="user-avatar">
+      <div class="message-content">
+        <div class="fw-bold small">${message.sender_username}</div>
+        <div>${message.content}</div>
+        <div class="message-meta">${new Date(message.timestamp).toLocaleTimeString()}</div>
+      </div>
+    `;
+    container.appendChild(messageDiv);
+    container.scrollTop = container.scrollHeight;
+  }
+});
+</script>
+{% endblock %}
