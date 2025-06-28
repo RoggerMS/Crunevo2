@@ -1,0 +1,127 @@
+Clubes + Misiones + Perfil Avanzado + Chat + Final Pulido de CRUNEVO
+Ejecuta todas las siguientes funciones en una sola pasada, asegurándote que la plataforma CRUNEVO quede completamente funcional, sin errores, lista para usuarios reales y expansión futura. Puedes usar tu criterio para mejorar visualmente o estructuralmente según el diseño actual. Este prompt reemplaza el SuperPrompt 8 anterior, ahora mucho más completo.
+
+👥 1. CLUBES ACADÉMICOS Y COMUNIDADES
+Vista /clubes:
+
+Lista de clubes académicos: Matemáticas, Historia, Educación, Ciencia, etc.
+
+Tarjeta de club con imagen, nombre, miembros, botón “Unirse” o “Ver”.
+
+Vista /clubes/<club_slug>:
+
+Mostrar publicaciones, apuntes y eventos solo de ese club.
+
+Botón para crear post exclusivo del club.
+
+Administradores de club pueden fijar contenido o moderar.
+
+Añadir sección de “Mis clubes” en el perfil del usuario.
+
+Añadir clubes destacados al sidebar del feed.
+
+🎯 2. SISTEMA COMPLETO DE MISIONES
+Vista /misiones:
+
+Tabs: Diarias | Semanales | Especiales | Logros
+
+Cada misión tiene:
+
+Icono visual, descripción clara, barra de progreso.
+
+Botón “Reclamar” (si está lista), tooltip de recompensa.
+
+Sistema de recompensas: otorgar Crolars automáticamente.
+
+Mostrar logros especiales desbloqueados.
+
+Animación de celebración al reclamar una misión o logro.
+
+👤 3. PERFIL AVANZADO Y PERSONALIZADO
+Vista /perfil mejorada con:
+
+Header visual con:
+
+Avatar editable
+
+Banner o fondo personalizable
+
+Estadísticas: apuntes, crolars, referidos, logros, misiones completadas
+
+Secciones adicionales:
+
+“Sobre mí”: descripción breve editable
+
+Carreras de interés: seleccionables
+
+Clubes a los que pertenece
+
+Últimas acciones (comentarios, apuntes subidos, compras)
+
+Botón “Ver mi perfil como público”.
+
+💬 4. INTEGRACIÓN DE CHATCRUNEVO
+Vista /chat:
+
+Asistente educativo con interfaz moderna, estilo Messenger o Notion AI.
+
+Mensajes tipo burbuja, scroll automático, fondo semitransparente.
+
+Soporte para respuestas largas, con opción de copiar.
+
+Botón para guardar conversación útil.
+
+Botón flotante en toda la plataforma para acceder al chat.
+
+Mostrar nombre oficial del bot: Crunebot.
+
+🛡️ 5. SISTEMA DE SEGURIDAD SOCIAL
+Añadir botón para:
+
+Bloquear usuarios desde perfil o chat.
+
+Reportar contenido desde cualquier tarjeta o comentario.
+
+Administradores deben poder ver reportes desde el panel y actuar.
+
+🔔 6. NOTIFICACIONES EN TIEMPO REAL (AJAX)
+Verificar que el sistema de notificaciones:
+
+Se actualice automáticamente (vía AJAX o polling).
+
+Permita marcar como leído sin recargar.
+
+Muestra número de no leídos en icono (badge rojo).
+
+Incluya tipos como: nuevo comentario, misión completada, logro obtenido, mensaje recibido.
+
+📆 7. MINI-CALENDARIO DE EVENTOS
+Vista mini calendario (opcional):
+
+Mostrar próximos eventos por color.
+
+Click en una fecha muestra los eventos del día.
+
+🧑‍💼 8. PANEL ADMIN EXPANDIDO
+En burrito.crunevo.com:
+
+Sección de gestión de clubes: crear, editar, asignar moderadores.
+
+Sección de estadísticas de misiones (cuáles se completan más).
+
+Reportes y bloqueos de usuarios.
+
+Gestión de eventos (crear, editar, eliminar).
+
+Exportación de datos como CSV (usuarios, referidos, compras, etc.)
+
+✅ 9. VERIFICACIÓN Y PULIDO FINAL (OBLIGATORIO)
+Antes de finalizar, debes:
+
+Verificar todas las rutas: /feed, /feed/trending, /store, /ranking, /perfil, /clubes, /misiones, /chat, etc.
+
+Comprobar que no existan errores visuales, de ejecución ni rutas rotas.
+
+Corregir cualquier excepción o conflicto visual, backend o frontend.
+
+Asegurarte que la webapp puede ejecutarse correctamente sin errores.
