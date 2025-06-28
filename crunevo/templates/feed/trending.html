@@ -275,7 +275,7 @@
                 <div class="small text-muted">
                   <i class="bi bi-download me-1"></i>{{ note.downloads or 0 }} descargas
                 </div>
-                <a href="{{ url_for('notes.detalle_note', note_id=note.id) }}" 
+                <a href="{{ url_for('notes.view_note', id=note.id) }}"
                    class="btn btn-sm btn-primary rounded-pill">
                   Ver apunte
                 </a>
