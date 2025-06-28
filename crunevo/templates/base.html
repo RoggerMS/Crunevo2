@@ -122,7 +122,7 @@
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;"></div>
 
     <!-- Shopping cart button for store pages -->
-    {% if request.path.startswith('/store') and 'store.view_cart' in current_app.view_functions %}
+    {% if request.path.startswith('/store') and 'store.view_cart' in url_for.__globals__.get('current_app', {}).view_functions %}
     <a href="{{ url_for('store.view_cart') }}" 
        class="btn btn-primary rounded-circle position-fixed shadow-lg d-lg-none mobile-overlay-btn"
        style="bottom: 80px; right: 20px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;">
@@ -194,10 +194,10 @@
 
     <!-- Configuration variables -->
     <script>
-      window.HAS_STORE = {{ 'true' if 'store.cart_count_api' in current_app.view_functions else 'false' }};
+      window.HAS_STORE = {{ 'true' if 'store.cart_count_api' in url_for.__globals__.get('current_app', {}).view_functions else 'false' }};
       window.CRUNEVO_CONFIG = {
         isDark: document.documentElement.dataset.bsTheme === 'dark',
-        hasStore: {{ 'true' if 'store.cart_count_api' in current_app.view_functions else 'false' }},
+        hasStore: {{ 'true' if 'store.cart_count_api' in url_for.__globals__.get('current_app', {}).view_functions else 'false' }},
         version: '2.0.0'
       };
     </script>
