@@ -391,3 +391,4 @@
 - Fixed forum link in feed sidebar and profile quick actions to use 'forum.ask_question' (hotfix forum-ask-link).
 - Public instance blocks /admin again by using create_app from app and hiding the dropdown link; fixed perfil route user variable, float conversion in store template and saved feed link (hotfix admin-block-route).
 - Registered main blueprint and removed redundant home route to restore `main.index` endpoint (hotfix main-blueprint-register).
+- Added endpoint checks for footer and error pages to avoid BuildError when blueprints are missing (hotfix endpoint-checks).

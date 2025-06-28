@@ -68,7 +68,7 @@
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('courses.list_courses') }}">
+            <a class="nav-link" href="{{ url_for('courses.list_courses') if 'courses.list_courses' in url_for.__globals__.get('current_app', {}).view_functions else '/cursos' }}">
               <i class="bi bi-play-circle-fill me-1"></i>Cursos
             </a>
           </li>
