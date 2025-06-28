@@ -389,4 +389,3 @@
 - Fixed navbar missions link to use 'auth.perfil' with tab to avoid BuildError (hotfix navbar-missions-link).
 - Fixed saved link to use 'saved.list_saved' and corrected notes detail endpoints in templates (hotfix endpoint-fixes).
 - Fixed forum link in feed sidebar and profile quick actions to use 'forum.ask_question' (hotfix forum-ask-link).
-- Public instance blocks /admin again by using create_app from app and hiding the dropdown link; fixed perfil route user variable, float conversion in store template and saved feed link (hotfix admin-block-route).

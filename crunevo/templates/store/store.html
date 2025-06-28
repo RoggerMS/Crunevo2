@@ -273,15 +273,15 @@
           <!-- Price Section -->
           <div class="price-section">
             {% if product.discount_percent %}
-            <span class="price-current" data-pen="{{ product.discounted_price }}" data-usd="{{ (product.discounted_price|float / 3.8)|round(2) }}">
+            <span class="price-current" data-pen="{{ product.discounted_price }}" data-usd="{{ (product.discounted_price / 3.8)|round(2) }}">
               S/ {{ product.discounted_price }}
             </span>
-            <span class="price-original" data-pen="{{ product.price }}" data-usd="{{ (product.price|float / 3.8)|round(2) }}">
+            <span class="price-original" data-pen="{{ product.price }}" data-usd="{{ (product.price / 3.8)|round(2) }}">
               S/ {{ product.price }}
             </span>
             <span class="discount-percent">-{{ product.discount_percent }}%</span>
             {% else %}
-            <span class="price-current" data-pen="{{ product.price }}" data-usd="{{ (product.price|float / 3.8)|round(2) }}">
+            <span class="price-current" data-pen="{{ product.price }}" data-usd="{{ (product.price / 3.8)|round(2) }}">
               S/ {{ product.price }}
             </span>
             {% endif %}
