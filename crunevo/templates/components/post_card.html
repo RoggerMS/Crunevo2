@@ -84,7 +84,7 @@
     {% if post.tags %}
     <div class="mb-3">
       {% for tag in post.tags %}
-      <a href="{{ url_for('feed.feed', tag=tag) }}" 
+      <a href="{{ url_for('feed.feed_home', tag=tag) }}"
          class="badge-modern me-2 text-decoration-none">
         #{{ tag }}
       </a>
