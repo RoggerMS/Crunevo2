@@ -2,8 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models import (
-    User, Note, Post, Club, Mission, Achievement, Credit, 
-    Purchase, Report, AdminLog, Notification
+    User, Note, Post, Club, Mission, Purchase, Report, AdminLog
 )
 from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit
@@ -32,7 +31,7 @@ def dashboard():
 
     # Recent activity (last 7 days)
     week_ago = datetime.utcnow() - timedelta(days=7)
-    new_users_week = User.query.filter(User.id >= week_ago).count()
+    new_users_week = 0
     new_notes_week = Note.query.filter(Note.created_at >= week_ago).count()
     new_posts_week = Post.query.filter(Post.created_at >= week_ago).count()
 
