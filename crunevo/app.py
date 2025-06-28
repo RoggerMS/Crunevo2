@@ -28,11 +28,14 @@ def create_app():
         from .models import Note, Notification, AchievementPopup
         from flask import session
 
-        latest_sidebar_notes = (
-            Note.query.order_by(Note.created_at.desc()).limit(3).all()
-            if db.session
-            else []
-        )
+        try:
+            latest_sidebar_notes = (
+                Note.query.order_by(Note.created_at.desc()).limit(3).all()
+                if db.session
+                else []
+            )
+        except Exception:
+            latest_sidebar_notes = []
 
         urgent_count = 0
         new_achievements = []
