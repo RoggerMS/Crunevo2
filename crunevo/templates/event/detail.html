@@ -1,0 +1,184 @@
+
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Event Header -->
+            <div class="card border-0 shadow-sm mb-4">
+                {% if event.image_url %}
+                <img src="{{ event.image_url }}" class="card-img-top" style="height: 250px; object-fit: cover;" alt="Evento">
+                {% endif %}
+                
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            {% if event.category %}
+                            <span class="badge bg-primary mb-2">{{ event.category }}</span>
+                            {% endif %}
+                            {% if event.is_featured %}
+                            <span class="badge bg-warning mb-2">
+                                <i class="bi bi-star-fill me-1"></i>
+                                Destacado
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div class="text-end">
+                            {% if event.is_upcoming %}
+                            <span class="badge bg-success">Próximamente</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Finalizado</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <h1 class="mb-3">{{ event.title }}</h1>
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="me-4">
+                            <i class="bi bi-calendar-event text-primary me-2"></i>
+                            <strong>{{ event.formatted_date }}</strong>
+                        </div>
+                        <div class="me-4">
+                            <i class="bi bi-people text-success me-2"></i>
+                            <span>{{ participant_count }} participantes</span>
+                        </div>
+                    </div>
+                    
+                    {% if event.description %}
+                    <div class="event-description mb-4">
+                        <h5>Descripción</h5>
+                        <p>{{ event.description }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if event.rewards %}
+                    <div class="event-rewards mb-4">
+                        <h5>Recompensas</h5>
+                        <div class="alert alert-info">
+                            <i class="bi bi-gift me-2"></i>
+                            {{ event.rewards }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Participation Buttons -->
+                    {% if current_user.is_authenticated and event.is_upcoming %}
+                    <div class="participation-section">
+                        {% if is_participating %}
+                        <button class="btn btn-outline-danger" onclick="leaveEvent({{ event.id }})">
+                            <i class="bi bi-box-arrow-left me-1"></i>
+                            Abandonar Evento
+                        </button>
+                        <span class="text-success ms-3">
+                            <i class="bi bi-check-circle me-1"></i>
+                            ¡Ya estás participando!
+                        </span>
+                        {% else %}
+                        <button class="btn btn-primary btn-lg" onclick="joinEvent({{ event.id }})">
+                            <i class="bi bi-plus-circle me-1"></i>
+                            Participar en Evento
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% elif not current_user.is_authenticated %}
+                    <div class="text-center">
+                        <p class="text-muted">Inicia sesión para participar en eventos</p>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Iniciar Sesión</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Detalles del Evento</h5>
+                    <div class="event-details">
+                        <div class="mb-3">
+                            <strong>Fecha:</strong><br>
+                            <span class="text-muted">{{ event.event_date.strftime('%d de %B de %Y') }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Hora:</strong><br>
+                            <span class="text-muted">{{ event.event_date.strftime('%H:%M') }}</span>
+                        </div>
+                        {% if event.category %}
+                        <div class="mb-3">
+                            <strong>Categoría:</strong><br>
+                            <span class="text-muted">{{ event.category }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="mb-3">
+                            <strong>Participantes:</strong><br>
+                            <span class="text-muted">{{ participant_count }} personas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if recent_participants %}
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Participantes Recientes</h5>
+                    <div class="participants-list">
+                        {% for participation in recent_participants %}
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ participation.user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                                 class="rounded-circle me-3" width="32" height="32" alt="Avatar">
+                            <div>
+                                <h6 class="mb-0">@{{ participation.user.username }}</h6>
+                                <small class="text-muted">{{ participation.joined_at.strftime('%d/%m') }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function joinEvent(eventId) {
+    fetch(`/evento/${eventId}/participar`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.error || 'Error al unirse al evento');
+        }
+    });
+}
+
+function leaveEvent(eventId) {
+    if (confirm('¿Estás seguro de que quieres abandonar este evento?')) {
+        fetch(`/evento/${eventId}/abandonar`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.error || 'Error al abandonar el evento');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

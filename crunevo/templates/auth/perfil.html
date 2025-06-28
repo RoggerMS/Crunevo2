@@ -1,4 +1,7 @@
+The code modifications add a "Certificates" tab to the user profile, allowing users to access and view their earned certificates.
+```
 
+```replit_final_file
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
 
@@ -285,20 +288,20 @@
     padding: 1.5rem;
     text-align: center;
   }
-  
+
   .profile-stats {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
   }
-  
+
   .activity-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .note-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .achievement-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -368,6 +371,9 @@
         <a class="nav-link {% if tab == 'verificacion' %}active{% endif %}" href="{{ url_for('auth.perfil', tab='verificacion') }}">
           <i class="bi bi-shield-check"></i>Verificación
         </a>
+        <a class="nav-link {% if tab == 'certificados' %}active{% endif %}" href="{{ url_for('auth.perfil', tab='certificados') }}">
+          <i class="bi bi-award"></i>Certificados
+        </a>
       </div>
 
       <!-- Contenido de tabs -->
@@ -404,7 +410,7 @@
           </h4>
           <a href="{{ url_for('notes.list_notes') }}" class="btn btn-outline-primary btn-sm">Ver todos</a>
         </div>
-        
+
         {% set sorted_notes = current_user.notes | sort(attribute='created_at', reverse=True) %}
         {% if sorted_notes %}
         <div class="note-grid">
@@ -493,7 +499,7 @@
             <i class="bi bi-trophy text-warning"></i>Logros e insignias
           </h4>
         </div>
-        
+
         <div class="achievement-filters">
           <a href="{{ url_for('auth.perfil') }}" class="btn btn-sm {% if not ach_type %}btn-primary{% else %}btn-outline-primary{% endif %}">
             <i class="bi bi-grid me-1"></i>Todos
@@ -533,7 +539,7 @@
         </div>
         {% endif %}
       </div>
-      
+
       {% elif tab == 'misiones' %}
         {% include 'auth/missions_tab.html' %}
       {% elif tab == 'referidos' %}
@@ -556,6 +562,20 @@
                 <i class="bi bi-clock me-2"></i>Próximamente disponible
               </button>
             {% endif %}
+          </div>
+        </div>
+      {% elif tab == 'certificados' %}
+        <div class="content-section">
+          <h4 class="section-title">
+            <i class="bi bi-award text-primary"></i>Certificados
+          </h4>
+          <div class="text-center py-5">
+            <h4>Certificados Disponibles</h4>
+            <p class="text-muted">Obtén certificados por tus logros en CRUNEVO</p>
+            <a href="{{ url_for('certificate.list_certificates') }}" class="btn btn-primary">
+              <i class="bi bi-award me-1"></i>
+              Ver Mis Certificados
+            </a>
           </div>
         </div>
       {% endif %}

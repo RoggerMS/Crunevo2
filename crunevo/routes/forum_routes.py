@@ -98,3 +98,44 @@ def answer_question(question_id):
     
     flash('¡Respuesta publicada exitosamente!')
     return redirect(url_for('forum.view_question', question_id=question_id))
+
+
+@forum_bp.route('/foro/respuesta/<int:answer_id>/votar', methods=['POST'])
+@login_required
+def vote_answer(answer_id):
+    answer = ForumAnswer.query.get_or_404(answer_id)
+    data = request.get_json()
+    vote_type = data.get('vote_type')
+    
+    if vote_type == 'up':
+        answer.votes += 1
+    elif vote_type == 'down':
+        answer.votes -= 1
+    
+    db.session.commit()
+    return jsonify({'success': True, 'votes': answer.votes})
+
+
+@forum_bp.route('/foro/respuesta/<int:answer_id>/aceptar', methods=['POST'])
+@login_required
+def accept_answer(answer_id):
+    answer = ForumAnswer.query.get_or_404(answer_id)
+    question = answer.question
+    
+    # Only question author can accept answers
+    if current_user.id != question.author_id:
+        return jsonify({'error': 'No autorizado'}), 403
+    
+    # Unmark other answers as accepted
+    ForumAnswer.query.filter_by(question_id=question.id).update({'is_accepted': False})
+    
+    # Mark this answer as accepted
+    answer.is_accepted = True
+    question.is_solved = True
+    
+    db.session.commit()
+    
+    # Award extra credits to answerer
+    add_credit(answer.author, 10, CreditReasons.ACTIVIDAD_SOCIAL, related_id=answer.id)
+    
+    return jsonify({'success': True})

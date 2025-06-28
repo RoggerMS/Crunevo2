@@ -38,6 +38,9 @@
     <a href="{{ url_for('chat.chat_index') }}" role="link" tabindex="0" aria-label="Chat" title="Chat" class="text-center {% if request.path.startswith('/chat') %}bottom-nav-active{% else %}text-primary{% endif %}">
       <i class="bi bi-chat fs-4 bottom-nav-icon"></i>
     </a>
+    <a href="{{ url_for('saved.list_saved') }}" role="link" tabindex="0" aria-label="Guardados" title="Guardados" class="text-center {% if request.path.startswith('/saved') %}bottom-nav-active{% else %}text-primary{% endif %}">
+                    <i class="bi bi-bookmark fs-4 bottom-nav-icon"></i>
+                </a>
     <a href="{{ url_for('auth.perfil') }}" role="link" tabindex="0" aria-label="Perfil" title="Perfil" class="text-center {% if request.path.startswith('/perfil') %}bottom-nav-active{% else %}text-primary{% endif %}">
       <i class="bi bi-person-circle fs-4 bottom-nav-icon"></i>
     </a>

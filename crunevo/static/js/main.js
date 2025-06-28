@@ -673,3 +673,52 @@ window.addEventListener('beforeunload', () => {
   const popup = document.getElementById('achievementPopup');
   if (popup) popup.classList.add('d-none', 'tw-hidden');
 });
+
+// Share functionality
+function sharePost(postId) {
+    const url = `${window.location.origin}/feed/post/${postId}`;
+    if (navigator.share) {
+        navigator.share({
+            title: 'Publicación en CRUNEVO',
+            url: url
+        });
+    } else {
+        copyToClipboard(url);
+        showToast('Enlace copiado al portapapeles');
+    }
+}
+
+// Save content functionality
+function toggleSave(contentType, contentId, button) {
+    fetch('/api/guardar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            content_type: contentType,
+            content_id: contentId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const icon = button.querySelector('i');
+            const text = button.querySelector('span');
+
+            if (data.saved) {
+                icon.className = 'bi bi-bookmark-fill';
+                if (text) text.textContent = 'Guardado';
+                showToast('Contenido guardado');
+            } else {
+                icon.className = 'bi bi-bookmark';
+                if (text) text.textContent = 'Guardar';
+                showToast('Contenido removido de guardados');
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Error al guardar contenido', 'error');
+    });
+}

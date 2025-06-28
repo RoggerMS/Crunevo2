@@ -26,8 +26,45 @@ def view_club(club_id):
     if current_user.is_authenticated:
         is_member = ClubMember.query.filter_by(user_id=current_user.id, club_id=club_id).first() is not None
     
+    # Get club posts
+    from crunevo.models.club_post import ClubPost
+    posts = ClubPost.query.filter_by(club_id=club_id).order_by(ClubPost.created_at.desc()).limit(20).all()
+    
     members = ClubMember.query.filter_by(club_id=club_id).limit(10).all()
-    return render_template('club/detail.html', club=club, is_member=is_member, members=members)
+    return render_template('club/detail.html', club=club, is_member=is_member, members=members, posts=posts)
+
+
+@club_bp.route('/club/<int:club_id>/post', methods=['POST'])
+@login_required
+def create_club_post(club_id):
+    club = Club.query.get_or_404(club_id)
+    
+    # Check if user is a member
+    membership = ClubMember.query.filter_by(user_id=current_user.id, club_id=club_id).first()
+    if not membership:
+        flash('Debes ser miembro del club para publicar', 'error')
+        return redirect(url_for('club.view_club', club_id=club_id))
+    
+    content = request.form.get('content')
+    if not content or len(content.strip()) < 5:
+        flash('El contenido debe tener al menos 5 caracteres', 'error')
+        return redirect(url_for('club.view_club', club_id=club_id))
+    
+    from crunevo.models.club_post import ClubPost
+    post = ClubPost(
+        club_id=club_id,
+        author_id=current_user.id,
+        content=content.strip()
+    )
+    
+    db.session.add(post)
+    db.session.commit()
+    
+    # Award credits
+    add_credit(current_user, 1, CreditReasons.ACTIVIDAD_SOCIAL, related_id=post.id)
+    
+    flash('¡Publicación creada en el club!')
+    return redirect(url_for('club.view_club', club_id=club_id))
 
 
 @club_bp.route('/club/<int:club_id>/join', methods=['POST'])

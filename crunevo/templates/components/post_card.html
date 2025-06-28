@@ -1,4 +1,3 @@
-
 <div class="feed-card-clean" data-post-id="{{ post.id }}">
   <!-- Header -->
   <div class="feed-header-clean">
@@ -69,7 +68,7 @@
         <i class="bi bi-heart{% if current_user.is_authenticated and current_user.has_reacted_to_post(post.id) %}-fill{% endif %}"></i>
         <span class="reaction-count">{{ post.reaction_count or 0 }}</span>
       </button>
-      
+
       <!-- Reaction options (hidden by default) -->
       <div class="reaction-options position-absolute d-none">
         <button class="reaction-btn" data-reaction="👍" title="Me gusta">👍</button>
@@ -121,7 +120,7 @@
           </div>
         </div>
       {% endfor %}
-      
+
       {% if post.comments|length > 3 %}
         <div class="text-center mt-2">
           <a href="{{ url_for('feed.post_detail', id=post.id) }}" class="text-primary">

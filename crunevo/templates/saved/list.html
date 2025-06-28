@@ -1,0 +1,185 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="d-flex align-items-center mb-4">
+                <i class="bi bi-bookmark-fill text-primary me-3" style="font-size: 2rem;"></i>
+                <div>
+                    <h1 class="mb-0">Contenido Guardado</h1>
+                    <p class="text-muted mb-0">Tus apuntes y publicaciones guardadas</p>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-tabs mb-4" id="savedTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="notes-tab" data-bs-toggle="tab" 
+                            data-bs-target="#notes" type="button" role="tab">
+                        <i class="bi bi-journal-text me-1"></i>
+                        Apuntes ({{ saved_notes|length }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="posts-tab" data-bs-toggle="tab" 
+                            data-bs-target="#posts" type="button" role="tab">
+                        <i class="bi bi-chat-square-text me-1"></i>
+                        Publicaciones ({{ saved_posts|length }})
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="savedTabsContent">
+                <!-- Notes Tab -->
+                <div class="tab-pane fade show active" id="notes" role="tabpanel">
+                    {% if saved_notes %}
+                    <div class="row g-4">
+                        {% for saved, note in saved_notes %}
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title mb-0">
+                                            <a href="{{ url_for('notes.detalle', id=note.id) }}" 
+                                               class="text-decoration-none">
+                                                {{ note.title }}
+                                            </a>
+                                        </h5>
+                                        <button class="btn btn-sm btn-outline-danger" 
+                                                onclick="unsaveContent('note', {{ note.id }})">
+                                            <i class="bi bi-bookmark-x"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <p class="card-text text-muted small">{{ note.description[:100] }}...</p>
+                                    
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="note-stats">
+                                            <small class="text-muted">
+                                                <i class="bi bi-download me-1"></i>{{ note.downloads }}
+                                                <i class="bi bi-heart ms-2 me-1"></i>{{ note.likes }}
+                                            </small>
+                                        </div>
+                                        <small class="text-muted">
+                                            Guardado: {{ saved.saved_at.strftime('%d/%m/%Y') }}
+                                        </small>
+                                    </div>
+                                    
+                                    {% if note.tags %}
+                                    <div class="mt-2">
+                                        {% for tag in note.tags.split(',')[:3] %}
+                                        <span class="badge bg-light text-dark me-1">{{ tag.strip() }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-bookmark text-muted" style="font-size: 4rem;"></i>
+                        <h4 class="text-muted mt-3">No tienes apuntes guardados</h4>
+                        <p class="text-muted">Explora los apuntes y guarda los que más te interesen</p>
+                        <a href="{{ url_for('notes.list') }}" class="btn btn-primary">
+                            <i class="bi bi-search me-1"></i>
+                            Explorar Apuntes
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Posts Tab -->
+                <div class="tab-pane fade" id="posts" role="tabpanel">
+                    {% if saved_posts %}
+                    <div class="row g-4">
+                        {% for saved, post in saved_posts %}
+                        <div class="col-12">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <h6 class="mb-0">@{{ post.author.username }}</h6>
+                                                <small class="text-muted">{{ post.created_at.strftime('%d/%m/%Y') }}</small>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-danger" 
+                                                onclick="unsaveContent('post', {{ post.id }})">
+                                            <i class="bi bi-bookmark-x"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <p class="mb-3">{{ post.content }}</p>
+                                    
+                                    {% if post.image_url %}
+                                    <img src="{{ post.image_url }}" class="img-fluid rounded mb-3" 
+                                         style="max-height: 200px;" alt="Imagen del post">
+                                    {% endif %}
+                                    
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="post-stats">
+                                            <small class="text-muted">
+                                                <i class="bi bi-heart me-1"></i>{{ post.likes }}
+                                                <i class="bi bi-chat ms-2 me-1"></i>{{ post.comments_count }}
+                                            </small>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <small class="text-muted">
+                                                Guardado: {{ saved.saved_at.strftime('%d/%m/%Y') }}
+                                            </small>
+                                            <a href="{{ url_for('feed.post_detail', post_id=post.id) }}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-arrow-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-bookmark text-muted" style="font-size: 4rem;"></i>
+                        <h4 class="text-muted mt-3">No tienes publicaciones guardadas</h4>
+                        <p class="text-muted">Guarda las publicaciones que más te interesen del feed</p>
+                        <a href="{{ url_for('feed.index') }}" class="btn btn-primary">
+                            <i class="bi bi-house me-1"></i>
+                            Ir al Feed
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function unsaveContent(contentType, contentId) {
+    fetch('/api/guardar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            content_type: contentType,
+            content_id: contentId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

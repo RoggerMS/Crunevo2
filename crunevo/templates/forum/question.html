@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Question Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge bg-primary me-2">{{ question.category }}</span>
+                        <small class="text-muted">
+                            <i class="bi bi-eye me-1"></i>
+                            {{ question.views }} vistas
+                        </small>
+                        {% if question.is_solved %}
+                        <span class="badge bg-success ms-2">
+                            <i class="bi bi-check-circle me-1"></i>
+                            Resuelto
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <h1 class="mb-3">{{ question.title }}</h1>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{{ question.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+                             class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                        <div>
+                            <h6 class="mb-0">@{{ question.author.username }}</h6>
+                            <small class="text-muted">{{ question.created_at.strftime('%d de %B, %Y a las %H:%M') }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="question-content">
+                        <p class="lead">{{ question.content }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Answers Section -->
+            <div class="answers-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>
+                        {{ answers|length }} Respuesta{{ 's' if answers|length != 1 else '' }}
+                    </h3>
+                </div>
+
+                {% if answers %}
+                <div class="row g-3 mb-4">
+                    {% for answer in answers %}
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm {% if answer.is_accepted %}border-success{% endif %}">
+                            {% if answer.is_accepted %}
+                            <div class="card-header bg-success text-white">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Respuesta Aceptada
+                            </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <div class="d-flex align-items-start">
+                                    <img src="{{ answer.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+                                         class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <h6 class="mb-0 me-2">@{{ answer.author.username }}</h6>
+                                            <small class="text-muted">{{ answer.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                                        </div>
+                                        <p class="mb-3">{{ answer.content }}</p>
+                                        
+                                        <div class="d-flex align-items-center">
+                                            <div class="btn-group me-3" role="group">
+                                                <button class="btn btn-sm btn-outline-success" 
+                                                        onclick="voteAnswer({{ answer.id }}, 'up')">
+                                                    <i class="bi bi-arrow-up"></i>
+                                                </button>
+                                                <span class="btn btn-sm btn-outline-secondary disabled">
+                                                    {{ answer.votes }}
+                                                </span>
+                                                <button class="btn btn-sm btn-outline-danger" 
+                                                        onclick="voteAnswer({{ answer.id }}, 'down')">
+                                                    <i class="bi bi-arrow-down"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            {% if current_user.is_authenticated and current_user.id == question.author_id and not answer.is_accepted %}
+                                            <button class="btn btn-sm btn-success" 
+                                                    onclick="acceptAnswer({{ answer.id }})">
+                                                <i class="bi bi-check-circle me-1"></i>
+                                                Marcar como solución
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-chat-right-dots text-muted" style="font-size: 3rem;"></i>
+                    <h4 class="text-muted mt-3">No hay respuestas aún</h4>
+                    <p class="text-muted">¡Sé el primero en ayudar!</p>
+                </div>
+                {% endif %}
+
+                <!-- Answer Form -->
+                {% if current_user.is_authenticated %}
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Tu respuesta</h5>
+                        <form method="post" action="{{ url_for('forum.answer_question', question_id=question.id) }}">
+                            {{ csrf.csrf_field() }}
+                            <div class="mb-3">
+                                <textarea class="form-control" name="content" rows="5" 
+                                        placeholder="Escribe tu respuesta..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-reply me-1"></i>
+                                Responder
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <h5>¿Quieres responder?</h5>
+                        <p class="text-muted">Inicia sesión para participar en la discusión</p>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Iniciar Sesión</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Estadísticas</h5>
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="border-end">
+                                <div class="h4 mb-0">{{ question.views }}</div>
+                                <small class="text-muted">Vistas</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border-end">
+                                <div class="h4 mb-0">{{ answers|length }}</div>
+                                <small class="text-muted">Respuestas</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="h4 mb-0 {% if question.is_solved %}text-success{% else %}text-muted{% endif %}">
+                                {% if question.is_solved %}✓{% else %}?{% endif %}
+                            </div>
+                            <small class="text-muted">Estado</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Categorías relacionadas</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for cat in ['Matemáticas', 'Ciencias', 'Lenguas', 'Historia', 'Tecnología'] %}
+                        <a href="{{ url_for('forum.list_questions', category=cat) }}" 
+                           class="badge bg-light text-dark text-decoration-none">{{ cat }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function voteAnswer(answerId, type) {
+    fetch(`/foro/respuesta/${answerId}/votar`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
+        },
+        body: JSON.stringify({vote_type: type})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function acceptAnswer(answerId) {
+    fetch(`/foro/respuesta/${answerId}/aceptar`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

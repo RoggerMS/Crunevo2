@@ -1,0 +1,156 @@
+
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Club Header -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-start">
+                        <div class="club-avatar me-3">
+                            {% if club.avatar_url %}
+                            <img src="{{ club.avatar_url }}" class="rounded-circle" width="80" height="80" alt="Club">
+                            {% else %}
+                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" 
+                                 style="width: 80px; height: 80px;">
+                                <i class="bi bi-people-fill text-white" style="font-size: 2rem;"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h1 class="mb-1">{{ club.name }}</h1>
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-mortarboard me-1"></i>
+                                {{ club.career }}
+                            </p>
+                            <p class="mb-3">{{ club.description }}</p>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="text-muted">
+                                    <i class="bi bi-people me-1"></i>
+                                    {{ club.member_count }} miembros
+                                </span>
+                                {% if current_user.is_authenticated %}
+                                    {% if is_member %}
+                                    <form method="post" action="{{ url_for('club.leave_club', club_id=club.id) }}" class="d-inline">
+                                        {{ csrf.csrf_field() }}
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="bi bi-box-arrow-left me-1"></i>
+                                            Abandonar
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <form method="post" action="{{ url_for('club.join_club', club_id=club.id) }}" class="d-inline">
+                                        {{ csrf.csrf_field() }}
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-plus-circle me-1"></i>
+                                            Unirme
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post Creation (only for members) -->
+            {% if current_user.is_authenticated and is_member %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Comparte con el club</h5>
+                    <form method="post" action="{{ url_for('club.create_club_post', club_id=club.id) }}">
+                        {{ csrf.csrf_field() }}
+                        <div class="mb-3">
+                            <textarea class="form-control" name="content" rows="3" 
+                                    placeholder="¿Qué quieres compartir con {{ club.name }}?"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send me-1"></i>
+                            Publicar
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Club Posts -->
+            <div class="posts-section">
+                <h3 class="mb-4">Publicaciones del Club</h3>
+                
+                {% if posts %}
+                <div class="row g-3">
+                    {% for post in posts %}
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start">
+                                    <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+                                         class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <h6 class="mb-0 me-2">@{{ post.author.username }}</h6>
+                                            <small class="text-muted">{{ post.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                                        </div>
+                                        <p class="mb-2">{{ post.content }}</p>
+                                        <div class="d-flex align-items-center">
+                                            <button class="btn btn-sm btn-outline-primary me-2">
+                                                <i class="bi bi-heart me-1"></i>
+                                                {{ post.likes }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-chat-dots text-muted" style="font-size: 3rem;"></i>
+                    <h4 class="text-muted mt-3">No hay publicaciones aún</h4>
+                    <p class="text-muted">
+                        {% if current_user.is_authenticated and is_member %}
+                        ¡Sé el primero en compartir algo!
+                        {% else %}
+                        Únete al club para ver y crear publicaciones
+                        {% endif %}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Miembros Recientes</h5>
+                    {% if members %}
+                    <div class="list-group list-group-flush">
+                        {% for member in members %}
+                        <div class="list-group-item px-0">
+                            <div class="d-flex align-items-center">
+                                <img src="{{ member.user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                                     class="rounded-circle me-3" width="32" height="32" alt="Avatar">
+                                <div>
+                                    <h6 class="mb-0">@{{ member.user.username }}</h6>
+                                    <small class="text-muted">{{ member.joined_at.strftime('%d/%m/%Y') }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay miembros aún</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
