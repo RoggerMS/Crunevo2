@@ -43,35 +43,42 @@ def create_app():
             "admin",
             "moderator",
         ]:
-            from .models import Report
+            try:
+                from .models import Report
 
-            counts = {}
-            for r in Report.query.filter_by(status="open").all():
-                if r.description.startswith("Post "):
-                    try:
-                        pid = int(r.description.split()[1].split(":")[0])
-                        counts[pid] = counts.get(pid, 0) + 1
-                    except Exception:
-                        pass
-            urgent_count = sum(1 for c in counts.values() if c >= 3)
+                counts = {}
+                for r in Report.query.filter_by(status="open").all():
+                    if r.description.startswith("Post "):
+                        try:
+                            pid = int(r.description.split()[1].split(":")[0])
+                            counts[pid] = counts.get(pid, 0) + 1
+                        except Exception:
+                            pass
+                urgent_count = sum(1 for c in counts.values() if c >= 3)
+            except Exception:
+                urgent_count = 0
 
         if current_user.is_authenticated:
-            popups = AchievementPopup.query.filter_by(
-                user_id=current_user.id, shown=False
-            ).all()
-            if popups:
-                new_achievements = [
-                    {
-                        "id": p.achievement.id,
-                        "code": p.achievement.code,
-                        "title": p.achievement.title,
-                        "credit_reward": p.achievement.credit_reward,
-                    }
-                    for p in popups
-                    if p.achievement
-                ]
-                session["new_achievements"] = new_achievements
-            else:
+            try:
+                popups = AchievementPopup.query.filter_by(
+                    user_id=current_user.id, shown=False
+                ).all()
+                if popups:
+                    new_achievements = [
+                        {
+                            "id": p.achievement.id,
+                            "code": p.achievement.code,
+                            "title": p.achievement.title,
+                            "credit_reward": p.achievement.credit_reward,
+                        }
+                        for p in popups
+                        if p.achievement
+                    ]
+                    session["new_achievements"] = new_achievements
+                else:
+                    new_achievements = []
+                    session.pop("new_achievements", None)
+            except Exception:
                 new_achievements = []
                 session.pop("new_achievements", None)
 
@@ -109,6 +116,14 @@ def create_app():
     login_manager.login_view = "auth.login"
 
     migrate.init_app(app, db)
+    
+    # Initialize database if needed
+    with app.app_context():
+        try:
+            from .utils.db_init import ensure_database_ready
+            ensure_database_ready()
+        except Exception as e:
+            app.logger.error(f"Database initialization error: {e}")
 
     from .routes.onboarding_routes import bp as onboarding_bp
     from .routes.auth_routes import auth_bp, login as login_view
