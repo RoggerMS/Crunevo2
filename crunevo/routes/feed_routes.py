@@ -287,6 +287,8 @@ def view_feed():
 feed_bp.add_url_rule(
     "/", endpoint="feed_home", view_func=view_feed, methods=["GET", "POST"]
 )
+# Legacy endpoint for older templates/tests
+feed_bp.add_url_rule("/", endpoint="feed", view_func=view_feed, methods=["GET", "POST"])
 
 # Expose alias for imports
 feed_home = view_feed

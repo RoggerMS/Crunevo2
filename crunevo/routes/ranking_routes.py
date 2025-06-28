@@ -33,6 +33,10 @@ def show_ranking():
     )
 
 
+# Backwards compatibility alias
+ranking_bp.add_url_rule("/", endpoint="index", view_func=show_ranking)
+
+
 @ranking_bp.route("/referidos")
 def top_referrers():
     now = datetime.utcnow()

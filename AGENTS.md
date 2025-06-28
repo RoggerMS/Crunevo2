@@ -356,3 +356,5 @@
 - Context processor serializes pending achievements and returns an empty list when none to avoid regenerating `window.NEW_ACHIEVEMENTS` (PR achievement-popup-context-fix).
 - Context processor syncs session['new_achievements'] and JS clears global variable after marking shown (PR achievement-popup-session-reset).
 - Popup now shown on DOMContentLoaded only when NEW_ACHIEVEMENTS has items and mark-shown updates immediately via API (PR achievement-popup-auto-mark)
+- Verified new design commit d3b38ae; reviewed templates and CSS, no conflicts detected. make test shows failing BuildError in routes.
+- Fixed missing endpoints for navbar links: added legacy aliases for feed and ranking blueprints and updated notifications link (PR feed-route-aliases).
