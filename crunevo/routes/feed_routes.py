@@ -233,7 +233,6 @@ def view_feed():
         create_feed_item_for_all("post", post.id)
         flash("Publicación creada")
         return redirect(url_for("feed.view_feed"))
-        return redirect(url_for("feed.view_feed"))
 
     categoria = request.args.get("categoria")
     query = FeedItem.query.filter_by(owner_id=current_user.id)
@@ -682,9 +681,10 @@ def api_quickfeed():
 def api_trending():
     """Return trending content filtered by type."""
     filter_opt = request.args.get("filter", "semana")
-    
+
     if filter_opt == "semana":
         from datetime import datetime, timedelta
+
         last_week = datetime.utcnow() - timedelta(days=7)
         posts = (
             Post.query.filter(Post.created_at > last_week)
@@ -694,6 +694,7 @@ def api_trending():
         )
     elif filter_opt == "mes":
         from datetime import datetime, timedelta
+
         last_month = datetime.utcnow() - timedelta(days=30)
         posts = (
             Post.query.filter(Post.created_at > last_month)
@@ -713,7 +714,7 @@ def api_trending():
         )
     else:
         posts = Post.query.order_by(Post.created_at.desc()).limit(10).all()
-    
+
     html = render_template("feed/_trending_posts.html", posts=posts)
     return jsonify({"html": html, "count": len(posts)})
 

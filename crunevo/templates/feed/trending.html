@@ -229,7 +229,7 @@
                     <span class="text-danger"><i class="bi bi-heart-fill me-1"></i>{{ post.likes or 0 }}</span>
                     <span class="text-primary"><i class="bi bi-chat me-1"></i>{{ post.comment_count or 0 }}</span>
                   </div>
-                  <a href="{{ url_for('feed.view_post_bp', post_id=post.id) }}" class="btn btn-sm btn-outline-primary rounded-pill">
+                  <a href="{{ url_for('feed.view_post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary rounded-pill">
                     Ver publicación
                   </a>
                 </div>
