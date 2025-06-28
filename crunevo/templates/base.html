@@ -92,7 +92,7 @@
             <span class="text-muted small">© 2024 Crunevo - Construyendo el futuro educativo</span>
           </div>
           <div class="col-md-6 text-md-end">
-            <a href="{{ url_for('about.about') }}" class="text-muted text-decoration-none me-3 small">Sobre Crunevo</a>
+            <a href="{{ url_for('about.about') if 'about.about' in url_for.__globals__.get('current_app', {}).view_functions else '/about' }}" class="text-muted text-decoration-none me-3 small">Sobre Crunevo</a>
             <a href="/cookies" class="text-muted text-decoration-none me-3 small">Cookies</a>
             <a href="/privacidad" class="text-muted text-decoration-none me-3 small">Privacidad</a>
             <a href="/terminos" class="text-muted text-decoration-none small">Términos</a>
