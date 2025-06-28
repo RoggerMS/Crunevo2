@@ -1,162 +1,579 @@
+
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
 
 {% block head_extra %}
-  {{ super() }}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
-{% endblock %}
-{% block content %}
-<div class="row g-4">
-  <div class="col-lg-4 d-none d-lg-block">
-  {% include "auth/perfil_sidebar.html" %}
-</div>
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
+<style>
+.profile-header {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-radius: 24px;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  position: relative;
+  overflow: hidden;
+}
 
-  <div class="col-lg-8">
-    <ul class="nav nav-tabs mb-3">
-      <li class="nav-item">
-        <a class="nav-link {% if not tab %}active{% endif %}" href="{{ url_for('auth.perfil') }}">Resumen</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {% if tab == 'misiones' %}active{% endif %}" href="{{ url_for('auth.perfil', tab='misiones') }}">🧠 Misiones</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {% if tab == 'referidos' %}active{% endif %}" href="{{ url_for('auth.perfil', tab='referidos') }}">👥 Referidos</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {% if tab == 'verificacion' %}active{% endif %}" href="{{ url_for('auth.perfil', tab='verificacion') }}">Verificación</a>
-      </li>
-    </ul>
-    {% if not tab %}
-    <div class="row g-3">
-      <div class="col-12">
-        <h4>Resumen de actividad</h4>
-        <div class="row row-cols-2 row-cols-md-3 g-2">
-          <div class="col">
-            <div class="card text-center p-3">
-              <div class="h4 mb-0">{{ current_user.notes|length }}</div>
-              <div class="small text-muted">Apuntes subidos</div>
-            </div>
+[data-bs-theme="dark"] .profile-header {
+  background: rgba(30, 30, 46, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 4px solid #667eea;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+  object-fit: cover;
+}
+
+.profile-info h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1a202c;
+  margin-bottom: 0.5rem;
+}
+
+[data-bs-theme="dark"] .profile-info h1 {
+  color: #f1f5f9;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.stat-item {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 1.25rem;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+  transform: translateY(-2px);
+}
+
+[data-bs-theme="dark"] .stat-item {
+  background: rgba(30, 30, 46, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #667eea;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+[data-bs-theme="dark"] .stat-label {
+  color: #d1d5db;
+}
+
+.profile-tabs {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  padding: 0.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+}
+
+[data-bs-theme="dark"] .profile-tabs {
+  background: rgba(30, 30, 46, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-tabs .nav-link {
+  border-radius: 16px;
+  font-weight: 600;
+  color: #6b7280;
+  border: none;
+  padding: 1rem 1.5rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile-tabs .nav-link.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.profile-tabs .nav-link:hover:not(.active) {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+.content-section {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+[data-bs-theme="dark"] .content-section {
+  background: rgba(30, 30, 46, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+[data-bs-theme="dark"] .section-title {
+  color: #f1f5f9;
+}
+
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.activity-card {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.activity-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  border-color: rgba(102, 126, 234, 0.2);
+}
+
+[data-bs-theme="dark"] .activity-card {
+  background: rgba(30, 30, 46, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.activity-card h6 {
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 1rem;
+}
+
+[data-bs-theme="dark"] .activity-card h6 {
+  color: #f1f5f9;
+}
+
+.note-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.note-item {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.note-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+[data-bs-theme="dark"] .note-item {
+  background: rgba(30, 30, 46, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.achievement-item {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.achievement-item:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+[data-bs-theme="dark"] .achievement-item {
+  background: rgba(30, 30, 46, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.achievement-filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.list-modern {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+[data-bs-theme="dark"] .list-modern {
+  background: rgba(30, 30, 46, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.list-modern .list-group-item {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1.25rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.list-modern .list-group-item:hover {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+[data-bs-theme="dark"] .list-modern .list-group-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #f1f5f9;
+}
+
+.list-modern .list-group-item:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    padding: 1.5rem;
+    text-align: center;
+  }
+  
+  .profile-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .activity-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .note-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .achievement-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3">
+  <div class="row g-4">
+    <!-- Sidebar -->
+    <div class="col-lg-3 d-none d-lg-block">
+      <div class="sticky-top" style="top: 80px;">
+        {% include "auth/perfil_sidebar.html" %}
+      </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="col-lg-9">
+      <!-- Header del perfil -->
+      <div class="profile-header">
+        <div class="d-flex align-items-center flex-column flex-md-row">
+          <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
+               class="profile-avatar mb-3 mb-md-0 me-md-4" alt="Avatar">
+          <div class="profile-info flex-grow-1 text-center text-md-start">
+            <h1>{{ current_user.username }}</h1>
+            <p class="text-muted mb-0">
+              <i class="bi bi-person-badge me-2"></i>Miembro desde 
+              {% set first_event = current_user.auth_events|sort(attribute='timestamp')|first %}
+              {{ first_event.timestamp.strftime('%B %Y') if first_event else 'hace tiempo' }}
+            </p>
           </div>
-          <div class="col">
-            <div class="card text-center p-3">
-              <div class="h4 mb-0">{{ current_user.post_comments|length }}</div>
-              <div class="small text-muted">Respuestas foro</div>
-            </div>
+        </div>
+
+        <!-- Estadísticas rápidas -->
+        <div class="profile-stats">
+          <div class="stat-item">
+            <div class="stat-value">{{ current_user.notes|length }}</div>
+            <div class="stat-label">Apuntes</div>
           </div>
-          <div class="col">
-            <div class="card text-center p-3">
-              <div class="h4 mb-0">{{ current_user.credits }}</div>
-              <div class="small text-muted">Crolars ganados</div>
-            </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ current_user.post_comments|length }}</div>
+            <div class="stat-label">Comentarios</div>
           </div>
-          <div class="col">
-            <div class="card text-center p-3">
-              <div class="h4 mb-0">{{ current_user.notes|map(attribute='likes')|sum }}</div>
-              <div class="small text-muted">Votos positivos</div>
-            </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ current_user.credits }}</div>
+            <div class="stat-label">Crolars</div>
           </div>
-          <div class="col">
-            {% set first_event = current_user.auth_events|sort(attribute='timestamp')|first %}
-            <div class="card text-center p-3">
-              <div class="h4 mb-0">{{ first_event.timestamp.strftime('%b %Y') if first_event else '' }}</div>
-              <div class="small text-muted">Miembro desde</div>
-            </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ current_user.notes|map(attribute='likes')|sum }}</div>
+            <div class="stat-label">Votos +</div>
           </div>
         </div>
       </div>
 
-      <div class="col-12">
-        <h4>Apuntes recientes</h4>
-        <div class="row row-cols-1 row-cols-md-2 g-3">
-          {% set sorted_notes = current_user.notes | sort(attribute='created_at', reverse=True) %}
-          {% for note in sorted_notes[:3] %}
-          <div class="col">
-            <div class="card h-100 shadow-sm">
-              <div class="card-body">
-                <h6 class="card-title">{{ note.title }}</h6>
-                <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d') }}</small>
-                <div class="mt-2">{{ note.views }} vistas</div>
-                <a href="{{ url_for('notes.view_note', id=note.id) }}" class="btn btn-sm btn-outline-primary mt-2">Ver</a>
+      <!-- Navegación de tabs -->
+      <div class="profile-tabs">
+        <a class="nav-link {% if not tab %}active{% endif %}" href="{{ url_for('auth.perfil') }}">
+          <i class="bi bi-house"></i>Resumen
+        </a>
+        <a class="nav-link {% if tab == 'misiones' %}active{% endif %}" href="{{ url_for('auth.perfil', tab='misiones') }}">
+          <i class="bi bi-brain"></i>Misiones
+        </a>
+        <a class="nav-link {% if tab == 'referidos' %}active{% endif %}" href="{{ url_for('auth.perfil', tab='referidos') }}">
+          <i class="bi bi-people"></i>Referidos
+        </a>
+        <a class="nav-link {% if tab == 'verificacion' %}active{% endif %}" href="{{ url_for('auth.perfil', tab='verificacion') }}">
+          <i class="bi bi-shield-check"></i>Verificación
+        </a>
+      </div>
+
+      <!-- Contenido de tabs -->
+      {% if not tab %}
+      <!-- Tab Resumen -->
+      <div class="content-section">
+        <h4 class="section-title">
+          <i class="bi bi-graph-up text-primary"></i>Actividad reciente
+        </h4>
+        <div class="activity-grid">
+          <div class="activity-card">
+            <h6><i class="bi bi-file-earmark-text me-2"></i>Apuntes subidos</h6>
+            <div class="h3 text-primary mb-2">{{ current_user.notes|length }}</div>
+            <p class="text-muted small mb-0">Total de materiales compartidos</p>
+          </div>
+          <div class="activity-card">
+            <h6><i class="bi bi-chat-dots me-2"></i>Participación</h6>
+            <div class="h3 text-success mb-2">{{ current_user.post_comments|length }}</div>
+            <p class="text-muted small mb-0">Respuestas en el foro</p>
+          </div>
+          <div class="activity-card">
+            <h6><i class="bi bi-coin me-2"></i>Crolars ganados</h6>
+            <div class="h3 text-warning mb-2">{{ current_user.credits }}</div>
+            <p class="text-muted small mb-0">Puntos acumulados</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Apuntes recientes -->
+      <div class="content-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="section-title mb-0">
+            <i class="bi bi-journal-bookmark text-primary"></i>Apuntes recientes
+          </h4>
+          <a href="{{ url_for('notes.list_notes') }}" class="btn btn-outline-primary btn-sm">Ver todos</a>
+        </div>
+        
+        {% set sorted_notes = current_user.notes | sort(attribute='created_at', reverse=True) %}
+        {% if sorted_notes %}
+        <div class="note-grid">
+          {% for note in sorted_notes[:6] %}
+          <div class="note-item">
+            <h6 class="fw-bold mb-2">{{ note.title }}</h6>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <small class="text-muted">{{ note.created_at.strftime('%d %b %Y') }}</small>
+              <span class="badge bg-light text-dark">{{ note.views }} vistas</span>
+            </div>
+            <a href="{{ url_for('notes.view_note', id=note.id) }}" class="btn btn-sm btn-primary w-100">
+              <i class="bi bi-eye me-1"></i>Ver apunte
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+          <i class="bi bi-journal-plus fs-1 text-muted mb-3 d-block"></i>
+          <p class="text-muted">Aún no has subido ningún apunte.</p>
+          <a href="{{ url_for('notes.upload') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Subir primer apunte
+          </a>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Participaciones recientes -->
+      <div class="content-section">
+        <h4 class="section-title">
+          <i class="bi bi-chat-left-text text-success"></i>Participaciones recientes
+        </h4>
+        {% set sorted_comments = current_user.post_comments | sort(attribute='timestamp', reverse=True) %}
+        {% if sorted_comments %}
+        <div class="list-modern">
+          {% for c in sorted_comments[:8] %}
+          <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="flex-grow-1">
+                <p class="mb-1">{{ c.body|truncate(100) }}</p>
+                <small class="text-muted">{{ c.timestamp.strftime('%d %b %Y a las %H:%M') }}</small>
               </div>
             </div>
           </div>
           {% endfor %}
         </div>
-        <div class="text-end"><a href="{{ url_for('notes.list_notes') }}">Ver todos</a></div>
-      </div>
-
-      <div class="col-12">
-        <h4>Participaciones recientes</h4>
-        <ul class="list-group">
-          {% set sorted_comments = current_user.post_comments | sort(attribute='timestamp', reverse=True) %}
-          {% for c in sorted_comments[:5] %}
-          <li class="list-group-item">
-            <small class="text-muted">{{ c.timestamp.strftime('%Y-%m-%d') }}</small><br>
-            {{ c.body }}
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-
-      <div class="col-12">
-        <h4>Guardados</h4>
-        <ul class="list-group">
-          {% for p in saved_posts %}
-          <li class="list-group-item">
-            <a href="{{ url_for('feed.view_post', post_id=p.id) }}">{{ p.content[:50] }}...</a>
-          </li>
-          {% else %}
-          <li class="list-group-item">Aún no guardas publicaciones.</li>
-          {% endfor %}
-        </ul>
-      </div>
-
-      <div class="col-12">
-        <h4>🎖️ Logros e insignias</h4>
-        <div class="mb-3">
-          <a href="{{ url_for('auth.perfil') }}" class="btn btn-outline-primary btn-sm {% if not ach_type %}active{% endif %}">Todos</a>
-          <a href="{{ url_for('auth.perfil', tipo='aportes') }}" class="btn btn-outline-primary btn-sm {% if ach_type == 'aportes' %}active{% endif %}">Aportes</a>
-          <a href="{{ url_for('auth.perfil', tipo='colaboracion') }}" class="btn btn-outline-primary btn-sm {% if ach_type == 'colaboracion' %}active{% endif %}">Colaboración</a>
-          <a href="{{ url_for('auth.perfil', tipo='actividad') }}" class="btn btn-outline-primary btn-sm {% if ach_type == 'actividad' %}active{% endif %}">Actividad</a>
+        {% else %}
+        <div class="text-center py-4">
+          <i class="bi bi-chat-dots fs-1 text-muted mb-3 d-block"></i>
+          <p class="text-muted">Aún no has participado en discusiones.</p>
         </div>
-        <div class="row row-cols-2 row-cols-md-3 g-2">
+        {% endif %}
+      </div>
+
+      <!-- Guardados -->
+      <div class="content-section">
+        <h4 class="section-title">
+          <i class="bi bi-bookmark-heart text-danger"></i>Publicaciones guardadas
+        </h4>
+        {% if saved_posts %}
+        <div class="list-modern">
+          {% for p in saved_posts %}
+          <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <p class="mb-1">{{ p.content|truncate(80) }}</p>
+                <small class="text-muted">Guardado el {{ p.created_at.strftime('%d %b %Y') }}</small>
+              </div>
+              <a href="{{ url_for('feed.view_post', post_id=p.id) }}" class="btn btn-sm btn-outline-primary">Ver</a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+          <i class="bi bi-bookmark fs-1 text-muted mb-3 d-block"></i>
+          <p class="text-muted">Aún no has guardado publicaciones.</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Logros e insignias -->
+      <div class="content-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="section-title mb-0">
+            <i class="bi bi-trophy text-warning"></i>Logros e insignias
+          </h4>
+        </div>
+        
+        <div class="achievement-filters">
+          <a href="{{ url_for('auth.perfil') }}" class="btn btn-sm {% if not ach_type %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            <i class="bi bi-grid me-1"></i>Todos
+          </a>
+          <a href="{{ url_for('auth.perfil', tipo='aportes') }}" class="btn btn-sm {% if ach_type == 'aportes' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            <i class="bi bi-upload me-1"></i>Aportes
+          </a>
+          <a href="{{ url_for('auth.perfil', tipo='colaboracion') }}" class="btn btn-sm {% if ach_type == 'colaboracion' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            <i class="bi bi-people me-1"></i>Colaboración
+          </a>
+          <a href="{{ url_for('auth.perfil', tipo='actividad') }}" class="btn btn-sm {% if ach_type == 'actividad' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            <i class="bi bi-lightning me-1"></i>Actividad
+          </a>
+        </div>
+
+        {% if achievements %}
+        <div class="achievement-grid">
           {% for a in achievements %}
             {% set info = ACHIEVEMENT_DETAILS.get(a.badge_code, {}) %}
             {% set icon = info.icon %}
             {% set title = info.title %}
             {% set timestamp = a.timestamp %}
             {% set description = info.description %}
-            {% include 'components/achievement_card.html' %}
-          {% else %}
-            <div class="col">Aún no tienes logros desbloqueados.</div>
+            <div class="achievement-item">
+              <div class="fs-2 mb-2">{{ icon }}</div>
+              <h6 class="fw-bold mb-1">{{ title }}</h6>
+              <p class="small text-muted mb-2">{{ description }}</p>
+              <small class="text-muted">{{ timestamp.strftime('%d %b %Y') }}</small>
+            </div>
           {% endfor %}
         </div>
-      </div>
-    </div>
-    {% endif %}
-
-    {% if tab == 'misiones' %}
-      {% include 'auth/missions_tab.html' %}
-    {% elif tab == 'referidos' %}
-      {% include 'auth/referrals_tab.html' %}
-    {% elif tab == 'verificacion' %}
-      <div class="card">
-        <div class="card-body text-center">
-          {% if current_user.verification_level >= 2 %}
-          <p class="mb-1">✅ Cuenta verificada.</p>
-          {% else %}
-          <p class="mb-1">Cuenta aún no verificada.</p>
-          <button class="btn btn-sm btn-outline-primary" disabled>Solicitar verificación</button>
-          {% endif %}
+        {% else %}
+        <div class="text-center py-4">
+          <i class="bi bi-award fs-1 text-muted mb-3 d-block"></i>
+          <p class="text-muted">Aún no tienes logros desbloqueados.</p>
+          <p class="small text-muted">¡Participa en la comunidad para desbloquear insignias!</p>
         </div>
+        {% endif %}
       </div>
-    {% endif %}
+      
+      {% elif tab == 'misiones' %}
+        {% include 'auth/missions_tab.html' %}
+      {% elif tab == 'referidos' %}
+        {% include 'auth/referrals_tab.html' %}
+      {% elif tab == 'verificacion' %}
+        <div class="content-section">
+          <h4 class="section-title">
+            <i class="bi bi-shield-check text-primary"></i>Estado de verificación
+          </h4>
+          <div class="text-center py-5">
+            {% if current_user.verification_level >= 2 %}
+              <i class="bi bi-patch-check fs-1 text-success mb-3 d-block"></i>
+              <h5 class="text-success mb-2">✅ Cuenta verificada</h5>
+              <p class="text-muted">Tu cuenta ha sido verificada correctamente.</p>
+            {% else %}
+              <i class="bi bi-shield-exclamation fs-1 text-warning mb-3 d-block"></i>
+              <h5 class="text-warning mb-2">Cuenta no verificada</h5>
+              <p class="text-muted mb-3">La verificación está en desarrollo.</p>
+              <button class="btn btn-outline-primary" disabled>
+                <i class="bi bi-clock me-2"></i>Próximamente disponible
+              </button>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
   </div>
 </div>
-<button class="btn btn-primary rounded-circle position-fixed bottom-0 start-0 m-3 d-lg-none mobile-overlay-btn" data-bs-toggle="offcanvas" data-bs-target="#profileSidebar"><i class="bi bi-filter"></i></button>
+
+<!-- Botón móvil -->
+<button class="btn btn-primary rounded-circle position-fixed d-lg-none mobile-overlay-btn" 
+        data-bs-toggle="offcanvas" data-bs-target="#profileSidebar"
+        style="bottom: 20px; left: 20px; width: 60px; height: 60px; z-index: 1040;">
+  <i class="bi bi-menu-up fs-5"></i>
+</button>
+
+<!-- Sidebar móvil -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="profileSidebar" aria-labelledby="profileSidebarLabel">
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="profileSidebarLabel">Menú</h5>
+    <h5 class="offcanvas-title fw-bold" id="profileSidebarLabel">
+      <i class="bi bi-person-circle me-2"></i>Perfil
+    </h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body">

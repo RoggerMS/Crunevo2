@@ -1,113 +1,412 @@
+
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
 {% import 'components/reactions.html' as react %}
+
 {% block title %}Publicaciones destacadas{% endblock %}
+
+{% block head_extra %}
+<style>
+.trending-header {
+  background: linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #48dbfb 100%);
+  border-radius: 24px;
+  padding: 3rem 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.trending-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+}
+
+.trending-header h1 {
+  position: relative;
+  z-index: 1;
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 0.5rem;
+}
+
+.trending-header p {
+  position: relative;
+  z-index: 1;
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 0;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+}
+
+.section-icon {
+  font-size: 1.5rem;
+  margin-right: 0.75rem;
+  color: #667eea;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+}
+
+[data-bs-theme="dark"] .section-title {
+  color: #f1f5f9;
+}
+
+.trending-badge {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+  z-index: 10;
+}
+
+.trending-post {
+  position: relative;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.trending-post:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  border-color: rgba(102, 126, 234, 0.2);
+}
+
+[data-bs-theme="dark"] .trending-post {
+  background: rgba(30, 30, 46, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stats-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 18px;
+  padding: 2rem;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-4px);
+}
+
+[data-bs-theme="dark"] .stats-card {
+  background: rgba(30, 30, 46, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.stats-label {
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+[data-bs-theme="dark"] .stats-label {
+  color: #d1d5db;
+}
+
+.top-user-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  margin-bottom: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.top-user-item:hover {
+  transform: translateX(4px);
+  background: rgba(102, 126, 234, 0.05);
+  border-color: rgba(102, 126, 234, 0.2);
+}
+
+[data-bs-theme="dark"] .top-user-item {
+  background: rgba(30, 30, 46, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-rank {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #667eea;
+  margin-right: 1rem;
+  min-width: 30px;
+}
+
+.achievement-highlight {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+[data-bs-theme="dark"] .achievement-highlight {
+  background: rgba(30, 30, 46, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row">
-  <div class="col-lg-2 d-none d-lg-block">
-    {% include 'components/feed_sidebar.html' %}
-  </div>
-  <div class="col-lg-7 col-md-12">
-    <div class="card mb-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#createPostModal">
-      <div class="card-body d-flex align-items-center">
-        <img loading="lazy" src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
-        <span class="text-muted">¿Qué deseas compartir?</span>
+<div class="container-fluid px-3">
+  <div class="row g-4">
+    <!-- Sidebar izquierdo -->
+    <div class="col-lg-2 d-none d-lg-block">
+      <div class="sticky-top" style="top: 80px;">
+        {% include 'components/feed_sidebar.html' %}
       </div>
     </div>
-    <div class="d-lg-none mb-3">
-      {% include 'components/feed_sidebar.html' %}
-    </div>
-    <h2 class="mb-4">💡 Publicaciones destacadas</h2>
-    {% for post in weekly_posts %}
-    <div class="card mb-3 position-relative">
-      <span class="position-absolute top-0 start-0 tw-bg-red-600 tw-text-white tw-px-2 tw-rounded-bottom-right">🔥 Tendencia</span>
-      <div class="card-body">
-        <div class="d-flex align-items-center mb-2">
+
+    <!-- Contenido principal -->
+    <div class="col-lg-7">
+      <!-- Header principal -->
+      <div class="trending-header">
+        <h1>🔥 Trending</h1>
+        <p>Descubre el contenido más popular y las conversaciones que están marcando tendencia</p>
+      </div>
+
+      <!-- Estadísticas destacadas -->
+      <div class="stats-grid">
+        <div class="stats-card">
+          <div class="stats-number">{{ weekly_posts|length }}</div>
+          <div class="stats-label">Posts destacados</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-number">{{ top_notes|length }}</div>
+          <div class="stats-label">Apuntes populares</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-number">{{ top_users|length }}</div>
+          <div class="stats-label">Usuarios activos</div>
+        </div>
+      </div>
+
+      <!-- Crear publicación -->
+      <div class="card mb-4" style="border-radius: 20px;" data-bs-toggle="modal" data-bs-target="#createPostModal">
+        <div class="card-body d-flex align-items-center py-3">
+          <img loading="lazy" src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
+               class="rounded-circle me-3" width="45" height="45" alt="avatar">
+          <span class="text-muted fw-medium">Únete a la conversación...</span>
+          <i class="bi bi-plus-circle fs-4 text-primary ms-auto"></i>
+        </div>
+      </div>
+
+      <!-- Filtros móviles -->
+      <div class="d-lg-none mb-4">
+        <div class="card">
+          <div class="card-body">
+            {% include 'components/feed_sidebar.html' %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Publicaciones destacadas -->
+      <div class="section-header">
+        <div class="section-icon">🔥</div>
+        <h2 class="section-title">Publicaciones destacadas</h2>
+      </div>
+
+      {% for post in weekly_posts %}
+      <div class="trending-post">
+        <div class="trending-badge">🔥 Trending</div>
+        
+        <div class="d-flex align-items-center mb-3">
           {% set author = post.author %}
           {% if author %}
-          <img loading="lazy" src="{{ author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
-          <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="me-auto text-decoration-none"><strong>{{ author.username }}</strong></a>
+          <img loading="lazy" src="{{ author.avatar_url or url_for('static', filename='img/default.png') }}" 
+               class="rounded-circle me-3" width="45" height="45" alt="avatar">
+          <div class="flex-grow-1">
+            <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" 
+               class="fw-semibold text-decoration-none text-dark">{{ author.username }}</a>
+            <div class="small text-muted">{{ post.created_at|timesince }}</div>
+          </div>
           {% else %}
-          <img loading="lazy" src="{{ url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
-          <span class="me-auto text-muted">Usuario eliminado</span>
+          <img loading="lazy" src="{{ url_for('static', filename='img/default.png') }}" 
+               class="rounded-circle me-3" width="45" height="45" alt="avatar">
+          <div class="flex-grow-1">
+            <span class="fw-semibold text-muted">Usuario eliminado</span>
+            <div class="small text-muted">{{ post.created_at|timesince }}</div>
+          </div>
           {% endif %}
-          <small class="text-muted">{{ post.created_at|timesince }}</small>
         </div>
-        <p class="card-text">{{ post.content }}</p>
+
+        <p class="card-text mb-3" style="font-size: 1.05rem; line-height: 1.6;">{{ post.content }}</p>
+
         {% if post.file_url %}
           {% if post.file_url.endswith('.pdf') %}
-          <a href="{{ post.file_url }}" target="_blank" class="btn btn-sm btn-outline-primary mb-2">Ver PDF</a>
+          <a href="{{ post.file_url }}" target="_blank" class="btn btn-outline-primary mb-3">
+            <i class="bi bi-file-pdf me-2"></i>Ver PDF
+          </a>
           {% else %}
-          <img loading="lazy" src="{{ post.file_url }}" class="feed-image img-fluid rounded mb-2">
+          <img loading="lazy" src="{{ post.file_url }}" class="img-fluid rounded mb-3" style="max-height: 400px; width: 100%; object-fit: cover;">
           {% endif %}
         {% endif %}
+
+        <div class="d-flex gap-2 mb-3">
+          {% if author %}
+          <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="btn btn-sm btn-outline-info">
+            <i class="bi bi-person me-1"></i>Ver perfil
+          </a>
+          <a href="{{ url_for('feed.view_post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-chat-dots me-1"></i>Ver publicación
+          </a>
+          {% endif %}
+        </div>
+
         {% set counts = reaction_counts.get(post.id, {}) %}
         {% set my_reaction = user_reactions.get(post.id) %}
-        {% if author %}
-        <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="btn btn-sm btn-outline-info mb-2">Ver perfil</a>
-        <a href="{{ url_for('feed.view_post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary mb-2">Ver publicación</a>
-        {% endif %}
         {{ react.reaction_container(post, counts, my_reaction) }}
       </div>
-    </div>
-    {% endfor %}
+      {% endfor %}
 
-    <div class="alert alert-primary text-center my-4" role="banner">
-      Crunevo une a jóvenes que se esfuerzan cada día por construir un futuro mejor
-    </div>
-
-    <h3 class="mb-3">🔥 Apuntes más vistos</h3>
-    <div class="row mb-4">
-      {% for note in top_notes %}
-      <div class="col-md-6 mb-3">
-        {% include 'components/note_card.html' %}
+      <!-- Mensaje motivacional -->
+      <div class="achievement-highlight">
+        <h4 class="fw-bold mb-2">🌟 ¡Sé parte de la comunidad!</h4>
+        <p class="mb-0">Crunevo une a jóvenes que se esfuerzan cada día por construir un futuro mejor. Comparte tu conocimiento y crece junto a nosotros.</p>
       </div>
-      {% endfor %}
+
+      <!-- Apuntes más vistos -->
+      <div class="section-header">
+        <div class="section-icon">📚</div>
+        <h3 class="section-title">Apuntes más vistos</h3>
+      </div>
+      
+      <div class="row mb-5">
+        {% for note in top_notes %}
+        <div class="col-md-6 mb-3">
+          <div class="card h-100" style="border-radius: 16px; transition: transform 0.3s ease;">
+            {% include 'components/note_card.html' %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Usuarios más activos -->
+      <div class="section-header">
+        <div class="section-icon">🏆</div>
+        <h3 class="section-title">Usuarios más activos</h3>
+      </div>
+      
+      <div class="mb-4">
+        {% for u in top_users %}
+        <div class="top-user-item">
+          <div class="user-rank">#{{ loop.index }}</div>
+          <img loading="lazy" src="{{ u.avatar_url or url_for('static', filename='img/default.png') }}" 
+               class="rounded-circle me-3" width="40" height="40" alt="avatar">
+          <div class="flex-grow-1">
+            <div class="fw-semibold">{{ u.username }}</div>
+            <div class="small text-muted">Miembro activo</div>
+          </div>
+          <div class="badge bg-success fs-6 px-3 py-2">{{ u.credits }} crolars</div>
+        </div>
+        {% endfor %}
+      </div>
     </div>
 
-    <h3 class="mb-3">📈 Usuarios más activos</h3>
-    <ul class="list-group mb-3">
-      {% for u in top_users %}
-      <li class="list-group-item d-flex justify-content-between align-items-start">
-        <span>{{ u.username }}</span>
-        <span class="badge bg-success">{{ u.credits }}</span>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
+    <!-- Sidebar derecho -->
+    <div class="col-lg-3 d-none d-lg-block">
+      <div class="sticky-top" style="top: 80px;">
+        <!-- Posts más votados hoy -->
+        <div class="card mb-4" style="border-radius: 18px;">
+          <div class="card-body">
+            <h6 class="fw-bold text-danger mb-3">
+              <i class="bi bi-fire me-2"></i>Más votados hoy
+            </h6>
+            {% for p in top_posts %}
+            <div class="d-flex justify-content-between align-items-start mb-2 p-2 rounded" style="background: rgba(102, 126, 234, 0.05);">
+              <small class="text-truncate me-2">{{ p.content|truncate(25) }}</small>
+              <span class="badge bg-danger">{{ p.likes }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
 
-  <div class="col-lg-3 d-none d-lg-block">
-    <div class="mb-4">
-      <h6 class="text-danger"><i class="bi bi-fire"></i> Más votados hoy</h6>
-      <ul class="list-group small">
-        {% for p in top_posts %}
-        <li class="list-group-item d-flex justify-content-between align-items-start">
-          <span>{{ p.content|truncate(30) }}</span>
-          <span class="badge bg-danger">{{ p.likes }}</span>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
-    <div class="mb-4">
-      <h6 class="text-muted">🏅 Usuarios que más crecieron</h6>
-      <ul class="list-group small">
-        {% for u in top_ranked %}
-        <li class="list-group-item d-flex justify-content-between align-items-start">
-          <span>{{ u.username }}</span>
-          <span class="badge bg-success">{{ u.credits }}</span>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
-    <div class="mb-4">
-      <h6 class="text-muted">🧩 Logros impactantes</h6>
-      <ul class="list-group small">
-        {% for username, badge_code, timestamp in recent_achievements %}
-        <li class="list-group-item">
-          <strong>{{ username }}</strong> – {{ badge_code }}
-        </li>
-        {% endfor %}
-      </ul>
+        <!-- Usuarios que más crecieron -->
+        <div class="card mb-4" style="border-radius: 18px;">
+          <div class="card-body">
+            <h6 class="fw-bold text-success mb-3">
+              <i class="bi bi-graph-up me-2"></i>Más crecimiento
+            </h6>
+            {% for u in top_ranked %}
+            <div class="d-flex justify-content-between align-items-center mb-2 p-2 rounded" style="background: rgba(25, 135, 84, 0.05);">
+              <small class="fw-medium">{{ u.username }}</small>
+              <span class="badge bg-success">{{ u.credits }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Logros impactantes -->
+        <div class="card" style="border-radius: 18px;">
+          <div class="card-body">
+            <h6 class="fw-bold text-purple mb-3">
+              <i class="bi bi-trophy me-2"></i>Logros recientes
+            </h6>
+            {% for username, badge_code, timestamp in recent_achievements %}
+            <div class="mb-2 p-2 rounded" style="background: rgba(111, 66, 193, 0.05);">
+              <div class="fw-medium small">{{ username }}</div>
+              <div class="text-muted small">{{ badge_code }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -115,44 +414,49 @@
 
 {% block body_end %}
 {{ super() }}
-  <div class="modal fade" id="createPostModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <form id="postForm" method="post" action="{{ url_for('feed.view_feed') }}" enctype="multipart/form-data">
-          {{ csrf.csrf_field() }}
-          <div class="modal-header">
-            <h5 class="modal-title">Crear publicación</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<!-- Modal crear publicación igual que en index -->
+<div class="modal fade" id="createPostModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" style="border-radius: 20px; border: none;">
+      <form id="postForm" method="post" action="{{ url_for('feed.view_feed') }}" enctype="multipart/form-data">
+        {{ csrf.csrf_field() }}
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold">
+            <i class="bi bi-pencil-square me-2 text-primary"></i>Crear publicación
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex mb-3">
+            <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                 class="rounded-circle me-3" width="45" height="45">
+            <textarea class="form-control" name="content" rows="4" 
+                      placeholder="¿Qué deseas compartir?" required style="border-radius: 12px;"></textarea>
           </div>
-          <div class="modal-body">
-            <div class="d-flex mb-3">
-              <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40">
-              <textarea class="form-control" name="content" rows="4" placeholder="¿Qué deseas compartir?" required></textarea>
-            </div>
-            <div class="d-flex gap-2 flex-wrap">
-              <label class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-image"></i> Imagen
-                <input type="file" name="file" id="feedImageInput" accept="image/*,.pdf" class="d-none">
-              </label>
-              <a href="{{ url_for('notes.upload') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-file-earmark-plus"></i> Apunte
-              </a>
-              <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
-                <i class="bi bi-trophy"></i> Logro
-              </button>
-            </div>
-            <div id="previewContainer" class="mt-2"></div>
-            <div id="uploadSpinner" class="text-center my-2 tw-hidden">
-              <div class="spinner-border" role="status"></div>
-            </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <label class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-image me-1"></i>Imagen
+              <input type="file" name="file" id="feedImageInput" accept="image/*,.pdf" class="d-none">
+            </label>
+            <a href="{{ url_for('notes.upload') }}" class="btn btn-outline-secondary btn-sm">
+              <i class="bi bi-file-earmark-plus me-1"></i>Apunte
+            </a>
           </div>
-          <div class="modal-footer">
-            <button id="postSubmitBtn" class="btn btn-primary" type="submit">Publicar</button>
+          <div id="previewContainer" class="mt-2"></div>
+          <div id="uploadSpinner" class="text-center my-2 tw-hidden">
+            <div class="spinner-border" role="status"></div>
           </div>
-        </form>
-      </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button id="postSubmitBtn" class="btn btn-primary" type="submit">
+            <i class="bi bi-send me-2"></i>Publicar
+          </button>
+        </div>
+      </form>
     </div>
   </div>
+</div>
+
 <script src="{{ url_for('static', filename='pdfjs/pdf.min.js') }}"></script>
 <script>
   pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";

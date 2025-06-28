@@ -1,113 +1,312 @@
+
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
 {% import 'components/reactions.html' as react %}
 
 {% block head_extra %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
+<style>
+.feed-header {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+[data-bs-theme="dark"] .feed-header {
+  background: rgba(30, 30, 46, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.feed-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+[data-bs-theme="dark"] .stat-card {
+  background: rgba(30, 30, 46, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-number {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #667eea;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+[data-bs-theme="dark"] .stat-label {
+  color: #d1d5db;
+}
+
+.create-post-card {
+  background: rgba(255, 255, 255, 0.98);
+  border: 2px solid rgba(102, 126, 234, 0.1);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.create-post-card:hover {
+  border-color: rgba(102, 126, 234, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.1);
+}
+
+[data-bs-theme="dark"] .create-post-card {
+  background: rgba(30, 30, 46, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.feed-content {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.feed-item {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 18px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.feed-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+[data-bs-theme="dark"] .feed-item {
+  background: rgba(30, 30, 46, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="row">
-  <div class="col-lg-2 d-none d-lg-block">
-    {% include 'feed/sidebar_left_feed.html' %}
-    {% include 'components/feed_sidebar.html' %}
-  </div>
-  <div class="col-lg-7">
-    <div class="card mb-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#createPostModal">
-      <div class="card-body d-flex align-items-center">
-        <img loading="lazy" src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
-        <span class="text-muted">¿Qué deseas compartir?</span>
+<div class="container-fluid px-3">
+  <div class="row g-4">
+    <!-- Sidebar izquierdo -->
+    <div class="col-lg-2 d-none d-lg-block">
+      <div class="sticky-top" style="top: 80px;">
+        {% include 'feed/sidebar_left_feed.html' %}
+        {% include 'components/feed_sidebar.html' %}
       </div>
     </div>
-    <div id="feed-filtros-principales" class="d-lg-none mb-3">
-      {% include 'components/feed_sidebar.html' %}
+
+    <!-- Contenido principal -->
+    <div class="col-lg-7">
+      <!-- Header del Feed -->
+      <div class="feed-header">
+        <h2 class="h3 mb-3 fw-bold text-center">
+          <i class="bi bi-house-heart me-2" style="color: #667eea;"></i>
+          Tu Feed Personal
+        </h2>
+        <div class="feed-stats">
+          <div class="stat-card">
+            <div class="stat-number">{{ feed_items|length }}</div>
+            <div class="stat-label">Publicaciones</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ current_user.credits }}</div>
+            <div class="stat-label">Crolars</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ current_user.notes|length }}</div>
+            <div class="stat-label">Apuntes</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Crear publicación -->
+      <div class="create-post-card" data-bs-toggle="modal" data-bs-target="#createPostModal">
+        <div class="d-flex align-items-center">
+          <img loading="lazy" src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
+               class="rounded-circle me-3" width="50" height="50" alt="avatar">
+          <div class="flex-grow-1">
+            <div class="fw-semibold text-muted mb-1">¡Hola, {{ current_user.username }}!</div>
+            <div class="text-muted">¿Qué deseas compartir con la comunidad hoy?</div>
+          </div>
+          <i class="bi bi-plus-circle fs-3 text-primary"></i>
+        </div>
+      </div>
+
+      <!-- Filtros rápidos en móvil -->
+      <div id="feed-filtros-principales" class="d-lg-none mb-4">
+        <div class="card">
+          <div class="card-body">
+            {% include 'components/feed_sidebar.html' %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Feed de contenido -->
+      <div id="feed" class="feed-content" data-categoria="{{ categoria or '' }}">
+        {% for item in feed_items %}
+          {% if item.type == 'note' %}
+            {% set note = item.data %}
+            <div class="feed-item">
+              {% include 'components/feed_card.html' %}
+            </div>
+          {% elif item.type == 'post' %}
+            {% set post = item.data %}
+            {% set counts = reaction_counts.get(post.id, {}) %}
+            {% set my_reaction = user_reactions.get(post.id) %}
+            <div class="feed-item">
+              {% include 'feed/post_card.html' %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Indicador de carga -->
+      <div id="feedEnd" class="my-4 text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+
+      {% if not feed_items %}
+        <div class="text-center my-5">
+          <div class="card">
+            <div class="card-body py-5">
+              <i class="bi bi-chat-dots fs-1 text-muted mb-3 d-block"></i>
+              <h4 class="text-muted mb-3">¡Tu feed está esperando!</h4>
+              <p class="text-muted mb-4">Aún no hay publicaciones. Sé el primero en compartir algo increíble con la comunidad.</p>
+              <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#createPostModal">
+                <i class="bi bi-plus-circle me-2"></i>Crear primera publicación
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endif %}
     </div>
-    <div id="feed" class="tw-space-y-4" data-categoria="{{ categoria or '' }}">
-      {% for item in feed_items %}
-        {% if item.type == 'note' %}
-          {% set note = item.data %}
-          {% include 'components/feed_card.html' %}
-        {% elif item.type == 'post' %}
-          {% set post = item.data %}
-          {% set counts = reaction_counts.get(post.id, {}) %}
-          {% set my_reaction = user_reactions.get(post.id) %}
-          {% include 'feed/post_card.html' %}
-        {% endif %}
-      {% endfor %}
+
+    <!-- Sidebar derecho -->
+    <div class="col-lg-3 d-none d-lg-block">
+      <div class="sticky-top" style="top: 80px;">
+        {% include 'components/sidebar_right.html' %}
+      </div>
     </div>
-    <div id="feedEnd" class="my-3 text-center">
-      <div class="spinner-border" role="status"></div>
-    </div>
-    {% if not feed_items %}
-      <div class="text-center my-5 text-muted">Aún no hay publicaciones. Sé el primero en compartir algo con la comunidad.</div>
-    {% endif %}
-  </div>
-  <div class="col-lg-3 d-none d-lg-block">
-    {% include 'components/sidebar_right.html' %}
   </div>
 </div>
-<button class="btn btn-primary rounded-circle position-fixed bottom-0 start-0 m-3 d-lg-none mobile-overlay-btn" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"><i class="bi bi-filter"></i></button>
+
+<!-- Botón móvil -->
+<button class="btn btn-primary rounded-circle position-fixed d-lg-none mobile-overlay-btn" 
+        data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"
+        style="bottom: 20px; right: 20px; width: 60px; height: 60px; z-index: 1040;">
+  <i class="bi bi-filter fs-5"></i>
+</button>
+
+<!-- Sidebar móvil -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="mobileSidebarLabel">Menú</h5>
+    <h5 class="offcanvas-title fw-bold" id="mobileSidebarLabel">
+      <i class="bi bi-menu-up me-2"></i>Menú
+    </h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body">
     {% include 'feed/sidebar_left_feed.html' %}
+    <hr class="my-4">
     {% include 'components/feed_sidebar.html' %}
   </div>
 </div>
+
 {% if show_streak_claim %}
-<div id="streakBox" class="card p-3 bg-light text-dark position-fixed shadow fade-in" style="bottom: 90px; right: 16px; z-index: 1050;">
-  <div class="d-flex align-items-center">
-    <div class="me-2 fs-3">🎉</div>
+<div id="streakBox" class="card p-4 bg-gradient position-fixed shadow-lg fade-in" 
+     style="bottom: 90px; right: 20px; z-index: 1050; max-width: 280px; border-radius: 20px; border: 2px solid #667eea;">
+  <div class="d-flex align-items-center mb-3">
+    <div class="me-3 fs-2">🎉</div>
     <div>
-      <strong>Día {{ streak_day }} de tu racha</strong><br>
-      <small class="text-muted">Reclama {{ streak_reward }} crolars</small>
+      <div class="fw-bold text-primary">¡Día {{ streak_day }}!</div>
+      <small class="text-muted">Continúa tu racha</small>
     </div>
   </div>
-  <button class="btn btn-sm btn-primary mt-2 w-100" onclick="claimStreak()">Reclamar</button>
+  <div class="text-center mb-3">
+    <div class="fw-bold fs-5 text-success">+{{ streak_reward }} crolars</div>
+  </div>
+  <button class="btn btn-primary w-100" onclick="claimStreak()">
+    <i class="bi bi-gift me-2"></i>Reclamar
+  </button>
 </div>
 {% endif %}
 {% endblock %}
 
 {% block body_end %}
-  <div class="modal fade" id="createPostModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <form id="postForm" method="post" action="{{ url_for('feed.view_feed') }}" enctype="multipart/form-data">
-          {{ csrf.csrf_field() }}
-          <div class="modal-header">
-            <h5 class="modal-title">Crear publicación</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<!-- Modal crear publicación -->
+<div class="modal fade" id="createPostModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" style="border-radius: 20px; border: none;">
+      <form id="postForm" method="post" action="{{ url_for('feed.view_feed') }}" enctype="multipart/form-data">
+        {{ csrf.csrf_field() }}
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">
+            <i class="bi bi-pencil-square me-2 text-primary"></i>Crear publicación
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body pt-2">
+          <div class="d-flex mb-4">
+            <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                 class="rounded-circle me-3" width="50" height="50">
+            <textarea class="form-control" name="content" rows="5" 
+                      placeholder="Comparte tus pensamientos, logros o cualquier cosa interesante..." 
+                      required style="border-radius: 16px; resize: none;"></textarea>
           </div>
-          <div class="modal-body">
-            <div class="d-flex mb-3">
-              <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40">
-              <textarea class="form-control" name="content" rows="4" placeholder="¿Qué deseas compartir?" required></textarea>
-            </div>
-            <div class="d-flex gap-2 flex-wrap">
-              <label class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-image"></i> Imagen
-                <input type="file" name="file" id="feedImageInput" accept="image/*,.pdf" class="d-none">
-              </label>
-              <a href="{{ url_for('notes.upload') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-file-earmark-plus"></i> Apunte
-              </a>
-              <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
-                <i class="bi bi-trophy"></i> Logro
-              </button>
-            </div>
-            <div id="previewContainer" class="mt-2"></div>
-            <div id="uploadSpinner" class="text-center my-2 tw-hidden">
-              <div class="spinner-border" role="status"></div>
+          
+          <div class="d-flex gap-2 flex-wrap mb-3">
+            <label class="btn btn-outline-primary">
+              <i class="bi bi-image me-2"></i>Imagen
+              <input type="file" name="file" id="feedImageInput" accept="image/*,.pdf" class="d-none">
+            </label>
+            <a href="{{ url_for('notes.upload') }}" class="btn btn-outline-secondary">
+              <i class="bi bi-file-earmark-plus me-2"></i>Apunte
+            </a>
+            <button type="button" class="btn btn-outline-secondary" disabled>
+              <i class="bi bi-trophy me-2"></i>Logro
+            </button>
+          </div>
+          
+          <div id="previewContainer" class="mt-3"></div>
+          <div id="uploadSpinner" class="text-center my-3 tw-hidden">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Subiendo...</span>
             </div>
           </div>
-          <div class="modal-footer">
-            <button id="postSubmitBtn" class="btn btn-primary" type="submit">Publicar</button>
-          </div>
-        </form>
-      </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button id="postSubmitBtn" class="btn btn-primary px-4" type="submit">
+            <i class="bi bi-send me-2"></i>Publicar
+          </button>
+        </div>
+      </form>
     </div>
   </div>
+</div>
 {% endblock %}

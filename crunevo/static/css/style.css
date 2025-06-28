@@ -50,14 +50,15 @@ body {
   top: 80px;
 }
 
-/* Modern card design */
+/* Modern card design with better contrast */
 .card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
+  color: #2d3748;
 }
 
 body[data-bs-theme="dark"] .card {
@@ -67,11 +68,27 @@ body[data-bs-theme="dark"] .card {
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
-/* Modern buttons */
+/* Better text contrast for light mode */
+.card .card-title {
+  color: #1a202c !important;
+  font-weight: 600;
+}
+
+.card .card-text {
+  color: #4a5568 !important;
+  font-weight: 400;
+}
+
+body[data-bs-theme="dark"] .card .card-title,
+body[data-bs-theme="dark"] .card .card-text {
+  color: #f1f1f1 !important;
+}
+
+/* Modern buttons with better visibility */
 .btn {
   border-radius: 12px;
   font-weight: 500;
@@ -79,27 +96,46 @@ body[data-bs-theme="dark"] .card {
   border: none;
   position: relative;
   overflow: hidden;
+  font-size: 0.95rem;
 }
 
 .btn-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  color: #ffffff !important;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  color: #ffffff !important;
 }
 
 .btn-outline-primary {
   border: 2px solid #667eea;
-  color: #667eea;
+  color: #667eea !important;
   background: transparent;
+  font-weight: 600;
 }
 
 .btn-outline-primary:hover {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   transform: translateY(-2px);
+  color: #ffffff !important;
+  border-color: transparent;
+}
+
+.btn-outline-secondary {
+  border: 2px solid #6c757d;
+  color: #6c757d !important;
+  background: transparent;
+  font-weight: 500;
+}
+
+.btn-outline-secondary:hover {
+  background: #6c757d;
+  color: #ffffff !important;
+  transform: translateY(-1px);
 }
 
 /* Comments and interactions */
@@ -175,25 +211,39 @@ body[data-bs-theme="dark"] #searchSuggestions {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Modern form controls */
+/* Modern form controls with better contrast */
 .form-control {
   border-radius: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #e2e8f0;
+  background: #ffffff;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
+  color: #2d3748;
+  font-weight: 400;
+  padding: 0.75rem 1rem;
 }
 
 .form-control:focus {
   border-color: #667eea;
-  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
-  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
+  background: #ffffff;
+  color: #1a202c;
+}
+
+.form-control::placeholder {
+  color: #a0aec0;
+  font-weight: 400;
 }
 
 body[data-bs-theme="dark"] .form-control {
   background: rgba(30, 30, 46, 0.8);
   border-color: rgba(255, 255, 255, 0.1);
   color: #f8f9fa;
+}
+
+body[data-bs-theme="dark"] .form-control:focus {
+  background: rgba(30, 30, 46, 0.9);
+  border-color: #667eea;
 }
 
 /* Navbar tweaks */
