@@ -1,0 +1,97 @@
+Hola Assistant. Este es el tercer bloque de mejoras para CRUNEVO, la red educativa peruana que ya tiene feed, apuntes, perfil, tienda, chat, foro, clubes, eventos, referidos, misiones y ranking. Ahora quiero que implementes TODO esto:
+
+---
+
+🎓 1. CERTIFICADOS DINÁMICOS EN PDF  
+- Crea una pestaña “Certificados” en el perfil del usuario.  
+- Genera al menos 3 certificados simbólicos que se descarguen como PDF automáticamente:
+  - Participación general (por ser parte activa de CRUNEVO)
+  - Completar 10 misiones
+  - Subir 3 apuntes
+- Usa diseño atractivo: logo, nombre del usuario (dinámico), motivo, fecha actual, firma simbólica, QR al perfil público.
+
+---
+
+👥 2. CLUBES FUNCIONALES  
+- Haz que el botón "Unirme" guarde al usuario como miembro (usa almacenamiento simulado si no hay base de datos).  
+- Permite abandonar el club.  
+- Mostrar la lista de clubes a los que pertenece el usuario en su perfil.  
+- Dentro de cada club, permite dejar publicaciones internas (puede ser visual, usando arrays o JSON temporal).
+
+---
+
+🌐 3. FORO FUNCIONAL  
+- Permite publicar nuevas preguntas desde el formulario.  
+- Guarda y muestra preguntas incluso al refrescar (usa localStorage si es necesario).  
+- Permite responder a preguntas (también usando almacenamiento simulado).  
+- Añade conteo de respuestas y fecha/hora de cada interacción.  
+- Añade sistema de votos (likes/dislikes) en respuestas.
+
+---
+
+📅 4. EVENTOS CON PARTICIPACIÓN  
+- Crea una vista expandida al hacer clic en un evento (tipo “/eventos/123”).  
+- Dentro, añade botón “Participar en evento” que marque al usuario como asistente.  
+- Muestra los eventos participados en su perfil con fecha e ícono.  
+- Agrega lógica para mostrar cuántos eventos ha completado.
+
+---
+
+🤖 5. CLUBOT CON RESPUESTAS INTELIGENTES  
+- Convierte al Clubot en un chatbot con respuestas fijas.  
+- Cuando el usuario escribe cosas como:
+  - “¿Qué es CRUNEVO?”
+  - “¿Cómo gano Crolars?”
+  - “¿Dónde están los clubes?”
+  - “¿Puedo ganar dinero?”
+  ...Clubot debe responder de forma clara (usa un JSON con pares pregunta-respuesta).  
+- Diseño responsivo estilo widget.
+
+---
+
+🛡️ 6. VERIFICACIÓN AUTOMÁTICA DE USUARIOS  
+- Si un usuario ha subido 3 apuntes + completado 1 misión → añade badge “Usuario Verificado Académicamente” en su perfil.  
+- Mostrar este estado en su tarjeta en el ranking también.
+
+---
+
+🎖️ 7. LOGROS VISIBLES  
+- En el perfil, crea una pestaña visual “Logros” que muestre insignias por:
+  - Primer apunte subido
+  - 5 apuntes
+  - 10 reacciones recibidas
+  - Participación en evento
+  - Completar 5 misiones
+- Usa íconos con tooltip que explique cada logro.
+
+---
+
+📈 8. ESTADÍSTICAS PERSONALES  
+- En el perfil, añade estadísticas completas:
+  - Crolars totales ganados y gastados
+  - Apuntes subidos
+  - Comentarios realizados
+  - Likes recibidos
+  - Eventos participados
+  - Preguntas hechas en foro
+
+---
+
+💡 9. FUNCIONALIDAD “GUARDAR PARA DESPUÉS”  
+- En cada apunte y post del feed, añade botón “Guardar” con ícono.  
+- Crear pestaña en perfil que liste “Guardados” del usuario.  
+- Permitir desmarcar/ocultar apuntes guardados.
+
+---
+
+📣 10. BOTÓN “COMPARTIR” AVANZADO  
+- Añadir botón "Compartir" que:
+  - Copie el link al portapapeles
+  - Muestre un toast de confirmación
+  - Incluya etiquetas `<meta>` correctas para redes (imagen, título, descripción)
+
+---
+
+🎯 OBJETIVO: Darle vida y profundidad a cada módulo creado hasta ahora. No solo visual, sino también simulación de funcionalidades reales con interactividad. Todo debe verse profesional, ordenado, atractivo, moderno y responsivo (incluido dark mode).  
+
+Gracias Assistant, hazlo TODO lo mejor que puedas 💜
