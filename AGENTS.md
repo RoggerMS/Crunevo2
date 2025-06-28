@@ -384,3 +384,4 @@
 - Fixed missing `render_template` import in `__init__.py` causing 500 errors (hotfix render-template-import).
 - Added `if_not_exists=True` and `if_exists=True` to `add_courses_system` migration to avoid duplicate table errors (hotfix courses-migration-fix).
 - Fixed navbar store link to use 'store.store_index' and avoid BuildError (hotfix navbar-store-link)
+- Fixed navbar courses link to use 'courses.list_courses' and avoid BuildError (hotfix navbar-courses-link)
