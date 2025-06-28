@@ -216,7 +216,7 @@ def create_app():
         )
         app.register_blueprint(store_bp)
         app.register_blueprint(chat_bp)
-    app.register_blueprint(search_bp)
+        app.register_blueprint(search_bp)
         app.register_blueprint(ia_bp)
         app.register_blueprint(noti_bp)
         app.register_blueprint(ach_bp)
