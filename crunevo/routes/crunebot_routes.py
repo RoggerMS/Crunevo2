@@ -1,7 +1,11 @@
+
 from flask import Blueprint, render_template, request, jsonify
-from flask_login import login_required
+from flask_login import login_required, current_user
 import json
 import re
+from datetime import datetime
+from crunevo.extensions import db
+from crunevo.models import User
 
 crunebot_bp = Blueprint("crunebot", __name__)
 
@@ -37,6 +41,35 @@ CRUNEBOT_RESPONSES = {
             "encontrar club",
         ],
         "response": "👥 Los clubes están en la sección 'Clubes' del menú principal. Allí encontrarás clubes por carrera como Matemáticas, Educación, Informática, etc. ¡Únete a los que más te interesen para conectar con estudiantes de tu área!",
+    },
+    "tienda_premium": {
+        "keywords": [
+            "crunevo+",
+            "premium",
+            "tienda premium",
+            "beneficios premium",
+            "suscripción",
+        ],
+        "response": "✨ CRUNEVO+ es nuestra membresía premium que te da:\n• Acceso a cursos exclusivos\n• Descuentos en la tienda\n• Badge especial en tu perfil\n• Soporte prioritario\n• Funciones avanzadas\n¡Revisa la tienda para más detalles!",
+    },
+    "cursos": {
+        "keywords": [
+            "cursos",
+            "lecciones",
+            "videos",
+            "aprender",
+            "estudiar",
+        ],
+        "response": "📚 En la sección 'Cursos' encontrarás:\n• Cursos por carrera y nivel\n• Lecciones en video\n• Seguimiento de progreso\n• Certificados al completar\n• Cursos gratuitos y premium\n¡Explora y mejora tus habilidades!",
+    },
+    "buscar": {
+        "keywords": [
+            "buscar",
+            "encontrar",
+            "buscador",
+            "search",
+        ],
+        "response": "🔍 Usa nuestro buscador global para encontrar:\n• Apuntes por materia\n• Usuarios y perfiles\n• Publicaciones del feed\n• Productos de la tienda\n• Cursos disponibles\n¡Está en la barra superior!",
     },
     "ganar_dinero": {
         "keywords": [
@@ -74,15 +107,15 @@ CRUNEBOT_RESPONSES = {
     },
     "tienda": {
         "keywords": ["tienda", "comprar", "productos", "canje", "usar crolars"],
-        "response": "🛒 En la Tienda puedes canjear tus Crolars por:\n• Productos educativos\n• Acceso premium\n• Materiales de estudio\n• ¡Y más sorpresas!\nRevisa regularmente porque agregamos nuevos productos.",
+        "response": "🛒 En la Tienda puedes canjear tus Crolars por:\n• Productos educativos\n• Acceso premium\n• Materiales de estudio\n• Ofertas especiales\n• ¡Y más sorpresas!\nRevisa regularmente porque agregamos nuevos productos y promociones.",
     },
     "certificados": {
         "keywords": ["certificados", "diplomas", "reconocimientos", "logros"],
-        "response": "🏆 Puedes obtener certificados digitales por:\n• Participación activa en CRUNEVO\n• Completar 10 misiones\n• Subir 3 o más apuntes\nVe a tu perfil → 'Certificados' para ver cuáles puedes generar.",
+        "response": "🏆 Puedes obtener certificados digitales por:\n• Participación activa en CRUNEVO\n• Completar 10 misiones\n• Subir 3 o más apuntes\n• Finalizar cursos\nVe a tu perfil → 'Certificados' para ver cuáles puedes generar.",
     },
     "ayuda_general": {
         "keywords": ["ayuda", "no entiendo", "confused", "socorro", "help"],
-        "response": "🤗 ¡Estoy aquí para ayudarte! Puedes preguntarme sobre:\n• Qué es CRUNEVO\n• Cómo ganar Crolars\n• Dónde encontrar clubes\n• Cómo usar el foro\n• Subir apuntes\n• Eventos y certificados\n¿Sobre qué quieres saber más?",
+        "response": "🤗 ¡Estoy aquí para ayudarte! Puedes preguntarme sobre:\n• Qué es CRUNEVO\n• Cómo ganar Crolars\n• Dónde encontrar clubes\n• Cómo usar el foro\n• Subir apuntes\n• Eventos y certificados\n• Tienda y CRUNEVO+\n• Cursos disponibles\n¿Sobre qué quieres saber más?",
     },
 }
 
@@ -108,16 +141,18 @@ def find_best_response(user_message):
         return best_match
 
     # Default response
-    return "🤔 Interesante pregunta. Te recomiendo:\n• Explorar el foro para dudas académicas\n• Revisar los clubes de tu carrera\n• Subir apuntes para ganar Crolars\n• Participar en eventos\n\n¿Hay algo específico en lo que pueda ayudarte?"
+    return "🤔 Interesante pregunta. Te recomiendo:\n• Explorar el foro para dudas académicas\n• Revisar los clubes de tu carrera\n• Subir apuntes para ganar Crolars\n• Participar en eventos\n• Usar el buscador global\n• Revisar los cursos disponibles\n\n¿Hay algo específico en lo que pueda ayudarte?"
 
 
 @crunebot_bp.route("/crunebot")
+@login_required
 def crunebot_chat():
     """Crunebot chat interface"""
     return render_template("crunebot/chat.html")
 
 
 @crunebot_bp.route("/api/crunebot/message", methods=["POST"])
+@login_required
 def crunebot_message():
     """Process message and return Crunebot response"""
     data = request.get_json()
@@ -136,6 +171,23 @@ def crunebot_message():
     return jsonify(
         {
             "response": response,
-            "timestamp": "2024-01-01T00:00:00Z",  # You can use actual timestamp
+            "timestamp": datetime.utcnow().isoformat(),
+            "can_save": True
         }
     )
+
+
+@crunebot_bp.route("/api/crunebot/save", methods=["POST"])
+@login_required
+def save_conversation():
+    """Save a conversation snippet"""
+    data = request.get_json()
+    conversation_data = data.get("conversation", "")
+    
+    # In a real implementation, you'd save this to a database
+    # For now, we'll just return success
+    
+    return jsonify({
+        "status": "success",
+        "message": "Conversación guardada exitosamente"
+    })

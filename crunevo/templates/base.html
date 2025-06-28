@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="es" data-bs-theme="{{ 'dark' if current_user.is_authenticated and (current_user.pref_dark|default(false)) else 'light' }}">
 <head>
@@ -8,23 +7,23 @@
     <meta name="theme-color" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    
+
     <!-- Favicons -->
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16x16.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
-    
+
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
+
     <!-- Modern fonts with display=swap -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
+
     <title>{% block title %}Crunevo - Comunidad Educativa Moderna{% endblock %}</title>
     <meta name="description" content="Crunevo es la plataforma educativa moderna que conecta estudiantes. Comparte apuntes, gana Crolars y forma parte de una comunidad que impulsa tu crecimiento académico.">
-    
+
     <!-- Enhanced Open Graph -->
     <meta property="og:title" content="{% block og_title %}Crunevo - Comunidad Educativa Moderna{% endblock %}" />
     <meta property="og:description" content="{% block og_description %}Plataforma educativa moderna que conecta estudiantes. Comparte conocimiento, gana recompensas y crece académicamente.{% endblock %}" />
@@ -32,17 +31,17 @@
     <meta property="og:url" content="{{ request.url }}" />
     <meta property="og:type" content="{% block og_type %}website{% endblock %}" />
     <meta property="og:site_name" content="Crunevo" />
-    
+
     <!-- Additional sharing meta -->
     <meta name="author" content="{% block author %}Crunevo{% endblock %}" />
     <meta name="keywords" content="{% block keywords %}educación, estudiantes, apuntes, universidad, Perú, comunidad educativa{% endblock %}" />
-    
+
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{% block twitter_title %}Crunevo - Comunidad Educativa Moderna{% endblock %}">
     <meta name="twitter:description" content="{% block twitter_description %}Plataforma educativa que conecta estudiantes y potencia el aprendizaje colaborativo{% endblock %}">
     <meta name="twitter:image" content="{{ url_for('static', filename='img/opengraph.jpg') }}">
-    
+
     <!-- Stylesheets with optimized loading -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/accessibility.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap.min.css') }}">
@@ -79,7 +78,7 @@
                 </div>
               {% endif %}
             {% endwith %}
-            
+
             <!-- Page content -->
             {% block content %}{% endblock %}
         </div>
@@ -136,17 +135,63 @@
     {% endif %}
 
     <!-- Mobile bottom navigation -->
-    {% if not config.ADMIN_INSTANCE %}
     {% include 'components/mobile_bottom_nav.html' %}
+
+    <!-- Floating Crunebot Button -->
+    {% if current_user.is_authenticated %}
+    <div class="floating-crunebot d-none d-lg-block">
+        <button class="btn btn-primary rounded-circle shadow-lg floating-btn" 
+                onclick="window.location.href='/crunebot'"
+                title="Hablar con Crunebot">
+            <i class="bi bi-robot fs-5"></i>
+        </button>
+    </div>
     {% endif %}
 
-    <!-- Core JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+    <!-- Bootstrap JS -->
+    <script src="{{ url_for('static', filename='vendor/bootstrap.bundle.min.js') }}"></script>
+
+    <style>
+    .floating-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border: none;
+        z-index: 1000;
+        transition: all 0.3s ease;
+        animation: pulse 2s infinite;
+    }
+
+    .floating-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4) !important;
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .floating-crunebot {
+            display: none !important;
+        }
+    }
+    </style>
+
     <!-- App JavaScript with enhanced loading -->
     <script src="{{ url_for('static', filename='js/feed_toggle.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/feed.js') }}" defer></script>
-    
+
     <!-- Configuration variables -->
     <script>
       window.HAS_STORE = {{ 'true' if 'store.cart_count_api' in current_app.view_functions else 'false' }};
@@ -156,7 +201,7 @@
         version: '2.0.0'
       };
     </script>
-    
+
     <!-- User context -->
     {% if current_user.is_authenticated %}
     <script>
@@ -178,11 +223,11 @@
       window.CURRENT_USER = null;
     </script>
     {% endif %}
-    
+
     <!-- Main app initialization -->
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/share.js') }}" defer></script>
-    
+
     {% block body_end %}{% endblock %}
 </body>
 </html>

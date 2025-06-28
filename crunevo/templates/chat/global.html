@@ -62,10 +62,30 @@
   padding: 0.5rem;
   border-radius: 8px;
   transition: background 0.2s;
+  cursor: pointer;
 }
 
 .user-item:hover {
   background: rgba(102, 126, 234, 0.1);
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #28a745;
+  border: 2px solid white;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.chat-input {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  padding: 1rem;
+  border-top: 1px solid #dee2e6;
 }
 </style>
 {% endblock %}
@@ -76,27 +96,30 @@
     <div class="col-lg-8">
       <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
-          <h5 class="mb-0"><i class="bi bi-chat-dots me-2"></i>Chat Global Educativo</h5>
-          <small>Comparte ideas y colabora con la comunidad</small>
+          <h5 class="mb-0">
+            <i class="bi bi-chat-dots me-2"></i>
+            Chat Global de CRUNEVO
+          </h5>
+          <small>Conecta con toda la comunidad estudiantil</small>
         </div>
         
-        <div class="card-body p-0">
-          <div id="chatContainer" class="chat-container">
-            {% for message in messages %}
-            <div class="message-item {% if message.sender_id == current_user.id %}own{% endif %}">
-              <img src="{{ message.sender.avatar_url or '/static/img/default.png' }}" 
-                   alt="{{ message.sender.username }}" class="user-avatar">
-              <div class="message-content">
-                <div class="fw-bold small">{{ message.sender.username }}</div>
-                <div>{{ message.content }}</div>
-                <div class="message-meta">{{ message.timestamp.strftime('%H:%M') }}</div>
+        <div id="chatContainer" class="chat-container">
+          {% for message in messages %}
+          <div class="message-item {% if message.sender_id == current_user.id %}own{% endif %}">
+            <img src="{{ message.sender.avatar_url or url_for('static', filename='img/default.png') }}" 
+                 alt="{{ message.sender.username }}" class="user-avatar">
+            <div class="message-content">
+              <div class="fw-semibold small">{{ message.sender.username }}</div>
+              {{ message.content }}
+              <div class="message-meta">
+                {{ message.timestamp.strftime('%H:%M') }}
               </div>
             </div>
-            {% endfor %}
           </div>
+          {% endfor %}
         </div>
         
-        <div class="card-footer">
+        <div class="chat-input">
           <form id="messageForm" class="d-flex gap-2">
             <input type="text" id="messageInput" class="form-control" 
                    placeholder="Escribe un mensaje..." maxlength="1000" required>
@@ -111,30 +134,26 @@
     <div class="col-lg-4">
       <div class="card shadow-sm">
         <div class="card-header">
-          <h6 class="mb-0"><i class="bi bi-people me-2"></i>Usuarios Activos</h6>
+          <h6 class="mb-0">
+            <i class="bi bi-people me-2"></i>
+            Usuarios Activos
+          </h6>
         </div>
-        <div class="card-body p-2">
+        <div class="card-body p-0">
           <div class="active-users">
             {% for user in active_users %}
-            <div class="user-item">
-              <img src="{{ user.avatar_url or '/static/img/default.png' }}" 
-                   alt="{{ user.username }}" class="user-avatar">
+            <div class="user-item" onclick="startPrivateChat({{ user.id }})">
+              <div class="position-relative">
+                <img src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                     alt="{{ user.username }}" class="user-avatar">
+                <div class="status-indicator"></div>
+              </div>
               <div class="flex-grow-1">
-                <div class="fw-bold">{{ user.username }}</div>
+                <div class="fw-semibold">{{ user.username }}</div>
                 <small class="text-muted">{{ user.role|title }}</small>
               </div>
-              <a href="{{ url_for('chat.private_chat', user_id=user.id) }}" 
-                 class="btn btn-sm btn-outline-primary">
-                <i class="bi bi-chat"></i>
-              </a>
             </div>
             {% endfor %}
-          </div>
-          
-          <div class="mt-3">
-            <a href="{{ url_for('chat.private_chats') }}" class="btn btn-outline-primary w-100">
-              <i class="bi bi-envelope me-2"></i>Mis Conversaciones
-            </a>
           </div>
         </div>
       </div>
@@ -149,10 +168,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const container = document.getElementById('chatContainer');
   let lastMessageId = {{ messages[-1].id if messages else 0 }};
   
-  // Scroll al final
+  // Auto scroll to bottom
   container.scrollTop = container.scrollHeight;
   
-  // Enviar mensaje
+  // Send message
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     const content = input.value.trim();
@@ -173,41 +192,48 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(data => {
       if (data.status === 'ok') {
         input.value = '';
-        addMessage(data.message, true);
         lastMessageId = data.message.id;
       }
     })
     .catch(console.error);
   });
   
-  // Polling para nuevos mensajes
+  // Poll for new messages
   setInterval(function() {
     fetch(`/chat/mensajes/global?since_id=${lastMessageId}`)
     .then(response => response.json())
     .then(messages => {
       messages.forEach(msg => {
-        addMessage(msg, false);
+        if (msg.sender_id !== {{ current_user.id }}) {
+          addMessage(msg);
+        }
         lastMessageId = Math.max(lastMessageId, msg.id);
       });
     })
     .catch(console.error);
-  }, 3000);
+  }, 2000);
   
-  function addMessage(message, isOwn) {
+  function addMessage(message) {
     const messageDiv = document.createElement('div');
-    messageDiv.className = `message-item ${isOwn ? 'own' : ''}`;
+    messageDiv.className = `message-item ${message.sender_id === {{ current_user.id }} ? 'own' : ''}`;
     messageDiv.innerHTML = `
       <img src="${message.sender_avatar || '/static/img/default.png'}" 
            alt="${message.sender_username}" class="user-avatar">
       <div class="message-content">
-        <div class="fw-bold small">${message.sender_username}</div>
-        <div>${message.content}</div>
-        <div class="message-meta">${new Date(message.timestamp).toLocaleTimeString()}</div>
+        <div class="fw-semibold small">${message.sender_username}</div>
+        ${message.content}
+        <div class="message-meta">
+          ${new Date(message.timestamp).toLocaleTimeString()}
+        </div>
       </div>
     `;
     container.appendChild(messageDiv);
     container.scrollTop = container.scrollHeight;
   }
 });
+
+function startPrivateChat(userId) {
+  window.location.href = `/chat/privado/${userId}`;
+}
 </script>
 {% endblock %}

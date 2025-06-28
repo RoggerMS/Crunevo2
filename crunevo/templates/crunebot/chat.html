@@ -14,8 +14,16 @@
                             <i class="bi bi-robot text-white" style="font-size: 2.5rem;"></i>
                         </div>
                     </div>
-                    <h1 class="mb-2">Crunebot</h1>
-                    <p class="text-muted mb-0">Tu guía inteligente en CRUNEVO</p>
+                    <h1 class="mb-2">🤖 Crunebot</h1>
+                    <p class="text-muted mb-0">Tu asistente inteligente en CRUNEVO</p>
+                    <div class="d-flex justify-content-center gap-2 mt-3">
+                        <button class="btn btn-outline-primary btn-sm" onclick="clearChat()">
+                            <i class="bi bi-trash"></i> Limpiar
+                        </button>
+                        <button class="btn btn-outline-success btn-sm" onclick="saveConversation()">
+                            <i class="bi bi-bookmark"></i> Guardar Chat
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -23,7 +31,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-0">
                     <!-- Chat Messages -->
-                    <div class="chat-messages p-4" id="chatMessages" style="height: 400px; overflow-y: auto;">
+                    <div class="chat-messages p-4" id="chatMessages" style="height: 500px; overflow-y: auto;">
                         <!-- Welcome Message -->
                         <div class="message-bubble bot-message mb-3">
                             <div class="d-flex align-items-start">
@@ -37,7 +45,7 @@
                                     <div class="message-text bg-light p-3 rounded">
                                         ¡Hola! 👋 Soy Crunebot, tu guía educativa en CRUNEVO. 
                                         Puedo ayudarte con información sobre la plataforma, 
-                                        cómo ganar Crolars, encontrar clubes y mucho más. 
+                                        cómo ganar Crolars, encontrar clubes, cursos, usar la tienda y mucho más. 
                                         ¿En qué puedo ayudarte hoy?
                                     </div>
                                     <small class="text-muted mt-1">Ahora</small>
@@ -85,9 +93,30 @@
                         ¿Cómo subir apuntes?
                     </button>
                 </div>
+                <div class="col-md-6">
+                    <button class="btn btn-outline-purple w-100" onclick="sendQuickMessage('¿Qué es CRUNEVO+?')">
+                        <i class="bi bi-star me-1"></i>
+                        ¿Qué es CRUNEVO+?
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-outline-secondary w-100" onclick="sendQuickMessage('¿Dónde están los cursos?')">
+                        <i class="bi bi-play-circle me-1"></i>
+                        ¿Dónde están los cursos?
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Floating Button for Mobile -->
+<div class="floating-crunebot d-lg-none">
+    <button class="btn btn-primary rounded-circle shadow-lg" 
+            style="position: fixed; bottom: 80px; right: 20px; width: 60px; height: 60px; z-index: 1000;"
+            onclick="toggleCrunebotMobile()">
+        <i class="bi bi-robot fs-4"></i>
+    </button>
 </div>
 
 <style>
@@ -169,12 +198,21 @@
         transform: translateY(-10px);
     }
 }
+
+.btn-outline-purple {
+    --bs-btn-color: #6f42c1;
+    --bs-btn-border-color: #6f42c1;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #6f42c1;
+    --bs-btn-hover-border-color: #6f42c1;
+}
 </style>
 
 <script>
 const chatMessages = document.getElementById('chatMessages');
 const chatForm = document.getElementById('chatForm');
 const messageInput = document.getElementById('messageInput');
+let conversationHistory = [];
 
 function scrollToBottom() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -206,6 +244,13 @@ function addMessage(content, isUser = false) {
     
     chatMessages.appendChild(messageDiv);
     scrollToBottom();
+    
+    // Add to conversation history
+    conversationHistory.push({
+        type: isUser ? 'user' : 'bot',
+        content: content,
+        timestamp: new Date().toISOString()
+    });
 }
 
 function addTypingIndicator() {
@@ -283,6 +328,43 @@ async function sendMessage(message) {
 
 function sendQuickMessage(message) {
     sendMessage(message);
+}
+
+function clearChat() {
+    if (confirm('¿Estás seguro de que quieres limpiar la conversación?')) {
+        // Keep only welcome message
+        const firstMessage = chatMessages.firstElementChild;
+        chatMessages.innerHTML = '';
+        chatMessages.appendChild(firstMessage);
+        conversationHistory = [];
+    }
+}
+
+function saveConversation() {
+    if (conversationHistory.length === 0) {
+        showToast('No hay conversación para guardar', 'info');
+        return;
+    }
+    
+    fetch('/api/crunebot/save', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ conversation: conversationHistory })
+    })
+    .then(response => response.json())
+    .then(data => {
+        showToast('Conversación guardada exitosamente', 'success');
+    })
+    .catch(error => {
+        showToast('Error al guardar la conversación', 'error');
+    });
+}
+
+function toggleCrunebotMobile() {
+    // For mobile overlay - can be implemented later
+    window.location.href = '/crunebot';
 }
 
 // Form submission
