@@ -52,7 +52,7 @@ Hola Assistant. Este proyecto es CRUNEVO, una red educativa para estudiantes uni
    - **Clubes**: vista general de clubes por carrera (Educación, Matemáticas, etc.) con botones para unirse.
    - **Foro**: vista tipo Brainly con preguntas, respuestas, y botón “Hacer pregunta”.
    - **Eventos**: sección con tarjetas tipo cronograma o calendario simple.
-   - **Clubot**: sección con mensaje fijo que diga “¡Hola! Soy el Clubot, tu guía educativa en CRUNEVO”, con una imagen simpática y base de IA.
+   - **Crunebot**: sección con mensaje fijo que diga “¡Hola! Soy el Crunebot, tu guía educativa en CRUNEVO”, con una imagen simpática y base de IA.
 
 ---
 

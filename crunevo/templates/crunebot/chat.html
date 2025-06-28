@@ -5,10 +5,10 @@
 <div class="container my-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <!-- Clubot Header -->
+            <!-- Crunebot Header -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body text-center">
-                    <div class="clubot-avatar mb-3">
+                    <div class="crunebot-avatar mb-3">
                         <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center mx-auto" 
                              style="width: 80px; height: 80px;">
                             <i class="bi bi-robot text-white" style="font-size: 2.5rem;"></i>
@@ -257,7 +257,7 @@ async function sendMessage(message) {
     addTypingIndicator();
     
     try {
-        const response = await fetch('/api/clubot/message', {
+        const response = await fetch('/api/crunebot/message', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

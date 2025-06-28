@@ -26,9 +26,9 @@ Hola de nuevo, Assistant. Ya se aplicaron más de 100 cambios visuales, pero aho
 
 ---
 
-🤖 **Clubot** (asistente base)  
+🤖 **Crunebot** (asistente base)  
 13. Agrega un bloque visible tipo chatbot en `/clubes` o `/foro` con mensaje:  
-> “¡Hola! Soy Clubot, tu guía educativa en Crunevo. Pronto podré ayudarte con tus preguntas.”  
+> “¡Hola! Soy Crunebot, tu guía educativa en Crunevo. Pronto podré ayudarte con tus preguntas.”  
 14. Que tenga animación sutil, imagen simpática y diseño tipo widget pegado al costado o en esquina.
 
 ---

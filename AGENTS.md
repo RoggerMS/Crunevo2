@@ -362,4 +362,5 @@
 - Updated enhanced_chat_system migration to set booleans using `false` instead of `0` to fix upgrade error (hotfix boolean-migration).
 - Sidebar feed links now use tailwind text color classes for better readability (PR feed-sidebar-color).
 - Fixed ambiguous join in chat global view to avoid AmbiguousForeignKeysError (hotfix chat-active-users-join).
-- Registered clubot and saved blueprints for public instance and removed unreachable code; added merge migration to unify heads (hotfix clubot-blueprint).
+- Registered Crunebot and saved blueprints for public instance and removed unreachable code; added merge migration to unify heads (hotfix crunebot-blueprint).
+- Renamed the assistant blueprint to Crunebot across routes, templates and attachments (PR crunebot-rename).
