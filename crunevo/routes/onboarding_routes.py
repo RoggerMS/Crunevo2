@@ -24,6 +24,7 @@ from crunevo.utils.audit import record_auth_event
 from sqlalchemy.exc import IntegrityError
 
 bp = Blueprint("onboarding", __name__, url_prefix="/onboarding")
+onboarding_bp = bp
 
 
 def generate_token():

@@ -3,7 +3,10 @@ from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models import AchievementPopup
 
+
+# Define the blueprint and keep a short alias for backwards compatibility.
 achievement_bp = Blueprint("achievement_popup", __name__)
+ach_bp = achievement_bp
 
 @ach_bp.before_app_request
 def clear_session_new_achievements():
