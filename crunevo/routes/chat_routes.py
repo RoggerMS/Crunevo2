@@ -26,11 +26,20 @@ def chat_index():
     
     # Obtener usuarios activos (que han enviado mensajes en las últimas 24h)
     recent_cutoff = datetime.utcnow() - timedelta(hours=24)
-    active_users = User.query.join(Message).filter(
-        Message.timestamp >= recent_cutoff,
-        User.id != current_user.id,
-        User.activated == True
-    ).distinct().limit(20).all()
+    active_users = (
+        User.query.join(
+            Message,
+            or_(Message.sender_id == User.id, Message.receiver_id == User.id),
+        )
+        .filter(
+            Message.timestamp >= recent_cutoff,
+            User.id != current_user.id,
+            User.activated == True,
+        )
+        .distinct()
+        .limit(20)
+        .all()
+    )
     
     return render_template("chat/global.html", 
                          messages=global_messages, 
