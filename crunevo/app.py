@@ -155,6 +155,8 @@ def create_app():
     from .routes.forum_routes import forum_bp
     from .routes.event_routes import event_bp
     from .routes.about_routes import about_bp
+    from .routes.clubot_routes import clubot_bp
+    from .routes.saved_routes import saved_bp
 
     @app.route("/")
     def home_redirect():
@@ -230,6 +232,8 @@ def create_app():
         app.register_blueprint(forum_bp)
         app.register_blueprint(event_bp)
         app.register_blueprint(about_bp)
+        app.register_blueprint(clubot_bp)
+        app.register_blueprint(saved_bp)
         app.register_blueprint(errors_bp)
         app.register_blueprint(admin_blocker_bp)
         if testing_env:
@@ -268,20 +272,3 @@ def create_app():
         app.logger.info("DB=%s", app.config.get("SQLALCHEMY_DATABASE_URI"))
 
     return app
-
-# Register blueprints
-    from .routes.club_routes import club_bp
-    from .routes.forum_routes import forum_bp
-    from .routes.event_routes import event_bp
-    from .routes.about_routes import about_bp
-    from .routes.certificate_routes import cert_bp
-    from .routes.clubot_routes import clubot_bp
-    from .routes.saved_routes import saved_bp
-
-    app.register_blueprint(club_bp)
-    app.register_blueprint(forum_bp)
-    app.register_blueprint(event_bp)
-    app.register_blueprint(about_bp)
-    app.register_blueprint(cert_bp)
-    app.register_blueprint(clubot_bp)
-    app.register_blueprint(saved_bp)
