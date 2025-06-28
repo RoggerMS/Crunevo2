@@ -1,0 +1,68 @@
+Hola Assistant. Este proyecto es CRUNEVO, una red educativa para estudiantes universitarios (estilo red social, moderna y funcional). Ya está casi todo implementado (feed, apuntes, tienda, chat, perfil, misiones, ranking). Ahora quiero que realices una **mejora final global y profesional** con estos cambios combinados:
+
+---
+
+🎨 DISEÑO Y VISUAL GENERAL:
+1. Unifica todo el diseño con una línea moderna, educativa y profesional. Usa colores oficiales de CRUNEVO: morado principal, fondo claro o dark con transiciones suaves.
+2. Elimina elementos innecesarios como “Tu feed personal” en el feed.
+3. Corrige las tarjetas del feed que parecen dobles o sobrecargadas. Deja solo una estructura clara: encabezado, contenido, reacciones, comentarios.
+4. En el modo oscuro, revisa que todo tenga suficiente contraste (por ejemplo: textos blancos sobre fondos no muy brillantes).
+5. Mejora el diseño mobile del sitio: que el menú inferior sea accesible, no haya scroll horizontal y todos los elementos se adapten bien.
+
+---
+
+💬 CHAT:
+6. Rediseña el chat estilo Facebook Messenger: burbujas limpias, animaciones suaves, modo oscuro bien integrado, barra de escritura más elegante.
+
+---
+
+📚 APUNTES:
+7. Asegúrate que la visualización de apuntes sea limpia, que no se rompa en móviles, y que tenga etiquetas visibles, opción de editar, y botón de reporte claro.
+8. En la vista general, que los apuntes se vean más estilizados, con bordes limpios y menos saturación visual.
+
+---
+
+🛒 TIENDA:
+9. En cada producto debe haber un botón "Agregar al carrito" **visible directamente** (no solo arriba).
+10. Cambia el texto "+ Carrito" por simplemente **“Agregar”** en todos los botones.
+11. Asegura que la vista dark mode en la tienda tenga textos legibles y no esté tan saturada.
+
+---
+
+📑 PERFIL:
+12. Mejora el diseño visual del perfil: avatar centrado, pestañas bien organizadas, más visualización en desktop y orden en móviles.
+13. Muestra resumen visible: Carrera elegida, Crolars, apuntes subidos, comentarios, botón “Editar perfil”.
+14. Mejora la tabla de historial de Crolars: ordena por fecha y resalta el motivo.
+
+---
+
+🏆 RANKING Y TRENDING:
+15. Rediseña el `/ranking`: muestra tarjetas o tabla más estilizada, íconos de logros, posición y Crolars ganados.
+16. En `/trending`, aplica un diseño más limpio y estilizado con gradiente más profesional, y mejores tarjetas para publicaciones destacadas.
+
+---
+
+📥 NOTIFICACIONES:
+17. Aplica diseño profesional: íconos por tipo (info, logro, alerta), animaciones suaves, soporte dark/light, filtros rápidos, botón "marcar como leído" funcional.
+
+---
+
+🌐 EXPLORADOR, CLUBES Y FORO (PREPARACIÓN BASE):
+18. Crea una base visual para:
+   - **Clubes**: vista general de clubes por carrera (Educación, Matemáticas, etc.) con botones para unirse.
+   - **Foro**: vista tipo Brainly con preguntas, respuestas, y botón “Hacer pregunta”.
+   - **Eventos**: sección con tarjetas tipo cronograma o calendario simple.
+   - **Clubot**: sección con mensaje fijo que diga “¡Hola! Soy el Clubot, tu guía educativa en CRUNEVO”, con una imagen simpática y base de IA.
+
+---
+
+🔄 EXTRAS:
+19. Añade mensajes visuales de estado vacío en feed, apuntes, tienda, ranking, foro (ej: “Aún no hay publicaciones”, “Sé el primero en compartir”).
+20. Revisa todo el sistema de tooltips y añade en íconos de Crolars, Misiones, Referidos, Chat y Notificaciones.
+21. Limpia cualquier código duplicado o visual innecesario. Que todo cargue rápido y se vea profesional.
+
+---
+
+🎯 EN RESUMEN: Quiero dejar CRUNEVO listo para el lanzamiento. Debe ser usable, rápido, educativo, social, limpio, motivador y atractivo para estudiantes peruanos. Todo debe estar perfectamente integrado en móviles y PC.
+
+Gracias Assistant. Haz lo mejor posible.
