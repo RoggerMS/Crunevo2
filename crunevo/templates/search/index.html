@@ -1,0 +1,607 @@
+
+{% extends 'base.html' %}
+{% block title %}Buscador Universal - Crunevo{% endblock %}
+
+{% block head %}
+<style>
+.search-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.search-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+}
+
+.search-box {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+}
+
+.suggestion-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f8f9fa;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.suggestion-item:hover {
+    background: #f8f9fa;
+}
+
+.filter-tabs {
+    background: white;
+    border-radius: 15px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    background: white;
+    color: #6c757d;
+    border-radius: 25px;
+    margin: 0.25rem;
+    transition: all 0.3s;
+}
+
+.filter-btn.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.result-section {
+    margin-bottom: 2rem;
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+.result-item {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.result-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.result-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.result-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.trending-section {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.trending-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.no-results {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+}
+
+.loading-spinner {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+}
+
+@media (max-width: 768px) {
+    .search-hero {
+        padding: 2rem 0;
+    }
+    
+    .filter-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    .filter-btn {
+        display: inline-block;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="search-hero">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="mb-3">🔍 Buscador Universal de Crunevo</h1>
+            <p class="lead">Encuentra apuntes, usuarios, publicaciones y más en un solo lugar</p>
+            
+            <div class="search-box mt-4">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" id="searchInput" class="form-control search-input" 
+                       placeholder="¿Qué quieres encontrar hoy?" value="{{ query }}" 
+                       autocomplete="off">
+                
+                <div id="searchSuggestions" class="search-suggestions"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container search-container">
+    <!-- Filtros de categoría -->
+    <div class="filter-tabs">
+        <div class="d-flex flex-wrap justify-content-center" id="categoryFilters">
+            <button class="filter-btn active" data-category="all">
+                <i class="bi bi-search"></i> Todo
+            </button>
+            <button class="filter-btn" data-category="notes">
+                <i class="bi bi-file-text"></i> Apuntes
+            </button>
+            <button class="filter-btn" data-category="posts">
+                <i class="bi bi-chat-square-text"></i> Publicaciones
+            </button>
+            <button class="filter-btn" data-category="users">
+                <i class="bi bi-people"></i> Usuarios
+            </button>
+            <button class="filter-btn" data-category="products">
+                <i class="bi bi-shop"></i> Tienda
+            </button>
+            <button class="filter-btn" data-category="chats">
+                <i class="bi bi-chat-dots"></i> Chat
+            </button>
+            <button class="filter-btn" data-category="missions">
+                <i class="bi bi-trophy"></i> Misiones
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Loading spinner -->
+            <div id="loadingSpinner" class="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Buscando...</span>
+                </div>
+                <p class="mt-2">Buscando en toda la plataforma...</p>
+            </div>
+
+            <!-- Resultados -->
+            <div id="searchResults"></div>
+
+            <!-- Sin resultados -->
+            <div id="noResults" class="no-results" style="display: none;">
+                <i class="bi bi-search display-1 text-muted"></i>
+                <h3>No se encontraron resultados</h3>
+                <p>Intenta con otros términos de búsqueda o revisa las sugerencias</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Trending searches -->
+            <div class="trending-section mb-4">
+                <h5><i class="bi bi-fire me-2"></i>Búsquedas Populares</h5>
+                <div id="trendingSearches"></div>
+            </div>
+
+            <!-- Sugerencias -->
+            <div class="trending-section">
+                <h5><i class="bi bi-lightbulb me-2"></i>Sugerencias</h5>
+                <div class="d-flex flex-wrap gap-2" id="searchSuggestionsStatic">
+                    <span class="badge bg-light text-dark border">Matemáticas</span>
+                    <span class="badge bg-light text-dark border">Física</span>
+                    <span class="badge bg-light text-dark border">Programación</span>
+                    <span class="badge bg-light text-dark border">Historia</span>
+                    <span class="badge bg-light text-dark border">Química</span>
+                    <span class="badge bg-light text-dark border">Literatura</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const searchSuggestions = document.getElementById('searchSuggestions');
+    const searchResults = document.getElementById('searchResults');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const noResults = document.getElementById('noResults');
+    const categoryFilters = document.querySelectorAll('.filter-btn');
+    
+    let currentCategory = 'all';
+    let searchTimeout;
+    let currentPage = 1;
+    
+    // Inicializar búsqueda si hay query en URL
+    if (searchInput.value.trim()) {
+        performSearch(searchInput.value.trim());
+    }
+    
+    loadTrendingSearches();
+    
+    // Event listeners
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        clearTimeout(searchTimeout);
+        
+        if (query.length >= 2) {
+            // Mostrar sugerencias
+            searchTimeout = setTimeout(() => {
+                loadSuggestions(query);
+            }, 300);
+            
+            // Realizar búsqueda
+            searchTimeout = setTimeout(() => {
+                performSearch(query);
+            }, 500);
+        } else {
+            hideSuggestions();
+            clearResults();
+        }
+    });
+    
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const query = this.value.trim();
+            if (query) {
+                performSearch(query);
+                hideSuggestions();
+            }
+        }
+    });
+    
+    // Filtros de categoría
+    categoryFilters.forEach(btn => {
+        btn.addEventListener('click', function() {
+            categoryFilters.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentCategory = this.dataset.category;
+            
+            const query = searchInput.value.trim();
+            if (query) {
+                performSearch(query);
+            }
+        });
+    });
+    
+    // Clics fuera del input para ocultar sugerencias
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
+            hideSuggestions();
+        }
+    });
+    
+    // Sugerencias estáticas clickeables
+    document.getElementById('searchSuggestionsStatic').addEventListener('click', function(e) {
+        if (e.target.classList.contains('badge')) {
+            searchInput.value = e.target.textContent;
+            performSearch(e.target.textContent);
+        }
+    });
+    
+    function performSearch(query) {
+        if (!query) return;
+        
+        showLoading();
+        
+        const params = new URLSearchParams({
+            q: query,
+            category: currentCategory,
+            page: currentPage,
+            per_page: 20
+        });
+        
+        fetch(`/search/api?${params}`)
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                displayResults(data);
+                updateURL(query);
+            })
+            .catch(error => {
+                hideLoading();
+                console.error('Error:', error);
+                showToast('Error al realizar la búsqueda', 'error');
+            });
+    }
+    
+    function loadSuggestions(query) {
+        fetch(`/search/suggestions?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(suggestions => {
+                displaySuggestions(suggestions);
+            })
+            .catch(error => {
+                console.error('Error loading suggestions:', error);
+            });
+    }
+    
+    function loadTrendingSearches() {
+        // Simular trending searches
+        const trending = [
+            {query: "Cálculo diferencial", count: 145},
+            {query: "Programación Python", count: 132}, 
+            {query: "Historia del Perú", count: 98},
+            {query: "Química orgánica", count: 87},
+            {query: "Inglés básico", count: 76}
+        ];
+        
+        const container = document.getElementById('trendingSearches');
+        container.innerHTML = trending.map(item => `
+            <div class="trending-item">
+                <span class="cursor-pointer" onclick="searchTrending('${item.query}')">${item.query}</span>
+                <small class="text-muted">${item.count}</small>
+            </div>
+        `).join('');
+    }
+    
+    function displaySuggestions(suggestions) {
+        if (suggestions.length === 0) {
+            hideSuggestions();
+            return;
+        }
+        
+        searchSuggestions.innerHTML = suggestions.map(suggestion => `
+            <div class="suggestion-item" onclick="selectSuggestion('${suggestion.text}')">
+                <i class="${suggestion.icon}"></i>
+                <span>${suggestion.text}</span>
+                <small class="ms-auto text-muted">${suggestion.type}</small>
+            </div>
+        `).join('');
+        
+        searchSuggestions.style.display = 'block';
+    }
+    
+    function displayResults(data) {
+        const { results, total, query } = data;
+        
+        if (total === 0) {
+            searchResults.innerHTML = '';
+            noResults.style.display = 'block';
+            return;
+        }
+        
+        noResults.style.display = 'none';
+        
+        let html = `<div class="mb-3"><h4>Resultados para "${query}" (${total})</h4></div>`;
+        
+        // Mostrar resultados por categoría
+        Object.entries(results).forEach(([category, items]) => {
+            if (items.length > 0) {
+                html += `<div class="result-section">`;
+                html += `<div class="result-header">`;
+                html += `<h5>${getCategoryLabel(category)}</h5>`;
+                html += `<span class="badge bg-primary">${items.length}</span>`;
+                html += `</div>`;
+                
+                items.forEach(item => {
+                    html += renderResultItem(item);
+                });
+                
+                html += `</div>`;
+            }
+        });
+        
+        searchResults.innerHTML = html;
+    }
+    
+    function renderResultItem(item) {
+        switch (item.type) {
+            case 'note':
+                return `
+                    <div class="result-item">
+                        <h6><a href="${item.url}" class="text-decoration-none">${item.title}</a></h6>
+                        <p class="text-muted mb-2">${item.content_preview}</p>
+                        <div class="result-meta">
+                            <span><i class="bi bi-person"></i> ${item.author.username}</span>
+                            <span><i class="bi bi-book"></i> ${item.subject}</span>
+                            <span><i class="bi bi-hand-thumbs-up"></i> ${item.upvotes}</span>
+                            <span><i class="bi bi-download"></i> ${item.downloads}</span>
+                        </div>
+                        <div class="result-actions">
+                            <a href="${item.url}" class="btn btn-sm btn-primary">Ver</a>
+                            ${item.file_url ? `<a href="${item.file_url}" class="btn btn-sm btn-outline-primary">Descargar</a>` : ''}
+                        </div>
+                    </div>
+                `;
+            
+            case 'user':
+                return `
+                    <div class="result-item">
+                        <div class="d-flex align-items-center">
+                            <img src="${item.avatar_url || '/static/img/default.png'}" 
+                                 class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                            <div class="flex-grow-1">
+                                <h6><a href="${item.url}" class="text-decoration-none">${item.username}</a></h6>
+                                <p class="text-muted mb-1">${item.about || 'Sin descripción'}</p>
+                                <div class="result-meta">
+                                    <span><i class="bi bi-star"></i> ${item.points} puntos</span>
+                                    <span><i class="bi bi-shield-check"></i> Nivel ${item.verification_level}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="result-actions">
+                            <a href="${item.url}" class="btn btn-sm btn-primary">Ver Perfil</a>
+                            <button class="btn btn-sm btn-outline-primary">Seguir</button>
+                        </div>
+                    </div>
+                `;
+            
+            case 'product':
+                return `
+                    <div class="result-item">
+                        <div class="d-flex">
+                            <img src="${item.image_url || '/static/img/default_product.png'}" 
+                                 class="me-3" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;">
+                            <div class="flex-grow-1">
+                                <h6><a href="${item.url}" class="text-decoration-none">${item.name}</a></h6>
+                                <p class="text-muted mb-2">${item.description}</p>
+                                <div class="result-meta">
+                                    <span><i class="bi bi-currency-dollar"></i> S/ ${item.price}</span>
+                                    <span><i class="bi bi-box"></i> Stock: ${item.stock}</span>
+                                    <span><i class="bi bi-star-fill"></i> ${item.avg_rating}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="result-actions">
+                            <a href="${item.url}" class="btn btn-sm btn-primary">Ver Producto</a>
+                            <button class="btn btn-sm btn-outline-primary">Agregar al Carrito</button>
+                        </div>
+                    </div>
+                `;
+            
+            case 'post':
+                return `
+                    <div class="result-item">
+                        <div class="d-flex align-items-start">
+                            <img src="${item.author.avatar_url || '/static/img/default.png'}" 
+                                 class="rounded-circle me-3" style="width: 40px; height: 40px;">
+                            <div class="flex-grow-1">
+                                <h6>${item.author.username}</h6>
+                                <p>${item.content}</p>
+                                <div class="result-meta">
+                                    <span><i class="bi bi-heart"></i> ${item.likes_count}</span>
+                                    <span><i class="bi bi-chat"></i> ${item.comments_count}</span>
+                                    <span><i class="bi bi-clock"></i> ${new Date(item.created_at).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="result-actions">
+                            <a href="${item.url}" class="btn btn-sm btn-primary">Ver Publicación</a>
+                        </div>
+                    </div>
+                `;
+            
+            default:
+                return `
+                    <div class="result-item">
+                        <h6>${item.title || item.name || 'Resultado'}</h6>
+                        <p class="text-muted">${item.description || item.content || ''}</p>
+                        <div class="result-actions">
+                            <a href="${item.url}" class="btn btn-sm btn-primary">Ver</a>
+                        </div>
+                    </div>
+                `;
+        }
+    }
+    
+    function getCategoryLabel(category) {
+        const labels = {
+            notes: '📖 Apuntes',
+            posts: '💬 Publicaciones', 
+            users: '👥 Usuarios',
+            products: '🛒 Productos',
+            chats: '💭 Mensajes',
+            missions: '🏆 Misiones'
+        };
+        return labels[category] || category;
+    }
+    
+    function showLoading() {
+        loadingSpinner.style.display = 'block';
+        searchResults.innerHTML = '';
+        noResults.style.display = 'none';
+    }
+    
+    function hideLoading() {
+        loadingSpinner.style.display = 'none';
+    }
+    
+    function hideSuggestions() {
+        searchSuggestions.style.display = 'none';
+    }
+    
+    function clearResults() {
+        searchResults.innerHTML = '';
+        noResults.style.display = 'none';
+    }
+    
+    function selectSuggestion(text) {
+        searchInput.value = text;
+        hideSuggestions();
+        performSearch(text);
+    }
+    
+    function updateURL(query) {
+        const url = new URL(window.location);
+        url.searchParams.set('q', query);
+        window.history.pushState({}, '', url);
+    }
+    
+    // Función global para trending searches
+    window.searchTrending = function(query) {
+        searchInput.value = query;
+        performSearch(query);
+    };
+});
+</script>
+{% endblock %}

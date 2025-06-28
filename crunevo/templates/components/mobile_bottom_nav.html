@@ -16,6 +16,9 @@
       <i class="bi bi-coin fs-4 bottom-nav-icon"></i>
       {% if current_user.is_authenticated %}<span class="d-block small">{{ current_user.credits }}</span>{% endif %}
     </a>
+    <a href="{{ url_for('search.search_page') }}" role="link" tabindex="0" aria-label="Buscar" title="Buscar" class="text-center {% if request.path.startswith('/search') %}bottom-nav-active{% else %}text-primary{% endif %}">
+        <i class="bi bi-search fs-4 bottom-nav-icon"></i>
+    </a>
     <a href="{{ url_for('chat.chat_index') }}" role="link" tabindex="0" aria-label="Chat" title="Chat" class="text-center {% if request.path.startswith('/chat') %}bottom-nav-active{% else %}text-primary{% endif %}">
       <i class="bi bi-chat fs-4 bottom-nav-icon"></i>
     </a>

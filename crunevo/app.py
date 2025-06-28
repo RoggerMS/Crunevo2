@@ -140,6 +140,7 @@ def create_app():
     )
     from .routes.store_routes import store_bp
     from .routes.chat_routes import chat_bp
+    from .routes.search_routes import search_bp
     from .routes.ia_routes import ia_bp
     from .routes.admin_routes import admin_bp
     from .routes.admin_blocker import admin_blocker_bp
@@ -215,6 +216,7 @@ def create_app():
         )
         app.register_blueprint(store_bp)
         app.register_blueprint(chat_bp)
+    app.register_blueprint(search_bp)
         app.register_blueprint(ia_bp)
         app.register_blueprint(noti_bp)
         app.register_blueprint(ach_bp)

@@ -1,7 +1,7 @@
 from .user import User  # noqa: F401
 from .note import Note  # noqa: F401
 from .product import Product  # noqa: F401
-from .chat import Message  # noqa: F401
+from .chat import Message, ChatRoom  # noqa: F401
 from .report import Report  # noqa: F401
 from .comment import Comment  # noqa: F401
 from .post_comment import PostComment  # noqa: F401

@@ -49,11 +49,20 @@
       </ul>
 
       <!-- Search -->
-      <div class="d-none d-lg-flex me-3 position-relative">
-        <input type="text" class="form-control form-control-sm" placeholder="Buscar..." 
-               id="globalSearchInput" style="width: 250px;">
-        <div class="dropdown-menu show" id="searchSuggestions" style="display: none;"></div>
-      </div>
+      <form class="d-flex me-3" role="search" action="{{ url_for('search.search_page') }}" method="GET">
+            <input
+              class="form-control me-2"
+              type="search"
+              name="q"
+              placeholder="Buscar en Crunevo..."
+              aria-label="Search"
+              autocomplete="off"
+              id="navbarSearch"
+            />
+            <button class="btn btn-outline-success" type="submit">
+              <i class="bi bi-search"></i>
+            </button>
+          </form>
 
       <!-- User menu -->
       <ul class="navbar-nav">
