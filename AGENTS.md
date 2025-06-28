@@ -365,3 +365,4 @@
 - Registered Crunebot and saved blueprints for public instance and removed unreachable code; added merge migration to unify heads (hotfix crunebot-blueprint).
 - Renamed the assistant blueprint to Crunebot across routes, templates and attachments (PR crunebot-rename).
 - Fixed sidebar credits display and search link endpoint to prevent template errors (PR feed-sidebar-credits-fix).
+- Updated notes links to use 'notes.list_notes' in bottom nav, sidebar and saved list to avoid BuildError (PR notes-list-alias-fix).

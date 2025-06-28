@@ -56,7 +56,7 @@
         </li>
         
         <li>
-          <a href="{{ url_for('notes.list') }}" class="nav-link {{ 'active' if request.endpoint == 'notes.list' }}">
+          <a href="{{ url_for('notes.list_notes') }}" class="nav-link {{ 'active' if request.endpoint == 'notes.list_notes' }}">
             <i class="bi bi-journal-text"></i>
             <span class="fw-semibold">Apuntes</span>
             <span class="badge bg-primary rounded-pill ms-auto">{{ current_user.notes.count() if current_user.notes else 0 }}</span>

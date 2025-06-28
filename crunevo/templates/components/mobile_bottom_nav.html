@@ -22,10 +22,10 @@
         </a>
 
         <!-- Notes -->
-        <a href="{{ url_for('notes.list') }}" 
-           class="nav-item {{ 'active' if request.endpoint == 'notes.list' }}">
+        <a href="{{ url_for('notes.list_notes') }}"
+           class="nav-item {{ 'active' if request.endpoint == 'notes.list_notes' }}">
           <div class="nav-icon">
-            <i class="bi bi-journal{{ '-text-fill' if request.endpoint == 'notes.list' }}"></i>
+            <i class="bi bi-journal{{ '-text-fill' if request.endpoint == 'notes.list_notes' }}"></i>
           </div>
           <span class="nav-label">Apuntes</span>
         </a>
