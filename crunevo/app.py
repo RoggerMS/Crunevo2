@@ -138,6 +138,14 @@ def create_app():
         toggle_save,
         donate_post,
     )
+    from .routes.course_routes import (
+        course_bp,
+        list_courses,
+        view_course,
+        toggle_save_course,
+        my_saved_courses,
+        api_search_courses,
+    )
     from .routes.store_routes import store_bp
     from .routes.chat_routes import chat_bp
     from .routes.search_routes import search_bp
@@ -216,6 +224,33 @@ def create_app():
             endpoint="feed.donate_post",
             view_func=donate_post,
             methods=["POST"],
+        )
+        app.register_blueprint(course_bp)
+        app.add_url_rule(
+            "/courses",
+            endpoint="courses.list_courses_alias",
+            view_func=list_courses,
+        )
+        app.add_url_rule(
+            "/courses/<int:course_id>",
+            endpoint="courses.view_course_alias",
+            view_func=view_course,
+        )
+        app.add_url_rule(
+            "/courses/save/<int:course_id>",
+            endpoint="courses.toggle_save_course_alias",
+            view_func=toggle_save_course,
+            methods=["POST"],
+        )
+        app.add_url_rule(
+            "/courses/mis-cursos",
+            endpoint="courses.my_saved_courses_alias",
+            view_func=my_saved_courses,
+        )
+        app.add_url_rule(
+            "/courses/api/search",
+            endpoint="courses.api_search_courses_alias",
+            view_func=api_search_courses,
         )
         app.register_blueprint(store_bp)
         app.register_blueprint(chat_bp)
