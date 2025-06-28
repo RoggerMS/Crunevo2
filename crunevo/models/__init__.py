@@ -23,7 +23,7 @@ from .favorite import FavoriteProduct  # noqa: F401
 from .review import Review  # noqa: F401
 from .question import Question  # noqa: F401
 from .answer import Answer  # noqa: F401
-from .saved_post import SavedPost
+from .saved_post import SavedPost  # noqa: F401
 from .course import Course, SavedCourse  # noqa: F401
 from .notification import Notification  # noqa: F401
 from .mission import Mission, UserMission  # noqa: F401
@@ -32,3 +32,4 @@ from .referido import Referral  # noqa: F401
 from .device_claim import DeviceClaim  # noqa: F401
 from .achievement_popup import AchievementPopup  # noqa: F401
 from .club import Club, ClubMember  # noqa: F401
+
