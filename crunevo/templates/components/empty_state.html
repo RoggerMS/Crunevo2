@@ -1,0 +1,23 @@
+
+{% macro empty_state(icon, title, description, action_text=None, action_url=None, secondary_action_text=None, secondary_action_url=None) %}
+<div class="empty-state">
+  <div class="empty-state-icon">
+    <i class="{{ icon }}"></i>
+  </div>
+  <h4>{{ title }}</h4>
+  <p>{{ description }}</p>
+  
+  {% if action_text and action_url %}
+  <div class="d-flex gap-2 justify-content-center flex-wrap">
+    <a href="{{ action_url }}" class="btn btn-primary">
+      {{ action_text }}
+    </a>
+    {% if secondary_action_text and secondary_action_url %}
+    <a href="{{ secondary_action_url }}" class="btn btn-outline-primary">
+      {{ secondary_action_text }}
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endmacro %}

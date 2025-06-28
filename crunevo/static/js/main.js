@@ -94,6 +94,30 @@ function showReactions(btn) {
   }, 4000);
 }
 
+// Confirmations for important actions
+function confirmAction(message, callback) {
+  if (confirm(message)) {
+    callback();
+  }
+}
+
+// Show confirmation modals for destructive actions
+document.addEventListener('click', (e) => {
+  if (e.target.matches('[data-confirm]')) {
+    e.preventDefault();
+    const message = e.target.dataset.confirm;
+    const href = e.target.href || e.target.dataset.href;
+    
+    if (confirm(message)) {
+      if (href) {
+        window.location.href = href;
+      } else if (e.target.onclick) {
+        e.target.onclick();
+      }
+    }
+  }
+});
+
 function initReactions() {
   document.querySelectorAll('.reaction-container').forEach((container) => {
     const mainBtn = container.querySelector('.btn-reaction');

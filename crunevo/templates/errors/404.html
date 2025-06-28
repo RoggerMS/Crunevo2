@@ -1,7 +1,82 @@
-{% extends 'base.html' %}
+
+{% extends "base.html" %}
+
+{% block title %}Página no encontrada - Crunevo{% endblock %}
+
 {% block content %}
-<div class="text-center mt-5">
-  <h1>Página no encontrada</h1>
-  <p>Lo sentimos, la página solicitada no existe.</p>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 text-center">
+      <div class="error-page">
+        <div class="error-icon mb-4">
+          <i class="bi bi-compass display-1 text-primary"></i>
+        </div>
+        <h1 class="display-4 fw-bold text-primary mb-3">¡Ups! Página no encontrada</h1>
+        <p class="lead text-muted mb-4">
+          La página que buscas no existe o fue movida. No te preocupes, 
+          ¡hay muchas cosas geniales esperándote en Crunevo!
+        </p>
+        
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center mb-5">
+          <a href="{{ url_for('feed.feed_home') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-house-fill me-2"></i>Ir al Feed
+          </a>
+          <a href="{{ url_for('notes.list_notes') }}" class="btn btn-outline-primary btn-lg">
+            <i class="bi bi-journal-text me-2"></i>Ver Apuntes
+          </a>
+        </div>
+
+        <div class="row text-center">
+          <div class="col-sm-4 mb-3">
+            <a href="{{ url_for('club.list_clubs') }}" class="text-decoration-none">
+              <i class="bi bi-people-fill fs-2 text-info d-block mb-2"></i>
+              <span class="text-muted">Explora Clubes</span>
+            </a>
+          </div>
+          <div class="col-sm-4 mb-3">
+            <a href="{{ url_for('store.store_index') }}" class="text-decoration-none">
+              <i class="bi bi-shop fs-2 text-success d-block mb-2"></i>
+              <span class="text-muted">Visita la Tienda</span>
+            </a>
+          </div>
+          <div class="col-sm-4 mb-3">
+            <a href="{{ url_for('ranking.show_ranking') }}" class="text-decoration-none">
+              <i class="bi bi-trophy-fill fs-2 text-warning d-block mb-2"></i>
+              <span class="text-muted">Ver Ranking</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<style>
+.error-page {
+  padding: 2rem;
+  background: rgba(102, 126, 234, 0.02);
+  border-radius: 20px;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+[data-bs-theme="dark"] .error-page {
+  background: rgba(102, 126, 234, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.error-icon {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error-icon {
+    animation: none;
+  }
+}
+</style>
 {% endblock %}

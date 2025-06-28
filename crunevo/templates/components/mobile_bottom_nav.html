@@ -1,7 +1,7 @@
-<div class="d-md-none fixed-bottom bg-white bg-body border-top shadow-sm py-1">
-  <div class="bottom-nav-wrapper d-flex justify-content-around align-items-center">
-    <a href="{{ url_for('feed.feed_home') }}" role="link" tabindex="0" aria-label="Inicio" title="Inicio" class="text-center {% if request.path.startswith('/feed') %}bottom-nav-active{% else %}text-primary{% endif %}">
-      <i class="bi bi-house fs-4 bottom-nav-icon"></i>
+<div class="d-md-none fixed-bottom bg-white bg-body border-top shadow-sm py-2" style="z-index: 1050;">
+  <div class="bottom-nav-wrapper d-flex justify-content-around align-items-center" style="min-height: 60px;">
+    <a href="{{ url_for('feed.feed_home') }}" role="link" tabindex="0" aria-label="Inicio" title="Inicio" class="text-center d-flex flex-column align-items-center justify-content-center {% if request.path.startswith('/feed') %}bottom-nav-active{% else %}text-primary{% endif %}" style="min-height: 48px; min-width: 48px;">
+      <i class="bi bi-house fs-5 bottom-nav-icon"></i>
     </a>
     <a href="{{ url_for('notes.list_notes') }}" role="link" tabindex="0" aria-label="Apuntes" title="Apuntes" class="text-center {% if request.path.startswith('/notes') %}bottom-nav-active{% else %}text-primary{% endif %}">
       <i class="bi bi-journal-text fs-4 bottom-nav-icon"></i>
