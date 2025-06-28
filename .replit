@@ -3,6 +3,7 @@ compile = "make"
 
 [nix]
 channel = "stable-24_05"
+packages = ["freetype", "glibcLocales"]
 
 [deployment]
 build = ["sh", "-c", "make"]
