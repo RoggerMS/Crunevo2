@@ -1,15 +1,12 @@
 
-from flask import Blueprint, render_template, request, jsonify, current_app
-from flask_login import current_user
+from flask import Blueprint, render_template, request, jsonify
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
 from crunevo.models import (
-    User, Note, Post, Product, Message, Achievement, Mission, 
-    Comment, PostComment, Notification, Review, Question, Answer
+    User, Note, Post, Product, Message, Mission, 
+    Review
 )
-from sqlalchemy import or_, and_, desc, func
-from datetime import datetime, timedelta
-import re
+from sqlalchemy import or_, desc, func
 
 search_bp = Blueprint("search", __name__, url_prefix="/search")
 
@@ -89,26 +86,24 @@ def search_api():
 
 def search_notes(query, page=1, per_page=20):
     """Búsqueda avanzada en apuntes"""
-    base_query = Note.query.filter(
-        Note.is_draft == False,
-        Note.is_approved == True
-    )
-    
+    base_query = Note.query
+
     # Búsqueda por contenido, título, tags
     search_filter = or_(
         Note.title.ilike(f"%{query}%"),
-        Note.content.ilike(f"%{query}%"),
+        Note.description.ilike(f"%{query}%"),
         Note.tags.ilike(f"%{query}%"),
-        Note.subject.ilike(f"%{query}%")
+        Note.summary.ilike(f"%{query}%"),
+        Note.course.ilike(f"%{query}%"),
+        Note.career.ilike(f"%{query}%")
     )
-    
+
     # Ordenar por relevancia (título tiene mayor peso)
     notes = base_query.filter(search_filter).order_by(
         func.case(
             (Note.title.ilike(f"%{query}%"), 1),
             else_=2
         ),
-        desc(Note.upvotes),
         desc(Note.created_at)
     ).paginate(
         page=page, per_page=per_page, error_out=False
@@ -116,24 +111,23 @@ def search_notes(query, page=1, per_page=20):
     
     results = []
     for note in notes.items:
+        content = note.description or note.summary or ""
+        preview = content[:200] + "..." if len(content) > 200 else content
+
         results.append({
             "id": note.id,
             "title": note.title,
-            "content_preview": note.content[:200] + "..." if len(note.content) > 200 else note.content,
+            "content_preview": preview,
             "author": {
-                "id": note.author.id,
-                "username": note.author.username,
-                "avatar_url": note.author.avatar_url
+                "id": note.author.id if note.author else None,
+                "username": note.author.username if note.author else "",
+                "avatar_url": note.author.avatar_url if note.author else "",
             },
-            "subject": note.subject,
             "tags": note.tags.split(",") if note.tags else [],
-            "upvotes": note.upvotes,
-            "downvotes": note.downvotes,
             "downloads": note.downloads or 0,
             "created_at": note.created_at.isoformat(),
             "url": f"/notes/{note.id}",
-            "file_url": note.file_url,
-            "type": "note"
+            "type": "note",
         })
     
     return {
@@ -352,8 +346,7 @@ def get_smart_suggestions(query):
     if query:
         # Buscar tags similares
         similar_notes = Note.query.filter(
-            Note.tags.ilike(f"%{query}%"),
-            Note.is_approved == True
+            Note.tags.ilike(f"%{query}%")
         ).limit(5).all()
         
         for note in similar_notes:
@@ -403,8 +396,7 @@ def search_suggestions():
     
     # Notas por título
     notes = Note.query.filter(
-        Note.title.ilike(f"{query}%"),
-        Note.is_approved == True
+        Note.title.ilike(f"{query}%")
     ).limit(3).all()
     
     for note in notes:
@@ -417,8 +409,7 @@ def search_suggestions():
     
     # Tags populares
     tags_notes = Note.query.filter(
-        Note.tags.ilike(f"%{query}%"),
-        Note.is_approved == True
+        Note.tags.ilike(f"%{query}%")
     ).limit(3).all()
     
     for note in tags_notes:

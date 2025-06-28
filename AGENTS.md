@@ -370,3 +370,4 @@
 - Updated profile links to use 'auth.perfil' instead of deprecated 'auth.profile' to avoid BuildError (hotfix profile-link-fix).
 - Replaced forum sidebar link with 'forum.list_questions' and wrapped referral ranking query in try/except; achievement session log now uses logger (PR logs-bugfixes).
 - Corrected sidebar club link to use 'club.list_clubs' and avoid BuildError (hotfix club-link-fix).
+- Fixed sidebar event link and refactored search notes to use existing fields (hotfix search-notes-fields).
