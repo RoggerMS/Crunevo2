@@ -376,3 +376,4 @@
 - Fixed AI chat sidebar link to use 'ia.ia_chat' endpoint and avoid BuildError (hotfix ia-chat-link).
 - Added aliases for achievements, notifications, onboarding and certificate blueprints to fix ImportError (PR blueprint-alias-fix).
 - Corregido feed: eliminado return duplicado, actualizado CSRF en index y enlaces en trending a feed.view_post (PR feed-fix-routes).
+- Fixed migration to avoid errors when columns or tables already exist by using `if_not_exists` and `checkfirst=True` (hotfix migration-transaction-failure).
