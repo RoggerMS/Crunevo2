@@ -386,3 +386,4 @@
 - Fixed navbar store link to use 'store.store_index' and avoid BuildError (hotfix navbar-store-link)
 - Fixed navbar courses link to use 'courses.list_courses' and avoid BuildError (hotfix navbar-courses-link)
 - Fixed notifications dropdown link to 'noti.ver_notificaciones' to resolve BuildError (hotfix notifications-dropdown-link).
+- Fixed navbar missions link to use 'auth.perfil' with tab to avoid BuildError (hotfix navbar-missions-link).
