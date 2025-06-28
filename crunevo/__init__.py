@@ -82,7 +82,7 @@ def create_app(config_class=Config):
     from crunevo.routes.ranking_routes import ranking_bp
     from crunevo.routes.achievement_routes import ach_bp as achievement_bp
     from crunevo.routes.missions_routes import missions_bp
-    from crunevo.routes.notifications_routes import notifications_bp
+    from crunevo.routes.notifications_routes import noti_bp as notifications_bp
     from crunevo.routes.onboarding_routes import onboarding_bp
     from crunevo.routes.about_routes import about_bp
     from crunevo.routes.ia_routes import ia_bp

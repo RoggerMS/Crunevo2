@@ -7,6 +7,7 @@ from crunevo.utils.certificate_generator import generate_certificate_pdf, check_
 from datetime import datetime
 
 cert_bp = Blueprint('certificate', __name__)
+certificate_bp = cert_bp
 
 
 @cert_bp.route('/certificados')
