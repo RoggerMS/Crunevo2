@@ -1,37 +1,36 @@
-
-/* ---- Design tokens CRUNEVO - Modern Update ---- */
+/* ---- Design tokens CRUNEVO - Soft & Elegant Update ---- */
 :root {
-  /* Enhanced neutrals with better contrast */
-  --gray-900: #0F172A;
-  --gray-800: #1E293B;
-  --gray-700: #334155;
-  --gray-600: #475569;
-  --gray-500: #64748B;
-  --gray-400: #94A3B8;
-  --gray-300: #CBD5E1;
-  --gray-200: #E2E8F0;
-  --gray-100: #F1F5F9;
-  --gray-50 : #F8FAFC;
+  /* Soft neutrals with excellent contrast */
+  --gray-900: #1a202c;
+  --gray-800: #2d3748;
+  --gray-700: #4a5568;
+  --gray-600: #718096;
+  --gray-500: #a0aec0;
+  --gray-400: #cbd5e0;
+  --gray-300: #e2e8f0;
+  --gray-200: #edf2f7;
+  --gray-100: #f7fafc;
+  --gray-50 : #fafbfc;
 
-  /* Modern brand colors */
-  --primary : #667eea;
-  --primary-dark: #5a67d8;
-  --primary-light: #7c3aed;
-  --secondary: #764ba2;
-  --success : #10b981;
-  --success-light: #34d399;
-  --accent  : #f59e0b;
-  --accent-light: #fbbf24;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --info: #06b6d4;
+  /* Soft brand colors - elegant and refined */
+  --primary : #6b73ff;
+  --primary-dark: #5850ec;
+  --primary-light: #9f7aea;
+  --secondary: #805ad5;
+  --success : #38b2ac;
+  --success-light: #68d391;
+  --accent  : #ed8936;
+  --accent-light: #f6ad55;
+  --danger: #fc8181;
+  --warning: #f6e05e;
+  --info: #63b3ed;
 
-  /* Enhanced gradients */
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-secondary: linear-gradient(135deg, #667eea 0%, #7c3aed 100%);
-  --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-  --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-bg-dark: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  /* Soft elegant gradients */
+  --gradient-primary: linear-gradient(135deg, #6b73ff 0%, #805ad5 100%);
+  --gradient-secondary: linear-gradient(135deg, #6b73ff 0%, #9f7aea 100%);
+  --gradient-success: linear-gradient(135deg, #38b2ac 0%, #68d391 100%);
+  --gradient-bg: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  --gradient-bg-dark: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #4a5568 100%);
 
   /* Enhanced spacing (4px scale with more options) */
   --space-0: 0px;
@@ -54,194 +53,24 @@
   --radius-2xl: 20px;
   --radius-full: 9999px;
 
-  /* Shadow scale */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.15);
-  --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+  /* Soft shadows */
+  --shadow-soft: 0 2px 8px rgba(107, 115, 255, 0.08);
+  --shadow-medium: 0 4px 16px rgba(107, 115, 255, 0.12);
+  --shadow-large: 0 8px 32px rgba(107, 115, 255, 0.16);
 
-  /* Glassmorphism effects */
-  --glass-light: rgba(255, 255, 255, 0.1);
-  --glass-medium: rgba(255, 255, 255, 0.2);
-  --glass-strong: rgba(255, 255, 255, 0.3);
-  --glass-dark: rgba(30, 30, 46, 0.8);
-  --glass-dark-medium: rgba(30, 30, 46, 0.9);
-
-  /* Animation durations */
-  --duration-fast: 0.15s;
-  --duration-normal: 0.3s;
-  --duration-slow: 0.5s;
-
-  /* Z-index scale */
-  --z-dropdown: 1000;
-  --z-sticky: 1020;
-  --z-fixed: 1030;
-  --z-modal-backdrop: 1040;
-  --z-modal: 1050;
-  --z-popover: 1060;
-  --z-tooltip: 1070;
-  --z-toast: 1080;
+  /* Typography improvements */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 }
 
-/* Enhanced typography with better hierarchy */
-body {
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  line-height: 1.6;
-  background: var(--gradient-bg);
-  color: var(--gray-900);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-[data-bs-theme="dark"] body {
-  background: var(--gradient-bg-dark);
-  color: var(--gray-100);
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: "Poppins", system-ui, sans-serif;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.025em;
-  color: inherit;
-}
-
-h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-}
-
-h2 {
-  font-size: 2rem;
-  font-weight: 600;
-}
-
-h3 {
-  font-size: 1.75rem;
-}
-
-h4 {
-  font-size: 1.5rem;
-}
-
-h5 {
-  font-size: 1.25rem;
-}
-
-h6 {
-  font-size: 1.125rem;
-}
-
-/* Enhanced code styling */
-code, pre, kbd, samp {
-  font-family: "JetBrains Mono", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
-  font-size: 0.875em;
-}
-
-code {
-  background: var(--glass-light);
-  padding: 0.125rem 0.25rem;
-  border-radius: var(--radius-sm);
-  color: var(--primary);
-}
-
-[data-bs-theme="dark"] code {
-  background: var(--glass-dark);
-  color: var(--primary-light);
-}
-
-pre {
-  background: var(--glass-medium);
-  padding: 1rem;
-  border-radius: var(--radius-lg);
-  overflow-x: auto;
-}
-
-[data-bs-theme="dark"] pre {
-  background: var(--glass-dark);
-}
-
-/* Enhanced focus styles */
-:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--primary), 0 0 0 4px rgba(102, 126, 234, 0.2);
-  border-radius: var(--radius-md);
-}
-
-/* Enhanced selection styles */
-::selection {
-  background: var(--primary);
-  color: white;
-}
-
-::-moz-selection {
-  background: var(--primary);
-  color: white;
-}
-
-/* Enhanced scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--glass-light);
-  border-radius: var(--radius-full);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--primary);
-  border-radius: var(--radius-full);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-dark);
-}
-
-[data-bs-theme="dark"] ::-webkit-scrollbar-track {
-  background: var(--glass-dark);
-}
-
-/* Utility classes for modern design */
-.glass {
-  background: var(--glass-medium);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-.glass-dark {
-  background: var(--glass-dark);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-.gradient-text {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.shadow-smooth {
-  box-shadow: var(--shadow-lg);
-}
-
-.shadow-glow {
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
-}
-
-.transition-smooth {
-  transition: all var(--duration-normal) ease;
-}
-
-.hover-lift:hover {
-  transform: translateY(-2px);
-}
-
-.hover-scale:hover {
-  transform: scale(1.02);
+/* Dark theme adjustments */
+[data-bs-theme="dark"] {
+  --primary: #8b5cf6;
+  --primary-dark: #7c3aed;
+  --primary-light: #a78bfa;
+  --secondary: #a855f7;
+  --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+  --gradient-bg: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #4a5568 100%);
 }

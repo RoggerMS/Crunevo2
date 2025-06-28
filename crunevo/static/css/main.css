@@ -4,11 +4,11 @@
    ========================================================================== */
 
 :root {
-  --crunevo-primary: #667eea;
-  --crunevo-primary-light: #7c95ff;
-  --crunevo-primary-dark: #5a67d8;
-  --crunevo-secondary: #764ba2;
-  --crunevo-accent: #f093fb;
+  --crunevo-primary: #6b73ff;
+  --crunevo-primary-light: #9f7aea;
+  --crunevo-primary-dark: #5850ec;
+  --crunevo-secondary: #805ad5;
+  --crunevo-accent: #ed8936;
   --crunevo-success: #48bb78;
   --crunevo-warning: #ed8936;
   --crunevo-danger: #f56565;
@@ -185,9 +185,11 @@ p {
 
 /* Primary button */
 .btn-primary {
-  background: linear-gradient(135deg, var(--crunevo-primary), var(--crunevo-secondary));
+  background: linear-gradient(135deg, #6b73ff, #805ad5);
   color: white;
   border: none;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.3s ease;
 }
 
 .btn-primary:hover {

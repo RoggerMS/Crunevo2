@@ -1,0 +1,107 @@
+
+{% extends "base.html" %}
+
+{% block title %}Cursos Gratuitos - Crunevo{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <!-- Header -->
+  <div class="row align-items-center mb-4">
+    <div class="col-md-8">
+      <div class="d-flex align-items-center gap-3">
+        <div class="bg-gradient-primary rounded-circle p-3">
+          <i class="bi bi-play-circle text-white fs-3"></i>
+        </div>
+        <div>
+          <h1 class="mb-1 text-gradient">🎓 Cursos Gratuitos</h1>
+          <p class="text-muted mb-0">Aprende con los mejores cursos educativos</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Buscar cursos..." 
+               value="{{ current_search or '' }}" id="courseSearch">
+        <button class="btn btn-outline-primary" type="button">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured Courses -->
+  {% if featured_courses %}
+  <div class="mb-5">
+    <h3 class="mb-3 d-flex align-items-center gap-2">
+      <i class="bi bi-star-fill text-warning"></i> Destacados
+    </h3>
+    <div class="row g-4">
+      {% for course in featured_courses %}
+      <div class="col-lg-4 col-md-6">
+        {% include 'courses/course_card.html' %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Filters -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex flex-wrap gap-2">
+        <a href="{{ url_for('courses.list_courses') }}" 
+           class="btn btn-sm {{ 'btn-primary' if not current_category and not current_difficulty else 'btn-outline-primary' }} rounded-pill">
+          Todos
+        </a>
+        {% for category in categories %}
+        <a href="{{ url_for('courses.list_courses', categoria=category) }}" 
+           class="btn btn-sm {{ 'btn-primary' if current_category == category else 'btn-outline-primary' }} rounded-pill">
+          {{ category }}
+        </a>
+        {% endfor %}
+        <div class="ms-3">
+          {% for difficulty in difficulties %}
+          <a href="{{ url_for('courses.list_courses', dificultad=difficulty) }}" 
+             class="btn btn-sm {{ 'btn-info' if current_difficulty == difficulty else 'btn-outline-info' }} rounded-pill">
+            {{ difficulty }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Courses Grid -->
+  <div class="row g-4" id="coursesContainer">
+    {% for course in courses %}
+    <div class="col-lg-4 col-md-6">
+      {% include 'courses/course_card.html' %}
+    </div>
+    {% else %}
+    <div class="col-12">
+      <div class="empty-state text-center py-5">
+        <div class="empty-state-icon mb-3">📚</div>
+        <h4 class="text-muted mb-2">¡Próximamente más cursos!</h4>
+        <p class="text-muted mb-4">Estamos preparando contenido educativo increíble para ti</p>
+        <a href="{{ url_for('feed.view_feed') }}" class="btn btn-primary rounded-pill">
+          Explorar Feed
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+document.getElementById('courseSearch').addEventListener('keyup', function(e) {
+  if (e.key === 'Enter') {
+    const query = this.value.trim();
+    if (query) {
+      window.location.href = `{{ url_for('courses.list_courses') }}?q=${encodeURIComponent(query)}`;
+    } else {
+      window.location.href = `{{ url_for('courses.list_courses') }}`;
+    }
+  }
+});
+</script>
+{% endblock %}

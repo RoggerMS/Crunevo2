@@ -1,112 +1,280 @@
-{% extends 'admin/base_admin.html' %}
+
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Dashboard - Admin{% endblock %}
+
 {% block admin_content %}
-<h2 class="page-title mb-4">Panel de Administración</h2>
+<div class="container-fluid px-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0 text-gray-800">📊 Dashboard</h1>
+      <p class="mb-0 text-muted">Resumen general de la plataforma</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-primary btn-sm" onclick="refreshStats()">
+        <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+      </button>
+      <div class="dropdown">
+        <button class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+          <i class="bi bi-calendar me-1"></i> Período
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="?period=7d">Últimos 7 días</a></li>
+          <li><a class="dropdown-item" href="?period=30d">Últimos 30 días</a></li>
+          <li><a class="dropdown-item" href="?period=90d">Últimos 90 días</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
-<div class="row row-cards">
-  <div class="col-sm-6 col-lg-3">
-    <div class="card">
-      <div class="card-body">
-        <div class="h1 mb-1">{{ users_total }}</div>
-        <div class="text-muted">Usuarios registrados</div>
+  <!-- Quick Stats Cards -->
+  <div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+      <div class="card bg-primary text-white h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="text-white-75 small">Usuarios Totales</div>
+              <div class="text-lg fw-bold">{{ stats.total_users }}</div>
+            </div>
+            <i class="bi bi-people fs-1 text-white-50"></i>
+          </div>
+        </div>
+        <div class="card-footer d-flex align-items-center justify-content-between">
+          <a class="small text-white stretched-link" href="{{ url_for('admin.manage_users') }}">Ver detalles</a>
+          <i class="bi bi-arrow-right text-white"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="card bg-success text-white h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="text-white-75 small">Apuntes Subidos</div>
+              <div class="text-lg fw-bold">{{ stats.total_notes }}</div>
+            </div>
+            <i class="bi bi-file-text fs-1 text-white-50"></i>
+          </div>
+        </div>
+        <div class="card-footer d-flex align-items-center justify-content-between">
+          <a class="small text-white stretched-link" href="{{ url_for('notes.list_notes') }}">Ver apuntes</a>
+          <i class="bi bi-arrow-right text-white"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="card bg-warning text-white h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="text-white-75 small">Posts Publicados</div>
+              <div class="text-lg fw-bold">{{ stats.total_posts }}</div>
+            </div>
+            <i class="bi bi-chat-square-text fs-1 text-white-50"></i>
+          </div>
+        </div>
+        <div class="card-footer d-flex align-items-center justify-content-between">
+          <a class="small text-white stretched-link" href="{{ url_for('feed.view_feed') }}">Ver feed</a>
+          <i class="bi bi-arrow-right text-white"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="card bg-info text-white h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="text-white-75 small">Crolars en Circulación</div>
+              <div class="text-lg fw-bold">{{ stats.total_credits }}</div>
+            </div>
+            <i class="bi bi-coin fs-1 text-white-50"></i>
+          </div>
+        </div>
+        <div class="card-footer d-flex align-items-center justify-content-between">
+          <a class="small text-white stretched-link" href="{{ url_for('admin.manage_credits') }}">Ver créditos</a>
+          <i class="bi bi-arrow-right text-white"></i>
+        </div>
       </div>
     </div>
   </div>
-  <div class="col-sm-6 col-lg-3">
-    <div class="card">
-      <div class="card-body">
-        <div class="h1 mb-1">{{ notes_total }}</div>
-        <div class="text-muted">Apuntes subidos</div>
+
+  <!-- Charts Row -->
+  <div class="row g-4 mb-4">
+    <div class="col-xl-6">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">📈 Registros por día</h6>
+        </div>
+        <div class="card-body">
+          <canvas id="registrationsChart" height="300"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-6">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">📊 Actividad por tipo</h6>
+        </div>
+        <div class="card-body">
+          <canvas id="activityChart" height="300"></canvas>
+        </div>
       </div>
     </div>
   </div>
-  <div class="col-sm-6 col-lg-3">
-    <div class="card">
-      <div class="card-body">
-        <div class="h1 mb-1">{{ comments_total }}</div>
-        <div class="text-muted">Comentarios</div>
+
+  <!-- Recent Activity -->
+  <div class="row g-4">
+    <div class="col-xl-8">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">🕐 Actividad reciente</h6>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Acción</th>
+                  <th>Fecha</th>
+                  <th>Detalles</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for activity in recent_activity %}
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <img src="{{ activity.user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                           class="rounded-circle" width="24" height="24">
+                      <span>{{ activity.user.username }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge bg-{{ activity.badge_color }}">{{ activity.action }}</span>
+                  </td>
+                  <td>
+                    <small class="text-muted">{{ activity.timestamp.strftime('%d/%m %H:%M') }}</small>
+                  </td>
+                  <td>
+                    <small>{{ activity.details }}</small>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="col-sm-6 col-lg-3">
-    <div class="card">
-      <div class="card-body">
-        <div class="h1 mb-1">{{ products_total }}</div>
-        <div class="text-muted">Productos en tienda</div>
+
+    <div class="col-xl-4">
+      <!-- Top Users -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h6 class="mb-0">🏆 Top usuarios</h6>
+        </div>
+        <div class="card-body">
+          {% for user in top_users %}
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                   class="rounded-circle" width="32" height="32">
+              <div>
+                <strong class="small">{{ user.username }}</strong>
+                <div class="text-muted small">{{ user.credits }} Crolars</div>
+              </div>
+            </div>
+            <span class="badge bg-warning">{{ loop.index }}°</span>
+          </div>
+          {% endfor %}
+        </div>
       </div>
+
+      <!-- Pending Reports -->
+      {% if pending_reports %}
+      <div class="card">
+        <div class="card-header bg-danger text-white">
+          <h6 class="mb-0">⚠️ Reportes pendientes ({{ pending_reports|length }})</h6>
+        </div>
+        <div class="card-body">
+          {% for report in pending_reports[:5] %}
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <small class="fw-bold">{{ report.description[:50] }}...</small>
+              <div class="text-muted small">{{ report.timestamp.strftime('%d/%m') }}</div>
+            </div>
+            <a href="{{ url_for('admin.manage_reports') }}" class="btn btn-outline-danger btn-sm">
+              Ver
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
     </div>
   </div>
-  <div class="col-sm-6 col-lg-3">
-    <div class="card">
-      <div class="card-body">
-        <div class="h1 mb-1">{{ credits_total }}</div>
-        <div class="text-muted">Crolars distribuidos</div>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-6 col-lg-3">
-    <div class="card">
-      <div class="card-body">
-        <div class="mb-1">Último ranking:</div>
-        <div class="text-muted small">{{ last_ranking.timestamp.strftime('%d %b %Y - %H:%M') if last_ranking else "Aún no calculado" }}</div>
-        <a href="{{ url_for('admin.run_ranking') }}" class="btn btn-outline-primary btn-sm mt-2">
-          <i class="bi bi-arrow-repeat me-1"></i>Recalcular ranking
-        </a>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-6 col-lg-3">
-    <div class="card border border-dashed text-center">
-      <div class="card-body">
-        <div class="text-muted">En desarrollo</div>
-        <a href="#" class="btn btn-light btn-sm disabled">Insignias y Misiones</a>
-      </div>
-    </div>
-  </div>
-  {% if URGENT_REPORTS %}
-  <div class="col-12">
-    <div class="card border-danger">
-      <div class="card-body">
-        <h4 class="card-title text-danger">Moderación urgente</h4>
-        <p>Hay {{ URGENT_REPORTS }} publicaciones con muchos reportes.</p>
-        <a href="{{ url_for('admin.manage_reports') }}" class="btn btn-danger">Revisar</a>
-      </div>
-    </div>
-  </div>
-  {% endif %}
 </div>
 
-<div class="row mt-4" id="chartsRow">
-  <div class="col-md-6 col-xl-3 mb-4">
-    <div class="card">
-      <div class="card-header"><h3 class="card-title">Usuarios / día</h3></div>
-      <div class="card-body">
-        <canvas id="usersChart" height="200" data-chart='{{ stats.users | tojson }}'></canvas>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-6 col-xl-3 mb-4">
-    <div class="card">
-      <div class="card-header"><h3 class="card-title">Apuntes / semana</h3></div>
-      <div class="card-body">
-        <canvas id="notesChart" height="200" data-chart='{{ stats.notes | tojson }}'></canvas>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-6 col-xl-3 mb-4">
-    <div class="card">
-      <div class="card-header"><h3 class="card-title">Crolars / semana</h3></div>
-      <div class="card-body">
-        <canvas id="creditsChart" height="200" data-chart='{{ stats.credits | tojson }}'></canvas>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-6 col-xl-3 mb-4">
-    <div class="card">
-      <div class="card-header"><h3 class="card-title">Productos / mes</h3></div>
-      <div class="card-body">
-        <canvas id="productsChart" height="200" data-chart='{{ stats.products | tojson }}'></canvas>
-      </div>
-    </div>
-  </div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Sample chart data - replace with real data from backend
+const registrationsData = {
+  labels: {{ chart_data.dates | tojsonfilter }},
+  datasets: [{
+    label: 'Registros',
+    data: {{ chart_data.registrations | tojsonfilter }},
+    borderColor: 'rgb(107, 115, 255)',
+    backgroundColor: 'rgba(107, 115, 255, 0.1)',
+    tension: 0.4
+  }]
+};
+
+const activityData = {
+  labels: ['Posts', 'Apuntes', 'Comentarios', 'Likes'],
+  datasets: [{
+    data: {{ chart_data.activity | tojsonfilter }},
+    backgroundColor: [
+      'rgba(107, 115, 255, 0.8)',
+      'rgba(128, 90, 213, 0.8)', 
+      'rgba(56, 178, 172, 0.8)',
+      'rgba(237, 137, 54, 0.8)'
+    ]
+  }]
+};
+
+// Initialize charts
+new Chart(document.getElementById('registrationsChart'), {
+  type: 'line',
+  data: registrationsData,
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+});
+
+new Chart(document.getElementById('activityChart'), {
+  type: 'doughnut',
+  data: activityData,
+  options: {
+    responsive: true,
+    maintainAspectRatio: false
+  }
+});
+
+function refreshStats() {
+  location.reload();
+}
+</script>
 {% endblock %}

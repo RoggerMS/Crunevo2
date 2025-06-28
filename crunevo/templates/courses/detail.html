@@ -1,0 +1,154 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }} - Crunevo{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <div class="row">
+    <div class="col-lg-8">
+      <!-- Video Player -->
+      <div class="card mb-4">
+        <div class="ratio ratio-16x9">
+          <iframe src="{{ course.youtube_embed_url }}" 
+                  title="{{ course.title }}" 
+                  allowfullscreen></iframe>
+        </div>
+      </div>
+      
+      <!-- Course Info -->
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <h2 class="mb-0">{{ course.title }}</h2>
+            <button class="btn {{ 'btn-warning' if is_saved else 'btn-outline-primary' }} save-course-btn" 
+                    data-course-id="{{ course.id }}">
+              <i class="bi bi-bookmark{{ '-fill' if is_saved else '' }} me-1"></i>
+              {{ 'Guardado' if is_saved else 'Guardar' }}
+            </button>
+          </div>
+          
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <img src="{{ course.creator.avatar_url or url_for('static', filename='img/default.png') }}" 
+                 class="rounded-circle" width="40" height="40">
+            <div>
+              <h6 class="mb-0">{{ course.creator.username }}</h6>
+              <small class="text-muted">Instructor</small>
+            </div>
+          </div>
+          
+          <div class="row g-3 mb-4">
+            <div class="col-md-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-tag text-primary"></i>
+                <div>
+                  <small class="text-muted d-block">Categoría</small>
+                  <strong>{{ course.category or 'General' }}</strong>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-bar-chart text-success"></i>
+                <div>
+                  <small class="text-muted d-block">Dificultad</small>
+                  <strong>{{ course.difficulty }}</strong>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-eye text-info"></i>
+                <div>
+                  <small class="text-muted d-block">Vistas</small>
+                  <strong>{{ course.views }}</strong>
+                </div>
+              </div>
+            </div>
+            {% if course.duration_minutes %}
+            <div class="col-md-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-clock text-warning"></i>
+                <div>
+                  <small class="text-muted d-block">Duración</small>
+                  <strong>{{ course.duration_minutes }}min</strong>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+          
+          {% if course.description %}
+          <h5>Descripción</h5>
+          <p class="text-muted">{{ course.description }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+      {% if related_courses %}
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">
+            <i class="bi bi-collection-play me-1"></i> Cursos relacionados
+          </h6>
+        </div>
+        <div class="card-body p-0">
+          {% for related in related_courses %}
+          <div class="d-flex p-3 border-bottom">
+            <img src="https://img.youtube.com/vi/{{ related.youtube_url.split('/')[-1] }}/mqdefault.jpg" 
+                 class="rounded" width="80" height="45" style="object-fit: cover;">
+            <div class="ms-3 flex-grow-1">
+              <h6 class="mb-1 small">
+                <a href="{{ url_for('courses.view_course', course_id=related.id) }}" 
+                   class="text-decoration-none">{{ related.title }}</a>
+              </h6>
+              <small class="text-muted">{{ related.creator.username }}</small>
+              <div class="mt-1">
+                <small class="text-muted">
+                  <i class="bi bi-eye me-1"></i>{{ related.views }}
+                </small>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelector('.save-course-btn').addEventListener('click', async function() {
+  const courseId = this.dataset.courseId;
+  const btn = this;
+  
+  try {
+    const response = await fetch(`/cursos/save/${courseId}`, {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRFToken': document.querySelector('[name="csrf_token"]').value
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.action === 'saved') {
+      btn.className = 'btn btn-warning save-course-btn';
+      btn.innerHTML = '<i class="bi bi-bookmark-fill me-1"></i>Guardado';
+    } else {
+      btn.className = 'btn btn-outline-primary save-course-btn';
+      btn.innerHTML = '<i class="bi bi-bookmark me-1"></i>Guardar';
+    }
+    
+    showToast(data.message, 'success');
+  } catch (error) {
+    showToast('Error al guardar curso', 'error');
+  }
+});
+</script>
+{% endblock %}

@@ -1,4 +1,3 @@
-
 <div class="sidebar-left bg-white rounded-4 shadow-sm border-0 h-100">
   <div class="p-4">
     <!-- User Profile Section -->
@@ -14,7 +13,7 @@
           <p class="small text-muted mb-0">{{ current_user.career or 'Estudiante' }}</p>
         </div>
       </div>
-      
+
       <!-- Profile Stats -->
       <div class="profile-stats row g-2 text-center">
         <div class="col-4">
@@ -47,14 +46,14 @@
             <span class="fw-semibold">Inicio</span>
           </a>
         </li>
-        
+
         <li>
           <a href="{{ url_for('auth.perfil') }}" class="nav-link {{ 'active' if request.endpoint == 'auth.perfil' }}">
             <i class="bi bi-person-circle"></i>
             <span class="fw-semibold">Mi Perfil</span>
           </a>
         </li>
-        
+
         <li>
           <a href="{{ url_for('notes.list_notes') }}" class="nav-link {{ 'active' if request.endpoint == 'notes.list_notes' }}">
             <i class="bi bi-journal-text"></i>
@@ -62,28 +61,34 @@
             <span class="badge bg-primary rounded-pill ms-auto">{{ current_user.notes|length }}</span>
           </a>
         </li>
-        
+
         <li>
           <a href="{{ url_for('forum.list_questions') }}" class="nav-link {{ 'active' if request.endpoint == 'forum.list_questions' }}">
             <i class="bi bi-chat-square-dots"></i>
             <span class="fw-semibold">Foro</span>
           </a>
         </li>
-        
+
         <li>
           <a href="{{ url_for('club.list_clubs') }}" class="nav-link {{ 'active' if request.endpoint == 'club.list_clubs' }}">
             <i class="bi bi-people"></i>
             <span class="fw-semibold">Clubes</span>
           </a>
         </li>
-        
+
         <li>
           <a href="{{ url_for('event.list_events') }}" class="nav-link {{ 'active' if request.endpoint == 'event.list_events' }}">
             <i class="bi bi-calendar-event"></i>
             <span class="fw-semibold">Eventos</span>
           </a>
         </li>
-        
+
+        <li>
+          <a href="{{ url_for('courses.list_courses') }}" class="nav-link">
+            <i class="bi bi-play-circle"></i>
+            <span>Cursos</span>
+          </a>
+        </li>
         <li>
           <a href="{{ url_for('store.store_index') }}" class="nav-link {{ 'active' if request.endpoint == 'store.store_index' }}">
             <i class="bi bi-shop"></i>
@@ -93,21 +98,21 @@
             {% endif %}
           </a>
         </li>
-        
+
         <li>
           <a href="{{ url_for('auth.perfil', tab='misiones') }}" class="nav-link {{ 'active' if request.endpoint == 'auth.perfil' and request.args.get('tab') == 'misiones' }}">
             <i class="bi bi-trophy"></i>
             <span class="fw-semibold">Misiones</span>
           </a>
         </li>
-        
+
         <li>
           <a href="{{ url_for('ranking.index') }}" class="nav-link {{ 'active' if request.endpoint == 'ranking.index' }}">
             <i class="bi bi-award"></i>
             <span class="fw-semibold">Ranking</span>
           </a>
         </li>
-        
+
         <li>
           <a href="{{ url_for('ia.ia_chat') }}" class="nav-link {{ 'active' if request.endpoint == 'ia.ia_chat' }}">
             <i class="bi bi-robot"></i>

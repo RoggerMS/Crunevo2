@@ -12,4 +12,10 @@ def create_app():
         app.register_blueprint(main_routes.main_bp)
         app.register_blueprint(static_routes.static_bp)
 
+    from crunevo.routes.saved_routes import saved_bp
+    app.register_blueprint(saved_bp)
+
+    from crunevo.routes.course_routes import course_bp
+    app.register_blueprint(course_bp)
+
     return app
