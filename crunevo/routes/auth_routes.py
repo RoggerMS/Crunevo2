@@ -31,7 +31,6 @@ auth_bp = Blueprint("auth", __name__)
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
-@auth_bp.route("/", methods=["GET", "POST"])
 @limiter.limit("5 per 15 minutes")
 def login():
     admin_mode = current_app.config.get("ADMIN_INSTANCE")
