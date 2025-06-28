@@ -2,97 +2,211 @@
 {% import 'components/csrf.html' as csrf %}
 {% block head_extra %}
   {{ super() }}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
 {% endblock %}
 {% block content %}
-<button id="toggle-theme" class="theme-toggle-btn">🌙</button>
-<div class="register-wrapper container-fluid d-flex justify-content-center align-items-center min-vh-100">
+<button id="toggle-theme" class="theme-toggle-btn" aria-label="Cambiar tema">🌙</button>
+<main class="register-wrapper">
   <div class="register-card fade-in">
-    <h2 class="register-title">Crea una cuenta</h2>
-    <p class="register-subtitle">Es rápido y fácil.</p>
-    <form method="post">
+    <h1 class="register-title">Crea una cuenta</h1>
+    <p class="register-subtitle">Es rápido y fácil. Únete a la comunidad estudiantil.</p>
+    
+    {% if errors %}
+      <div class="alert alert-danger" role="alert">
+        <ul class="mb-0">
+          {% for error in errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+    
+    <form method="post" novalidate aria-label="Formulario de registro">
       {{ csrf.csrf_field() }}
-      <div class="row g-2 mb-3">
-        <div class="col">
-          <input type="text" class="form-control" name="nombre" placeholder="Nombre" required>
+      
+      <fieldset>
+        <legend class="sr-only">Información personal</legend>
+        <div class="row g-2 mb-3">
+          <div class="col">
+            <label for="nombre" class="form-label visually-hidden">Nombre</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="nombre"
+              name="nombre" 
+              placeholder="Nombre" 
+              autocomplete="given-name"
+              required
+              aria-describedby="nombre-help"
+            >
+            <small id="nombre-help" class="form-text text-muted">Tu nombre real</small>
+          </div>
+          <div class="col">
+            <label for="apellido" class="form-label visually-hidden">Apellido</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="apellido"
+              name="apellido" 
+              placeholder="Apellido" 
+              autocomplete="family-name"
+              required
+              aria-describedby="apellido-help"
+            >
+            <small id="apellido-help" class="form-text text-muted">Tu apellido</small>
+          </div>
         </div>
-        <div class="col">
-          <input type="text" class="form-control" name="apellido" placeholder="Apellido" required>
-        </div>
-      </div>
+      </fieldset>
+      
       <div class="mb-3">
-        <input type="text" class="form-control" name="username" placeholder="Nombre de usuario único" required>
+        <label for="username" class="form-label">Nombre de usuario</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="username"
+          name="username" 
+          placeholder="Elige un nombre de usuario único" 
+          autocomplete="username"
+          required
+          aria-describedby="username-help"
+          pattern="[a-zA-Z0-9_]+"
+        >
+        <small id="username-help" class="form-text text-muted">
+          Solo letras, números y guiones bajos. Será visible para otros usuarios.
+        </small>
       </div>
+      
       <div class="mb-3">
-        <input type="email" class="form-control" name="email" placeholder="Correo electrónico" required>
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input 
+          type="email" 
+          class="form-control" 
+          id="email"
+          name="email" 
+          placeholder="tu.correo@ejemplo.com" 
+          autocomplete="email"
+          required
+          aria-describedby="email-help"
+        >
+        <small id="email-help" class="form-text text-muted">
+          Usaremos este correo para enviarte confirmaciones importantes.
+        </small>
       </div>
-      <div class="mb-3 password-group">
-        <input type="password" class="form-control" name="password" placeholder="Contraseña nueva" required>
-        <button type="button" tabindex="0" aria-label="Mostrar contraseña" class="toggle-password">🙈</button>
+      
+      <div class="password-group">
+        <label for="password" class="form-label">Contraseña</label>
+        <input 
+          type="password" 
+          class="form-control" 
+          id="password"
+          name="password" 
+          placeholder="Crea una contraseña segura" 
+          autocomplete="new-password"
+          required
+          aria-describedby="password-help password-toggle"
+          minlength="8"
+        >
+        <button 
+          type="button" 
+          class="toggle-password" 
+          aria-label="Mostrar contraseña"
+          aria-controls="password"
+          id="password-toggle"
+        >🙈</button>
+        <small id="password-help" class="form-text text-muted">
+          Mínimo 8 caracteres. Usa letras, números y símbolos.
+        </small>
       </div>
-      <div class="row g-2 mb-3">
-        <label class="form-label">Fecha de nacimiento</label>
-        <div class="col-4">
-          <select class="form-select" name="dia" required>
-            {% for i in range(1, 32) %}
-            <option value="{{ i }}">{{ i }}</option>
-            {% endfor %}
-          </select>
+      
+      <fieldset class="mb-3">
+        <legend class="form-label">Fecha de nacimiento</legend>
+        <div class="row g-2">
+          <div class="col-4">
+            <label for="dia" class="form-label visually-hidden">Día</label>
+            <select class="form-select" id="dia" name="dia" required aria-label="Día de nacimiento">
+              <option value="">Día</option>
+              {% for i in range(1, 32) %}
+              <option value="{{ i }}">{{ i }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-4">
+            <label for="mes" class="form-label visually-hidden">Mes</label>
+            <select class="form-select" id="mes" name="mes" required aria-label="Mes de nacimiento">
+              <option value="">Mes</option>
+              <option value="ene">Enero</option><option value="feb">Febrero</option><option value="mar">Marzo</option>
+              <option value="abr">Abril</option><option value="may">Mayo</option><option value="jun">Junio</option>
+              <option value="jul">Julio</option><option value="ago">Agosto</option><option value="sep">Septiembre</option>
+              <option value="oct">Octubre</option><option value="nov">Noviembre</option><option value="dic">Diciembre</option>
+            </select>
+          </div>
+          <div class="col-4">
+            <label for="anio" class="form-label visually-hidden">Año</label>
+            <select class="form-select" id="anio" name="anio" required aria-label="Año de nacimiento">
+              <option value="">Año</option>
+              {% for i in range(2010, 1950, -1) %}
+              <option value="{{ i }}">{{ i }}</option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
-        <div class="col-4">
-          <select class="form-select" name="mes" required>
-            <option value="ene">ene</option><option value="feb">feb</option><option value="mar">mar</option>
-            <option value="abr">abr</option><option value="may">may</option><option value="jun">jun</option>
-            <option value="jul">jul</option><option value="ago">ago</option><option value="sep">sep</option>
-            <option value="oct">oct</option><option value="nov">nov</option><option value="dic">dic</option>
-          </select>
-        </div>
-        <div class="col-4">
-          <select class="form-select" name="anio" required>
-            {% for i in range(2025, 1900, -1) %}
-            <option value="{{ i }}">{{ i }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Género</label>
+        <small class="form-text text-muted">
+          Esta información nos ayuda a personalizar tu experiencia.
+        </small>
+      </fieldset>
+      
+      <fieldset class="mb-3">
+        <legend class="form-label">Género</legend>
         <div class="d-flex gap-3">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="genero" value="Mujer" required>
-            <label class="form-check-label">Mujer</label>
+            <input class="form-check-input" type="radio" name="genero" id="mujer" value="Mujer" required>
+            <label class="form-check-label" for="mujer">Mujer</label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="genero" value="Hombre" required>
-            <label class="form-check-label">Hombre</label>
+            <input class="form-check-input" type="radio" name="genero" id="hombre" value="Hombre" required>
+            <label class="form-check-label" for="hombre">Hombre</label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="genero" value="Personalizado" required>
-            <label class="form-check-label">Personalizado</label>
+            <input class="form-check-input" type="radio" name="genero" id="personalizado" value="Personalizado" required>
+            <label class="form-check-label" for="personalizado">Personalizado</label>
           </div>
         </div>
-      </div>
+      </fieldset>
+      
       <div class="form-check mb-3">
         <input class="form-check-input" type="checkbox" id="acceptTerms" required>
-        <label class="form-check-label" for="acceptTerms">He leído y acepto los <a href="{{ url_for('main.terms') }}">Términos y Condiciones</a></label>
+        <label class="form-check-label" for="acceptTerms">
+          He leído y acepto los 
+          <a href="{{ url_for('main.terms') }}" target="_blank" rel="noopener">
+            Términos y Condiciones
+          </a>
+        </label>
       </div>
-      <button type="submit" class="btn btn-crunevo w-100">Registrarte</button>
+      
+      <button type="submit" class="btn btn-crunevo">
+        <span>Crear mi cuenta</span>
+      </button>
 
-      <div class="legal-text mt-3">
-        Es posible que las personas que usan nuestro servicio hayan subido tu información de contacto a CRUNEVO. <a href="#">Más información</a>.<br><br>
-        Al hacer clic en "Registrarte", aceptas nuestras <a href="{{ url_for('main.terms') }}">Condiciones</a>, la <a href="/privacidad">Política de privacidad</a> y la <a href="/cookies">Política de cookies</a>.
-        Es posible que te enviemos notificaciones por correo o sistema, que puedes desactivar cuando quieras.
+      <div class="legal-text">
+        Al hacer clic en "Crear mi cuenta", aceptas nuestras 
+        <a href="{{ url_for('main.terms') }}" target="_blank" rel="noopener">Condiciones</a>, 
+        la <a href="/privacidad" target="_blank" rel="noopener">Política de privacidad</a> 
+        y la <a href="/cookies" target="_blank" rel="noopener">Política de cookies</a>.
+        <br><br>
+        Es posible que te enviemos notificaciones por correo electrónico, que puedes desactivar en cualquier momento.
       </div>
 
-      <div class="text-center mt-3">
-        <a href="{{ url_for('auth.login') }}" class="link-sm">¿Ya tienes una cuenta?</a>
+      <div class="text-center">
+        <a href="{{ url_for('auth.login') }}" class="link-sm">¿Ya tienes una cuenta? Inicia sesión</a>
       </div>
     </form>
   </div>
-</div>
+</main>
+
 <div class="access-links">
-  <a href="/tienda">Ver tienda</a>
-  <a href="/apuntes">Explorar apuntes</a>
+  <a href="/tienda" aria-label="Explorar tienda de productos">Ver tienda</a>
+  <a href="/apuntes" aria-label="Explorar apuntes compartidos">Explorar apuntes</a>
 </div>
 {% endblock %}
 
