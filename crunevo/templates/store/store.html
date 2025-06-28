@@ -61,7 +61,7 @@
       <div class="d-flex gap-3 overflow-auto pb-3" style="scroll-snap-type: x mandatory;">
         {% for product in featured_products %}
         <div class="featured-card flex-shrink-0" style="scroll-snap-align: start;">
-          <a href="{{ url_for('store.product_detail', id=product.id) }}" class="text-decoration-none">
+          <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="text-decoration-none">
             <img src="{{ product.image_url or url_for('static', filename='img/default_product.png') }}" 
                  class="card-img-top" alt="{{ product.name }}" loading="lazy">
             <div class="p-2">
@@ -84,15 +84,15 @@
       {% for product in products %}
       <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4 product-item" data-category="{{ product.category or 'general' }}">
         <div class="card product-card h-100">
-          <a href="{{ url_for('store.product_detail', id=product.id) }}" class="text-decoration-none">
+          <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="text-decoration-none">
             <img src="{{ product.image_url or url_for('static', filename='img/default_product.png') }}" 
                  class="card-img-top" alt="{{ product.name }}" loading="lazy"
                  style="height: 200px; object-fit: cover;">
           </a>
           <div class="card-body d-flex flex-column">
             <h5 class="product-name mb-2">
-              <a href="{{ url_for('store.product_detail', id=product.id) }}" 
-                 class="text-decoration-none">{{ product.name }}</a>
+              <a href="{{ url_for('store.view_product', product_id=product.id) }}"
+                class="text-decoration-none">{{ product.name }}</a>
             </h5>
             <p class="product-desc text-muted flex-grow-1">{{ product.description or 'Sin descripción disponible' }}</p>
             
