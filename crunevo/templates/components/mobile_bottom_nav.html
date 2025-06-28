@@ -31,10 +31,10 @@
         </a>
 
         <!-- Notifications -->
-        <a href="{{ url_for('notifications.lista') }}" 
-           class="nav-item position-relative {{ 'active' if request.endpoint == 'notifications.lista' }}">
+        <a href="{{ url_for('noti.ver_notificaciones') }}"
+           class="nav-item position-relative {{ 'active' if request.endpoint == 'noti.ver_notificaciones' }}">
           <div class="nav-icon">
-            <i class="bi bi-bell{{ '-fill' if request.endpoint == 'notifications.lista' }}"></i>
+            <i class="bi bi-bell{{ '-fill' if request.endpoint == 'noti.ver_notificaciones' }}"></i>
             {% if current_user.is_authenticated %}
             <span id="mobileNotificationBadge" 
                   class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge">
