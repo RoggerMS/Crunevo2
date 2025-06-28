@@ -127,11 +127,10 @@ def create_app():
             app.logger.error(f"Database initialization error: {e}")
 
     from .routes.onboarding_routes import bp as onboarding_bp
-    from .routes.auth_routes import auth_bp, login as login_view
+    from .routes.auth_routes import auth_bp
     from .routes.notes_routes import notes_bp
     from .routes.feed_routes import (
         feed_bp,
-        feed_home,
         api_feed,
         view_post,
         like_post,
@@ -158,18 +157,15 @@ def create_app():
     from .routes.about_routes import about_bp
     from .routes.crunebot_routes import crunebot_bp
     from .routes.saved_routes import saved_bp
+    from .routes.main_routes import main_bp
 
-    @app.route("/")
-    def home_redirect():
-        if current_user.is_authenticated:
-            return feed_home()
-        return login_view()
 
     is_admin = os.environ.get("ADMIN_INSTANCE") == "1"
     testing_env = os.environ.get("PYTEST_CURRENT_TEST") is not None
     app.config["ADMIN_INSTANCE"] = is_admin
 
     app.register_blueprint(health_bp)
+    app.register_blueprint(main_bp)
     app.logger.info("Running in ADMIN mode" if is_admin else "Running in PUBLIC mode")
 
     if is_admin:
