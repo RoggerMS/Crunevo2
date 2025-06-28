@@ -1,0 +1,311 @@
+$ fly logs -a crunevo2
+
+Waiting for logs...
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] [2025-06-28 00:19:25,931] ERROR in app: Exception on / [GET]
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] Traceback (most recent call last):
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] response = self.full_dispatch_request()
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] rv = self.handle_user_exception(e)
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] rv = self.dispatch_request()
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args) # type: ignore[no-any-return]
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/app/crunevo/app.py", line 139, in home_redirect
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] return feed_home()
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] return current_app.ensure_sync(func)(*args, **kwargs)
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/app/crunevo/utils/helpers.py", line 37, in decorated_function
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] return f(*args, **kwargs)
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/app/crunevo/routes/feed_routes.py", line 274, in view_feed
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] return render_template(
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/templating.py", line 150, in render_template
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] return _render(app, template, context)
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/templating.py", line 131, in _render
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] rv = template.render(context)
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/jinja2/environment.py", line 1295, in render
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] self.environment.handle_exception()
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/jinja2/environment.py", line 942, in handle_exception
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] raise rewrite_traceback_stack(source=source)
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/app/crunevo/templates/feed/index.html", line 3, in top-level template code
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] {% import 'components/reactions.html' as react %}
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/app/crunevo/templates/base.html", line 53, in top-level template code
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] {% include 'components/navbar.html' %}
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/app/crunevo/templates/components/navbar.html", line 18, in top-level template code
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] <a class="nav-link" href="{{ url_for('feed.feed') }}">
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1121, in url_for
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] return self.handle_url_build_error(error, endpoint, values)
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1110, in url_for
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] rv = url_adapter.build( # type: ignore[union-attr]
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/werkzeug/routing/map.py", line 924, in build
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] raise BuildError(endpoint, values, method, self)
+
+2025-06-28T00:19:25.935 app[d8d9945a06e258] bog [info] werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'feed.feed'. Did you mean 'feed.edu_feed' instead?
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] [2025-06-28 00:19:26 +0000] [638] [ERROR] Error handling request /
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] Traceback (most recent call last):
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] response = self.full_dispatch_request()
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] rv = self.handle_user_exception(e)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] rv = self.dispatch_request()
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args) # type: ignore[no-any-return]
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/app/crunevo/app.py", line 139, in home_redirect
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] return feed_home()
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] return current_app.ensure_sync(func)(*args, **kwargs)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/app/crunevo/utils/helpers.py", line 37, in decorated_function
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] return f(*args, **kwargs)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/app/crunevo/routes/feed_routes.py", line 274, in view_feed
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] return render_template(
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/templating.py", line 150, in render_template
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] return _render(app, template, context)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/templating.py", line 131, in _render
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] rv = template.render(context)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/jinja2/environment.py", line 1295, in render
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] self.environment.handle_exception()
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/jinja2/environment.py", line 942, in handle_exception
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] raise rewrite_traceback_stack(source=source)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/app/crunevo/templates/feed/index.html", line 3, in top-level template code
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] {% import 'components/reactions.html' as react %}
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/app/crunevo/templates/base.html", line 53, in top-level template code
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] {% include 'components/navbar.html' %}
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/app/crunevo/templates/components/navbar.html", line 18, in top-level template code
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] <a class="nav-link" href="{{ url_for('feed.feed') }}">
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1121, in url_for
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] return self.handle_url_build_error(error, endpoint, values)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1110, in url_for
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] rv = url_adapter.build( # type: ignore[union-attr]
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/werkzeug/routing/map.py", line 924, in build
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] raise BuildError(endpoint, values, method, self)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'feed.feed'. Did you mean 'feed.edu_feed' instead?
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] During handling of the above exception, another exception occurred:
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] Traceback (most recent call last):
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/sync.py", line 134, in handle
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] self.handle_request(listener, req, client, addr)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/sync.py", line 177, in handle_request
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] respiter = self.wsgi(environ, resp.start_response)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1536, in __call__
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] return self.wsgi_app(environ, start_response)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1514, in wsgi_app
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] response = self.handle_exception(e)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 860, in handle_exception
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] server_error = self.ensure_sync(handler)(server_error)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/app/crunevo/routes/errors.py", line 8, in internal_error
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] return render_template("errors/500.html"), 500
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/templating.py", line 150, in render_template
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] return _render(app, template, context)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/templating.py", line 131, in _render
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] rv = template.render(context)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/jinja2/environment.py", line 1295, in render
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] self.environment.handle_exception()
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/jinja2/environment.py", line 942, in handle_exception
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] raise rewrite_traceback_stack(source=source)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/app/crunevo/templates/errors/500.html", line 1, in top-level template code
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] {% extends 'base.html' %}
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/app/crunevo/templates/base.html", line 53, in top-level template code
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] {% include 'components/navbar.html' %}
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/app/crunevo/templates/components/navbar.html", line 18, in top-level template code
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] <a class="nav-link" href="{{ url_for('feed.feed') }}">
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1121, in url_for
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] return self.handle_url_build_error(error, endpoint, values)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1110, in url_for
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] rv = url_adapter.build( # type: ignore[union-attr]
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] File "/usr/local/lib/python3.11/site-packages/werkzeug/routing/map.py", line 924, in build
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] raise BuildError(endpoint, values, method, self)
+
+2025-06-28T00:19:26.400 app[d8d9945a06e258] bog [info] werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'feed.feed'. Did you mean 'feed.edu_feed' instead?
