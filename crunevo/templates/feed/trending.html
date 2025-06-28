@@ -293,6 +293,7 @@
           </div>
 
           {% for post in weekly_posts[:5] %}
+          {% set item = {'data': post} %}
           <div class="trending-card">
             <div class="trending-badge">#{{ loop.index }}</div>
             {% include 'components/post_card.html' with context %}

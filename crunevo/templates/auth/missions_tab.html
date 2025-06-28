@@ -1,7 +1,7 @@
 {% import 'components/csrf.html' as csrf %}
 <h3 class="mb-3">🎯 Tus misiones activas</h3>
 
-{% for mision in misiones %}
+{% for mision in misiones or [] %}
   {% set progreso = progresos.get(mision.id) %}
   <div class="card mb-3">
     <div class="card-body">

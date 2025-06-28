@@ -392,3 +392,4 @@
 - Public instance blocks /admin again by using create_app from app and hiding the dropdown link; fixed perfil route user variable, float conversion in store template and saved feed link (hotfix admin-block-route).
 - Registered main blueprint and removed redundant home route to restore `main.index` endpoint (hotfix main-blueprint-register).
 - Added endpoint checks for footer and error pages to avoid BuildError when blueprints are missing (hotfix endpoint-checks).
+- Fixed sidebar links to terms/privacy, trending post includes item context, optional missions list and mobile nav endpoint checks. Added user_level calculation in perfil view (hotfix template-errors).
