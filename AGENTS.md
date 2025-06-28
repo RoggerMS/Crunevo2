@@ -355,3 +355,4 @@
 - Backend mark-shown endpoint loops through each record and handles errors to ensure achievements are updated (PR achievement-popup-mark-shown-fix).
 - Context processor serializes pending achievements and returns an empty list when none to avoid regenerating `window.NEW_ACHIEVEMENTS` (PR achievement-popup-context-fix).
 - Context processor syncs session['new_achievements'] and JS clears global variable after marking shown (PR achievement-popup-session-reset).
+- Popup now shown on DOMContentLoaded only when NEW_ACHIEVEMENTS has items and mark-shown updates immediately via API (PR achievement-popup-auto-mark)

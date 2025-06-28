@@ -261,6 +261,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
     document.body.classList.add('no-anim');
   }
+  if (window.NEW_ACHIEVEMENTS && window.NEW_ACHIEVEMENTS.length > 0) {
+    showAchievementPopup(window.NEW_ACHIEVEMENTS[0]);
+  }
   if (sessionStorage.getItem('notifHighlight')) {
     sessionStorage.removeItem('notifHighlight');
     document.body.classList.add('notification-highlight');
@@ -639,6 +642,13 @@ function showAchievementPopup(data) {
   content.classList.remove('animate-fade-out-up');
   content.classList.add('animate-fade-in-down');
 
+  // Mark achievements as shown immediately after displaying
+  csrfFetch('/api/achievement-popup/mark-shown', { method: 'POST' }).then((r) => {
+    if (r.ok) {
+      window.NEW_ACHIEVEMENTS = undefined;
+    }
+  });
+
   const closeBtn = popup.querySelector('#closeAchievementBtn');
   if (closeBtn) {
     closeBtn.onclick = () => closeAchievementPopup();
@@ -655,11 +665,6 @@ function closeAchievementPopup() {
     popup.removeAttribute('style');
     popup.querySelector('#achievementTitle').textContent = '';
     popup.querySelector('.credit-gain').textContent = '';
-    csrfFetch('/api/achievement-popup/mark-shown', { method: 'POST' }).then((r) => {
-      if (r.ok) {
-        window.NEW_ACHIEVEMENTS = undefined;
-      }
-    });
   }, 300);
 }
 
