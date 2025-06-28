@@ -151,6 +151,7 @@ def perfil():
 
     return render_template(
         "auth/perfil.html",
+        user=current_user,
         saved_posts=posts,
         achievements=achievements,
         ach_type=ach_type,
