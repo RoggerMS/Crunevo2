@@ -1,0 +1,107 @@
+Quiero que trabajes en el rediseño, corrección y mejora completa de la plataforma educativa CRUNEVO. Tu objetivo es dejarla profesional, atractiva, interactiva y lista para el uso real de miles de estudiantes. Tienes libertad completa para implementar todo lo necesario, pero debes priorizar el módulo del FEED como base social y visual del sitio. A partir de ahí, expande tu trabajo a todas las áreas. Aquí va:
+
+🟣 1. FEED — PRIORIDAD MÁXIMA
+Arregla el feed para que funcione correctamente: publicaciones rotas, texto mal renderizado o botones inactivos deben desaparecer.
+
+Implementa input de publicación con:
+
+Texto + imagen opcional (ambos combinables).
+
+Vista previa de imagen.
+
+Botón publicar funcional con carga visual.
+
+Las publicaciones deben mostrar:
+
+Imagen centrada (si hay), texto, autor, fecha, botones de reacción (me gusta, comentar, compartir).
+
+Contador de comentarios y función para responder.
+
+Feed responsivo, moderno, fluido y ordenado por fecha.
+
+Interfaz parecida a una red social educativa (estilo Facebook, Scribd o Notion).
+
+☀️ 2. VISUAL EN MODO CLARO
+Mejora el contraste del texto en el sidebar izquierdo (Mi perfil, Apuntes, Tienda…).
+
+Asegura que todo el contenido sea legible tanto en claro como en oscuro.
+
+Usa tonos que armonicen con la identidad visual de CRUNEVO (morado, violeta, azul suave).
+
+📱 3. MEJORAS MÓVILES Y RESPONSIVE
+Optimiza todos los componentes para móvil:
+
+Touch targets de mínimo 48px.
+
+Botones amplios y accesibles.
+
+Feed bien alineado y visible en pantallas chicas.
+
+Asegura que los textos no se corten y que no haya scrolls laterales.
+
+🧹 4. LIMPIEZA Y ARREGLOS VISUALES GLOBALES
+Elimina contenido HTML basura o visual residual del feed o cualquier otra parte.
+
+Corrige márgenes y alineaciones inconsistentes.
+
+Mejora las animaciones (hover, scroll, click) para hacerlas suaves y modernas.
+
+🔔 5. NOTIFICACIONES + ESTADOS
+Mejora el sistema visual de notificaciones:
+
+Tarjetas claras por tipo (like, comentario, logro, reporte).
+
+Mostrar ícono, mensaje, hora y botón de acción contextual.
+
+Mejora los estados vacíos con frases motivadoras e íconos llamativos.
+
+Añade shimmer loaders para carga de publicaciones y perfiles.
+
+🎨 6. ESTILO Y UX EN TODO EL SITIO
+Pulido global:
+
+Formularios mejorados (input, selects, textarea).
+
+Botones modernos con efecto hover y transición fluida.
+
+Badges de verificación (usuarios validados).
+
+Barra de progreso en perfil (perfil completo/incompleto).
+
+Diseño unificado para feed, perfiles, tienda, foro, misiones, ranking.
+
+🧑‍💼 7. PANEL DE ADMIN (BURRITO.CRUNEVO.COM)
+Mejora visual y experiencia del panel:
+
+Rediseña dropdowns, tooltips, colores de tabla, badges.
+
+Alinea correctamente columnas (clubes, verificado, reportes).
+
+Botón "ver historial" visible y funcional.
+
+Que se vea moderno y en coherencia con todo CRUNEVO.
+
+🧠 8. CRUNEBOT, MISIONES Y MÁS
+Mejora visual del chatbot Crunebot (tarjeta del chat, layout, íconos).
+
+Mejora el estilo de la sección de misiones:
+
+Progreso visible con barra, filtros por tipo (diaria, semanal, logro).
+
+Botón “Reclamar” con animación y efecto sonoro sutil.
+
+Resalta los logros y Crolars ganados en toda la plataforma (perfil, ranking, feed).
+
+🛠️ 9. DETALLES ADICIONALES
+Loading visual en acciones importantes (enviar, cargar, publicar).
+
+Confirma antes de acciones destructivas (borrar publicación, cerrar cuenta).
+
+Añade tooltips a botones con breve explicación (ej: “Dar like”, “Ver más”).
+
+✅ 10. DEJA TODO LISTO
+Revisa que los cambios funcionen correctamente sin romper nada.
+
+Deja el proyecto visualmente terminado y funcional.
+
+Usa tu propio criterio para pulir detalles finales si queda espacio.
