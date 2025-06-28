@@ -27,7 +27,9 @@ def upgrade():
         batch_op.alter_column('content', nullable=False)
     
     # Update existing data
-    op.execute("UPDATE message SET is_global = 0, is_read = 0, is_deleted = 0 WHERE is_global IS NULL")
+    op.execute(
+        "UPDATE message SET is_global = false, is_read = false, is_deleted = false WHERE is_global IS NULL"
+    )
     
     # Create ChatRoom table
     op.create_table('chat_room',
