@@ -120,6 +120,7 @@ def perfil():
     referidos_completados = 0
     enlace_referido = None
     creditos_referidos = 0
+    user_level = current_user.verification_level * 2
     if tab == "misiones":
         from crunevo.routes.missions_routes import compute_mission_states
         from crunevo.models import Mission
@@ -163,6 +164,7 @@ def perfil():
         referidos_completados=referidos_completados,
         enlace_referido=enlace_referido,
         creditos_referidos=creditos_referidos,
+        user_level=user_level,
     )
 
 

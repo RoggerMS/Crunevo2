@@ -3,7 +3,7 @@
     <div class="container-fluid px-3">
       <div class="d-flex justify-content-around align-items-center w-100">
         <!-- Home -->
-        <a href="{{ url_for('feed.view_feed') }}" 
+        <a href="{{ url_for('feed.view_feed') if 'feed.view_feed' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}"
            class="nav-item {{ 'active' if request.endpoint == 'feed.view_feed' }}">
           <div class="nav-icon">
             <i class="bi bi-house{{ '-fill' if request.endpoint == 'feed.view_feed' }}"></i>
@@ -12,7 +12,7 @@
         </a>
 
         <!-- Search -->
-        <a href="{{ url_for('search.search_page') }}"
+        <a href="{{ url_for('search.search_page') if 'search.search_page' in url_for.__globals__.get('current_app', {}).view_functions else '#' }}"
            class="nav-item {{ 'active' if request.endpoint == 'search.search_page' }}">
           <div class="nav-icon">
             <i class="bi bi-search"></i>
@@ -21,7 +21,7 @@
         </a>
 
         <!-- Notes -->
-        <a href="{{ url_for('notes.list_notes') }}"
+        <a href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '#' }}"
            class="nav-item {{ 'active' if request.endpoint == 'notes.list_notes' }}">
           <div class="nav-icon">
             <i class="bi bi-journal{{ '-text-fill' if request.endpoint == 'notes.list_notes' }}"></i>
@@ -30,7 +30,7 @@
         </a>
 
         <!-- Notifications -->
-        <a href="{{ url_for('noti.ver_notificaciones') }}"
+        <a href="{{ url_for('noti.ver_notificaciones') if 'noti.ver_notificaciones' in url_for.__globals__.get('current_app', {}).view_functions else '#' }}"
            class="nav-item position-relative {{ 'active' if request.endpoint == 'noti.ver_notificaciones' }}">
           <div class="nav-icon">
             <i class="bi bi-bell{{ '-fill' if request.endpoint == 'noti.ver_notificaciones' }}"></i>
@@ -45,7 +45,7 @@
         </a>
 
         <!-- Profile -->
-        <a href="{{ url_for('auth.perfil') }}"
+        <a href="{{ url_for('auth.perfil') if 'auth.perfil' in url_for.__globals__.get('current_app', {}).view_functions else '#' }}"
            class="nav-item {{ 'active' if request.endpoint == 'auth.perfil' }}">
           <div class="nav-icon">
             {% if current_user.is_authenticated %}
