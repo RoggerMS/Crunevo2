@@ -1,324 +1,215 @@
+{% extends "base.html" %}
 
-{% extends 'base.html' %}
-{% import 'components/csrf.html' as csrf %}
-{% import 'components/reactions.html' as react %}
-
-{% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
-<style>
-.feed-header {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  border: 2px solid rgba(102, 126, 234, 0.15);
-  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.08);
-}
-
-[data-bs-theme="dark"] .feed-header {
-  background: rgba(30, 30, 46, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.feed-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.stat-card {
-  background: rgba(255, 255, 255, 0.98);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 16px;
-  padding: 1.5rem;
-  text-align: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
-  border-color: rgba(102, 126, 234, 0.2);
-}
-
-[data-bs-theme="dark"] .stat-card {
-  background: rgba(30, 30, 46, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.stat-number {
-  font-size: 2rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 0.9rem;
-  color: #475569;
-  font-weight: 600;
-  margin-top: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-[data-bs-theme="dark"] .stat-label {
-  color: #d1d5db;
-}
-
-.create-post-card {
-  background: rgba(255, 255, 255, 0.98);
-  border: 2px solid rgba(102, 126, 234, 0.1);
-  border-radius: 20px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.create-post-card:hover {
-  border-color: rgba(102, 126, 234, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.1);
-}
-
-[data-bs-theme="dark"] .create-post-card {
-  background: rgba(30, 30, 46, 0.8);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-.feed-content {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.feed-item {
-  background: rgba(255, 255, 255, 0.98);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 20px;
-  padding: 1.75rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-  margin-bottom: 1.5rem;
-}
-
-.feed-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-  border-color: rgba(102, 126, 234, 0.2);
-}
-
-[data-bs-theme="dark"] .feed-item {
-  background: rgba(30, 30, 46, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-</style>
-{% endblock %}
+{% block title %}Feed - Crunevo{% endblock %}
 
 {% block content %}
-<div class="container-fluid px-3">
-  <div class="row g-4">
-    <!-- Sidebar izquierdo -->
-    <div class="col-lg-2 d-none d-lg-block">
-      <div class="sticky-top" style="top: 80px;">
-        {% include 'feed/sidebar_left_feed.html' %}
-        {% include 'components/feed_sidebar.html' %}
-      </div>
+<div class="container-fluid px-0">
+  <div class="row g-0">
+    <!-- Left Sidebar -->
+    <div class="col-lg-3 d-none d-lg-block">
+      {% include 'components/sidebar_left_feed.html' %}
     </div>
 
-    <!-- Contenido principal -->
-    <div class="col-lg-7">
-      <!-- Header del Feed -->
-      <div class="feed-header">
-        <h2 class="h3 mb-3 fw-bold text-center">
-          <i class="bi bi-house-heart me-2" style="color: #667eea;"></i>
-          Tu Feed Personal
-        </h2>
-        <div class="feed-stats">
-          <div class="stat-card">
-            <div class="stat-number">{{ feed_items|length }}</div>
-            <div class="stat-label">Publicaciones</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number">{{ current_user.credits }}</div>
-            <div class="stat-label">Crolars</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number">{{ current_user.notes|length }}</div>
-            <div class="stat-label">Apuntes</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Crear publicación -->
-      <div class="create-post-card" data-bs-toggle="modal" data-bs-target="#createPostModal">
-        <div class="d-flex align-items-center">
-          <img loading="lazy" src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
-               class="rounded-circle me-3" width="50" height="50" alt="avatar">
-          <div class="flex-grow-1">
-            <div class="fw-semibold text-muted mb-1">¡Hola, {{ current_user.username }}!</div>
-            <div class="text-muted">¿Qué deseas compartir con la comunidad hoy?</div>
-          </div>
-          <i class="bi bi-plus-circle fs-3 text-primary"></i>
-        </div>
-      </div>
-
-      <!-- Filtros rápidos en móvil -->
-      <div id="feed-filtros-principales" class="d-lg-none mb-4">
-        <div class="card">
+    <!-- Main Feed Content -->
+    <div class="col-lg-6 col-12">
+      <div class="px-3 px-lg-4">
+        <!-- Create Post Form -->
+        {% if current_user.is_authenticated %}
+        <div class="card mb-4 feed-card-clean">
           <div class="card-body">
-            {% include 'components/feed_sidebar.html' %}
+            <form id="feedForm" enctype="multipart/form-data">
+              {{ csrf_token() }}
+              <div class="d-flex gap-3 align-items-start">
+                <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                     alt="Tu avatar" class="feed-avatar">
+                <div class="flex-grow-1">
+                  <textarea 
+                    name="content" 
+                    id="content" 
+                    class="form-control border-0 bg-transparent resize-none" 
+                    rows="3" 
+                    placeholder="¿Qué quieres compartir con la comunidad educativa?"
+                    style="box-shadow: none;"></textarea>
+
+                  <div id="previewContainer" class="mt-2"></div>
+
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="d-flex gap-2">
+                      <label for="image" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-image"></i> Imagen
+                      </label>
+                      <input type="file" name="image" id="image" class="d-none" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" disabled id="submitBtn">
+                      <i class="bi bi-send"></i> Publicar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
-      </div>
+        {% endif %}
 
-      <!-- Feed de contenido -->
-      <div id="feed" class="feed-content" data-categoria="{{ categoria or '' }}">
-        {% for item in feed_items %}
-          {% if item.type == 'note' %}
-            {% set note = item.data %}
-            <div class="feed-item">
-              {% include 'components/feed_card.html' %}
-            </div>
-          {% elif item.type == 'post' %}
-            {% set post = item.data %}
-            {% set counts = reaction_counts.get(post.id, {}) %}
-            {% set my_reaction = user_reactions.get(post.id) %}
-            <div class="feed-item">
-              {% include 'feed/post_card.html' %}
+        <!-- Quick Filters (Mobile) -->
+        <div class="d-lg-none mb-3">
+          <div id="quickFilters" class="d-flex gap-2 overflow-auto pb-2">
+            <button class="btn btn-sm btn-outline-primary active" data-filter="all">
+              <i class="bi bi-house"></i> Todo
+            </button>
+            <button class="btn btn-sm btn-outline-primary" data-filter="popular">
+              <i class="bi bi-fire"></i> Popular
+            </button>
+            <button class="btn btn-sm btn-outline-primary" data-filter="recent">
+              <i class="bi bi-clock"></i> Reciente
+            </button>
+            <button class="btn btn-sm btn-outline-primary" data-filter="following">
+              <i class="bi bi-people"></i> Siguiendo
+            </button>
+          </div>
+        </div>
+
+        <!-- Feed Content -->
+        <div id="feedContainer">
+          {% if posts %}
+            {% for post in posts %}
+              {% include 'components/post_card.html' %}
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">
+              <i class="bi bi-chat-square-text"></i>
+              <h3>¡El feed está esperándote!</h3>
+              <p>Sé el primero en compartir algo con la comunidad educativa.</p>
+              {% if not current_user.is_authenticated %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+                  Únete a Crunevo
+                </a>
+              {% endif %}
             </div>
           {% endif %}
-        {% endfor %}
-      </div>
+        </div>
 
-      <!-- Indicador de carga -->
-      <div id="feedEnd" class="my-4 text-center">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Cargando...</span>
+        <!-- Loading indicator -->
+        <div id="feedLoading" class="feed-loading d-none">
+          <i class="bi bi-arrow-clockwise"></i>
+          <p>Cargando más publicaciones...</p>
         </div>
       </div>
+    </div>
 
-      {% if not feed_items %}
-        <div class="text-center my-5">
-          <div class="card">
-            <div class="card-body py-5">
-              <i class="bi bi-chat-dots fs-1 text-muted mb-3 d-block"></i>
-              <h4 class="text-muted mb-3">¡Tu feed está esperando!</h4>
-              <p class="text-muted mb-4">Aún no hay publicaciones. Sé el primero en compartir algo increíble con la comunidad.</p>
-              <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#createPostModal">
-                <i class="bi bi-plus-circle me-2"></i>Crear primera publicación
-              </button>
+    <!-- Right Sidebar -->
+    <div class="col-lg-3 d-none d-lg-block">
+      {% include 'components/sidebar_right.html' %}
+    </div>
+  </div>
+</div>
+
+<!-- Floating Action Button (Mobile) -->
+{% if current_user.is_authenticated %}
+<div class="d-lg-none">
+  <button class="btn btn-primary rounded-circle position-fixed shadow-lg mobile-overlay-btn" 
+          data-bs-toggle="modal" data-bs-target="#mobilePostModal"
+          style="bottom: 80px; right: 20px; width: 56px; height: 56px;">
+    <i class="bi bi-plus-lg"></i>
+  </button>
+</div>
+
+<!-- Mobile Post Modal -->
+<div class="modal fade" id="mobilePostModal" tabindex="-1">
+  <div class="modal-dialog modal-fullscreen-sm-down">
+    <div class="modal-content border-0">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title">Nueva publicación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="mobilePostForm" enctype="multipart/form-data">
+          {{ csrf_token() }}
+          <div class="d-flex gap-3 align-items-start">
+            <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                 alt="Tu avatar" class="feed-avatar">
+            <div class="flex-grow-1">
+              <textarea 
+                name="content" 
+                class="form-control border-0 bg-transparent" 
+                rows="4" 
+                placeholder="¿Qué quieres compartir?"
+                style="box-shadow: none;"></textarea>
+
+              <div class="mt-3">
+                <label for="mobileImage" class="btn btn-outline-primary">
+                  <i class="bi bi-image"></i> Agregar imagen
+                </label>
+                <input type="file" name="image" id="mobileImage" class="d-none" accept="image/*">
+              </div>
             </div>
           </div>
-        </div>
-      {% endif %}
-    </div>
-
-    <!-- Sidebar derecho -->
-    <div class="col-lg-3 d-none d-lg-block">
-      <div class="sticky-top" style="top: 80px;">
-        {% include 'components/sidebar_right.html' %}
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" form="mobilePostForm" class="btn btn-primary">
+          <i class="bi bi-send"></i> Publicar
+        </button>
       </div>
     </div>
   </div>
-</div>
-
-<!-- Botón móvil -->
-<button class="btn btn-primary rounded-circle position-fixed d-lg-none mobile-overlay-btn" 
-        data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"
-        style="bottom: 20px; right: 20px; width: 60px; height: 60px; z-index: 1040;">
-  <i class="bi bi-filter fs-5"></i>
-</button>
-
-<!-- Sidebar móvil -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title fw-bold" id="mobileSidebarLabel">
-      <i class="bi bi-menu-up me-2"></i>Menú
-    </h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <div class="offcanvas-body">
-    {% include 'feed/sidebar_left_feed.html' %}
-    <hr class="my-4">
-    {% include 'components/feed_sidebar.html' %}
-  </div>
-</div>
-
-{% if show_streak_claim %}
-<div id="streakBox" class="card p-4 bg-gradient position-fixed shadow-lg fade-in" 
-     style="bottom: 90px; right: 20px; z-index: 1050; max-width: 280px; border-radius: 20px; border: 2px solid #667eea;">
-  <div class="d-flex align-items-center mb-3">
-    <div class="me-3 fs-2">🎉</div>
-    <div>
-      <div class="fw-bold text-primary">¡Día {{ streak_day }}!</div>
-      <small class="text-muted">Continúa tu racha</small>
-    </div>
-  </div>
-  <div class="text-center mb-3">
-    <div class="fw-bold fs-5 text-success">+{{ streak_reward }} crolars</div>
-  </div>
-  <button class="btn btn-primary w-100" onclick="claimStreak()">
-    <i class="bi bi-gift me-2"></i>Reclamar
-  </button>
 </div>
 {% endif %}
 {% endblock %}
 
 {% block body_end %}
-<!-- Modal crear publicación -->
-<div class="modal fade" id="createPostModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content" style="border-radius: 20px; border: none;">
-      <form id="postForm" method="post" action="{{ url_for('feed.view_feed') }}" enctype="multipart/form-data">
-        {{ csrf.csrf_field() }}
-        <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title fw-bold">
-            <i class="bi bi-pencil-square me-2 text-primary"></i>Crear publicación
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body pt-2">
-          <div class="d-flex mb-4">
-            <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
-                 class="rounded-circle me-3" width="50" height="50">
-            <textarea class="form-control" name="content" rows="5" 
-                      placeholder="Comparte tus pensamientos, logros o cualquier cosa interesante..." 
-                      required style="border-radius: 16px; resize: none;"></textarea>
-          </div>
-          
-          <div class="d-flex gap-2 flex-wrap mb-3">
-            <label class="btn btn-outline-primary">
-              <i class="bi bi-image me-2"></i>Imagen
-              <input type="file" name="file" id="feedImageInput" accept="image/*,.pdf" class="d-none">
-            </label>
-            <a href="{{ url_for('notes.upload') }}" class="btn btn-outline-secondary">
-              <i class="bi bi-file-earmark-plus me-2"></i>Apunte
-            </a>
-            <button type="button" class="btn btn-outline-secondary" disabled>
-              <i class="bi bi-trophy me-2"></i>Logro
-            </button>
-          </div>
-          
-          <div id="previewContainer" class="mt-3"></div>
-          <div id="uploadSpinner" class="text-center my-3 tw-hidden">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Subiendo...</span>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer border-0 pt-0">
-          <button id="postSubmitBtn" class="btn btn-primary px-4" type="submit">
-            <i class="bi bi-send me-2"></i>Publicar
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enable submit button when content is typed
+    const contentTextarea = document.getElementById('content');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (contentTextarea && submitBtn) {
+        contentTextarea.addEventListener('input', function() {
+            submitBtn.disabled = this.value.trim().length === 0;
+        });
+    }
+
+    // Image preview functionality
+    const imageInput = document.getElementById('image');
+    const previewContainer = document.getElementById('previewContainer');
+
+    if (imageInput && previewContainer) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewContainer.innerHTML = `
+                        <div class="position-relative d-inline-block">
+                            <img src="${e.target.result}" class="img-fluid rounded" style="max-height: 200px;">
+                            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="this.parentElement.remove(); document.getElementById('image').value = '';">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Quick filters functionality
+    const filterButtons = document.querySelectorAll('#quickFilters button[data-filter]');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            this.classList.add('active');
+
+            // Here you would implement the filtering logic
+            const filter = this.getAttribute('data-filter');
+            console.log('Filtering by:', filter);
+        });
+    });
+});
+</script>
 {% endblock %}

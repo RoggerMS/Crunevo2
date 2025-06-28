@@ -1,171 +1,324 @@
-{% extends 'base.html' %}
-{% import 'components/button.html' as btn %}
-{% import 'components/csrf.html' as csrf %}
-{% block head_extra %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
-{% endblock %}
-{% block content %}
-<div class="container-fluid mt-4">
-  <div class="row">
-    <!-- Sidebar izquierdo exclusivo para tienda -->
-    <div class="col-lg-2 d-none d-lg-block">
-      {% include 'store/sidebar.html' %}
-    </div>
 
-    <!-- Contenido central -->
-    <div class="col-lg-7">
-      {% if featured_products %}
-        <div class="card shadow-sm border-0 mb-4 px-3 py-2 bg-body">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6 class="mb-0 fw-bold text-muted">🎖 Productos destacados</h6>
-            <div class="carousel-controls d-none d-md-flex gap-2">
-              <button id="scrollLeft" class="btn btn-sm btn-outline-secondary">&larr;</button>
-              <button id="scrollRight" class="btn btn-sm btn-outline-secondary">&rarr;</button>
+{% extends "base.html" %}
+
+{% block title %}Tienda - Crunevo{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-lg-5">
+  <!-- Store Header -->
+  <div class="store-header">
+    <h1 class="store-title display-5">
+      <i class="bi bi-shop me-2"></i>
+      Tienda Crunevo
+    </h1>
+    <p class="store-subtitle">Intercambia tus Crolars por increíbles productos educativos</p>
+    <div class="d-flex justify-content-center align-items-center gap-3 mt-3">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-coin text-warning fs-4"></i>
+        <span class="fw-bold fs-5">{{ current_user.credits if current_user.is_authenticated else 0 }} Crolars</span>
+      </div>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('store.view_cart') }}" class="btn btn-outline-primary">
+        <i class="bi bi-cart"></i>
+        Carrito
+        <span class="badge cart-badge ms-1">{{ cart_count or 0 }}</span>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Category Filters -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex flex-wrap justify-content-center gap-2">
+        <button class="category-filter active" data-category="all">
+          <i class="bi bi-grid"></i> Todos
+        </button>
+        <button class="category-filter" data-category="libros">
+          <i class="bi bi-book"></i> Libros
+        </button>
+        <button class="category-filter" data-category="papeleria">
+          <i class="bi bi-pencil"></i> Papelería
+        </button>
+        <button class="category-filter" data-category="tecnologia">
+          <i class="bi bi-laptop"></i> Tecnología
+        </button>
+        <button class="category-filter" data-category="accesorios">
+          <i class="bi bi-bag"></i> Accesorios
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured Products -->
+  {% if featured_products %}
+  <div class="row mb-5">
+    <div class="col-12">
+      <h3 class="mb-3 text-center">
+        <i class="bi bi-star-fill text-warning me-2"></i>
+        Productos Destacados
+      </h3>
+      <div class="d-flex gap-3 overflow-auto pb-3" style="scroll-snap-type: x mandatory;">
+        {% for product in featured_products %}
+        <div class="featured-card flex-shrink-0" style="scroll-snap-align: start;">
+          <a href="{{ url_for('store.product_detail', id=product.id) }}" class="text-decoration-none">
+            <img src="{{ product.image_url or url_for('static', filename='img/default_product.png') }}" 
+                 class="card-img-top" alt="{{ product.name }}" loading="lazy">
+            <div class="p-2">
+              <div class="featured-title">{{ product.name }}</div>
+              <div class="text-center">
+                <span class="product-price">{{ product.price }} <i class="bi bi-coin text-warning"></i></span>
+              </div>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Products Grid -->
+  <div class="row" id="productsContainer">
+    {% if products %}
+      {% for product in products %}
+      <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4 product-item" data-category="{{ product.category or 'general' }}">
+        <div class="card product-card h-100">
+          <a href="{{ url_for('store.product_detail', id=product.id) }}" class="text-decoration-none">
+            <img src="{{ product.image_url or url_for('static', filename='img/default_product.png') }}" 
+                 class="card-img-top" alt="{{ product.name }}" loading="lazy"
+                 style="height: 200px; object-fit: cover;">
+          </a>
+          <div class="card-body d-flex flex-column">
+            <h5 class="product-name mb-2">
+              <a href="{{ url_for('store.product_detail', id=product.id) }}" 
+                 class="text-decoration-none">{{ product.name }}</a>
+            </h5>
+            <p class="product-desc text-muted flex-grow-1">{{ product.description or 'Sin descripción disponible' }}</p>
+            
+            <div class="mt-auto">
+              <div class="product-price mb-3">
+                {{ product.price }} <i class="bi bi-coin text-warning"></i>
+              </div>
+              
+              {% if current_user.is_authenticated %}
+                {% if current_user.credits >= product.price %}
+                  <button class="btn-add-cart" 
+                          onclick="addToCart({{ product.id }}, '{{ product.name }}', {{ product.price }})"
+                          data-product-id="{{ product.id }}">
+                    <i class="bi bi-cart-plus me-1"></i>
+                    Agregar
+                  </button>
+                {% else %}
+                  <button class="btn-add-cart" disabled>
+                    <i class="bi bi-coin me-1"></i>
+                    Insuficientes Crolars
+                  </button>
+                {% endif %}
+              {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn-add-cart text-decoration-none d-block text-center">
+                  <i class="bi bi-box-arrow-in-right me-1"></i>
+                  Inicia Sesión
+                </a>
+              {% endif %}
             </div>
           </div>
-          <div id="featured-carousel" class="row row-cols-auto g-2 overflow-auto flex-nowrap" style="scroll-behavior: smooth;">
-            {% for product in featured_products %}
-              <div class="col">
-                <div class="card border-purple featured-card">
-                  <img loading="lazy" src="{{ product.image if product.image else url_for('static', filename='img/default_product.png') }}" class="card-img-top" alt="{{ product.name }}">
-                  <div class="card-body p-2 text-center">
-                    <p class="featured-title mb-1">{{ product.name }}</p>
-                    {% if product.price is not none %}
-                      <span class="badge bg-info text-dark d-block mb-1">S/ {{ '%.2f'|format(product.price) }}</span>
-                    {% endif %}
-                    {% if product.price_credits is not none %}
-                      <span class="badge bg-warning text-dark d-block mb-1">{{ product.price_credits }} crolars</span>
-                    {% endif %}
-                    <button class="btn btn-sm btn-primary add-cart-btn d-block mx-auto mb-1" data-product-id="{{ product.id }}">+ Carrito</button>
-                    <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary btn-sm d-block mx-auto">Ver</a>
-                  </div>
-                </div>
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-      {% else %}
-        <div class="card shadow-sm border-0 mb-4 px-3 py-2 bg-body">
-          <h6 class="fw-bold text-muted mb-1">🎖 Productos destacados</h6>
-          <p class="text-muted mb-0">Aún no hay destacados esta semana</p>
-        </div>
-      {% endif %}
-      <h2 class="mb-4">Tienda</h2>
-      {% if request.args.get('free') %}
-        <div class="alert alert-success">Recursos Gratuitos</div>
-      {% endif %}
-      <div class="row">
-        <div class="col-12">
-          <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
-            {% for product in products %}
-              <div class="col">
-                <div class="card product-card position-relative h-100 border border-primary p-2 {% if product.is_featured %}bg-light border-purple{% endif %} {% if product.category == 'Pack' %}tw-scale-[1.03]{% endif %}">
-                  <img
-                    loading="lazy"
-                    src="{{ product.image if product.image else url_for('static', filename='img/default_product.png') }}"
-                    class="card-img-top rounded mb-2"
-                    alt="{{ product.name }}"
-                    title="Ver {{ product.name }}"
-                  >
-                  <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="position-absolute top-0 end-0 m-2">
-                    {{ csrf.csrf_field() }}
-                    <button class="btn btn-sm btn-light border-0" type="submit">
-                      <i class="bi {% if product.id in favorite_ids %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
-                    </button>
-                  </form>
-                  <div class="card-body d-flex flex-column">
-                    <h5 class="card-title product-name" title="{{ product.name }}">{{ product.name }}</h5>
-                    {% set r = ratings.get(product.id, 0) %}
-                    <div class="mb-1">
-                      {% for _ in range(r|round(0,'floor')|int) %}<i class="bi bi-star-fill text-warning"></i>{% endfor %}
-                      {% for _ in range(5 - r|round(0,'floor')|int) %}<i class="bi bi-star text-warning"></i>{% endfor %}
-                      <small class="text-muted">{{ '%.1f'|format(r) }}</small>
-                    </div>
-                    <p class="card-text small text-muted mb-1 product-desc">{{ product.description }}</p>
-                    {% if product.price is not none %}
-                      <p class="mb-1 text-primary fw-bold">
-                        {% if product.price == 0 %}
-                          Desde S/ 0
-                        {% else %}
-                          S/ {{ '%.2f' | format(product.price) }}
-                        {% endif %}
-                      </p>
-                    {% endif %}
-                    {% if product.price_credits is not none %}
-                      <p class="mb-1 text-warning fw-bold">
-                        {% if product.price_credits == 0 %}
-                          0 crolars
-                        {% else %}
-                          {{ product.price_credits }} crolars
-                        {% endif %}
-                      </p>
-                    {% endif %}
-                    <div class="mb-2">
-                      {% if product.category %}<span class="badge bg-info text-dark">{{ product.category }}</span>{% endif %}
-                      {% if product.is_new %}<span class="badge bg-success">Nuevo</span>{% endif %}
-                      {% if product.is_popular %}<span class="badge bg-danger">Popular</span>{% endif %}
-                      {% if product.credits_only %}<span class="badge bg-warning text-dark">Solo crolars</span>{% endif %}
-                      {% if product.is_featured %}<span class="badge bg-purple text-white">Destacado</span>{% endif %}
-                      {% if product.id in purchased_ids %}<span class="badge bg-secondary">Adquirido</span>{% endif %}
-                    </div>
-                  </div>
-                  <div class="card-footer bg-body border-0 pt-0 d-flex justify-content-between align-items-center">
-                    {% if product.id in purchased_ids and product.download_url %}
-                      <a href="{{ product.download_url }}" class="btn btn-success btn-sm" target="_blank">Descargar</a>
-                    {% endif %}
-                    <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn btn-outline-primary btn-sm tw-whitespace-nowrap"><i class="bi bi-search me-1"></i>Ver detalle</a>
-                    <button type="button" class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('store.view_product', product_id=product.id, _external=True) }}" title="Compartir este producto"><i class="bi bi-share"></i></button>
-                  </div>
-                </div>
-              </div>
-            {% endfor %}
-          </div>
-          <div class="mt-4 text-center">
-            {{ btn.button('<i class="bi bi-cart-fill me-1"></i> Ver carrito', href=url_for('store.view_cart'), variant='secondary') }}
-          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Sidebar derecho -->
-    <div class="col-lg-3 d-none d-lg-block">
-      <div class="card mb-3">
-        <div class="card-header">🔥 Top más vendidos</div>
-        <ul class="list-group list-group-flush">
-          {% for p in top_sellers %}
-          <li class="list-group-item py-1">
-            <a href="{{ url_for('store.view_product', product_id=p.id) }}">{{ p.name }}</a>
-          </li>
-          {% endfor %}
-        </ul>
+      {% endfor %}
+    {% else %}
+      <div class="col-12">
+        <div class="empty-state">
+          <i class="bi bi-shop"></i>
+          <h3>¡Pronto tendremos productos increíbles!</h3>
+          <p>Nuestro equipo está trabajando para traerte los mejores productos educativos.</p>
+          {% if current_user.is_authenticated and (current_user.is_admin or current_user.is_moderator) %}
+            <a href="{{ url_for('admin.manage_store') }}" class="btn btn-primary">
+              Agregar Productos
+            </a>
+          {% endif %}
+        </div>
       </div>
-    </div>
-
+    {% endif %}
   </div>
+
+  <!-- Load More Button -->
+  {% if products and products|length >= 12 %}
+  <div class="row">
+    <div class="col-12 text-center">
+      <button id="loadMoreBtn" class="btn btn-outline-primary">
+        <i class="bi bi-arrow-down-circle"></i>
+        Cargar más productos
+      </button>
+    </div>
+  </div>
+  {% endif %}
 </div>
-<button class="btn btn-primary rounded-circle position-fixed bottom-0 start-0 m-3 d-lg-none mobile-overlay-btn" data-bs-toggle="offcanvas" data-bs-target="#storeSidebar"><i class="bi bi-filter"></i></button>
-<div class="offcanvas offcanvas-start" tabindex="-1" id="storeSidebar" aria-labelledby="storeSidebarLabel">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="storeSidebarLabel">Menú</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <div class="offcanvas-body">
-    {% include 'store/sidebar.html' %}
+
+<!-- Cart Added Modal -->
+<div class="modal fade" id="cartAddedModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">
+          <i class="bi bi-check-circle-fill text-success me-2"></i>
+          ¡Agregado al carrito!
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div id="cartModalContent"></div>
+        <div class="mt-3">
+          <button type="button" class="btn btn-outline-primary me-2" data-bs-dismiss="modal">
+            Seguir comprando
+          </button>
+          <a href="{{ url_for('store.view_cart') }}" class="btn btn-primary">
+            <i class="bi bi-cart"></i> Ver carrito
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
 
 {% block body_end %}
-  {{ super() }}
-  <script>
-    const carousel = document.getElementById('featured-carousel');
-    if (carousel) {
-      document.getElementById('scrollLeft')?.addEventListener('click', () => {
-        carousel.scrollBy({ left: -300, behavior: 'smooth' });
-      });
-      document.getElementById('scrollRight')?.addEventListener('click', () => {
-        carousel.scrollBy({ left: 300, behavior: 'smooth' });
-      });
+<script>
+// Add to cart functionality
+function addToCart(productId, productName, productPrice) {
+    const button = document.querySelector(`[data-product-id="${productId}"]`);
+    const originalContent = button.innerHTML;
+    
+    // Show loading state
+    button.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Agregando...';
+    button.disabled = true;
+    
+    fetch('/store/add-to-cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrf_token]').value
+        },
+        body: JSON.stringify({
+            product_id: productId,
+            quantity: 1
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update cart count
+            updateCartCount(data.cart_count);
+            
+            // Show success modal
+            document.getElementById('cartModalContent').innerHTML = `
+                <div class="d-flex align-items-center justify-content-center gap-3 mb-3">
+                    <div class="bg-success rounded-circle p-2">
+                        <i class="bi bi-check text-white fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">${productName}</h6>
+                        <small class="text-muted">${productPrice} Crolars</small>
+                    </div>
+                </div>
+            `;
+            
+            const modal = new bootstrap.Modal(document.getElementById('cartAddedModal'));
+            modal.show();
+            
+            // Reset button
+            button.innerHTML = '<i class="bi bi-check me-1"></i> Agregado';
+            button.classList.add('btn-success');
+            
+            setTimeout(() => {
+                button.innerHTML = originalContent;
+                button.classList.remove('btn-success');
+                button.disabled = false;
+            }, 2000);
+            
+        } else {
+            showToast(data.message || 'Error al agregar al carrito', 'error');
+            button.innerHTML = originalContent;
+            button.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Error al agregar al carrito', 'error');
+        button.innerHTML = originalContent;
+        button.disabled = false;
+    });
+}
+
+// Update cart count in navbar and other places
+function updateCartCount(count) {
+    const cartBadges = document.querySelectorAll('.cart-badge, #mobileCartBadge');
+    cartBadges.forEach(badge => {
+        badge.textContent = count;
+        badge.classList.toggle('d-none', count === 0);
+    });
+}
+
+// Category filtering
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryButtons = document.querySelectorAll('.category-filter');
+    const productItems = document.querySelectorAll('.product-item');
+    
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const category = this.getAttribute('data-category');
+            
+            // Update active button
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter products
+            productItems.forEach(item => {
+                const itemCategory = item.getAttribute('data-category');
+                if (category === 'all' || itemCategory === category) {
+                    item.style.display = 'block';
+                    item.classList.add('fade-in');
+                } else {
+                    item.style.display = 'none';
+                    item.classList.remove('fade-in');
+                }
+            });
+        });
+    });
+    
+    // Load more functionality
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            // Implement load more logic here
+            console.log('Loading more products...');
+        });
     }
-  </script>
+});
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toastContainer = document.querySelector('.toast-container');
+    const toastId = 'toast-' + Date.now();
+    
+    const toastHTML = `
+        <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body d-flex align-items-center">
+                <i class="bi bi-${type === 'error' ? 'exclamation-triangle' : 'check-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+    const toast = new bootstrap.Toast(document.getElementById(toastId));
+    toast.show();
+    
+    // Remove toast element after it's hidden
+    document.getElementById(toastId).addEventListener('hidden.bs.toast', function() {
+        this.remove();
+    });
+}
+</script>
 {% endblock %}

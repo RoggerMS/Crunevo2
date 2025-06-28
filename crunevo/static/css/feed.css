@@ -1,45 +1,221 @@
+
 .sidebar-left-feed .nav-link {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   white-space: nowrap;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
 }
+
+.sidebar-left-feed .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: translateX(3px);
+}
+
 .sidebar-left-feed .nav-link i {
   width: 1rem;
 }
+
+.sidebar-left-feed .nav-link.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
 #quickFilters {
   overflow-x: auto;
   white-space: nowrap;
   z-index: 0;
+  padding: 0.5rem 0;
 }
+
 #quickFilters button {
   flex-shrink: 0;
+  margin-right: 0.5rem;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
 }
+
+#quickFilters button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+#quickFilters button.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+[data-bs-theme="dark"] .sidebar-left-feed .nav-link {
+  color: rgba(255, 255, 255, 0.7);
+}
+
 [data-bs-theme="dark"] .sidebar-left-feed .nav-link:hover {
-  background-color: #333;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
+
+[data-bs-theme="light"] .sidebar-left-feed .nav-link {
+  color: rgba(255, 255, 255, 0.8);
+}
+
 [data-bs-theme="light"] .sidebar-left-feed .nav-link:hover {
-  background-color: #f8f9fa;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* Clean feed card structure */
+.feed-card-clean {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+[data-bs-theme="dark"] .feed-card-clean {
+  background: rgba(40, 40, 55, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.feed-card-clean:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+[data-bs-theme="dark"] .feed-card-clean:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.feed-header-clean {
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+[data-bs-theme="dark"] .feed-header-clean {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.feed-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(102, 126, 234, 0.3);
+}
+
+.feed-user-info h6 {
+  margin: 0;
+  font-weight: 600;
+  color: #1a202c;
+}
+
+[data-bs-theme="dark"] .feed-user-info h6 {
+  color: #f1f5f9;
+}
+
+.feed-timestamp {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+}
+
+[data-bs-theme="dark"] .feed-timestamp {
+  color: #94a3b8;
+}
+
+.feed-content-clean {
+  padding: 1rem 1.25rem;
+}
+
+.feed-text {
+  color: #1e293b;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+[data-bs-theme="dark"] .feed-text {
+  color: #e2e8f0;
 }
 
 .feed-image {
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 1rem 0 0 0;
+  max-width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-#previewContainer img {
-  border: 2px solid #6f42c1;
-  border-radius: 8px;
-  margin-top: 10px;
-  max-width: 100%;
-  object-fit: contain;
+.feed-actions-clean {
+  padding: 0.75rem 1.25rem 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
+
+[data-bs-theme="dark"] .feed-actions-clean {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.feed-action-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.feed-action-btn:hover {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+[data-bs-theme="dark"] .feed-action-btn {
+  color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .feed-action-btn:hover {
+  background: rgba(102, 126, 234, 0.2);
+  color: #aad4ff;
+}
+
+.feed-action-btn.active {
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+[data-bs-theme="dark"] .feed-action-btn.active {
+  color: #aad4ff;
+  background: rgba(102, 126, 234, 0.2);
+}
+
+/* Reaction system improvements */
 .reaction-options {
-  background: white;
+  background: rgba(255, 255, 255, 0.98);
   border-radius: 12px;
-  padding: 6px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(20px);
   z-index: 100;
   top: -60px;
   left: 0;
@@ -47,6 +223,12 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
   max-width: 100%;
+  animation: slideUp 0.3s ease;
+}
+
+[data-bs-theme="dark"] .reaction-options {
+  background: rgba(40, 40, 55, 0.98);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .reaction-btn {
@@ -55,11 +237,19 @@
   font-size: 24px;
   cursor: pointer;
   transition: transform 0.2s;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.reaction-btn:hover {
+  transform: scale(1.1);
+  background: rgba(102, 126, 234, 0.1);
 }
 
 @media (max-width: 576px) {
   .reaction-btn {
     font-size: 20px;
+    padding: 6px;
   }
 }
 
@@ -70,6 +260,7 @@
   box-shadow: none;
   padding: 0;
 }
+
 .reaction-active {
   transform: scale(1.2);
   transition: transform 0.2s;
@@ -79,29 +270,50 @@
   margin-top: 0.25rem;
   font-size: 0.875rem;
   color: #6c757d;
+  display: flex;
+  gap: 1rem;
 }
 
+[data-bs-theme="dark"] .reaction-counts {
+  color: #94a3b8;
+}
+
+/* Hide unnecessary elements on mobile */
 @media (max-width: 768px) {
   #feed-filtros-principales {
     display: none !important;
+  }
+  
+  .feed-header-clean {
+    padding: 0.75rem 1rem 0.5rem;
+  }
+  
+  .feed-content-clean {
+    padding: 0.75rem 1rem;
+  }
+  
+  .feed-actions-clean {
+    padding: 0.5rem 1rem 0.75rem;
+  }
+  
+  .feed-card-clean {
+    margin-bottom: 1rem;
+    border-radius: 12px;
   }
 }
 
 .hover-scale {
   transition: transform 0.15s ease;
 }
+
 .hover-scale:hover {
   transform: scale(1.02);
 }
 
-.reaction-options {
-  animation: fadeInDown 0.2s ease;
-}
-
-@keyframes fadeInDown {
+@keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -110,7 +322,86 @@
 }
 
 .reaction-btn.active {
-  background-color: #f3f3ff;
-  border: 1px solid #8a2be2;
-  border-radius: 50%;
+  background-color: rgba(102, 126, 234, 0.2);
+  border: 1px solid #667eea;
+  border-radius: 8px;
+}
+
+/* Comments section */
+.comments-section {
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+}
+
+[data-bs-theme="dark"] .comments-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.comment-item {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+[data-bs-theme="dark"] .comment-item {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.comment-author {
+  font-weight: 600;
+  color: #667eea;
+  font-size: 0.875rem;
+}
+
+[data-bs-theme="dark"] .comment-author {
+  color: #aad4ff;
+}
+
+.comment-text {
+  color: #1e293b;
+  font-size: 0.875rem;
+  margin: 0.25rem 0 0 0;
+}
+
+[data-bs-theme="dark"] .comment-text {
+  color: #e2e8f0;
+}
+
+/* Image preview improvements */
+#previewContainer img {
+  border: 2px solid #667eea;
+  border-radius: 12px;
+  margin-top: 10px;
+  max-width: 100%;
+  object-fit: contain;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+}
+
+/* Remove "Tu feed personal" text */
+.feed-personal-text {
+  display: none !important;
+}
+
+/* Loading states for feed */
+.feed-loading {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+}
+
+[data-bs-theme="dark"] .feed-loading {
+  color: #94a3b8;
+}
+
+.feed-loading i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
