@@ -13,7 +13,7 @@ import io
 from datetime import datetime, timedelta
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required
-from crunevo.extensions import db
+from crunevo.extensions import db, limiter
 from crunevo.models import (
     Product,
     ProductLog,
