@@ -1,0 +1,76 @@
+Hola Assistant. Este es el cuarto gran bloque de cambios para CRUNEVO. La plataforma ya tiene: feed, apuntes, perfil, tienda, chat, foro, clubes, eventos, misiones, ranking, certificados, Crunebot y más. Todo está funcional.
+
+Ahora quiero que realices el **pulido final**, tanto visual como estructural, para prepararlo para usuarios reales y optimizar el panel de administración en burrito.crunevo.com. Haz todo esto:
+
+---
+
+🎨 OPTIMIZACIÓN VISUAL GLOBAL
+1. Revisa todas las tarjetas del sitio (feed, apuntes, productos, ranking) y:
+   - Reduce saturación visual si hay doble borde, sombras exageradas o layouts desalineados.
+   - Asegura que los íconos estén centrados y bien espaciados.
+   - Que todas las tarjetas tengan transiciones suaves y coherentes.
+2. Mejora animaciones para que no saturen dispositivos lentos. Usa `prefers-reduced-motion` si es posible.
+3. Elimina o arregla animaciones que interrumpen UX móvil (ej. overlays pesados o scroll bloqueado).
+4. Asegúrate que **todo esté 100% responsive** en móviles pequeños (menos de 360px de ancho).
+
+---
+
+📱 OPTIMIZACIÓN MÓVIL
+5. Mejora todos los botones flotantes y barras inferiores en móviles.
+6. Verifica que el menú tipo hamburger no bloquee contenido y se pueda cerrar fácil con toque fuera.
+7. Asegura que los inputs, botones y enlaces sean cómodos de tocar (mínimo 48px de alto).
+8. Elimina cualquier scroll horizontal no intencionado.
+
+---
+
+🔐 SEGURIDAD Y UX
+9. Añade alertas y confirmaciones suaves cuando el usuario realice acciones importantes (ej: borrar, guardar, salir de club).
+10. Mejora diseño de formularios: placeholders claros, validaciones visibles, colores accesibles.
+11. Crea páginas de error:
+   - `/404` personalizada con mensaje amigable e ilustración.
+   - `/500` o error general con botón “Volver al inicio”.
+
+---
+
+📣 SEO Y PREPARACIÓN SOCIAL
+12. Asegúrate que cada página tenga:
+   - `<title>` dinámico y único.
+   - `<meta description>` descriptiva.
+   - Open Graph tags: `og:title`, `og:image`, `og:description`, `og:url`.
+13. Agrega etiqueta `lang="es"` al `html` y favicon en todas las páginas.
+14. Optimiza etiquetas ALT en imágenes, incluso las genéricas.
+
+---
+
+🧪 CHECKLIST VISUAL PARA USUARIOS REALES
+15. Si el usuario no tiene apuntes, eventos, clubes o certificados, mostrar mensaje vacío motivador con botón de acción (ej: “Aún no subes apuntes. ¡Empieza aquí!”).
+16. En el perfil, si un campo está incompleto (avatar, carrera, etc.), muestra sugerencia editable.
+17. Agrega color verde/sello visual a usuarios que ya han completado todo su perfil.
+
+---
+
+🧑‍💼 PANEL DE ADMINISTRACIÓN: burrito.crunevo.com
+18. En la vista de usuarios:
+   - Muestra los clubes a los que pertenece cada usuario.
+   - Añade columna de “Verificado” si cumple condiciones.
+   - Botón para “Ver historial” → muestra Crolars, misiones, apuntes subidos, reportes.
+19. En sección de reportes:
+   - Listar reportes con botón de acción (Eliminar contenido, Ignorar, Marcar como resuelto).
+20. En sección de apuntes:
+   - Botón para eliminar apuntes desde la tabla (confirmación incluida).
+   - Vista del apunte con contador de descargas y votos.
+21. Añade notificación visual (badge rojo o toast) si hay nuevos reportes pendientes.
+
+---
+
+🧠 BONUS UX (si te da tiempo)
+22. En la tienda, muestra notificación si el carrito está vacío con botón directo a “Ver productos”.
+23. Si un apunte ya fue comentado por el usuario, desactiva doble comentario o avisa.
+24. Agrega un miniloader tipo shimmer en el feed y misiones mientras se carga el contenido.
+
+---
+
+🎯 OBJETIVO:  
+Pulir la plataforma para el lanzamiento público, mejorar experiencia visual, preparar el Admin para control total, y optimizar todo para SEO, móviles y usuarios reales. Hazlo todo de forma coherente, profesional, rápida, con diseño claro y limpio.
+
+Gracias Assistant. Este es el turno más importante 🔥
