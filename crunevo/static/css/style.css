@@ -50,19 +50,19 @@ body {
   top: 80px;
 }
 
-/* Modern card design with better contrast */
+/* Modern card design with enhanced contrast */
 .card {
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
-  color: #2d3748;
+  color: #1a202c;
 }
 
 body[data-bs-theme="dark"] .card {
-  background: rgba(30, 30, 46, 0.85);
+  background: rgba(30, 30, 46, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #f8f9fa;
 }
@@ -70,22 +70,33 @@ body[data-bs-theme="dark"] .card {
 .card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  border-color: rgba(102, 126, 234, 0.2);
 }
 
-/* Better text contrast for light mode */
+/* Enhanced text contrast for light mode */
 .card .card-title {
-  color: #1a202c !important;
-  font-weight: 600;
+  color: #0f172a !important;
+  font-weight: 700;
+  font-size: 1.1rem;
 }
 
 .card .card-text {
-  color: #4a5568 !important;
-  font-weight: 400;
+  color: #1e293b !important;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.card .text-muted {
+  color: #64748b !important;
 }
 
 body[data-bs-theme="dark"] .card .card-title,
 body[data-bs-theme="dark"] .card .card-text {
-  color: #f1f1f1 !important;
+  color: #f1f5f9 !important;
+}
+
+body[data-bs-theme="dark"] .card .text-muted {
+  color: #94a3b8 !important;
 }
 
 /* Modern buttons with better visibility */
@@ -126,16 +137,17 @@ body[data-bs-theme="dark"] .card .card-text {
 }
 
 .btn-outline-secondary {
-  border: 2px solid #6c757d;
-  color: #6c757d !important;
+  border: 2px solid #475569;
+  color: #475569 !important;
   background: transparent;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .btn-outline-secondary:hover {
-  background: #6c757d;
+  background: #475569;
   color: #ffffff !important;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(71, 85, 105, 0.3);
 }
 
 /* Comments and interactions */
@@ -211,27 +223,28 @@ body[data-bs-theme="dark"] #searchSuggestions {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Modern form controls with better contrast */
+/* Enhanced form controls with better contrast */
 .form-control {
   border-radius: 12px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid #cbd5e1;
   background: #ffffff;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
-  color: #2d3748;
-  font-weight: 400;
-  padding: 0.75rem 1rem;
+  color: #0f172a;
+  font-weight: 500;
+  padding: 0.875rem 1.125rem;
+  font-size: 0.95rem;
 }
 
 .form-control:focus {
   border-color: #667eea;
   box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
   background: #ffffff;
-  color: #1a202c;
+  color: #0f172a;
 }
 
 .form-control::placeholder {
-  color: #a0aec0;
+  color: #64748b;
   font-weight: 400;
 }
 

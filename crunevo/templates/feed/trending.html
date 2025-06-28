@@ -90,18 +90,19 @@
 .trending-post {
   position: relative;
   background: rgba(255, 255, 255, 0.98);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 20px;
-  padding: 1.5rem;
+  padding: 1.75rem;
   margin-bottom: 1.5rem;
   transition: all 0.3s ease;
   overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 .trending-post:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-  border-color: rgba(102, 126, 234, 0.2);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+  border-color: rgba(102, 126, 234, 0.25);
 }
 
 [data-bs-theme="dark"] .trending-post {
