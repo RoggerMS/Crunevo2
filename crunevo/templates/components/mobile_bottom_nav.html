@@ -6,6 +6,22 @@
     <a href="{{ url_for('notes.list_notes') }}" role="link" tabindex="0" aria-label="Apuntes" title="Apuntes" class="text-center {% if request.path.startswith('/notes') %}bottom-nav-active{% else %}text-primary{% endif %}">
       <i class="bi bi-journal-text fs-4 bottom-nav-icon"></i>
     </a>
+    <div class="nav-item dropdown">
+      <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="bi bi-grid-3x3-gap fs-4 bottom-nav-icon"></i>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="{{ url_for('club.list_clubs') }}">
+          <i class="bi bi-people me-2"></i>Clubes
+        </a></li>
+        <li><a class="dropdown-item" href="{{ url_for('forum.list_questions') }}">
+          <i class="bi bi-chat-dots me-2"></i>Foro
+        </a></li>
+        <li><a class="dropdown-item" href="{{ url_for('event.list_events') }}">
+          <i class="bi bi-calendar-event me-2"></i>Eventos
+        </a></li>
+      </ul>
+    </div>
     <a href="{{ url_for('store.store_index') }}" role="link" tabindex="0" aria-label="Tienda" title="Tienda" class="text-center {% if request.path.startswith('/store') %}bottom-nav-active{% else %}text-primary{% endif %}">
       <i class="bi bi-bag fs-4 bottom-nav-icon"></i>
     </a>

@@ -1,0 +1,137 @@
+
+{% extends "base.html" %}
+
+{% block title %}Explora Clubes Académicos - Crunevo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <!-- Header -->
+      <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold gradient-text">🎓 Explora Clubes Académicos</h1>
+        <p class="lead text-muted">Únete a comunidades de estudiantes apasionados por tu carrera</p>
+      </div>
+
+      <!-- Crunebot Widget -->
+      <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
+        <div class="card shadow-lg border-0" style="width: 280px;">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                <i class="bi bi-robot text-white"></i>
+              </div>
+              <strong class="gradient-text">Crunebot</strong>
+            </div>
+            <p class="small mb-2">¡Hola! Soy Crunebot, tu guía educativa en Crunevo. Pronto podré ayudarte con tus preguntas.</p>
+            <div class="text-end">
+              <button class="btn btn-sm btn-outline-primary" onclick="this.parentElement.parentElement.parentElement.parentElement.style.display='none'">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clubs Grid -->
+      <div class="row g-4">
+        {% for club in clubs %}
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0 hover-lift">
+            <div class="card-body text-center">
+              <div class="mb-3">
+                <img src="{{ club.avatar_url or url_for('static', filename='img/default.png') }}" 
+                     class="rounded-circle border" width="80" height="80" alt="{{ club.name }}">
+              </div>
+              <h5 class="card-title fw-bold">{{ club.name }}</h5>
+              <span class="badge bg-primary-subtle text-primary mb-2">{{ club.career }}</span>
+              <p class="card-text text-muted small">{{ club.description or 'Club académico para estudiantes de ' + club.career }}</p>
+              <div class="mb-3">
+                <small class="text-muted">
+                  <i class="bi bi-people"></i> {{ club.member_count }} miembros
+                </small>
+              </div>
+              
+              {% if current_user.is_authenticated %}
+                {% if club.id in user_clubs %}
+                  <button class="btn btn-success btn-sm" disabled>
+                    <i class="bi bi-check-circle"></i> Miembro
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm ms-1" onclick="leaveClub({{ club.id }})">
+                    Salir
+                  </button>
+                {% else %}
+                  <button class="btn btn-primary btn-sm" onclick="joinClub({{ club.id }})">
+                    <i class="bi bi-plus-circle"></i> Unirme
+                  </button>
+                {% endif %}
+              {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-sm">
+                  Iniciar sesión para unirte
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+          <i class="bi bi-mortarboard display-1 text-muted"></i>
+          <h3 class="mt-3 text-muted">Próximamente nuevos clubes</h3>
+          <p class="text-muted">Los clubes académicos estarán disponibles pronto</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block body_end %}
+<script>
+function joinClub(clubId) {
+  fetch(`/club/${clubId}/join`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      location.reload();
+    } else {
+      alert(data.error || 'Error al unirse al club');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error al unirse al club');
+  });
+}
+
+function leaveClub(clubId) {
+  if (confirm('¿Estás seguro de que quieres salir de este club?')) {
+    fetch(`/club/${clubId}/leave`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();
+      } else {
+        alert(data.error || 'Error al salir del club');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error al salir del club');
+    });
+  }
+}
+</script>
+{% endblock %}

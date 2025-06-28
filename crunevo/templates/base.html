@@ -22,10 +22,14 @@
     <!-- Enhanced Open Graph -->
     <meta property="og:title" content="{% block og_title %}Crunevo - Comunidad Educativa Moderna{% endblock %}" />
     <meta property="og:description" content="{% block og_description %}Plataforma educativa moderna que conecta estudiantes. Comparte conocimiento, gana recompensas y crece académicamente.{% endblock %}" />
-    <meta property="og:image" content="{{ url_for('static', filename='img/opengraph.jpg') }}" />
+    <meta property="og:image" content="{% block og_image %}{{ url_for('static', filename='img/opengraph.jpg') }}{% endblock %}" />
     <meta property="og:url" content="{{ request.url }}" />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}" />
     <meta property="og:site_name" content="Crunevo" />
+    
+    <!-- Additional sharing meta -->
+    <meta name="author" content="{% block author %}Crunevo{% endblock %}" />
+    <meta name="keywords" content="{% block keywords %}educación, estudiantes, apuntes, universidad, Perú, comunidad educativa{% endblock %}" />
     
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
@@ -83,6 +87,7 @@
             <span class="text-muted small">© 2024 Crunevo - Construyendo el futuro educativo</span>
           </div>
           <div class="col-md-6 text-md-end">
+            <a href="{{ url_for('about.about') }}" class="text-muted text-decoration-none me-3 small">Sobre Crunevo</a>
             <a href="/cookies" class="text-muted text-decoration-none me-3 small">Cookies</a>
             <a href="/privacidad" class="text-muted text-decoration-none me-3 small">Privacidad</a>
             <a href="/terminos" class="text-muted text-decoration-none small">Términos</a>
@@ -170,6 +175,7 @@
     
     <!-- Main app initialization -->
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/share.js') }}" defer></script>
     
     {% block body_end %}{% endblock %}
 </body>

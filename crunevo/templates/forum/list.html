@@ -1,0 +1,160 @@
+
+{% extends "base.html" %}
+
+{% block title %}Foro Educativo - Crunevo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-lg-9">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="h2 fw-bold gradient-text">💬 Foro Educativo</h1>
+          <p class="text-muted mb-0">Comparte conocimiento y resuelve dudas académicas</p>
+        </div>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('forum.ask_question') }}" class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i> Hacer pregunta
+        </a>
+        {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+          Iniciar sesión para preguntar
+        </a>
+        {% endif %}
+      </div>
+
+      <!-- Category filters -->
+      <div class="mb-4">
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="{{ url_for('forum.list_questions') }}" 
+             class="badge bg-secondary-subtle text-secondary text-decoration-none {{ 'bg-primary text-white' if not current_category }}">
+            Todas
+          </a>
+          {% for category in categories %}
+          <a href="{{ url_for('forum.list_questions', category=category) }}" 
+             class="badge bg-secondary-subtle text-secondary text-decoration-none {{ 'bg-primary text-white' if current_category == category }}">
+            {{ category }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Questions list -->
+      <div class="row g-3">
+        {% for question in questions.items %}
+        <div class="col-12">
+          <div class="card border-0 shadow-sm hover-lift">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-md-8">
+                  <div class="d-flex align-items-start">
+                    <img src="{{ question.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+                         class="rounded-circle me-3" width="40" height="40" alt="avatar">
+                    <div class="flex-grow-1">
+                      <h5 class="mb-1">
+                        <a href="{{ url_for('forum.view_question', question_id=question.id) }}" 
+                           class="text-decoration-none">{{ question.title }}</a>
+                      </h5>
+                      <div class="d-flex align-items-center gap-3 text-muted small">
+                        <span><i class="bi bi-person"></i> {{ question.author.username }}</span>
+                        <span><i class="bi bi-calendar"></i> {{ question.created_at.strftime('%d/%m/%Y') }}</span>
+                        <span class="badge bg-primary-subtle text-primary">{{ question.category }}</span>
+                        {% if question.is_solved %}
+                        <span class="badge bg-success-subtle text-success">
+                          <i class="bi bi-check-circle"></i> Resuelto
+                        </span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                  <div class="d-flex justify-content-md-end gap-3 small text-muted">
+                    <div class="text-center">
+                      <div class="fw-bold text-primary">{{ question.answer_count }}</div>
+                      <div>respuestas</div>
+                    </div>
+                    <div class="text-center">
+                      <div class="fw-bold text-secondary">{{ question.views }}</div>
+                      <div>vistas</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+          <i class="bi bi-chat-dots display-1 text-muted"></i>
+          <h3 class="mt-3 text-muted">Aún no hay preguntas</h3>
+          <p class="text-muted">Sé el primero en hacer una pregunta en el foro</p>
+          {% if current_user.is_authenticated %}
+          <a href="{{ url_for('forum.ask_question') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Hacer la primera pregunta
+          </a>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if questions.pages > 1 %}
+      <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+          {% if questions.has_prev %}
+          <li class="page-item">
+            <a class="page-link" href="{{ url_for('forum.list_questions', page=questions.prev_num, category=current_category) }}">Anterior</a>
+          </li>
+          {% endif %}
+          
+          {% for page_num in questions.iter_pages() %}
+            {% if page_num %}
+              {% if page_num != questions.page %}
+              <li class="page-item">
+                <a class="page-link" href="{{ url_for('forum.list_questions', page=page_num, category=current_category) }}">{{ page_num }}</a>
+              </li>
+              {% else %}
+              <li class="page-item active">
+                <span class="page-link">{{ page_num }}</span>
+              </li>
+              {% endif %}
+            {% else %}
+            <li class="page-item disabled">
+              <span class="page-link">…</span>
+            </li>
+            {% endif %}
+          {% endfor %}
+          
+          {% if questions.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="{{ url_for('forum.list_questions', page=questions.next_num, category=current_category) }}">Siguiente</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
+    </div>
+
+    <div class="col-lg-3">
+      <!-- Sidebar -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h6 class="fw-bold mb-3">📊 Estadísticas del foro</h6>
+          <div class="small text-muted">
+            <div class="d-flex justify-content-between mb-2">
+              <span>Total preguntas:</span>
+              <span class="fw-bold">{{ questions.total }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Resueltas:</span>
+              <span class="fw-bold text-success">{{ questions.items | selectattr('is_solved') | list | length }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

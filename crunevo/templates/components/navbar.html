@@ -35,16 +35,32 @@
           </a>
         </li>
         {% endif %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-grid-3x3-gap me-1"></i>Explorar
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ url_for('club.list_clubs') }}">
+              <i class="bi bi-people me-2"></i>Clubes Académicos
+            </a></li>
+            <li><a class="dropdown-item" href="{{ url_for('forum.list_questions') }}">
+              <i class="bi bi-chat-dots me-2"></i>Foro Educativo
+            </a></li>
+            <li><a class="dropdown-item" href="{{ url_for('event.list_events') }}">
+              <i class="bi bi-calendar-event me-2"></i>Eventos
+            </a></li>
+          </ul>
+        </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('ranking.index') }}">
             <i class="bi bi-trophy-fill me-1"></i>Ranking
           </a>
         </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('chat.chat_index') }}">
-                  <i class="bi bi-chat-dots"></i>
-                  <span class="nav-text">Chat</span>
-                </a>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('chat.chat_index') }}">
+            <i class="bi bi-chat-dots"></i>
+            <span class="nav-text">Chat</span>
+          </a>
         </li>
       </ul>
 

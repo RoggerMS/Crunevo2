@@ -1,0 +1,134 @@
+
+{% extends "base.html" %}
+
+{% block title %}Eventos Especiales - Crunevo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <!-- Header -->
+      <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold gradient-text">🎫 Eventos Especiales</h1>
+        <p class="lead text-muted">Próximamente en Crunevo</p>
+      </div>
+
+      <!-- Upcoming Events -->
+      {% if upcoming_events %}
+      <div class="mb-5">
+        <h2 class="h3 fw-bold mb-4">📅 Próximos eventos</h2>
+        <div class="row g-4">
+          {% for event in upcoming_events %}
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm hover-lift">
+              {% if event.image_url %}
+              <img src="{{ event.image_url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ event.title }}">
+              {% endif %}
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="badge bg-primary">{{ event.formatted_date }}</span>
+                  {% if event.is_featured %}
+                  <span class="badge bg-warning">⭐ Destacado</span>
+                  {% endif %}
+                </div>
+                <h5 class="card-title fw-bold">{{ event.title }}</h5>
+                <p class="card-text text-muted">{{ event.description }}</p>
+                {% if event.rewards %}
+                <div class="mb-3">
+                  <small class="text-success">
+                    <i class="bi bi-gift"></i> {{ event.rewards }}
+                  </small>
+                </div>
+                {% endif %}
+              </div>
+              <div class="card-footer bg-transparent border-0">
+                <a href="{{ url_for('event.view_event', event_id=event.id) }}" class="btn btn-outline-primary btn-sm w-100">
+                  Ver más detalles
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Sample Event -->
+      <div class="mb-5">
+        <h2 class="h3 fw-bold mb-4">🎯 Evento destacado</h2>
+        <div class="card border-0 shadow-lg overflow-hidden">
+          <div class="row g-0">
+            <div class="col-md-4">
+              <div class="bg-gradient-primary h-100 d-flex align-items-center justify-content-center text-white">
+                <div class="text-center">
+                  <i class="bi bi-calendar-event display-1"></i>
+                  <h3 class="mt-2">15 JUL</h3>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <h3 class="card-title fw-bold">📚 Día del Apunte</h3>
+                  <span class="badge bg-warning">⭐ Evento especial</span>
+                </div>
+                <p class="card-text">Comparte tus mejores apuntes y gana Crolars extra. Durante todo el día, cada apunte subido te otorgará el doble de recompensas.</p>
+                <div class="row g-3 mt-3">
+                  <div class="col-sm-6">
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-coin text-warning me-2"></i>
+                      <span class="small">Doble Crolars por apunte</span>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-trophy text-warning me-2"></i>
+                      <span class="small">Logros especiales</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <button class="btn btn-primary" disabled>
+                    <i class="bi bi-calendar-plus"></i> Próximamente
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Past Events -->
+      {% if past_events %}
+      <div class="mb-5">
+        <h2 class="h3 fw-bold mb-4">📋 Eventos pasados</h2>
+        <div class="row g-3">
+          {% for event in past_events %}
+          <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h6 class="card-title mb-0">{{ event.title }}</h6>
+                  <small class="text-muted">{{ event.formatted_date }}</small>
+                </div>
+                <p class="card-text small text-muted">{{ event.description }}</p>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Empty state -->
+      {% if not upcoming_events and not past_events %}
+      <div class="text-center py-5">
+        <i class="bi bi-calendar-event display-1 text-muted"></i>
+        <h3 class="mt-3 text-muted">Próximamente eventos especiales</h3>
+        <p class="text-muted">Mantente atento a nuestros anuncios para no perderte ningún evento</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

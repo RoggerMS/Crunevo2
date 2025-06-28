@@ -116,7 +116,7 @@ def create_app():
     login_manager.login_view = "auth.login"
 
     migrate.init_app(app, db)
-    
+
     # Initialize database if needed
     with app.app_context():
         try:
@@ -151,6 +151,10 @@ def create_app():
     from .routes.errors import errors_bp
     from .routes.missions_routes import missions_bp
     from .routes.health_routes import health_bp
+    from .routes.club_routes import club_bp
+    from .routes.forum_routes import forum_bp
+    from .routes.event_routes import event_bp
+    from .routes.about_routes import about_bp
 
     @app.route("/")
     def home_redirect():
@@ -222,6 +226,10 @@ def create_app():
         app.register_blueprint(ach_bp)
         app.register_blueprint(missions_bp)
         app.register_blueprint(ranking_bp)
+        app.register_blueprint(club_bp)
+        app.register_blueprint(forum_bp)
+        app.register_blueprint(event_bp)
+        app.register_blueprint(about_bp)
         app.register_blueprint(errors_bp)
         app.register_blueprint(admin_blocker_bp)
         if testing_env:
