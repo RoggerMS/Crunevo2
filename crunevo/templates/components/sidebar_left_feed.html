@@ -84,7 +84,7 @@
         </li>
 
         <li>
-          <a href="{{ url_for('course_bp.list_courses') if 'course_bp.list_courses' in url_for.__globals__.get('current_app', {}).view_functions else '/courses' }}" class="nav-link">
+          <a href="{{ url_for('courses.list_courses') if 'courses.list_courses' in url_for.__globals__.get('current_app', {}).view_functions else '/cursos' }}" class="nav-link">
             <i class="bi bi-play-circle"></i>
             <span>Cursos</span>
           </a>

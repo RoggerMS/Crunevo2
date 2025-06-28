@@ -395,3 +395,4 @@
 - Fixed sidebar links to terms/privacy, trending post includes item context, optional missions list and mobile nav endpoint checks. Added user_level calculation in perfil view (hotfix template-errors).
 - Fixed sidebar links: privacy uses 'main.privacidad' and removed obsolete admin.manage_comments link (hotfix template-link-fixes).
 - Fixed about link in sidebar to use 'about.about' and avoid BuildError (hotfix about-link-fix).
+- Registered courses blueprint and added English path aliases; updated sidebar link (PR courses-aliases).
