@@ -70,21 +70,21 @@
         </li>
 
         <li>
-          <a href="{{ url_for('club.list_clubs') }}" class="nav-link {{ 'active' if request.endpoint == 'club.list_clubs' }}">
+          <a href="{{ url_for('club_bp.list_clubs') if 'club_bp.list_clubs' in url_for.__globals__.get('current_app', {}).view_functions else '/clubes' }}" class="nav-link {{ 'active' if request.endpoint == 'club_bp.list_clubs' }}">
             <i class="bi bi-people"></i>
             <span class="fw-semibold">Clubes</span>
           </a>
         </li>
 
         <li>
-          <a href="{{ url_for('event.list_events') }}" class="nav-link {{ 'active' if request.endpoint == 'event.list_events' }}">
+          <a href="{{ url_for('event_bp.list_events') if 'event_bp.list_events' in url_for.__globals__.get('current_app', {}).view_functions else '/events' }}" class="nav-link {{ 'active' if request.endpoint == 'event_bp.list_events' }}">
             <i class="bi bi-calendar-event"></i>
             <span class="fw-semibold">Eventos</span>
           </a>
         </li>
 
         <li>
-          <a href="{{ url_for('courses.list_courses') }}" class="nav-link">
+          <a href="{{ url_for('course_bp.list_courses') if 'course_bp.list_courses' in url_for.__globals__.get('current_app', {}).view_functions else '/courses' }}" class="nav-link">
             <i class="bi bi-play-circle"></i>
             <span>Cursos</span>
           </a>

@@ -1,4 +1,3 @@
-
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">
@@ -32,43 +31,54 @@
               </button>
             </form>
           </li>
-          
+
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('feed.index') }}">
-              <i class="bi bi-house-fill me-1"></i>Feed
+            <a class="nav-link" href="{{ url_for('feed.feed_home') }}">
+              <i class="bi bi-house-door me-1"></i>
+              Feed
             </a>
           </li>
-          
+
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('club.list_clubs') }}">
-              <i class="bi bi-people-fill me-1"></i>Clubes
+            <a class="nav-link" href="{{ url_for('notes.list_notes') }}">
+              <i class="bi bi-file-text me-1"></i>
+              Apuntes
             </a>
           </li>
-          
+
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('store.index') }}">
-              <i class="bi bi-shop me-1"></i>Tienda
+            <a class="nav-link" href="{{ url_for('forum.list_questions') }}">
+              <i class="bi bi-chat-left-quote me-1"></i>
+              Foro
             </a>
           </li>
-          
+
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('ranking.index') }}">
-              <i class="bi bi-trophy-fill me-1"></i>Ranking
+            <a class="nav-link" href="{{ url_for('store.store') }}">
+              <i class="bi bi-shop me-1"></i>
+              Tienda
             </a>
           </li>
-          
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('ranking.show_ranking') }}">
+              <i class="bi bi-trophy me-1"></i>
+              Ranking
+            </a>
+          </li>
+
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('course.list_courses') }}">
               <i class="bi bi-play-circle-fill me-1"></i>Cursos
             </a>
           </li>
-          
+
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('chat.chat_index') }}">
               <i class="bi bi-chat-dots-fill me-1"></i>Chat
             </a>
           </li>
-          
+
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('crunebot.crunebot_chat') }}">
               <i class="bi bi-robot me-1"></i>Crunebot
@@ -150,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
     globalSearch.addEventListener('input', function() {
       const query = this.value.trim();
       clearTimeout(searchTimeout);
-      
+
       if (query.length >= 2) {
         searchTimeout = setTimeout(() => {
           performGlobalSearch(query);
@@ -215,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </a>
       `;
     }
-    
+
     searchDropdown.style.display = 'block';
   }
 

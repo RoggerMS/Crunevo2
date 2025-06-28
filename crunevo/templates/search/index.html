@@ -605,3 +605,462 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Buscador Global - CRUNEVO{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <!-- Search Header -->
+    <div class="col-12">
+      <div class="search-header bg-gradient-primary text-white rounded-4 p-4 mb-4">
+        <div class="row align-items-center">
+          <div class="col-lg-8">
+            <h1 class="h3 fw-bold mb-2">
+              <i class="bi bi-search me-2"></i>
+              Buscador Global CRUNEVO
+            </h1>
+            <p class="mb-0 opacity-75">Encuentra apuntes, usuarios, cursos y más en toda la plataforma</p>
+          </div>
+          <div class="col-lg-4 text-lg-end">
+            <div class="search-stats">
+              <small class="opacity-75">Millones de recursos disponibles</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Input -->
+    <div class="col-12">
+      <div class="search-container mb-4">
+        <div class="position-relative">
+          <input 
+            type="text" 
+            id="globalSearchInput" 
+            class="form-control form-control-lg border-0 shadow-sm rounded-pill ps-5 pe-4" 
+            placeholder="¿Qué estás buscando? Prueba: matemáticas, programación, historia..."
+            value="{{ query }}"
+            autocomplete="off"
+          >
+          <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-4 text-muted"></i>
+          
+          <!-- Suggestions dropdown -->
+          <div id="searchSuggestions" class="dropdown-menu w-100 shadow-lg border-0 rounded-3 mt-2" style="display: none;">
+            <!-- Dynamic suggestions will be populated here -->
+          </div>
+        </div>
+        
+        <!-- Quick filters -->
+        <div class="search-filters mt-3">
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-outline-primary btn-sm rounded-pill filter-btn active" data-filter="all">
+              <i class="bi bi-grid me-1"></i>Todo
+            </button>
+            <button class="btn btn-outline-primary btn-sm rounded-pill filter-btn" data-filter="notes">
+              <i class="bi bi-file-text me-1"></i>Apuntes
+            </button>
+            <button class="btn btn-outline-primary btn-sm rounded-pill filter-btn" data-filter="users">
+              <i class="bi bi-people me-1"></i>Usuarios
+            </button>
+            <button class="btn btn-outline-primary btn-sm rounded-pill filter-btn" data-filter="posts">
+              <i class="bi bi-chat-square-text me-1"></i>Posts
+            </button>
+            <button class="btn btn-outline-primary btn-sm rounded-pill filter-btn" data-filter="products">
+              <i class="bi bi-shop me-1"></i>Tienda
+            </button>
+            <button class="btn btn-outline-primary btn-sm rounded-pill filter-btn" data-filter="courses">
+              <i class="bi bi-play-circle me-1"></i>Cursos
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Results -->
+    <div class="col-12">
+      <div id="searchResults" class="search-results">
+        {% if query %}
+        <div class="search-info mb-4">
+          <p class="text-muted mb-0">
+            <i class="bi bi-info-circle me-1"></i>
+            Resultados para: <strong>"{{ query }}"</strong>
+          </p>
+        </div>
+        {% else %}
+        <!-- Welcome state -->
+        <div class="search-welcome text-center py-5">
+          <div class="mb-4">
+            <i class="bi bi-search display-1 text-muted opacity-50"></i>
+          </div>
+          <h3 class="fw-bold text-muted mb-3">Explora todo CRUNEVO</h3>
+          <p class="text-muted mb-4">Usa el buscador para encontrar apuntes, usuarios, cursos y más recursos educativos</p>
+          
+          <!-- Quick search suggestions -->
+          <div class="row g-3 justify-content-center">
+            <div class="col-md-3">
+              <div class="quick-search-card p-3 rounded-3 border">
+                <i class="bi bi-calculator text-primary fs-4 mb-2"></i>
+                <p class="mb-1 fw-semibold">Matemáticas</p>
+                <small class="text-muted">Cálculo, álgebra, geometría</small>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="quick-search-card p-3 rounded-3 border">
+                <i class="bi bi-code-slash text-success fs-4 mb-2"></i>
+                <p class="mb-1 fw-semibold">Programación</p>
+                <small class="text-muted">Python, Java, JavaScript</small>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="quick-search-card p-3 rounded-3 border">
+                <i class="bi bi-book text-info fs-4 mb-2"></i>
+                <p class="mb-1 fw-semibold">Historia</p>
+                <small class="text-muted">Mundial, peruana, contemporánea</small>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="quick-search-card p-3 rounded-3 border">
+                <i class="bi bi-translate text-warning fs-4 mb-2"></i>
+                <p class="mb-1 fw-semibold">Idiomas</p>
+                <small class="text-muted">Inglés, francés, alemán</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Loading state -->
+        <div id="searchLoading" class="text-center py-5" style="display: none;">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Buscando...</span>
+          </div>
+          <p class="mt-3 text-muted">Buscando en toda la plataforma...</p>
+        </div>
+
+        <!-- Results container -->
+        <div id="searchResultsContainer">
+          <!-- Dynamic search results will be populated here -->
+        </div>
+
+        <!-- No results state -->
+        <div id="noResults" class="text-center py-5" style="display: none;">
+          <div class="mb-4">
+            <i class="bi bi-search display-1 text-muted opacity-25"></i>
+          </div>
+          <h4 class="fw-bold text-muted mb-3">No encontramos resultados</h4>
+          <p class="text-muted mb-4">Intenta con términos diferentes o revisa la ortografía</p>
+          <div class="d-flex justify-content-center gap-2">
+            <button class="btn btn-outline-primary" onclick="clearSearch()">
+              <i class="bi bi-arrow-clockwise me-1"></i>Limpiar búsqueda
+            </button>
+            <a href="/feed" class="btn btn-primary">
+              <i class="bi bi-house me-1"></i>Ir al feed
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.search-header {
+  background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%);
+}
+
+.quick-search-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.quick-search-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  border-color: var(--bs-primary) !important;
+}
+
+.filter-btn.active {
+  background-color: var(--bs-primary);
+  color: white;
+  border-color: var(--bs-primary);
+}
+
+.search-result-item {
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.search-result-item:hover {
+  border-left-color: var(--bs-primary);
+  background-color: rgba(var(--bs-primary-rgb), 0.05);
+}
+
+#searchSuggestions .dropdown-item {
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+#searchSuggestions .dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.search-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .search-filters {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .search-filters .d-flex {
+    flex-wrap: nowrap;
+    padding-bottom: 10px;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('globalSearchInput');
+  const searchResults = document.getElementById('searchResultsContainer');
+  const searchLoading = document.getElementById('searchLoading');
+  const noResults = document.getElementById('noResults');
+  const suggestions = document.getElementById('searchSuggestions');
+  
+  let searchTimeout;
+  let currentFilter = 'all';
+  
+  // Filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentFilter = this.dataset.filter;
+      
+      if (searchInput.value.trim()) {
+        performSearch(searchInput.value.trim());
+      }
+    });
+  });
+  
+  // Search input
+  searchInput.addEventListener('input', function() {
+    const query = this.value.trim();
+    
+    clearTimeout(searchTimeout);
+    
+    if (query.length >= 2) {
+      searchTimeout = setTimeout(() => {
+        performSearch(query);
+        loadSuggestions(query);
+      }, 300);
+    } else {
+      searchResults.innerHTML = '';
+      suggestions.style.display = 'none';
+    }
+  });
+  
+  // Hide suggestions when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!suggestions.contains(e.target) && e.target !== searchInput) {
+      suggestions.style.display = 'none';
+    }
+  });
+  
+  // Quick search cards
+  document.querySelectorAll('.quick-search-card').forEach(card => {
+    card.addEventListener('click', function() {
+      const searchTerm = this.querySelector('p').textContent;
+      searchInput.value = searchTerm;
+      performSearch(searchTerm);
+    });
+  });
+  
+  async function performSearch(query) {
+    if (!query) return;
+    
+    searchLoading.style.display = 'block';
+    searchResults.innerHTML = '';
+    noResults.style.display = 'none';
+    
+    try {
+      const response = await fetch(`/search/api?q=${encodeURIComponent(query)}&category=${currentFilter}`);
+      const data = await response.json();
+      
+      searchLoading.style.display = 'none';
+      
+      if (data.total === 0) {
+        noResults.style.display = 'block';
+        return;
+      }
+      
+      renderResults(data.results);
+    } catch (error) {
+      console.error('Search error:', error);
+      searchLoading.style.display = 'none';
+      searchResults.innerHTML = '<div class="alert alert-danger">Error al realizar la búsqueda</div>';
+    }
+  }
+  
+  async function loadSuggestions(query) {
+    if (query.length < 2) return;
+    
+    try {
+      const response = await fetch(`/search/suggestions?q=${encodeURIComponent(query)}`);
+      const suggestions_data = await response.json();
+      
+      if (suggestions_data.length > 0) {
+        suggestions.innerHTML = suggestions_data.map(item => 
+          `<div class="dropdown-item" onclick="selectSuggestion('${item.text}')">
+            <i class="${item.icon} me-2"></i>${item.text}
+            <small class="text-muted ms-auto">${item.type}</small>
+          </div>`
+        ).join('');
+        suggestions.style.display = 'block';
+      } else {
+        suggestions.style.display = 'none';
+      }
+    } catch (error) {
+      console.error('Suggestions error:', error);
+    }
+  }
+  
+  window.selectSuggestion = function(text) {
+    searchInput.value = text;
+    suggestions.style.display = 'none';
+    performSearch(text);
+  }
+  
+  window.clearSearch = function() {
+    searchInput.value = '';
+    searchResults.innerHTML = '';
+    noResults.style.display = 'none';
+    currentFilter = 'all';
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.filter === 'all');
+    });
+  }
+  
+  function renderResults(results) {
+    let html = '';
+    
+    Object.keys(results).forEach(category => {
+      if (results[category].length > 0) {
+        html += `<div class="result-category mb-4">
+          <h5 class="fw-bold text-capitalize mb-3">
+            <i class="bi bi-${getCategoryIcon(category)} me-2"></i>
+            ${getCategoryLabel(category)} (${results[category].length})
+          </h5>
+          <div class="row">`;
+        
+        results[category].forEach(item => {
+          html += renderResultItem(item, category);
+        });
+        
+        html += '</div></div>';
+      }
+    });
+    
+    searchResults.innerHTML = html;
+  }
+  
+  function renderResultItem(item, category) {
+    switch(category) {
+      case 'notes':
+        return `<div class="col-md-6 col-lg-4 mb-3">
+          <div class="card h-100 search-result-item">
+            <div class="card-body">
+              <h6 class="card-title">${item.title}</h6>
+              <p class="card-text small text-muted">${item.content_preview}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">Por ${item.author.username}</small>
+                <a href="${item.url}" class="btn btn-sm btn-outline-primary">Ver</a>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      
+      case 'users':
+        return `<div class="col-md-6 col-lg-4 mb-3">
+          <div class="card h-100 search-result-item">
+            <div class="card-body text-center">
+              <img src="${item.avatar_url || '/static/img/default.png'}" class="rounded-circle mb-2" width="48" height="48">
+              <h6 class="card-title">${item.username}</h6>
+              <p class="card-text small text-muted">${item.about || 'Sin descripción'}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">${item.points} pts</small>
+                <a href="${item.url}" class="btn btn-sm btn-outline-primary">Ver perfil</a>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      
+      case 'products':
+        return `<div class="col-md-6 col-lg-4 mb-3">
+          <div class="card h-100 search-result-item">
+            <div class="card-body">
+              <h6 class="card-title">${item.name}</h6>
+              <p class="card-text small text-muted">${item.description}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-primary">S/ ${item.price}</span>
+                <a href="${item.url}" class="btn btn-sm btn-outline-primary">Ver</a>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      
+      default:
+        return `<div class="col-12 mb-3">
+          <div class="card search-result-item">
+            <div class="card-body">
+              <h6 class="card-title">${item.title || item.name || item.content}</h6>
+              <a href="${item.url}" class="btn btn-sm btn-outline-primary">Ver</a>
+            </div>
+          </div>
+        </div>`;
+    }
+  }
+  
+  function getCategoryIcon(category) {
+    const icons = {
+      notes: 'file-text',
+      users: 'people',
+      posts: 'chat-square-text',
+      products: 'shop',
+      courses: 'play-circle',
+      chats: 'chat-dots',
+      missions: 'trophy'
+    };
+    return icons[category] || 'grid';
+  }
+  
+  function getCategoryLabel(category) {
+    const labels = {
+      notes: 'Apuntes',
+      users: 'Usuarios',
+      posts: 'Publicaciones',
+      products: 'Productos',
+      courses: 'Cursos',
+      chats: 'Mensajes',
+      missions: 'Misiones'
+    };
+    return labels[category] || category;
+  }
+  
+  // Perform initial search if query exists
+  if (searchInput.value.trim()) {
+    performSearch(searchInput.value.trim());
+  }
+});
+</script>
+{% endblock %}
