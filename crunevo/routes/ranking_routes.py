@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request
 from sqlalchemy import func, desc
+from sqlalchemy.exc import ProgrammingError, OperationalError
 from crunevo.extensions import db
 from crunevo.models import User, Credit, Referral
 
@@ -41,17 +42,22 @@ ranking_bp.add_url_rule("/", endpoint="index", view_func=show_ranking)
 def top_referrers():
     now = datetime.utcnow()
     start = now - timedelta(days=30)
-    ranking = (
-        db.session.query(
-            User,
-            func.count(Referral.id).label("total"),
+    try:
+        ranking = (
+            db.session.query(
+                User,
+                func.count(Referral.id).label("total"),
+            )
+            .join(Referral, Referral.invitador_id == User.id)
+            .filter(Referral.completado.is_(True))
+            .filter(Referral.fecha_creacion >= start)
+            .group_by(User.id)
+            .order_by(desc("total"))
+            .limit(10)
+            .all()
         )
-        .join(Referral, Referral.invitador_id == User.id)
-        .filter(Referral.completado.is_(True))
-        .filter(Referral.fecha_creacion >= start)
-        .group_by(User.id)
-        .order_by(desc("total"))
-        .limit(10)
-        .all()
-    )
+    except (ProgrammingError, OperationalError):
+        db.session.rollback()
+        ranking = []
+
     return render_template("ranking/top_referrals.html", ranking=ranking)
