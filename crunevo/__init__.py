@@ -2,14 +2,13 @@
 import logging
 import os
 from datetime import datetime
-from flask import Flask, g, request, redirect, url_for, flash
+from flask import Flask, g, redirect, request, url_for, render_template
 from flask_login import current_user
 from werkzeug.exceptions import HTTPException
 
 from crunevo.config import Config
 from crunevo.extensions import db, login_manager, migrate, csrf, mail
-from crunevo.utils.helpers import activated_required
-from crunevo.utils.notify import send_notification
+
 
 
 def create_app(config_class=Config):
@@ -201,4 +200,4 @@ def create_app(config_class=Config):
 
 
 # Import models to ensure they're registered
-from crunevo.models import *
+from crunevo.models import *  # noqa: F403,E402

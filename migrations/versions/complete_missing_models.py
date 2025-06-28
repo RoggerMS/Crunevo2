@@ -60,7 +60,7 @@ def upgrade():
         sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("user_id", "club_id"),
-        checkfirst=True,
+        if_not_exists=True,
     )
 
     op.create_table(
@@ -73,13 +73,13 @@ def upgrade():
         sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("user_id", "course_id"),
-        checkfirst=True,
+        if_not_exists=True,
     )
 
 
 def downgrade():
-    op.drop_table("saved_course", checkfirst=True)
-    op.drop_table("club_member", checkfirst=True)
+    op.drop_table("saved_course", if_exists=True)
+    op.drop_table("club_member", if_exists=True)
     op.drop_column("product", "popularity_score", if_exists=True)
     op.drop_column("product", "active", if_exists=True)
     op.drop_column("user", "interests", if_exists=True)

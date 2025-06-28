@@ -379,3 +379,6 @@
 - Fixed migration to avoid errors when columns or tables already exist by using `if_not_exists` and `checkfirst=True` (hotfix migration-transaction-failure).
 - Removed root '/' alias for auth.login to prevent infinite redirect (hotfix login-loop).
 - Updated templates to access current_app via url_for.__globals__ and replaced inspector.has_column with helper in migration (hotfix templates-current_app).
+
+- Replaced `checkfirst` with `if_not_exists` in create_table ops to fix deployment error (hotfix create-table-checkfirst).
+- Fixed missing `render_template` import in `__init__.py` causing 500 errors (hotfix render-template-import).
