@@ -1,0 +1,65 @@
+Hola de nuevo, Assistant. Ya se aplicaron más de 100 cambios visuales, pero ahora necesito que agregues **funcionalidades nuevas base**, enfocadas en lo que aún falta para completar Crunevo como red educativa. Haz todo esto agrupado:
+
+---
+
+👥 **Clubes por carrera**  
+1. Crea una vista general accesible desde el menú o sidebar con el título: **Explora Clubes Académicos**.  
+2. Cada club debe ser una tarjeta (avatar, nombre, carrera, botón “Unirme”).  
+3. Agrega 5 clubes de ejemplo: Matemáticas, Educación, Informática, Ciencias Sociales, Lenguas.  
+4. Prepara la estructura para añadir publicaciones o debates dentro de cada club (aunque no sea funcional aún).  
+
+---
+
+🌐 **Foro de Preguntas y Respuestas**  
+5. Agrega una sección llamada **Foro Educativo**.  
+6. Vista principal: lista de preguntas recientes con usuario, fecha, categoría y número de respuestas.  
+7. Botón “Hacer una pregunta” abre un modal o formulario.  
+8. Cada pregunta lleva a una vista de respuestas, con opción para responder (si está autenticado).  
+9. Estiliza todo para que se vea moderno y responsivo, con dark mode incluido.
+
+---
+
+🎫 **Eventos académicos**  
+10. Crea una sección de **Eventos Especiales** o “Próximamente en Crunevo”.  
+11. Usa tarjetas tipo cronograma (nombre del evento, fecha, descripción, botón 'Ver más').  
+12. Muestra ejemplo de evento: “Día del Apunte – 15 de julio – Comparte tus mejores apuntes y gana Crolars”.
+
+---
+
+🤖 **Clubot** (asistente base)  
+13. Agrega un bloque visible tipo chatbot en `/clubes` o `/foro` con mensaje:  
+> “¡Hola! Soy Clubot, tu guía educativa en Crunevo. Pronto podré ayudarte con tus preguntas.”  
+14. Que tenga animación sutil, imagen simpática y diseño tipo widget pegado al costado o en esquina.
+
+---
+
+📄 **Página /about**  
+15. Crea una vista accesible desde el footer o menú, con información de Crunevo:  
+- Misión, visión, valores.  
+- Frases como: “Hecho por estudiantes peruanos, para estudiantes peruanos.”  
+- Agrega algunas imágenes o capturas.  
+
+---
+
+❤️ **Sistema de donaciones responsable**  
+16. En /about, añade un bloque claro y serio:  
+> “¿Te gusta Crunevo? Puedes apoyarnos para mantenerlo gratuito para todos.”  
+Botón “Aportar” que por ahora no lleva a nada (solo diseño).
+
+---
+
+🔍 **SEO y enlaces compartibles**  
+17. Mejora etiquetas `<meta>` en publicaciones y apuntes para que se vean bien al compartir en WhatsApp, Telegram, Facebook.  
+18. Cada post y apunte debe tener título, imagen, descripción y url amigable.
+
+---
+
+📎 **Compartir apuntes y posts**  
+19. Agrega botón “Compartir” en todos los apuntes y publicaciones que copie el link al portapapeles.  
+20. Muestra un toast “Enlace copiado” al hacerlo.
+
+---
+
+🎯 En resumen: Quiero completar visualmente las secciones que faltan para que Crunevo esté listo para estudiantes reales. Las funciones internas pueden estar vacías, pero el diseño debe ser real, interactivo y profesional.
+
+Gracias, Assistant. Hazlo lo mejor que puedas 💜
