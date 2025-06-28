@@ -121,6 +121,7 @@ def create_app():
     with app.app_context():
         try:
             from .utils.db_init import ensure_database_ready
+
             ensure_database_ready()
         except Exception as e:
             app.logger.error(f"Database initialization error: {e}")
@@ -155,7 +156,7 @@ def create_app():
     from .routes.forum_routes import forum_bp
     from .routes.event_routes import event_bp
     from .routes.about_routes import about_bp
-    from .routes.clubot_routes import clubot_bp
+    from .routes.crunebot_routes import crunebot_bp
     from .routes.saved_routes import saved_bp
 
     @app.route("/")
@@ -232,7 +233,7 @@ def create_app():
         app.register_blueprint(forum_bp)
         app.register_blueprint(event_bp)
         app.register_blueprint(about_bp)
-        app.register_blueprint(clubot_bp)
+        app.register_blueprint(crunebot_bp)
         app.register_blueprint(saved_bp)
         app.register_blueprint(errors_bp)
         app.register_blueprint(admin_blocker_bp)

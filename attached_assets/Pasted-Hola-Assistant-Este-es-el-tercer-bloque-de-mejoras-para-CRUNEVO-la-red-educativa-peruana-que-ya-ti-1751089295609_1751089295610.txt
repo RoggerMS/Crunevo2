@@ -37,14 +37,14 @@ Hola Assistant. Este es el tercer bloque de mejoras para CRUNEVO, la red educati
 
 ---
 
-🤖 5. CLUBOT CON RESPUESTAS INTELIGENTES  
-- Convierte al Clubot en un chatbot con respuestas fijas.  
+🤖 5. CRUNEBOT CON RESPUESTAS INTELIGENTES  
+- Convierte al Crunebot en un chatbot con respuestas fijas.  
 - Cuando el usuario escribe cosas como:
   - “¿Qué es CRUNEVO?”
   - “¿Cómo gano Crolars?”
   - “¿Dónde están los clubes?”
   - “¿Puedo ganar dinero?”
-  ...Clubot debe responder de forma clara (usa un JSON con pares pregunta-respuesta).  
+  ...Crunebot debe responder de forma clara (usa un JSON con pares pregunta-respuesta).  
 - Diseño responsivo estilo widget.
 
 ---
