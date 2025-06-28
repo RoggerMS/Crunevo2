@@ -372,3 +372,4 @@
 - Corrected sidebar club link to use 'club.list_clubs' and avoid BuildError (hotfix club-link-fix).
 - Fixed sidebar event link and refactored search notes to use existing fields (hotfix search-notes-fields).
 - Fixed store links pointing to deprecated endpoints in navbar, feed sidebar and store.html (hotfix store-endpoint-fix).
+- Fixed missions sidebar link to use 'auth.perfil' with tab instead of nonexistent 'misiones.index' (hotfix missions-link).

@@ -95,7 +95,7 @@
         </li>
         
         <li>
-          <a href="{{ url_for('misiones.index') }}" class="nav-link {{ 'active' if request.endpoint == 'misiones.index' }}">
+          <a href="{{ url_for('auth.perfil', tab='misiones') }}" class="nav-link {{ 'active' if request.endpoint == 'auth.perfil' and request.args.get('tab') == 'misiones' }}">
             <i class="bi bi-trophy"></i>
             <span class="fw-semibold">Misiones</span>
           </a>
