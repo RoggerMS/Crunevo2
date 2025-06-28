@@ -1,156 +1,358 @@
 
-{% extends 'base.html' %}
-{% import 'components/csrf.html' as csrf %}
+{% extends "base.html" %}
+
+{% block title %}{{ club.name }} - Club Académico{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    <div class="row">
-        <div class="col-lg-8">
-            <!-- Club Header -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-start">
-                        <div class="club-avatar me-3">
-                            {% if club.avatar_url %}
-                            <img src="{{ club.avatar_url }}" class="rounded-circle" width="80" height="80" alt="Club">
-                            {% else %}
-                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" 
-                                 style="width: 80px; height: 80px;">
-                                <i class="bi bi-people-fill text-white" style="font-size: 2rem;"></i>
-                            </div>
-                            {% endif %}
-                        </div>
-                        <div class="flex-grow-1">
-                            <h1 class="mb-1">{{ club.name }}</h1>
-                            <p class="text-muted mb-2">
-                                <i class="bi bi-mortarboard me-1"></i>
-                                {{ club.career }}
-                            </p>
-                            <p class="mb-3">{{ club.description }}</p>
-                            <div class="d-flex align-items-center gap-3">
-                                <span class="text-muted">
-                                    <i class="bi bi-people me-1"></i>
-                                    {{ club.member_count }} miembros
-                                </span>
-                                {% if current_user.is_authenticated %}
-                                    {% if is_member %}
-                                    <form method="post" action="{{ url_for('club.leave_club', club_id=club.id) }}" class="d-inline">
-                                        {{ csrf.csrf_field() }}
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">
-                                            <i class="bi bi-box-arrow-left me-1"></i>
-                                            Abandonar
-                                        </button>
-                                    </form>
-                                    {% else %}
-                                    <form method="post" action="{{ url_for('club.join_club', club_id=club.id) }}" class="d-inline">
-                                        {{ csrf.csrf_field() }}
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            <i class="bi bi-plus-circle me-1"></i>
-                                            Unirme
-                                        </button>
-                                    </form>
-                                    {% endif %}
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Post Creation (only for members) -->
-            {% if current_user.is_authenticated and is_member %}
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Comparte con el club</h5>
-                    <form method="post" action="{{ url_for('club.create_club_post', club_id=club.id) }}">
-                        {{ csrf.csrf_field() }}
-                        <div class="mb-3">
-                            <textarea class="form-control" name="content" rows="3" 
-                                    placeholder="¿Qué quieres compartir con {{ club.name }}?"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-send me-1"></i>
-                            Publicar
-                        </button>
-                    </form>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Club Posts -->
-            <div class="posts-section">
-                <h3 class="mb-4">Publicaciones del Club</h3>
-                
-                {% if posts %}
-                <div class="row g-3">
-                    {% for post in posts %}
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body">
-                                <div class="d-flex align-items-start">
-                                    <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" 
-                                         class="rounded-circle me-3" width="40" height="40" alt="Avatar">
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <h6 class="mb-0 me-2">@{{ post.author.username }}</h6>
-                                            <small class="text-muted">{{ post.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
-                                        </div>
-                                        <p class="mb-2">{{ post.content }}</p>
-                                        <div class="d-flex align-items-center">
-                                            <button class="btn btn-sm btn-outline-primary me-2">
-                                                <i class="bi bi-heart me-1"></i>
-                                                {{ post.likes }}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% else %}
-                <div class="text-center py-5">
-                    <i class="bi bi-chat-dots text-muted" style="font-size: 3rem;"></i>
-                    <h4 class="text-muted mt-3">No hay publicaciones aún</h4>
-                    <p class="text-muted">
-                        {% if current_user.is_authenticated and is_member %}
-                        ¡Sé el primero en compartir algo!
-                        {% else %}
-                        Únete al club para ver y crear publicaciones
-                        {% endif %}
-                    </p>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Miembros Recientes</h5>
-                    {% if members %}
-                    <div class="list-group list-group-flush">
-                        {% for member in members %}
-                        <div class="list-group-item px-0">
-                            <div class="d-flex align-items-center">
-                                <img src="{{ member.user.avatar_url or url_for('static', filename='img/default.png') }}" 
-                                     class="rounded-circle me-3" width="32" height="32" alt="Avatar">
-                                <div>
-                                    <h6 class="mb-0">@{{ member.user.username }}</h6>
-                                    <small class="text-muted">{{ member.joined_at.strftime('%d/%m/%Y') }}</small>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <p class="text-muted">No hay miembros aún</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+<div class="container-fluid px-3 py-4">
+  <div class="row g-4">
+    <!-- Left Sidebar -->
+    <div class="col-lg-3 d-none d-lg-block">
+      {% include 'components/sidebar_left_feed.html' %}
     </div>
+
+    <!-- Main Content -->
+    <div class="col-lg-6">
+      <!-- Club Header -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <img src="{{ club.avatar_url or url_for('static', filename='img/default.png') }}" 
+                   alt="{{ club.name }}" 
+                   class="rounded-circle border-3 border-primary" 
+                   width="80" height="80">
+            </div>
+            <div class="col">
+              <h1 class="h3 fw-bold text-dark mb-1">{{ club.name }}</h1>
+              <p class="badge bg-primary mb-2">{{ club.career }}</p>
+              <p class="text-muted mb-3">{{ club.description }}</p>
+              
+              <div class="d-flex align-items-center gap-3">
+                <div class="members-info">
+                  <i class="bi bi-people text-primary"></i>
+                  <span class="fw-semibold">{{ club.member_count }} miembros</span>
+                </div>
+                <div class="created-info">
+                  <i class="bi bi-calendar text-muted"></i>
+                  <span class="small text-muted">Creado {{ club.created_at.strftime('%B %Y') }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-auto">
+              {% if is_member %}
+              <div class="btn-group-vertical">
+                <button class="btn btn-outline-danger btn-sm leave-club-btn" 
+                        data-club-id="{{ club.id }}">
+                  <i class="bi bi-box-arrow-right"></i> Salir del Club
+                </button>
+                <button class="btn btn-outline-primary btn-sm" 
+                        onclick="togglePostForm()">
+                  <i class="bi bi-plus-circle"></i> Nueva Publicación
+                </button>
+              </div>
+              {% else %}
+              <button class="btn btn-primary btn-lg join-club-btn" 
+                      data-club-id="{{ club.id }}">
+                <i class="bi bi-plus-circle"></i> Unirse al Club
+              </button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post Creation Form (Only for members) -->
+      {% if is_member %}
+      <div class="card border-0 shadow-sm mb-4" id="post-form" style="display: none;">
+        <div class="card-body p-4">
+          <h6 class="fw-bold text-primary mb-3">
+            <i class="bi bi-pencil"></i> Crear Publicación en {{ club.name }}
+          </h6>
+          <form method="POST" action="{{ url_for('club.create_club_post', club_id=club.id) }}">
+            {% include 'components/csrf.html' %}
+            <div class="mb-3">
+              <textarea class="form-control" 
+                        name="content" 
+                        rows="4" 
+                        placeholder="Comparte algo interesante con el club..."
+                        required></textarea>
+            </div>
+            <div class="d-flex justify-content-between">
+              <button type="button" class="btn btn-outline-secondary" onclick="togglePostForm()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-send"></i> Publicar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Club Navigation Tabs -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-0">
+          <nav class="nav nav-pills nav-fill">
+            <a class="nav-link active" data-bs-toggle="pill" href="#posts-tab">
+              <i class="bi bi-chat-dots"></i> Publicaciones
+            </a>
+            <a class="nav-link" data-bs-toggle="pill" href="#members-tab">
+              <i class="bi bi-people"></i> Miembros
+            </a>
+            <a class="nav-link" data-bs-toggle="pill" href="#about-tab">
+              <i class="bi bi-info-circle"></i> Información
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Posts Tab -->
+        <div class="tab-pane fade show active" id="posts-tab">
+          {% if posts %}
+          {% for post in posts %}
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-start gap-3">
+                <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+                     alt="{{ post.author.username }}" 
+                     class="rounded-circle" 
+                     width="48" height="48">
+                <div class="flex-grow-1">
+                  <div class="d-flex align-items-center gap-2 mb-2">
+                    <h6 class="fw-bold mb-0">{{ post.author.username }}</h6>
+                    {% if post.author.verification_level > 0 %}
+                    <i class="bi bi-patch-check-fill text-primary"></i>
+                    {% endif %}
+                    <span class="text-muted small">{{ post.created_at.strftime('%d %b %Y, %H:%M') }}</span>
+                  </div>
+                  <p class="mb-3">{{ post.content }}</p>
+                  
+                  <!-- Post Actions -->
+                  <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-primary btn-sm">
+                      <i class="bi bi-heart"></i> Me gusta
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm">
+                      <i class="bi bi-chat"></i> Comentar
+                    </button>
+                    <button class="btn btn-outline-info btn-sm">
+                      <i class="bi bi-share"></i> Compartir
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div class="text-center py-5">
+            <i class="bi bi-chat-dots display-1 text-muted mb-3"></i>
+            <h5 class="text-muted">Aún no hay publicaciones</h5>
+            <p class="text-muted">
+              {% if is_member %}
+              ¡Sé el primero en compartir algo con el club!
+              {% else %}
+              Únete al club para ver y crear publicaciones.
+              {% endif %}
+            </p>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Members Tab -->
+        <div class="tab-pane fade" id="members-tab">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <h6 class="fw-bold text-primary mb-3">
+                <i class="bi bi-people"></i> Miembros del Club ({{ club.member_count }})
+              </h6>
+              
+              <div class="row g-3">
+                {% for member in members %}
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-3 p-3 border rounded">
+                    <img src="{{ member.user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                         alt="{{ member.user.username }}" 
+                         class="rounded-circle" 
+                         width="48" height="48">
+                    <div class="flex-grow-1">
+                      <h6 class="fw-bold mb-0">{{ member.user.username }}</h6>
+                      <p class="text-muted small mb-0">
+                        Miembro desde {{ member.joined_at.strftime('%B %Y') }}
+                      </p>
+                      {% if member.role != 'member' %}
+                      <span class="badge bg-warning">{{ member.role.title() }}</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              
+              {% if club.member_count > members|length %}
+              <div class="text-center mt-4">
+                <button class="btn btn-outline-primary">
+                  Ver todos los miembros
+                </button>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- About Tab -->
+        <div class="tab-pane fade" id="about-tab">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <h6 class="fw-bold text-primary mb-3">
+                <i class="bi bi-info-circle"></i> Sobre {{ club.name }}
+              </h6>
+              
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <h6 class="fw-semibold">Descripción</h6>
+                  <p class="text-muted">{{ club.description or 'Sin descripción disponible.' }}</p>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="fw-semibold">Carrera</h6>
+                  <p class="text-muted">{{ club.career }}</p>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="fw-semibold">Fecha de creación</h6>
+                  <p class="text-muted">{{ club.created_at.strftime('%d de %B de %Y') }}</p>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="fw-semibold">Total de miembros</h6>
+                  <p class="text-muted">{{ club.member_count }} miembros activos</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="col-lg-3 d-none d-lg-block">
+      <div class="sticky-top" style="top: 100px;">
+        <!-- Club Stats -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body p-4">
+            <h6 class="fw-bold text-primary mb-3">
+              <i class="bi bi-graph-up"></i> Estadísticas
+            </h6>
+            <div class="stats-grid">
+              <div class="stat-item mb-3">
+                <div class="fw-bold text-dark">{{ club.member_count }}</div>
+                <div class="small text-muted">Miembros totales</div>
+              </div>
+              <div class="stat-item mb-3">
+                <div class="fw-bold text-primary">{{ posts|length }}</div>
+                <div class="small text-muted">Publicaciones</div>
+              </div>
+              <div class="stat-item">
+                <div class="fw-bold text-success">Activo</div>
+                <div class="small text-muted">Estado del club</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Related Clubs -->
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <h6 class="fw-bold text-success mb-3">
+              <i class="bi bi-bookmark"></i> Clubes Relacionados
+            </h6>
+            <div class="related-clubs">
+              <p class="text-muted small">Próximamente: clubes relacionados con {{ club.career }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Mobile Bottom Navigation -->
+<div class="d-lg-none">
+  {% include 'components/mobile_bottom_nav.html' %}
+</div>
+
+<script>
+function togglePostForm() {
+  const form = document.getElementById('post-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+// Join/Leave club functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const joinBtn = document.querySelector('.join-club-btn');
+  const leaveBtn = document.querySelector('.leave-club-btn');
+  
+  if (joinBtn) {
+    joinBtn.addEventListener('click', function() {
+      joinClub(this.dataset.clubId, this);
+    });
+  }
+  
+  if (leaveBtn) {
+    leaveBtn.addEventListener('click', function() {
+      leaveClub(this.dataset.clubId, this);
+    });
+  }
+});
+
+function joinClub(clubId, button) {
+  button.disabled = true;
+  button.innerHTML = '<i class="bi bi-hourglass"></i> Uniéndose...';
+  
+  fetch(`/club/${clubId}/join`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      location.reload();
+    } else {
+      button.disabled = false;
+      button.innerHTML = '<i class="bi bi-plus-circle"></i> Unirse al Club';
+      alert(data.error || 'Error al unirse al club');
+    }
+  });
+}
+
+function leaveClub(clubId, button) {
+  if (!confirm('¿Estás seguro de que quieres dejar este club?')) return;
+  
+  button.disabled = true;
+  button.innerHTML = '<i class="bi bi-hourglass"></i> Saliendo...';
+  
+  fetch(`/club/${clubId}/leave`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      location.reload();
+    } else {
+      button.disabled = false;
+      button.innerHTML = '<i class="bi bi-box-arrow-right"></i> Salir del Club';
+      alert(data.error || 'Error al salir del club');
+    }
+  });
+}
+</script>
 {% endblock %}

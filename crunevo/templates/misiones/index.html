@@ -1,25 +1,465 @@
+
 {% extends 'base.html' %}
+
+{% block title %}Misiones y Logros - Crunevo{% endblock %}
+
 {% block content %}
-<div class="container my-4">
-  <h1 class="mb-4">Misiones semanales</h1>
-  <div class="row row-cols-1 row-cols-md-2 g-3">
-  {% for m in missions %}
-    <div class="col">
-      <div class="card h-100">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">{{ m.mission.description }}</h5>
-          <p class="card-text">Progreso: {{ m.progress }}/{{ m.mission.goal }}</p>
-          {% if m.completed %}
-          <span class="badge bg-success mt-auto">✔ Completada</span>
-          {% else %}
-          <span class="badge bg-secondary mt-auto">❌ Pendiente</span>
-          {% endif %}
+<div class="container-fluid px-3 py-4">
+  <div class="row g-4">
+    <!-- Left Sidebar -->
+    <div class="col-lg-3 d-none d-lg-block">
+      {% include 'components/sidebar_left_feed.html' %}
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-lg-6">
+      <!-- Header -->
+      <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold gradient-text mb-3">🎯 Misiones y Logros</h1>
+        <p class="lead text-muted">Completa desafíos y gana Crolars mientras aprendes</p>
+      </div>
+
+      <!-- Mission Stats -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <div class="card border-0 bg-primary text-white">
+            <div class="card-body text-center p-3">
+              <i class="bi bi-trophy display-6 mb-2"></i>
+              <h5 class="fw-bold mb-0">{{ completed_missions }}</h5>
+              <small>Completadas</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-0 bg-success text-white">
+            <div class="card-body text-center p-3">
+              <i class="bi bi-coin display-6 mb-2"></i>
+              <h5 class="fw-bold mb-0">{{ total_crolars_earned }}</h5>
+              <small>Crolars Ganados</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-0 bg-warning text-white">
+            <div class="card-body text-center p-3">
+              <i class="bi bi-fire display-6 mb-2"></i>
+              <h5 class="fw-bold mb-0">{{ current_streak }}</h5>
+              <small>Racha Actual</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-0 bg-info text-white">
+            <div class="card-body text-center p-3">
+              <i class="bi bi-calendar-week display-6 mb-2"></i>
+              <h5 class="fw-bold mb-0">{{ weekly_progress }}%</h5>
+              <small>Progreso Semanal</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mission Tabs -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-0">
+          <nav class="nav nav-pills nav-fill">
+            <a class="nav-link active" data-bs-toggle="pill" href="#daily-missions">
+              <i class="bi bi-sunrise"></i> Diarias
+            </a>
+            <a class="nav-link" data-bs-toggle="pill" href="#weekly-missions">
+              <i class="bi bi-calendar-week"></i> Semanales
+            </a>
+            <a class="nav-link" data-bs-toggle="pill" href="#special-missions">
+              <i class="bi bi-star"></i> Especiales
+            </a>
+            <a class="nav-link" data-bs-toggle="pill" href="#achievements">
+              <i class="bi bi-trophy"></i> Logros
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Daily Missions -->
+        <div class="tab-pane fade show active" id="daily-missions">
+          <div class="missions-container">
+            {% for mission in daily_missions %}
+            <div class="card mission-card border-0 shadow-sm mb-3">
+              <div class="card-body p-4">
+                <div class="row align-items-center">
+                  <div class="col-auto">
+                    <div class="mission-icon bg-primary-subtle rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-sunrise fs-3 text-primary"></i>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <h6 class="fw-bold mb-2">{{ mission.description }}</h6>
+                    
+                    <!-- Progress Bar -->
+                    <div class="progress mb-2" style="height: 8px;">
+                      {% set progress_percent = (mission.progress / mission.goal * 100) if mission.goal > 0 else 0 %}
+                      <div class="progress-bar bg-primary" 
+                           style="width: {{ progress_percent }}%"></div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                      <small class="text-muted">
+                        {{ mission.progress }}/{{ mission.goal }} - 
+                        {{ mission.credit_reward }} Crolars
+                      </small>
+                      {% if mission.completed and not mission.claimed %}
+                      <button class="btn btn-success btn-sm claim-btn" 
+                              data-mission-id="{{ mission.id }}">
+                        <i class="bi bi-gift"></i> Reclamar
+                      </button>
+                      {% elif mission.claimed %}
+                      <span class="badge bg-success">
+                        <i class="bi bi-check-circle"></i> Completada
+                      </span>
+                      {% else %}
+                      <span class="badge bg-secondary">
+                        {{ (mission.progress / mission.goal * 100)|round(1) }}%
+                      </span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Weekly Missions -->
+        <div class="tab-pane fade" id="weekly-missions">
+          <div class="missions-container">
+            {% for mission in weekly_missions %}
+            <div class="card mission-card border-0 shadow-sm mb-3">
+              <div class="card-body p-4">
+                <div class="row align-items-center">
+                  <div class="col-auto">
+                    <div class="mission-icon bg-success-subtle rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-calendar-week fs-3 text-success"></i>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <h6 class="fw-bold mb-2">{{ mission.description }}</h6>
+                    
+                    <!-- Progress Bar -->
+                    <div class="progress mb-2" style="height: 8px;">
+                      {% set progress_percent = (mission.progress / mission.goal * 100) if mission.goal > 0 else 0 %}
+                      <div class="progress-bar bg-success" 
+                           style="width: {{ progress_percent }}%"></div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                      <small class="text-muted">
+                        {{ mission.progress }}/{{ mission.goal }} - 
+                        {{ mission.credit_reward }} Crolars
+                      </small>
+                      {% if mission.completed and not mission.claimed %}
+                      <button class="btn btn-success btn-sm claim-btn" 
+                              data-mission-id="{{ mission.id }}">
+                        <i class="bi bi-gift"></i> Reclamar
+                      </button>
+                      {% elif mission.claimed %}
+                      <span class="badge bg-success">
+                        <i class="bi bi-check-circle"></i> Completada
+                      </span>
+                      {% else %}
+                      <span class="badge bg-secondary">
+                        {{ (mission.progress / mission.goal * 100)|round(1) }}%
+                      </span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Special Missions -->
+        <div class="tab-pane fade" id="special-missions">
+          <div class="missions-container">
+            {% for mission in special_missions %}
+            <div class="card mission-card border-0 shadow-sm mb-3">
+              <div class="card-body p-4">
+                <div class="row align-items-center">
+                  <div class="col-auto">
+                    <div class="mission-icon bg-warning-subtle rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-star fs-3 text-warning"></i>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <h6 class="fw-bold mb-2">
+                      {{ mission.description }}
+                      <span class="badge bg-warning text-dark ms-2">Especial</span>
+                    </h6>
+                    
+                    <!-- Progress Bar -->
+                    <div class="progress mb-2" style="height: 8px;">
+                      {% set progress_percent = (mission.progress / mission.goal * 100) if mission.goal > 0 else 0 %}
+                      <div class="progress-bar bg-warning" 
+                           style="width: {{ progress_percent }}%"></div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                      <small class="text-muted">
+                        {{ mission.progress }}/{{ mission.goal }} - 
+                        {{ mission.credit_reward }} Crolars
+                      </small>
+                      {% if mission.completed and not mission.claimed %}
+                      <button class="btn btn-warning btn-sm claim-btn" 
+                              data-mission-id="{{ mission.id }}">
+                        <i class="bi bi-gift"></i> Reclamar
+                      </button>
+                      {% elif mission.claimed %}
+                      <span class="badge bg-success">
+                        <i class="bi bi-check-circle"></i> Completada
+                      </span>
+                      {% else %}
+                      <span class="badge bg-secondary">
+                        {{ (mission.progress / mission.goal * 100)|round(1) }}%
+                      </span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="tab-pane fade" id="achievements">
+          <div class="achievements-grid">
+            <div class="row g-3">
+              {% for achievement in achievements %}
+              <div class="col-md-6">
+                <div class="card achievement-card border-0 shadow-sm">
+                  <div class="card-body p-4 text-center">
+                    <div class="achievement-icon mb-3">
+                      {% if achievement.unlocked %}
+                      <i class="bi bi-trophy-fill display-1 text-warning"></i>
+                      {% else %}
+                      <i class="bi bi-trophy display-1 text-muted"></i>
+                      {% endif %}
+                    </div>
+                    <h6 class="fw-bold mb-2">{{ achievement.title }}</h6>
+                    <p class="text-muted small mb-3">{{ achievement.description }}</p>
+                    
+                    {% if achievement.unlocked %}
+                    <span class="badge bg-warning text-dark">
+                      <i class="bi bi-star"></i> Desbloqueado
+                    </span>
+                    <div class="mt-2">
+                      <small class="text-muted">
+                        Desbloqueado el {{ achievement.unlocked_date.strftime('%d/%m/%Y') }}
+                      </small>
+                    </div>
+                    {% else %}
+                    <div class="progress mb-2" style="height: 6px;">
+                      <div class="progress-bar bg-warning" 
+                           style="width: {{ achievement.progress_percent }}%"></div>
+                    </div>
+                    <small class="text-muted">{{ achievement.progress_percent }}% completado</small>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  {% else %}
-    <p class="text-muted">No hay misiones.</p>
-  {% endfor %}
+
+    <!-- Right Sidebar -->
+    <div class="col-lg-3 d-none d-lg-block">
+      <div class="sticky-top" style="top: 100px;">
+        <!-- Mission Tips -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body p-4">
+            <h6 class="fw-bold text-primary mb-3">
+              <i class="bi bi-lightbulb"></i> Consejos para Misiones
+            </h6>
+            <div class="tips-list">
+              <div class="tip-item mb-3">
+                <i class="bi bi-check-circle text-success me-2"></i>
+                <small>Sube apuntes diariamente para completar misiones rápido</small>
+              </div>
+              <div class="tip-item mb-3">
+                <i class="bi bi-check-circle text-success me-2"></i>
+                <small>Participa en el foro para ganar Crolars extra</small>
+              </div>
+              <div class="tip-item">
+                <i class="bi bi-check-circle text-success me-2"></i>
+                <small>Invita amigos para desbloquear logros especiales</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly Leaderboard -->
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <h6 class="fw-bold text-success mb-3">
+              <i class="bi bi-award"></i> Top Semanal
+            </h6>
+            <div class="leaderboard-list">
+              {% for user in weekly_top_users[:5] %}
+              <div class="d-flex align-items-center mb-2">
+                <div class="rank-badge me-2">
+                  <span class="badge {% if loop.index == 1 %}bg-warning{% elif loop.index == 2 %}bg-light text-dark{% elif loop.index == 3 %}bg-secondary{% else %}bg-outline-secondary{% endif %}">
+                    {{ loop.index }}
+                  </span>
+                </div>
+                <img src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                     alt="{{ user.username }}" 
+                     class="rounded-circle me-2" 
+                     width="32" height="32">
+                <div class="flex-grow-1">
+                  <div class="fw-semibold small">{{ user.username }}</div>
+                  <div class="text-muted small">{{ user.weekly_missions }} misiones</div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
+<!-- Mobile Bottom Navigation -->
+<div class="d-lg-none">
+  {% include 'components/mobile_bottom_nav.html' %}
+</div>
+
+<!-- Mission Claim Modal -->
+<div class="modal fade" id="missionClaimModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body p-4 text-center">
+        <div class="celebration-icon mb-3">
+          <i class="bi bi-trophy-fill display-1 text-warning"></i>
+        </div>
+        <h5 class="fw-bold text-primary mb-2">¡Misión Completada!</h5>
+        <p class="text-muted mb-3">Has ganado <span class="fw-bold text-success" id="reward-amount">0</span> Crolars</p>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          ¡Genial!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.gradient-text {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mission-card {
+  transition: all 0.3s ease;
+  border-radius: 16px !important;
+}
+
+.mission-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.mission-icon {
+  width: 60px;
+  height: 60px;
+}
+
+.achievement-card {
+  transition: all 0.3s ease;
+  border-radius: 16px !important;
+}
+
+.achievement-card:hover {
+  transform: scale(1.02);
+}
+
+.claim-btn {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.celebration-icon {
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-20px); }
+  60% { transform: translateY(-10px); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Claim mission functionality
+  document.querySelectorAll('.claim-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const missionId = this.dataset.missionId;
+      claimMission(missionId, this);
+    });
+  });
+});
+
+function claimMission(missionId, button) {
+  button.disabled = true;
+  button.innerHTML = '<i class="bi bi-hourglass"></i> Reclamando...';
+  
+  fetch(`/misiones/reclamar_mision/${missionId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      // Show celebration modal
+      const modal = new bootstrap.Modal(document.getElementById('missionClaimModal'));
+      modal.show();
+      
+      // Update button state
+      button.innerHTML = '<i class="bi bi-check-circle"></i> Completada';
+      button.className = 'btn btn-success btn-sm';
+      button.disabled = true;
+      
+      // Refresh page after modal closes
+      document.getElementById('missionClaimModal').addEventListener('hidden.bs.modal', function() {
+        location.reload();
+      });
+    } else {
+      button.disabled = false;
+      button.innerHTML = '<i class="bi bi-gift"></i> Reclamar';
+      alert('Error al reclamar la misión');
+    }
+  })
+  .catch(error => {
+    button.disabled = false;
+    button.innerHTML = '<i class="bi bi-gift"></i> Reclamar';
+    console.error('Error:', error);
+  });
+}
+</script>
 {% endblock %}

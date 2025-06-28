@@ -1,137 +1,303 @@
 
-{% extends "base.html" %}
+<div class="container-fluid px-3 py-4">
+  <div class="row g-4">
+    <!-- Left Sidebar -->
+    <div class="col-lg-3 d-none d-lg-block">
+      {% include 'components/sidebar_left_feed.html' %}
+    </div>
 
-{% block title %}Explora Clubes Académicos - Crunevo{% endblock %}
-
-{% block content %}
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-12">
+    <!-- Main Content -->
+    <div class="col-lg-6">
       <!-- Header -->
       <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold gradient-text">🎓 Explora Clubes Académicos</h1>
+        <h1 class="display-5 fw-bold gradient-text mb-3">🎓 Clubes Académicos</h1>
         <p class="lead text-muted">Únete a comunidades de estudiantes apasionados por tu carrera</p>
       </div>
 
-      <!-- Crunebot Widget -->
-      <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
-        <div class="card shadow-lg border-0" style="width: 280px;">
-          <div class="card-body p-3">
-            <div class="d-flex align-items-center mb-2">
-              <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
-                <i class="bi bi-robot text-white"></i>
-              </div>
-              <strong class="gradient-text">Crunebot</strong>
-            </div>
-            <p class="small mb-2">¡Hola! Soy Crunebot, tu guía educativa en Crunevo. Pronto podré ayudarte con tus preguntas.</p>
-            <div class="text-end">
-              <button class="btn btn-sm btn-outline-primary" onclick="this.parentElement.parentElement.parentElement.parentElement.style.display='none'">
-                <i class="bi bi-x"></i>
-              </button>
-            </div>
-          </div>
-        </div>
+      <!-- Featured Clubs -->
+      <div class="section-header mb-4">
+        <h3 class="h4 fw-bold text-primary mb-0">⭐ Clubes Destacados</h3>
       </div>
 
-      <!-- Clubs Grid -->
-      <div class="row g-4">
-        {% for club in clubs %}
-        <div class="col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm border-0 hover-lift">
-            <div class="card-body text-center">
-              <div class="mb-3">
+      <div class="row g-4 mb-5">
+        {% for club in clubs[:3] %}
+        <div class="col-md-4">
+          <div class="card club-card h-100 border-0 shadow-sm">
+            <div class="card-body p-4">
+              <div class="club-avatar mb-3">
                 <img src="{{ club.avatar_url or url_for('static', filename='img/default.png') }}" 
-                     class="rounded-circle border" width="80" height="80" alt="{{ club.name }}">
+                     alt="{{ club.name }}" 
+                     class="rounded-circle border-3 border-primary" 
+                     width="64" height="64">
               </div>
-              <h5 class="card-title fw-bold">{{ club.name }}</h5>
-              <span class="badge bg-primary-subtle text-primary mb-2">{{ club.career }}</span>
-              <p class="card-text text-muted small">{{ club.description or 'Club académico para estudiantes de ' + club.career }}</p>
-              <div class="mb-3">
-                <small class="text-muted">
-                  <i class="bi bi-people"></i> {{ club.member_count }} miembros
-                </small>
-              </div>
+              <h5 class="fw-bold text-dark mb-2">{{ club.name }}</h5>
+              <p class="badge bg-light text-dark mb-2">{{ club.career }}</p>
+              <p class="text-muted small mb-3">{{ club.description[:100] }}...</p>
               
-              {% if current_user.is_authenticated %}
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="members-count">
+                  <i class="bi bi-people text-primary"></i>
+                  <span class="fw-semibold">{{ club.member_count }}</span>
+                </div>
+                
                 {% if club.id in user_clubs %}
-                  <button class="btn btn-success btn-sm" disabled>
-                    <i class="bi bi-check-circle"></i> Miembro
-                  </button>
-                  <button class="btn btn-outline-danger btn-sm ms-1" onclick="leaveClub({{ club.id }})">
-                    Salir
-                  </button>
+                <span class="badge bg-success rounded-pill">
+                  <i class="bi bi-check-circle"></i> Miembro
+                </span>
                 {% else %}
-                  <button class="btn btn-primary btn-sm" onclick="joinClub({{ club.id }})">
-                    <i class="bi bi-plus-circle"></i> Unirme
-                  </button>
+                <button class="btn btn-primary btn-sm rounded-pill join-club-btn" 
+                        data-club-id="{{ club.id }}">
+                  <i class="bi bi-plus-circle"></i> Unirse
+                </button>
                 {% endif %}
-              {% else %}
-                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-sm">
-                  Iniciar sesión para unirte
-                </a>
-              {% endif %}
+              </div>
             </div>
           </div>
         </div>
-        {% else %}
-        <div class="col-12 text-center py-5">
-          <i class="bi bi-mortarboard display-1 text-muted"></i>
-          <h3 class="mt-3 text-muted">Próximamente nuevos clubes</h3>
-          <p class="text-muted">Los clubes académicos estarán disponibles pronto</p>
+        {% endfor %}
+      </div>
+
+      <!-- All Clubs -->
+      <div class="section-header mb-4">
+        <h3 class="h4 fw-bold text-dark mb-0">📚 Todos los Clubes</h3>
+      </div>
+
+      <div class="clubs-grid">
+        {% for club in clubs %}
+        <div class="card club-card mb-3 border-0 shadow-sm">
+          <div class="card-body p-4">
+            <div class="row align-items-center">
+              <div class="col-auto">
+                <img src="{{ club.avatar_url or url_for('static', filename='img/default.png') }}" 
+                     alt="{{ club.name }}" 
+                     class="rounded-circle border-2 border-primary" 
+                     width="56" height="56">
+              </div>
+              <div class="col">
+                <h5 class="fw-bold text-dark mb-1">{{ club.name }}</h5>
+                <p class="text-muted mb-1">{{ club.career }}</p>
+                <p class="small text-muted mb-0">{{ club.description }}</p>
+              </div>
+              <div class="col-auto">
+                <div class="text-end">
+                  <div class="members-count mb-2">
+                    <i class="bi bi-people text-primary"></i>
+                    <span class="fw-semibold">{{ club.member_count }} miembros</span>
+                  </div>
+                  
+                  {% if club.id in user_clubs %}
+                  <div class="btn-group">
+                    <a href="{{ url_for('club.view_club', club_id=club.id) }}" 
+                       class="btn btn-outline-primary btn-sm">
+                      <i class="bi bi-eye"></i> Ver
+                    </a>
+                    <button class="btn btn-outline-danger btn-sm leave-club-btn" 
+                            data-club-id="{{ club.id }}">
+                      <i class="bi bi-box-arrow-right"></i> Salir
+                    </button>
+                  </div>
+                  {% else %}
+                  <div class="btn-group">
+                    <a href="{{ url_for('club.view_club', club_id=club.id) }}" 
+                       class="btn btn-outline-primary btn-sm">
+                      <i class="bi bi-eye"></i> Ver
+                    </a>
+                    <button class="btn btn-primary btn-sm join-club-btn" 
+                            data-club-id="{{ club.id }}">
+                      <i class="bi bi-plus-circle"></i> Unirse
+                    </button>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         {% endfor %}
       </div>
     </div>
+
+    <!-- Right Sidebar -->
+    <div class="col-lg-3 d-none d-lg-block">
+      <div class="sticky-top" style="top: 100px;">
+        <!-- My Clubs -->
+        {% if user_clubs %}
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body p-4">
+            <h6 class="fw-bold text-primary mb-3">
+              <i class="bi bi-bookmark"></i> Mis Clubes
+            </h6>
+            {% for club_id in user_clubs[:5] %}
+            {% set club = clubs | selectattr('id', 'equalto', club_id) | first %}
+            {% if club %}
+            <div class="d-flex align-items-center mb-2">
+              <img src="{{ club.avatar_url or url_for('static', filename='img/default.png') }}" 
+                   alt="{{ club.name }}" 
+                   class="rounded-circle me-2" 
+                   width="32" height="32">
+              <div class="flex-grow-1">
+                <a href="{{ url_for('club.view_club', club_id=club.id) }}" 
+                   class="text-decoration-none">
+                  <div class="fw-semibold small">{{ club.name }}</div>
+                </a>
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Quick Actions -->
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <h6 class="fw-bold text-success mb-3">
+              <i class="bi bi-lightning"></i> Acciones Rápidas
+            </h6>
+            <div class="d-grid gap-2">
+              <button class="btn btn-outline-primary btn-sm" onclick="showCreateClubModal()">
+                <i class="bi bi-plus-circle"></i> Crear Club
+              </button>
+              <a href="{{ url_for('forum.list_questions') }}" class="btn btn-outline-success btn-sm">
+                <i class="bi bi-chat-dots"></i> Ir al Foro
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-{% endblock %}
 
-{% block body_end %}
+<!-- Mobile Bottom Navigation -->
+<div class="d-lg-none">
+  {% include 'components/mobile_bottom_nav.html' %}
+</div>
+
+<style>
+.club-card {
+  transition: all 0.3s ease;
+  border-radius: 16px !important;
+}
+
+.club-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.join-club-btn, .leave-club-btn {
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.join-club-btn:hover {
+  transform: scale(1.05);
+}
+
+.section-header {
+  border-left: 4px solid var(--bs-primary);
+  padding-left: 1rem;
+}
+</style>
+
 <script>
-function joinClub(clubId) {
+document.addEventListener('DOMContentLoaded', function() {
+  // Join club functionality
+  document.querySelectorAll('.join-club-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const clubId = this.dataset.clubId;
+      joinClub(clubId, this);
+    });
+  });
+
+  // Leave club functionality
+  document.querySelectorAll('.leave-club-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const clubId = this.dataset.clubId;
+      leaveClub(clubId, this);
+    });
+  });
+});
+
+function joinClub(clubId, button) {
+  button.disabled = true;
+  button.innerHTML = '<i class="bi bi-hourglass"></i> Uniéndose...';
+  
   fetch(`/club/${clubId}/join`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+      'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content
     }
   })
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      location.reload();
+      button.innerHTML = '<i class="bi bi-check-circle"></i> Miembro';
+      button.className = 'btn btn-success btn-sm rounded-pill';
+      button.disabled = true;
+      
+      // Update member count
+      const memberCountSpan = button.closest('.card').querySelector('.members-count span');
+      if (memberCountSpan) {
+        memberCountSpan.textContent = data.member_count;
+      }
+      
+      setTimeout(() => {
+        location.reload();
+      }, 1500);
     } else {
+      button.disabled = false;
+      button.innerHTML = '<i class="bi bi-plus-circle"></i> Unirse';
       alert(data.error || 'Error al unirse al club');
     }
   })
   .catch(error => {
+    button.disabled = false;
+    button.innerHTML = '<i class="bi bi-plus-circle"></i> Unirse';
     console.error('Error:', error);
-    alert('Error al unirse al club');
   });
 }
 
-function leaveClub(clubId) {
-  if (confirm('¿Estás seguro de que quieres salir de este club?')) {
-    fetch(`/club/${clubId}/leave`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
+function leaveClub(clubId, button) {
+  if (!confirm('¿Estás seguro de que quieres dejar este club?')) return;
+  
+  button.disabled = true;
+  button.innerHTML = '<i class="bi bi-hourglass"></i> Saliendo...';
+  
+  fetch(`/club/${clubId}/leave`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      setTimeout(() => {
         location.reload();
-      } else {
-        alert(data.error || 'Error al salir del club');
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('Error al salir del club');
-    });
-  }
+      }, 500);
+    } else {
+      button.disabled = false;
+      button.innerHTML = '<i class="bi bi-box-arrow-right"></i> Salir';
+      alert(data.error || 'Error al salir del club');
+    }
+  })
+  .catch(error => {
+    button.disabled = false;
+    button.innerHTML = '<i class="bi bi-box-arrow-right"></i> Salir';
+    console.error('Error:', error);
+  });
 }
 </script>
+</div>
+
 {% endblock %}
