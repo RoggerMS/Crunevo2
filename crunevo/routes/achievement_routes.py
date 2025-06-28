@@ -26,13 +26,10 @@ def mark_achievement_popup_seen():
     """Mark all pending achievement popups as shown for the current user."""
     try:
         print("\U0001F9E0 Marcar logros como vistos para:", current_user.username)
-        popups = AchievementPopup.query.filter_by(
-            user_id=current_user.id, shown=False
-        ).all()
-        if not popups:
+        q = AchievementPopup.query.filter_by(user_id=current_user.id, shown=False)
+        if q.count() == 0:
             return jsonify({"success": True, "message": "No hay logros pendientes"})
-        for popup in popups:
-            popup.shown = True
+        q.update({"shown": True}, synchronize_session=False)
         db.session.commit()
         session.pop("new_achievements", None)
         return jsonify({"success": True})
