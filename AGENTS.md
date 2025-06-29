@@ -398,3 +398,4 @@
 - Registered courses blueprint and added English path aliases; updated sidebar link (PR courses-aliases).
 - Trimmed duplicate content in search/index.html to fix 'block title' error (hotfix search-template).
 - Added courses search support and moved search page JS to main.js for single DOMContentLoaded handler (hotfix search-modern)
+- Updated feed UI: replaced heart icons with fire, improved filter contrast and lighter gradient background (PR feed-ui-fire-icon)

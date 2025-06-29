@@ -39,18 +39,29 @@
   border-radius: 20px;
   padding: 0.5rem 1rem;
   border: none;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.2);
+  color: #333;
   transition: all 0.3s ease;
 }
 
 #quickFilters button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.3);
+  color: #111;
 }
 
 #quickFilters button.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: rgba(255, 255, 255, 0.3);
+  color: #111;
+}
+
+[data-bs-theme="dark"] #quickFilters button {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+}
+
+[data-bs-theme="dark"] #quickFilters button:hover,
+[data-bs-theme="dark"] #quickFilters button.active {
+  background: rgba(255, 255, 255, 0.2);
   color: #fff;
 }
 

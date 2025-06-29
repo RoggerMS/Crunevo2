@@ -113,10 +113,10 @@
     <div class="post-actions d-flex align-items-center gap-1 border-top pt-3">
       <!-- Like Button -->
       {% set user_reaction = user_reactions.get(post.id) %}
-      <button class="btn btn-ghost flex-fill d-flex align-items-center justify-content-center gap-2 like-btn {{ 'active' if user_reaction else '' }}" 
-              data-post-id="{{ post.id }}" 
+      <button class="btn btn-ghost flex-fill d-flex align-items-center justify-content-center gap-2 like-btn {{ 'active' if user_reaction else '' }}"
+              data-post-id="{{ post.id }}"
               data-reaction="👍">
-        <i class="bi bi-heart{% if user_reaction %}-fill text-danger{% endif %}"></i>
+        <i class="bi bi-fire{% if user_reaction %} text-danger{% endif %}"></i>
         <span class="d-none d-sm-inline">Me gusta</span>
         <span id="likeCount{{ post.id }}" class="badge bg-light text-dark rounded-pill">{{ post.likes or 0 }}</span>
       </button>

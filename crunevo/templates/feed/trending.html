@@ -184,7 +184,7 @@
             <i class="bi bi-calendar-month me-1"></i> Este mes
           </button>
           <button class="btn btn-outline-primary" data-filter="populares">
-            <i class="bi bi-heart me-1"></i> Más likes
+            <i class="bi bi-fire me-1"></i> Más likes
           </button>
           <button class="btn btn-outline-primary" data-filter="comentarios">
             <i class="bi bi-chat me-1"></i> Más comentarios
@@ -226,7 +226,7 @@
 
                 <div class="d-flex align-items-center justify-content-between">
                   <div class="d-flex gap-3">
-                    <span class="text-danger"><i class="bi bi-heart-fill me-1"></i>{{ post.likes or 0 }}</span>
+                    <span class="text-danger"><i class="bi bi-fire me-1"></i>{{ post.likes or 0 }}</span>
                     <span class="text-primary"><i class="bi bi-chat me-1"></i>{{ post.comment_count or 0 }}</span>
                   </div>
                   <a href="{{ url_for('feed.view_post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary rounded-pill">

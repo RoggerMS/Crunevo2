@@ -213,13 +213,13 @@ class FeedManager {
       const icon = btn.querySelector('i');
       if (data.status === 'added') {
         btn.classList.add('active');
-        if (icon) icon.classList.add('bi-heart-fill', 'text-danger');
-        if (icon) icon.classList.remove('bi-heart');
-        this.animateButton(btn, '❤️');
+        if (icon) icon.classList.add('bi-fire', 'text-danger');
+        if (icon) icon.classList.remove('bi-heart', 'bi-heart-fill');
+        this.animateButton(btn, '🔥');
       } else if (data.status === 'removed') {
         btn.classList.remove('active');
-        if (icon) icon.classList.remove('bi-heart-fill', 'text-danger');
-        if (icon) icon.classList.add('bi-heart');
+        if (icon) icon.classList.remove('bi-fire', 'text-danger');
+        if (icon) icon.classList.add('bi-fire');
       }
 
       this.showToast(data.status === 'added' ? '¡Te gusta esta publicación!' : 'Ya no te gusta esta publicación', 'success');
