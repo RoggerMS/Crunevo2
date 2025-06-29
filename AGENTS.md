@@ -403,3 +403,4 @@
   centered links, smaller search bar, removed Crunebot link, added theme toggle
   in user menu and softened the "Publicar" button color (PR navbar-streak-fix).
 - Fixed navbar template conditional and cleaned ruff errors across routes (PR navbar-template-fix).
+- Dark mode improvements: solid dark background, dark search input, sidebar username color and navbar dark style. Trending posts now use the full post card with like/comment/share actions (PR dark-mode-fixes).
