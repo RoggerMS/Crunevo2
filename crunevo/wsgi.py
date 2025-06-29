@@ -1,9 +1,9 @@
 from crunevo.app import create_app
-from flask import Response
+from typing import Tuple
 
 app = create_app()
 
 
 @app.route("/health")
-def health() -> Response:
-    return Response("ok", status=200)
+def health() -> Tuple[str, int]:
+    return "ok", 200

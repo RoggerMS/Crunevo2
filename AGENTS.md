@@ -413,3 +413,4 @@
 - Reemplazadas plantillas de publicaciones con 'components/post_card.html' y eliminado diseño anterior y la clase hover-scale (PR post-card-modernization).
 - Added /health endpoint in wsgi.py and updated fly.toml to check it via HTTP (PR fix-health-check).
 - Restored admin.logs and product_history routes to fix BuildError
+- Simplified health endpoint to return plain tuple as instructed (PR fix-health-return).
