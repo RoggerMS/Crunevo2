@@ -407,3 +407,4 @@
 - Further dark mode tweaks: override bg-light classes and navbar primary color, ensure textarea and badges adapt to dark theme (PR dark-mode-tweak).
 - Fixed dark mode selectors in style.css to target html[data-bs-theme], enabling consistent theme across pages (PR dark-mode-selector-fix).
 - Dark mode overhaul: unified dark backgrounds and comment box styles across templates (PR dark-mode-overhaul)
+- Feed dark mode: removed gradient background and set solid #0D1117 for feed section (PR dark-feed-solid-bg).
