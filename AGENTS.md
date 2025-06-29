@@ -405,3 +405,4 @@
 - Fixed navbar template conditional and cleaned ruff errors across routes (PR navbar-template-fix).
 - Dark mode improvements: solid dark background, dark search input, sidebar username color and navbar dark style. Trending posts now use the full post card with like/comment/share actions (PR dark-mode-fixes).
 - Further dark mode tweaks: override bg-light classes and navbar primary color, ensure textarea and badges adapt to dark theme (PR dark-mode-tweak).
+- Fixed dark mode selectors in style.css to target html[data-bs-theme], enabling consistent theme across pages (PR dark-mode-selector-fix).
