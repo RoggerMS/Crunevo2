@@ -5,7 +5,7 @@
     </a>
 
     <!-- Global Search Bar -->
-    <div class="navbar-search d-none d-lg-block" style="max-width: 200px; width: 100%;">
+    <div class="navbar-search d-none d-lg-block mx-auto" style="max-width: 400px; width: 100%;">
       <div class="position-relative">
         <input type="text" id="globalSearch" class="form-control bg-light border-0 rounded-pill ps-4" 
                placeholder="Buscar en CRUNEVO..." autocomplete="off">
@@ -21,9 +21,9 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav d-lg-none mb-2">
+      <ul class="navbar-nav ms-auto align-items-center">
         {% if current_user.is_authenticated %}
-          <li class="nav-item">
+          <li class="nav-item d-lg-none">
             <form class="d-flex my-2">
               <input class="form-control me-2" type="search" placeholder="Buscar..." id="mobileSearch">
               <button class="btn btn-outline-light" type="button" onclick="performMobileSearch()">
@@ -31,33 +31,60 @@
               </button>
             </form>
           </li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.feed_home') }}">Feed</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('notes.list_notes') }}">Apuntes</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('forum.list_questions') }}">Foro</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('store.store_index') }}">Tienda</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('ranking.show_ranking') }}">Ranking</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('courses.list_courses') if 'courses.list_courses' in url_for.__globals__.get('current_app', {}).view_functions else '/cursos' }}">Cursos</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.perfil', tab='misiones') }}">Misiones</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('chat.chat_index') }}">Chat</a></li>
-        {% endif %}
-      </ul>
 
-      <div class="mx-auto d-none d-lg-flex gap-3">
-        <a class="nav-link" href="{{ url_for('feed.feed_home') }}"><i class="bi bi-house-door me-1"></i>Feed</a>
-        <a class="nav-link" href="{{ url_for('notes.list_notes') }}"><i class="bi bi-file-text me-1"></i>Apuntes</a>
-        <a class="nav-link" href="{{ url_for('forum.list_questions') }}"><i class="bi bi-chat-left-quote me-1"></i>Foro</a>
-        <a class="nav-link" href="{{ url_for('store.store_index') }}"><i class="bi bi-shop me-1"></i>Tienda</a>
-        <a class="nav-link" href="{{ url_for('ranking.show_ranking') }}"><i class="bi bi-trophy me-1"></i>Ranking</a>
-        <a class="nav-link" href="{{ url_for('courses.list_courses') if 'courses.list_courses' in url_for.__globals__.get('current_app', {}).view_functions else '/cursos' }}"><i class="bi bi-play-circle-fill me-1"></i>Cursos</a>
-        <a class="nav-link" href="{{ url_for('auth.perfil', tab='misiones') }}"><i class="bi bi-trophy-fill me-1"></i>Misiones</a>
-      </div>
-
-      <ul class="navbar-nav ms-auto align-items-center gap-2">
-          <li class="nav-item d-none d-lg-block">
-            <a class="nav-link" href="{{ url_for('chat.chat_index') }}">
-              <i class="bi bi-chat-dots-fill"></i>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('feed.feed_home') }}">
+              <i class="bi bi-house-door me-1"></i>
+              Feed
             </a>
           </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('notes.list_notes') }}">
+              <i class="bi bi-file-text me-1"></i>
+              Apuntes
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('forum.list_questions') }}">
+              <i class="bi bi-chat-left-quote me-1"></i>
+              Foro
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('store.store_index') }}">
+              <i class="bi bi-shop me-1"></i>
+              Tienda
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('ranking.show_ranking') }}">
+              <i class="bi bi-trophy me-1"></i>
+              Ranking
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('courses.list_courses') if 'courses.list_courses' in url_for.__globals__.get('current_app', {}).view_functions else '/cursos' }}">
+              <i class="bi bi-play-circle-fill me-1"></i>Cursos
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('chat.chat_index') }}">
+              <i class="bi bi-chat-dots-fill me-1"></i>Chat
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('crunebot.crunebot_chat') }}">
+              <i class="bi bi-robot me-1"></i>Crunebot
+            </a>
+          </li>
+
           <!-- Notifications -->
           <li class="nav-item dropdown">
             <a class="nav-link position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown">
@@ -97,12 +124,6 @@
               <li><span class="dropdown-item-text">
                 <i class="bi bi-coin me-2"></i>{{ current_user.credits }} Crolars
               </span></li>
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <button class="dropdown-item d-flex align-items-center gap-2" type="button" data-theme-toggle>
-                  <i class="bi bi-sun"></i>Tema claro / oscuro
-                </button>
-              </li>
               <li><hr class="dropdown-divider"></li>
               {% if current_user.role == 'admin' and config.ADMIN_INSTANCE %}
               <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}">

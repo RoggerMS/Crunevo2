@@ -401,7 +401,7 @@ function initStreakClaim() {
     this.innerHTML = '<div class="spinner-border spinner-border-sm"></div>';
     
     try {
-      const response = await fetch('/api/reclamar-racha', {
+      const response = await fetch('/auth/claim_streak', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
