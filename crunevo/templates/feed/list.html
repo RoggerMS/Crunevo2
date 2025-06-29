@@ -28,10 +28,7 @@
           {% set note = item.data %}
           {% include 'components/feed_card.html' %}
         {% elif item.type == 'post' %}
-          {% set post = item.data %}
-          {% set counts = reaction_counts.get(post.id, {}) %}
-          {% set my_reaction = user_reactions.get(post.id) %}
-          {% include 'feed/post_card.html' %}
+          {% include 'components/post_card.html' with context %}
         {% endif %}
       {% endfor %}
     </div>
