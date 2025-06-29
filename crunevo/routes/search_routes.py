@@ -3,8 +3,14 @@ from flask import Blueprint, render_template, request, jsonify
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
 from crunevo.models import (
-    User, Note, Post, Product, Message, Mission, 
-    Review
+    User,
+    Note,
+    Post,
+    Product,
+    Message,
+    Mission,
+    Review,
+    Course,
 )
 from sqlalchemy import or_, desc, func
 
@@ -59,6 +65,11 @@ def search_api():
         products_results = search_products(query, page, per_page)
         results["products"] = products_results["results"]
         total_results += products_results["total"]
+
+    if category == "all" or category == "courses":
+        courses_results = search_courses(query, page, per_page)
+        results["courses"] = courses_results["results"]
+        total_results += courses_results["total"]
     
     if category == "all" or category == "chats":
         chats_results = search_chats(query, page, per_page)
@@ -264,6 +275,37 @@ def search_products(query, page=1, per_page=20):
     }
 
 
+def search_courses(query, page=1, per_page=20):
+    """Búsqueda en cursos"""
+    search_filter = or_(
+        Course.title.ilike(f"%{query}%"),
+        Course.description.ilike(f"%{query}%"),
+        Course.category.ilike(f"%{query}%"),
+    )
+
+    courses = Course.query.filter(search_filter).order_by(
+        desc(Course.created_at)
+    ).paginate(page=page, per_page=per_page, error_out=False)
+
+    results = []
+    for course in courses.items:
+        results.append({
+            "id": course.id,
+            "title": course.title,
+            "category": course.category,
+            "creator": course.creator.username if course.creator else "",
+            "thumbnail_url": course.thumbnail_url,
+            "url": f"/cursos/{course.id}",
+            "type": "course",
+        })
+
+    return {
+        "results": results,
+        "total": courses.total,
+        "pages": courses.pages,
+    }
+
+
 def search_chats(query, page=1, per_page=20):
     """Búsqueda en mensajes de chat global"""
     messages = Message.query.filter(
@@ -423,6 +465,19 @@ def search_suggestions():
                         "icon": "bi-tag",
                         "url": f"/search?q={tag}"
                     })
+
+    # Cursos
+    courses = Course.query.filter(
+        Course.title.ilike(f"{query}%")
+    ).limit(3).all()
+
+    for course in courses:
+        suggestions.append({
+            "text": course.title,
+            "type": "course",
+            "icon": "bi-play-circle",
+            "url": f"/cursos/{course.id}"
+        })
     
     return jsonify(suggestions[:10])
 
@@ -438,6 +493,7 @@ def search_filters():
             {"value": "posts", "label": "Publicaciones", "icon": "bi-chat-square-text"},
             {"value": "users", "label": "Usuarios", "icon": "bi-people"},
             {"value": "products", "label": "Tienda", "icon": "bi-shop"},
+            {"value": "courses", "label": "Cursos", "icon": "bi-play-circle"},
             {"value": "chats", "label": "Chat", "icon": "bi-chat-dots"},
             {"value": "missions", "label": "Misiones", "icon": "bi-trophy"}
         ],
