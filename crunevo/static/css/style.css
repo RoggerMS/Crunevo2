@@ -12,7 +12,7 @@ html {
 }
 
 body[data-bs-theme="dark"] {
-  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  background: #121212 !important;
   color: #f8f9fa;
 }
 
@@ -48,6 +48,10 @@ body {
 .sidebar {
   position: sticky;
   top: 80px;
+}
+
+[data-bs-theme="dark"] .sidebar .username {
+  color: #ffffff;
 }
 
 /* Modern card design with enhanced contrast */
@@ -274,6 +278,22 @@ body[data-bs-theme="dark"] .form-control:focus {
   border-color: #667eea;
 }
 
+[data-bs-theme="dark"] input.form-control {
+  background-color: #1e1e2f !important;
+  color: #ffffff;
+}
+
+[data-bs-theme="dark"] textarea.form-control,
+[data-bs-theme="dark"] .form-control.bg-light {
+  background-color: #1e1e2f !important;
+  color: #ffffff;
+}
+
+[data-bs-theme="dark"] .badge.bg-light {
+  background-color: #343a40 !important;
+  color: #f8f9fa !important;
+}
+
 /* Chat input styling */
 .chat-input-container {
   background: rgba(255, 255, 255, 0.95);
@@ -384,6 +404,12 @@ body > .navbar {
 
 html {
   scroll-padding-top: 0 !important;
+}
+
+[data-bs-theme="dark"] .navbar,
+[data-bs-theme="dark"] .navbar.bg-primary {
+  background-color: #121212 !important;
+  border-bottom: 1px solid #333;
 }
 
 /* Enhanced notification styles */
