@@ -1,7 +1,18 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from crunevo.extensions import db
-from crunevo.models import User, Note, Post, Club, Mission, Purchase, Report, AdminLog
+from crunevo.models import (
+    User,
+    Note,
+    Post,
+    Club,
+    Mission,
+    Purchase,
+    Report,
+    AdminLog,
+    Product,
+    ProductLog,
+)
 from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit
 from crunevo.constants.credit_reasons import CreditReasons
@@ -187,6 +198,32 @@ def export_users():
     response.headers["Content-Disposition"] = "attachment; filename=users_export.csv"
 
     return response
+
+
+@admin_bp.route("/store/history")
+def product_history():
+    """View history of product actions"""
+    logs = (
+        db.session.query(ProductLog, Product)
+        .join(Product, ProductLog.product_id == Product.id)
+        .order_by(ProductLog.timestamp.desc())
+        .limit(200)
+        .all()
+    )
+    return render_template("admin/product_history.html", logs=logs)
+
+
+@admin_bp.route("/logs")
+def admin_logs():
+    """View recent admin actions"""
+    logs = (
+        db.session.query(AdminLog, User)
+        .join(User, AdminLog.admin_id == User.id)
+        .order_by(AdminLog.timestamp.desc())
+        .limit(200)
+        .all()
+    )
+    return render_template("admin/admin_logs.html", logs=logs)
 
 
 @admin_bp.route("/stats/api")
