@@ -1,5 +1,6 @@
 {% for post in posts %}
-  {% include 'feed/post_card.html' %}
+  {% set item = {'data': post} %}
+  {% include 'components/post_card.html' with context %}
 {% else %}
   <p class="tw-text-center tw-text-muted">No se encontraron publicaciones.</p>
 {% endfor %}

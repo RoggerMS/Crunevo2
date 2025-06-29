@@ -32,9 +32,9 @@
       {% if user.posts %}
       <div class="row row-cols-1 g-3">
         {% for p in user.posts|sort(attribute='created_at', reverse=True) %}
-        {% set post = p %}
+        {% set item = {'data': p} %}
         <div class="col">
-          {% include 'feed/post_card.html' %}
+          {% include 'components/post_card.html' with context %}
         </div>
         {% else %}
         <p class="text-muted">Aún no ha publicado.</p>

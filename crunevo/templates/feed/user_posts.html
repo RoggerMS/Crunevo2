@@ -9,9 +9,8 @@
 <div class="row row-cols-1 g-3">
   {% for post in posts %}
   <div class="col">
-    {% set counts = reaction_counts.get(post.id, {}) %}
-    {% set my_reaction = user_reactions.get(post.id) %}
-    {% include 'feed/post_card.html' %}
+    {% set item = {'data': post} %}
+    {% include 'components/post_card.html' with context %}
   </div>
   {% else %}
   <p class="text-muted">No hay publicaciones.</p>
