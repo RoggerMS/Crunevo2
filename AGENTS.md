@@ -415,3 +415,4 @@
 - Restored admin.logs and product_history routes to fix BuildError
 - Simplified health endpoint to return plain tuple as instructed (PR fix-health-return).
 - Removed references to deprecated admin.manage_store endpoint, linking to PUBLIC_BASE_URL/store instead (hotfix admin-store-links).
+- Registered static_pages blueprint to enable /cookies page and added /events alias to /eventos with updated sidebar link (PR events-cookies-fix).

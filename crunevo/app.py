@@ -161,12 +161,12 @@ def create_app():
     from .routes.health_routes import health_bp
     from .routes.club_routes import club_bp
     from .routes.forum_routes import forum_bp
-    from .routes.event_routes import event_bp
+    from .routes.event_routes import event_bp, list_events
     from .routes.about_routes import about_bp
+    from .routes.static_routes import static_bp
     from .routes.crunebot_routes import crunebot_bp
     from .routes.saved_routes import saved_bp
     from .routes.main_routes import main_bp
-
 
     is_admin = os.environ.get("ADMIN_INSTANCE") == "1"
     testing_env = os.environ.get("PYTEST_CURRENT_TEST") is not None
@@ -263,7 +263,13 @@ def create_app():
         app.register_blueprint(club_bp)
         app.register_blueprint(forum_bp)
         app.register_blueprint(event_bp)
+        app.add_url_rule(
+            "/events",
+            endpoint="event.list_events_alias",
+            view_func=list_events,
+        )
         app.register_blueprint(about_bp)
+        app.register_blueprint(static_bp)
         app.register_blueprint(crunebot_bp)
         app.register_blueprint(saved_bp)
         app.register_blueprint(errors_bp)

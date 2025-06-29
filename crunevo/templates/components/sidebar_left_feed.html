@@ -77,7 +77,7 @@
         </li>
 
         <li>
-          <a href="{{ url_for('event_bp.list_events') if 'event_bp.list_events' in url_for.__globals__.get('current_app', {}).view_functions else '/events' }}" class="nav-link {{ 'active' if request.endpoint == 'event_bp.list_events' }}">
+          <a href="{{ url_for('event.list_events') if 'event.list_events' in url_for.__globals__.get('current_app', {}).view_functions else '/eventos' }}" class="nav-link {{ 'active' if request.endpoint == 'event.list_events' }}">
             <i class="bi bi-calendar-event"></i>
             <span class="fw-semibold">Eventos</span>
           </a>
