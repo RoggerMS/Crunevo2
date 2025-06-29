@@ -416,3 +416,12 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.feed-submit-btn {
+  background-color: var(--primary-light);
+  border-color: var(--primary-light);
+}
+.feed-submit-btn:hover {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
