@@ -411,3 +411,4 @@
 - Fixed remaining dark mode issues: unified body and feed backgrounds, updated card and input styles, and forced text-dark to white (PR dark-mode-bugfix).
 - Adjusted feed selectors to use `html[data-bs-theme]` and ensured feed section background stays solid in dark mode (PR dark-mode-feed-css).
 - Reemplazadas plantillas de publicaciones con 'components/post_card.html' y eliminado diseño anterior y la clase hover-scale (PR post-card-modernization).
+- Added /health endpoint in wsgi.py and updated fly.toml to check it via HTTP (PR fix-health-check).
