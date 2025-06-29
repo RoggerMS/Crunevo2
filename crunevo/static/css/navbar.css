@@ -13,6 +13,12 @@
   position: sticky;
 }
 
+@media (min-width: 992px) {
+  .navbar-search {
+    max-width: 200px;
+  }
+}
+
 @media (max-width: 768px) {
   .navbar-crunevo {
     min-height: 56px;

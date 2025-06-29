@@ -150,7 +150,7 @@ def search_notes(query, page=1, per_page=20):
 
 def search_posts(query, page=1, per_page=20):
     """Búsqueda en publicaciones sociales"""
-    base_query = Post.query.filter(Post.is_deleted == False)
+    base_query = Post.query.filter(Post.is_deleted.is_(False))
     
     search_filter = or_(
         Post.content.ilike(f"%{query}%"),
@@ -195,7 +195,7 @@ def search_users(query, page=1, per_page=20):
     )
     
     users = User.query.filter(
-        User.activated == True,
+        User.activated.is_(True),
         search_filter
     ).order_by(
         func.case(
@@ -236,7 +236,7 @@ def search_products(query, page=1, per_page=20):
     )
     
     products = Product.query.filter(
-        Product.active == True,
+        Product.active.is_(True),
         Product.stock > 0,
         search_filter
     ).order_by(
@@ -309,8 +309,8 @@ def search_courses(query, page=1, per_page=20):
 def search_chats(query, page=1, per_page=20):
     """Búsqueda en mensajes de chat global"""
     messages = Message.query.filter(
-        Message.is_global == True,
-        Message.is_deleted == False,
+        Message.is_global.is_(True),
+        Message.is_deleted.is_(False),
         Message.content.ilike(f"%{query}%")
     ).order_by(
         desc(Message.timestamp)
@@ -425,7 +425,7 @@ def search_suggestions():
     # Usuarios
     users = User.query.filter(
         User.username.ilike(f"{query}%"),
-        User.activated == True
+        User.activated.is_(True)
     ).limit(3).all()
     
     for user in users:

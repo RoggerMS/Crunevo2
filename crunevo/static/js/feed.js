@@ -383,7 +383,7 @@ class FeedManager {
         claimBtn.disabled = true;
         claimBtn.innerHTML = '<div class="spinner-border spinner-border-sm"></div>';
 
-        const response = await this.fetchWithCSRF('/auth/claim_streak', {
+        const response = await this.fetchWithCSRF('/api/reclamar-racha', {
           method: 'POST'
         });
 

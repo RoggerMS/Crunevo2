@@ -1,11 +1,6 @@
-
 from flask import Blueprint, render_template, request, jsonify
-from flask_login import login_required, current_user
-import json
-import re
+from flask_login import login_required
 from datetime import datetime
-from crunevo.extensions import db
-from crunevo.models import User
 
 crunebot_bp = Blueprint("crunebot", __name__)
 
@@ -172,7 +167,7 @@ def crunebot_message():
         {
             "response": response,
             "timestamp": datetime.utcnow().isoformat(),
-            "can_save": True
+            "can_save": True,
         }
     )
 
@@ -182,12 +177,11 @@ def crunebot_message():
 def save_conversation():
     """Save a conversation snippet"""
     data = request.get_json()
-    conversation_data = data.get("conversation", "")
-    
+    data.get("conversation", "")
+
     # In a real implementation, you'd save this to a database
     # For now, we'll just return success
-    
-    return jsonify({
-        "status": "success",
-        "message": "Conversación guardada exitosamente"
-    })
+
+    return jsonify(
+        {"status": "success", "message": "Conversación guardada exitosamente"}
+    )
