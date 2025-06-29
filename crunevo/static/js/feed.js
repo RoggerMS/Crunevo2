@@ -256,10 +256,10 @@ class FeedManager {
       const comments = await response.json();
 
       container.innerHTML = comments.map(comment => `
-        <div class="comment-item d-flex gap-3 mb-3">
+        <div class="comment-item d-flex gap-3 mb-3 comment-box">
           <img src="${comment.avatar}" class="rounded-circle" width="32" height="32">
           <div class="flex-grow-1">
-            <div class="bg-light rounded-3 p-3">
+            <div class="comment-box p-3 rounded-3">
               <div class="fw-semibold small mb-1">${comment.author}</div>
               <div class="small">${comment.body}</div>
             </div>
@@ -320,10 +320,10 @@ class FeedManager {
     if (!container) return;
 
     const commentHtml = `
-      <div class="comment-item d-flex gap-3 mb-3">
+      <div class="comment-item d-flex gap-3 mb-3 comment-box">
         <img src="${comment.avatar || '/static/img/default.png'}" class="rounded-circle" width="32" height="32">
         <div class="flex-grow-1">
-          <div class="bg-light rounded-3 p-3">
+          <div class="comment-box p-3 rounded-3">
             <div class="fw-semibold small mb-1">${comment.author}</div>
             <div class="small">${comment.body}</div>
           </div>

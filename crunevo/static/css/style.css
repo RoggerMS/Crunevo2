@@ -575,3 +575,53 @@ html {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* Dark mode overhaul */
+body[data-bs-theme="dark"] {
+  background-color: #0d1117;
+  color: #ffffff;
+}
+
+body[data-bs-theme="dark"] main {
+  background-color: #0d1117;
+}
+
+body[data-bs-theme="dark"] .post-input,
+body[data-bs-theme="dark"] .form-control {
+  background-color: #1e1e2f;
+  color: #ffffff;
+  border: 1px solid #333;
+}
+
+[data-bs-theme="dark"] .navbar {
+  background-color: #161b22;
+  border-bottom: 1px solid #30363d;
+}
+
+[data-bs-theme="dark"] .navbar .form-control {
+  background-color: #0d1117;
+  color: #ffffff;
+}
+
+body[data-bs-theme="dark"] .comment-box {
+  background-color: #1c1c2b;
+  color: #ffffff;
+}
+
+body[data-bs-theme="dark"] .btn {
+  background-color: #24292f;
+  color: #c9d1d9;
+}
+
+body[data-bs-theme="dark"] .btn:hover {
+  background-color: #30363d;
+}
+
+body[data-bs-theme="dark"] .sidebar-left,
+body[data-bs-theme="dark"] .card,
+body[data-bs-theme="dark"] .trending-card {
+  background-color: #161b22;
+  color: #ffffff;
+  border: 1px solid #30363d;
+}
+
