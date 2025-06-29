@@ -152,7 +152,7 @@
         <img src="{{ comment.author.avatar_url or url_for('static', filename='img/default.png') }}" 
              class="rounded-circle" width="24" height="24">
         <div class="flex-grow-1">
-          <div class="bg-light rounded-3 px-3 py-2">
+          <div class="comment-box rounded-3 px-3 py-2">
             <div class="small fw-semibold mb-1">{{ comment.author.username }}</div>
             <div class="small">{{ comment.body }}</div>
           </div>

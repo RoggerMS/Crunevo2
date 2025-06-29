@@ -52,7 +52,7 @@
   <h5 class="mb-3">Comentarios</h5>
   <div id="comments" class="comment-container" data-post-id="{{ note.id }}">
     {% for c in note.comments|sort(attribute='created_at', reverse=True) %}
-    <div class="d-flex mb-3 comment comment-item">
+    <div class="d-flex mb-3 comment comment-item comment-box">
       <img loading="lazy" src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
       <div>
         <div class="small text-muted">
@@ -111,7 +111,7 @@
     }
     function renderComment(data) {
       const div = document.createElement('div');
-      div.className = 'd-flex mb-3 comment comment-item';
+      div.className = 'd-flex mb-3 comment comment-item comment-box';
       div.innerHTML = `
         <img src="${data.avatar}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
         <div><div class="small text-muted">${data.author} • ${timeAgo(data.timestamp)}</div><div>${data.body}</div></div>`;
