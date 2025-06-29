@@ -15,7 +15,7 @@
   <a class="nav-link {% if request.endpoint == 'admin.admin_logs' %}active{% endif %}" href="{{ url_for('admin.admin_logs') }}">
     <i class="ti ti-clipboard-list me-2"></i> Auditoría
   </a>
-  <a class="nav-link {% if request.endpoint == 'admin.manage_store' %}active{% endif %}" href="{{ url_for('admin.manage_store') }}">
+  <a class="nav-link" href="{{ PUBLIC_BASE_URL }}/store" target="_blank">
     <i class="ti ti-building-store me-2"></i> Tienda
   </a>
   <a class="nav-link {% if request.endpoint == 'admin.product_history' %}active{% endif %}" href="{{ url_for('admin.product_history') }}">

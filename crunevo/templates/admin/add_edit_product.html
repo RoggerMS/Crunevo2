@@ -46,5 +46,5 @@
   <a href="{{ PUBLIC_BASE_URL }}/store/product/{{ product.id }}" target="_blank" class="btn btn-outline-info ms-2">Ver en tienda</a>
   {% endif %}
 </form>
-<a href="{{ url_for('admin.manage_store') }}" class="btn btn-link mt-2">&larr; Volver a tienda</a>
+<a href="{{ PUBLIC_BASE_URL }}/store" class="btn btn-link mt-2" target="_blank">&larr; Ir a tienda</a>
 {% endblock %}
