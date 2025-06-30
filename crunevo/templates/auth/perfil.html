@@ -201,7 +201,7 @@
                       <button class="btn btn-warning btn-sm">
                         <i class="bi bi-plus-circle"></i> Comprar más Crolars
                       </button>
-                      <a href="{{ url_for('store.store_index') }}" class="btn btn-outline-warning btn-sm">
+                      <a href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}" class="btn btn-outline-warning btn-sm">
                         <i class="bi bi-shop"></i> Ir a la Tienda
                       </a>
                     </div>
@@ -387,7 +387,7 @@
               <a href="{{ url_for('club.list_clubs') }}" class="btn btn-outline-success btn-sm">
                 <i class="bi bi-people"></i> Buscar Clubes
               </a>
-              <a href="{{ url_for('store.store_index') }}" class="btn btn-outline-warning btn-sm">
+              <a href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}" class="btn btn-outline-warning btn-sm">
                 <i class="bi bi-shop"></i> Tienda
               </a>
             </div>

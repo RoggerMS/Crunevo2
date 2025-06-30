@@ -90,7 +90,7 @@
           </a>
         </li>
         <li>
-          <a href="{{ url_for('store.store_index') }}" class="nav-link {{ 'active' if request.endpoint == 'store.store_index' }}">
+          <a href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}" class="nav-link {{ 'active' if request.endpoint == 'store.store_index' }}">
             <i class="bi bi-shop"></i>
             <span class="fw-semibold">Tienda</span>
             {% if session.get('cart_count', 0) > 0 %}
