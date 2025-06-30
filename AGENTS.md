@@ -424,3 +424,4 @@
 - Verificado enlace al foro en navbar, feed sidebar y club list con comprobación de endpoint para evitar BuildError (hotfix forum-link-check).
 - Moved 'Ver tendencias 🔥' button from hero to ranking tabs next to 'Top Referidores' and styled as nav-link (PR trending-button-move).
 - Redirected main.index to admin dashboard when ADMIN_INSTANCE and guarded store and stats links to avoid BuildError (hotfix admin-root-builderror).
+- Fixed comment modal to display complete post detail via new /feed/api/post endpoint and ensured closing works correctly (PR comment-modal-full-post).

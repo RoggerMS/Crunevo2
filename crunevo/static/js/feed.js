@@ -233,16 +233,29 @@ class FeedManager {
 
   openCommentModal(e) {
     const postId = e.currentTarget.dataset.postId;
-    this.loadComments(postId);
-    
-    const modal = new bootstrap.Modal(document.getElementById('commentModal'));
+    const modalEl = document.getElementById('commentModal');
+    const bodyEl = document.getElementById('commentModalBody');
+    if (!modalEl || !bodyEl) return;
+    bodyEl.innerHTML = '<div class="text-center p-3"><div class="spinner-border"></div></div>';
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.show();
-    
-    // Focus on comment input
-    setTimeout(() => {
-      const input = document.querySelector('#commentForm input[name="body"]');
-      if (input) input.focus();
-    }, 300);
+
+    fetch(`/feed/api/post/${postId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        bodyEl.innerHTML = data.html;
+        const form = bodyEl.querySelector('#commentForm');
+        if (form) {
+          form.onsubmit = (ev) => this.submitComment(ev, postId);
+        }
+        setTimeout(() => {
+          const input = bodyEl.querySelector('#commentForm input[name="body"]');
+          if (input) input.focus();
+        }, 300);
+      })
+      .catch(() => {
+        bodyEl.innerHTML = '<div class="text-center text-muted p-3">Error al cargar publicación</div>';
+      });
   }
 
   async loadComments(postId) {
