@@ -30,6 +30,11 @@ IS_ADMIN = os.environ.get("ADMIN_INSTANCE") == "1"
 auth_bp = Blueprint("auth", __name__)
 
 
+@auth_bp.route("/register")
+def redirect_register():
+    return redirect(url_for("onboarding.register"))
+
+
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     admin_mode = current_app.config.get("ADMIN_INSTANCE")
