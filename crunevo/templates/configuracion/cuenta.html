@@ -4,7 +4,22 @@
       <h5 class="mb-0">Cuenta y seguridad</h5>
     </div>
     <div class="card-body">
-      <p class="text-muted">Próximamente podrás actualizar tu correo y contraseña.</p>
+      <form id="passwordForm" class="settings-form" method="post" action="{{ url_for('settings.update_password') }}">
+        {{ csrf.csrf_field() }}
+        <div class="mb-3">
+          <label for="current_password" class="form-label">Contraseña actual</label>
+          <input type="password" class="form-control" id="current_password" name="current_password" autocomplete="current-password">
+        </div>
+        <div class="mb-3">
+          <label for="new_password" class="form-label">Nueva contraseña</label>
+          <input type="password" class="form-control" id="new_password" name="new_password" autocomplete="new-password">
+        </div>
+        <div class="mb-3">
+          <label for="confirm_new" class="form-label">Confirmar nueva contraseña</label>
+          <input type="password" class="form-control" id="confirm_new" name="confirm_new" autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-primary">Cambiar contraseña</button>
+      </form>
     </div>
   </div>
 </section>

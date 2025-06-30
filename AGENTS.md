@@ -453,3 +453,4 @@
 - Added trending posts section to feed sidebar with weekly top posts (PR feed-sidebar-trending).
 - Added settings page '/configuracion' with authenticated route and sidebar. Updated user dropdown with copy, edit and configuración options (PR settings-page).
 - Removed copy and edit options from user dropdown and related JS listener (PR profile-menu-cleanup).
+- Added password change form and backend route under settings (PR settings-change-password).
