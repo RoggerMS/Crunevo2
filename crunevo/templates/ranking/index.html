@@ -321,7 +321,6 @@
       <div class="ranking-hero">
         <div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
           <h1 class="m-0">🏆 Ranking CRUNEVO</h1>
-          <a href="{{ url_for('feed.trending') }}" class="btn btn-sm btn-outline-warning ms-3">Ver tendencias 🔥</a>
         </div>
         <p>Descubre a los líderes y top contributors de nuestra comunidad educativa</p>
       </div>
@@ -342,6 +341,9 @@
         </a>
         <a class="nav-link" href="{{ url_for('ranking.top_referrers') }}">
           <i class="bi bi-people me-2"></i>Top Referidores
+        </a>
+        <a class="nav-link" href="{{ url_for('feed.trending') }}">
+          <i class="bi bi-fire me-2"></i>Ver tendencias 🔥
         </a>
       </div>
 
