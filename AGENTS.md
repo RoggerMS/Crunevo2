@@ -434,3 +434,4 @@
 - Redesigned comment modal using feed post card layout and fixed share modal backdrop removal (PR share-modal-redesign).
 - Updated IA route to use OpenRouter chat completions API, added OPENROUTER_API_KEY config and CSP connect-src entry (PR openrouter-api-fix).
 - Added admin.run_ranking route invoking calculate_weekly_ranking and linked from dashboard (hotfix admin-run-ranking-route).
+- Updated IA route headers to include Content-Type and switched model to "deepseek-chat" via OpenRouter (PR deepseek-openrouter).
