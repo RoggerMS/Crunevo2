@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, current_app
 import openai
+from openai import RateLimitError
 
 from crunevo.utils.helpers import activated_required
 
@@ -27,6 +28,9 @@ def ia_ask():
         )
         answer = completion.choices[0].message.content
         return jsonify({"answer": answer})
+    except RateLimitError:
+        current_app.logger.exception("OpenAI request failed")
+        return jsonify({"error": "quota"}), 429
     except Exception:
         current_app.logger.exception("OpenAI request failed")
         return jsonify({"error": "api"}), 500
