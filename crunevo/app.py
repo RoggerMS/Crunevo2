@@ -283,10 +283,10 @@ def create_app():
         app.register_blueprint(static_bp)
         app.register_blueprint(saved_bp)
         app.register_blueprint(errors_bp)
-        app.register_blueprint(admin_blocker_bp)
         if testing_env:
             app.register_blueprint(admin_bp)
             app.register_blueprint(admin_email_bp)
+        app.register_blueprint(admin_blocker_bp)
 
     @app.errorhandler(CSRFError)
     def handle_csrf_error(e):

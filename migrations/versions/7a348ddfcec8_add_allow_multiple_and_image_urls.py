@@ -18,18 +18,23 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column(
-        "product",
-        sa.Column(
-            "allow_multiple",
-            sa.Boolean(),
-            server_default=sa.true(),
-            nullable=True,
-        ),
-    )
-    op.add_column("product", sa.Column("image_urls", sa.JSON(), nullable=True))
+    bind = op.get_bind()
+    insp = sa.inspect(bind)
+    cols = {c["name"] for c in insp.get_columns("product")}
+    if "allow_multiple" not in cols:
+        op.add_column(
+            "product",
+            sa.Column(
+                "allow_multiple",
+                sa.Boolean(),
+                server_default=sa.true(),
+                nullable=True,
+            ),
+        )
+    if "image_urls" not in cols:
+        op.add_column("product", sa.Column("image_urls", sa.JSON(), nullable=True))
 
 
 def downgrade():
-    op.drop_column("product", "image_urls")
-    op.drop_column("product", "allow_multiple")
+    op.drop_column("product", "image_urls", if_exists=True)
+    op.drop_column("product", "allow_multiple", if_exists=True)

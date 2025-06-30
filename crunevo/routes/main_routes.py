@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, current_app
+from flask import Blueprint, render_template, redirect, url_for, current_app, abort
 from flask_login import current_user
 from crunevo.routes.feed_routes import feed_home
 
@@ -42,4 +42,9 @@ def privacidad():
 @main_bp.route("/crunebot")
 def redirect_crunebot():
     """Redirect legacy /crunebot to the unified IA chat."""
+    if (
+        current_app.config.get("ADMIN_INSTANCE")
+        or "ia.ia_chat" not in current_app.view_functions
+    ):
+        abort(404)
     return redirect(url_for("ia.ia_chat"))
