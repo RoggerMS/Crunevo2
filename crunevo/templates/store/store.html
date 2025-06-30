@@ -92,6 +92,10 @@
   margin-bottom: 2rem;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
+[data-bs-theme="dark"] .category-tabs {
+  background: #1f2937;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
 
 .category-btn {
   border: none;
@@ -101,6 +105,10 @@
   margin: 0.25rem;
   transition: all 0.3s;
   font-weight: 500;
+  color: #1a202c;
+}
+[data-bs-theme="dark"] .category-btn {
+  color: #f1f5f9;
 }
 
 .category-btn.active {
@@ -150,66 +158,83 @@
   </div>
 </div>
 
-<!-- Store Hero -->
-<div class="store-hero">
-  <div class="container text-center">
-    <h1 class="display-4 fw-bold mb-3">🛒 Tienda CRUNEVO</h1>
-    <p class="lead">Descubre productos educativos exclusivos y mejora tu experiencia de aprendizaje</p>
-    <div class="row justify-content-center mt-4">
-      <div class="col-md-8">
-        <div class="d-flex justify-content-center gap-3">
-          <div class="text-center">
-            <i class="bi bi-shield-check display-6"></i>
-            <p class="small mt-2">Productos Verificados</p>
+<!-- Hero / Offers / Premium carousel -->
+<div id="storeCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <div class="store-hero">
+        <div class="container text-center">
+          <h1 class="display-4 fw-bold mb-3">🛒 Tienda CRUNEVO</h1>
+          <p class="lead">Descubre productos educativos exclusivos y mejora tu experiencia de aprendizaje</p>
+          <div class="row justify-content-center mt-4">
+            <div class="col-md-8">
+              <div class="d-flex justify-content-center gap-3">
+                <div class="text-center">
+                  <i class="bi bi-shield-check display-6"></i>
+                  <p class="small mt-2">Productos Verificados</p>
+                </div>
+                <div class="text-center">
+                  <i class="bi bi-truck display-6"></i>
+                  <p class="small mt-2">Entrega Digital</p>
+                </div>
+                <div class="text-center">
+                  <i class="bi bi-coin display-6"></i>
+                  <p class="small mt-2">Paga con Crolars</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="text-center">
-            <i class="bi bi-truck display-6"></i>
-            <p class="small mt-2">Entrega Digital</p>
-          </div>
-          <div class="text-center">
-            <i class="bi bi-coin display-6"></i>
-            <p class="small mt-2">Paga con Crolars</p>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <div class="offers-banner text-center">
+        <div class="container">
+          <h2>🔥 ¡Ofertas Especiales!</h2>
+          <p class="mb-3">Aprovecha descuentos de hasta 50% en productos seleccionados</p>
+          <button class="btn btn-light btn-lg" onclick="scrollToOffers()">Ver Ofertas</button>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <div class="premium-section">
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h2>✨ CRUNEVO+ Premium</h2>
+              <p class="mb-3">Accede a contenido exclusivo, cursos premium y beneficios especiales</p>
+              <ul class="list-unstyled">
+                <li><i class="bi bi-check-circle me-2"></i>Cursos exclusivos de alta calidad</li>
+                <li><i class="bi bi-check-circle me-2"></i>Descuentos especiales en la tienda</li>
+                <li><i class="bi bi-check-circle me-2"></i>Badge premium en tu perfil</li>
+                <li><i class="bi bi-check-circle me-2"></i>Soporte prioritario</li>
+              </ul>
+            </div>
+            <div class="col-md-4 text-center">
+              <div class="price-section justify-content-center">
+                <span class="price-current">S/ 29.90</span>
+                <span class="price-original">S/ 49.90</span>
+              </div>
+              <button class="btn btn-warning btn-lg fw-bold text-dark">
+                <i class="bi bi-star me-2"></i>Obtener CRUNEVO+
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#storeCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Anterior</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#storeCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Siguiente</span>
+  </button>
 </div>
 
 <div class="container">
-  <!-- Offers Banner -->
-  <div class="offers-banner">
-    <h2>🔥 ¡Ofertas Especiales!</h2>
-    <p class="mb-3">Aprovecha descuentos de hasta 50% en productos seleccionados</p>
-    <button class="btn btn-light btn-lg" onclick="scrollToOffers()">
-      Ver Ofertas
-    </button>
-  </div>
-
-  <!-- Premium Section -->
-  <div class="premium-section">
-    <div class="row align-items-center">
-      <div class="col-md-8">
-        <h2>✨ CRUNEVO+ Premium</h2>
-        <p class="mb-3">Accede a contenido exclusivo, cursos premium y beneficios especiales</p>
-        <ul class="list-unstyled">
-          <li><i class="bi bi-check-circle me-2"></i>Cursos exclusivos de alta calidad</li>
-          <li><i class="bi bi-check-circle me-2"></i>Descuentos especiales en la tienda</li>
-          <li><i class="bi bi-check-circle me-2"></i>Badge premium en tu perfil</li>
-          <li><i class="bi bi-check-circle me-2"></i>Soporte prioritario</li>
-        </ul>
-      </div>
-      <div class="col-md-4 text-center">
-        <div class="price-section justify-content-center">
-          <span class="price-current">S/ 29.90</span>
-          <span class="price-original">S/ 49.90</span>
-        </div>
-        <button class="btn btn-warning btn-lg fw-bold">
-          <i class="bi bi-star me-2"></i>Obtener CRUNEVO+
-        </button>
-      </div>
-    </div>
-  </div>
 
   <!-- Category Tabs -->
   <div class="category-tabs">
@@ -258,11 +283,12 @@
 
         <!-- Product Image -->
         <div class="product-image d-flex align-items-center justify-content-center">
-          {% if product.image_url %}
-          <img src="{{ product.image_url }}" alt="{{ product.name }}" 
+          {% if product.first_image or product.image %}
+          <img src="{{ product.first_image or product.image }}" alt="{{ product.name }}"
                class="img-fluid" style="max-height: 150px; object-fit: cover;">
           {% else %}
-          <i class="bi bi-box-seam display-4 text-muted"></i>
+          <img src="{{ url_for('static', filename='img/default_product.png') }}" alt="Sin imagen"
+               class="img-fluid" style="max-height: 150px; object-fit: cover;">
           {% endif %}
         </div>
 
@@ -391,27 +417,26 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function addToCart(productId) {
-  fetch('/store/add-to-cart', {
+  fetch(`/store/add/${productId}`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content
-    },
-    body: JSON.stringify({ product_id: productId, quantity: 1 })
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      showToast('Producto agregado al carrito', 'success');
-      updateCartCount();
-    } else {
-      showToast(data.message || 'Error al agregar al carrito', 'error');
+      'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content,
+      'X-Requested-With': 'XMLHttpRequest'
     }
   })
-  .catch(error => {
-    console.error('Error:', error);
-    showToast('Error de conexión', 'error');
-  });
+    .then(response => response.json())
+    .then(data => {
+      if (data.count !== undefined) {
+        showToast('Producto agregado al carrito', 'success');
+        updateCartBadge(data.count);
+      } else {
+        showToast('Error al agregar al carrito', 'error');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showToast('Error de conexión', 'error');
+    });
 }
 
 function viewProduct(productId) {
@@ -427,17 +452,10 @@ function scrollToOffers() {
 }
 
 function updateCartCount() {
-  // Update cart count in navbar if exists
-  fetch('/store/cart-count')
-  .then(response => response.json())
-  .then(data => {
-    const cartBadge = document.getElementById('cart-count');
-    if (cartBadge) {
-      cartBadge.textContent = data.count;
-      cartBadge.style.display = data.count > 0 ? 'inline' : 'none';
-    }
-  })
-  .catch(console.error);
+  fetch('/store/api/cart_count')
+    .then(response => response.json())
+    .then(data => updateCartBadge(data.count))
+    .catch(console.error);
 }
 
 // Load cart count on page load

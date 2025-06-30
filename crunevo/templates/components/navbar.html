@@ -51,6 +51,14 @@
       </div>
 
       <ul class="navbar-nav ms-auto align-items-center gap-2">
+          {% if 'store.view_cart' in url_for.__globals__.get('current_app', {}).view_functions %}
+          <li class="nav-item d-none d-lg-block position-relative">
+            <a class="nav-link" href="{{ url_for('store.view_cart') }}">
+              <i class="bi bi-cart-fill"></i>
+              <span id="cartBadgeDesktop" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger tw-hidden">0</span>
+            </a>
+          </li>
+          {% endif %}
           <li class="nav-item d-none d-lg-block">
             <a class="nav-link" href="{{ url_for('chat.chat_index') }}">
               <i class="bi bi-chat-dots-fill"></i>
