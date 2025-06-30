@@ -51,7 +51,6 @@
 }
 
 .product-image {
-  height: 200px;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   position: relative;
   overflow: hidden;
@@ -142,6 +141,34 @@
   top: 20px;
   right: 20px;
   z-index: 100;
+}
+
+/* Uniform carousel panel sizing */
+#storeCarousel .carousel-item > div {
+  min-height: 300px;
+  padding: 3rem;
+  display: flex;
+  align-items: center;
+}
+
+.store-hero,
+.offers-banner,
+.premium-section {
+  margin-bottom: 0;
+}
+
+/* Square product thumbnails */
+.product-image {
+  aspect-ratio: 1 / 1;
+  height: auto;
+}
+
+/* Dark mode visibility fixes */
+[data-bs-theme="dark"] #storeCarousel .carousel-item > div {
+  color: #f8f8f8;
+}
+[data-bs-theme="dark"] .category-btn {
+  color: #f8f8f8;
 }
 </style>
 {% endblock %}
@@ -285,10 +312,10 @@
         <div class="product-image d-flex align-items-center justify-content-center">
           {% if product.first_image or product.image %}
           <img src="{{ product.first_image or product.image }}" alt="{{ product.name }}"
-               class="img-fluid" style="max-height: 150px; object-fit: cover;">
+               class="img-fluid w-100 h-100" style="object-fit: cover;">
           {% else %}
           <img src="{{ url_for('static', filename='img/default_product.png') }}" alt="Sin imagen"
-               class="img-fluid" style="max-height: 150px; object-fit: cover;">
+               class="img-fluid w-100 h-100" style="object-fit: cover;">
           {% endif %}
         </div>
 
@@ -322,7 +349,7 @@
           {% endif %}
 
           <!-- Actions -->
-          <div class="d-grid gap-2">
+          <div class="d-grid gap-2 mt-auto">
             {% if product.stock > 0 %}
             <button class="btn btn-primary" onclick="addToCart({{ product.id }})">
               <i class="bi bi-cart-plus me-2"></i>Agregar al Carrito
