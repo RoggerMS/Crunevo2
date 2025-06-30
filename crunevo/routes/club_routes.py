@@ -4,6 +4,8 @@ from crunevo.extensions import db
 from crunevo.models.club import Club, ClubMember
 from crunevo.utils.credits import add_credit
 from crunevo.constants.credit_reasons import CreditReasons
+from crunevo.forms import ClubForm
+from datetime import datetime
 
 club_bp = Blueprint("club", __name__)
 
@@ -122,3 +124,31 @@ def leave_club(club_id):
 
     flash(f"Has dejado el club {club.name}")
     return jsonify({"success": True, "member_count": club.member_count})
+
+
+@club_bp.route("/clubes/crear", methods=["GET", "POST"])
+@login_required
+def create_club():
+    """Create a new club"""
+    form = ClubForm()
+    if form.validate_on_submit():
+        club = Club(
+            name=form.name.data.strip(),
+            career=form.career.data.strip(),
+            description=(
+                form.description.data.strip() if form.description.data else None
+            ),
+            created_at=datetime.utcnow(),
+        )
+        db.session.add(club)
+        db.session.flush()
+
+        membership = ClubMember(user_id=current_user.id, club_id=club.id, role="admin")
+        club.member_count = 1
+        db.session.add(membership)
+        db.session.commit()
+
+        flash("Club creado exitosamente", "success")
+        return redirect(url_for("club.view_club", club_id=club.id))
+
+    return render_template("club/create_club.html", form=form)

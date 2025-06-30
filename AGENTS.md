@@ -466,3 +466,4 @@
 
 - Removed "Misiones" link from navbar, added mobile offcanvas sidebar toggle, redirected /register to onboarding and relaxed password policy to 6+ chars with letters and numbers (PR mobile-sidebar-register-fix).
 - Removed duplicate 'reportlab' entry from requirements.txt (PR requirements-cleanup).
+- Added user-facing club creation route, form template and updated sidebar button (PR create-club-route).
