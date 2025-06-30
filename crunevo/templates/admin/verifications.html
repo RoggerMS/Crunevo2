@@ -5,7 +5,7 @@
 <div class="card shadow-sm">
   <div class="card-body p-0">
     <div class="table-responsive">
-      <table id="tablaVerificaciones" class="table table-vcenter card-table">
+      <table id="tablaVerificaciones" class="table table-vcenter card-table" data-datatable>
       <thead><tr><th>ID</th><th>Usuario</th><th>Email</th><th>Acciones</th></tr></thead>
       <tbody>
       {% for u in users %}
@@ -27,9 +27,5 @@
   </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  new simpleDatatables.DataTable('#tablaVerificaciones');
-});
-</script>
+
 {% endblock %}

@@ -518,6 +518,169 @@ function updateThemeIcons() {
   });
 }
 
+function initNavbarSearchLegacy() {
+  const globalSearch = document.getElementById('globalSearch');
+  const searchDropdown = document.getElementById('searchDropdown');
+  const searchResults = document.getElementById('searchResults');
+  let searchTimeout;
+
+  if (globalSearch) {
+    globalSearch.addEventListener('input', () => {
+      const query = globalSearch.value.trim();
+      clearTimeout(searchTimeout);
+      if (query.length >= 2) {
+        searchTimeout = setTimeout(() => perform(query), 300);
+      } else {
+        hide();
+      }
+    });
+
+    globalSearch.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const query = globalSearch.value.trim();
+        if (query) {
+          window.location.href = `/search?q=${encodeURIComponent(query)}`;
+        }
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!globalSearch.contains(e.target) && !searchDropdown.contains(e.target)) {
+        hide();
+      }
+    });
+  }
+
+  const mobileSearchInput = document.getElementById('mobileSearchInput');
+  if (mobileSearchInput) {
+    mobileSearchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        performMobileSearch();
+      }
+    });
+  }
+
+  async function perform(query) {
+    try {
+      const resp = await fetch(`/search/suggestions?q=${encodeURIComponent(query)}`);
+      const suggestions = await resp.json();
+      display(suggestions, query);
+    } catch (err) {
+      console.error('Search error:', err);
+    }
+  }
+
+  function display(items, query) {
+    if (!searchDropdown || !searchResults) return;
+    if (items.length === 0) {
+      searchResults.innerHTML = `
+        <div class="dropdown-item-text text-muted">
+          <i class="bi bi-search me-2"></i>No se encontraron resultados
+        </div>
+        <div class="dropdown-divider"></div>
+        <a href="/search?q=${encodeURIComponent(query)}" class="dropdown-item">
+          <i class="bi bi-arrow-right me-2"></i>Buscar "${query}" en toda la plataforma
+        </a>`;
+    } else {
+      searchResults.innerHTML =
+        items
+          .map(
+            (u) => `
+        <a href="${u.url}" class="dropdown-item d-flex align-items-center py-2">
+          <i class="${u.icon} me-3 text-muted"></i>
+          <div>
+            <div>${u.text}</div>
+            <small class="text-muted">${u.type}</small>
+          </div>
+        </a>`
+          )
+          .join('') +
+        `
+        <div class="dropdown-divider"></div>
+        <a href="/search?q=${encodeURIComponent(query)}" class="dropdown-item text-center">
+          <i class="bi bi-search me-2"></i>Ver todos los resultados
+        </a>`;
+    }
+    searchDropdown.style.display = 'block';
+  }
+
+  function hide() {
+    if (searchDropdown) searchDropdown.style.display = 'none';
+  }
+
+  window.performMobileSearch = function () {
+    const q = mobileSearchInput ? mobileSearchInput.value.trim() : '';
+    if (q) {
+      window.location.href = `/search?q=${encodeURIComponent(q)}`;
+    }
+  };
+}
+
+function initAuthPage() {
+  const themeBtn = document.getElementById('toggle-theme');
+  document.querySelectorAll('.toggle-password').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const input = btn.previousElementSibling;
+      const hide = input.type === 'text';
+      input.type = hide ? 'password' : 'text';
+      btn.innerHTML = hide ? '🙈' : '🙊';
+      btn.setAttribute('aria-label', hide ? 'Mostrar contraseña' : 'Ocultar contraseña');
+    });
+  });
+  if (!themeBtn) return;
+  function setThemeIcon(t) {
+    themeBtn.textContent = t === 'dark' ? '🌙' : '☀️';
+  }
+  const stored = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-bs-theme', stored);
+  setThemeIcon(stored);
+  themeBtn.addEventListener('click', () => {
+    const html = document.documentElement;
+    const next = html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-bs-theme', next);
+    localStorage.setItem('theme', next);
+    setThemeIcon(next);
+  });
+
+  const wrapper = document.querySelector('.login-wrapper');
+  if (wrapper) {
+    const wait = parseInt(wrapper.dataset.wait || '0', 10);
+    if (wait > 0) {
+      const el = document.getElementById('loginCountdown');
+      if (el) {
+        let remaining = wait;
+        function tick() {
+          const m = Math.floor(remaining / 60);
+          const s = remaining % 60;
+          el.textContent = ` ${m}:${s.toString().padStart(2, '0')}`;
+          if (remaining > 0) remaining--;
+        }
+        tick();
+        setInterval(tick, 1000);
+      }
+    }
+    const frases = [
+      'Insp\u00edrate, aprende y deja huella con tus apuntes.',
+      'Crunevo une a j\u00f3venes que se esfuerzan cada d\u00eda por construir un futuro mejor.',
+      'Aqu\u00ed tu conocimiento vale y se comparte.',
+    ];
+    let i = 0;
+    const fraseEl = document.getElementById('frase-bienvenida');
+    if (fraseEl) fraseEl.textContent = frases[0];
+    setInterval(() => {
+      if (fraseEl) {
+        fraseEl.style.opacity = 0;
+        setTimeout(() => {
+          i = (i + 1) % frases.length;
+          fraseEl.textContent = frases[i];
+          fraseEl.style.opacity = 1;
+        }, 500);
+      }
+    }, 8000);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
     document.body.classList.add('no-anim');
@@ -620,6 +783,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initFeedSearch();
   }
   initGlobalSearch();
+  initNavbarSearchLegacy();
+  initAuthPage();
   if (typeof initSettingsPage === 'function') {
     initSettingsPage();
   }

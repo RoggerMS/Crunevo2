@@ -7,7 +7,7 @@
 {% endblock %}
 {% block content %}
 <button id="toggle-theme" class="theme-toggle-btn" aria-label="Cambiar tema">🌙</button>
-<main class="login-wrapper">
+<main class="login-wrapper" data-wait="{{ wait or 0 }}">
   <div class="login-card fade-in">
     <h1 class="login-title">Iniciar sesión</h1>
     {% if error %}
@@ -96,67 +96,4 @@
 
 {% block body_end %}
   {{ super() }}
-  <script>
-    document.querySelectorAll('.toggle-password').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const input = btn.previousElementSibling;
-        const hide = input.type === 'text';
-        input.type = hide ? 'password' : 'text';
-        btn.innerHTML = hide ? '🙈' : '🙊';
-        btn.setAttribute('aria-label', hide ? 'Mostrar contraseña' : 'Ocultar contraseña');
-      });
-    });
-    const frases = [
-      'Inspírate, aprende y deja huella con tus apuntes.',
-      'Crunevo une a jóvenes que se esfuerzan cada día por construir un futuro mejor.',
-      'Aquí tu conocimiento vale y se comparte.'
-    ];
-    let i = 0;
-    const fraseEl = document.getElementById('frase-bienvenida');
-    if (fraseEl) fraseEl.textContent = frases[0];
-    setInterval(() => {
-      if (fraseEl) {
-        fraseEl.style.opacity = 0;
-        setTimeout(() => {
-          i = (i + 1) % frases.length;
-          fraseEl.textContent = frases[i];
-          fraseEl.style.opacity = 1;
-        }, 500);
-      }
-    }, 8000);
-
-    const themeBtn = document.getElementById('toggle-theme');
-    function setThemeIcon(theme) {
-      themeBtn.textContent = theme === 'dark' ? '🌙' : '☀️';
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const stored = localStorage.getItem('theme') || 'light';
-      document.documentElement.setAttribute('data-bs-theme', stored);
-      setThemeIcon(stored);
-    });
-
-    themeBtn.addEventListener('click', () => {
-      const html = document.documentElement;
-      const next = html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
-      html.setAttribute('data-bs-theme', next);
-      localStorage.setItem('theme', next);
-      setThemeIcon(next);
-    });
-    {% if wait %}
-    (function() {
-      let remaining = {{ wait }};
-      const el = document.getElementById('loginCountdown');
-      function tick() {
-        if (!el) return;
-        const m = Math.floor(remaining / 60);
-        const s = remaining % 60;
-        el.textContent = ` ${m}:${s.toString().padStart(2, '0')}`;
-        if (remaining > 0) remaining--;
-      }
-      tick();
-      setInterval(tick, 1000);
-    })();
-    {% endif %}
-  </script>
 {% endblock %}
