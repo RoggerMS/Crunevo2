@@ -574,6 +574,19 @@ document.addEventListener('DOMContentLoaded', () => {
     initNoteViewer();
   }
 
+  if (typeof initFeedManager === 'function') {
+    initFeedManager();
+  }
+  if (typeof initNotificationManager === 'function') {
+    initNotificationManager();
+  }
+  if (typeof initShareButtons === 'function') {
+    initShareButtons();
+  }
+  if (typeof initChatIA === 'function') {
+    initChatIA();
+  }
+
   document.querySelectorAll('.achievement-card').forEach((el) => {
     if (el.title && !bootstrap.Tooltip.getInstance(el)) {
       bootstrap.Tooltip.getOrCreateInstance(el);

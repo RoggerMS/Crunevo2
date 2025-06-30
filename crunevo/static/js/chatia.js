@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+function initChatIA() {
   const form = document.getElementById('aiForm');
   const input = document.getElementById('aiInput');
   const history = document.getElementById('aiHistory');
@@ -49,4 +49,5 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('Error de conexión');
       });
   });
-});
+}
+window.initChatIA = initChatIA;

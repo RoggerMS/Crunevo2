@@ -720,8 +720,9 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Initialize feed manager when DOM is ready
+// Feed manager initialization handled in main.js
 let feedManager;
-document.addEventListener('DOMContentLoaded', () => {
+function initFeedManager() {
   feedManager = new FeedManager();
-});
+}
+window.initFeedManager = initFeedManager;
