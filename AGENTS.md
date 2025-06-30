@@ -427,3 +427,4 @@
 
 - Restored /admin/credits routes and export CSV to fix BuildError (hotfix manage-credits-route).
 - Fixed comment modal to display complete post detail via new /feed/api/post endpoint and ensured closing works correctly (PR comment-modal-full-post).
+- Imported reactions macro in _post_modal.html to fix UndefinedError (hotfix reactions-import).
