@@ -1,6 +1,9 @@
+import logging
 from PIL import Image
 import io
 import cloudinary.uploader
+
+logger = logging.getLogger(__name__)
 
 
 def optimize_image(image_file, max_width=800, quality=85):
@@ -25,7 +28,7 @@ def optimize_image(image_file, max_width=800, quality=85):
 
         return output
     except Exception as e:
-        print(f"Error optimizing image: {e}")
+        logger.exception("Error optimizing image: %s", e)
         return image_file
 
 
@@ -44,5 +47,5 @@ def upload_optimized_image(image_file, folder="uploads"):
         )
         return result["secure_url"]
     except Exception as e:
-        print(f"Error uploading to Cloudinary: {e}")
+        logger.exception("Error uploading to Cloudinary: %s", e)
         return None
