@@ -454,3 +454,4 @@
 - Added settings page '/configuracion' with authenticated route and sidebar. Updated user dropdown with copy, edit and configuración options (PR settings-page).
 - Removed copy and edit options from user dropdown and related JS listener (PR profile-menu-cleanup).
 - Added password change form and backend route under settings (PR settings-change-password).
+- Cleaned feed left sidebar: removed trending posts and added link card (PR feed-sidebar-cleanup).
