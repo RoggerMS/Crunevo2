@@ -1,7 +1,7 @@
 {% import 'components/csrf.html' as csrf %}
 <div class="modal fade" id="editRoleModal{{ user.id }}" tabindex="-1">
   <div class="modal-dialog">
-    <form method="POST" action="{{ url_for('admin.update_user_role', user_id=user.id) }}">
+    <form method="POST" action="{{ url_for('admin.update_user_role', user_id=user.id) if 'admin.update_user_role' in url_for.__globals__.get('current_app', {}).view_functions else '#' }}">
       {{ csrf.csrf_field() }}
       <div class="modal-content">
         <div class="modal-header">
