@@ -36,10 +36,10 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <div class="text-white-75 small fw-bold">Total Usuarios</div>
-              <div class="display-6 fw-bold">{{ users_total }}</div>
+              <div class="display-6 fw-bold">{{ total_users }}</div>
               <div class="small">
                 <i class="bi bi-arrow-up text-success"></i>
-                +{{ stats.users|length if stats.users else 0 }} esta semana
+                +{{ new_users_week }} esta semana
               </div>
             </div>
             <i class="bi bi-people display-4 text-white-50"></i>
@@ -60,7 +60,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <div class="text-white-75 small fw-bold">Apuntes Subidos</div>
-              <div class="display-6 fw-bold">{{ notes_total }}</div>
+              <div class="display-6 fw-bold">{{ total_notes }}</div>
               <div class="small">
                 <i class="bi bi-arrow-up text-info"></i>
                 Material educativo activo
@@ -84,7 +84,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <div class="text-white-75 small fw-bold">Posts Publicados</div>
-              <div class="display-6 fw-bold">{{ comments_total }}</div>
+              <div class="display-6 fw-bold">{{ total_posts }}</div>
               <div class="small">
                 <i class="bi bi-heart text-danger"></i>
                 Interacciones sociales
@@ -108,7 +108,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <div class="text-white-75 small fw-bold">Crolars en Circulación</div>
-              <div class="display-6 fw-bold">{{ credits_total }}</div>
+              <div class="display-6 fw-bold">{{ total_crolars_circulation }}</div>
               <div class="small">
                 <i class="bi bi-coin text-warning"></i>
                 Economía interna activa

@@ -430,3 +430,4 @@
 - Added environment variable overrides in create_app and implemented admin delete routes. Fixed missing csrf_field in club detail. Migrations use if_not_exists and safe drop to avoid errors.
 - Wrapped admin sidebar link to 'admin.manage_achievements' with endpoint check to avoid BuildError when route is absent (hotfix admin-sidebar-achievements).
 - Imported reactions macro in _post_modal.html to fix UndefinedError (hotfix reactions-import).
+- Fixed dashboard template variable names to match admin route and replaced stats.users usage with new_users_week (hotfix admin-dashboard-stats).
