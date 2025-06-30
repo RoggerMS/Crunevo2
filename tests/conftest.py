@@ -64,4 +64,15 @@ def another_user(db_session):
 def fake_redis(monkeypatch):
     r = fakeredis.FakeRedis()
     monkeypatch.setattr(feed_cache, "r", r)
+    from crunevo import tasks
+
+    monkeypatch.setattr(tasks, "redis_conn", r)
+    tasks.task_queue.connection = r
+
+    def immediate(func, *a, **kw):
+        return func(*a, **kw)
+
+    monkeypatch.setattr(
+        tasks.task_queue, "enqueue", lambda f, *a, **kw: immediate(f, *a, **kw)
+    )
     yield r
