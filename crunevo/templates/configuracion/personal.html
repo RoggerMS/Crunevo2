@@ -1,0 +1,21 @@
+<section id="personal" class="mb-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Información personal</h5>
+    </div>
+    <div class="card-body">
+      <form id="personalForm" class="settings-form" method="post" action="{{ url_for('settings.update_personal') }}">
+        {{ csrf.csrf_field() }}
+        <div class="mb-3">
+          <label for="username" class="form-label">Nombre de usuario</label>
+          <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}">
+        </div>
+        <div class="mb-3">
+          <label for="about" class="form-label">Descripción</label>
+          <textarea class="form-control" id="about" name="about" rows="3">{{ current_user.about }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </form>
+    </div>
+  </div>
+</section>

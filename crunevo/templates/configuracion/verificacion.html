@@ -1,0 +1,12 @@
+<section id="verificacion" class="mb-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Verificación</h5>
+    </div>
+    <div class="card-body">
+      <p class="text-muted">Estado de verificación:
+        {% if current_user.verification_level > 0 %}Verificado{% else %}No verificado{% endif %}
+      </p>
+    </div>
+  </div>
+</section>

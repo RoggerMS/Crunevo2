@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+
+{% block title %}Configuración{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4" style="background-color:#f5f0ff;">
+  <div class="row g-4">
+    <div class="col-lg-3">
+      <div class="list-group mb-4">
+        <a href="#personal" class="list-group-item list-group-item-action">Información personal</a>
+        <a href="#account" class="list-group-item list-group-item-action">Cuenta y seguridad</a>
+        <a href="#verificacion" class="list-group-item list-group-item-action">Verificación</a>
+        <a href="#notificaciones" class="list-group-item list-group-item-action">Notificaciones</a>
+        <a href="#plus" class="list-group-item list-group-item-action">CRUNEVO+</a>
+        <a href="#legal" class="list-group-item list-group-item-action">Centro de ayuda / Legal</a>
+      </div>
+    </div>
+    <div class="col-lg-9">
+      <div class="d-flex align-items-center mb-4">
+        <i class="bi bi-gear-fill fs-2 me-2"></i>
+        <h2 class="mb-0 flex-grow-1">Configuración</h2>
+        <a href="{{ url_for('auth.perfil') }}" class="btn btn-outline-secondary">Volver al perfil</a>
+      </div>
+      {% include 'configuracion/personal.html' %}
+      {% include 'configuracion/cuenta.html' %}
+      {% include 'configuracion/verificacion.html' %}
+      {% include 'configuracion/notificaciones.html' %}
+      {% include 'configuracion/plus.html' %}
+      {% include 'configuracion/legal.html' %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block body_end %}
+<script src="{{ url_for('static', filename='js/settings.js') }}" defer></script>
+{% endblock %}
