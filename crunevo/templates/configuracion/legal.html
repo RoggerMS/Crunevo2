@@ -1,0 +1,14 @@
+<section id="legal" class="mb-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Centro de ayuda / Legal</h5>
+    </div>
+    <div class="card-body">
+      <ul class="list-unstyled">
+        <li><a href="{{ url_for('main.terminos') if 'main.terminos' in url_for.__globals__.get('current_app', {}).view_functions else '/terminos' }}">Términos y condiciones</a></li>
+        <li><a href="{{ url_for('main.privacidad') if 'main.privacidad' in url_for.__globals__.get('current_app', {}).view_functions else '/privacidad' }}">Política de privacidad</a></li>
+        <li><a href="{{ url_for('static_pages.cookies') if 'static_pages.cookies' in url_for.__globals__.get('current_app', {}).view_functions else '/cookies' }}">Política de cookies</a></li>
+      </ul>
+    </div>
+  </div>
+</section>

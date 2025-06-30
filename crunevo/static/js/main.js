@@ -607,6 +607,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initFeedSearch();
   }
   initGlobalSearch();
+  if (typeof initSettingsPage === 'function') {
+    initSettingsPage();
+  }
 
   if (typeof initAdminCharts === 'function') {
     initAdminCharts();
@@ -665,6 +668,14 @@ document.addEventListener('DOMContentLoaded', () => {
       navigator.clipboard.writeText(window.location.href).then(() => {
         showToast('Enlace copiado');
       });
+    });
+  }
+
+  const copyProfile = document.getElementById('copyProfileUrl');
+  if (copyProfile && window.CURRENT_USER) {
+    copyProfile.addEventListener('click', () => {
+      const url = `${window.location.origin}/perfil/${window.CURRENT_USER.username}`;
+      navigator.clipboard.writeText(url).then(() => showToast('Enlace copiado'));
     });
   }
 

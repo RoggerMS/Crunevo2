@@ -90,6 +90,16 @@
               <span class="d-none d-lg-inline">{{ current_user.username }}</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <button class="dropdown-item" id="copyProfileUrl" type="button">
+                  <i class="bi bi-clipboard me-2"></i>Copiar
+                </button>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{{ url_for('auth.perfil') }}?edit=1">
+                  <i class="bi bi-pencil-square me-2"></i>Editar
+                </a>
+              </li>
               <li><a class="dropdown-item" href="{{ url_for('auth.perfil') }}">
                 <i class="bi bi-person me-2"></i>Mi Perfil
               </a></li>
@@ -103,6 +113,10 @@
               <li><span class="dropdown-item-text">
                 <i class="bi bi-coin me-2"></i>{{ current_user.credits }} Crolars
               </span></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{{ url_for('settings.index') }}">
+                <i class="bi bi-gear me-2"></i>Configuración
+              </a></li>
               <li><hr class="dropdown-divider"></li>
               <li>
                 <button class="dropdown-item d-flex align-items-center gap-2" type="button" data-theme-toggle>
