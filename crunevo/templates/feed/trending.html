@@ -293,7 +293,7 @@
               <i class="bi bi-fire fs-1 text-muted mb-3 d-block"></i>
               <h4 class="text-muted mb-3">¡Aún no hay trending!</h4>
               <p class="text-muted mb-4">Sé el primero en crear contenido viral en la comunidad</p>
-              <a href="{{ url_for('feed.view_feed') }}" class="btn btn-primary rounded-pill px-4">
+              <a href="{{ url_for('feed.view_feed') if 'feed.view_feed' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}" class="btn btn-primary rounded-pill px-4">
                 Ir al Feed
               </a>
             </div>
