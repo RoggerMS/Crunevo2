@@ -261,6 +261,11 @@ def view_feed():
 
     reaction_map = PostReaction.counts_for_posts(post_ids)
     user_reactions = PostReaction.reactions_for_user_posts(current_user.id, post_ids)
+    trending_posts = get_weekly_top_posts(limit=3)
+    trending_counts = PostReaction.counts_for_posts([p.id for p in trending_posts])
+    trending_user_reactions = PostReaction.reactions_for_user_posts(
+        current_user.id, [p.id for p in trending_posts]
+    )
 
     streak = current_user.login_streak
     show_streak = (
@@ -277,6 +282,9 @@ def view_feed():
         reaction_counts=reaction_map,
         user_reactions=user_reactions,
         show_streak_claim=show_streak,
+        trending_posts=trending_posts,
+        trending_counts=trending_counts,
+        trending_user_reactions=trending_user_reactions,
         streak_day=streak.current_day if streak else 1,
         streak_reward=reward,
     )

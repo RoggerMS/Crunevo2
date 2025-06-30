@@ -123,6 +123,23 @@
       </ul>
     </nav>
 
+    {% if trending_posts is defined and trending_posts %}
+    <div class="trending-section mt-4 pt-4 border-top">
+      <h6 class="small text-muted mb-3 fw-bold">
+        <i class="bi bi-fire"></i> Tendencias
+      </h6>
+      <div class="d-flex flex-column gap-3">
+        {% for post in trending_posts %}
+        {% set item = {'data': post} %}
+        {% set reaction_counts = trending_counts %}
+        {% set user_reactions = trending_user_reactions %}
+        {% include 'components/post_card.html' with context %}
+        {% endfor %}
+        <a href="{{ url_for('feed.trending') }}" class="btn btn-outline-primary btn-sm rounded-pill">Ver más</a>
+      </div>
+    </div>
+    {% endif %}
+
     <!-- Quick Actions -->
     <div class="quick-actions mt-4 pt-4 border-top">
       <h6 class="small text-muted mb-3 fw-bold">Acciones rápidas</h6>

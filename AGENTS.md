@@ -448,3 +448,6 @@
 - Store index uses Bootstrap carousel for hero, ofertas and premium blocks; product cards show first_image or default placeholder, navbar displays cart icon with badge and JS calls /store/api/cart_count (PR store-carousel-fixes).
 - Unified store carousel height, squared product images and improved dark mode styles (PR store-ui-consistency).
 - Replaced IP rate limit on login with per-user attempt tracking using Redis or memory cache, showing countdown on the login page (PR login-attempt-limit).
+
+- Replaced notes sidebar in notes list with modern feed sidebar and adjusted layout (PR notes-modern-sidebar).
+- Added trending posts section to feed sidebar with weekly top posts (PR feed-sidebar-trending).
