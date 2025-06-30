@@ -17,6 +17,7 @@ from crunevo.models import (
 )
 from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit
+from crunevo.utils.ranking import calculate_weekly_ranking
 from crunevo.constants.credit_reasons import CreditReasons
 from datetime import datetime, timedelta
 import csv
@@ -280,6 +281,15 @@ def admin_logs():
         .all()
     )
     return render_template("admin/admin_logs.html", logs=logs)
+
+
+@admin_bp.route("/run-ranking")
+def run_ranking():
+    """Manually recalculate the weekly ranking."""
+    calculate_weekly_ranking()
+    log_admin_action("Recalcul\u00f3 ranking semanal")
+    flash("Ranking recalculado", "success")
+    return redirect(url_for("admin.dashboard"))
 
 
 @admin_bp.route(
