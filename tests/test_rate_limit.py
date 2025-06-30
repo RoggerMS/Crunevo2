@@ -5,7 +5,8 @@ def test_login_rate_limit(client):
     for _ in range(5):
         client.post("/login", data={"username": "none", "password": "wrong"})
     resp = client.post("/login", data={"username": "none", "password": "wrong"})
-    assert resp.status_code == 429
+    assert resp.status_code == 200
+    assert "Has excedido el número de intentos" in resp.get_data(as_text=True)
 
 
 def test_register_rate_limit(client):

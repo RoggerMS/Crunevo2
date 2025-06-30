@@ -10,7 +10,7 @@ from flask import (
 )
 from flask_login import login_user, logout_user, current_user
 from crunevo.utils.helpers import activated_required
-from crunevo.extensions import limiter
+from crunevo.cache import login_attempts
 from crunevo.utils.audit import record_auth_event
 from urllib.parse import urlparse  # ✅ Corrección aquí
 import json
@@ -31,15 +31,24 @@ auth_bp = Blueprint("auth", __name__)
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
-@limiter.limit("5 per 15 minutes")
 def login():
     admin_mode = current_app.config.get("ADMIN_INSTANCE")
     template = "auth/login_admin.html" if admin_mode else "auth/login.html"
+    error = None
+    wait = 0
     if request.method == "POST":
         username = request.form["username"]
+        if login_attempts.is_blocked(username):
+            wait = login_attempts.get_remaining(username)
+            error = (
+                "⚠️ Has excedido el número de intentos. Intenta de nuevo en 15 minutos."
+            )
+            return render_template(template, error=error, wait=wait)
+
         password = request.form["password"]
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
+            login_attempts.reset(username)
             if admin_mode and user.role not in ("admin", "moderator"):
                 record_auth_event(
                     user,
@@ -63,9 +72,10 @@ def login():
             if not next_page or urlparse(next_page).netloc != "":
                 next_page = url_for("feed.feed_home")
             return redirect(next_page)
+        login_attempts.record_fail(username)
         record_auth_event(user, "login_fail", extra=json.dumps({"username": username}))
         flash("Credenciales inválidas")
-    return render_template(template)
+    return render_template(template, error=error, wait=wait)
 
 
 @auth_bp.route("/logout")

@@ -13,6 +13,9 @@
     {% if error %}
       <div class="alert alert-danger" role="alert">
         {{ error }}
+        {% if wait %}
+          <span id="loginCountdown"></span>
+        {% endif %}
       </div>
     {% endif %}
     <form method="post" novalidate>
@@ -140,5 +143,20 @@
       localStorage.setItem('theme', next);
       setThemeIcon(next);
     });
+    {% if wait %}
+    (function() {
+      let remaining = {{ wait }};
+      const el = document.getElementById('loginCountdown');
+      function tick() {
+        if (!el) return;
+        const m = Math.floor(remaining / 60);
+        const s = remaining % 60;
+        el.textContent = ` ${m}:${s.toString().padStart(2, '0')}`;
+        if (remaining > 0) remaining--;
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+    {% endif %}
   </script>
 {% endblock %}
