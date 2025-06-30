@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, current_app
 from flask_login import current_user
 from crunevo.routes.feed_routes import feed_home
 
@@ -8,6 +8,8 @@ main_bp = Blueprint("main", __name__)
 @main_bp.route("/")
 def index():
     if current_user.is_authenticated:
+        if current_app.config.get("ADMIN_INSTANCE"):
+            return redirect(url_for("admin.dashboard"))
         return feed_home()
     return redirect(url_for("auth.login"))
 
