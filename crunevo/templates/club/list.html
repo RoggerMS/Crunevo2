@@ -160,9 +160,9 @@
               <i class="bi bi-lightning"></i> Acciones Rápidas
             </h6>
             <div class="d-grid gap-2">
-              <button class="btn btn-outline-primary btn-sm" onclick="showCreateClubModal()">
+              <a href="{{ url_for('club.create_club') }}" class="btn btn-outline-primary btn-sm">
                 <i class="bi bi-plus-circle"></i> Crear Club
-              </button>
+              </a>
               <a href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}" class="btn btn-outline-success btn-sm">
                 <i class="bi bi-chat-dots"></i> Ir al Foro
               </a>
