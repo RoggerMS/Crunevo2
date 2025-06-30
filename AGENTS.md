@@ -455,3 +455,4 @@
 - Removed copy and edit options from user dropdown and related JS listener (PR profile-menu-cleanup).
 - Added password change form and backend route under settings (PR settings-change-password).
 - Cleaned feed left sidebar: removed trending posts and added link card (PR feed-sidebar-cleanup).
+- Styled feed sidebar trend card with bi-fire icon before text (PR feed-sidebar-fire-icon).
