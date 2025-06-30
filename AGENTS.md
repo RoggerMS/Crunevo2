@@ -427,3 +427,4 @@
 
 - Restored /admin/credits routes and export CSV to fix BuildError (hotfix manage-credits-route).
 - Fixed comment modal to display complete post detail via new /feed/api/post endpoint and ensured closing works correctly (PR comment-modal-full-post).
+- Wrapped admin sidebar link to 'admin.manage_achievements' with endpoint check to avoid BuildError when route is absent (hotfix admin-sidebar-achievements).
