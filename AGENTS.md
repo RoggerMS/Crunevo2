@@ -458,3 +458,5 @@
 - Split personal settings into separate username and description forms with real-time availability check and page reload on success. Updated profile header to show username overlay on banner (PR settings-username-fix).
 - Cleaned feed left sidebar: removed trending posts and added link card (PR feed-sidebar-cleanup).
 - Styled feed sidebar trend card with bi-fire icon before text (PR feed-sidebar-fire-icon).
+- Diagnóstico de carpeta components realizado; listado de archivos y detección de duplicados funcionales. Se sugirió refactorización (QA components-diagnosis).
+- Unificada la barra lateral del feed, eliminando la versión duplicada y actualizando las vistas a usar components/sidebar_left_feed.html (PR feed-sidebar-unify).
