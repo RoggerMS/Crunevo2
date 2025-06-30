@@ -177,10 +177,14 @@ body {
 }
 
 .chat-container {
-  height: 300px;
+  max-height: calc(100vh - 160px);
   overflow-y: auto;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.02);
+}
+
+.chat-messages {
+  padding-bottom: 120px;
 }
 
 /* Modern messages with Messenger-style design */
@@ -626,5 +630,18 @@ html[data-bs-theme="dark"] .feed-section {
 html[data-bs-theme="dark"] .text-dark,
 html[data-bs-theme="dark"] .text-black {
   color: #ffffff !important;
+}
+
+footer {
+  position: relative;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid #e0e0e0;
+}
+
+html[data-bs-theme="dark"] footer {
+  background: rgba(13, 17, 23, 0.95);
+  border-top-color: #30363d;
 }
 
