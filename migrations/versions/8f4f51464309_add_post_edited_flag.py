@@ -10,6 +10,11 @@ from alembic import op
 import sqlalchemy as sa
 
 
+def has_col(table: str, column: str, conn) -> bool:
+    inspector = sa.inspect(conn)
+    return any(c["name"] == column for c in inspector.get_columns(table))
+
+
 # revision identifiers, used by Alembic.
 revision = "8f4f51464309"
 down_revision = "8728b618b1f9"
@@ -18,10 +23,12 @@ depends_on = None
 
 
 def upgrade():
+    conn = op.get_bind()
     with op.batch_alter_table("post", schema=None) as batch_op:
-        batch_op.add_column(sa.Column("edited", sa.Boolean(), nullable=True))
+        if not has_col("post", "edited", conn):
+            batch_op.add_column(sa.Column("edited", sa.Boolean(), nullable=True))
 
 
 def downgrade():
     with op.batch_alter_table("post", schema=None) as batch_op:
-        batch_op.drop_column("edited")
+        batch_op.drop_column("edited", if_exists=True)

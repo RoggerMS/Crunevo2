@@ -27,26 +27,23 @@ def upgrade():
         op.add_column(
             "user",
             sa.Column("pref_dark", sa.Boolean(), server_default=sa.text("false")),
-            if_not_exists=True,
         )
     if not has_col("user", "bio"):
-        op.add_column("user", sa.Column("bio", sa.Text()), if_not_exists=True)
+        op.add_column("user", sa.Column("bio", sa.Text()))
     if not has_col("user", "career"):
-        op.add_column("user", sa.Column("career", sa.String(100)), if_not_exists=True)
+        op.add_column("user", sa.Column("career", sa.String(100)))
     if not has_col("user", "interests"):
-        op.add_column("user", sa.Column("interests", sa.Text()), if_not_exists=True)
+        op.add_column("user", sa.Column("interests", sa.Text()))
 
     if not has_col("product", "active"):
         op.add_column(
             "product",
             sa.Column("active", sa.Boolean(), server_default=sa.text("true")),
-            if_not_exists=True,
         )
     if not has_col("product", "popularity_score"):
         op.add_column(
             "product",
             sa.Column("popularity_score", sa.Integer(), server_default="0"),
-            if_not_exists=True,
         )
 
     op.create_table(

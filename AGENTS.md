@@ -440,3 +440,4 @@
 - Fixed manage_users links to avoid BuildError when admin endpoints are missing (hotfix admin-user-links).
 - Adjusted IA referer header fallback to request.url_root and added OPENROUTER_MODEL config (hotfix openrouter-referer-model).
 - Guarded Crunebot button and route on admin instance; restored admin store alias and verification routes; updated migrations with existence checks (PR admin-crunebot-fix).
+- Fixed TemplateSyntaxError in club list and added safety checks in migrations (PR template-migration-fixes).

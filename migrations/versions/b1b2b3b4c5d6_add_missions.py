@@ -24,6 +24,7 @@ def upgrade():
         sa.Column("goal", sa.Integer(), nullable=True),
         sa.Column("credit_reward", sa.Integer(), nullable=True),
         sa.Column("achievement_code", sa.String(length=50), nullable=True),
+        if_not_exists=True,
     )
     op.create_table(
         "user_mission",
@@ -33,9 +34,10 @@ def upgrade():
             "mission_id", sa.Integer(), sa.ForeignKey("mission.id"), nullable=False
         ),
         sa.Column("completed_at", sa.DateTime(), nullable=True),
+        if_not_exists=True,
     )
 
 
 def downgrade():
-    op.drop_table("user_mission")
-    op.drop_table("mission")
+    op.drop_table("user_mission", if_exists=True)
+    op.drop_table("mission", if_exists=True)

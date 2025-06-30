@@ -22,8 +22,9 @@ def upgrade():
         sa.Column("user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False),
         sa.Column("post_id", sa.Integer(), sa.ForeignKey("post.id"), nullable=False),
         sa.Column("timestamp", sa.DateTime(), nullable=True),
+        if_not_exists=True,
     )
 
 
 def downgrade():
-    op.drop_table("saved_post")
+    op.drop_table("saved_post", if_exists=True)
