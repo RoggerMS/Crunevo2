@@ -53,13 +53,13 @@
             </td>
             <td>{{ user.created_at.strftime('%d/%m/%Y') if user.created_at else 'N/A' }}</td>
             <td>
-              <a href="{{ url_for('admin.user_activity', user_id=user.id) }}" class="btn btn-sm btn-outline-info">
+              <a href="{{ url_for('admin.user_activity', user_id=user.id) if 'admin.user_activity' in url_for.__globals__.get('current_app', {}).view_functions else '#' }}" class="btn btn-sm btn-outline-info">
                 <i class="bi bi-clock-history"></i> Historial
               </a>
               <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editRoleModal" data-user-id="{{ user.id }}" data-user-role="{{ user.role }}">
                 Cambiar Rol
               </a>
-              <a href="{{ url_for('admin.toggle_user_status', user_id=user.id) }}" class="btn btn-sm btn-outline-warning">
+              <a href="{{ url_for('admin.toggle_user_status', user_id=user.id) if 'admin.toggle_user_status' in url_for.__globals__.get('current_app', {}).view_functions else '#' }}" class="btn btn-sm btn-outline-warning">
                 {{ 'Desactivar' if user.activated else 'Activar' }}
               </a>
             </td>
