@@ -432,3 +432,4 @@
 - Imported reactions macro in _post_modal.html to fix UndefinedError (hotfix reactions-import).
 - Fixed dashboard template variable names to match admin route and replaced stats.users usage with new_users_week (hotfix admin-dashboard-stats).
 - Redesigned comment modal using feed post card layout and fixed share modal backdrop removal (PR share-modal-redesign).
+- Added admin.run_ranking route invoking calculate_weekly_ranking and linked from dashboard (hotfix admin-run-ranking-route).
