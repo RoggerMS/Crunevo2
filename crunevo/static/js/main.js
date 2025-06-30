@@ -671,14 +671,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const copyProfile = document.getElementById('copyProfileUrl');
-  if (copyProfile && window.CURRENT_USER) {
-    copyProfile.addEventListener('click', () => {
-      const url = `${window.location.origin}/perfil/${window.CURRENT_USER.username}`;
-      navigator.clipboard.writeText(url).then(() => showToast('Enlace copiado'));
-    });
-  }
-
   document.querySelectorAll('.share-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       const url = btn.dataset.shareUrl || window.location.href;
