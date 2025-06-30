@@ -20,22 +20,19 @@ def ia_ask():
     if not prompt:
         return jsonify({"error": "empty"}), 400
     try:
+        api_key = current_app.config.get("OPENROUTER_API_KEY")
         resp = requests.post(
-            "https://openrouter.ai/deepseek/deepseek-chat-v3-0324:free/api",
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={"Authorization": f"Bearer {api_key}"} if api_key else None,
             json={
-                "model": "deepseek/deepseek-chat:free",
-                "api_key": "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",
-                "prompt": prompt,
+                "model": "deepseek/deepseek-chat",
+                "messages": [{"role": "user", "content": prompt}],
             },
             timeout=15,
         )
         resp.raise_for_status()
         data = resp.json()
-        answer = (
-            data.get("answer")
-            or data.get("choices", [{}])[0].get("message", {}).get("content")
-            or ""
-        )
+        answer = data.get("choices", [{}])[0].get("message", {}).get("content", "")
         return jsonify({"answer": answer})
     except Exception:
         current_app.logger.exception("AI request failed")

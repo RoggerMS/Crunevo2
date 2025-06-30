@@ -432,3 +432,4 @@
 - Imported reactions macro in _post_modal.html to fix UndefinedError (hotfix reactions-import).
 - Fixed dashboard template variable names to match admin route and replaced stats.users usage with new_users_week (hotfix admin-dashboard-stats).
 - Redesigned comment modal using feed post card layout and fixed share modal backdrop removal (PR share-modal-redesign).
+- Updated IA route to use OpenRouter chat completions API, added OPENROUTER_API_KEY config and CSP connect-src entry (PR openrouter-api-fix).
