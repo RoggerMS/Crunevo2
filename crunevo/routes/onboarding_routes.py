@@ -17,7 +17,6 @@ from werkzeug.utils import secure_filename
 
 from crunevo.extensions import db, limiter, csrf
 from flask_limiter.util import get_remote_address
-from zxcvbn import zxcvbn
 from crunevo.models import User, EmailToken
 from crunevo.utils.mailer import send_email
 from crunevo.utils.audit import record_auth_event
@@ -50,8 +49,15 @@ def register():
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
-        if len(password) < 12 or zxcvbn(password)["score"] < 2:
-            flash("Contraseña débil", "danger")
+        if (
+            len(password) < 6
+            or not any(c.isalpha() for c in password)
+            or not any(c.isdigit() for c in password)
+        ):
+            flash(
+                "Tu contraseña debe tener al menos 6 caracteres, incluyendo letras y números.",
+                "danger",
+            )
             return render_template("onboarding/register.html"), 400
         user = User(username=email, email=email)
         user.set_password(password)
