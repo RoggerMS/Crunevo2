@@ -2,7 +2,7 @@
   <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('auth.perfil') }}" data-bs-toggle="tooltip" title="Mi perfil">
     <i class="bi bi-person"></i><span>Mi perfil</span>
   </a>
-  <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('notes.list_notes') }}" data-bs-toggle="tooltip" title="Mis apuntes">
+  <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}" data-bs-toggle="tooltip" title="Mis apuntes">
     <i class="bi bi-journal-text"></i><span>Mis apuntes</span>
   </a>
   <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('auth.favorites') if 'auth.favorites' in url_for.__globals__.get('current_app', {}).view_functions else '#' }}" data-bs-toggle="tooltip" title="Favoritos">

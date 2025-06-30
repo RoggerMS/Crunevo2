@@ -32,4 +32,3 @@ from .referido import Referral  # noqa: F401
 from .device_claim import DeviceClaim  # noqa: F401
 from .achievement_popup import AchievementPopup  # noqa: F401
 from .club import Club, ClubMember  # noqa: F401
-

@@ -55,7 +55,7 @@
         </li>
 
         <li>
-          <a href="{{ url_for('notes.list_notes') }}" class="nav-link {{ 'active' if request.endpoint == 'notes.list_notes' }}">
+          <a href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}" class="nav-link {{ 'active' if request.endpoint == 'notes.list_notes' }}">
             <i class="bi bi-journal-text"></i>
             <span class="fw-semibold">Apuntes</span>
             <span class="badge bg-primary rounded-pill ms-auto">{{ current_user.notes|length }}</span>

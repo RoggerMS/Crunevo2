@@ -3,7 +3,7 @@
 {% block content %}
 <h2 class="mb-4">Apuntes de {{ user.username }}</h2>
 <div class="mb-3">
-  <a href="{{ url_for('notes.list_notes') }}" class="btn btn-sm btn-secondary">&larr; Volver</a>
+  <a href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}" class="btn btn-sm btn-secondary">&larr; Volver</a>
 </div>
 <div class="row row-cols-1 row-cols-md-2 g-3">
   {% for note in notes %}

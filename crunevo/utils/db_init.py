@@ -1,4 +1,3 @@
-
 from flask import current_app
 from crunevo.extensions import db
 import os
@@ -17,7 +16,9 @@ def init_database():
             db.create_all()
             current_app.logger.info("Database tables created successfully")
         except Exception as create_error:
-            current_app.logger.error(f"Failed to create database tables: {create_error}")
+            current_app.logger.error(
+                f"Failed to create database tables: {create_error}"
+            )
             raise
 
 
