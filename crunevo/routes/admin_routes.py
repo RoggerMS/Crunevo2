@@ -13,6 +13,7 @@ from crunevo.models import (
     AdminLog,
     Product,
     ProductLog,
+    FeedItem,
 )
 from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit
@@ -279,6 +280,50 @@ def admin_logs():
         .all()
     )
     return render_template("admin/admin_logs.html", logs=logs)
+
+
+@admin_bp.route(
+    "/delete-post/<int:post_id>", methods=["POST"], endpoint="delete_post_admin"
+)
+def delete_post_admin(post_id):
+    """Allow admins to delete any post."""
+    post = Post.query.get_or_404(post_id)
+    FeedItem.query.filter_by(item_type="post", ref_id=post.id).delete()
+    db.session.delete(post)
+    db.session.commit()
+    log_admin_action(f"Elimin\u00f3 post {post_id}")
+    flash("Post eliminado", "success")
+    return redirect(url_for("admin.manage_reports"))
+
+
+@admin_bp.route(
+    "/delete-note/<int:note_id>", methods=["POST"], endpoint="delete_note_admin"
+)
+def delete_note_admin(note_id):
+    """Allow admins to delete any note."""
+    note = Note.query.get_or_404(note_id)
+    FeedItem.query.filter_by(item_type="apunte", ref_id=note.id).delete()
+    Credit.query.filter_by(
+        user_id=note.user_id, related_id=note.id, reason=CreditReasons.APUNTE_SUBIDO
+    ).delete()
+    db.session.delete(note)
+    db.session.commit()
+    log_admin_action(f"Elimin\u00f3 apunte {note_id}")
+    flash("Apunte eliminado", "success")
+    return redirect(url_for("admin.manage_reports"))
+
+
+@admin_bp.route(
+    "/products/<int:product_id>/delete", methods=["POST"], endpoint="delete_product"
+)
+def delete_product(product_id):
+    """Delete a product from the store."""
+    product = Product.query.get_or_404(product_id)
+    db.session.delete(product)
+    db.session.commit()
+    log_admin_action(f"Elimin\u00f3 producto {product_id}")
+    flash("Producto eliminado", "success")
+    return redirect(url_for("admin.product_history"))
 
 
 @admin_bp.route("/stats/api")

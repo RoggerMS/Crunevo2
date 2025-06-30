@@ -28,6 +28,7 @@ def upgrade():
         sa.Column("image", sa.String(length=200), nullable=True),
         sa.Column("stock", sa.Integer(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
     op.create_table(
         "user",
@@ -46,6 +47,7 @@ def upgrade():
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("email"),
         sa.UniqueConstraint("username"),
+        if_not_exists=True,
     )
     op.create_table(
         "auth_event",
@@ -61,6 +63,7 @@ def upgrade():
             ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
     op.create_table(
         "credit",
@@ -75,6 +78,7 @@ def upgrade():
             ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
     op.create_table(
         "email_token",
@@ -90,6 +94,7 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("token"),
+        if_not_exists=True,
     )
     op.create_table(
         "feed_item",
@@ -118,10 +123,14 @@ def upgrade():
             ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
     with op.batch_alter_table("feed_item", schema=None) as batch_op:
         batch_op.create_index(
-            "idx_feed_type_ref", ["item_type", "ref_id"], unique=False
+            "idx_feed_type_ref",
+            ["item_type", "ref_id"],
+            unique=False,
+            if_not_exists=True,
         )
 
     op.create_table(
@@ -134,6 +143,7 @@ def upgrade():
             ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
     op.create_table(
         "message",
@@ -151,6 +161,7 @@ def upgrade():
             ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
     op.create_table(
         "note",
@@ -171,6 +182,7 @@ def upgrade():
             ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
     op.create_table(
         "post",
@@ -184,6 +196,7 @@ def upgrade():
             ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
     op.create_table(
         "ranking_cache",
@@ -197,6 +210,7 @@ def upgrade():
             ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
     op.create_table(
         "report",
@@ -210,6 +224,7 @@ def upgrade():
             ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
     op.create_table(
         "user_achievement",
@@ -222,6 +237,7 @@ def upgrade():
             ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
     op.create_table(
         "comment",
@@ -239,6 +255,7 @@ def upgrade():
             ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
     op.create_table(
         "note_vote",
@@ -261,6 +278,7 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("user_id", "note_id", name="unique_vote"),
+        if_not_exists=True,
     )
     # ### end Alembic commands ###
 

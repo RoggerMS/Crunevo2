@@ -71,6 +71,7 @@
           </h6>
           <form method="POST" action="{{ url_for('club.create_club_post', club_id=club.id) }}">
             {% include 'components/csrf.html' %}
+            {{ csrf.csrf_field() }}
             <div class="mb-3">
               <textarea class="form-control" 
                         name="content" 
