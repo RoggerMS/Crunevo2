@@ -422,3 +422,4 @@
 - Unified AI chat under /ia and removed /crunebot routes and templates; /crunebot now redirects to /ia (PR ia-chat-unification).
 - Ocultado navbar y navegación inferior en login y registro; se calcula padding superior dinámico con JS para la navbar fija (hotfix login-navbar-padding).
 - Verificado enlace al foro en navbar, feed sidebar y club list con comprobación de endpoint para evitar BuildError (hotfix forum-link-check).
+- Redirected main.index to admin dashboard when ADMIN_INSTANCE and guarded store and stats links to avoid BuildError (hotfix admin-root-builderror).

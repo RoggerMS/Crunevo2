@@ -11,7 +11,7 @@
   <a class="nav-link d-flex align-items-center gap-2" href="#" data-bs-toggle="tooltip" title="Clubes">
     <i class="bi bi-people"></i><span>Clubes</span>
   </a>
-  <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('store.store_index') }}" data-bs-toggle="tooltip" title="Tienda">
+  <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}" data-bs-toggle="tooltip" title="Tienda">
     <i class="bi bi-bag"></i><span>Tienda</span>
   </a>
   <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('ranking.index') if 'ranking.index' in url_for.__globals__.get('current_app', {}).view_functions else '#' }}" data-bs-toggle="tooltip" title="Ranking">
