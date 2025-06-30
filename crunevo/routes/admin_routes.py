@@ -9,6 +9,7 @@ from crunevo.models import (
     Mission,
     Purchase,
     Report,
+    Credit,
     AdminLog,
     Product,
     ProductLog,
@@ -162,6 +163,60 @@ def add_credits_to_user():
         flash(f"Se agregaron {amount} Crolars a {user.username}", "success")
 
     return redirect(url_for("admin.manage_users"))
+
+
+@admin_bp.route("/creditos")
+def manage_creditos_alias():
+    """Alias spanish route that forwards to manage_credits."""
+    return redirect(url_for("admin.manage_credits"))
+
+
+@admin_bp.route("/credits")
+def manage_credits():
+    """View and filter credit history."""
+    user_id = request.args.get("user_id", type=int)
+    reason = request.args.get("reason")
+
+    query = db.session.query(Credit, User).join(User, Credit.user_id == User.id)
+    if user_id:
+        query = query.filter(Credit.user_id == user_id)
+    if reason:
+        query = query.filter(Credit.reason == reason)
+
+    credits = query.order_by(Credit.timestamp.desc()).all()
+    return render_template("admin/manage_credits.html", credits=credits)
+
+
+@admin_bp.route("/credits/export")
+def export_credits():
+    """Export credit history to CSV."""
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["ID", "Usuario", "Email", "Monto", "Razón", "Fecha"])
+
+    credits = (
+        db.session.query(Credit, User)
+        .join(User, Credit.user_id == User.id)
+        .order_by(Credit.timestamp.desc())
+        .all()
+    )
+    for credit, user in credits:
+        writer.writerow(
+            [
+                credit.id,
+                user.username,
+                user.email,
+                credit.amount,
+                credit.reason,
+                credit.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+            ]
+        )
+
+    output.seek(0)
+    response = make_response(output.getvalue())
+    response.headers["Content-Type"] = "text/csv"
+    response.headers["Content-Disposition"] = "attachment; filename=credits_export.csv"
+    return response
 
 
 @admin_bp.route("/export/users")
