@@ -454,3 +454,4 @@
 - Added settings page '/configuracion' with authenticated route and sidebar. Updated user dropdown with copy, edit and configuración options (PR settings-page).
 - Removed copy and edit options from user dropdown and related JS listener (PR profile-menu-cleanup).
 - Added password change form and backend route under settings (PR settings-change-password).
+- Split personal settings into separate username and description forms with real-time availability check and page reload on success. Updated profile header to show username overlay on banner (PR settings-username-fix).

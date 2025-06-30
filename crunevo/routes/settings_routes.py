@@ -18,15 +18,23 @@ def index():
 @login_required
 @activated_required
 def update_personal():
-    username = request.form.get("username", "").strip()
-    about = request.form.get("about", "")
-    if username and username != current_user.username:
-        if User.query.filter_by(username=username).first():
-            return jsonify(success=False, error="Nombre de usuario no disponible"), 400
-        current_user.username = username
-    current_user.about = about
+    username = request.form.get("username")
+    about = request.form.get("about")
+    changed = False
+    if username is not None:
+        username = username.strip()
+        if username and username != current_user.username:
+            if User.query.filter_by(username=username).first():
+                return (
+                    jsonify(success=False, error="Nombre de usuario no disponible"),
+                    400,
+                )
+            current_user.username = username
+            changed = True
+    if about is not None:
+        current_user.about = about
     db.session.commit()
-    return jsonify(success=True)
+    return jsonify(success=True, changed_username=changed)
 
 
 @settings_bp.route("/password", methods=["POST"])
@@ -49,3 +57,14 @@ def update_password():
     current_user.set_password(new_pw)
     db.session.commit()
     return jsonify(success=True)
+
+
+@settings_bp.route("/api/check_username")
+@login_required
+@activated_required
+def api_check_username():
+    username = request.args.get("username", "").strip()
+    if not username or username == current_user.username:
+        return jsonify(available=True)
+    exists = User.query.filter_by(username=username).first() is not None
+    return jsonify(available=not exists)

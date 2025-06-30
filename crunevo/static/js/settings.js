@@ -7,12 +7,60 @@ function initSettingsPage() {
         body: new FormData(form),
       });
       if (resp.ok) {
+        let data = {};
+        try {
+          data = await resp.clone().json();
+        } catch {
+          // ignore
+        }
         showToast('Cambios guardados');
+        if (data.changed_username) {
+          window.location.reload();
+        }
       } else {
-        showToast('Error al guardar', { delay: 5000 });
+        let msg = 'Error al guardar';
+        try {
+          const data = await resp.json();
+          if (data.error) msg = data.error;
+        } catch {
+          // ignore
+        }
+        showToast(msg, { delay: 5000 });
       }
     });
   });
+
+  const usernameInput = document.getElementById('username');
+  const feedback = document.getElementById('usernameFeedback');
+  if (usernameInput && feedback) {
+    usernameInput.addEventListener('input', async () => {
+      const value = usernameInput.value.trim();
+      if (!value || value === usernameInput.dataset.current) {
+        feedback.textContent = '';
+        feedback.classList.remove('text-success', 'text-danger');
+        return;
+      }
+      const resp = await fetch(
+        `/api/check_username?username=${encodeURIComponent(value)}`
+      );
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.available) {
+          feedback.textContent = '✅ Nombre disponible';
+          feedback.classList.remove('text-danger');
+          feedback.classList.add('text-success');
+        } else {
+          feedback.textContent = '❌ No disponible';
+          feedback.classList.remove('text-success');
+          feedback.classList.add('text-danger');
+        }
+      } else {
+        feedback.textContent = 'Error al verificar';
+        feedback.classList.remove('text-success');
+        feedback.classList.add('text-danger');
+      }
+    });
+  }
 }
 window.initSettingsPage = initSettingsPage;
 
