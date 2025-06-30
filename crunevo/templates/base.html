@@ -140,16 +140,16 @@
     {% include 'components/mobile_bottom_nav.html' %}
     {% endif %}
 
-    <!-- Floating Crunebot Button -->
-    {% if current_user.is_authenticated %}
-    <div class="floating-crunebot d-none d-lg-block">
-        <button class="btn btn-primary rounded-circle shadow-lg floating-btn" 
-                onclick="window.location.href='/crunebot'"
-                title="Hablar con Crunebot">
-            <i class="bi bi-robot fs-5"></i>
-        </button>
-    </div>
-    {% endif %}
+      <!-- Floating Crunebot Button -->
+      {% if current_user.is_authenticated and 'ia.ia_chat' in current_app.view_functions %}
+      <div class="floating-crunebot d-none d-lg-block">
+          <button class="btn btn-primary rounded-circle shadow-lg floating-btn"
+                  onclick="window.location.href='{{ url_for('ia.ia_chat') }}'"
+                  title="Hablar con Crunebot">
+              <i class="bi bi-robot fs-5"></i>
+          </button>
+      </div>
+      {% endif %}
 
     <!-- Bootstrap JS -->
     <script src="{{ url_for('static', filename='vendor/bootstrap.bundle.min.js') }}"></script>
