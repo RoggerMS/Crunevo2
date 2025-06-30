@@ -5,7 +5,7 @@
 <div class="card shadow-sm">
   <div class="card-body p-0">
     <div class="table-responsive">
-      <table id="tablaReportes" class="table table-vcenter card-table">
+      <table id="tablaReportes" class="table table-vcenter card-table" data-datatable>
       <thead>
         <tr><th>ID</th><th>Usuario</th><th>Descripción</th><th>Estado</th><th>Acciones</th></tr>
       </thead>
@@ -37,9 +37,5 @@
   </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  new simpleDatatables.DataTable('#tablaReportes');
-});
-</script>
+
 {% endblock %}
