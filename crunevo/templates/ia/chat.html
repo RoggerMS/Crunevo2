@@ -42,9 +42,21 @@
                     data-question="¿Cómo ganar Crolars?">
               <i class="bi bi-coin"></i> ¿Cómo ganar Crolars?
             </button>
-            <button class="btn btn-outline-info btn-sm quick-question" 
+            <button class="btn btn-outline-info btn-sm quick-question"
                     data-question="Explícame los clubes académicos">
               <i class="bi bi-people"></i> Sobre clubes académicos
+            </button>
+            <button class="btn btn-outline-warning btn-sm quick-question"
+                    data-question="¿Cómo subir apuntes?">
+              <i class="bi bi-journal-text"></i> ¿Cómo subir apuntes?
+            </button>
+            <button class="btn btn-outline-purple btn-sm quick-question"
+                    data-question="¿Qué es CRUNEVO+?">
+              <i class="bi bi-star"></i> ¿Qué es CRUNEVO+?
+            </button>
+            <button class="btn btn-outline-secondary btn-sm quick-question"
+                    data-question="¿Dónde están los cursos?">
+              <i class="bi bi-play-circle"></i> ¿Dónde están los cursos?
             </button>
           </div>
         </div>
@@ -118,11 +130,11 @@
           <form id="chat-form" class="d-flex align-items-end gap-3">
             <div class="flex-grow-1">
               <div class="input-group">
-                <textarea class="form-control border-0 shadow-sm" 
-                          id="message-input" 
-                          placeholder="Escribe tu pregunta aquí..." 
-                          rows="1"
-                          style="resize: none; border-radius: 25px; padding: 12px 20px;"></textarea>
+                <input type="text"
+                       class="form-control border-0 shadow-sm"
+                       id="message-input"
+                       placeholder="Escribe tu pregunta aquí..."
+                       style="border-radius: 25px; padding: 12px 20px;" />
               </div>
             </div>
             
@@ -264,11 +276,6 @@
   box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
 }
 
-#message-input {
-  max-height: 120px;
-  min-height: 45px;
-}
-
 #message-input:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
@@ -328,6 +335,14 @@
   background: rgba(255,255,255,0.3);
   border-radius: 3px;
 }
+
+.btn-outline-purple {
+  --bs-btn-color: #6f42c1;
+  --bs-btn-border-color: #6f42c1;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #6f42c1;
+  --bs-btn-hover-border-color: #6f42c1;
+}
 </style>
 
 <script>
@@ -338,19 +353,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const sendButton = document.getElementById('send-button');
   const typingIndicator = document.getElementById('typing-indicator');
 
-  // Auto-resize textarea
-  messageInput.addEventListener('input', function() {
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-  });
-
-  // Send message on Enter (Shift+Enter for new line)
-  messageInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
 
   // Form submission
   chatForm.addEventListener('submit', function(e) {
@@ -380,13 +382,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Clear input
     messageInput.value = '';
-    messageInput.style.height = 'auto';
 
     // Show typing indicator
     showTypingIndicator();
 
     // Send to backend
-    fetch('/ia/api/chat', {
+    fetch('/ia/ask', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -397,9 +398,9 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(data => {
       hideTypingIndicator();
-      
-      if (data.response) {
-        addMessageToChat(data.response, 'received', 'Crunebot');
+
+      if (data.answer) {
+        addMessageToChat(data.answer, 'received', 'Crunebot');
       } else {
         addMessageToChat('Lo siento, ha ocurrido un error. Inténtalo de nuevo.', 'received', 'Crunebot');
       }
@@ -487,7 +488,25 @@ function clearChat() {
 }
 
 function saveConversation() {
-  alert('Función de guardar conversación próximamente disponible');
+  fetch('/ia/save', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content,
+    },
+    body: JSON.stringify({ conversation: 'todo' }),
+  })
+    .then((r) => r.json())
+    .then(() => {
+      if (typeof showToast === 'function') {
+        showToast('Conversación guardada', { delay: 3000 });
+      }
+    })
+    .catch(() => {
+      if (typeof showToast === 'function') {
+        showToast('Error al guardar la conversación', { delay: 3000 });
+      }
+    });
 }
 
 function attachFile() {

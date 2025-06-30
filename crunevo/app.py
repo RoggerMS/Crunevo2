@@ -164,7 +164,6 @@ def create_app():
     from .routes.event_routes import event_bp, list_events
     from .routes.about_routes import about_bp
     from .routes.static_routes import static_bp
-    from .routes.crunebot_routes import crunebot_bp
     from .routes.saved_routes import saved_bp
     from .routes.main_routes import main_bp
 
@@ -270,7 +269,6 @@ def create_app():
         )
         app.register_blueprint(about_bp)
         app.register_blueprint(static_bp)
-        app.register_blueprint(crunebot_bp)
         app.register_blueprint(saved_bp)
         app.register_blueprint(errors_bp)
         app.register_blueprint(admin_blocker_bp)

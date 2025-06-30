@@ -419,3 +419,4 @@
 - Navbar redesigned: centered search bar, mobile modal search, trending links updated in sidebar and ranking hero (PR trending-navbar-update).
 - Prevented BuildError in templates by checking 'feed.view_feed' exists before linking (hotfix feed-link-check).
 - Fixed links to 'notes.list_notes' in navbar and sidebar templates with endpoint checks to avoid BuildError on admin instance (hotfix notes-sidebar-link).
+- Unified AI chat under /ia and removed /crunebot routes and templates; /crunebot now redirects to /ia (PR ia-chat-unification).
