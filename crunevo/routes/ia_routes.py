@@ -40,3 +40,11 @@ def ia_ask():
     except Exception:
         current_app.logger.exception("AI request failed")
         return jsonify({"error": "api"}), 500
+
+
+@ia_bp.route("/save", methods=["POST"])
+@activated_required
+def ia_save():
+    """Placeholder endpoint to save a conversation snippet."""
+    request.get_json()
+    return jsonify({"status": "success"})

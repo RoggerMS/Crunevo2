@@ -35,3 +35,9 @@ def tienda():
 @main_bp.route("/privacidad")
 def privacidad():
     return render_template("static/privacy.html")
+
+
+@main_bp.route("/crunebot")
+def redirect_crunebot():
+    """Redirect legacy /crunebot to the unified IA chat."""
+    return redirect(url_for("ia.ia_chat"))
