@@ -5,6 +5,11 @@
 {% block content %}
 <div class="tw-max-w-md tw-mx-auto tw-my-16 tw-rounded-2xl tw-shadow-sm tw-bg-white dark:tw-bg-gray-900 tw-p-4 tw-space-y-4">
   <h2>Acceso Privado CRUNEVO</h2>
+  {% if error %}
+    <div class="alert alert-danger" role="alert">
+      {{ error }}{% if wait %} <span id="loginCountdown"></span>{% endif %}
+    </div>
+  {% endif %}
   <form method="post" class="tw-space-y-4">
     {{ csrf.csrf_field() }}
     {{ forms.input('username', placeholder='Usuario') }}
@@ -12,4 +17,25 @@
     {{ btn.button('Entrar', type='submit') }}
   </form>
 </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  {% if wait %}
+  <script>
+    (function() {
+      let remaining = {{ wait }};
+      const el = document.getElementById('loginCountdown');
+      function tick() {
+        if (!el) return;
+        const m = Math.floor(remaining / 60);
+        const s = remaining % 60;
+        el.textContent = ` ${m}:${s.toString().padStart(2, '0')}`;
+        if (remaining > 0) remaining--;
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+  {% endif %}
 {% endblock %}
