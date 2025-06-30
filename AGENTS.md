@@ -445,3 +445,4 @@
 - Updated ia_routes to use new openai.chat.completions API and fix crash (hotfix openai-api-call).
 - Improved chat layout: added footer padding, dynamic year and footer styling (PR chat-footer-fix).
 - Added CreditReasons.ACTIVIDAD_SOCIAL constant, handled OpenAI RateLimitError in ia_routes and skipped migration test when SQLite lacks IF NOT EXISTS support (hotfix social-credit-constant).
+- Store index uses Bootstrap carousel for hero, ofertas and premium blocks; product cards show first_image or default placeholder, navbar displays cart icon with badge and JS calls /store/api/cart_count (PR store-carousel-fixes).
