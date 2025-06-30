@@ -436,4 +436,5 @@
 - Added admin.run_ranking route invoking calculate_weekly_ranking and linked from dashboard (hotfix admin-run-ranking-route).
 - Updated IA route headers to include Content-Type and switched model to "deepseek-chat" via OpenRouter (PR deepseek-openrouter).
 - Improved IA route error handling and added extra padding to chat messages to avoid footer overlap (PR deepseek-openrouter-ui-fix).
+- Added HTTP-Referer and X-Title headers when calling OpenRouter to satisfy API requirements (hotfix openrouter-headers).
 - Fixed manage_users links to avoid BuildError when admin endpoints are missing (hotfix admin-user-links).
