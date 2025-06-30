@@ -21,11 +21,17 @@ def ia_ask():
         return jsonify({"error": "empty"}), 400
     try:
         api_key = current_app.config.get("OPENROUTER_API_KEY")
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": current_app.config.get("PUBLIC_BASE_URL"),
+            "X-Title": "Crunebot",
+        }
         resp = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
-            headers={"Authorization": f"Bearer {api_key}"} if api_key else None,
+            headers=headers,
             json={
-                "model": "deepseek/deepseek-chat",
+                "model": "deepseek-chat",
                 "messages": [{"role": "user", "content": prompt}],
             },
             timeout=15,
@@ -34,6 +40,13 @@ def ia_ask():
         data = resp.json()
         answer = data.get("choices", [{}])[0].get("message", {}).get("content", "")
         return jsonify({"answer": answer})
+    except requests.HTTPError:
+        current_app.logger.exception("OpenRouter response error")
+        try:
+            error_detail = resp.json().get("error", {}).get("message")
+        except Exception:
+            error_detail = resp.text if resp else ""
+        return jsonify({"error": error_detail or "api"}), 502
     except Exception:
         current_app.logger.exception("AI request failed")
         return jsonify({"error": "api"}), 500
