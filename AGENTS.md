@@ -461,3 +461,4 @@
 - Diagnóstico de carpeta components realizado; listado de archivos y detección de duplicados funcionales. Se sugirió refactorización (QA components-diagnosis).
 - Unificada la barra lateral del feed, eliminando la versión duplicada y actualizando las vistas a usar components/sidebar_left_feed.html (PR feed-sidebar-unify).
 - Removed "Misiones" link from navbar, added mobile offcanvas sidebar toggle, redirected /register to onboarding and relaxed password policy to 6+ chars with letters and numbers (PR mobile-sidebar-register-fix).
+- Removed duplicate 'reportlab' entry from requirements.txt (PR requirements-cleanup).
