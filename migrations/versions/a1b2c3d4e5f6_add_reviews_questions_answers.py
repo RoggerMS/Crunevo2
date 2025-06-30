@@ -27,6 +27,7 @@ def upgrade():
         sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
         sa.ForeignKeyConstraint(["product_id"], ["product.id"]),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
     op.create_table(
         "question",
@@ -38,6 +39,7 @@ def upgrade():
         sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
         sa.ForeignKeyConstraint(["product_id"], ["product.id"]),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
     op.create_table(
         "answer",
@@ -49,10 +51,11 @@ def upgrade():
         sa.ForeignKeyConstraint(["question_id"], ["question.id"]),
         sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
 
 
 def downgrade():
-    op.drop_table("answer")
-    op.drop_table("question")
-    op.drop_table("review")
+    op.drop_table("answer", if_exists=True)
+    op.drop_table("question", if_exists=True)
+    op.drop_table("review", if_exists=True)

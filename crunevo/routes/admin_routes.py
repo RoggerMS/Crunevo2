@@ -1,4 +1,13 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    flash,
+    redirect,
+    url_for,
+    jsonify,
+    abort,
+)
 from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models import (
@@ -18,6 +27,7 @@ from crunevo.models import (
 from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit
 from crunevo.utils.ranking import calculate_weekly_ranking
+from .store_routes import store_index
 from crunevo.constants.credit_reasons import CreditReasons
 from datetime import datetime, timedelta
 import csv
@@ -83,9 +93,11 @@ def dashboard():
     )
 
 
-@admin_bp.route("/users")
+@admin_bp.route("/users", methods=["GET", "POST"])
 def manage_users():
     """Enhanced user management with club and mission info"""
+    if request.method == "POST":
+        abort(403)
     page = request.args.get("page", 1, type=int)
     search = request.args.get("search", "")
 
@@ -268,6 +280,37 @@ def product_history():
         .all()
     )
     return render_template("admin/product_history.html", logs=logs)
+
+
+@admin_bp.route("/store")
+def admin_store_alias():
+    """Serve the public store under the admin prefix."""
+    return store_index()
+
+
+@admin_bp.route("/verificaciones")
+def pending_verifications():
+    """List users pending verification."""
+    users = User.query.filter(User.verification_level < 2).all()
+    return render_template("admin/verifications.html", users=users)
+
+
+@admin_bp.route("/verificaciones/<int:user_id>/approve", methods=["POST"])
+def approve_user(user_id):
+    """Approve a user's verification."""
+    user = User.query.get_or_404(user_id)
+    user.verification_level = 2
+    db.session.commit()
+    flash("Usuario verificado", "success")
+    log_admin_action(f"Aprob\u00f3 verificacion {user_id}")
+    return redirect(url_for("admin.pending_verifications"))
+
+
+@admin_bp.route("/products/new", methods=["POST"])
+def add_product():
+    """Legacy add product route blocked for moderators."""
+    flash("Acción no permitida", "danger")
+    return redirect(url_for("admin.admin_store_alias"))
 
 
 @admin_bp.route("/logs")
