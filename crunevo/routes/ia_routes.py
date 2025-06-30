@@ -21,7 +21,7 @@ def ia_ask():
         return jsonify({"error": "empty"}), 400
     try:
         openai.api_key = current_app.config.get("OPENAI_API_KEY")
-        completion = openai.ChatCompletion.create(
+        completion = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
         )
