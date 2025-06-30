@@ -417,3 +417,4 @@
 - Removed references to deprecated admin.manage_store endpoint, linking to PUBLIC_BASE_URL/store instead (hotfix admin-store-links).
 - Registered static_pages blueprint to enable /cookies page and added /events alias to /eventos with updated sidebar link (PR events-cookies-fix).
 - Navbar redesigned: centered search bar, mobile modal search, trending links updated in sidebar and ranking hero (PR trending-navbar-update).
+- Prevented BuildError in templates by checking 'feed.view_feed' exists before linking (hotfix feed-link-check).

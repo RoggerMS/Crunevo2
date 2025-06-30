@@ -94,7 +94,7 @@
           </div>
         </div>
         <div class="card-footer bg-white bg-opacity-10 d-flex align-items-center justify-content-between">
-          <a class="small text-white stretched-link text-decoration-none" href="{{ url_for('feed.view_feed') }}">
+          <a class="small text-white stretched-link text-decoration-none" href="{{ url_for('feed.view_feed') if 'feed.view_feed' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}">
             Ver feed social
           </a>
           <i class="bi bi-arrow-right text-white"></i>
