@@ -37,6 +37,7 @@ class Config:
 
     RESEND_API_KEY = os.getenv("RESEND_API_KEY")
     OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+    OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "deepseek-chat")
     MAIL_PROVIDER = os.getenv("MAIL_PROVIDER", "smtp")
     USE_RESEND = MAIL_PROVIDER == "resend" or RESEND_API_KEY is not None
     MAIL_SUPPRESS_SEND = (
