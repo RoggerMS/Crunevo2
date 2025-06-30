@@ -21,6 +21,18 @@ def create_app():
     from .config import Config
 
     app.config.from_object(Config)
+    # Re-apply environment overrides after Config class variables load.
+    env_db = os.getenv("DATABASE_URL")
+    if env_db:
+        app.config["SQLALCHEMY_DATABASE_URI"] = env_db.replace(
+            "postgres://", "postgresql://"
+        )
+    env_talisman = os.getenv("ENABLE_TALISMAN")
+    if env_talisman is not None:
+        app.config["ENABLE_TALISMAN"] = env_talisman.lower() in ("1", "true", "yes")
+    env_rlimit = os.getenv("RATELIMIT_STORAGE_URI")
+    if env_rlimit:
+        app.config["RATELIMIT_STORAGE_URI"] = env_rlimit
 
     @app.context_processor
     def inject_globals():

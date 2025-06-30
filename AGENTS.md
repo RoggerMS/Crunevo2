@@ -427,5 +427,6 @@
 
 - Restored /admin/credits routes and export CSV to fix BuildError (hotfix manage-credits-route).
 - Fixed comment modal to display complete post detail via new /feed/api/post endpoint and ensured closing works correctly (PR comment-modal-full-post).
+- Added environment variable overrides in create_app and implemented admin delete routes. Fixed missing csrf_field in club detail. Migrations use if_not_exists and safe drop to avoid errors.
 - Wrapped admin sidebar link to 'admin.manage_achievements' with endpoint check to avoid BuildError when route is absent (hotfix admin-sidebar-achievements).
 - Imported reactions macro in _post_modal.html to fix UndefinedError (hotfix reactions-import).
