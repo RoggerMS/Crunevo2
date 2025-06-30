@@ -2,11 +2,11 @@
 {% block content %}
 <div class="row">
   <!-- Lado izquierdo (menú lateral) -->
-  <div class="col-lg-2 d-none d-lg-block">
-    {% include 'components/sidebar_left.html' %}
+  <div class="col-lg-3 d-none d-lg-block">
+    {% include 'components/sidebar_left_feed.html' %}
   </div>
   <!-- Contenido central -->
-  <div class="col-lg-7 col-md-12">
+  <div class="col-lg-9 col-md-12">
     <h2 class="mb-3">Apuntes</h2>
     <div class="d-flex flex-wrap gap-2 mb-3 justify-content-center">
       <a href="{{ url_for('notes.list_notes', filter='recientes', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'recientes' %}active{% endif %}">📅 Recientes</a>
