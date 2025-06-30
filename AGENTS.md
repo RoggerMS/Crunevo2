@@ -460,3 +460,4 @@
 - Styled feed sidebar trend card with bi-fire icon before text (PR feed-sidebar-fire-icon).
 - Diagnóstico de carpeta components realizado; listado de archivos y detección de duplicados funcionales. Se sugirió refactorización (QA components-diagnosis).
 - Unificada la barra lateral del feed, eliminando la versión duplicada y actualizando las vistas a usar components/sidebar_left_feed.html (PR feed-sidebar-unify).
+- Consolidated script initialization: moved DOMContentLoaded handlers from feed.js, notifications.js, share.js and chatia.js into main.js; modules expose init functions (PR unify-js-entry).
