@@ -158,25 +158,14 @@
 
 <!-- Comment Modal -->
 <div class="modal fade" id="commentModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content border-0 rounded-4">
       <div class="modal-header border-0 pb-0">
         <h5 class="modal-title">💬 Comentarios</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
-      <div class="modal-body">
-        <div id="commentsContainer" class="mb-3" style="max-height: 300px; overflow-y: auto;">
-          <!-- Comments will be loaded here -->
-        </div>
-        <form id="commentForm" class="d-flex gap-2">
-          {{ csrf.csrf_field() }}
-          <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
-               class="rounded-circle" width="32" height="32">
-          <input type="text" name="body" class="form-control rounded-pill" placeholder="Escribe un comentario..." required>
-          <button type="submit" class="btn btn-primary rounded-circle" style="width: 40px; height: 40px;">
-            <i class="bi bi-send"></i>
-          </button>
-        </form>
+      <div id="commentModalBody" class="modal-body p-0">
+        <!-- Post detail will load here -->
       </div>
     </div>
   </div>
@@ -381,9 +370,55 @@ function initPostInteractions() {
 }
 
 function openCommentModal(postId) {
-  const modal = new bootstrap.Modal(document.getElementById('commentModal'));
-  // Load comments logic here
+  const modalEl = document.getElementById('commentModal');
+  const bodyEl = document.getElementById('commentModalBody');
+  if (!modalEl || !bodyEl) return;
+  bodyEl.innerHTML = '<div class="text-center p-3"><div class="spinner-border"></div></div>';
+  const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
   modal.show();
+  fetch(`/feed/api/post/${postId}`)
+    .then(r => r.json())
+    .then(data => {
+      bodyEl.innerHTML = data.html;
+      const form = bodyEl.querySelector('#commentForm');
+      if (form) {
+        form.addEventListener('submit', ev => {
+          ev.preventDefault();
+          // simple ajax submit
+          const input = form.querySelector('input[name="body"]');
+          if (!input.value.trim()) return;
+          const fd = new FormData();
+          fd.append('body', input.value.trim());
+          fd.append('csrf_token', document.querySelector('[name="csrf_token"]').value);
+          fetch(`/feed/comment/${postId}`, { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(c => {
+              const container = bodyEl.querySelector('#commentsContainer');
+              if (container) {
+                container.insertAdjacentHTML('afterbegin', `
+                  <div class="comment-item d-flex gap-3 mb-3 comment-box">
+                    <img src="${c.avatar || '/static/img/default.png'}" class="rounded-circle" width="32" height="32">
+                    <div class="flex-grow-1">
+                      <div class="comment-box p-3 rounded-3">
+                        <div class="fw-semibold small mb-1">${c.author}</div>
+                        <div class="small">${c.body}</div>
+                      </div>
+                      <div class="small text-muted mt-1">ahora</div>
+                    </div>
+                  </div>`);
+              }
+              input.value = '';
+            });
+        });
+      }
+      setTimeout(() => {
+        const input = bodyEl.querySelector('#commentForm input[name="body"]');
+        if (input) input.focus();
+      }, 300);
+    })
+    .catch(() => {
+      bodyEl.innerHTML = '<div class="text-center text-muted p-3">Error al cargar publicación</div>';
+    });
 }
 
 function openShareModal(url) {

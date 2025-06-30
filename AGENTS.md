@@ -426,3 +426,4 @@
 - Redirected main.index to admin dashboard when ADMIN_INSTANCE and guarded store and stats links to avoid BuildError (hotfix admin-root-builderror).
 
 - Restored /admin/credits routes and export CSV to fix BuildError (hotfix manage-credits-route).
+- Fixed comment modal to display complete post detail via new /feed/api/post endpoint and ensured closing works correctly (PR comment-modal-full-post).

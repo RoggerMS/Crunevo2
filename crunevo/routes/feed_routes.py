@@ -497,6 +497,26 @@ def api_comments(post_id):
     )
 
 
+@feed_bp.route("/api/post/<int:post_id>")
+@activated_required
+def api_post_detail(post_id: int):
+    """Return rendered HTML for a post used in the comment modal."""
+    post = Post.query.get_or_404(post_id)
+    counts = PostReaction.count_for_post(post.id)
+    my_reaction = (
+        PostReaction.query.with_entities(PostReaction.reaction_type)
+        .filter_by(user_id=current_user.id, post_id=post.id)
+        .scalar()
+    )
+    html = render_template(
+        "feed/_post_modal.html",
+        post=post,
+        reaction_counts=counts,
+        user_reaction=my_reaction,
+    )
+    return jsonify({"html": html})
+
+
 @feed_bp.route("/save/<int:post_id>", methods=["POST"])
 @activated_required
 def toggle_save(post_id):
