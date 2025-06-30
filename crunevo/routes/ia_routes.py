@@ -21,17 +21,20 @@ def ia_ask():
         return jsonify({"error": "empty"}), 400
     try:
         api_key = current_app.config.get("OPENROUTER_API_KEY")
+        base_url = current_app.config.get("PUBLIC_BASE_URL") or request.url_root.rstrip(
+            "/"
+        )
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            "HTTP-Referer": current_app.config.get("PUBLIC_BASE_URL"),
+            "HTTP-Referer": base_url,
             "X-Title": "Crunebot",
         }
         resp = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             headers=headers,
             json={
-                "model": "deepseek-chat",
+                "model": current_app.config.get("OPENROUTER_MODEL", "deepseek-chat"),
                 "messages": [{"role": "user", "content": prompt}],
             },
             timeout=15,

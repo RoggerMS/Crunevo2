@@ -438,3 +438,4 @@
 - Improved IA route error handling and added extra padding to chat messages to avoid footer overlap (PR deepseek-openrouter-ui-fix).
 - Added HTTP-Referer and X-Title headers when calling OpenRouter to satisfy API requirements (hotfix openrouter-headers).
 - Fixed manage_users links to avoid BuildError when admin endpoints are missing (hotfix admin-user-links).
+- Adjusted IA referer header fallback to request.url_root and added OPENROUTER_MODEL config (hotfix openrouter-referer-model).
