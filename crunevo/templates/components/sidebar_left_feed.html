@@ -63,7 +63,7 @@
         </li>
 
         <li>
-          <a href="{{ url_for('forum.list_questions') }}" class="nav-link {{ 'active' if request.endpoint == 'forum.list_questions' }}">
+          <a href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}" class="nav-link {{ 'active' if request.endpoint == 'forum.list_questions' }}">
             <i class="bi bi-chat-square-dots"></i>
             <span class="fw-semibold">Foro</span>
           </a>
