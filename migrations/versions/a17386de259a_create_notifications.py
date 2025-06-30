@@ -26,8 +26,9 @@ def upgrade():
         sa.Column("url", sa.String(length=255), nullable=True),
         sa.Column("is_read", sa.Boolean(), nullable=True),
         sa.Column("timestamp", sa.DateTime(), nullable=True),
+        if_not_exists=True,
     )
 
 
 def downgrade():
-    op.drop_table("notifications")
+    op.drop_table("notifications", if_exists=True)
