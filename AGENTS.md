@@ -440,3 +440,4 @@
 - Fixed manage_users links to avoid BuildError when admin endpoints are missing (hotfix admin-user-links).
 - Adjusted IA referer header fallback to request.url_root and added OPENROUTER_MODEL config (hotfix openrouter-referer-model).
 - Guarded Crunebot button and route on admin instance; restored admin store alias and verification routes; updated migrations with existence checks (PR admin-crunebot-fix).
+- Replaced OpenRouter integration with direct OpenAI ChatCompletion API and updated config, requirements and .env (PR openai-integration).
