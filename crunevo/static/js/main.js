@@ -522,6 +522,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
     document.body.classList.add('no-anim');
   }
+  const fixedNav = document.querySelector('.navbar.fixed-top');
+  if (fixedNav) {
+    document.body.style.paddingTop = fixedNav.offsetHeight + 'px';
+  }
   if (window.NEW_ACHIEVEMENTS && window.NEW_ACHIEVEMENTS.length > 0) {
     showAchievementPopup(window.NEW_ACHIEVEMENTS[0]);
   }

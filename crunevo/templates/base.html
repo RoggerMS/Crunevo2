@@ -56,7 +56,8 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
     <!-- Navigation -->
-    {% if not request.path.startswith('/admin') %}
+    {% if not request.path.startswith('/admin')
+          and request.endpoint not in ['auth.login', 'onboarding.register'] %}
       {% if config.ADMIN_INSTANCE %}
         {% include 'components/navbar_admin.html' %}
       {% else %}
@@ -135,7 +136,9 @@
     {% endif %}
 
     <!-- Mobile bottom navigation -->
+    {% if request.endpoint not in ['auth.login', 'onboarding.register'] %}
     {% include 'components/mobile_bottom_nav.html' %}
+    {% endif %}
 
     <!-- Floating Crunebot Button -->
     {% if current_user.is_authenticated %}
