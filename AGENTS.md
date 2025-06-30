@@ -444,3 +444,4 @@
 - Replaced OpenRouter integration with direct OpenAI ChatCompletion API and updated config, requirements and .env (PR openai-integration).
 - Updated ia_routes to use new openai.chat.completions API and fix crash (hotfix openai-api-call).
 - Improved chat layout: added footer padding, dynamic year and footer styling (PR chat-footer-fix).
+- Added CreditReasons.ACTIVIDAD_SOCIAL constant, handled OpenAI RateLimitError in ia_routes and skipped migration test when SQLite lacks IF NOT EXISTS support (hotfix social-credit-constant).
