@@ -35,9 +35,11 @@
 
   <span class="text-muted fw-bold small mt-4 mb-2">🏅 Comunidad</span>
   <a class="nav-link disabled"><i class="ti ti-check me-2"></i> Verificaciones</a>
+  {% if 'admin.manage_achievements' in url_for.__globals__.get('current_app', {}).view_functions %}
   <a class="nav-link {% if request.endpoint == 'admin.manage_achievements' %}active{% endif %}" href="{{ url_for('admin.manage_achievements') }}">
     <i class="ti ti-award me-2"></i> Logros
   </a>
+  {% endif %}
   <a class="nav-link {% if request.endpoint == 'admin.manage_missions' %}active{% endif %}" href="{{ url_for('admin.manage_missions') }}">
     <i class="ti ti-target me-2"></i> Misiones
   </a>
