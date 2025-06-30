@@ -23,12 +23,9 @@ def ia_ask():
         api_key = current_app.config.get("OPENROUTER_API_KEY")
         resp = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
+            headers={"Authorization": f"Bearer {api_key}"} if api_key else None,
             json={
-                "model": "deepseek-chat",
+                "model": "deepseek/deepseek-chat",
                 "messages": [{"role": "user", "content": prompt}],
             },
             timeout=15,
