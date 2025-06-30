@@ -122,6 +122,21 @@
     <!-- Toast container for dynamic notifications -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;"></div>
 
+    {% if request.endpoint not in ['auth.login', 'onboarding.register'] %}
+    <button class="btn btn-primary rounded-circle position-fixed top-0 start-0 m-3 d-lg-none mobile-overlay-btn" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-label="Menú">
+      <i class="bi bi-list"></i>
+    </button>
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="mobileSidebarLabel">Menú</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+      </div>
+      <div class="offcanvas-body p-0">
+        {% include 'components/sidebar_left_feed.html' %}
+      </div>
+    </div>
+    {% endif %}
+
     <!-- Shopping cart button for store pages -->
     {% if request.path.startswith('/store') and 'store.view_cart' in url_for.__globals__.get('current_app', {}).view_functions %}
     <a href="{{ url_for('store.view_cart') }}" 

@@ -461,3 +461,8 @@
 - Diagnóstico de carpeta components realizado; listado de archivos y detección de duplicados funcionales. Se sugirió refactorización (QA components-diagnosis).
 - Unificada la barra lateral del feed, eliminando la versión duplicada y actualizando las vistas a usar components/sidebar_left_feed.html (PR feed-sidebar-unify).
 - Introducida cola de tareas con RQ y worker para insertar publicaciones de feed asincrónamente; create_feed_item_for_all ahora encola la tarea (PR feed-queue-worker).
+
+- Consolidated script initialization: moved DOMContentLoaded handlers from feed.js, notifications.js, share.js and chatia.js into main.js; modules expose init functions (PR unify-js-entry).
+
+- Removed "Misiones" link from navbar, added mobile offcanvas sidebar toggle, redirected /register to onboarding and relaxed password policy to 6+ chars with letters and numbers (PR mobile-sidebar-register-fix).
+- Removed duplicate 'reportlab' entry from requirements.txt (PR requirements-cleanup).

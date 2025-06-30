@@ -54,10 +54,10 @@ function createToastContainer() {
 }
 
 // Add share buttons to posts and notes
-document.addEventListener('DOMContentLoaded', function() {
-  // Add share buttons to existing content
+function initShareButtons() {
   addShareButtons();
-});
+}
+window.initShareButtons = initShareButtons;
 
 function addShareButtons() {
   // Add to post cards

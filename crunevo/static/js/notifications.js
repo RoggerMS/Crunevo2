@@ -74,9 +74,10 @@ class NotificationManager {
     }
 }
 
-// Inicializar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', () => {
+// Initialization handled in main.js
+function initNotificationManager() {
     if (window.CURRENT_USER_ID) {
         new NotificationManager();
     }
-});
+}
+window.initNotificationManager = initNotificationManager;
