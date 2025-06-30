@@ -81,7 +81,7 @@ def login():
 @auth_bp.route("/logout")
 @activated_required
 def logout():
-    user = current_user
+    user = current_user._get_current_object()
     logout_user()
     record_auth_event(user, "logout")
     return redirect(url_for("auth.login"))
