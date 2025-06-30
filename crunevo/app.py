@@ -129,14 +129,17 @@ def create_app():
 
     migrate.init_app(app, db)
 
-    # Initialize database if needed
-    with app.app_context():
-        try:
-            from .utils.db_init import ensure_database_ready
+    testing_env = os.environ.get("PYTEST_CURRENT_TEST") is not None
 
-            ensure_database_ready()
-        except Exception as e:
-            app.logger.error(f"Database initialization error: {e}")
+    # Initialize database if needed (skip during tests)
+    with app.app_context():
+        if not testing_env:
+            try:
+                from .utils.db_init import ensure_database_ready
+
+                ensure_database_ready()
+            except Exception as e:
+                app.logger.error(f"Database initialization error: {e}")
 
     from .routes.onboarding_routes import bp as onboarding_bp
     from .routes.auth_routes import auth_bp
@@ -180,7 +183,6 @@ def create_app():
     from .routes.main_routes import main_bp
 
     is_admin = os.environ.get("ADMIN_INSTANCE") == "1"
-    testing_env = os.environ.get("PYTEST_CURRENT_TEST") is not None
     app.config["ADMIN_INSTANCE"] = is_admin
 
     app.register_blueprint(health_bp)

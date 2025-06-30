@@ -35,3 +35,4 @@ beautifulsoup4==4.12.2
 reportlab==4.4.2
 qrcode[pil]
 reportlab
+openai>=1.0.0

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify, current_app
-import requests
+import openai
 
 from crunevo.utils.helpers import activated_required
 
@@ -20,38 +20,15 @@ def ia_ask():
     if not prompt:
         return jsonify({"error": "empty"}), 400
     try:
-        api_key = current_app.config.get("OPENROUTER_API_KEY")
-        base_url = current_app.config.get("PUBLIC_BASE_URL") or request.url_root.rstrip(
-            "/"
+        openai.api_key = current_app.config.get("OPENAI_API_KEY")
+        completion = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
         )
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": base_url,
-            "X-Title": "Crunebot",
-        }
-        resp = requests.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers=headers,
-            json={
-                "model": current_app.config.get("OPENROUTER_MODEL", "deepseek-chat"),
-                "messages": [{"role": "user", "content": prompt}],
-            },
-            timeout=15,
-        )
-        resp.raise_for_status()
-        data = resp.json()
-        answer = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+        answer = completion.choices[0].message.content
         return jsonify({"answer": answer})
-    except requests.HTTPError:
-        current_app.logger.exception("OpenRouter response error")
-        try:
-            error_detail = resp.json().get("error", {}).get("message")
-        except Exception:
-            error_detail = resp.text if resp else ""
-        return jsonify({"error": error_detail or "api"}), 502
     except Exception:
-        current_app.logger.exception("AI request failed")
+        current_app.logger.exception("OpenAI request failed")
         return jsonify({"error": "api"}), 500
 
 
