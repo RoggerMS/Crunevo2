@@ -4,12 +4,19 @@
       <i class="bi bi-mortarboard-fill me-2"></i>CRUNEVO
     </a>
 
+    <!-- Mobile search and chat buttons -->
+    <button class="btn text-white d-lg-none me-2" type="button" data-bs-toggle="modal" data-bs-target="#mobileSearchModal" aria-label="Buscar">
+      <i class="bi bi-search"></i>
+    </button>
+    <a class="btn text-white d-lg-none me-2" href="{{ url_for('chat.chat_index') }}" aria-label="Chat">
+      <i class="bi bi-chat-dots-fill"></i>
+    </a>
+
     <!-- Global Search Bar -->
-    <div class="navbar-search d-none d-lg-block" style="max-width: 200px; width: 100%;">
+    <div class="navbar-search d-none d-lg-block mx-auto" style="max-width: 200px; width: 100%;">
       <div class="position-relative">
         <input type="text" id="globalSearch" class="form-control bg-light border-0 rounded-pill ps-4" 
                placeholder="Buscar en CRUNEVO..." autocomplete="off">
-        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
         <div id="searchDropdown" class="dropdown-menu w-100 shadow-lg border-0 rounded-3" style="display: none; top: 100%; z-index: 1050;">
           <div id="searchResults"></div>
         </div>
@@ -23,14 +30,6 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav d-lg-none mb-2">
         {% if current_user.is_authenticated %}
-          <li class="nav-item">
-            <form class="d-flex my-2">
-              <input class="form-control me-2" type="search" placeholder="Buscar..." id="mobileSearch">
-              <button class="btn btn-outline-light" type="button" onclick="performMobileSearch()">
-                <i class="bi bi-search"></i>
-              </button>
-            </form>
-          </li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.feed_home') }}">Feed</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('notes.list_notes') }}">Apuntes</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('forum.list_questions') }}">Foro</a></li>
@@ -127,6 +126,18 @@
   </div>
 </nav>
 
+<!-- Mobile Search Modal -->
+<div class="modal fade" id="mobileSearchModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen-sm-down">
+    <div class="modal-content bg-body">
+      <div class="modal-header border-0">
+        <input type="search" id="mobileSearchInput" class="form-control" placeholder="Buscar en CRUNEVO..." autofocus>
+        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const globalSearch = document.getElementById('globalSearch');
@@ -161,6 +172,16 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', function(e) {
       if (!globalSearch.contains(e.target) && !searchDropdown.contains(e.target)) {
         hideSearchResults();
+      }
+    });
+  }
+
+  const mobileSearchInput = document.getElementById('mobileSearchInput');
+  if (mobileSearchInput) {
+    mobileSearchInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        performMobileSearch();
       }
     });
   }
@@ -213,11 +234,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function performMobileSearch() {
-  const mobileSearch = document.getElementById('mobileSearch');
-  const query = mobileSearch.value.trim();
+  const mobileSearch = document.getElementById('mobileSearchInput');
+  const query = mobileSearch ? mobileSearch.value.trim() : '';
   if (query) {
     window.location.href = `/search?q=${encodeURIComponent(query)}`;
   }
 }
 </script>
-</nav>
