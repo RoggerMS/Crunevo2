@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from crunevo.extensions import db
 
@@ -13,11 +12,11 @@ class Event(db.Model):
     is_featured = db.Column(db.Boolean, default=False)
     rewards = db.Column(db.Text)  # JSON string with reward details
     category = db.Column(db.String(50))
-    
+
     @property
     def is_upcoming(self):
         return self.event_date > datetime.utcnow()
-    
+
     @property
     def formatted_date(self):
-        return self.event_date.strftime('%d de %B')
+        return self.event_date.strftime("%d de %B")

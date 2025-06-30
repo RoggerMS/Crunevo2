@@ -226,7 +226,7 @@
           
           {% if user.notes|length > 12 %}
           <div class="text-center mt-4">
-            <a href="{{ url_for('notes.list_notes') }}" class="btn btn-outline-primary">
+            <a href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}" class="btn btn-outline-primary">
               Ver todos los apuntes ({{ user.notes|length }})
             </a>
           </div>

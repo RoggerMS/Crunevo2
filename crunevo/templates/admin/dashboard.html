@@ -70,7 +70,7 @@
           </div>
         </div>
         <div class="card-footer bg-white bg-opacity-10 d-flex align-items-center justify-content-between">
-          <a class="small text-white stretched-link text-decoration-none" href="{{ url_for('notes.list_notes') }}">
+          <a class="small text-white stretched-link text-decoration-none" href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}">
             Gestionar apuntes
           </a>
           <i class="bi bi-arrow-right text-white"></i>
