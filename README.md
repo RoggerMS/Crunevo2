@@ -97,6 +97,15 @@ Para correr Redis localmente de forma rápida:
 docker run -d --name redis -p 6379:6379 redis:7
 ```
 
+### Background worker
+
+Las publicaciones del feed se insertan en segundo plano usando **RQ**.
+Ejecuta un worker aparte para procesar la cola:
+
+```bash
+python scripts/run_feed_worker.py
+```
+
 ### Migrations
 
 Para crear una nueva migración y aplicarla:
