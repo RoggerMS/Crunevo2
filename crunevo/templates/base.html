@@ -86,11 +86,11 @@
     </main>
 
     <!-- Enhanced footer -->
-    <footer class="text-center py-4 mt-5" style="background: rgba(255,255,255,0.05); backdrop-filter: blur(10px);">
+    <footer class="text-center py-4 mt-5" style="position: relative; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #e0e0e0;">
       <div class="container">
         <div class="row align-items-center">
           <div class="col-md-6 text-md-start">
-            <span class="text-muted small">© 2024 Crunevo - Construyendo el futuro educativo</span>
+            <span class="text-muted small">© <span id="year"></span> Crunevo - Construyendo el futuro educativo</span>
           </div>
           <div class="col-md-6 text-md-end">
             <a href="{{ url_for('about.about') if 'about.about' in url_for.__globals__.get('current_app', {}).view_functions else '/about' }}" class="text-muted text-decoration-none me-3 small">Sobre Crunevo</a>
@@ -230,6 +230,9 @@
     <!-- Main app initialization -->
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/share.js') }}" defer></script>
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
 
     {% block body_end %}{% endblock %}
 </body>

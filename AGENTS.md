@@ -443,3 +443,4 @@
 - Fixed TemplateSyntaxError in club list and added safety checks in migrations (PR template-migration-fixes).
 - Replaced OpenRouter integration with direct OpenAI ChatCompletion API and updated config, requirements and .env (PR openai-integration).
 - Updated ia_routes to use new openai.chat.completions API and fix crash (hotfix openai-api-call).
+- Improved chat layout: added footer padding, dynamic year and footer styling (PR chat-footer-fix).
