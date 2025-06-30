@@ -351,8 +351,8 @@ class FeedManager {
   openShareModal(e) {
     const shareUrl = e.currentTarget.dataset.shareUrl;
     window.currentShareUrl = shareUrl;
-    
-    const modal = new bootstrap.Modal(document.getElementById('shareModal'));
+
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('shareModal'));
     modal.show();
   }
 

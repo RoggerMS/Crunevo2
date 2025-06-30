@@ -431,3 +431,4 @@
 - Wrapped admin sidebar link to 'admin.manage_achievements' with endpoint check to avoid BuildError when route is absent (hotfix admin-sidebar-achievements).
 - Imported reactions macro in _post_modal.html to fix UndefinedError (hotfix reactions-import).
 - Fixed dashboard template variable names to match admin route and replaced stats.users usage with new_users_week (hotfix admin-dashboard-stats).
+- Redesigned comment modal using feed post card layout and fixed share modal backdrop removal (PR share-modal-redesign).

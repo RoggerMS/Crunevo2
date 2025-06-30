@@ -1,68 +1,134 @@
 {% import 'components/csrf.html' as csrf %}
 {% import 'components/reactions.html' as react %}
-<div class="card mb-4 shadow-sm border-0 rounded-4">
+<article class="card mb-4 shadow-sm border-0 rounded-4 post-card" data-post-id="{{ post.id }}">
   <div class="card-body p-4">
-    <div class="d-flex align-items-center mb-2">
+    <!-- Post Header -->
+    <div class="d-flex align-items-center gap-3 mb-3">
       {% set author = post.author %}
       {% if author %}
-      <img loading="lazy" src="{{ author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
-      <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="me-auto text-decoration-none">
-        <strong>{{ author.username }}</strong>
-      </a>
-      {% else %}
-      <img loading="lazy" src="{{ url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
-      <span class="me-auto text-muted">Usuario eliminado</span>
-      {% endif %}
-      <small class="text-muted">{{ post.created_at.strftime('%Y-%m-%d') }}{% if post.edited %} • Editado{% endif %}</small>
-    </div>
-    <p class="card-text">{{ post.content }}</p>
-      {% if post.file_url %}
-        {% if post.file_url.endswith('.pdf') %}
-        <a href="{{ post.file_url }}" target="_blank" class="btn btn-outline-primary mb-2">Ver PDF</a>
-        {% else %}
-        <img loading="lazy" src="{{ post.file_url }}" class="feed-image img-fluid rounded mb-2">
-        {% endif %}
-      {% endif %}
-      {% set counts = reaction_counts %}
-      {{ react.reaction_container(post, counts, user_reaction) }}
-
-      <div class="d-flex gap-2 my-3">
-        <button type="button" class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('feed.view_post', post_id=post.id, _external=True) }}">
-          <i class="bi bi-share"></i> Compartir
-        </button>
-        {% if author %}
-        <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="btn btn-outline-info btn-sm">Ver perfil</a>
-        <a href="{{ url_for('feed.user_posts', user_id=author.id) }}" class="btn btn-outline-primary btn-sm">
-          Ver más publicaciones de este usuario
-        </a>
-        {% endif %}
-      </div>
-
-      <h6 class="mt-3 mb-2">Comentarios</h6>
-      <div id="commentsContainer" class="comment-container" data-post-id="{{ post.id }}">
-        {% if post.comments %}
-          {% for c in post.comments|sort(attribute='timestamp', reverse=True) %}
-          <div class="d-flex mb-3 comment comment-item comment-box">
-            <img loading="lazy" src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
-            <div>
-              <div class="small text-muted">
-                <a href="{{ url_for('auth.profile_by_username', username=c.author.username) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.timestamp.strftime('%Y-%m-%d %H:%M') }}
-              </div>
-              <div>{{ c.body }}</div>
-            </div>
-          </div>
-          {% endfor %}
-        {% else %}
-          <p class="text-muted" data-empty-msg>Sé el primero en comentar esta publicación.</p>
-        {% endif %}
-      </div>
-      <form id="commentForm" method="post" action="{{ url_for('feed.comment_post', post_id=post.id) }}">
-        {{ csrf.csrf_field() }}
-        <div class="input-group mb-2">
-          <input type="text" name="body" class="form-control" placeholder="Añadir comentario" required>
-          <button class="btn btn-primary" type="submit">Enviar</button>
+      <img src="{{ author.avatar_url or url_for('static', filename='img/default.png') }}"
+           class="rounded-circle" width="48" height="48" alt="avatar">
+      <div class="flex-grow-1">
+        <div class="d-flex align-items-center gap-2">
+          <h6 class="mb-0 fw-semibold">
+            <a href="{{ url_for('auth.profile_by_username', username=author.username) }}"
+               class="text-decoration-none text-dark">{{ author.username }}</a>
+          </h6>
+          {% if author.verified %}
+          <span class="badge verified-badge"><i class="bi bi-check-circle-fill"></i> Verificado</span>
+          {% endif %}
         </div>
-      </form>
+        <small class="text-muted">
+          <i class="bi bi-clock"></i>
+          <span data-timestamp="{{ post.created_at.isoformat() }}">{{ post.created_at|timesince }}</span>
+          {% if post.edited %}<span class="text-muted"> • editado</span>{% endif %}
+        </small>
+      </div>
+      {% else %}
+      <img src="{{ url_for('static', filename='img/default.png') }}" class="rounded-circle" width="48" height="48" alt="avatar">
+      <div class="flex-grow-1">
+        <strong class="text-muted">Usuario eliminado</strong>
+      </div>
+      {% endif %}
     </div>
+
+    <!-- Post Content -->
+    {% if post.content %}
+    <div class="post-content mb-3">
+      <p class="mb-0 lh-base">{{ post.content }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Post Media -->
+    {% if post.file_url %}
+    <div class="post-media mb-3">
+      {% if post.file_url.endswith('.pdf') %}
+      <div class="pdf-preview bg-light rounded-3 p-3 text-center">
+        <i class="bi bi-file-pdf text-danger fs-1 mb-2"></i>
+        <p class="mb-2 fw-semibold">Documento PDF</p>
+        <a href="{{ post.file_url }}" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill">
+          <i class="bi bi-download"></i> Ver documento
+        </a>
+      </div>
+      {% else %}
+      <img src="{{ post.file_url }}" alt="Imagen del post" class="img-fluid rounded-3 w-100 post-image" style="max-height: 400px; object-fit: cover;">
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Post Stats -->
+    {% set counts = reaction_counts %}
+    <div class="post-stats d-flex align-items-center gap-4 mb-3 small text-muted">
+      {% if counts %}
+      <span class="d-flex align-items-center gap-1">
+        {% for reaction, count in counts.items() %}
+        <span>{{ reaction }}</span>
+        {% endfor %}
+        <span>{{ post.likes or 0 }}</span>
+      </span>
+      {% endif %}
+      {% set comment_count = post.comments|length %}
+      {% if comment_count > 0 %}
+      <span>{{ comment_count }} comentario{{ 's' if comment_count > 1 else '' }}</span>
+      {% endif %}
+    </div>
+
+    <!-- Post Actions -->
+    <div class="post-actions d-flex align-items-center gap-1 border-top pt-3">
+      {% set user_reaction = user_reaction %}
+      <button class="btn btn-ghost flex-fill d-flex align-items-center justify-content-center gap-2 like-btn {{ 'active' if user_reaction else '' }}"
+              data-post-id="{{ post.id }}"
+              data-reaction="👍">
+        <i class="bi bi-fire{% if user_reaction %} text-danger{% endif %}"></i>
+        <span class="d-none d-sm-inline">Me gusta</span>
+        <span id="likeCount{{ post.id }}" class="badge bg-light text-dark rounded-pill">{{ post.likes or 0 }}</span>
+      </button>
+
+      <button class="btn btn-ghost flex-fill d-flex align-items-center justify-content-center gap-2 comment-btn"
+              data-post-id="{{ post.id }}">
+        <i class="bi bi-chat"></i>
+        <span class="d-none d-sm-inline">Comentar</span>
+      </button>
+
+      <button class="btn btn-ghost flex-fill d-flex align-items-center justify-content-center gap-2 share-btn"
+              data-share-url="{{ url_for('feed.view_post', post_id=post.id, _external=True) }}">
+        <i class="bi bi-share"></i>
+        <span class="d-none d-sm-inline">Compartir</span>
+      </button>
+
+      <button class="btn btn-ghost d-flex align-items-center justify-content-center save-btn"
+              data-post-id="{{ post.id }}" style="width: 40px; height: 40px;">
+        <i class="bi bi-bookmark"></i>
+      </button>
+    </div>
+
+    <!-- Comments -->
+    <h6 class="mt-4 mb-3">Comentarios</h6>
+    <div id="commentsContainer" class="comment-container" data-post-id="{{ post.id }}">
+      {% if post.comments %}
+        {% for c in post.comments|sort(attribute='timestamp', reverse=True) %}
+        <div class="comment-item d-flex gap-3 mb-3 comment-box">
+          <img src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle" width="32" height="32">
+          <div class="flex-grow-1">
+            <div class="comment-box p-3 rounded-3">
+              <div class="fw-semibold small mb-1">{{ c.author.username }}</div>
+              <div class="small">{{ c.body }}</div>
+            </div>
+            <div class="small text-muted mt-1">{{ c.timestamp|timesince }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-muted" data-empty-msg>Sé el primero en comentar esta publicación.</p>
+      {% endif %}
+    </div>
+
+    <form id="commentForm" method="post" action="{{ url_for('feed.comment_post', post_id=post.id) }}">
+      {{ csrf.csrf_field() }}
+      <div class="input-group mb-2">
+        <input type="text" name="body" class="form-control" placeholder="Añadir comentario" required>
+        <button class="btn btn-primary" type="submit">Enviar</button>
+      </div>
+    </form>
   </div>
-</div>
+</article>
