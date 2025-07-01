@@ -474,3 +474,4 @@
 - Fixed profile header overlay by raising username z-index and moving styles to perfil.css. Computed club and mission counts in auth.perfil, showing participation percentage (PR profile-fixes).
 - Improved chat: sanitized messages, active user ping with Redis fallback, real-time UI updates and message button on profiles (PR chat-enhancements-phase1).
 - Added dynamic link previews for pasted URLs using BeautifulSoup and Redis cache (PR link-preview).
+- Refined mobile sidebar toggle button with fixed 48px circle and removed excessive click area (PR mobile-menu-button-fix).
