@@ -6,6 +6,7 @@ class FeedManager {
     this.isLoading = false;
     this.currentFilter = 'recientes';
     this.posts = new Map();
+    this.imageFiles = [];
     this.init();
   }
 
@@ -55,6 +56,11 @@ class FeedManager {
       // Show loading state
       this.setButtonLoading(submitBtn, true);
 
+      const imgInput = document.getElementById('feedImageInput');
+      const dt = new DataTransfer();
+      this.imageFiles.forEach((f) => dt.items.add(f));
+      if (imgInput) imgInput.files = dt.files;
+
       const formData = new FormData(form);
       const response = await this.fetchWithCSRF(form.action || window.location.pathname, {
         method: 'POST',
@@ -88,41 +94,50 @@ class FeedManager {
     if (!input || !preview) return;
 
     input.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file && file.type.startsWith('image/')) {
-        this.showImagePreview(file, preview);
-      } else if (file) {
-        this.showToast('Solo se permiten archivos de imagen', 'warning');
-        input.value = '';
-      }
+      const files = Array.from(e.target.files);
+      files.forEach((file) => {
+        if (file && file.type.startsWith('image/')) {
+          this.imageFiles.push(file);
+        }
+      });
+      input.value = '';
+      this.updateImagePreviews();
     });
   }
 
-  showImagePreview(file, container) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      container.innerHTML = `
-        <div class="image-preview position-relative d-inline-block">
-          <img src="${e.target.result}" 
-               class="img-fluid rounded-3 shadow-sm" 
-               style="max-height: 200px; max-width: 100%;">
-          <button type="button" 
-                  class="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 translate-middle"
-                  onclick="feedManager.clearImagePreview()"
-                  style="width: 24px; height: 24px; padding: 0;">
-            <i class="bi bi-x" style="font-size: 0.8rem;"></i>
-          </button>
-        </div>
-      `;
-    };
-    reader.readAsDataURL(file);
+  updateImagePreviews() {
+    const container = document.getElementById('previewContainer');
+    if (!container) return;
+    container.innerHTML = '';
+    this.imageFiles.forEach((file, idx) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const div = document.createElement('div');
+        div.className = 'preview-item';
+        div.innerHTML = `
+          <img src="${e.target.result}" class="img-fluid rounded-3 shadow-sm" style="max-height: 150px;">
+          <button type="button" class="btn btn-danger btn-sm rounded-circle remove-btn" data-index="${idx}">
+            <i class="bi bi-x"></i>
+          </button>`;
+        container.appendChild(div);
+        div.querySelector('button').addEventListener('click', () => {
+          this.removeImage(idx);
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+    this.updatePostButtonState();
+  }
+
+  removeImage(index) {
+    this.imageFiles.splice(index, 1);
+    this.updateImagePreviews();
   }
 
   clearImagePreview() {
-    const preview = document.getElementById('previewContainer');
-    const input = document.getElementById('feedImageInput');
-    if (preview) preview.innerHTML = '';
-    if (input) input.value = '';
+    this.imageFiles = [];
+    document.getElementById('previewContainer').innerHTML = '';
+    document.getElementById('feedImageInput').value = '';
     this.updatePostButtonState();
   }
 
@@ -132,7 +147,7 @@ class FeedManager {
 
     const content = form.querySelector('textarea[name="content"]').value.trim();
     const fileInputs = form.querySelectorAll('input[type="file"]');
-    let hasFile = false;
+    let hasFile = this.imageFiles.length > 0;
 
     fileInputs.forEach(inp => {
       if (inp.files && inp.files.length > 0) {

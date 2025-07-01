@@ -55,7 +55,7 @@
                   <div class="mt-3 d-flex flex-wrap gap-2">
                     <label class="btn btn-light border d-flex align-items-center gap-2 mb-0">
                       <i class="bi bi-image"></i> <span class="small">Agregar Imagen</span>
-                      <input type="file" name="file" accept="image/*" class="d-none" id="feedImageInput">
+                      <input type="file" name="files" accept="image/*" multiple class="d-none" id="feedImageInput">
                     </label>
                     <label class="btn btn-light border d-flex align-items-center gap-2 mb-0">
                       <i class="bi bi-camera-video"></i> <span class="small">Agregar Video</span>
@@ -253,6 +253,11 @@ function initFeedForm() {
     spinner.classList.remove('d-none');
     
     try {
+      const imgInput = document.getElementById('feedImageInput');
+      const dt = new DataTransfer();
+      (window.selectedImages || []).forEach(f => dt.items.add(f));
+      if (imgInput) imgInput.files = dt.files;
+
       const formData = new FormData(form);
       const response = await fetch(form.action || window.location.pathname, {
         method: 'POST',
@@ -277,31 +282,47 @@ function initFeedForm() {
 function initImagePreview() {
   const input = document.getElementById('feedImageInput');
   const preview = document.getElementById('previewContainer');
-  
+  window.selectedImages = [];
+
   if (!input || !preview) return;
-  
+
   input.addEventListener('change', function() {
-    const file = this.files[0];
-    if (file && file.type.startsWith('image/')) {
+    Array.from(this.files).forEach(f => {
+      if (f && f.type.startsWith('image/')) {
+        window.selectedImages.push(f);
+      }
+    });
+    this.value = '';
+    renderPreviews();
+  });
+
+  function renderPreviews() {
+    preview.innerHTML = '';
+    window.selectedImages.forEach((file, idx) => {
       const reader = new FileReader();
       reader.onload = function(e) {
-        preview.innerHTML = `
-          <div class="position-relative d-inline-block">
-            <img src="${e.target.result}" class="img-fluid rounded-3 shadow-sm" style="max-height: 200px;">
-            <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 translate-middle" onclick="clearPreview()">
-              <i class="bi bi-x"></i>
-            </button>
-          </div>
-        `;
+        const div = document.createElement('div');
+        div.className = 'position-relative d-inline-block preview-item';
+        div.innerHTML = `
+          <img src="${e.target.result}" class="img-fluid rounded-3 shadow-sm" style="max-height: 150px;">
+          <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 translate-middle" onclick="removePreview(${idx})">
+            <i class="bi bi-x"></i>
+          </button>`;
+        preview.appendChild(div);
       };
       reader.readAsDataURL(file);
-    } else {
-      clearPreview();
-    }
-  });
+    });
+    document.querySelector('.feed-submit-btn').disabled = !(window.selectedImages.length || document.querySelector('textarea[name="content"]').value.trim());
+  }
+
+  window.removePreview = function(i) {
+    window.selectedImages.splice(i, 1);
+    renderPreviews();
+  };
 }
 
 function clearPreview() {
+  window.selectedImages = [];
   document.getElementById('previewContainer').innerHTML = '';
   document.getElementById('feedImageInput').value = '';
 }
