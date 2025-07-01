@@ -96,7 +96,13 @@ class FeedManager {
     input.addEventListener('change', (e) => {
       const files = Array.from(e.target.files);
       files.forEach((file) => {
-        if (file && file.type.startsWith('image/')) {
+        if (
+          file &&
+          file.type.startsWith('image/') &&
+          !this.imageFiles.some(
+            (f) => f.name === file.name && f.size === file.size && f.lastModified === file.lastModified
+          )
+        ) {
           this.imageFiles.push(file);
         }
       });
@@ -120,7 +126,8 @@ class FeedManager {
             <i class="bi bi-x"></i>
           </button>`;
         container.appendChild(div);
-        div.querySelector('button').addEventListener('click', () => {
+        div.querySelector('button').addEventListener('click', (ev) => {
+          ev.stopPropagation();
           this.removeImage(idx);
         });
       };
