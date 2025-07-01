@@ -60,3 +60,11 @@ def api_notifications():
             for n in unread
         ]
     )
+
+
+@noti_bp.route("/notifications/api/count")
+@login_required
+def api_notifications_count():
+    """Return the number of unread notifications for the current user."""
+    count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
+    return jsonify({"count": count})
