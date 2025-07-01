@@ -12,3 +12,9 @@ class Post(db.Model):
     type = db.Column(db.String(20))
     edited = db.Column(db.Boolean, default=False)
     comments = db.relationship("PostComment", backref="post", lazy=True)
+    images = db.relationship(
+        "PostImage",
+        backref="post",
+        lazy=True,
+        cascade="all, delete-orphan",
+    )

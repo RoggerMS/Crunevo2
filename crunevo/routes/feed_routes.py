@@ -21,6 +21,7 @@ from datetime import date
 from crunevo.utils.login_streak import streak_reward
 from crunevo.models import (
     Post,
+    PostImage,
     PostComment,
     PostReaction,
     FeedItem,
@@ -111,33 +112,40 @@ def get_weekly_ranking(limit=5):
 def create_post():
     """Create a new feed post."""
     content = request.form.get("content", "").strip()
-    file = request.files.get("file")
+    files = request.files.getlist("files") or request.files.getlist("file")
 
-    if not content and (not file or not file.filename):
+    valid_files = [f for f in files if f and f.filename]
+
+    if not content and not valid_files:
         flash("Debes escribir algo", "danger")
         return redirect(url_for("feed.view_feed"))
 
-    file_url = None
-    if file and file.filename:
+    urls = []
+    for f in valid_files:
         cloud_url = current_app.config.get("CLOUDINARY_URL")
         try:
             if cloud_url:
-                res = cloudinary.uploader.upload(file, resource_type="auto")
-                file_url = res["secure_url"]
+                res = cloudinary.uploader.upload(f, resource_type="auto")
+                urls.append(res["secure_url"])
             else:
-                filename = secure_filename(file.filename)
+                filename = secure_filename(f.filename)
                 upload_folder = current_app.config["UPLOAD_FOLDER"]
                 os.makedirs(upload_folder, exist_ok=True)
                 filepath = os.path.join(upload_folder, filename)
-                file.save(filepath)
-                file_url = filepath
+                f.save(filepath)
+                urls.append(filepath)
         except Exception:
             current_app.logger.exception("Error al subir archivo")
             flash("Ocurrió un problema al subir el archivo", "danger")
             return redirect(url_for("feed.view_feed"))
 
-    post = Post(content=content, file_url=file_url, author=current_user)
+    post = Post(
+        content=content, file_url=urls[0] if urls else None, author=current_user
+    )
     db.session.add(post)
+    db.session.flush()
+    for url in urls:
+        db.session.add(PostImage(post_id=post.id, url=url))
     db.session.commit()
     create_feed_item_for_all("post", post.id)
     flash("Publicación creada")
