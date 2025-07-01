@@ -864,38 +864,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  const imgInput = document.getElementById('feedImageInput');
-  const previewBox = document.getElementById('previewContainer');
-  if (imgInput && previewBox) {
-    imgInput.addEventListener('change', () => {
-      const file = imgInput.files[0];
-      if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          previewBox.innerHTML = `
-            <img src="${e.target.result}" alt="preview" class="img-fluid rounded" style="max-height: 300px;" />
-          `;
-        };
-        reader.readAsDataURL(file);
-      } else {
-        previewBox.innerHTML = "<p class='text-danger'>Archivo no válido</p>";
-      }
-    });
-  }
-
-  const postForm = document.getElementById('postForm');
-  const postBtn = document.getElementById('postSubmitBtn');
-  const uploadSpinner = document.getElementById('uploadSpinner');
-  if (postForm && postBtn) {
-    postForm.addEventListener('submit', () => {
-      postBtn.disabled = true;
-      postBtn.innerHTML =
-        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Publicando...';
-      if (uploadSpinner) {
-        uploadSpinner.classList.remove('tw-hidden');
-      }
-    });
-  }
+  // Feed interactions are handled by FeedManager in feed.js
 
   if (window.HAS_STORE) {
     refreshCartCount();

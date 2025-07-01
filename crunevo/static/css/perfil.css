@@ -27,3 +27,13 @@
   position: relative;
   height: 200px;
 }
+
+.profile-stats {
+  flex-wrap: nowrap;
+  scroll-snap-type: x mandatory;
+}
+
+.profile-stats .stat-item {
+  min-width: 80px;
+  scroll-snap-align: start;
+}
