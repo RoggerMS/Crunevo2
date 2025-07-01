@@ -479,3 +479,4 @@
 - Wrapped ranking sidebar links with endpoint checks to prevent BuildError on admin instance (hotfix ranking-sidebar-link).
 
 - Improved error templates: centered with limited width, added close button and responsive wrapper (PR error-page-responsive).
+- Fixed club post creation form to import csrf macro and use csrf_field() (hotfix club-csrf).
