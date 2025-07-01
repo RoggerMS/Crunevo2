@@ -10,7 +10,8 @@ from flask_wtf.csrf import CSRFError
 DEFAULT_CSP = {
     "default-src": "'self'",
     "img-src": ["'self'", "data:", "https://res.cloudinary.com"],
-    "style-src": ["'self'", "'unsafe-inline'"],
+    "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+    "font-src": ["'self'", "https://fonts.gstatic.com"],
     "script-src": ["'self'", "'unsafe-inline'"],
     "connect-src": "'self'",
 }

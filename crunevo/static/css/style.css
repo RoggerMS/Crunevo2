@@ -58,6 +58,7 @@ body {
 .card {
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -194,6 +195,7 @@ body {
   margin-bottom: 0.75rem;
   max-width: 75%;
   background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   animation: slideIn 0.3s ease;
@@ -207,6 +209,7 @@ body {
 }
 
 .message.received {
+  -webkit-backdrop-filter: blur(10px);
   background: rgba(233, 236, 239, 0.9);
   backdrop-filter: blur(10px);
   border-bottom-left-radius: 6px;
@@ -233,6 +236,7 @@ body {
   z-index: 1000;
   top: 100%;
   max-height: 300px;
+  -webkit-backdrop-filter: blur(20px);
   overflow-y: auto;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
@@ -248,6 +252,7 @@ body {
 
 /* Enhanced form controls with better contrast */
 .form-control {
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 12px;
   border: 2px solid #cbd5e1;
   background: #ffffff;
@@ -297,6 +302,7 @@ body {
   background-color: #343a40 !important;
   color: #f8f9fa !important;
 }
+  -webkit-backdrop-filter: blur(20px);
 
 /* Chat input styling */
 .chat-input-container {
@@ -347,6 +353,7 @@ body {
   transition: all 0.3s ease;
 }
 
+  -webkit-backdrop-filter: blur(20px);
 /* Mobile bottom navigation */
 .mobile-overlay-btn {
   z-index: 1040;
@@ -415,6 +422,7 @@ html {
   background-color: #121212 !important;
   border-bottom: 1px solid #333;
 }
+  -webkit-backdrop-filter: blur(10px);
 
 /* Enhanced notification styles */
 .notification-card {
@@ -491,6 +499,7 @@ html {
   color: #64748b;
 }
 
+  -webkit-backdrop-filter: blur(20px);
 /* Tooltip enhancements */
 .tooltip {
   font-size: 0.875rem;
@@ -628,6 +637,7 @@ html[data-bs-theme="dark"] .feed-section {
 }
 
 html[data-bs-theme="dark"] .text-dark,
+  -webkit-backdrop-filter: blur(10px);
 html[data-bs-theme="dark"] .text-black {
   color: #ffffff !important;
 }

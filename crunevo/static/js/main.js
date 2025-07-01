@@ -552,6 +552,7 @@ function initNavbarSearchLegacy() {
   }
 
   const mobileSearchInput = document.getElementById('mobileSearchInput');
+  const mobileSearchModal = document.getElementById('mobileSearchModal');
   if (mobileSearchInput) {
     mobileSearchInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
@@ -559,6 +560,11 @@ function initNavbarSearchLegacy() {
         performMobileSearch();
       }
     });
+    if (mobileSearchModal) {
+      mobileSearchModal.addEventListener('shown.bs.modal', () => {
+        mobileSearchInput.focus();
+      });
+    }
   }
 
   async function perform(query) {
