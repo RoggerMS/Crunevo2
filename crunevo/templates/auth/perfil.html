@@ -1,6 +1,11 @@
 
 {% extends "base.html" %}
 
+{% block head_extra %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
+{% endblock %}
+
 {% block title %}{{ user.username }} - Perfil{% endblock %}
 
 {% block content %}
@@ -406,44 +411,6 @@
   {% include 'components/mobile_bottom_nav.html' %}
 </div>
 
-<style>
-.profile-header-bg {
-  position: relative;
-  z-index: 0;
-}
-
-.profile-avatar-container {
-  z-index: 10;
-}
-
-.username-display {
-  position: absolute;
-  bottom: 12px;
-  left: 16px;
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 8px;
-  font-weight: bold;
-  z-index: 2;
-}
-
-.stat-item {
-  padding: 8px;
-  border-radius: 8px;
-  background: rgba(102, 126, 234, 0.05);
-}
-
-.activity-timeline {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.stats-chart {
-  position: relative;
-  height: 200px;
-}
-</style>
 
 <script>
 // Initialize profile stats chart

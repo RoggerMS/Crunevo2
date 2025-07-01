@@ -113,11 +113,32 @@ def perfil():
                 current_user.avatar_url = filepath
         db.session.commit()
         flash("Perfil actualizado")
-    from crunevo.models import SavedPost, Post
+    from crunevo.models import SavedPost, Post, ClubMember, UserMission
     from crunevo.constants import ACHIEVEMENT_CATEGORIES
 
     saved = SavedPost.query.filter_by(user_id=current_user.id).all()
     posts = [Post.query.get(sp.post_id) for sp in saved if Post.query.get(sp.post_id)]
+
+    # Quick counts for profile stats
+    user_clubs = [
+        cm.club for cm in ClubMember.query.filter_by(user_id=current_user.id).all()
+    ]
+    completed_missions_count = UserMission.query.filter_by(
+        user_id=current_user.id
+    ).count()
+
+    # Academic level and participation metrics
+    user_level = min(
+        10, (current_user.points or 0) // 100 + current_user.verification_level
+    )
+    activity_total = (
+        len(current_user.post_comments or [])
+        + len(current_user.posts or [])
+        + len(current_user.notes or [])
+    )
+    participation_percentage = (
+        min(100, int((activity_total / 30) * 100)) if activity_total else 0
+    )
 
     ach_type = request.args.get("tipo")
     achievements = current_user.achievements
@@ -135,7 +156,6 @@ def perfil():
     referidos_completados = 0
     enlace_referido = None
     creditos_referidos = 0
-    user_level = current_user.verification_level * 2
     if tab == "misiones":
         from crunevo.routes.missions_routes import compute_mission_states
         from crunevo.models import Mission
@@ -180,6 +200,9 @@ def perfil():
         enlace_referido=enlace_referido,
         creditos_referidos=creditos_referidos,
         user_level=user_level,
+        user_clubs=user_clubs,
+        completed_missions_count=completed_missions_count,
+        participation_percentage=participation_percentage,
     )
 
 
