@@ -133,7 +133,7 @@
           </h6>
           <small class="text-muted">Temas populares de la semana</small>
         </div>
-        <a href="{{ url_for('feed.trending') }}" class="btn btn-sm btn-outline-primary">Ir</a>
+        <a href="{{ url_for('feed.trending') if 'feed.trending' in url_for.__globals__.get('current_app', {}).view_functions else '/feed/trending' }}" class="btn btn-sm btn-outline-primary">Ir</a>
       </div>
     </div>
 
