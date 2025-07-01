@@ -1,7 +1,7 @@
 """🔥 Baseline limpia real
 
 Revision ID: 63782dce56ec
-Revises: 
+Revises:
 Create Date: 2025-06-15 00:40:05.646499
 
 """

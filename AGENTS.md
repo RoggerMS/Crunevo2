@@ -475,3 +475,4 @@
 - Improved chat: sanitized messages, active user ping with Redis fallback, real-time UI updates and message button on profiles (PR chat-enhancements-phase1).
 - Added dynamic link previews for pasted URLs using BeautifulSoup and Redis cache (PR link-preview).
 - Refined mobile sidebar toggle button with fixed 48px circle and removed excessive click area (PR mobile-menu-button-fix).
+- Added graceful fallback to in-memory task queue when Redis unavailable (PR redis-fallback).
