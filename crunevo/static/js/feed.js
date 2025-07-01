@@ -32,8 +32,17 @@ class FeedManager {
     // Auto-resize textarea
     const textarea = form.querySelector('textarea[name="content"]');
     if (textarea) {
-      textarea.addEventListener('input', this.autoResizeTextarea);
+      textarea.addEventListener('input', () => {
+        this.autoResizeTextarea.call(textarea);
+        this.updatePostButtonState();
+      });
     }
+
+    form.querySelectorAll('input[type="file"]').forEach((inp) => {
+      inp.addEventListener('change', () => this.updatePostButtonState());
+    });
+
+    this.updatePostButtonState();
   }
 
   async submitPost(form) {
@@ -55,6 +64,7 @@ class FeedManager {
         this.showToast('¡Publicación creada exitosamente! 🎉', 'success');
         form.reset();
         this.clearImagePreview();
+        this.updatePostButtonState();
         // Reload feed or add new post to top
         setTimeout(() => window.location.reload(), 1000);
       } else {
@@ -66,6 +76,7 @@ class FeedManager {
       this.showToast('Error de conexión. Intenta nuevamente.', 'error');
     } finally {
       this.setButtonLoading(submitBtn, false);
+      this.updatePostButtonState();
     }
   }
 
@@ -111,6 +122,21 @@ class FeedManager {
     const input = document.getElementById('feedImageInput');
     if (preview) preview.innerHTML = '';
     if (input) input.value = '';
+    this.updatePostButtonState();
+  }
+
+  updatePostButtonState() {
+    const form = document.getElementById('feedForm');
+    if (!form) return;
+    const text = form.querySelector('textarea[name="content"]')?.value.trim();
+    let hasFile = false;
+    form.querySelectorAll('input[type="file"]').forEach((inp) => {
+      if (inp.files && inp.files.length > 0) {
+        hasFile = true;
+      }
+    });
+    const btn = form.querySelector('.feed-submit-btn');
+    if (btn) btn.disabled = !(text || hasFile);
   }
 
   initFeedFilters() {
