@@ -121,9 +121,9 @@
         
         <div class="chat-input">
           <form id="messageForm" class="d-flex gap-2">
-            <input type="text" id="messageInput" class="form-control" 
+            <input type="text" id="messageInput" class="form-control rounded-pill"
                    placeholder="Escribe un mensaje..." maxlength="1000" required>
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary rounded-pill">
               <i class="bi bi-send"></i>
             </button>
           </form>
@@ -192,6 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(data => {
       if (data.status === 'ok') {
         input.value = '';
+        addMessage(data.message);
         lastMessageId = data.message.id;
       }
     })
@@ -212,6 +213,31 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch(console.error);
   }, 2000);
+
+  // Ping and update active users
+  function refreshActiveUsers() {
+    fetch('/chat/ping', { method: 'POST' });
+    fetch('/chat/usuarios/activos')
+      .then(r => r.json())
+      .then(list => {
+        const box = document.querySelector('.active-users');
+        if (!box) return;
+        box.innerHTML = list.map(u => `
+          <div class="user-item" onclick="startPrivateChat(${u.id})">
+            <div class="position-relative">
+              <img src="${u.avatar_url || '/static/img/default.png'}" class="user-avatar" alt="${u.username}">
+              <div class="status-indicator"></div>
+            </div>
+            <div class="flex-grow-1">
+              <div class="fw-semibold">${u.username}</div>
+              <small class="text-muted">${u.role.charAt(0).toUpperCase() + u.role.slice(1)}</small>
+            </div>
+          </div>
+        `).join('');
+      });
+  }
+  refreshActiveUsers();
+  setInterval(refreshActiveUsers, 15000);
   
   function addMessage(message) {
     const messageDiv = document.createElement('div');
