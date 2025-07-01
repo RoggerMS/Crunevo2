@@ -427,7 +427,7 @@
               <a href="{{ url_for('notes.upload') }}" class="btn btn-primary btn-sm">
                 <i class="bi bi-plus-circle"></i> Subir Apunte
               </a>
-              <a href="{{ url_for('forum.ask_question') }}" class="btn btn-outline-primary btn-sm">
+              <a href="{{ url_for('forum.ask_question') if 'forum.ask_question' in url_for.__globals__.get('current_app', {}).view_functions else '/foro/hacer-pregunta' }}" class="btn btn-outline-primary btn-sm">
                 <i class="bi bi-question-circle"></i> Hacer Pregunta
               </a>
               <a href="{{ url_for('club.list_clubs') }}" class="btn btn-outline-success btn-sm">
