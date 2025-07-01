@@ -488,3 +488,4 @@
 - Wrapped trending links with endpoint check to prevent BuildError when feed routes are missing (hotfix feed-trending-link).
 - Activado botón 'Publicar' si hay texto o archivo en el feed (hotfix feed-post-button).
 - Wrapped notes upload quick action link with endpoint check and added favicon files (hotfix notes-upload-link).
+- Added /notifications/api/count endpoint and updated mobile badge script with error handling (PR notifications-count-fix).

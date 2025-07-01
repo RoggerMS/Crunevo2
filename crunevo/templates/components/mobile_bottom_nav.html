@@ -202,19 +202,21 @@ body {
 // Update notification badge via AJAX
 function updateMobileNotificationBadge() {
   fetch('/notifications/api/count')
-    .then(response => response.json())
+    .then(r => (r.ok ? r.json() : null))
     .then(data => {
+      const count = data && typeof data.count === 'number' ? data.count : 0;
       const badge = document.getElementById('mobileNotificationBadge');
       if (badge) {
-        badge.textContent = data.count > 0 ? data.count : '';
-        badge.style.display = data.count > 0 ? 'flex' : 'none';
+        badge.textContent = count > 0 ? count : '';
+        badge.style.display = count > 0 ? 'flex' : 'none';
       }
     })
-    .catch(error => console.error('Error updating notification badge:', error));
+    .catch(() => {});
 }
 
 // Update every 30 seconds
 if (document.getElementById('mobileNotificationBadge')) {
+  updateMobileNotificationBadge();
   setInterval(updateMobileNotificationBadge, 30000);
 }
 </script>
