@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="theme-color" content="#667eea">
+    <meta name="theme-color" content="#667eea"> {# Firefox ignores this tag #}
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
@@ -86,7 +86,7 @@
     </main>
 
     <!-- Enhanced footer -->
-    <footer class="text-center py-4 mt-5" style="position: relative; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #e0e0e0;">
+    <footer class="text-center py-4 mt-5" style="position: relative; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid #e0e0e0;">
       <div class="container">
         <div class="row align-items-center">
           <div class="col-md-6 text-md-start">

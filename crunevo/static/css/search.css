@@ -51,6 +51,7 @@
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   max-height: 300px;
   overflow-y: auto;
 }

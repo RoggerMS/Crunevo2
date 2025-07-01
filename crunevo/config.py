@@ -68,6 +68,11 @@ class Config:
             "'unsafe-inline'",
             "https://cdn.jsdelivr.net",
             "https://unpkg.com",
+            "https://fonts.googleapis.com",
+        ],
+        "font-src": [
+            "'self'",
+            "https://fonts.gstatic.com",
         ],
         "script-src": [
             "'self'",

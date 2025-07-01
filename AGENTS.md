@@ -489,3 +489,4 @@
 - Activado botón 'Publicar' si hay texto o archivo en el feed (hotfix feed-post-button).
 - Wrapped notes upload quick action link with endpoint check and added favicon files (hotfix notes-upload-link).
 - Added /notifications/api/count endpoint and updated mobile badge script with error handling (PR notifications-count-fix).
+- Solucionados warnings de autofocus oculto, soporte Safari de backdrop-filter y fuentes en CSP (PR accessibility-fixes).
