@@ -492,3 +492,4 @@
 - Added /notifications/api/count endpoint and updated mobile badge script with error handling (PR notifications-count-fix).
 - Implemented profile page improvements: repositioned username header, added real recent activity feed, new sidebar cards and tooltips. (PR perfil-enhancements)
 - Solucionados warnings de autofocus oculto, soporte Safari de backdrop-filter y fuentes en CSP (PR accessibility-fixes).
+- Eliminado script en index del feed para usar feed.js y evitar vistas duplicadas; se habilitan publicaciones solo texto (PR feed-final-polish)
