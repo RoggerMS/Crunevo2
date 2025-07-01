@@ -500,3 +500,4 @@
 - Fixed SQLAlchemy case usage in search routes, replacing func.case with case to avoid TypeError logs (PR search-case-fix).
 
 - Removed unused `perfil_sidebar.html` after verifying no includes or routes reference it. (QA perfil-sidebar-diagnosis)
+- Adjusted verified badges in feed posts to check `verification_level >= 2` and added tooltip. Removed duplicate image preview initialization in main.js. (PR feed-verify-fix)
