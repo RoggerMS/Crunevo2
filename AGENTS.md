@@ -485,3 +485,4 @@
 - Reemplazado formulario en el feed por botón que abre modal de creación con opciones de imagen, video, apunte o foro. Formulario usa POST a /feed y botón se habilita solo con contenido. (PR feed-post-modal)
 - Añadida ruta '/feed/post' para aceptar POST y modificado index del feed con caja de entrada y modal de publicación tipo Facebook. (PR feed-post-overlay)
 - Rediseñado input rápido del feed con botones visibles de Live, Foto/Video y Apuntes; botón Foto/Video abre el modal y selecciona imagen automáticamente. (PR feed-input-redesign)
+- Wrapped trending links with endpoint check to prevent BuildError when feed routes are missing (hotfix feed-trending-link).

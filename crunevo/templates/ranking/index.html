@@ -342,7 +342,7 @@
         <a class="nav-link" href="{{ url_for('ranking.top_referrers') }}">
           <i class="bi bi-people me-2"></i>Top Referidores
         </a>
-        <a class="nav-link" href="{{ url_for('feed.trending') }}">
+        <a class="nav-link" href="{{ url_for('feed.trending') if 'feed.trending' in url_for.__globals__.get('current_app', {}).view_functions else '/feed/trending' }}">
           <i class="bi bi-fire me-2"></i>Ver tendencias 🔥
         </a>
       </div>

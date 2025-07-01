@@ -37,7 +37,7 @@
           </div>
         </div>
         
-        <a href="{{ url_for('feed.trending') }}" class="btn btn-outline-primary w-100">Ver más tendencias</a>
+        <a href="{{ url_for('feed.trending') if 'feed.trending' in url_for.__globals__.get('current_app', {}).view_functions else '/feed/trending' }}" class="btn btn-outline-primary w-100">Ver más tendencias</a>
       </div>
     </div>
   </div>
