@@ -497,3 +497,4 @@
   añadiendo aria-label al botón de borrar. Se ajustó la sección de estadísticas
   del perfil con layout horizontal scrollable. (PR profile-feed-fix)
 - Habilitada verificación con tooltip en perfil, removida tarjeta redundante y menú móvil ajustado más arriba. Vista previa de imágenes evita duplicados y botón de eliminar no dispara doble acción. (PR feed-profile-adjustments)
+- Fixed SQLAlchemy case usage in search routes, replacing func.case with case to avoid TypeError logs (PR search-case-fix).
