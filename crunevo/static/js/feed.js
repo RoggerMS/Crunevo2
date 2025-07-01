@@ -18,6 +18,7 @@ class FeedManager {
     this.initStreakClaim();
     this.initModals();
     this.initTooltips();
+    this.initQuickButtons();
   }
 
   initFeedForm() {
@@ -518,6 +519,23 @@ class FeedManager {
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(tooltipTriggerEl => {
       return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  }
+
+  initQuickButtons() {
+    const modalEl = document.getElementById('crearPublicacionModal');
+    const photoBtn = document.getElementById('photoVideoBtn');
+    if (!modalEl || !photoBtn) return;
+    let openWithImage = false;
+    photoBtn.addEventListener('click', () => {
+      openWithImage = true;
+      bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    });
+    modalEl.addEventListener('shown.bs.modal', () => {
+      if (openWithImage) {
+        document.getElementById('feedImageInput')?.click();
+        openWithImage = false;
+      }
     });
   }
 
