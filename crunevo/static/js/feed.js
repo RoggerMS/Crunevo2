@@ -129,15 +129,21 @@ class FeedManager {
   updatePostButtonState() {
     const form = document.getElementById('feedForm');
     if (!form) return;
-    const text = form.querySelector('textarea[name="content"]')?.value.trim();
+
+    const content = form.querySelector('textarea[name="content"]').value.trim();
+    const fileInputs = form.querySelectorAll('input[type="file"]');
     let hasFile = false;
-    form.querySelectorAll('input[type="file"]').forEach((inp) => {
+
+    fileInputs.forEach(inp => {
       if (inp.files && inp.files.length > 0) {
         hasFile = true;
       }
     });
-    const btn = form.querySelector('.feed-submit-btn');
-    if (btn) btn.disabled = !(text || hasFile);
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = !(content || hasFile);
+    }
   }
 
   initFeedFilters() {
