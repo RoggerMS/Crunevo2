@@ -123,8 +123,13 @@
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;"></div>
 
     {% if request.endpoint not in ['auth.login', 'onboarding.register'] %}
-    <button class="btn btn-primary rounded-circle position-fixed top-0 start-0 m-3 d-lg-none mobile-overlay-btn" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-label="Menú">
-      <i class="bi bi-list"></i>
+    <button id="menuToggleBtn"
+            class="btn btn-primary rounded-circle shadow position-fixed d-lg-none"
+            style="width: 48px; height: 48px; bottom: 16px; left: 16px; z-index: 1050;"
+            aria-label="Menú"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#mobileSidebar">
+      <i class="bi bi-list fs-3"></i>
     </button>
     <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
       <div class="offcanvas-header">
