@@ -490,3 +490,4 @@
 - Wrapped notes upload quick action link with endpoint check and added favicon files (hotfix notes-upload-link).
 - Permitir múltiples imágenes en el modal de publicación con vista previa y botón de eliminar fijo. (PR feed-multi-image)
 - Added /notifications/api/count endpoint and updated mobile badge script with error handling (PR notifications-count-fix).
+- Solucionados warnings de autofocus oculto, soporte Safari de backdrop-filter y fuentes en CSP (PR accessibility-fixes).
