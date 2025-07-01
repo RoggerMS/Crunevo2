@@ -476,3 +476,4 @@
 - Added dynamic link previews for pasted URLs using BeautifulSoup and Redis cache (PR link-preview).
 - Refined mobile sidebar toggle button with fixed 48px circle and removed excessive click area (PR mobile-menu-button-fix).
 - Added graceful fallback to in-memory task queue when Redis unavailable (PR redis-fallback).
+- Improved error templates: centered with limited width, added close button and responsive wrapper (PR error-page-responsive).

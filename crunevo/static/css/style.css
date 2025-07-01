@@ -645,3 +645,19 @@ html[data-bs-theme="dark"] footer {
   border-top-color: #30363d;
 }
 
+@media (min-width: 768px) {
+  .error-page {
+    max-width: 500px;
+    margin: 0 auto;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  }
+  .error-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    background-color: #fff;
+  }
+}

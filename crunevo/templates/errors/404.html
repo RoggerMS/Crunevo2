@@ -4,10 +4,9 @@
 {% block title %}Página no encontrada - Crunevo{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-6 text-center">
-      <div class="error-page">
+<div class="error-wrapper tw-flex tw-items-center tw-justify-center">
+  <div class="error-page position-relative text-center">
+    <button class="btn-close position-absolute top-0 end-0 m-3" onclick="this.closest('.error-wrapper').remove()" aria-label="Cerrar error"></button>
         <div class="error-icon mb-4">
           <i class="bi bi-compass display-1 text-primary"></i>
         </div>
@@ -46,9 +45,6 @@
             </a>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <style>
