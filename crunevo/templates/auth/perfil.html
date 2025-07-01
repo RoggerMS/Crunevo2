@@ -24,10 +24,12 @@
           <div class="profile-header-bg" style="height: 150px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 16px 16px 0 0;"></div>
         </div>
         <div class="card-body p-4" style="margin-top: -75px;">
-          <h3 class="fw-bold mb-3">
+          <h3 class="fw-bold d-flex align-items-center gap-2 mb-3">
             {{ user.username }}
-            {% if user.verification_level > 0 %}
-            <i class="bi bi-check-circle-fill text-primary ms-1" data-bs-toggle="tooltip" title="Cuenta verificada"></i>
+            {% if user.verification_level >= 2 %}
+            <span class="badge verified-badge" data-bs-toggle="tooltip" title="Cuenta verificada">
+              <i class="bi bi-check-circle-fill"></i>
+            </span>
             {% endif %}
           </h3>
           <div class="row align-items-end">

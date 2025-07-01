@@ -501,3 +501,4 @@
 
 - Removed unused `perfil_sidebar.html` after verifying no includes or routes reference it. (QA perfil-sidebar-diagnosis)
 - Adjusted verified badges in feed posts to check `verification_level >= 2` and added tooltip. Removed duplicate image preview initialization in main.js. (PR feed-verify-fix)
+- Displayed verified badge in own profile page using same markup as post cards and checking `verification_level >= 2`. (PR perfil-own-verify)
