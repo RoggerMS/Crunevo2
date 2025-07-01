@@ -106,6 +106,44 @@ def get_weekly_ranking(limit=5):
     return top_ranked, recent_achievements
 
 
+@feed_bp.route("/post", methods=["POST"], endpoint="create_post")
+@activated_required
+def create_post():
+    """Create a new feed post."""
+    content = request.form.get("content", "").strip()
+    file = request.files.get("file")
+
+    if not content and (not file or not file.filename):
+        flash("Debes escribir algo", "danger")
+        return redirect(url_for("feed.view_feed"))
+
+    file_url = None
+    if file and file.filename:
+        cloud_url = current_app.config.get("CLOUDINARY_URL")
+        try:
+            if cloud_url:
+                res = cloudinary.uploader.upload(file, resource_type="auto")
+                file_url = res["secure_url"]
+            else:
+                filename = secure_filename(file.filename)
+                upload_folder = current_app.config["UPLOAD_FOLDER"]
+                os.makedirs(upload_folder, exist_ok=True)
+                filepath = os.path.join(upload_folder, filename)
+                file.save(filepath)
+                file_url = filepath
+        except Exception:
+            current_app.logger.exception("Error al subir archivo")
+            flash("Ocurrió un problema al subir el archivo", "danger")
+            return redirect(url_for("feed.view_feed"))
+
+    post = Post(content=content, file_url=file_url, author=current_user)
+    db.session.add(post)
+    db.session.commit()
+    create_feed_item_for_all("post", post.id)
+    flash("Publicación creada")
+    return redirect(url_for("feed.view_feed"))
+
+
 @feed_bp.route("/list", methods=["GET", "POST"])
 @activated_required
 def edu_feed():
@@ -202,37 +240,7 @@ def edu_feed():
 @activated_required
 def view_feed():
     if request.method == "POST":
-        content = request.form.get("content", "").strip()
-        if not content:
-            flash("Debes escribir algo", "danger")
-            return redirect(url_for("feed.view_feed"))
-
-        file = request.files.get("file")
-        file_url = None
-        if file and file.filename:
-            cloud_url = current_app.config.get("CLOUDINARY_URL")
-            try:
-                if cloud_url:
-                    res = cloudinary.uploader.upload(file, resource_type="auto")
-                    file_url = res["secure_url"]
-                else:
-                    filename = secure_filename(file.filename)
-                    upload_folder = current_app.config["UPLOAD_FOLDER"]
-                    os.makedirs(upload_folder, exist_ok=True)
-                    filepath = os.path.join(upload_folder, filename)
-                    file.save(filepath)
-                    file_url = filepath
-            except Exception:
-                current_app.logger.exception("Error al subir archivo")
-                flash("Ocurrió un problema al subir el archivo", "danger")
-                return redirect(url_for("feed.view_feed"))
-
-        post = Post(content=content, file_url=file_url, author=current_user)
-        db.session.add(post)
-        db.session.commit()
-        create_feed_item_for_all("post", post.id)
-        flash("Publicación creada")
-        return redirect(url_for("feed.view_feed"))
+        return create_post()
 
     categoria = request.args.get("categoria")
     query = FeedItem.query.filter_by(owner_id=current_user.id)

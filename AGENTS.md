@@ -483,3 +483,4 @@
 - Adjusted footer colors for dark theme, ensuring readable text and subtle border (PR dark-footer-fix).
 - Wrapped IA chat link in feed sidebar with endpoint check and added /favicon.ico route to serve static icon (hotfix ia-sidebar-favicon).
 - Reemplazado formulario en el feed por botón que abre modal de creación con opciones de imagen, video, apunte o foro. Formulario usa POST a /feed y botón se habilita solo con contenido. (PR feed-post-modal)
+- Añadida ruta '/feed/post' para aceptar POST y modificado index del feed con caja de entrada y modal de publicación tipo Facebook. (PR feed-post-overlay)
