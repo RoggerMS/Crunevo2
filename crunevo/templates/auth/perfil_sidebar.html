@@ -21,17 +21,6 @@
   </div>
 </div>
 
-<div class="card mt-4">
-  <div class="card-header">Verificación</div>
-  <div class="card-body text-center">
-    {% if current_user.verification_level >= 2 %}
-    <p class="mb-1">✅ Cuenta verificada.</p>
-    {% else %}
-    <p class="mb-1">Cuenta aún no verificada.</p>
-    <button class="btn btn-sm btn-outline-primary" disabled>Solicitar verificación</button>
-    {% endif %}
-  </div>
-</div>
 
 <div class="card mt-4">
   <div class="card-header">💳 Crolars</div>

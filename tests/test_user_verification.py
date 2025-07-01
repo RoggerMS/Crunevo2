@@ -16,7 +16,7 @@ def test_badge_visible(client, db_session):
     db_session.commit()
     client.post("/login", data={"username": "v", "password": "StrongPassw0rd!"})
     resp = client.get("/perfil")
-    assert b"bi-patch-check-fill" in resp.data
+    assert b"bi-check-circle-fill" in resp.data
 
 
 def test_badge_hidden(client, db_session):
@@ -26,7 +26,7 @@ def test_badge_hidden(client, db_session):
     db_session.commit()
     client.post("/login", data={"username": "n", "password": "StrongPassw0rd!"})
     resp = client.get("/perfil")
-    assert b"bi-patch-check-fill" not in resp.data
+    assert b"bi-check-circle-fill" not in resp.data
 
 
 def test_admin_can_approve(client, db_session):
@@ -50,7 +50,7 @@ def test_admin_can_approve(client, db_session):
     assert user.verification_level == 2
     client.post("/login", data={"username": "stud", "password": "pass"})
     resp = client.get("/perfil")
-    assert b"bi-patch-check-fill" in resp.data
+    assert b"bi-check-circle-fill" in resp.data
 
 
 def test_download_requires_verification(client, db_session):
