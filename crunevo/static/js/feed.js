@@ -116,7 +116,7 @@ class FeedManager {
         div.className = 'preview-item';
         div.innerHTML = `
           <img src="${e.target.result}" class="img-fluid rounded-3 shadow-sm" style="max-height: 150px;">
-          <button type="button" class="btn btn-danger btn-sm rounded-circle remove-btn" data-index="${idx}">
+          <button type="button" class="btn btn-danger btn-sm rounded-circle remove-btn" data-index="${idx}" aria-label="Eliminar imagen">
             <i class="bi bi-x"></i>
           </button>`;
         container.appendChild(div);

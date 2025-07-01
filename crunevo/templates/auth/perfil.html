@@ -57,26 +57,26 @@
                 {% endif %}
                 
                 <!-- Quick Stats -->
-                <div class="row g-2 text-center">
-                  <div class="col-3">
+                <div class="profile-stats d-flex text-center overflow-auto gap-2">
+                  <div class="flex-shrink-0">
                     <div class="stat-item">
                       <div class="fw-bold text-primary">{{ user.credits or 0 }}</div>
                       <div class="small text-muted">Crolars</div>
                     </div>
                   </div>
-                  <div class="col-3">
+                  <div class="flex-shrink-0">
                     <div class="stat-item">
                       <div class="fw-bold text-success">{{ user.notes|length }}</div>
                       <div class="small text-muted">Apuntes</div>
                     </div>
                   </div>
-                  <div class="col-3">
+                  <div class="flex-shrink-0">
                     <div class="stat-item">
                       <div class="fw-bold text-info">{{ user_clubs|length }}</div>
                       <div class="small text-muted">Clubes</div>
                     </div>
                   </div>
-                  <div class="col-3">
+                  <div class="flex-shrink-0">
                     <div class="stat-item">
                       <div class="fw-bold text-warning">{{ completed_missions_count }}</div>
                       <div class="small text-muted">Misiones</div>
