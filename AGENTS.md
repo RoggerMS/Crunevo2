@@ -471,3 +471,4 @@
 - Added test for '/health' endpoint asserting 200 response (PR health-endpoint-test).
 - Corregido formulario de reseña en view_product.html eliminando repetición de 'Comentario' y texto 'div>' sobrante.
 - Replaced print statements in crunevo/utils/image_optimizer.py with logging and added logger import (PR image-logging-fix).
+- Fixed profile header overlay by raising username z-index and moving styles to perfil.css. Computed club and mission counts in auth.perfil, showing participation percentage (PR profile-fixes).
