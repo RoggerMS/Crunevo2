@@ -496,3 +496,4 @@
 - Corrigido preview de imágenes en el feed eliminando lógica duplicada en main.js y
   añadiendo aria-label al botón de borrar. Se ajustó la sección de estadísticas
   del perfil con layout horizontal scrollable. (PR profile-feed-fix)
+- Fixed SQLAlchemy case usage in search routes, replacing func.case with case to avoid TypeError logs (PR search-case-fix).
