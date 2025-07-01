@@ -22,14 +22,14 @@
       <div class="card border-0 shadow-sm mb-4">
         <div class="position-relative">
           <div class="profile-header-bg" style="height: 150px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 16px 16px 0 0;"></div>
-          <div class="username-display">
-            {{ user.username }}
-            {% if user.verification_level > 0 %}
-            <i class="bi bi-patch-check-fill ms-1"></i>
-            {% endif %}
-          </div>
         </div>
         <div class="card-body p-4" style="margin-top: -75px;">
+          <h3 class="fw-bold mb-3">
+            {{ user.username }}
+            {% if user.verification_level > 0 %}
+            <i class="bi bi-patch-check-fill text-primary ms-1"></i>
+            {% endif %}
+          </h3>
           <div class="row align-items-end">
             <div class="col-auto">
               <div class="profile-avatar-container position-relative">
@@ -154,7 +154,10 @@
                 {% else %}
                 <div class="text-center py-4">
                   <i class="bi bi-clock-history display-1 text-muted mb-3"></i>
-                  <p class="text-muted">No hay actividad reciente</p>
+                  <p class="text-muted">
+                    Aún no has realizado acciones recientes.
+                    ¡Comienza a participar para ver tu historial aquí!
+                  </p>
                 </div>
                 {% endfor %}
               </div>
@@ -210,6 +213,9 @@
                       </button>
                       <a href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}" class="btn btn-outline-warning btn-sm">
                         <i class="bi bi-shop"></i> Ir a la Tienda
+                      </a>
+                      <a href="{{ url_for('main.crolars') if 'main.crolars' in url_for.__globals__.get('current_app', {}).view_functions else '/crolars' }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-clock-history"></i> Ver historial de Crolars
                       </a>
                     </div>
                     {% endif %}
@@ -359,7 +365,12 @@
             
             <div class="stats-summary">
               <div class="d-flex justify-content-between mb-2">
-                <span class="text-muted">Nivel académico</span>
+                <span class="text-muted">
+                  Nivel académico
+                  <i class="bi bi-info-circle ms-1" data-bs-toggle="tooltip"
+                     title="Basado en tus logros, apuntes y participación."
+                  ></i>
+                </span>
                 <span class="fw-bold">{{ user_level }}/10</span>
               </div>
               <div class="progress mb-3" style="height: 6px;">
@@ -374,6 +385,34 @@
                 <div class="progress-bar bg-success" style="width: {{ participation_percentage }}%"></div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Achievements Summary -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body p-4">
+            <h6 class="fw-bold text-info mb-3">
+              <i class="bi bi-stars"></i> Resumen de Logros
+            </h6>
+            <p class="mb-2">Has alcanzado {{ achievements|length }} logros.</p>
+            <div class="progress mb-2" style="height: 6px;">
+              <div class="progress-bar bg-info" style="width: {{ (achievements|length/10*100)|int }}%"></div>
+            </div>
+            <small class="text-muted">Has alcanzado {{ achievements|length }}/10 logros posibles</small>
+          </div>
+        </div>
+
+        <!-- Global Progress -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body p-4">
+            <h6 class="fw-bold text-secondary mb-3">
+              <i class="bi bi-graph-up-arrow"></i> Progreso Global del Usuario
+            </h6>
+            {% set global_progress = (((user_level/10*100) + participation_percentage) / 2)|int %}
+            <div class="progress mb-2" style="height: 8px;">
+              <div class="progress-bar" style="width: {{ global_progress }}%"></div>
+            </div>
+            <small class="text-muted">{{ global_progress }}% completado</small>
           </div>
         </div>
 
