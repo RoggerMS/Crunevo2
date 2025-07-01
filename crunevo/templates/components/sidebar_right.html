@@ -64,7 +64,7 @@
       </div>
       {% endfor %}
       
-      <a href="{{ url_for('ranking.index') }}" class="btn btn-outline-primary btn-sm rounded-pill w-100">Ver ranking completo</a>
+      <a href="{{ url_for('ranking.index') if 'ranking.index' in url_for.__globals__.get('current_app', {}).view_functions else '/ranking' }}" class="btn btn-outline-primary btn-sm rounded-pill w-100">Ver ranking completo</a>
     </div>
   </div>
 
