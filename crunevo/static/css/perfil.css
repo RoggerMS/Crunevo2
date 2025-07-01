@@ -11,17 +11,6 @@
   z-index: 10;
 }
 
-.username-display {
-  position: absolute;
-  bottom: 12px;
-  left: 16px;
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 8px;
-  font-weight: bold;
-  z-index: 20;
-}
 
 .stat-item {
   padding: 8px;

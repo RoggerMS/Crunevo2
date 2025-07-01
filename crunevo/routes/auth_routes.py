@@ -113,7 +113,15 @@ def perfil():
                 current_user.avatar_url = filepath
         db.session.commit()
         flash("Perfil actualizado")
-    from crunevo.models import SavedPost, Post, ClubMember, UserMission
+    from crunevo.models import (
+        SavedPost,
+        Post,
+        ClubMember,
+        UserMission,
+        Note,
+        PostComment,
+        Comment,
+    )
     from crunevo.constants import ACHIEVEMENT_CATEGORIES
 
     saved = SavedPost.query.filter_by(user_id=current_user.id).all()
@@ -139,6 +147,85 @@ def perfil():
     participation_percentage = (
         min(100, int((activity_total / 30) * 100)) if activity_total else 0
     )
+
+    # Build recent activity feed
+    recent_activities = []
+    for post in (
+        Post.query.filter_by(author_id=current_user.id)
+        .order_by(Post.created_at.desc())
+        .limit(5)
+    ):
+        recent_activities.append(
+            {
+                "timestamp": post.created_at,
+                "description": "Publicaste en el feed",
+                "icon": "pencil-square",
+                "type_color": "primary",
+            }
+        )
+
+    for note in (
+        Note.query.filter_by(user_id=current_user.id)
+        .order_by(Note.created_at.desc())
+        .limit(5)
+    ):
+        recent_activities.append(
+            {
+                "timestamp": note.created_at,
+                "description": f"Subiste un apunte llamado {note.title}",
+                "icon": "journal-text",
+                "type_color": "success",
+            }
+        )
+
+    for comment in (
+        Comment.query.filter_by(user_id=current_user.id)
+        .order_by(Comment.created_at.desc())
+        .limit(5)
+    ):
+        recent_activities.append(
+            {
+                "timestamp": comment.created_at,
+                "description": "Comentaste en un apunte",
+                "icon": "chat-left-text",
+                "type_color": "info",
+            }
+        )
+
+    for pcom in (
+        PostComment.query.filter_by(author_id=current_user.id)
+        .order_by(PostComment.timestamp.desc())
+        .limit(5)
+    ):
+        recent_activities.append(
+            {
+                "timestamp": pcom.timestamp,
+                "description": "Comentaste en una publicación",
+                "icon": "chat-left-text",
+                "type_color": "info",
+            }
+        )
+
+    for um in (
+        UserMission.query.filter_by(user_id=current_user.id)
+        .order_by(UserMission.completed_at.desc())
+        .limit(5)
+    ):
+        if um.mission:
+            desc = f"Completaste la misión {um.mission.description}"
+        else:
+            desc = "Completaste una misión"
+        recent_activities.append(
+            {
+                "timestamp": um.completed_at,
+                "description": desc,
+                "icon": "trophy",
+                "type_color": "warning",
+            }
+        )
+
+    recent_activities.sort(key=lambda a: a["timestamp"], reverse=True)
+    recent_activities = recent_activities[:5]
 
     ach_type = request.args.get("tipo")
     achievements = current_user.achievements
@@ -203,6 +290,7 @@ def perfil():
         user_clubs=user_clubs,
         completed_missions_count=completed_missions_count,
         participation_percentage=participation_percentage,
+        recent_activities=recent_activities,
     )
 
 
