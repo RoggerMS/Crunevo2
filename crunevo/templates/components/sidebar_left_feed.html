@@ -113,6 +113,7 @@
           </a>
         </li>
 
+        {% if 'ia.ia_chat' in url_for.__globals__.get('current_app', {}).view_functions %}
         <li>
           <a href="{{ url_for('ia.ia_chat') }}" class="nav-link {{ 'active' if request.endpoint == 'ia.ia_chat' }}">
             <i class="bi bi-robot"></i>
@@ -120,6 +121,7 @@
             <span class="badge bg-success rounded-pill ms-auto">AI</span>
           </a>
         </li>
+        {% endif %}
       </ul>
     </nav>
 
