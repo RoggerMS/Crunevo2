@@ -106,8 +106,17 @@ def create_app():
         }
 
     from .utils.helpers import timesince
+    from .cache.link_preview import extract_first_url, get_preview
 
     app.jinja_env.filters["timesince"] = timesince
+
+    def link_preview(text):
+        url = extract_first_url(text)
+        if not url:
+            return None
+        return get_preview(url)
+
+    app.jinja_env.filters["link_preview"] = link_preview
 
     db.init_app(app)
     login_manager.init_app(app)

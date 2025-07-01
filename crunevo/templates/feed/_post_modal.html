@@ -37,6 +37,23 @@
     <div class="post-content mb-3">
       <p class="mb-0 lh-base">{{ post.content }}</p>
     </div>
+    {% set preview = post.content | link_preview %}
+    {% if preview %}
+    <div class="link-preview card mb-3">
+      <a href="{{ preview.url }}" target="_blank" rel="noopener" class="text-decoration-none">
+        {% if preview.image %}
+        <img src="{{ preview.image }}" class="card-img-top" alt="Vista previa">
+        {% endif %}
+        <div class="card-body">
+          <strong class="card-title">{{ preview.title }}</strong>
+          {% if preview.description %}
+          <p class="card-text small">{{ preview.description }}</p>
+          {% endif %}
+          <small class="text-muted">{{ preview.site_name }}</small>
+        </div>
+      </a>
+    </div>
+    {% endif %}
     {% endif %}
 
     <!-- Post Media -->
