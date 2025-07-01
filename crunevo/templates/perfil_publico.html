@@ -23,6 +23,7 @@
       {{ csrf.csrf_field() }}
       <button class="btn btn-primary" type="submit">Agradecer</button>
     </form>
+    <a href="{{ url_for('chat.private_chat_username', username=user.username) }}" class="btn btn-outline-primary ms-2">Enviar mensaje privado</a>
     {% endif %}
   </div>
 

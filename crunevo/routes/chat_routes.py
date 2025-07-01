@@ -4,8 +4,9 @@ from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
 from crunevo.models import Message, User
 from crunevo.utils import send_notification
-from datetime import datetime, timedelta
 from sqlalchemy import or_, and_
+from crunevo.cache.active_users import mark_online, get_active_ids
+from crunevo.utils.content_filter import sanitize_message
 
 chat_bp = Blueprint("chat", __name__, url_prefix="/chat")
 
@@ -14,6 +15,7 @@ chat_bp = Blueprint("chat", __name__, url_prefix="/chat")
 @activated_required
 def chat_index():
     """Chat global principal"""
+    mark_online(current_user.id)
     # Obtener mensajes del chat global (últimos 50)
     global_messages = (
         Message.query.filter_by(is_global=True, is_deleted=False)
@@ -25,21 +27,11 @@ def chat_index():
     # Invertir para mostrar cronológicamente
     global_messages.reverse()
 
-    # Obtener usuarios activos (que han enviado mensajes en las últimas 24h)
-    recent_cutoff = datetime.utcnow() - timedelta(hours=24)
+    ids = get_active_ids()
+    if current_user.id not in ids:
+        ids.append(current_user.id)
     active_users = (
-        User.query.join(
-            Message,
-            or_(Message.sender_id == User.id, Message.receiver_id == User.id),
-        )
-        .filter(
-            Message.timestamp >= recent_cutoff,
-            User.id != current_user.id,
-            User.activated.is_(True),
-        )
-        .distinct()
-        .limit(20)
-        .all()
+        User.query.filter(User.id.in_(ids), User.activated.is_(True)).limit(20).all()
     )
 
     return render_template(
@@ -133,7 +125,7 @@ def private_chat(user_id):
 def send_message():
     """Enviar mensaje (global o privado)"""
     data = request.get_json() or request.form
-    content = data.get("content", "").strip()
+    content = sanitize_message(data.get("content", "").strip())
     receiver_id = data.get("receiver_id")
     is_global = data.get("is_global", False)
 
@@ -153,6 +145,7 @@ def send_message():
 
     db.session.add(message)
     db.session.commit()
+    mark_online(current_user.id)
 
     # Enviar notificación si es mensaje privado
     if not is_global and receiver_id:
@@ -243,3 +236,38 @@ def search_users():
             for user in users
         ]
     )
+
+
+@chat_bp.route("/usuarios/activos")
+@activated_required
+def active_users_api():
+    """Return currently active users."""
+    ids = get_active_ids()
+    if current_user.id not in ids:
+        ids.append(current_user.id)
+    users = User.query.filter(User.id.in_(ids), User.activated.is_(True)).all()
+    return jsonify(
+        [
+            {
+                "id": u.id,
+                "username": u.username,
+                "avatar_url": u.avatar_url,
+                "role": u.role,
+            }
+            for u in users
+        ]
+    )
+
+
+@chat_bp.route("/ping", methods=["POST"])
+@activated_required
+def ping_active():
+    mark_online(current_user.id)
+    return "", 204
+
+
+@chat_bp.route("/@<username>")
+@activated_required
+def private_chat_username(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return redirect(url_for("chat.private_chat", user_id=user.id))
