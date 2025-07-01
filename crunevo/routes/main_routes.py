@@ -5,6 +5,11 @@ from crunevo.routes.feed_routes import feed_home
 main_bp = Blueprint("main", __name__)
 
 
+@main_bp.route("/favicon.ico")
+def favicon():
+    return redirect(url_for("static", filename="img/favicon.ico"))
+
+
 @main_bp.route("/")
 def index():
     if current_user.is_authenticated:
