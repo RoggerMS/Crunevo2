@@ -782,9 +782,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initQuickFilters === 'function') {
     initQuickFilters();
   }
-  if (typeof initImagePreview === 'function') {
-    initImagePreview();
-  }
   if (typeof initFeedSearch === 'function') {
     initFeedSearch();
   }

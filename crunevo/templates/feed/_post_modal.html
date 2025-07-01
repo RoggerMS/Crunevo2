@@ -14,8 +14,10 @@
             <a href="{{ url_for('auth.profile_by_username', username=author.username) }}"
                class="text-decoration-none text-dark">{{ author.username }}</a>
           </h6>
-          {% if author.verified %}
-          <span class="badge verified-badge"><i class="bi bi-check-circle-fill"></i> Verificado</span>
+          {% if author.verification_level >= 2 %}
+          <span class="badge verified-badge" data-bs-toggle="tooltip" title="Cuenta verificada">
+            <i class="bi bi-check-circle-fill"></i> Verificado
+          </span>
           {% endif %}
         </div>
         <small class="text-muted">
