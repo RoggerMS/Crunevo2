@@ -11,7 +11,7 @@ from crunevo.models import (
     Review,
     Course,
 )
-from sqlalchemy import or_, desc, func
+from sqlalchemy import or_, desc, func, case
 
 search_bp = Blueprint("search", __name__, url_prefix="/search")
 
@@ -116,7 +116,7 @@ def search_notes(query, page=1, per_page=20):
     notes = (
         base_query.filter(search_filter)
         .order_by(
-            func.case((Note.title.ilike(f"%{query}%"), 1), else_=2),
+            case((Note.title.ilike(f"%{query}%"), 1), else_=2),
             desc(Note.created_at),
         )
         .paginate(page=page, per_page=per_page, error_out=False)
@@ -198,7 +198,7 @@ def search_users(query, page=1, per_page=20):
     users = (
         User.query.filter(User.activated.is_(True), search_filter)
         .order_by(
-            func.case((User.username.ilike(f"{query}%"), 1), else_=2), desc(User.points)
+            case((User.username.ilike(f"{query}%"), 1), else_=2), desc(User.points)
         )
         .paginate(page=page, per_page=per_page, error_out=False)
     )
@@ -235,7 +235,7 @@ def search_products(query, page=1, per_page=20):
     products = (
         Product.query.filter(Product.active.is_(True), Product.stock > 0, search_filter)
         .order_by(
-            func.case((Product.name.ilike(f"{query}%"), 1), else_=2),
+            case((Product.name.ilike(f"{query}%"), 1), else_=2),
             (
                 desc(Product.popularity_score)
                 if hasattr(Product, "popularity_score")
