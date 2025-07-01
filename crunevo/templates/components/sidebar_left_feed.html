@@ -141,7 +141,7 @@
     <div class="quick-actions mt-4 pt-4 border-top">
       <h6 class="small text-muted mb-3 fw-bold">Acciones rápidas</h6>
       <div class="d-grid gap-2">
-        <a href="{{ url_for('notes.upload') }}" class="btn btn-primary btn-sm rounded-pill">
+        <a href="{{ url_for('notes.upload') if 'notes.upload' in url_for.__globals__.get('current_app', {}).view_functions else '/notes/upload' }}" class="btn btn-primary btn-sm rounded-pill">
           <i class="bi bi-plus-circle"></i> Subir Apunte
         </a>
         <a href="{{ url_for('forum.ask_question') }}" class="btn btn-outline-primary btn-sm rounded-pill">

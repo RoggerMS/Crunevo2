@@ -487,3 +487,4 @@
 - Rediseñado input rápido del feed con botones visibles de Live, Foto/Video y Apuntes; botón Foto/Video abre el modal y selecciona imagen automáticamente. (PR feed-input-redesign)
 - Wrapped trending links with endpoint check to prevent BuildError when feed routes are missing (hotfix feed-trending-link).
 - Activado botón 'Publicar' si hay texto o archivo en el feed (hotfix feed-post-button).
+- Wrapped notes upload quick action link with endpoint check and added favicon files (hotfix notes-upload-link).
