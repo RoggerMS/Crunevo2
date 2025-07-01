@@ -642,7 +642,11 @@ footer {
 
 html[data-bs-theme="dark"] footer {
   background: rgba(13, 17, 23, 0.95);
-  border-top-color: #30363d;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+html[data-bs-theme="dark"] footer,
+html[data-bs-theme="dark"] footer a {
+  color: #ccc !important;
 }
 
 @media (min-width: 768px) {

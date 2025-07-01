@@ -480,3 +480,4 @@
 
 - Improved error templates: centered with limited width, added close button and responsive wrapper (PR error-page-responsive).
 - Fixed club post creation form to import csrf macro and use csrf_field() (hotfix club-csrf).
+- Adjusted footer colors for dark theme, ensuring readable text and subtle border (PR dark-footer-fix).
