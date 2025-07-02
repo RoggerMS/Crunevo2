@@ -35,7 +35,7 @@ class FeedManager {
     const textarea = form.querySelector('textarea[name="content"]');
     if (textarea) {
       textarea.addEventListener('input', () => {
-        this.autoResizeTextarea.call(textarea);
+        this.autoResizeTextarea(textarea);
         this.updatePostButtonState();
       });
     }
@@ -568,8 +568,7 @@ class FeedManager {
   }
 
   // Utility methods
-  autoResizeTextarea(e) {
-    const textarea = e.target;
+  autoResizeTextarea(textarea) {
     textarea.style.height = 'auto';
     textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
   }
