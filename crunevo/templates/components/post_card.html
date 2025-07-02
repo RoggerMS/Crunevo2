@@ -84,11 +84,11 @@
     {% endif %}
 
     <!-- Post Media -->
-    {% if post.images %}
-    {{ gallery.image_gallery(post.images, post.id) }}
-    {% elif post.file_url %}
+    {% set images = post.images or (post.file_url and [{'url': post.file_url}]) %}
+    {% if images %}
+    {{ gallery.image_gallery(images, post.id) }}
+    {% elif post.file_url and post.file_url.endswith('.pdf') %}
     <div class="post-media mb-3">
-      {% if post.file_url.endswith('.pdf') %}
       <div class="pdf-preview bg-light rounded-3 p-3 text-center">
         <i class="bi bi-file-pdf text-danger fs-1 mb-2"></i>
         <p class="mb-2 fw-semibold">Documento PDF</p>
@@ -96,9 +96,6 @@
           <i class="bi bi-download"></i> Ver documento
         </a>
       </div>
-      {% else %}
-      {{ gallery.image_gallery([{'url': post.file_url}], post.id) }}
-      {% endif %}
     </div>
     {% endif %}
 
