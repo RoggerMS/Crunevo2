@@ -1,12 +1,25 @@
 import requests
 from flask_mail import Message
-from flask import current_app, flash
+from flask import current_app
 from crunevo.extensions import mail
 
 
 def send_email(to, subject, html):
+    """Send an email using Resend or Flask-Mail.
+
+    Returns
+    -------
+    tuple
+        (success: bool, error_message: Optional[str])
+    """
+
     key = current_app.config.get("RESEND_API_KEY")
     provider = current_app.config.get("MAIL_PROVIDER")
+    if provider == "resend" and not key:
+        current_app.logger.error(
+            "MAIL_PROVIDER=resend pero RESEND_API_KEY no est\xc3\xa1 configurada"
+        )
+
     if provider == "resend" and key:
         sender = current_app.config.get("MAIL_USERNAME", "noreply@crunevo.com")
         try:
@@ -22,31 +35,26 @@ def send_email(to, subject, html):
                 timeout=5,
             )
             current_app.logger.info("Resend response: %s", resp.text)
-            if resp.status_code != 200:
-                flash(
-                    "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
-                    "danger",
-                )
-                current_app.logger.warning(
-                    "Resend failed with status %s", resp.status_code
-                )
-            return resp.status_code == 200
+            if resp.status_code == 200:
+                return True, None
+            err_msg = resp.text
+            try:
+                data = resp.json()
+                err_msg = data.get("error", {}).get("message", err_msg)
+            except Exception:
+                pass
+            current_app.logger.warning(
+                "Resend failed with status %s: %s", resp.status_code, err_msg
+            )
+            return False, err_msg
         except Exception as e:
             current_app.logger.error("Email error: %s", e)
-            flash(
-                "No se pudo enviar el correo de confirmaci\u00f3n. Int\u00e9ntalo m\u00e1s tarde.",
-                "danger",
-            )
-            return False
+            return False, str(e)
 
     msg = Message(subject=subject, recipients=[to], html=html)
     try:
         mail.send(msg)
-        return True
+        return True, None
     except Exception as e:
         current_app.logger.error("Email error: %s", e)
-        flash(
-            "No se pudo enviar el correo de confirmaci\u00f3n. Int\u00e9ntalo m\u00e1s tarde.",
-            "danger",
-        )
-        return False
+        return False, str(e)

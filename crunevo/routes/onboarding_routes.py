@@ -36,7 +36,8 @@ def send_confirmation_email(user):
     db.session.commit()
     confirm_url = url_for("onboarding.confirm", token=token, _external=True)
     html = render_template("emails/confirm.html", confirm_url=confirm_url)
-    return send_email(user.email, "¡Confirma tu cuenta en CRUNEVO!", html)
+    success, error = send_email(user.email, "¡Confirma tu cuenta en CRUNEVO!", html)
+    return success, error
 
 
 def _user_key():
@@ -91,11 +92,14 @@ def register():
                         db.session.commit()
                 except (ProgrammingError, OperationalError):
                     db.session.rollback()
-        if not send_confirmation_email(user):
+        success, error = send_confirmation_email(user)
+        if not success:
             flash(
                 "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
                 "danger",
             )
+            if error:
+                flash(error, "danger")
         return render_template("onboarding/confirm.html")
     return render_template("onboarding/register.html")
 
@@ -186,11 +190,14 @@ def pending():
 def resend():
     if current_user.activated:
         return redirect(url_for("feed.feed_home"))
-    if not send_confirmation_email(current_user):
+    success, error = send_confirmation_email(current_user)
+    if not success:
         flash(
             "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
             "danger",
         )
+        if error:
+            flash(error, "danger")
     record_auth_event(current_user, "resend_email")
     flash("Correo reenviado")
     return redirect(url_for("onboarding.pending"))

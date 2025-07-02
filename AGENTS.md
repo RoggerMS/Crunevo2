@@ -510,3 +510,4 @@
 - Cleaned profile header layout removing stats block, hiding sidebar numbers on /perfil and improving modal text post validation. (PR perfil-layout-cleanup)
 - Positioned username overlay with dark background over banner on desktop. (hotfix perfil-username-overlay)
 - Reorganized profile header placing username next to avatar on desktop and showing stats in a gray block. (hotfix perfil-header-restore)
+- Improved email confirmation logging and resend feedback; send_email returns detailed errors and register links to reenviar (PR email-resend-debug)
