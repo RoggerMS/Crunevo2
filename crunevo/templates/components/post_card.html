@@ -83,7 +83,13 @@
     {% endif %}
 
     <!-- Post Media -->
-    {% if post.file_url %}
+    {% if post.images %}
+    <div class="gallery-grid">
+      {% for img in post.images %}
+      <img src="{{ img.url }}" class="gallery-img" alt="Imagen {{ loop.index }}" onclick="openGallery('{{ post.id }}', {{ loop.index0 }})">
+      {% endfor %}
+    </div>
+    {% elif post.file_url %}
     <div class="post-media mb-3">
       {% if post.file_url.endswith('.pdf') %}
       <div class="pdf-preview bg-light rounded-3 p-3 text-center">
@@ -95,9 +101,9 @@
       </div>
       {% else %}
       <div class="image-container position-relative">
-        <img src="{{ post.file_url }}" 
-             alt="Imagen del post" 
-             class="img-fluid rounded-3 w-100 post-image" 
+        <img src="{{ post.file_url }}"
+             alt="Imagen del post"
+             class="img-fluid rounded-3 w-100 post-image"
              style="max-height: 400px; object-fit: cover;"
              onclick="openImageModal('{{ post.file_url }}')">
         <div class="image-overlay position-absolute bottom-0 start-0 w-100 p-2 bg-gradient rounded-bottom-3">

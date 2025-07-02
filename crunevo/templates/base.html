@@ -171,6 +171,18 @@
       </div>
       {% endif %}
 
+    <!-- Gallery Modal -->
+    <div class="modal fade" id="galleryModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-transparent border-0">
+          <button type="button" class="btn btn-secondary position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Cerrar">
+            <i class="bi bi-x-lg"></i>
+          </button>
+          <img id="modalImage" class="img-fluid rounded-3" alt="Imagen" style="max-height:80vh;">
+        </div>
+      </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="{{ url_for('static', filename='vendor/bootstrap.bundle.min.js') }}"></script>
 

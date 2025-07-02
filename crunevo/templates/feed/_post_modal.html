@@ -59,7 +59,13 @@
     {% endif %}
 
     <!-- Post Media -->
-    {% if post.file_url %}
+    {% if post.images %}
+    <div class="gallery-grid">
+      {% for img in post.images %}
+      <img src="{{ img.url }}" class="gallery-img" alt="Imagen {{ loop.index }}" onclick="openGallery('{{ post.id }}', {{ loop.index0 }})">
+      {% endfor %}
+    </div>
+    {% elif post.file_url %}
     <div class="post-media mb-3">
       {% if post.file_url.endswith('.pdf') %}
       <div class="pdf-preview bg-light rounded-3 p-3 text-center">

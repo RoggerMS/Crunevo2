@@ -449,3 +449,23 @@ body[data-bs-theme="dark"] .comment-box {
   color: #ffffff;
 }
 
+/* Gallery grid for multiple post images */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.gallery-img {
+  width: 100%;
+  border-radius: 6px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.gallery-img:hover {
+  transform: scale(1.02);
+}
+

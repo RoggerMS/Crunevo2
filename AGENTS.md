@@ -514,3 +514,4 @@
 - Eliminada vista central de stats en perfil, mostradas en la barra lateral con puntos, crolars y apuntes como en el feed. Portada reducida y margen ajustado para mostrar el nombre sin superposición; columna principal centrada en móviles (PR perfil-sidebar-restore).
 - Sanitized recipient handling in `send_email` ensuring Resend receives a list of addresses (PR resend-to-list-fix).
 - Ajustado nombre de usuario a la izquierda en móviles dentro de perfil y descripción centrada. (PR perfil-mobile-name-align)
+- Mostrar múltiples imágenes en cada tarjeta de publicación con galería modal y estilos en feed.css. (PR feed-gallery-display)
