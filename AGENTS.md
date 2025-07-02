@@ -518,4 +518,5 @@
 - Añadido enlace para cambiar email en pending.html debajo de 'Volver al inicio' (PR pending-change-email-link).
 - Validación de formato de correo en /onboarding/register y prueba unitaria correspondiente (PR email-format-validation).
 - Mejorado diseño del correo de confirmación con imagen, botón con sombra y pie responsive (PR confirmation-email-design).
+- Añadido flujo de eliminación de cuenta con botón en configuración, ruta protegida y test (PR delete-account).
 - Corregido enlace en pending.html para usar 'onboarding.register' y evitar BuildError (hotfix pending-register-link).

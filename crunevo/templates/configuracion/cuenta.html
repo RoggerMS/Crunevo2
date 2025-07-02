@@ -20,6 +20,33 @@
         </div>
         <button type="submit" class="btn btn-primary">Cambiar contraseña</button>
       </form>
+      {% if current_user.is_authenticated %}
+      <button class="btn btn-danger mt-4" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+        <i class="bi bi-trash me-2"></i>Eliminar cuenta
+      </button>
+      <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+              <h5 class="modal-title">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar eliminación
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <p>⚠ ¿Estás seguro de que deseas eliminar tu cuenta?<br>Esta acción es irreversible y se perderán todos tus datos, apuntes, comentarios, crolars, progreso en misiones, etc.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <form method="post" action="{{ url_for('auth.delete_account') }}">
+                {{ csrf.csrf_field() }}
+                <button type="submit" class="btn btn-danger">Sí, eliminar mi cuenta</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
     </div>
   </div>
 </section>
