@@ -20,6 +20,7 @@ from flask_limiter.util import get_remote_address
 from crunevo.models import User, EmailToken
 from crunevo.utils.mailer import send_email
 from crunevo.utils.audit import record_auth_event
+import re
 from sqlalchemy.exc import IntegrityError
 
 bp = Blueprint("onboarding", __name__, url_prefix="/onboarding")
@@ -49,6 +50,9 @@ def _user_key():
 def register():
     if request.method == "POST":
         email = request.form["email"]
+        if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
+            flash("Ingresa un correo v\u00e1lido", "danger")
+            return render_template("onboarding/register.html"), 400
         password = request.form["password"]
         if (
             len(password) < 6
