@@ -1,0 +1,13 @@
+{% macro image_gallery(images, post_id) %}
+{% set count = images|length %}
+<div class="post-images images-count-{{ 4 if count > 4 else count }}" data-post-id="{{ post_id }}">
+  {% for img in images[:4] %}
+  <div class="img-wrapper">
+    <img src="{{ img.url }}" class="gallery-img" alt="Imagen {{ loop.index }}" onclick="openGallery('{{ post_id }}', {{ loop.index0 }})">
+    {% if count > 4 and loop.index == 4 %}
+    <div class="more-overlay">+{{ count - 4 }}</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endmacro %}
