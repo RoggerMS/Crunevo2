@@ -22,12 +22,14 @@ def send_admin_email():
             flash("Todos los campos son obligatorios", "danger")
             return render_template("admin/send_email.html")
 
-        success = send_email(recipient, subject, html_content)
+        success, error = send_email(recipient, subject, html_content)
         if success:
             flash("Correo enviado correctamente", "success")
             record_auth_event(current_user, "admin_send_email")
         else:
             flash("No se pudo enviar el correo", "danger")
+            if error:
+                flash(error, "danger")
 
         return redirect(url_for("admin_email.send_admin_email"))
 

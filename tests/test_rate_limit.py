@@ -33,7 +33,10 @@ def test_resend_rate_limit(client, db_session):
     )
     from unittest.mock import patch
 
-    with patch("crunevo.routes.onboarding_routes.send_confirmation_email"):
+    with patch(
+        "crunevo.routes.onboarding_routes.send_confirmation_email",
+        return_value=(True, None),
+    ):
         for _ in range(3):
             client.post("/onboarding/resend")
         resp = client.post("/onboarding/resend")
