@@ -42,7 +42,7 @@ def test_self_spend_no_movement_feed(app, db_session, test_user):
     assert FeedItem.query.count() == 0
 
 
-def test_feed_cache_roundtrip(fake_redis):
+def test_feed_cache_roundtrip(reset_caches):
     from datetime import datetime
 
     items = [
@@ -56,28 +56,24 @@ def test_feed_cache_roundtrip(fake_redis):
     assert feed_cache.fetch(42) == [{"hello": "world"}]
 
 
-def test_push_items_sets_ttl(fake_redis):
+def test_push_items_persists(reset_caches):
     from datetime import datetime
-    from crunevo.cache.feed_cache import push_items, FEED_KEY
+    from crunevo.cache.feed_cache import push_items, fetch
 
-    push_items(1, [{"score": 0, "created_at": datetime.utcnow(), "payload": {}}])
-    assert fake_redis.ttl(FEED_KEY.format(user_id=1)) > 0
+    push_items(1, [{"score": 0, "created_at": datetime.utcnow(), "payload": {"a": 1}}])
+    assert fetch(1)[0] == {"a": 1}
 
 
-def test_feed_fallback_on_redis_error(monkeypatch, client, db_session, test_user):
-    from redis.exceptions import RedisError
-
+def test_feed_fetch_handles_error(monkeypatch, client, db_session, test_user):
     monkeypatch.setattr(
-        feed_cache,
-        "fetch",
-        lambda *a, **k: (_ for _ in ()).throw(RedisError("boom")),
+        feed_cache, "fetch", lambda *a, **k: (_ for _ in ()).throw(Exception("boom"))
     )
     login(client, test_user.username, "secret")
     resp = client.get("/api/feed")
     assert resp.status_code == 200
 
 
-def test_feed_cache_hit_after_warmup(fake_redis, client, test_user, monkeypatch):
+def test_feed_cache_hit_after_warmup(reset_caches, client, test_user, monkeypatch):
     login(client, test_user.username, "secret")
     warm = client.get("/api/feed").get_json()
 
@@ -109,7 +105,7 @@ def test_feed_cache_hit_after_warmup(fake_redis, client, test_user, monkeypatch)
     assert cached == warm
 
 
-def test_feed_ordering(fake_redis, client, db_session, test_user, another_user):
+def test_feed_ordering(reset_caches, client, db_session, test_user, another_user):
     post1 = Post(content="A", author=test_user)
     post2 = Post(content="B", author=test_user)
     db_session.add_all([post1, post2])

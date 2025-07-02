@@ -8,7 +8,6 @@ from crunevo import create_app
 from crunevo.extensions import db, mail
 from crunevo.models import User
 from crunevo.cache import feed_cache
-import fakeredis
 
 
 @pytest.fixture
@@ -61,18 +60,9 @@ def another_user(db_session):
 
 
 @pytest.fixture(autouse=True)
-def fake_redis(monkeypatch):
-    r = fakeredis.FakeRedis()
-    monkeypatch.setattr(feed_cache, "r", r)
+def reset_caches():
+    feed_cache._cache.clear()
     from crunevo import tasks
 
-    monkeypatch.setattr(tasks, "redis_conn", r)
-    tasks.task_queue.connection = r
-
-    def immediate(func, *a, **kw):
-        return func(*a, **kw)
-
-    monkeypatch.setattr(
-        tasks.task_queue, "enqueue", lambda f, *a, **kw: immediate(f, *a, **kw)
-    )
-    yield r
+    tasks.task_queue = tasks._LocalQueue()
+    yield

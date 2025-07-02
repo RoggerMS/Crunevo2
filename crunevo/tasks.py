@@ -1,9 +1,5 @@
-import os
 import logging
 import json
-
-from redis import Redis, RedisError
-from rq import Queue
 
 from .extensions import db
 from .models import User, FeedItem, Note
@@ -12,23 +8,16 @@ from .utils.scoring import compute_score
 
 log = logging.getLogger(__name__)
 
-# Redis connection and queue with graceful fallback
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-try:
-    redis_conn = Redis.from_url(REDIS_URL)
-    redis_conn.ping()
-    task_queue = Queue("crunevo", connection=redis_conn)
-except RedisError as exc:  # pragma: no cover - requires no redis server
-    log.warning("Redis ping failed – using local queue: %s", exc)
 
-    class _LocalQueue:
-        """Synchronous fallback when Redis is unavailable."""
+# Simple synchronous queue used for task execution
+class _LocalQueue:
+    """Synchronous task queue."""
 
-        def enqueue(self, func, *args, **kwargs):
-            return func(*args, **kwargs)
+    def enqueue(self, func, *args, **kwargs):
+        return func(*args, **kwargs)
 
-    redis_conn = None
-    task_queue = _LocalQueue()
+
+task_queue = _LocalQueue()
 
 
 def insert_feed_items(

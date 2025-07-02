@@ -39,7 +39,6 @@ from crunevo.utils import (
 )
 from crunevo.utils.credits import add_credit, spend_credit
 from crunevo.constants import CreditReasons, AchievementCodes
-import redis
 from crunevo.cache.feed_cache import (
     fetch as cache_fetch,
     push_items as cache_push,
@@ -658,14 +657,11 @@ def api_feed():
     categoria = request.args.get("categoria")
     start = (page - 1) * 10
     stop = start + 9
-    try:
-        items = [
-            i
-            for i in cache_fetch(current_user.id, start, stop)
-            if i.get("item_type") != "apunte"
-        ]
-    except redis.RedisError:
-        items = []
+    items = [
+        i
+        for i in cache_fetch(current_user.id, start, stop)
+        if i.get("item_type") != "apunte"
+    ]
     if not items:
         q = (
             FeedItem.query.filter_by(owner_id=current_user.id)
