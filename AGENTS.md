@@ -506,3 +506,4 @@
 - Displayed verified badge in own profile page using same markup as post cards and checking `verification_level >= 2`. (PR perfil-own-verify)
 - Moved username header with verification badge above description without interfering with avatar. (PR perfil-username-check)
 - Fixed feed form button enabling for text-only posts by adjusting feed.js textarea handler and removing default disabled attribute. (hotfix feed-text-posts)
+- Repositioned profile stats below username on desktop with responsive duplication. (PR perfil-stats-below)

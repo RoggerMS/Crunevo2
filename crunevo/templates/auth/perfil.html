@@ -61,8 +61,8 @@
                 </p>
                 {% endif %}
                 
-                <!-- Quick Stats -->
-                <div class="profile-stats d-flex text-center overflow-auto gap-2">
+                <!-- Quick Stats (mobile) -->
+                <div class="profile-stats d-flex text-center overflow-auto gap-2 d-sm-none">
                   <div class="flex-shrink-0">
                     <div class="stat-item">
                       <div class="fw-bold text-primary">{{ user.credits or 0 }}</div>
@@ -102,6 +102,24 @@
               </div>
             </div>
             {% endif %}
+          </div>
+          <div class="d-none d-sm-flex justify-content-center gap-3 mt-3">
+            <div class="text-center">
+              <h5 class="mb-0">{{ user.credits or 0 }}</h5>
+              <small>Crolars</small>
+            </div>
+            <div class="text-center">
+              <h5 class="mb-0">{{ user.notes|length }}</h5>
+              <small>Apuntes</small>
+            </div>
+            <div class="text-center">
+              <h5 class="mb-0">{{ user_clubs|length }}</h5>
+              <small>Clubes</small>
+            </div>
+            <div class="text-center">
+              <h5 class="mb-0">{{ completed_missions_count }}</h5>
+              <small>Misiones</small>
+            </div>
           </div>
         </div>
       </div>
