@@ -3,56 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Confirma tu cuenta en CRUNEVO</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f7f8fc;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            max-width: 600px;
-            margin: 0 auto;
-            text-align: center;
-        }
-        .button {
-            background-color: #7b3ea0;
-            color: #ffffff;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-            display: inline-block;
-            margin-top: 20px;
-        }
-        .button:hover {
-            background-color: #65159a;
-        }
-        .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #777;
-        }
-        img.logo {
-            width: 120px;
-            margin-bottom: 20px;
-        }
-    </style>
 </head>
-<body>
-    <div class="container">
-        <img loading="lazy" src="https://res.cloudinary.com/dnp9trhfx/image/upload/v1750493478/ChatGPT_Image_21_jun_2025_03_10_48_a.m._orljvz.png" alt="CRUNEVO Logo" class="logo">
-        <h1>¡Estás a un paso de unirte a CRUNEVO!</h1>
-        <p>Gracias por registrarte en <strong>CRUNEVO</strong>, la comunidad educativa donde compartes, aprendes y avanzas.</p>
-        <p>Para completar tu registro y activar tu cuenta, haz clic en el siguiente botón:</p>
-        <a href="{{ confirm_url }}" class="button">Confirmar mi cuenta</a>
-        <p class="footer">Si no solicitaste este registro, simplemente ignora este correo.</p>
-        <p class="footer">El enlace caducará en 24 horas por motivos de seguridad.</p>
-    </div>
+<body style="margin:0;padding:0;background-color:#f7f8fc;font-family:'Segoe UI', Arial, sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;background-color:#ffffff;border-radius:8px;overflow:hidden;">
+        <tr>
+            <td style="text-align:center;">
+                <img src="https://res.cloudinary.com/dnp9trhfx/image/upload/v1751439516/correo.png" alt="Bienvenida a Crunevo" style="width:100%;height:auto;border-radius:8px 8px 0 0;">
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:20px;text-align:center;">
+                <img loading="lazy" src="https://res.cloudinary.com/dnp9trhfx/image/upload/v1750493478/ChatGPT_Image_21_jun_2025_03_10_48_a.m._orljvz.png" alt="CRUNEVO Logo" style="width:120px;margin:20px auto;display:block;">
+                <h1 style="color:#333;font-size:24px;margin:0;">¡Confirma tu cuenta para empezar a aprender!</h1>
+                <p style="color:#333;font-size:16px;line-height:1.4;margin:16px 0;">¡Hola! 👋<br>Estamos felices de que formes parte de <strong>CRUNEVO</strong>, la comunidad educativa donde compartir conocimiento es divertido y valioso.</p>
+                <p style="margin:16px 0;color:#333;font-size:16px;">Para activar tu cuenta y empezar tu aventura educativa, haz clic en el siguiente botón:</p>
+                <a href="{{ confirm_url }}" style="background-color:#7B2CBF;color:#ffffff;text-decoration:none;padding:14px 26px;border-radius:12px;display:inline-block;font-weight:bold;font-size:16px;box-shadow:0px 4px 10px rgba(0,0,0,0.2);">Activar mi cuenta ahora</a>
+                <p style="font-size:14px;color:#555;margin:20px 0 0;">El enlace es válido por 24 horas por motivos de seguridad.</p>
+                <p style="font-size:14px;color:#555;margin:0;">Si no solicitaste este registro, simplemente ignora este correo.</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:20px;text-align:center;font-size:12px;color:#888;border-top:1px solid #eee;">
+                Gracias por elegirnos,<br>Equipo CRUNEVO 💜
+                <div style="margin-top:10px;">
+                    🌐 <a href="https://www.crunevo.com" style="color:#7B2CBF;text-decoration:none;">www.crunevo.com</a> |
+                    ✉️ <a href="mailto:soporte@crunevo.com" style="color:#7B2CBF;text-decoration:none;">soporte@crunevo.com</a>
+                </div>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
