@@ -530,3 +530,5 @@
 - Incluido feed.css globalmente en base.html para activar la cuadrícula de la galería en todas las vistas (PR feed-gallery-css-fix).
 - Ajustados estilos del feed: imágenes del modal preservan proporciones, tarjetas ocupan todo el ancho y márgenes móviles eliminados (PR feed-responsive-fixes).
 - Convertido generador a lista en image_gallery.html para mantener JSON del modal. (PR gallery-list-fix)
+
+- post_card.html now uses a local `author` variable and shows 'Usuario eliminado' when missing (PR post-card-orphan-fix).
