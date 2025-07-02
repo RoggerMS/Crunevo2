@@ -770,6 +770,28 @@ function openImageModal(imageUrl) {
   });
 }
 
+let currentImages = [];
+let currentIndex = 0;
+
+function openGallery(postId, startIndex = 0) {
+  const imgs = document.querySelectorAll(`[data-post-id='${postId}'] .gallery-img`);
+  currentImages = Array.from(imgs).map((img) => img.src);
+  currentIndex = startIndex;
+
+  const modalEl = document.getElementById('galleryModal');
+  if (!modalEl) return;
+
+  modalEl.querySelector('#modalImage').src = currentImages[currentIndex];
+  const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+  modal.show();
+}
+
+function closeGallery() {
+  const modalEl = document.getElementById('galleryModal');
+  const modal = bootstrap.Modal.getInstance(modalEl);
+  if (modal) modal.hide();
+}
+
 // CSS animations
 const style = document.createElement('style');
 style.textContent = `
