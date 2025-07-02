@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
+{% import 'components/image_gallery.html' as gallery %}
 {% block content %}
 <div class="row">
   <!-- Lado izquierdo (menú lateral) -->
@@ -76,12 +77,11 @@
           <small class="text-muted">{{ post.created_at|timesince }}</small>
         </div>
         <p class="card-text">{{ post.content }}</p>
-        {% if post.file_url %}
-          {% if post.file_url.endswith('.pdf') %}
+        {% set images = post.images or (post.file_url and [{'url': post.file_url}]) %}
+        {% if images %}
+          {{ gallery.image_gallery(images, post.id) }}
+        {% elif post.file_url and post.file_url.endswith('.pdf') %}
           <a href="{{ post.file_url }}" target="_blank" class="btn btn-sm btn-outline-primary mb-2">Ver PDF</a>
-          {% else %}
-          <img loading="lazy" src="{{ post.file_url }}" class="feed-image img-fluid rounded mb-2">
-          {% endif %}
         {% endif %}
         <a href="{{ url_for('feed.view_post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary mb-2">Ver publicación</a>
         {% if author %}

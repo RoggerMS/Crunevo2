@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
 {% import 'components/reactions.html' as react %}
+{% import 'components/image_gallery.html' as gallery %}
 {% block content %}
 <div class="card mb-4 shadow-sm border-0 rounded-4">
   <div class="card-body p-4">
@@ -35,12 +36,11 @@
       </a>
     </div>
     {% endif %}
-      {% if post.file_url %}
-        {% if post.file_url.endswith('.pdf') %}
+      {% set images = post.images or (post.file_url and [{'url': post.file_url}]) %}
+      {% if images %}
+        {{ gallery.image_gallery(images, post.id) }}
+      {% elif post.file_url and post.file_url.endswith('.pdf') %}
         <a href="{{ post.file_url }}" target="_blank" class="btn btn-outline-primary mb-2">Ver PDF</a>
-        {% else %}
-        <img loading="lazy" src="{{ post.file_url }}" class="feed-image img-fluid rounded mb-2">
-        {% endif %}
       {% endif %}
       {% set counts = reaction_counts %}
       {{ react.reaction_container(post, counts, user_reaction) }}

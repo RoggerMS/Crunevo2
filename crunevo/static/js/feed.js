@@ -781,10 +781,20 @@ function openGallery(postId, startIndex = 0) {
   const modalEl = document.getElementById('galleryModal');
   if (!modalEl) return;
 
-  modalEl.querySelector('#modalImage').src = currentImages[currentIndex];
+  updateGallery(modalEl);
   const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
   modal.show();
   document.addEventListener('keydown', handleGalleryKey);
+
+  let startX = 0;
+  modalEl.addEventListener('touchstart', (e) => {
+    startX = e.changedTouches[0].clientX;
+  });
+  modalEl.addEventListener('touchend', (e) => {
+    const diff = e.changedTouches[0].clientX - startX;
+    if (diff > 50) prevImage();
+    if (diff < -50) nextImage();
+  });
 }
 
 function closeGallery() {
@@ -796,6 +806,10 @@ function closeGallery() {
 
 function updateGallery(modalEl) {
   modalEl.querySelector('#modalImage').src = currentImages[currentIndex];
+  const indicator = modalEl.querySelector('#galleryIndicator');
+  if (indicator) {
+    indicator.textContent = `${currentIndex + 1} / ${currentImages.length}`;
+  }
 }
 
 function nextImage() {
