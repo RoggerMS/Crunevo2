@@ -504,3 +504,4 @@
 - Wrapped forum quick action link with endpoint check to avoid BuildError when forum routes are missing (hotfix forum-ask-link).
 
 - Displayed verified badge in own profile page using same markup as post cards and checking `verification_level >= 2`. (PR perfil-own-verify)
+- Moved username header with verification badge above description without interfering with avatar. (PR perfil-username-check)
