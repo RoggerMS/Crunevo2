@@ -521,3 +521,4 @@
 - Añadido flujo de eliminación de cuenta con botón en configuración, ruta protegida y test (PR delete-account).
 - Corregido enlace en pending.html para usar 'onboarding.register' y evitar BuildError (hotfix pending-register-link).
 - Reestructurado sistema de imágenes en feed con componente unificado y galería navegable (PR feed-gallery-rework).
+- Galería del feed rediseñada con cuadrícula dinámica, modal con contador y unificación de file_url como imágenes (PR feed-gallery-facebook-style).
