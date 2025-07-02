@@ -6,13 +6,26 @@
   <img src="{{ url }}" alt="Imagen" loading="lazy" onclick="openImageModal('{{ url }}', 0, '{{ post_id }}')" />
 </div>
 {% else %}
-<div class="post-gallery images-{{ count }}" data-post-id="{{ post_id }}">
-  {% for image in images %}
-  {% set url = image.url if image.url is defined else image %}
-  <div class="image-thumb" onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}')">
-    <img src="{{ url }}" alt="Imagen" loading="lazy" />
-  </div>
+{% set urls = images | map(attribute='url') if images[0] is mapping or images[0].url is defined else images %}
+{% if count > 4 %}
+  {% set visible = images[:4] %}
+  <div class="post-gallery images-{{ visible|length }}" data-post-id="{{ post_id }}" data-images='{{ urls | tojson }}'>
+  {% for image in visible %}
+    {% set url = image.url if image.url is defined else image %}
+    <div class="image-thumb{% if loop.last %} more{% endif %}" onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}')"{% if loop.last %} data-more="+{{ count - 4 }}"{% endif %}>
+      <img src="{{ url }}" alt="Imagen" loading="lazy" />
+    </div>
   {% endfor %}
-</div>
+  </div>
+{% else %}
+  <div class="post-gallery images-{{ count }}" data-post-id="{{ post_id }}">
+  {% for image in images %}
+    {% set url = image.url if image.url is defined else image %}
+    <div class="image-thumb" onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}')">
+      <img src="{{ url }}" alt="Imagen" loading="lazy" />
+    </div>
+  {% endfor %}
+  </div>
+{% endif %}
 {% endif %}
 {% endmacro %}
