@@ -24,14 +24,7 @@
           <div class="profile-header-bg" style="height: 150px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 16px 16px 0 0;"></div>
         </div>
         <div class="card-body p-4" style="margin-top: -75px;">
-          <h3 class="fw-bold d-flex align-items-center gap-2 mb-3">
-            {{ user.username }}
-            {% if user.verification_level >= 2 %}
-            <span class="badge verified-badge" data-bs-toggle="tooltip" title="Cuenta verificada">
-              <i class="bi bi-check-circle-fill"></i>
-            </span>
-            {% endif %}
-          </h3>
+          
           <div class="row align-items-end">
             <div class="col-auto">
               <div class="profile-avatar-container position-relative">
@@ -48,7 +41,17 @@
             </div>
             <div class="col">
               <div class="mt-3">
-                
+
+                <!-- Nombre de usuario con verificación -->
+                <h3 class="fw-bold d-flex align-items-center gap-2 mb-2">
+                  {{ user.username }}
+                  {% if user.verification_level >= 2 %}
+                  <span class="badge verified-badge" data-bs-toggle="tooltip" title="Cuenta verificada">
+                    <i class="bi bi-check-circle-fill"></i>
+                  </span>
+                  {% endif %}
+                </h3>
+
                 {% if user.about %}
                 <p class="text-muted mb-3">{{ user.about }}</p>
                 {% elif is_own_profile %}
