@@ -782,6 +782,8 @@ function openGallery(postId, startIndex = 0) {
   if (!modalEl) return;
 
   modalEl.querySelector('#modalImage').src = currentImages[currentIndex];
+  const counter = modalEl.querySelector('#galleryCounter');
+  if (counter) counter.textContent = `${currentIndex + 1}/${currentImages.length}`;
   const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
   modal.show();
   document.addEventListener('keydown', handleGalleryKey);
@@ -796,6 +798,8 @@ function closeGallery() {
 
 function updateGallery(modalEl) {
   modalEl.querySelector('#modalImage').src = currentImages[currentIndex];
+  const counter = modalEl.querySelector('#galleryCounter');
+  if (counter) counter.textContent = `${currentIndex + 1}/${currentImages.length}`;
 }
 
 function nextImage() {
