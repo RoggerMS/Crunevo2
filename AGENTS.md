@@ -509,3 +509,4 @@
 - Repositioned profile stats below username on desktop with responsive duplication. (PR perfil-stats-below)
 - Cleaned profile header layout removing stats block, hiding sidebar numbers on /perfil and improving modal text post validation. (PR perfil-layout-cleanup)
 - Positioned username overlay with dark background over banner on desktop. (hotfix perfil-username-overlay)
+- Reorganized profile header placing username next to avatar on desktop and showing stats in a gray block. (hotfix perfil-header-restore)
