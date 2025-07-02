@@ -777,8 +777,17 @@ let currentImageIndex = 0;
 let imageList = [];
 
 function openImageModal(src, index, postId) {
-  const selector = `[data-post-id='${postId}'] .image-thumb img, [data-post-id='${postId}'] > img`;
-  imageList = Array.from(document.querySelectorAll(selector)).map((img) => img.src);
+  const container = document.querySelector(`[data-post-id='${postId}']`);
+  if (container && container.dataset.images) {
+    try {
+      imageList = JSON.parse(container.dataset.images);
+    } catch (e) {
+      imageList = [];
+    }
+  } else {
+    const selector = `[data-post-id='${postId}'] .image-thumb img, [data-post-id='${postId}'] > img`;
+    imageList = Array.from(document.querySelectorAll(selector)).map((img) => img.src);
+  }
   currentImageIndex = index;
   document.getElementById('modalImage').src = src;
   document.getElementById('imageModal').classList.remove('hidden');
