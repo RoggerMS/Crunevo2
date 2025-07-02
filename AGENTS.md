@@ -525,3 +525,4 @@
 - Reemplazado image_gallery.html y modal global con diseño tipo Facebook, nuevas clases y funciones JS simplificadas (PR feed-gallery-ui-fix).
 - Rediseñado el feed principal con tarjetas centradas "feed-post-card" y oculto el sidebar derecho en móviles (PR feed-facebook-style).
 - Galería de publicaciones adaptada con clase `.post-gallery`, navegación por publicación y padding reducido en móviles (PR feed-gallery-grid).
+- Eliminado Redis por completo; caches ahora usan memoria y se actualizó README y pruebas (PR redis-removal).
