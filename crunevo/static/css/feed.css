@@ -449,17 +449,42 @@ body[data-bs-theme="dark"] .comment-box {
   color: #ffffff;
 }
 
-/* Gallery grid for multiple post images */
-.gallery-grid {
+/* Unified gallery grid */
+.post-images {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 6px;
   margin-top: 10px;
 }
 
+.post-images.images-count-1 {
+  grid-template-columns: 1fr;
+}
+
+.post-images.images-count-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.post-images.images-count-3 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+.post-images.images-count-3 .img-wrapper:nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+.post-images.images-count-4,
+.post-images.images-count-5 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.img-wrapper {
+  position: relative;
+}
+
 .gallery-img {
   width: 100%;
-  border-radius: 6px;
+  height: 100%;
+  border-radius: 8px;
   object-fit: cover;
   cursor: pointer;
   transition: transform 0.2s ease;
@@ -467,5 +492,18 @@ body[data-bs-theme="dark"] .comment-box {
 
 .gallery-img:hover {
   transform: scale(1.02);
+}
+
+.more-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.5rem;
+  border-radius: 8px;
 }
 

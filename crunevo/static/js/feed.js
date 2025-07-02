@@ -784,12 +784,37 @@ function openGallery(postId, startIndex = 0) {
   modalEl.querySelector('#modalImage').src = currentImages[currentIndex];
   const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
   modal.show();
+  document.addEventListener('keydown', handleGalleryKey);
 }
 
 function closeGallery() {
   const modalEl = document.getElementById('galleryModal');
   const modal = bootstrap.Modal.getInstance(modalEl);
   if (modal) modal.hide();
+  document.removeEventListener('keydown', handleGalleryKey);
+}
+
+function updateGallery(modalEl) {
+  modalEl.querySelector('#modalImage').src = currentImages[currentIndex];
+}
+
+function nextImage() {
+  const modalEl = document.getElementById('galleryModal');
+  if (!modalEl) return;
+  currentIndex = (currentIndex + 1) % currentImages.length;
+  updateGallery(modalEl);
+}
+
+function prevImage() {
+  const modalEl = document.getElementById('galleryModal');
+  if (!modalEl) return;
+  currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+  updateGallery(modalEl);
+}
+
+function handleGalleryKey(e) {
+  if (e.key === 'ArrowRight') nextImage();
+  if (e.key === 'ArrowLeft') prevImage();
 }
 
 // CSS animations
@@ -819,3 +844,7 @@ function initFeedManager() {
   feedManager = new FeedManager();
 }
 window.initFeedManager = initFeedManager;
+window.openGallery = openGallery;
+window.closeGallery = closeGallery;
+window.nextImage = nextImage;
+window.prevImage = prevImage;

@@ -1,5 +1,6 @@
 {% import 'components/csrf.html' as csrf %}
 {% import 'components/reactions.html' as react %}
+{% import 'components/image_gallery.html' as gallery %}
 <article class="card mb-4 shadow-sm border-0 rounded-4 post-card" data-post-id="{{ post.id }}">
   <div class="card-body p-4">
     <!-- Post Header -->
@@ -60,11 +61,7 @@
 
     <!-- Post Media -->
     {% if post.images %}
-    <div class="gallery-grid">
-      {% for img in post.images %}
-      <img src="{{ img.url }}" class="gallery-img" alt="Imagen {{ loop.index }}" onclick="openGallery('{{ post.id }}', {{ loop.index0 }})">
-      {% endfor %}
-    </div>
+    {{ gallery.image_gallery(post.images, post.id) }}
     {% elif post.file_url %}
     <div class="post-media mb-3">
       {% if post.file_url.endswith('.pdf') %}
@@ -76,7 +73,7 @@
         </a>
       </div>
       {% else %}
-      <img src="{{ post.file_url }}" alt="Imagen del post" class="img-fluid rounded-3 w-100 post-image" style="max-height: 400px; object-fit: cover;">
+      {{ gallery.image_gallery([{'url': post.file_url}], post.id) }}
       {% endif %}
     </div>
     {% endif %}
