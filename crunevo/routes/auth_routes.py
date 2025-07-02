@@ -387,3 +387,44 @@ def reclamar_racha():
             "balance": current_user.credits,
         }
     )
+
+
+@auth_bp.route("/perfil/eliminar-cuenta", methods=["POST"])
+@activated_required
+def delete_account():
+    from flask_login import logout_user
+    from crunevo.models import (
+        Post,
+        Note,
+        Comment,
+        PostComment,
+        Notification,
+        LoginStreak,
+    )
+
+    for post in current_user.posts:
+        db.session.delete(post)
+    for note in current_user.notes:
+        db.session.delete(note)
+    for comment in current_user.comments:
+        db.session.delete(comment)
+    for pcomment in current_user.post_comments:
+        db.session.delete(pcomment)
+    for notif in current_user.notifications.all():
+        db.session.delete(notif)
+
+    streak = LoginStreak.query.filter_by(user_id=current_user.id).first()
+    if streak:
+        db.session.delete(streak)
+
+    current_user.activated = False
+    current_user.password_hash = ""
+    current_user.chat_enabled = False
+    db.session.commit()
+    logout_user()
+    return redirect(url_for("auth.account_deleted"))
+
+
+@auth_bp.route("/cuenta-eliminada")
+def account_deleted():
+    return render_template("auth/account_deleted.html")
