@@ -1,10 +1,18 @@
 {% macro image_gallery(images, post_id) %}
-<div class="image-gallery-container image-grid image-grid-{{ images|length }}" data-post-id="{{ post_id }}">
+{% set count = images|length %}
+{% if count == 1 %}
+<div class="post-gallery single" data-post-id="{{ post_id }}">
+  {% set url = images[0].url if images[0].url is defined else images[0] %}
+  <img src="{{ url }}" alt="Imagen" loading="lazy" onclick="openImageModal('{{ url }}', 0, '{{ post_id }}')" />
+</div>
+{% else %}
+<div class="post-gallery images-{{ count }}" data-post-id="{{ post_id }}">
   {% for image in images %}
   {% set url = image.url if image.url is defined else image %}
-  <div class="image-thumb" onclick="openImageModal('{{ url }}', {{ loop.index0 }})">
+  <div class="image-thumb" onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}')">
     <img src="{{ url }}" alt="Imagen" loading="lazy" />
   </div>
   {% endfor %}
 </div>
+{% endif %}
 {% endmacro %}

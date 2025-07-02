@@ -2,8 +2,8 @@
 {% set reaction_counts = reaction_counts if reaction_counts is defined else {} %}
 {% set user_reactions = user_reactions if user_reactions is defined else {} %}
 {% import 'components/image_gallery.html' as gallery %}
-<article class="card mb-4 shadow-sm border-0 rounded-4 post-card" data-post-id="{{ post.id }}">
-  <div class="card-body p-4">
+<article class="feed-post-card post-card" data-post-id="{{ post.id }}">
+  <div class="post-body p-4">
     <!-- Post Header -->
     <div class="d-flex align-items-center gap-3 mb-3">
       <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" 

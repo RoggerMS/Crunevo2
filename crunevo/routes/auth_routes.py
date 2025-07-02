@@ -394,11 +394,6 @@ def reclamar_racha():
 def delete_account():
     from flask_login import logout_user
     from crunevo.models import (
-        Post,
-        Note,
-        Comment,
-        PostComment,
-        Notification,
         LoginStreak,
     )
 
