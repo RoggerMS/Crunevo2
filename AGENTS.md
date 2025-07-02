@@ -527,3 +527,4 @@
 - Galería de publicaciones adaptada con clase `.post-gallery`, navegación por publicación y padding reducido en móviles (PR feed-gallery-grid).
 - Eliminado Redis por completo; caches ahora usan memoria y se actualizó README y pruebas (PR redis-removal).
 - Galería del feed ajustada con límite de altura 300px, cuadrícula de hasta cuatro miniaturas y overlay de más imágenes; modal lee URLs desde data attribute (PR feed-image-grid-fix).
+- Incluido feed.css globalmente en base.html para activar la cuadrícula de la galería en todas las vistas (PR feed-gallery-css-fix).
