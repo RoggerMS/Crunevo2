@@ -10,4 +10,10 @@
   </form>
   {{ btn.button('Volver al inicio', href=url_for('feed.feed_home')) }}
 </div>
+<div class="text-center mt-4">
+  <p class="text-muted small">
+    ¿Te equivocaste al escribir tu correo?
+    <a href="{{ url_for('auth.register') }}" class="text-decoration-underline">Cambiar dirección de correo</a>
+  </p>
+</div>
 {% endblock %}
