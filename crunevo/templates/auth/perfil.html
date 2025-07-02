@@ -21,11 +21,11 @@
       <!-- Profile Header -->
       <div class="card border-0 shadow-sm mb-4">
         <div class="position-relative">
-          <div class="profile-header-bg" style="height: 150px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 16px 16px 0 0;"></div>
+          <div class="profile-header-bg" style="min-height: 180px; padding-top: 1rem; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 16px 16px 0 0;"></div>
         </div>
         <div class="card-body p-4" style="margin-top: -75px;">
           
-          <div class="row align-items-end">
+          <div class="row align-items-center">
             <div class="col-auto">
               <div class="profile-avatar-container position-relative">
                 <img src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" 
@@ -61,33 +61,6 @@
                 </p>
                 {% endif %}
                 
-                <!-- Quick Stats (mobile) -->
-                <div class="profile-stats d-flex text-center overflow-auto gap-2 d-sm-none">
-                  <div class="flex-shrink-0">
-                    <div class="stat-item">
-                      <div class="fw-bold text-primary">{{ user.credits or 0 }}</div>
-                      <div class="small text-muted">Crolars</div>
-                    </div>
-                  </div>
-                  <div class="flex-shrink-0">
-                    <div class="stat-item">
-                      <div class="fw-bold text-success">{{ user.notes|length }}</div>
-                      <div class="small text-muted">Apuntes</div>
-                    </div>
-                  </div>
-                  <div class="flex-shrink-0">
-                    <div class="stat-item">
-                      <div class="fw-bold text-info">{{ user_clubs|length }}</div>
-                      <div class="small text-muted">Clubes</div>
-                    </div>
-                  </div>
-                  <div class="flex-shrink-0">
-                    <div class="stat-item">
-                      <div class="fw-bold text-warning">{{ completed_missions_count }}</div>
-                      <div class="small text-muted">Misiones</div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
             {% if is_own_profile %}
@@ -102,24 +75,6 @@
               </div>
             </div>
             {% endif %}
-          </div>
-          <div class="d-none d-sm-flex justify-content-center gap-3 mt-3">
-            <div class="text-center">
-              <h5 class="mb-0">{{ user.credits or 0 }}</h5>
-              <small>Crolars</small>
-            </div>
-            <div class="text-center">
-              <h5 class="mb-0">{{ user.notes|length }}</h5>
-              <small>Apuntes</small>
-            </div>
-            <div class="text-center">
-              <h5 class="mb-0">{{ user_clubs|length }}</h5>
-              <small>Clubes</small>
-            </div>
-            <div class="text-center">
-              <h5 class="mb-0">{{ completed_missions_count }}</h5>
-              <small>Misiones</small>
-            </div>
           </div>
         </div>
       </div>
