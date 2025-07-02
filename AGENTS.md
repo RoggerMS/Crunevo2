@@ -515,3 +515,4 @@
 - Sanitized recipient handling in `send_email` ensuring Resend receives a list of addresses (PR resend-to-list-fix).
 - Ajustado nombre de usuario a la izquierda en móviles dentro de perfil y descripción centrada. (PR perfil-mobile-name-align)
 - Mostrar múltiples imágenes en cada tarjeta de publicación con galería modal y estilos en feed.css. (PR feed-gallery-display)
+- Añadido enlace para cambiar email en pending.html debajo de 'Volver al inicio' (PR pending-change-email-link).
