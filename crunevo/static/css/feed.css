@@ -523,27 +523,28 @@ body[data-bs-theme="dark"] .comment-box {
 }
 
 
-/* New image gallery layout */
-.image-grid {
+/* Post gallery grid */
+.post-gallery {
   display: grid;
   gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
 }
-.image-grid-1 { grid-template-columns: 1fr; }
-.image-grid-2 { grid-template-columns: repeat(2, 1fr); }
-.image-grid-3 { grid-template-columns: repeat(3, 1fr); }
-.image-grid-4,
-.image-grid-5,
-.image-grid-6 { grid-template-columns: repeat(3, 1fr); }
-
-.image-thumb img {
+.post-gallery.images-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.post-gallery.single img {
+  height: auto;
+  max-height: 400px;
+}
+.post-gallery img {
   width: 100%;
-  height: 200px;
+  height: 120px;
   object-fit: cover;
   border-radius: 8px;
   cursor: pointer;
   transition: transform 0.2s ease;
 }
-.image-thumb img:hover {
+.post-gallery img:hover {
   transform: scale(1.03);
 }
 
@@ -595,5 +596,53 @@ body[data-bs-theme="dark"] .comment-box {
   right: 20px;
   top: 50%;
   transform: translateY(-50%);
+}
+
+/* Modern feed post card */
+.feed-post-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+[data-bs-theme="dark"] .feed-post-card {
+  background: #1f2937;
+}
+.feed-post-card:hover {
+  transform: scale(1.01);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+.feed-post-card img {
+  border-radius: 8px;
+  max-width: 100%;
+  object-fit: cover;
+  max-height: 400px;
+}
+.feed-post-card .post-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.feed-post-card .post-actions .btn {
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+.feed-post-card .post-actions .btn:hover {
+  background-color: rgba(102, 126, 234, 0.1);
+}
+
+@media (max-width: 768px) {
+  #sidebar-right {
+    display: none !important;
+  }
+  .feed-post-card {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
 }
 

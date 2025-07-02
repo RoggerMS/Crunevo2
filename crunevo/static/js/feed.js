@@ -776,8 +776,9 @@ window.initFeedManager = initFeedManager;
 let currentImageIndex = 0;
 let imageList = [];
 
-function openImageModal(src, index) {
-  imageList = Array.from(document.querySelectorAll('.image-thumb img')).map((img) => img.src);
+function openImageModal(src, index, postId) {
+  const selector = `[data-post-id='${postId}'] .image-thumb img, [data-post-id='${postId}'] > img`;
+  imageList = Array.from(document.querySelectorAll(selector)).map((img) => img.src);
   currentImageIndex = index;
   document.getElementById('modalImage').src = src;
   document.getElementById('imageModal').classList.remove('hidden');
