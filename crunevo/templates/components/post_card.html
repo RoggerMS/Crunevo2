@@ -1,4 +1,5 @@
 {% set post = item.data %}
+{% set author = post.author %}
 {% set reaction_counts = reaction_counts if reaction_counts is defined else {} %}
 {% set user_reactions = user_reactions if user_reactions is defined else {} %}
 {% import 'components/image_gallery.html' as gallery %}
@@ -6,20 +7,24 @@
   <div class="post-body p-4">
     <!-- Post Header -->
     <div class="d-flex align-items-center gap-3 mb-3">
-      <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" 
-           alt="{{ post.author.username }}" 
-           class="rounded-circle" 
-           width="48" 
+      <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}"
+           alt="{{ author.username if author else 'Usuario eliminado' }}"
+           class="rounded-circle"
+           width="48"
            height="48">
       <div class="flex-grow-1">
         <div class="d-flex align-items-center gap-2">
           <h6 class="mb-0 fw-semibold">
-            <a href="{{ url_for('auth.profile_by_username', username=post.author.username) }}" 
+            {% if author %}
+            <a href="{{ url_for('auth.profile_by_username', username=author.username) }}"
                class="text-decoration-none text-dark">
-              {{ post.author.username }}
+              {{ author.username }}
             </a>
+            {% else %}
+            Usuario eliminado
+            {% endif %}
           </h6>
-          {% if post.author.verification_level >= 2 %}
+          {% if author and author.verification_level >= 2 %}
           <span class="badge verified-badge" data-bs-toggle="tooltip" title="Cuenta verificada">
             <i class="bi bi-check-circle-fill"></i> Verificado
           </span>
