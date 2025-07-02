@@ -164,7 +164,7 @@ class FeedManager {
 
     const submitBtn = form.querySelector('button[type="submit"]');
     if (submitBtn) {
-      submitBtn.disabled = !(content || hasFile);
+      submitBtn.disabled = !(content.length >= 2 || hasFile);
     }
   }
 
