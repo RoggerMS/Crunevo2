@@ -175,7 +175,9 @@
     <!-- Image Modal -->
     <div id="imageModal" class="image-modal hidden">
       <span class="close" onclick="closeImageModal()">&times;</span>
-      <img class="modal-content" id="modalImage" alt="Imagen">
+      <div class="modal-image-container">
+        <img class="modal-content" id="modalImage" alt="Imagen">
+      </div>
       <div class="modal-counter" id="modalCounter"></div>
       <div class="modal-nav prev" onclick="prevImage()">&larr;</div>
       <div class="modal-nav next" onclick="nextImage()">&rarr;</div>
