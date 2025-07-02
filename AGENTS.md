@@ -522,3 +522,4 @@
 - Corregido enlace en pending.html para usar 'onboarding.register' y evitar BuildError (hotfix pending-register-link).
 - Reestructurado sistema de imágenes en feed con componente unificado y galería navegable (PR feed-gallery-rework).
 - Galería del feed rediseñada con cuadrícula dinámica, modal con contador y unificación de file_url como imágenes (PR feed-gallery-facebook-style).
+- Reemplazado image_gallery.html y modal global con diseño tipo Facebook, nuevas clases y funciones JS simplificadas (PR feed-gallery-ui-fix).

@@ -171,23 +171,13 @@
       </div>
       {% endif %}
 
-    <!-- Gallery Modal -->
-    <div class="modal fade gallery-modal" id="galleryModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content bg-transparent border-0 position-relative">
-          <button type="button" class="btn btn-secondary position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Cerrar" onclick="closeGallery()">
-            <i class="bi bi-x-lg"></i>
-          </button>
-          <button type="button" class="btn btn-secondary position-absolute top-50 start-0 translate-middle-y ms-3" onclick="prevImage()">
-            <i class="bi bi-chevron-left"></i>
-          </button>
-          <button type="button" class="btn btn-secondary position-absolute top-50 end-0 translate-middle-y me-3" onclick="nextImage()">
-            <i class="bi bi-chevron-right"></i>
-          </button>
-          <img id="modalImage" class="img-fluid rounded-3" alt="Imagen" style="max-height:80vh;">
-          <div id="galleryCounter" class="position-absolute bottom-0 start-50 translate-middle-x mb-3 text-white fw-semibold"></div>
-        </div>
-      </div>
+    <!-- Image Modal -->
+    <div id="imageModal" class="image-modal hidden">
+      <span class="close" onclick="closeImageModal()">&times;</span>
+      <img class="modal-content" id="modalImage" alt="Imagen">
+      <div class="modal-counter" id="modalCounter"></div>
+      <div class="modal-nav prev" onclick="prevImage()">&larr;</div>
+      <div class="modal-nav next" onclick="nextImage()">&rarr;</div>
     </div>
 
     <!-- Bootstrap JS -->

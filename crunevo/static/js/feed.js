@@ -744,82 +744,6 @@ function copyPostLink(postId) {
   }
 }
 
-function openImageModal(imageUrl) {
-  // Create image modal
-  const modal = document.createElement('div');
-  modal.className = 'modal fade';
-  modal.innerHTML = `
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content bg-transparent border-0">
-        <div class="modal-body p-0 text-center">
-          <img src="${imageUrl}" class="img-fluid rounded-3" style="max-height: 80vh;">
-          <button type="button" class="btn btn-secondary position-absolute top-0 end-0 m-3" data-bs-dismiss="modal">
-            <i class="bi bi-x-lg"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(modal);
-  const bsModal = new bootstrap.Modal(modal);
-  bsModal.show();
-  
-  modal.addEventListener('hidden.bs.modal', () => {
-    modal.remove();
-  });
-}
-
-let currentImages = [];
-let currentIndex = 0;
-
-function openGallery(postId, startIndex = 0) {
-  const imgs = document.querySelectorAll(`[data-post-id='${postId}'] .gallery-img`);
-  currentImages = Array.from(imgs).map((img) => img.src);
-  currentIndex = startIndex;
-
-  const modalEl = document.getElementById('galleryModal');
-  if (!modalEl) return;
-
-  modalEl.querySelector('#modalImage').src = currentImages[currentIndex];
-  const counter = modalEl.querySelector('#galleryCounter');
-  if (counter) counter.textContent = `${currentIndex + 1}/${currentImages.length}`;
-  const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-  modal.show();
-  document.addEventListener('keydown', handleGalleryKey);
-}
-
-function closeGallery() {
-  const modalEl = document.getElementById('galleryModal');
-  const modal = bootstrap.Modal.getInstance(modalEl);
-  if (modal) modal.hide();
-  document.removeEventListener('keydown', handleGalleryKey);
-}
-
-function updateGallery(modalEl) {
-  modalEl.querySelector('#modalImage').src = currentImages[currentIndex];
-  const counter = modalEl.querySelector('#galleryCounter');
-  if (counter) counter.textContent = `${currentIndex + 1}/${currentImages.length}`;
-}
-
-function nextImage() {
-  const modalEl = document.getElementById('galleryModal');
-  if (!modalEl) return;
-  currentIndex = (currentIndex + 1) % currentImages.length;
-  updateGallery(modalEl);
-}
-
-function prevImage() {
-  const modalEl = document.getElementById('galleryModal');
-  if (!modalEl) return;
-  currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
-  updateGallery(modalEl);
-}
-
-function handleGalleryKey(e) {
-  if (e.key === 'ArrowRight') nextImage();
-  if (e.key === 'ArrowLeft') prevImage();
-}
 
 // CSS animations
 const style = document.createElement('style');
@@ -848,7 +772,39 @@ function initFeedManager() {
   feedManager = new FeedManager();
 }
 window.initFeedManager = initFeedManager;
-window.openGallery = openGallery;
-window.closeGallery = closeGallery;
+
+let currentImageIndex = 0;
+let imageList = [];
+
+function openImageModal(src, index) {
+  imageList = Array.from(document.querySelectorAll('.image-thumb img')).map((img) => img.src);
+  currentImageIndex = index;
+  document.getElementById('modalImage').src = src;
+  document.getElementById('imageModal').classList.remove('hidden');
+  updateModalCounter();
+}
+
+function closeImageModal() {
+  document.getElementById('imageModal').classList.add('hidden');
+}
+
+function nextImage() {
+  currentImageIndex = (currentImageIndex + 1) % imageList.length;
+  document.getElementById('modalImage').src = imageList[currentImageIndex];
+  updateModalCounter();
+}
+
+function prevImage() {
+  currentImageIndex = (currentImageIndex - 1 + imageList.length) % imageList.length;
+  document.getElementById('modalImage').src = imageList[currentImageIndex];
+  updateModalCounter();
+}
+
+function updateModalCounter() {
+  document.getElementById('modalCounter').textContent = `${currentImageIndex + 1} / ${imageList.length}`;
+}
+
+window.openImageModal = openImageModal;
+window.closeImageModal = closeImageModal;
 window.nextImage = nextImage;
 window.prevImage = prevImage;
