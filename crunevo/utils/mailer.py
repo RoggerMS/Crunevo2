@@ -15,6 +15,14 @@ def send_email(to, subject, html):
 
     key = current_app.config.get("RESEND_API_KEY")
     provider = current_app.config.get("MAIL_PROVIDER")
+    if isinstance(to, str):
+        to_list = [to.strip()]
+    else:
+        try:
+            to_list = [str(addr).strip() for addr in to if addr]
+        except TypeError:
+            to_list = [str(to).strip()]
+
     if provider == "resend" and not key:
         current_app.logger.error(
             "MAIL_PROVIDER=resend pero RESEND_API_KEY no est\xc3\xa1 configurada"
@@ -28,7 +36,7 @@ def send_email(to, subject, html):
                 headers={"Authorization": f"Bearer {key}"},
                 json={
                     "from": f"CRUNEVO <{sender}>",
-                    "to": [to],
+                    "to": to_list,
                     "subject": subject,
                     "html": html,
                 },
@@ -51,7 +59,7 @@ def send_email(to, subject, html):
             current_app.logger.error("Email error: %s", e)
             return False, str(e)
 
-    msg = Message(subject=subject, recipients=[to], html=html)
+    msg = Message(subject=subject, recipients=to_list, html=html)
     try:
         mail.send(msg)
         return True, None

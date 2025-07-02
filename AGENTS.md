@@ -512,3 +512,4 @@
 - Reorganized profile header placing username next to avatar on desktop and showing stats in a gray block. (hotfix perfil-header-restore)
 - Improved email confirmation logging and resend feedback; send_email returns detailed errors and register links to reenviar (PR email-resend-debug)
 - Eliminada vista central de stats en perfil, mostradas en la barra lateral con puntos, crolars y apuntes como en el feed. Portada reducida y margen ajustado para mostrar el nombre sin superposición; columna principal centrada en móviles (PR perfil-sidebar-restore).
+- Sanitized recipient handling in `send_email` ensuring Resend receives a list of addresses (PR resend-to-list-fix).
