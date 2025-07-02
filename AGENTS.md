@@ -523,3 +523,4 @@
 - Reestructurado sistema de imágenes en feed con componente unificado y galería navegable (PR feed-gallery-rework).
 - Galería del feed rediseñada con cuadrícula dinámica, modal con contador y unificación de file_url como imágenes (PR feed-gallery-facebook-style).
 - Reemplazado image_gallery.html y modal global con diseño tipo Facebook, nuevas clases y funciones JS simplificadas (PR feed-gallery-ui-fix).
+- Eliminado Redis por completo; caches ahora usan memoria y se actualizó README y pruebas (PR redis-removal).
