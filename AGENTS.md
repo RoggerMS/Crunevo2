@@ -535,3 +535,4 @@
 - Updated profile tabs to use query string navigation, ensuring missions and achievements load correctly (PR perfil-tabs-fix).
 - Fixed edit and delete actions on feed posts with modal form and fetch logic (PR feed-edit-delete-fix).
 - Resolved feed.js syntax error and exposed post action functions to window (hotfix feed-js-buttons).
+- /health endpoint now returns JSON {"status": "ok"}; updated test accordingly (PR health-json-endpoint).

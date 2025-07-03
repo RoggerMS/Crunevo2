@@ -1,9 +1,9 @@
 from crunevo.app import create_app
-from typing import Tuple
+from typing import Dict
 
 app = create_app()
 
 
 @app.route("/health")
-def health() -> Tuple[str, int]:
-    return "ok", 200
+def health() -> Dict[str, str]:
+    return {"status": "ok"}
