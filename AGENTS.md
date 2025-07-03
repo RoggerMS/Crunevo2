@@ -540,3 +540,4 @@
 - Implementado visor de imágenes con URL dinámica tipo Facebook y navegación en feed.js y base.html (PR photo-modal-dynamic).
 - Rediseñado modal de imágenes estilo Facebook con botones accesibles, tarjeta informativa y ruta compartible "/feed/post/<id>/photo/<n>" que establece OG:image (PR photo-modal-redesign).
 - Añadidos metadatos OpenGraph dinámicos en `post_detail` con título y descripción derivados del contenido, enviados desde `feed_routes.py` (PR feed-og-tags).
+- Se extrajo el CSS del visor de imágenes a `photo-modal.css`, se incluyó en `base.html` y se añadieron mejoras de accesibilidad: role="dialog", botones type="button" y enlace para abrir la imagen en nueva pestaña. (PR photo-modal-css)

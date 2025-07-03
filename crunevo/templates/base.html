@@ -53,6 +53,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/modern-components.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/photo-modal.css') }}">
     {% block head_extra %}{% endblock %}
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -173,17 +174,19 @@
       {% endif %}
 
     <!-- Image Modal -->
-    <div id="imageModal" class="image-modal hidden" onclick="outsideImageClick(event)">
-      <button class="close" aria-label="Cerrar" onclick="closeImageModal()">✖</button>
+    <div id="imageModal" class="image-modal hidden" role="dialog" aria-modal="true" onclick="outsideImageClick(event)">
+      <button type="button" class="close" aria-label="Cerrar" onclick="closeImageModal()">✖</button>
       <div class="modal-body-wrapper">
         <div class="modal-image-container">
-          <img class="modal-content" id="modalImage" alt="Imagen">
+          <a id="modalImageLink" target="_blank" rel="noopener">
+            <img class="modal-content" id="modalImage" alt="Imagen">
+          </a>
         </div>
         <div id="imageModalInfo" class="modal-details"></div>
       </div>
       <div class="modal-counter" id="modalCounter"></div>
-      <button class="modal-nav prev" aria-label="Imagen anterior" onclick="prevImage()">←</button>
-      <button class="modal-nav next" aria-label="Siguiente imagen" onclick="nextImage()">→</button>
+      <button type="button" class="modal-nav prev" aria-label="Imagen anterior" onclick="prevImage()">←</button>
+      <button type="button" class="modal-nav next" aria-label="Siguiente imagen" onclick="nextImage()">→</button>
     </div>
 
     <!-- Bootstrap JS -->
