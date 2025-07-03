@@ -12,6 +12,7 @@
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
 
     <!-- Preconnect for performance -->
@@ -279,6 +280,13 @@
     <!-- Main app initialization -->
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/share.js') }}" defer></script>
+    <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('{{ url_for('static', filename='js/service-worker.js') }}')
+    .then(reg => console.log('SW registrado', reg))
+    .catch(err => console.error('SW error', err));
+}
+    </script>
     <script>
       document.getElementById('year').textContent = new Date().getFullYear();
     </script>
