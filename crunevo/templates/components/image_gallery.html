@@ -1,12 +1,12 @@
 {% macro image_gallery(images, post_id) %}
 {% set count = images|length %}
+{% set urls = (images | map(attribute='url') | list) if images and (images[0] is mapping or images[0].url is defined) else images %}
 {% if count == 1 %}
-<div class="post-gallery single" data-post-id="{{ post_id }}">
-  {% set url = images[0].url if images[0].url is defined else images[0] %}
+<div class="post-gallery single" data-post-id="{{ post_id }}" data-images='{{ urls | tojson }}'>
+  {% set url = urls[0] %}
   <img src="{{ url }}" alt="Imagen 1 de la publicación" loading="lazy" onclick="openImageModal('{{ url }}', 0, '{{ post_id }}')" />
 </div>
 {% else %}
-{% set urls = (images | map(attribute='url') | list) if images[0] is mapping or images[0].url is defined else images %}
 {% if count > 4 %}
   {% set visible = images[:4] %}
   <div class="post-gallery images-{{ visible|length }}" data-post-id="{{ post_id }}" data-images='{{ urls | tojson }}'>
@@ -18,7 +18,7 @@
   {% endfor %}
   </div>
 {% else %}
-  <div class="post-gallery images-{{ count }}" data-post-id="{{ post_id }}">
+  <div class="post-gallery images-{{ count }}" data-post-id="{{ post_id }}" data-images='{{ urls | tojson }}'>
   {% for image in images %}
     {% set url = image.url if image.url is defined else image %}
     <div class="image-thumb" onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}')">

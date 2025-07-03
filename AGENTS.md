@@ -541,3 +541,4 @@
 - Rediseñado modal de imágenes estilo Facebook con botones accesibles, tarjeta informativa y ruta compartible "/feed/post/<id>/photo/<n>" que establece OG:image (PR photo-modal-redesign).
 - Añadidos metadatos OpenGraph dinámicos en `post_detail` con título y descripción derivados del contenido, enviados desde `feed_routes.py` (PR feed-og-tags).
 - Se extrajo el CSS del visor de imágenes a `photo-modal.css`, se incluyó en `base.html` y se añadieron mejoras de accesibilidad: role="dialog", botones type="button" y enlace para abrir la imagen en nueva pestaña. (PR photo-modal-css)
+- Galería macro ahora siempre define data-images para todas las publicaciones y trending incluye botón "Volver al Feed" (PR feed-gallery-data-images).
