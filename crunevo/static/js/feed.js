@@ -807,7 +807,9 @@ function openImageModal(src, index, postId) {
   currentImageIndex = index;
   currentPostId = postId;
   const modalImage = document.getElementById('modalImage');
+  const modalLink = document.getElementById('modalImageLink');
   modalImage.src = src;
+  if (modalLink) modalLink.href = src;
   modalImage.alt = `Imagen ${index + 1} de la publicación`;
   const modal = document.getElementById('imageModal');
   modal.classList.remove('hidden');
@@ -844,6 +846,8 @@ function closeImageModal() {
 function nextImage() {
   currentImageIndex = (currentImageIndex + 1) % imageList.length;
   document.getElementById('modalImage').src = imageList[currentImageIndex];
+  const link = document.getElementById('modalImageLink');
+  if (link) link.href = imageList[currentImageIndex];
   updateModalCounter();
   if (currentPostId) {
     window.history.replaceState({ photo: true }, '', `/feed/post/${currentPostId}/photo/${currentImageIndex + 1}`);
@@ -853,6 +857,8 @@ function nextImage() {
 function prevImage() {
   currentImageIndex = (currentImageIndex - 1 + imageList.length) % imageList.length;
   document.getElementById('modalImage').src = imageList[currentImageIndex];
+  const link = document.getElementById('modalImageLink');
+  if (link) link.href = imageList[currentImageIndex];
   updateModalCounter();
   if (currentPostId) {
     window.history.replaceState({ photo: true }, '', `/feed/post/${currentPostId}/photo/${currentImageIndex + 1}`);
