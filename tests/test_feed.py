@@ -1,5 +1,5 @@
 from flask import url_for
-from crunevo.models import FeedItem, Post
+from crunevo.models import FeedItem, Post, SavedPost
 from crunevo.utils.feed import create_feed_item_for_all
 from crunevo.cache import feed_cache
 from crunevo.utils.achievements import unlock_achievement
@@ -172,3 +172,20 @@ def test_eliminar_post_forbidden(client, db_session, test_user, another_user):
     resp = client.post(f"/feed/post/eliminar/{post.id}")
     assert resp.status_code == 403
     assert Post.query.get(post.id) is not None
+
+
+def test_eliminar_post_with_saved_posts(client, db_session, test_user, another_user):
+    post = Post(content="del2", author=test_user)
+    db_session.add(post)
+    db_session.commit()
+    create_feed_item_for_all("post", post.id)
+
+    saved = SavedPost(user_id=another_user.id, post_id=post.id)
+    db_session.add(saved)
+    db_session.commit()
+
+    login(client, test_user.username, "secret")
+    resp = client.post(f"/feed/post/eliminar/{post.id}")
+    assert resp.status_code == 302
+    assert Post.query.get(post.id) is None
+    assert SavedPost.query.filter_by(post_id=post.id).count() == 0

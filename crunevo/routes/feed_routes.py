@@ -603,6 +603,12 @@ def eliminar_post(post_id):
     feed_items = FeedItem.query.filter_by(item_type="post", ref_id=post.id).all()
     owner_ids = [fi.owner_id for fi in feed_items]
     FeedItem.query.filter_by(item_type="post", ref_id=post.id).delete()
+    try:
+        from crunevo.models import SavedPost
+
+        SavedPost.query.filter_by(post_id=post.id).delete()
+    except Exception:
+        pass
     db.session.delete(post)
     db.session.commit()
     for uid in owner_ids:

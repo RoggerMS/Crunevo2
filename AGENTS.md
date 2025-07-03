@@ -536,3 +536,4 @@
 - Fixed edit and delete actions on feed posts with modal form and fetch logic (PR feed-edit-delete-fix).
 - Resolved feed.js syntax error and exposed post action functions to window (hotfix feed-js-buttons).
 - /health endpoint now returns JSON {"status": "ok"}; updated test accordingly (PR health-json-endpoint).
+- Fixed deleting posts with saved records; removal now deletes SavedPost entries to prevent IntegrityError (PR delete-savedpost-fix).
