@@ -2,9 +2,9 @@
 {% import 'components/csrf.html' as csrf %}
 {% import 'components/reactions.html' as react %}
 {% import 'components/image_gallery.html' as gallery %}
-{% if og_image %}
-{% block og_image %}{{ og_image }}{% endblock %}
-{% endif %}
+{% block og_title %}{{ og_title or 'Publicación de ' ~ (post.author.username if post.author else 'usuario') }}{% endblock %}
+{% block og_description %}{{ og_description or (post.content|striptags)|truncate(100) }}{% endblock %}
+{% if og_image %}{% block og_image %}{{ og_image }}{% endblock %}{% endif %}
 {% block content %}
 <div class="card mb-4 shadow-sm border-0 rounded-4">
   <div class="card-body p-4">
