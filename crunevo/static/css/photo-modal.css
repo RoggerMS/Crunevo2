@@ -8,7 +8,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #0d0d0d;
+  background-color: rgba(0, 0, 0, 0.92);
   backdrop-filter: blur(4px);
   z-index: 1050;
 }
@@ -51,13 +51,14 @@
   overflow-y: auto;
   max-height: 30vh;
   width: 100%;
-  max-width: 380px;
+  max-width: 400px;
 }
 
 .zoom-controls {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   gap: 0.5rem;
 }
@@ -84,7 +85,7 @@
 }
 
 .image-modal .close,
-.modal-image-container .modal-nav {
+.image-modal .modal-nav {
   position: absolute;
   color: #fff;
   font-size: 2rem;
@@ -103,25 +104,27 @@
 .image-modal .close {
   top: 10px;
   right: 20px;
+}
+
 .image-modal .modal-counter {
   position: absolute;
   top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 70px;
   color: #fff;
 }
 
-.modal-image-container .modal-nav {
+
+.image-modal .modal-nav.prev {
+  left: 40px;
   top: 50%;
   transform: translateY(-50%);
 }
 
-.modal-image-container .modal-nav.prev {
-  left: 16px;
-}
 
-.modal-image-container .modal-nav.next {
-  right: 16px;
+.image-modal .modal-nav.next {
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 body.photo-modal-open {
@@ -139,7 +142,7 @@ body.photo-modal-open {
   }
 
   .modal-details {
-    flex: 0 0 380px;
+    flex: 0 0 400px;
     max-height: 100%;
   }
 }

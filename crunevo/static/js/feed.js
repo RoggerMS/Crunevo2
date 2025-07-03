@@ -916,11 +916,11 @@ window.reportPost = reportPost;
 window.copyPostLink = copyPostLink;
 
 const editPostForm = document.getElementById('editPostForm');
-  if (editPostForm) {
-    editPostForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const form = e.currentTarget;
-      const postId = form.dataset.postId;
+if (editPostForm) {
+  editPostForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const postId = form.dataset.postId;
     const content = form.querySelector('textarea[name="content"]').value.trim();
 
     const formData = new FormData();
@@ -946,31 +946,5 @@ const editPostForm = document.getElementById('editPostForm');
     } catch (error) {
       feedManager.showToast('Error de conexión', 'error');
     }
-    });
-  }
-
-// Keyboard navigation and wheel zoom for photo modal
-document.addEventListener('keydown', (e) => {
-  if (!document.body.classList.contains('photo-modal-open')) return;
-  if (e.key === 'Escape') {
-    closeImageModal();
-  } else if (e.key === 'ArrowRight') {
-    nextImage();
-  } else if (e.key === 'ArrowLeft') {
-    prevImage();
-  }
-});
-
-const modalImageContainer = document.querySelector('#imageModal .modal-image-container');
-if (modalImageContainer) {
-  modalImageContainer.addEventListener('wheel', (e) => {
-    if (!document.body.classList.contains('photo-modal-open')) return;
-    e.preventDefault();
-    if (e.deltaY < 0) {
-      currentScale += 0.1;
-    } else {
-      currentScale = Math.max(0.2, currentScale - 0.1);
-    }
-    applyZoom();
-  }, { passive: false });
+  });
 }
