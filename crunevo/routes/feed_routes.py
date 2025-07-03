@@ -290,8 +290,12 @@ def view_feed():
     )
     reward = streak_reward(streak.current_day) if streak else 0
 
+    ua = request.user_agent
+    is_mobile = ua.platform in ["android", "iphone"] or ua.browser == "mobile"
+    template = "feed/feed_mobile.html" if is_mobile else "feed/feed.html"
+
     return render_template(
-        "feed/index.html",
+        template,
         feed_items=feed_items,
         categoria=categoria,
         reaction_counts=reaction_map,

@@ -688,6 +688,13 @@ function initAuthPage() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  const isMobile = window.innerWidth < 768;
+  const wasMobile = localStorage.getItem('was_mobile') === 'true';
+  if (isMobile !== wasMobile) {
+    localStorage.setItem('was_mobile', isMobile.toString());
+    location.reload();
+    return;
+  }
   if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
     document.body.classList.add('no-anim');
   }

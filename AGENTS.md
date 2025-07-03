@@ -543,3 +543,4 @@
 - Se extrajo el CSS del visor de imágenes a `photo-modal.css`, se incluyó en `base.html` y se añadieron mejoras de accesibilidad: role="dialog", botones type="button" y enlace para abrir la imagen en nueva pestaña. (PR photo-modal-css)
 - Galería macro ahora siempre define data-images para todas las publicaciones y trending incluye botón "Volver al Feed" (PR feed-gallery-data-images).
 - Mejorado visor de imágenes con fondo oscuro, controles de zoom y flechas centradas. Tarjeta lateral ocupa 100% hasta 400px y botón para abrir imagen en nueva pestaña. (PR photo-modal-pro-style)
+- Separación de plantillas escritorio/móvil para el feed con detección de user-agent y script de recarga. (PR mobile-desktop-separation)
