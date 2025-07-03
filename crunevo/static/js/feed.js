@@ -718,14 +718,29 @@ function copyLink() {
 
 // Global functions for post actions
 function editPost(postId) {
-  feedManager.showToast('Función de edición en desarrollo', 'info');
+  const card = document.querySelector(`[data-post-id='${postId}']`);
+  const textarea = document.querySelector('#editPostForm textarea[name="content"]');
+  const form = document.getElementById('editPostForm');
+  if (!card || !textarea || !form) return;
+  const contentEl = card.querySelector('.post-content p');
+  textarea.value = contentEl ? contentEl.textContent.trim() : '';
+  form.dataset.postId = postId;
+  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editPostModal'));
+  modal.show();
 }
 
 function deletePost(postId) {
-  if (confirm('¿Estás seguro de que quieres eliminar esta publicación?')) {
-    // Implement delete functionality
-    feedManager.showToast('Publicación eliminada', 'success');
-  }
+  if (!confirm('¿Estás seguro de que quieres eliminar esta publicación?')) return;
+  feedManager.fetchWithCSRF(`/feed/post/eliminar/${postId}`, { method: 'POST' })
+    .then((resp) => {
+      if (resp.ok) {
+        document.querySelector(`[data-post-id='${postId}']`)?.remove();
+        feedManager.showToast('Publicación eliminada', 'success');
+      } else {
+        feedManager.showToast('Error al eliminar', 'error');
+      }
+    })
+    .catch(() => feedManager.showToast('Error de conexión', 'error'));
 }
 
 function reportPost(postId) {
@@ -818,3 +833,34 @@ window.openImageModal = openImageModal;
 window.closeImageModal = closeImageModal;
 window.nextImage = nextImage;
 window.prevImage = prevImage;
+
+const editPostForm = document.getElementById('editPostForm');
+if (editPostForm) {
+  editPostForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const postId = form.dataset.postId;
+    const content = form.querySelector('textarea[name="content"]').value.trim();
+
+    const formData = new FormData();
+    formData.append('content', content);
+    formData.append('csrf_token', feedManager.getCSRFToken());
+
+    try {
+      const resp = await feedManager.fetchWithCSRF(`/feed/post/editar/${postId}`, {
+        method: 'POST',
+        body: formData
+      });
+      if (resp.ok) {
+        const card = document.querySelector(`[data-post-id='${postId}']`);
+        card?.querySelector('.post-content p')?.textContent = content;
+        feedManager.showToast('Publicación actualizada', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('editPostModal')).hide();
+      } else {
+        feedManager.showToast('Error al editar publicación', 'error');
+      }
+    } catch (error) {
+      feedManager.showToast('Error de conexión', 'error');
+    }
+  });
+}
