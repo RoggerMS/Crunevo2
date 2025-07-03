@@ -537,3 +537,4 @@
 - Resolved feed.js syntax error and exposed post action functions to window (hotfix feed-js-buttons).
 - /health endpoint now returns JSON {"status": "ok"}; updated test accordingly (PR health-json-endpoint).
 - Fixed deleting posts with saved records; removal now deletes SavedPost entries to prevent IntegrityError (PR delete-savedpost-fix).
+- Implementado visor de imágenes con URL dinámica tipo Facebook y navegación en feed.js y base.html (PR photo-modal-dynamic).
