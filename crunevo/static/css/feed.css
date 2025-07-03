@@ -614,6 +614,14 @@ body[data-bs-theme="dark"] .comment-box {
 .modal-details {
   overflow-y: auto;
   max-height: 20vh;
+  background: #fff;
+  color: #000;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+[data-bs-theme="dark"] .modal-details {
+  background: #1e1e1e;
   color: #fff;
 }
 .image-modal .close,
@@ -623,6 +631,8 @@ body[data-bs-theme="dark"] .comment-box {
   font-size: 2rem;
   cursor: pointer;
   user-select: none;
+  background: none;
+  border: none;
 }
 .image-modal .close {
   top: 10px;
@@ -644,6 +654,10 @@ body[data-bs-theme="dark"] .comment-box {
   right: 20px;
   top: 50%;
   transform: translateY(-50%);
+}
+
+body.photo-modal-open main {
+  display: none;
 }
 
 /* Feed container full width */

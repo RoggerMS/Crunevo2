@@ -174,7 +174,7 @@
 
     <!-- Image Modal -->
     <div id="imageModal" class="image-modal hidden" onclick="outsideImageClick(event)">
-      <span class="close" onclick="closeImageModal()">&times;</span>
+      <button class="close" aria-label="Cerrar" onclick="closeImageModal()">✖</button>
       <div class="modal-body-wrapper">
         <div class="modal-image-container">
           <img class="modal-content" id="modalImage" alt="Imagen">
@@ -182,8 +182,8 @@
         <div id="imageModalInfo" class="modal-details"></div>
       </div>
       <div class="modal-counter" id="modalCounter"></div>
-      <div class="modal-nav prev" onclick="prevImage()">&larr;</div>
-      <div class="modal-nav next" onclick="nextImage()">&rarr;</div>
+      <button class="modal-nav prev" aria-label="Imagen anterior" onclick="prevImage()">←</button>
+      <button class="modal-nav next" aria-label="Siguiente imagen" onclick="nextImage()">→</button>
     </div>
 
     <!-- Bootstrap JS -->

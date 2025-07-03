@@ -360,6 +360,31 @@ def view_post(post_id: int):
     )
 
 
+@feed_bp.route("/post/<int:post_id>/photo/<int:index>", endpoint="view_post_photo")
+@activated_required
+def view_post_photo(post_id: int, index: int):
+    """Display a single image from a post."""
+    post = Post.query.get_or_404(post_id)
+    counts = PostReaction.count_for_post(post.id)
+    my_reaction = (
+        PostReaction.query.with_entities(PostReaction.reaction_type)
+        .filter_by(user_id=current_user.id, post_id=post.id)
+        .scalar()
+    )
+    image_url = None
+    if post.images and 1 <= index <= len(post.images):
+        image_url = post.images[index - 1].url
+    elif post.file_url:
+        image_url = post.file_url
+    return render_template(
+        "feed/post_detail.html",
+        post=post,
+        reaction_counts=counts,
+        user_reaction=my_reaction,
+        og_image=image_url,
+    )
+
+
 @feed_bp.route("/user/<int:user_id>/posts")
 @activated_required
 def user_posts(user_id: int):
