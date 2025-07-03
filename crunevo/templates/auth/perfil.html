@@ -101,23 +101,29 @@
       <div class="card border-0 shadow-sm mb-4">
         <div class="card-body p-0">
           <nav class="nav nav-pills nav-fill">
-            <a class="nav-link active" data-bs-toggle="pill" href="#overview-tab">
+            <a class="nav-link {% if not tab %}active{% endif %}"
+               href="{{ url_for('auth.perfil') }}">
               <i class="bi bi-house"></i> Resumen
             </a>
-            <a class="nav-link" data-bs-toggle="pill" href="#notes-tab">
+            <a class="nav-link {% if tab == 'apuntes' %}active{% endif %}"
+               href="{{ url_for('auth.perfil', tab='apuntes') }}">
               <i class="bi bi-journal-text"></i> Apuntes
             </a>
-            <a class="nav-link" data-bs-toggle="pill" href="#clubs-tab">
+            <a class="nav-link {% if tab == 'clubes' %}active{% endif %}"
+               href="{{ url_for('auth.perfil', tab='clubes') }}">
               <i class="bi bi-people"></i> Clubes
             </a>
-            <a class="nav-link" data-bs-toggle="pill" href="#missions-tab">
+            <a class="nav-link {% if tab == 'misiones' %}active{% endif %}"
+               href="{{ url_for('auth.perfil', tab='misiones') }}">
               <i class="bi bi-trophy"></i> Misiones
             </a>
-            <a class="nav-link" data-bs-toggle="pill" href="#achievements-tab">
+            <a class="nav-link {% if tab == 'logros' %}active{% endif %}"
+               href="{{ url_for('auth.perfil', tab='logros') }}">
               <i class="bi bi-award"></i> Logros
             </a>
             {% if is_own_profile %}
-            <a class="nav-link" data-bs-toggle="pill" href="#referrals-tab">
+            <a class="nav-link {% if tab == 'referidos' %}active{% endif %}"
+               href="{{ url_for('auth.perfil', tab='referidos') }}">
               <i class="bi bi-person-plus"></i> Referidos
             </a>
             {% endif %}
@@ -128,7 +134,7 @@
       <!-- Tab Content -->
       <div class="tab-content">
         <!-- Overview Tab -->
-        <div class="tab-pane fade show active" id="overview-tab">
+        <div class="tab-pane fade {% if not tab %}show active{% endif %}" id="overview-tab">
           <!-- Recent Activity -->
           <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-4">
@@ -223,7 +229,7 @@
         </div>
 
         <!-- Notes Tab -->
-        <div class="tab-pane fade" id="notes-tab">
+        <div class="tab-pane fade {% if tab == 'apuntes' %}show active{% endif %}" id="notes-tab">
           {% if user.notes %}
           <div class="row g-3">
             {% for note in user.notes[:12] %}
@@ -255,7 +261,7 @@
         </div>
 
         <!-- Clubs Tab -->
-        <div class="tab-pane fade" id="clubs-tab">
+        <div class="tab-pane fade {% if tab == 'clubes' %}show active{% endif %}" id="clubs-tab">
           {% if user_clubs %}
           <div class="row g-3">
             {% for club in user_clubs %}
@@ -297,12 +303,12 @@
         </div>
 
         <!-- Missions Tab -->
-        <div class="tab-pane fade" id="missions-tab">
+        <div class="tab-pane fade {% if tab == 'misiones' %}show active{% endif %}" id="missions-tab">
           {% include 'auth/missions_tab.html' %}
         </div>
 
         <!-- Achievements Tab -->
-        <div class="tab-pane fade" id="achievements-tab">
+        <div class="tab-pane fade {% if tab == 'logros' %}show active{% endif %}" id="achievements-tab">
           <div class="row g-3">
             {% for achievement in user_achievements %}
             <div class="col-md-4">
@@ -338,7 +344,7 @@
 
         <!-- Referrals Tab -->
         {% if is_own_profile %}
-        <div class="tab-pane fade" id="referrals-tab">
+        <div class="tab-pane fade {% if tab == 'referidos' %}show active{% endif %}" id="referrals-tab">
           {% include 'auth/referrals_tab.html' %}
         </div>
         {% endif %}
