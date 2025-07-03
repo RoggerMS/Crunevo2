@@ -170,9 +170,15 @@
     <div class="col-lg-9 col-12">
       <div class="px-3 px-lg-4">
         <!-- Hero Section -->
-        <div class="trending-hero">
+        <div class="trending-hero mb-3">
           <h1>🔥 Trending</h1>
           <p>Lo más popular e impactante de la comunidad educativa</p>
+        </div>
+
+        <div class="mb-4 text-end">
+          <a href="{{ url_for('feed.view_feed') }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-arrow-left"></i> Volver al Feed
+          </a>
         </div>
 
         <!-- Filters -->
