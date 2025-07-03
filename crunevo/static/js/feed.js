@@ -806,9 +806,21 @@ function openImageModal(src, index, postId) {
   }
   currentImageIndex = index;
   currentPostId = postId;
-  document.getElementById('modalImage').src = src;
+  const modalImage = document.getElementById('modalImage');
+  modalImage.src = src;
+  modalImage.alt = `Imagen ${index + 1} de la publicación`;
   const modal = document.getElementById('imageModal');
   modal.classList.remove('hidden');
+  document.body.classList.add('photo-modal-open');
+  const prevBtn = modal.querySelector('.modal-nav.prev');
+  const nextBtn = modal.querySelector('.modal-nav.next');
+  if (imageList.length > 1) {
+    prevBtn.style.display = '';
+    nextBtn.style.display = '';
+  } else {
+    prevBtn.style.display = 'none';
+    nextBtn.style.display = 'none';
+  }
   updateModalCounter();
   fetch(`/feed/api/post/${postId}`)
     .then((r) => r.json())
@@ -824,6 +836,7 @@ function openImageModal(src, index, postId) {
 function closeImageModal() {
   document.getElementById('imageModal').classList.add('hidden');
   document.getElementById('imageModalInfo').innerHTML = '';
+  document.body.classList.remove('photo-modal-open');
   currentPostId = null;
   window.history.back();
 }

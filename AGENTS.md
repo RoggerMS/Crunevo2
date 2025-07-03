@@ -538,3 +538,4 @@
 - /health endpoint now returns JSON {"status": "ok"}; updated test accordingly (PR health-json-endpoint).
 - Fixed deleting posts with saved records; removal now deletes SavedPost entries to prevent IntegrityError (PR delete-savedpost-fix).
 - Implementado visor de imágenes con URL dinámica tipo Facebook y navegación en feed.js y base.html (PR photo-modal-dynamic).
+- Rediseñado modal de imágenes estilo Facebook con botones accesibles, tarjeta informativa y ruta compartible "/feed/post/<id>/photo/<n>" que establece OG:image (PR photo-modal-redesign).
