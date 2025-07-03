@@ -791,6 +791,29 @@ window.initFeedManager = initFeedManager;
 let currentImageIndex = 0;
 let imageList = [];
 let currentPostId = null;
+let currentScale = 1;
+
+function applyZoom() {
+  const img = document.getElementById('modalImage');
+  if (img) {
+    img.style.transform = `scale(${currentScale})`;
+  }
+}
+
+function zoomIn() {
+  currentScale += 0.2;
+  applyZoom();
+}
+
+function zoomOut() {
+  currentScale = Math.max(0.2, currentScale - 0.2);
+  applyZoom();
+}
+
+function resetZoom() {
+  currentScale = 1;
+  applyZoom();
+}
 
 function openImageModal(src, index, postId) {
   const container = document.querySelector(`[data-post-id='${postId}']`);
@@ -808,8 +831,12 @@ function openImageModal(src, index, postId) {
   currentPostId = postId;
   const modalImage = document.getElementById('modalImage');
   const modalLink = document.getElementById('modalImageLink');
+  const openTab = document.getElementById('openImageNewTab');
   modalImage.src = src;
   if (modalLink) modalLink.href = src;
+  if (openTab) openTab.href = src;
+  currentScale = 1;
+  applyZoom();
   modalImage.alt = `Imagen ${index + 1} de la publicación`;
   const modal = document.getElementById('imageModal');
   modal.classList.remove('hidden');
@@ -880,6 +907,9 @@ window.closeImageModal = closeImageModal;
 window.nextImage = nextImage;
 window.prevImage = prevImage;
 window.outsideImageClick = outsideImageClick;
+window.zoomIn = zoomIn;
+window.zoomOut = zoomOut;
+window.resetZoom = resetZoom;
 window.editPost = editPost;
 window.deletePost = deletePost;
 window.reportPost = reportPost;
