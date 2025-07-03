@@ -833,6 +833,10 @@ window.openImageModal = openImageModal;
 window.closeImageModal = closeImageModal;
 window.nextImage = nextImage;
 window.prevImage = prevImage;
+window.editPost = editPost;
+window.deletePost = deletePost;
+window.reportPost = reportPost;
+window.copyPostLink = copyPostLink;
 
 const editPostForm = document.getElementById('editPostForm');
 if (editPostForm) {
@@ -853,7 +857,10 @@ if (editPostForm) {
       });
       if (resp.ok) {
         const card = document.querySelector(`[data-post-id='${postId}']`);
-        card?.querySelector('.post-content p')?.textContent = content;
+        const contentEl = card ? card.querySelector('.post-content p') : null;
+        if (contentEl) {
+          contentEl.textContent = content;
+        }
         feedManager.showToast('Publicación actualizada', 'success');
         bootstrap.Modal.getInstance(document.getElementById('editPostModal')).hide();
       } else {
