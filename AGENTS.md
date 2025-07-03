@@ -532,3 +532,4 @@
 - Convertido generador a lista en image_gallery.html para mantener JSON del modal. (PR gallery-list-fix)
 
 - post_card.html now uses a local `author` variable and shows 'Usuario eliminado' when missing (PR post-card-orphan-fix).
+- Updated profile tabs to use query string navigation, ensuring missions and achievements load correctly (PR perfil-tabs-fix).
