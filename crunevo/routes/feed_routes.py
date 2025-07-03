@@ -352,11 +352,19 @@ def view_post(post_id: int):
         .filter_by(user_id=current_user.id, post_id=post.id)
         .scalar()
     )
+    og_title = (
+        f"Publicación de {post.author.username}"
+        if post.author
+        else "Publicación en Crunevo"
+    )
+    og_description = (post.content or "")[:100]
     return render_template(
         "feed/post_detail.html",
         post=post,
         reaction_counts=counts,
         user_reaction=my_reaction,
+        og_title=og_title,
+        og_description=og_description,
     )
 
 
@@ -376,12 +384,16 @@ def view_post_photo(post_id: int, index: int):
         image_url = post.images[index - 1].url
     elif post.file_url:
         image_url = post.file_url
+    og_title = f"Foto de {post.author.username}" if post.author else "Foto en Crunevo"
+    og_description = (post.content or "")[:100]
     return render_template(
         "feed/post_detail.html",
         post=post,
         reaction_counts=counts,
         user_reaction=my_reaction,
         og_image=image_url,
+        og_title=og_title,
+        og_description=og_description,
     )
 
 
