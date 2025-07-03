@@ -790,6 +790,7 @@ window.initFeedManager = initFeedManager;
 
 let currentImageIndex = 0;
 let imageList = [];
+let currentPostId = null;
 
 function openImageModal(src, index, postId) {
   const container = document.querySelector(`[data-post-id='${postId}']`);
@@ -804,35 +805,62 @@ function openImageModal(src, index, postId) {
     imageList = Array.from(document.querySelectorAll(selector)).map((img) => img.src);
   }
   currentImageIndex = index;
+  currentPostId = postId;
   document.getElementById('modalImage').src = src;
-  document.getElementById('imageModal').classList.remove('hidden');
+  const modal = document.getElementById('imageModal');
+  modal.classList.remove('hidden');
   updateModalCounter();
+  fetch(`/feed/api/post/${postId}`)
+    .then((r) => r.json())
+    .then((data) => {
+      document.getElementById('imageModalInfo').innerHTML = data.html;
+    })
+    .catch(() => {
+      document.getElementById('imageModalInfo').textContent = 'Error al cargar';
+    });
+  window.history.pushState({ photo: true }, '', `/feed/post/${postId}/photo/${index + 1}`);
 }
 
 function closeImageModal() {
   document.getElementById('imageModal').classList.add('hidden');
+  document.getElementById('imageModalInfo').innerHTML = '';
+  currentPostId = null;
+  window.history.back();
 }
 
 function nextImage() {
   currentImageIndex = (currentImageIndex + 1) % imageList.length;
   document.getElementById('modalImage').src = imageList[currentImageIndex];
   updateModalCounter();
+  if (currentPostId) {
+    window.history.replaceState({ photo: true }, '', `/feed/post/${currentPostId}/photo/${currentImageIndex + 1}`);
+  }
 }
 
 function prevImage() {
   currentImageIndex = (currentImageIndex - 1 + imageList.length) % imageList.length;
   document.getElementById('modalImage').src = imageList[currentImageIndex];
   updateModalCounter();
+  if (currentPostId) {
+    window.history.replaceState({ photo: true }, '', `/feed/post/${currentPostId}/photo/${currentImageIndex + 1}`);
+  }
 }
 
 function updateModalCounter() {
   document.getElementById('modalCounter').textContent = `${currentImageIndex + 1} / ${imageList.length}`;
 }
 
+function outsideImageClick(ev) {
+  if (ev.target.id === 'imageModal') {
+    closeImageModal();
+  }
+}
+
 window.openImageModal = openImageModal;
 window.closeImageModal = closeImageModal;
 window.nextImage = nextImage;
 window.prevImage = prevImage;
+window.outsideImageClick = outsideImageClick;
 window.editPost = editPost;
 window.deletePost = deletePost;
 window.reportPost = reportPost;

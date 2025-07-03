@@ -866,6 +866,29 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.HAS_STORE) {
     refreshCartCount();
   }
+
+  const photoMatch = window.location.pathname.match(/\/feed\/post\/(\d+)\/photo\/(\d+)/);
+  if (photoMatch && typeof openImageModal === 'function') {
+    const postId = photoMatch[1];
+    const idx = parseInt(photoMatch[2], 10) - 1;
+    const container = document.querySelector(`[data-post-id='${postId}']`);
+    if (container) {
+      const imgs = container.querySelectorAll('.image-thumb img, > img');
+      if (imgs[idx]) {
+        openImageModal(imgs[idx].src, idx, postId);
+      }
+    }
+  }
+
+  window.addEventListener('popstate', () => {
+    if (!window.location.pathname.match(/\/feed\/post\/\d+\/photo\/\d+/)) {
+      const modal = document.getElementById('imageModal');
+      if (modal && !modal.classList.contains('hidden')) {
+        modal.classList.add('hidden');
+        document.getElementById('imageModalInfo').innerHTML = '';
+      }
+    }
+  });
   document.querySelectorAll('.add-cart-btn').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
