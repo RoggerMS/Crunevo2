@@ -555,3 +555,4 @@
 - Added /api/user endpoint returning activation status and JS redirect in pending.html to avoid being stuck after verification (PR pending-verify-redirect).
 - Ensured email confirmation logs the user in after activation to refresh session (PR confirm-login-user).
 - Pending page now polls `/api/user` every few seconds and redirects once the account is activated to avoid getting stuck (PR pending-refresh-status).
+- Mejorado visor de imágenes del feed con fondo oscuro, zoom accesible y flechas internas al estilo de redes sociales (PR photo-modal-advanced).
