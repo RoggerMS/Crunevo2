@@ -194,6 +194,7 @@ def create_app():
     from .routes.errors import errors_bp
     from .routes.missions_routes import missions_bp
     from .routes.health_routes import health_bp
+    from .routes.maintenance_routes import maintenance_bp
     from .routes.club_routes import club_bp
     from .routes.forum_routes import forum_bp
     from .routes.event_routes import event_bp, list_events
@@ -208,6 +209,7 @@ def create_app():
     app.config["ADMIN_INSTANCE"] = is_admin
 
     app.register_blueprint(health_bp)
+    app.register_blueprint(maintenance_bp)
     app.register_blueprint(main_bp)
     app.logger.info("Running in ADMIN mode" if is_admin else "Running in PUBLIC mode")
 

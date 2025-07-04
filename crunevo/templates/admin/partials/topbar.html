@@ -1,6 +1,13 @@
+{% from "components/csrf.html" import csrf_field %}
 <header class="d-flex justify-content-between align-items-center py-3 mb-4 border-bottom">
   <h1 class="h4 m-0">CRUNEVO Admin</h1>
   <div>
+    <form method="post" action="{{ url_for('admin.toggle_maintenance') }}" class="d-inline">
+      {{ csrf_field() }}
+      <button class="btn btn-sm btn-warning me-2" type="submit">
+        {% if current_app.config.MAINTENANCE_MODE %}Desactivar{% else %}Activar{% endif %} mantenimiento
+      </button>
+    </form>
     <button class="btn btn-sm btn-outline-primary me-2 admin-theme-toggle" data-theme-toggle data-bs-toggle="tooltip" title="Modo claro / oscuro">
       <i class="bi"></i>
     </button>
