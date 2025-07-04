@@ -1,4 +1,5 @@
 import os
+import logging
 from dotenv import load_dotenv
 import cloudinary
 
@@ -14,7 +15,7 @@ class Config:
         "postgres://", "postgresql://"
     )
     if DEBUG:
-        print("DB:", SQLALCHEMY_DATABASE_URI)
+        logging.getLogger(__name__).debug("DB: %s", SQLALCHEMY_DATABASE_URI)
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "static/uploads")
