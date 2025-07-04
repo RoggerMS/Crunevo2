@@ -56,6 +56,8 @@
                     <i>Añade una descripción sobre ti...</i>
                     <button class="btn btn-sm btn-outline-primary ms-2">Editar</button>
                   </p>
+                  {% else %}
+                  <p class="text-muted mb-2"><i>Este usuario aún no ha escrito su biografía.</i></p>
                   {% endif %}
                 </div>
               </div>
@@ -91,6 +93,8 @@
               {% elif is_own_profile %}
                 <i>Añade una descripción sobre ti...</i>
                 <button class="btn btn-sm btn-outline-primary ms-2">Editar</button>
+              {% else %}
+                <i>Este usuario aún no ha escrito su biografía.</i>
               {% endif %}
             </p>
           </div>
