@@ -100,3 +100,10 @@ def test_change_email_updates_and_resends(client, db_session):
         assert user.email == "newchg@example.com"
         assert not user.activated
         assert len(outbox) == 1
+
+
+def test_pending_redirects_when_active(client, test_user):
+    login(client, test_user.username, "secret")
+    resp = client.get("/onboarding/pending")
+    assert resp.status_code == 302
+    assert resp.headers["Location"].endswith("/")
