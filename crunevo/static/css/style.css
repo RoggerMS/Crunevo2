@@ -537,6 +537,25 @@ html {
   }
 }
 
+.bounce-once {
+  animation: bounceOnce 0.6s;
+}
+
+@keyframes bounceOnce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+.achievement-card {
+  transition: all 0.3s ease;
+  border-radius: 16px;
+}
+
+.achievement-card:hover {
+  transform: scale(1.02);
+}
+
 /* Professional badge styles */
 .badge-modern {
   border-radius: 12px;
