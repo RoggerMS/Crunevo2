@@ -448,3 +448,16 @@ def delete_account():
 @auth_bp.route("/cuenta-eliminada")
 def account_deleted():
     return render_template("auth/account_deleted.html")
+
+
+@auth_bp.route("/api/user")
+@login_required
+def api_user():
+    """Return basic data for the currently logged in user."""
+    return jsonify(
+        {
+            "activated": current_user.activated,
+            "username": current_user.username,
+            "verification_level": current_user.verification_level,
+        }
+    )

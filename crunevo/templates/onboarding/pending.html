@@ -20,4 +20,9 @@
     </div>
   </div>
 </div>
+{% if current_user.activated %}
+  <script>
+    window.location.href = "{{ url_for('feed.feed_home') }}";
+  </script>
+{% endif %}
 {% endblock %}

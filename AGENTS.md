@@ -552,3 +552,4 @@
 - Updated onboarding confirm page with modern card, email change and AJAX resend endpoint; added `/auth/resend-confirmation` route (PR confirm-resend-change).
 - Onboarding now redirects to feed after email verification, profile completion is optional with default bio text when empty (PR optional-onboarding-fix).
 - Onboarding finish page updated with modern card, dynamic avatar preview and bio counter (PR onboarding-finish-refresh)
+- Added /api/user endpoint returning activation status and JS redirect in pending.html to avoid being stuck after verification (PR pending-verify-redirect).
