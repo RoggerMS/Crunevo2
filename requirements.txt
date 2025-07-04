@@ -35,3 +35,4 @@ reportlab==4.4.2
 qrcode[pil]
 openai>=1.0.0
 eventlet==0.35.2
+pyotp==2.9.0

@@ -569,3 +569,4 @@
 
 - Config class now logs DB URI with logging.getLogger when DEBUG is enabled (PR config-debug-log)
  
+- Added TwoFactorToken model with 2FA login flow and backup codes. (PR twofactor-auth)
