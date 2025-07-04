@@ -4,7 +4,16 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
-from .extensions import db, login_manager, migrate, mail, csrf, limiter, talisman
+from .extensions import (
+    db,
+    login_manager,
+    migrate,
+    mail,
+    csrf,
+    limiter,
+    talisman,
+    socketio,
+)
 from flask_wtf.csrf import CSRFError
 
 DEFAULT_CSP = {
@@ -138,6 +147,7 @@ def create_app():
     login_manager.login_view = "auth.login"
 
     migrate.init_app(app, db)
+    socketio.init_app(app)
 
     testing_env = os.environ.get("PYTEST_CURRENT_TEST") is not None
 
@@ -303,6 +313,9 @@ def create_app():
             app.register_blueprint(admin_bp)
             app.register_blueprint(admin_email_bp)
         app.register_blueprint(admin_blocker_bp)
+
+    # Initialize socket namespaces
+    import crunevo.routes.socket_routes  # noqa: F401
 
     @app.errorhandler(CSRFError)
     def handle_csrf_error(e):
