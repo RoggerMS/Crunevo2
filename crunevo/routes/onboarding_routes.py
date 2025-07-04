@@ -148,10 +148,8 @@ def confirm(token):
     db.session.commit()
     record_auth_event(record.user, "confirm_email")
     login_user(record.user)
-    flash(
-        "¡Correo verificado! Puedes personalizar tu perfil o ir directamente al feed.",
-        "success",
-    )
+
+    flash("¡Correo verificado! Bienvenido a CRUNEVO", "success")
     return redirect(url_for("feed.feed_home"))
 
 
