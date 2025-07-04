@@ -175,6 +175,10 @@
       </div>
       {% endif %}
 
+    {% if request.endpoint not in ['auth.login', 'onboarding.register'] %}
+    {% include 'components/shortcut_help.html' %}
+    {% endif %}
+
     <!-- Image Modal -->
     <div id="imageModal" class="image-modal hidden" role="dialog" aria-modal="true" onclick="outsideImageClick(event)" tabindex="-1">
       <button type="button" class="close" aria-label="Cerrar" onclick="closeImageModal()">✖</button>
@@ -238,6 +242,15 @@
         .floating-crunebot {
             display: none !important;
         }
+        .shortcut-help {
+            display: none !important;
+        }
+    }
+    .shortcut-help {
+        position: fixed;
+        bottom: 30px;
+        right: 100px;
+        z-index: 1000;
     }
     </style>
 
@@ -254,6 +267,9 @@
         hasStore: {{ 'true' if 'store.cart_count_api' in url_for.__globals__.get('current_app', {}).view_functions else 'false' }},
         version: '2.0.0',
         soundEnabled: localStorage.getItem('notifSound') !== 'off'
+      };
+      window.SHORTCUTS = {
+        home: {{ url_for('feed.view_feed')|tojson if 'feed.view_feed' in url_for.__globals__.get('current_app', {}).view_functions else '/'|tojson }}
       };
     </script>
 
