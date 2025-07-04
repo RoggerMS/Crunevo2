@@ -558,4 +558,5 @@
 - Mejorado visor de imágenes del feed con fondo oscuro, zoom accesible y flechas internas al estilo de redes sociales (PR photo-modal-advanced).
 - Added bounce/fade animations for mission status changes and achievement cards with unified DOMContentLoaded handler (PR mission-achievement-animations).
 - Added weather widget on user dashboard fetching data from OpenWeather API with caching via requests. (PR weather-dashboard-widget)
+=======
 - Añadido sonido opcional para nuevas notificaciones con control en configuración (PR sound-notifications).
