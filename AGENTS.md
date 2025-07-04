@@ -548,3 +548,4 @@
 - Updated service worker caching: removed '/feed', excluded JS from dynamic cache and bumped version to crunevo-v2 (PR pwa-cache-update).
 - Pending email confirmation page redesigned with gradient background, modern card and bouncing envelope icon (PR pending-ui-refresh).
 - Fixed duplicate isMobile constant in main.js that prevented feed buttons from working (PR feed-buttons-bugfix).
+- Implemented route `onboarding.change_email` with new template and updated pending page with disabled resend button (PR pending-change-email-route).
