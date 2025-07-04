@@ -11,8 +11,11 @@ class OnlineNamespace(Namespace):
         connected_sessions.add(request.sid)
         emit("count", {"count": len(connected_sessions)}, broadcast=True)
 
-    def on_disconnect(self):
-        connected_sessions.discard(request.sid)
+    def on_disconnect(self, sid=None, *args):
+        # Flask-SocketIO may pass the session id and a reason argument when the
+        # client disconnects. Accept optional parameters to avoid TypeError.
+        session_id = sid or request.sid
+        connected_sessions.discard(session_id)
         emit("count", {"count": len(connected_sessions)}, broadcast=True)
 
 
