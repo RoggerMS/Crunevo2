@@ -1,38 +1,73 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
 {% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-      <div class="card shadow">
-        <div class="card-body p-4">
-          <h2 class="text-center mb-4">👤 Opcional: personaliza tu perfil</h2>
-          <p class="text-muted text-center">Puedes hacerlo más tarde desde tu perfil público.</p>
-          <form method="post" enctype="multipart/form-data">
-            {{ csrf.csrf_field() }}
-            {% if current_user.username == current_user.email %}
+<div class="tw-min-h-screen tw-flex tw-items-center tw-justify-center tw-bg-gradient-to-b tw-from-indigo-50 tw-to-purple-100 dark:tw-from-gray-900 dark:tw-to-gray-800 tw-px-4 py-5">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow-lg rounded-4">
+      <div class="card-body p-5 text-center">
+        <h2 class="mb-3">🎨 Personaliza tu perfil</h2>
+        <p class="text-muted">Hazlo más tuyo o continúa al feed sin problema.</p>
+        <form method="post" enctype="multipart/form-data">
+          {{ csrf.csrf_field() }}
+
+          {% if current_user.username == current_user.email %}
+          <div class="mb-4 text-start">
+            <label class="form-label fw-semibold" for="aliasInput">Nombre para mostrar</label>
+            <input type="text" class="form-control" id="aliasInput" name="alias" placeholder="ej. ProfeRogger" required>
+          </div>
+          {% endif %}
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Foto de perfil</label>
             <div class="mb-3">
-              <label for="aliasInput" class="form-label">Nombre para mostrar</label>
-              <input type="text" class="form-control" id="aliasInput" name="alias" placeholder="ej. ProfeRogger">
+              <img id="avatarPreview" src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle shadow" width="96" height="96">
             </div>
-            {% endif %}
-            <div class="mb-3">
-              <label class="form-label">Foto de perfil</label>
-              <input class="form-control mb-2" type="file" id="avatarFileInput" name="avatar_file" accept="image/*">
-              <span class="form-text">o pega un enlace de imagen:</span>
-              <input class="form-control" type="url" id="avatarUrlInput" name="avatar_url" placeholder="https://...">
+            <input class="form-control mb-2" type="file" id="avatarFileInput" name="avatar_file" accept="image/*">
+            <small class="form-text text-muted">o pega un enlace:</small>
+            <input class="form-control" type="url" id="avatarUrlInput" name="avatar_url" placeholder="https://...">
+          </div>
+
+          <div class="mb-4 text-start">
+            <label class="form-label fw-semibold" for="bioInput">Biografía</label>
+            <textarea class="form-control" id="bioInput" name="bio" rows="3" maxlength="300" placeholder="Cuéntanos algo interesante sobre ti..."></textarea>
+            <div class="d-flex justify-content-between align-items-center mt-1">
+              <small class="text-muted">Una buena biografía ayuda a otros a conocerte</small>
+              <small id="bioCounter" class="text-muted">0/300</small>
             </div>
-            <img loading="lazy" id="avatarPreview" src="#" alt="Preview" class="tw-hidden mb-2 rounded-circle" width="96" height="96">
-            <div class="mb-3">
-              <label for="bioInput" class="form-label">Biografía</label>
-              <textarea class="form-control" id="bioInput" name="bio" rows="3" placeholder="Cuéntanos sobre ti"></textarea>
-            </div>
-            <button class="btn btn-primary w-100 mt-3" type="submit">Guardar mi perfil</button>
-          </form>
-          <a class="btn btn-secondary w-100 mt-3" href="{{ url_for('feed.feed_home') }}">Ir al feed</a>
-        </div>
+          </div>
+
+          <button class="btn btn-primary w-100 mt-3" type="submit">Guardar mi perfil</button>
+        </form>
+
+        <hr class="my-4">
+
+        <a class="btn btn-outline-secondary w-100" href="{{ url_for('feed.feed_home') }}">Saltar y continuar al Feed</a>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  const fileInput = document.getElementById('avatarFileInput');
+  const urlInput = document.getElementById('avatarUrlInput');
+  const preview = document.getElementById('avatarPreview');
+  const bioInput = document.getElementById('bioInput');
+  const bioCounter = document.getElementById('bioCounter');
+
+  fileInput?.addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = () => preview.src = reader.result;
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  });
+
+  urlInput?.addEventListener('input', () => {
+    preview.src = urlInput.value;
+  });
+
+  bioInput?.addEventListener('input', () => {
+    bioCounter.textContent = `${bioInput.value.length}/300`;
+  });
+</script>
 {% endblock %}
