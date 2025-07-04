@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-3">Autenticación de dos factores</h2>
+  {% if confirmed %}
+  <div class="alert alert-success">2FA activado</div>
+  <h5>Códigos de respaldo</h5>
+  <ul class="list-unstyled mb-3">
+    {% for c in codes %}
+    <li class="mb-1"><code>{{ c }}</code></li>
+    {% endfor %}
+  </ul>
+  <form method="post" action="{{ url_for('auth.regen_backup_codes') }}">
+    {{ csrf.csrf_field() }}
+    <button type="submit" class="btn btn-secondary">Generar nuevos códigos</button>
+  </form>
+  {% else %}
+  <p>Agrega esta clave en tu aplicación de autenticación:</p>
+  <pre class="bg-light p-2 rounded">{{ secret }}</pre>
+  <form method="post" class="mt-3">
+    {{ csrf.csrf_field() }}
+    <div class="mb-3">
+      <label for="code" class="form-label">Código de verificación</label>
+      <input id="code" name="code" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Confirmar</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

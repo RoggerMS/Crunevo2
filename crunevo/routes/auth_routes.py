@@ -7,6 +7,7 @@ from flask import (
     request,
     current_app,
     jsonify,
+    session,
 )
 from flask_login import login_user, logout_user, current_user, login_required
 from crunevo.utils.helpers import activated_required
@@ -18,12 +19,14 @@ import os
 import cloudinary.uploader
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db, csrf
-from crunevo.models import User, Note
+from crunevo.models import User, Note, TwoFactorToken
 from crunevo.utils import spend_credit, record_login, send_notification, add_credit
 from crunevo.constants import CreditReasons
 from crunevo.utils.login_streak import streak_reward
 from datetime import date, datetime, timedelta
 from crunevo.models import DeviceClaim
+import pyotp
+import secrets
 
 IS_ADMIN = os.environ.get("ADMIN_INSTANCE") == "1"
 
@@ -69,6 +72,10 @@ def login():
             if not user.activated:
                 login_user(user)
                 return redirect(url_for("onboarding.pending"))
+            if user.two_factor and user.two_factor.confirmed_at:
+                session["2fa_user_id"] = user.id
+                session["next"] = request.args.get("next")
+                return redirect(url_for("auth.verify_token"))
             login_user(user)
             record_login(user)
             if admin_mode:
@@ -83,6 +90,41 @@ def login():
     return render_template(template, error=error, wait=wait)
 
 
+@auth_bp.route("/login/verify", methods=["GET", "POST"])
+def verify_token():
+    user_id = session.get("2fa_user_id")
+    if not user_id:
+        return redirect(url_for("auth.login"))
+    user = User.query.get(user_id)
+    record = user.two_factor
+    if not record or not record.confirmed_at:
+        return redirect(url_for("auth.login"))
+    if request.method == "POST":
+        code = request.form.get("code")
+        totp = pyotp.TOTP(record.secret)
+        valid = totp.verify(code)
+        if not valid and record.backup_codes:
+            codes = record.backup_codes.split(",")
+            if code in codes:
+                codes.remove(code)
+                record.backup_codes = ",".join(codes)
+                valid = True
+        if valid:
+            login_user(user)
+            record_login(user)
+            session.pop("2fa_user_id", None)
+            next_page = session.pop("next", None)
+            admin_mode = current_app.config.get("ADMIN_INSTANCE")
+            if admin_mode:
+                return redirect(url_for("admin.dashboard"))
+            if not next_page or urlparse(next_page).netloc != "":
+                next_page = url_for("feed.feed_home")
+            db.session.commit()
+            return redirect(next_page)
+        flash("Código inválido", "danger")
+    return render_template("auth/two_factor_verify.html")
+
+
 @auth_bp.route("/logout")
 @activated_required
 def logout():
@@ -90,6 +132,56 @@ def logout():
     logout_user()
     record_auth_event(user, "logout")
     return redirect(url_for("auth.login"))
+
+
+def _generate_backup_codes(n=5):
+    return [secrets.token_hex(4) for _ in range(n)]
+
+
+@auth_bp.route("/2fa/setup", methods=["GET", "POST"])
+@login_required
+def setup_2fa():
+    record = TwoFactorToken.query.filter_by(user_id=current_user.id).first()
+    if request.method == "POST":
+        if not record:
+            return redirect(url_for("auth.setup_2fa"))
+        code = request.form.get("code")
+        totp = pyotp.TOTP(record.secret)
+        if totp.verify(code):
+            record.confirmed_at = datetime.utcnow()
+            record.backup_codes = ",".join(_generate_backup_codes())
+            db.session.commit()
+            flash("Autenticación de dos factores activada")
+            return redirect(url_for("auth.perfil"))
+        flash("Código inválido", "danger")
+    else:
+        if not record:
+            secret = pyotp.random_base32()
+            record = TwoFactorToken(user_id=current_user.id, secret=secret)
+            db.session.add(record)
+            db.session.commit()
+    qr_url = pyotp.totp.TOTP(record.secret).provisioning_uri(
+        name=current_user.email, issuer_name="Crunevo"
+    )
+    codes = record.backup_codes.split(",") if record.backup_codes else []
+    return render_template(
+        "auth/enable_2fa.html",
+        secret=record.secret,
+        qr_url=qr_url,
+        confirmed=bool(record.confirmed_at),
+        codes=codes,
+    )
+
+
+@auth_bp.route("/2fa/backup", methods=["POST"])
+@login_required
+def regen_backup_codes():
+    record = current_user.two_factor
+    if not record or not record.confirmed_at:
+        return redirect(url_for("auth.setup_2fa"))
+    record.backup_codes = ",".join(_generate_backup_codes())
+    db.session.commit()
+    return jsonify(codes=record.backup_codes.split(","))
 
 
 @auth_bp.route("/perfil", methods=["GET", "POST"])

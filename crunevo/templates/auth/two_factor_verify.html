@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+{% block content %}
+<div class="container py-5 max-w-md mx-auto">
+  <h2 class="mb-3">Ingresa tu código de autenticación</h2>
+  <form method="post" class="mt-3">
+    {{ csrf.csrf_field() }}
+    <div class="mb-3">
+      <label for="code" class="form-label">Código</label>
+      <input id="code" name="code" class="form-control" required autofocus>
+    </div>
+    <button type="submit" class="btn btn-primary">Verificar</button>
+  </form>
+</div>
+{% endblock %}
