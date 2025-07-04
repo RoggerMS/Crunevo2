@@ -7,6 +7,7 @@ from flask import (
     url_for,
     jsonify,
     abort,
+    current_app,
 )
 from flask_login import login_required, current_user
 from crunevo.extensions import db
@@ -332,6 +333,25 @@ def run_ranking():
     calculate_weekly_ranking()
     log_admin_action("Recalcul\u00f3 ranking semanal")
     flash("Ranking recalculado", "success")
+    return redirect(url_for("admin.dashboard"))
+
+
+@admin_bp.route("/toggle-maintenance", methods=["POST"])
+def toggle_maintenance():
+    """Toggle maintenance mode."""
+    current = current_app.config.get("MAINTENANCE_MODE", False)
+    current_app.config["MAINTENANCE_MODE"] = not current
+    log_admin_action(
+        "Activ\u00f3 mantenimiento" if not current else "Desactiv\u00f3 mantenimiento"
+    )
+    flash(
+        (
+            "Modo mantenimiento activado"
+            if not current
+            else "Modo mantenimiento desactivado"
+        ),
+        "success",
+    )
     return redirect(url_for("admin.dashboard"))
 
 

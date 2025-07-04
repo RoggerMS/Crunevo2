@@ -105,3 +105,9 @@ class Config:
         "NOTE_CATEGORIES",
         "Matemática,Historia,Biología,Comunicación",
     ).split(",")
+
+    MAINTENANCE_MODE = os.getenv("MAINTENANCE_MODE", "0").lower() in (
+        "1",
+        "true",
+        "yes",
+    )

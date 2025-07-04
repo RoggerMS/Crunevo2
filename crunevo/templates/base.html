@@ -58,6 +58,11 @@
     {% block head_extra %}{% endblock %}
 </head>
 <body class="d-flex flex-column min-vh-100">
+    {% if current_app.config.MAINTENANCE_MODE and not request.path.startswith('/admin') %}
+    <div class="alert alert-warning text-center m-0" role="alert">
+        El sitio se encuentra en mantenimiento. Algunas funciones pueden no estar disponibles.
+    </div>
+    {% endif %}
     <!-- Navigation -->
     {% if not request.path.startswith('/admin')
           and request.endpoint not in ['auth.login', 'onboarding.register'] %}
