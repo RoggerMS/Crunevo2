@@ -37,6 +37,7 @@ class Config:
 
     RESEND_API_KEY = os.getenv("RESEND_API_KEY")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
     MAIL_PROVIDER = os.getenv("MAIL_PROVIDER", "smtp")
     USE_RESEND = MAIL_PROVIDER == "resend" or RESEND_API_KEY is not None
     MAIL_SUPPRESS_SEND = (

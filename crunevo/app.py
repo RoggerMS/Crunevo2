@@ -190,6 +190,7 @@ def create_app():
     from .routes.about_routes import about_bp
     from .routes.static_routes import static_bp
     from .routes.saved_routes import saved_bp
+    from .routes.dashboard_routes import dashboard_bp
     from .routes.settings_routes import settings_bp
     from .routes.main_routes import main_bp
 
@@ -295,6 +296,7 @@ def create_app():
         app.register_blueprint(about_bp)
         app.register_blueprint(static_bp)
         app.register_blueprint(saved_bp)
+        app.register_blueprint(dashboard_bp)
         app.register_blueprint(settings_bp)
         app.register_blueprint(errors_bp)
         if testing_env:
