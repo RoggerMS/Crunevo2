@@ -546,3 +546,4 @@
 - Separación de plantillas escritorio/móvil para el feed con detección de user-agent y script de recarga. (PR mobile-desktop-separation)
 - Added PWA manifest and service worker with offline caching; registered in base.html (PR pwa-support).
 - Updated service worker caching: removed '/feed', excluded JS from dynamic cache and bumped version to crunevo-v2 (PR pwa-cache-update).
+- Pending email confirmation page redesigned with gradient background, modern card and bouncing envelope icon (PR pending-ui-refresh).
