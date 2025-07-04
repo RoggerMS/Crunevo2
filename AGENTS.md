@@ -561,3 +561,4 @@
 - Added bounce/fade animations for mission status changes and achievement cards with unified DOMContentLoaded handler (PR mission-achievement-animations).
 - Added weather widget on user dashboard fetching data from OpenWeather API with caching via requests. (PR weather-dashboard-widget)
 - Añadido sonido opcional para nuevas notificaciones con control en configuración (PR sound-notifications).
+- Added keyboard shortcuts Shift+H (home) and Shift+N (new post) with a help dialog accessible from a question icon. (PR keyboard-shortcuts-help)

@@ -941,6 +941,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initMissionClaimButtons();
   highlightNewAchievements();
+  initKeyboardShortcuts();
 
   // Bootstrap collapse handles the mobile menu
 
@@ -1209,4 +1210,28 @@ function highlightNewAchievements() {
         const el = document.getElementById(`achievement-${a.code}`);
         if (el) el.classList.add('bounce-once', 'fade-in');
     });
+}
+
+function initKeyboardShortcuts() {
+  document.addEventListener('keydown', (e) => {
+    if (!e.shiftKey) return;
+    const target = e.target;
+    if (
+      target.tagName === 'INPUT' ||
+      target.tagName === 'TEXTAREA' ||
+      target.isContentEditable
+    ) {
+      return;
+    }
+    const key = e.key.toUpperCase();
+    if (key === 'H' && window.SHORTCUTS?.home) {
+      window.location.href = window.SHORTCUTS.home;
+    } else if (key === 'N') {
+      const modal = document.getElementById('crearPublicacionModal');
+      if (modal) {
+        e.preventDefault();
+        bootstrap.Modal.getOrCreateInstance(modal).show();
+      }
+    }
+  });
 }
