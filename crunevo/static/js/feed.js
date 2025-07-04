@@ -792,6 +792,30 @@ let currentImageIndex = 0;
 let imageList = [];
 let currentPostId = null;
 let currentScale = 1;
+let modalImageEl;
+
+function handleModalKeydown(e) {
+  if (e.key === 'Escape') {
+    closeImageModal();
+  } else if (e.key === 'ArrowRight') {
+    nextImage();
+  } else if (e.key === 'ArrowLeft') {
+    prevImage();
+  } else if (e.key === '+' || e.key === '=') {
+    zoomIn();
+  } else if (e.key === '-') {
+    zoomOut();
+  }
+}
+
+function handleWheel(e) {
+  e.preventDefault();
+  if (e.deltaY < 0) {
+    zoomIn();
+  } else {
+    zoomOut();
+  }
+}
 
 function applyZoom() {
   const img = document.getElementById('modalImage');
@@ -830,6 +854,7 @@ function openImageModal(src, index, postId) {
   currentImageIndex = index;
   currentPostId = postId;
   const modalImage = document.getElementById('modalImage');
+  modalImageEl = modalImage;
   const modalLink = document.getElementById('modalImageLink');
   const openTab = document.getElementById('openImageNewTab');
   modalImage.src = src;
@@ -841,6 +866,8 @@ function openImageModal(src, index, postId) {
   const modal = document.getElementById('imageModal');
   modal.classList.remove('hidden');
   document.body.classList.add('photo-modal-open');
+  document.addEventListener('keydown', handleModalKeydown);
+  modalImageEl.addEventListener('wheel', handleWheel, { passive: false });
   const prevBtn = modal.querySelector('.modal-nav.prev');
   const nextBtn = modal.querySelector('.modal-nav.next');
   if (imageList.length > 1) {
@@ -866,6 +893,10 @@ function closeImageModal() {
   document.getElementById('imageModal').classList.add('hidden');
   document.getElementById('imageModalInfo').innerHTML = '';
   document.body.classList.remove('photo-modal-open');
+  document.removeEventListener('keydown', handleModalKeydown);
+  if (modalImageEl) {
+    modalImageEl.removeEventListener('wheel', handleWheel);
+  }
   currentPostId = null;
   window.history.back();
 }

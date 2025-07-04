@@ -8,8 +8,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.92);
-  backdrop-filter: blur(4px);
+  background-color: rgba(13, 13, 13, 0.95);
+  backdrop-filter: blur(6px);
   z-index: 1050;
 }
 
@@ -36,6 +36,7 @@
 
 .modal-image-container img {
   max-width: 100%;
+  max-height: 90vh;
   height: auto;
   object-fit: contain;
   border-radius: 8px;
@@ -51,16 +52,16 @@
   overflow-y: auto;
   max-height: 30vh;
   width: 100%;
-  max-width: 400px;
+  max-width: 380px;
 }
 
 .zoom-controls {
   position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 10px;
+  right: 10px;
   display: flex;
   gap: 0.5rem;
+  z-index: 2;
 }
 
 .zoom-controls button {
@@ -114,21 +115,28 @@
 }
 
 
+
 .image-modal .modal-nav.prev {
-  left: 40px;
+  left: 10px;
   top: 50%;
   transform: translateY(-50%);
 }
 
 
 .image-modal .modal-nav.next {
-  right: 40px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
 }
 
 body.photo-modal-open {
   overflow: hidden;
+}
+
+@media (max-width: 767.98px) {
+  .image-modal .modal-nav {
+    display: none;
+  }
 }
 
 @media (min-width: 992px) {
@@ -142,7 +150,7 @@ body.photo-modal-open {
   }
 
   .modal-details {
-    flex: 0 0 400px;
+    flex: 0 0 380px;
     max-height: 100%;
   }
 }
