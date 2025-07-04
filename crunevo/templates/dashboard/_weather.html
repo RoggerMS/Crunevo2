@@ -1,0 +1,24 @@
+<div id="weatherWidget" class="tw-bg-white dark:tw-bg-gray-800 tw-rounded-lg tw-shadow p-4">
+  <div class="tw-flex tw-items-center">
+    <img id="weatherIcon" class="tw-w-10 tw-h-10 tw-me-2" alt="icon" />
+    <div>
+      <p id="weatherCity" class="tw-font-semibold"></p>
+      <p id="weatherTemp" class="tw-text-sm tw-text-gray-600 dark:tw-text-gray-300"></p>
+    </div>
+  </div>
+</div>
+<script>
+function loadWeather() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const { latitude, longitude } = pos.coords;
+    const resp = await fetch(`/dashboard/weather?lat=${latitude}&lon=${longitude}`);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    document.getElementById('weatherCity').textContent = data.city;
+    document.getElementById('weatherTemp').textContent = `${data.temp}°C - ${data.desc}`;
+    document.getElementById('weatherIcon').src = data.icon;
+  });
+}
+document.addEventListener('DOMContentLoaded', loadWeather);
+</script>

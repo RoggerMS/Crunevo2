@@ -62,6 +62,9 @@ def another_user(db_session):
 @pytest.fixture(autouse=True)
 def reset_caches():
     feed_cache._cache.clear()
+    from crunevo.cache import weather_cache
+
+    weather_cache._cache.clear()
     from crunevo import tasks
 
     tasks.task_queue = tasks._LocalQueue()
