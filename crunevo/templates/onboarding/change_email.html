@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+
+{% block content %}
+<div class="tw-min-h-screen tw-flex tw-items-center tw-justify-center tw-bg-gradient-to-b tw-from-indigo-50 tw-to-purple-100 dark:tw-from-gray-900 dark:tw-to-gray-800 tw-px-4">
+  <div class="tw-bg-white dark:tw-bg-gray-900 tw-rounded-2xl tw-shadow-lg tw-p-8 tw-max-w-md tw-w-full tw-text-center">
+    <div class="tw-text-4xl tw-mb-4 tw-text-indigo-600">✉️</div>
+    <h1 class="tw-text-2xl tw-font-semibold tw-mb-4">Cambiar dirección de correo</h1>
+    <form method="POST" class="tw-space-y-4">
+      {{ csrf.csrf_field() }}
+      <input type="email" name="email" placeholder="Nuevo correo" class="tw-w-full tw-p-3 tw-border tw-rounded-lg" required>
+      <button type="submit" class="tw-w-full tw-bg-indigo-600 tw-text-white tw-py-2 tw-rounded-lg hover:tw-bg-indigo-700">📤 Actualizar y reenviar</button>
+    </form>
+    <div class="tw-mt-4">
+      <a href="{{ url_for('onboarding.pending') }}" class="tw-text-sm tw-text-gray-500 hover:tw-underline">← Volver</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -208,3 +208,26 @@ def resend():
 
 
 csrf.exempt(resend)
+
+
+@bp.route("/change_email", methods=["GET", "POST"])
+@login_required
+def change_email():
+    if request.method == "POST":
+        new_email = request.form.get("email")
+        if not new_email or not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", new_email):
+            flash("Ingresa un correo válido", "danger")
+            return render_template("onboarding/change_email.html"), 400
+        if User.query.filter_by(email=new_email).first():
+            flash("Ese correo ya está registrado", "danger")
+            return render_template("onboarding/change_email.html"), 400
+        current_user.email = new_email
+        current_user.activated = False
+        db.session.commit()
+        send_confirmation_email(current_user)
+        flash(
+            "Tu dirección de correo ha sido actualizada y se ha reenviado la verificación.",
+            "success",
+        )
+        return redirect(url_for("onboarding.pending"))
+    return render_template("onboarding/change_email.html")

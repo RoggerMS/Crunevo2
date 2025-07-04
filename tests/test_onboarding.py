@@ -86,3 +86,17 @@ def test_generated_token_length_and_confirm(client):
     assert len(token.token) < 64
     client.get(f"/onboarding/confirm/{token.token}")
     assert user.activated
+
+
+def test_change_email_updates_and_resends(client, db_session):
+    user = User(username="chg", email="chg@example.com")
+    user.set_password("StrongPassw0rd!")
+    db_session.add(user)
+    db_session.commit()
+    login(client, user.username, "StrongPassw0rd!")
+    with mail.record_messages() as outbox:
+        client.post("/onboarding/change_email", data={"email": "newchg@example.com"})
+        db_session.refresh(user)
+        assert user.email == "newchg@example.com"
+        assert not user.activated
+        assert len(outbox) == 1

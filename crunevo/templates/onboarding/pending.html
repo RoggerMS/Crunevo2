@@ -2,18 +2,18 @@
 {% import 'components/csrf.html' as csrf %}
 {% block content %}
 <div class="tw-min-h-screen tw-flex tw-items-center tw-justify-center tw-bg-gradient-to-b tw-from-indigo-50 tw-to-purple-100 dark:tw-from-gray-900 dark:tw-to-gray-800 tw-px-4">
-  <div class="tw-bg-white dark:tw-bg-gray-900 tw-rounded-2xl tw-shadow-lg tw-p-8 tw-max-w-md tw-w-full tw-text-center">
-    <div class="tw-text-4xl tw-mb-4 tw-text-indigo-600 animate-bounce">📩</div>
-    <h1 class="tw-text-2xl tw-font-semibold tw-mb-2">¡Estás a un paso de entrar a CRUNEVO!</h1>
-    <p class="tw-text-gray-600 dark:tw-text-gray-300 tw-mb-6">Hemos enviado un correo de verificación a <strong>tu dirección registrada</strong>. Haz clic en el enlace para activar tu cuenta.</p>
+  <div class="tw-bg-white dark:tw-bg-gray-900 tw-rounded-2xl tw-shadow-2xl tw-p-8 tw-max-w-md tw-w-full tw-text-center tw-space-y-4">
+    <div class="tw-text-5xl tw-mb-2 tw-text-indigo-600 animate-bounce">📩</div>
+    <h1 class="tw-text-2xl tw-font-semibold">¡Estás a un paso de entrar a CRUNEVO!</h1>
+    <p class="tw-text-gray-600 dark:tw-text-gray-300">Hemos enviado un correo de verificación a <strong>tu dirección registrada</strong>. Haz clic en el enlace para activar tu cuenta.</p>
 
-    <form method="post" action="{{ url_for('onboarding.resend') }}" class="tw-mb-4">
+    <form method="post" action="{{ url_for('onboarding.resend') }}" class="tw-mb-2" onsubmit="this.querySelector('button').disabled=true;">
       {{ csrf.csrf_field() }}
       <button type="submit" class="tw-w-full tw-bg-indigo-600 tw-text-white tw-py-2 tw-rounded-lg hover:tw-bg-indigo-700 tw-transition">📧 Reenviar correo</button>
     </form>
 
-    <div class="tw-mt-4">
-      <a href="{{ url_for('onboarding.register') }}" class="tw-text-sm tw-text-blue-600 hover:tw-underline">✍️ Cambiar dirección de correo</a>
+    <div>
+      <a href="{{ url_for('onboarding.change_email') }}" class="tw-text-sm tw-text-blue-600 hover:tw-underline">✍️ Cambiar dirección de correo</a>
     </div>
     <div class="tw-mt-2">
       <a href="{{ url_for('feed.feed_home') }}" class="tw-text-sm tw-text-gray-500 hover:tw-underline">← Volver al inicio</a>
