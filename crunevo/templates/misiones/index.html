@@ -240,7 +240,7 @@
             <div class="row g-3">
               {% for achievement in achievements %}
               <div class="col-md-6">
-                <div class="card achievement-card border-0 shadow-sm">
+                <div class="card achievement-card border-0 shadow-sm" id="achievement-{{ achievement.code }}">
                   <div class="card-body p-4 text-center">
                     <div class="achievement-icon mb-3">
                       {% if achievement.unlocked %}
@@ -412,54 +412,5 @@
 }
 </style>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Claim mission functionality
-  document.querySelectorAll('.claim-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const missionId = this.dataset.missionId;
-      claimMission(missionId, this);
-    });
-  });
-});
 
-function claimMission(missionId, button) {
-  button.disabled = true;
-  button.innerHTML = '<i class="bi bi-hourglass"></i> Reclamando...';
-  
-  fetch(`/misiones/reclamar_mision/${missionId}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content
-    }
-  })
-  .then(response => {
-    if (response.ok) {
-      // Show celebration modal
-      const modal = new bootstrap.Modal(document.getElementById('missionClaimModal'));
-      modal.show();
-      
-      // Update button state
-      button.innerHTML = '<i class="bi bi-check-circle"></i> Completada';
-      button.className = 'btn btn-success btn-sm';
-      button.disabled = true;
-      
-      // Refresh page after modal closes
-      document.getElementById('missionClaimModal').addEventListener('hidden.bs.modal', function() {
-        location.reload();
-      });
-    } else {
-      button.disabled = false;
-      button.innerHTML = '<i class="bi bi-gift"></i> Reclamar';
-      alert('Error al reclamar la misión');
-    }
-  })
-  .catch(error => {
-    button.disabled = false;
-    button.innerHTML = '<i class="bi bi-gift"></i> Reclamar';
-    console.error('Error:', error);
-  });
-}
-</script>
 {% endblock %}
