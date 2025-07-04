@@ -1,0 +1,23 @@
+<div class="quick-notes d-none d-lg-block">
+  <button class="btn btn-secondary rounded-circle shadow-lg floating-btn" data-bs-toggle="modal" data-bs-target="#quickNotesModal" title="Notas rápidas">
+    <i class="bi bi-journal-text fs-5"></i>
+  </button>
+</div>
+
+<div class="modal fade" id="quickNotesModal" tabindex="-1" aria-labelledby="quickNotesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="quickNotesLabel">Notas rápidas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <textarea id="quickNotesTextarea" class="form-control" rows="5"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="quickNotesSaveBtn">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
