@@ -6,13 +6,16 @@
     <div class="col-md-8 col-lg-6">
       <div class="card shadow">
         <div class="card-body p-4">
-          <h2 class="text-center mb-4">👤 Completa tu perfil</h2>
+          <h2 class="text-center mb-4">👤 Opcional: personaliza tu perfil</h2>
+          <p class="text-muted text-center">Puedes hacerlo más tarde desde tu perfil público.</p>
           <form method="post" enctype="multipart/form-data">
             {{ csrf.csrf_field() }}
+            {% if current_user.username == current_user.email %}
             <div class="mb-3">
               <label for="aliasInput" class="form-label">Nombre para mostrar</label>
               <input type="text" class="form-control" id="aliasInput" name="alias" placeholder="ej. ProfeRogger">
             </div>
+            {% endif %}
             <div class="mb-3">
               <label class="form-label">Foto de perfil</label>
               <input class="form-control mb-2" type="file" id="avatarFileInput" name="avatar_file" accept="image/*">

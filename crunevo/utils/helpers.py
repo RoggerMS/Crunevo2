@@ -1,6 +1,6 @@
 from functools import wraps
 from datetime import datetime
-from flask import redirect, url_for
+from flask import redirect, url_for, flash
 from flask_login import current_user, login_required
 
 
@@ -31,9 +31,8 @@ def activated_required(f):
     @login_required
     def decorated_function(*args, **kwargs):
         if not current_user.activated:
+            flash("Primero debes confirmar tu correo.", "warning")
             return redirect(url_for("onboarding.pending"))
-        if current_user.username == current_user.email or not current_user.avatar_url:
-            return redirect(url_for("onboarding.finish"))
         return f(*args, **kwargs)
 
     return decorated_function

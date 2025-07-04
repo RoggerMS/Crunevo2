@@ -550,3 +550,4 @@
 - Fixed duplicate isMobile constant in main.js that prevented feed buttons from working (PR feed-buttons-bugfix).
 - Implemented route `onboarding.change_email` with new template and updated pending page with disabled resend button (PR pending-change-email-route).
 - Updated onboarding confirm page with modern card, email change and AJAX resend endpoint; added `/auth/resend-confirmation` route (PR confirm-resend-change).
+- Onboarding now redirects to feed after email verification, profile completion is optional with default bio text when empty (PR optional-onboarding-fix).

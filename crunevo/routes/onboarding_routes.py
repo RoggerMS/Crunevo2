@@ -148,7 +148,11 @@ def confirm(token):
     db.session.commit()
     record_auth_event(record.user, "confirm_email")
     login_user(record.user)
-    return redirect(url_for("onboarding.finish"))
+    flash(
+        "¡Correo verificado! Puedes personalizar tu perfil o ir directamente al feed.",
+        "success",
+    )
+    return redirect(url_for("feed.feed_home"))
 
 
 @bp.route("/finish", methods=["GET", "POST"])
