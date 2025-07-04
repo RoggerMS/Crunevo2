@@ -43,9 +43,9 @@ It usually means Fly.io detected an outdated manifest from a previous deployment
        handlers = ["http"]
        port = 8080
    ```
-4. **Verify the Dockerfile** uses Gunicorn:
+4. **Verify the Dockerfile** uses Gunicorn with the eventlet worker for WebSocket support:
    ```Dockerfile
-   CMD ["gunicorn", "-b", "0.0.0.0:8080", "crunevo.app:app"]
+   CMD ["gunicorn", "-k", "eventlet", "-b", "0.0.0.0:8080", "crunevo.app:app"]
    ```
    or, alternatively, the Flask development server (not recommended for production).
 5. **Deploy the application**

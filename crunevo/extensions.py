@@ -17,4 +17,5 @@ mail = Mail()
 csrf = CSRFProtect()
 limiter = Limiter(key_func=get_remote_address, default_limits=["200 per day"])
 talisman = Talisman()
-socketio = SocketIO(async_mode="threading")
+# Use eventlet for async WebSocket support
+socketio = SocketIO(async_mode="eventlet")
