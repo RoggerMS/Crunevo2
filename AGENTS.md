@@ -549,3 +549,4 @@
 - Pending email confirmation page redesigned with gradient background, modern card and bouncing envelope icon (PR pending-ui-refresh).
 - Fixed duplicate isMobile constant in main.js that prevented feed buttons from working (PR feed-buttons-bugfix).
 - Implemented route `onboarding.change_email` with new template and updated pending page with disabled resend button (PR pending-change-email-route).
+- Updated onboarding confirm page with modern card, email change and AJAX resend endpoint; added `/auth/resend-confirmation` route (PR confirm-resend-change).
