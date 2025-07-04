@@ -61,6 +61,18 @@ function initSettingsPage() {
       }
     });
   }
+
+  const toggle = document.getElementById('notifSoundToggle');
+  if (toggle) {
+    toggle.checked = localStorage.getItem('notifSound') !== 'off';
+    toggle.addEventListener('change', () => {
+      const on = toggle.checked;
+      localStorage.setItem('notifSound', on ? 'on' : 'off');
+      if (window.CRUNEVO_CONFIG) {
+        window.CRUNEVO_CONFIG.soundEnabled = on;
+      }
+    });
+  }
 }
 window.initSettingsPage = initSettingsPage;
 

@@ -124,6 +124,7 @@
 
     <!-- Toast container for dynamic notifications -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;"></div>
+    <audio id="notifSound" class="d-none" src="{{ url_for('static', filename='audio/notification.wav') }}" preload="auto"></audio>
 
     {% if request.endpoint not in ['auth.login', 'onboarding.register'] %}
     <button id="menuToggleBtn"
@@ -251,7 +252,8 @@
       window.CRUNEVO_CONFIG = {
         isDark: document.documentElement.dataset.bsTheme === 'dark',
         hasStore: {{ 'true' if 'store.cart_count_api' in url_for.__globals__.get('current_app', {}).view_functions else 'false' }},
-        version: '2.0.0'
+        version: '2.0.0',
+        soundEnabled: localStorage.getItem('notifSound') !== 'off'
       };
     </script>
 

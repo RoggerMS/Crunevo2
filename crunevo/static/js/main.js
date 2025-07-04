@@ -939,6 +939,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('touchmove', handleScroll, { passive: true });
   }
 
+  initMissionClaimButtons();
+  highlightNewAchievements();
+
   // Bootstrap collapse handles the mobile menu
 
 });
@@ -949,6 +952,7 @@ function initNotifications() {
   const badge = document.getElementById('notifBadge');
   const icon = document.getElementById('notifIcon');
   const markAll = document.getElementById('markAllRead');
+  const sound = document.getElementById('notifSound');
   if (!list || !badge) return;
 
 function getNotiInfo(msg) {
@@ -986,6 +990,12 @@ function getNotiInfo(msg) {
         if (items.length > notifCount) {
           items.slice(0, items.length - notifCount).forEach((n) => {
             showToast(n.message);
+            if (window.CRUNEVO_CONFIG?.soundEnabled && sound) {
+              try {
+                sound.currentTime = 0;
+                sound.play();
+              } catch {}
+            }
           });
         }
         notifCount = items.length;
@@ -1150,5 +1160,53 @@ function toggleSave(contentType, contentId, button) {
     .catch(error => {
         console.error('Error:', error);
         showToast('Error al guardar contenido', 'error');
+    });
+}
+
+function claimMission(missionId, button) {
+    button.disabled = true;
+    button.innerHTML = '<i class="bi bi-hourglass"></i> Reclamando...';
+
+    csrfFetch(`/misiones/reclamar_mision/${missionId}`, { method: 'POST' })
+        .then((r) => {
+            if (!r.ok) throw new Error('fail');
+
+            const card = button.closest('.mission-card');
+            if (card) card.classList.add('bounce-once', 'fade-in');
+
+            const modalEl = document.getElementById('missionClaimModal');
+            if (modalEl) {
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+                modalEl.addEventListener('hidden.bs.modal', () => location.reload(), { once: true });
+            } else {
+                location.reload();
+            }
+
+            button.innerHTML = '<i class="bi bi-check-circle"></i> Completada';
+            button.className = 'btn btn-success btn-sm';
+            button.disabled = true;
+        })
+        .catch(() => {
+            button.disabled = false;
+            button.innerHTML = '<i class="bi bi-gift"></i> Reclamar';
+            showToast('Error al reclamar la misión', 'error');
+        });
+}
+
+function initMissionClaimButtons() {
+    document.querySelectorAll('.claim-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const missionId = btn.dataset.missionId;
+            if (missionId) claimMission(missionId, btn);
+        });
+    });
+}
+
+function highlightNewAchievements() {
+    if (!window.NEW_ACHIEVEMENTS || window.NEW_ACHIEVEMENTS.length === 0) return;
+    window.NEW_ACHIEVEMENTS.forEach((a) => {
+        const el = document.getElementById(`achievement-${a.code}`);
+        if (el) el.classList.add('bounce-once', 'fade-in');
     });
 }
