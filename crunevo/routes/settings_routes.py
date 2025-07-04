@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, jsonify
 from flask_login import login_required, current_user
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
-from crunevo.models import User
+from crunevo.models import User, VerificationRequest
 
 settings_bp = Blueprint("settings", __name__, url_prefix="/configuracion")
 
@@ -55,6 +55,25 @@ def update_password():
             400,
         )
     current_user.set_password(new_pw)
+    db.session.commit()
+    return jsonify(success=True)
+
+
+@settings_bp.route("/verificacion", methods=["POST"])
+@login_required
+@activated_required
+def submit_verification():
+    info = request.form.get("info", "").strip()
+    if not info:
+        return jsonify(success=False, error="Debes incluir la información"), 400
+    existing = VerificationRequest.query.filter_by(
+        user_id=current_user.id, status="pending"
+    ).first()
+    if existing:
+        return jsonify(success=False, error="Solicitud ya enviada"), 400
+    vr = VerificationRequest(user_id=current_user.id, info=info)
+    current_user.verification_level = 1
+    db.session.add(vr)
     db.session.commit()
     return jsonify(success=True)
 

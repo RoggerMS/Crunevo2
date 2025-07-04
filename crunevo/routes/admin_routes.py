@@ -24,6 +24,7 @@ from crunevo.models import (
     Product,
     ProductLog,
     FeedItem,
+    VerificationRequest,
 )
 from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit
@@ -290,21 +291,23 @@ def admin_store_alias():
 
 
 @admin_bp.route("/verificaciones")
-def pending_verifications():
-    """List users pending verification."""
-    users = User.query.filter(User.verification_level < 2).all()
-    return render_template("admin/verifications.html", users=users)
+def verification_requests():
+    """List pending verification requests."""
+    requests = VerificationRequest.query.filter_by(status="pending").all()
+    return render_template("admin/verification_requests.html", requests=requests)
 
 
-@admin_bp.route("/verificaciones/<int:user_id>/approve", methods=["POST"])
-def approve_user(user_id):
-    """Approve a user's verification."""
-    user = User.query.get_or_404(user_id)
+@admin_bp.route("/verificaciones/<int:request_id>/approve", methods=["POST"])
+def approve_verification(request_id):
+    """Approve a verification request."""
+    req = VerificationRequest.query.get_or_404(request_id)
+    user = req.user
     user.verification_level = 2
+    req.status = "approved"
     db.session.commit()
     flash("Usuario verificado", "success")
-    log_admin_action(f"Aprob\u00f3 verificacion {user_id}")
-    return redirect(url_for("admin.pending_verifications"))
+    log_admin_action(f"Aprob\u00f3 verificacion {user.id}")
+    return redirect(url_for("admin.verification_requests"))
 
 
 @admin_bp.route("/products/new", methods=["POST"])
