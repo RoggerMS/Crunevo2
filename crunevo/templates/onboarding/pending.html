@@ -24,5 +24,22 @@
   <script>
     window.location.href = "{{ url_for('feed.feed_home') }}";
   </script>
+{% else %}
+  <script>
+    async function checkActivation() {
+      try {
+        const resp = await fetch("{{ url_for('auth.api_user') }}");
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.activated) {
+            window.location.href = "{{ url_for('feed.feed_home') }}";
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    setInterval(checkActivation, 5000);
+  </script>
 {% endif %}
 {% endblock %}
