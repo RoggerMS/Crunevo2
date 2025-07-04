@@ -565,3 +565,4 @@
 - Added quick-notes modal with Shift+Q shortcut storing notes in localStorage. (PR quick-notes-modal)
 - Fixed OnlineNamespace.on_disconnect to accept optional sid and avoid TypeError causing worker restarts (PR socketio-disconnect-fix).
 - Gunicorn now uses the eventlet worker and SocketIO async_mode is set to eventlet to prevent timeouts. (PR socketio-eventlet-worker)
+- errors blueprint registered once in create_app for admin and public modes (PR errors-blueprint-once).

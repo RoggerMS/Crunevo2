@@ -215,7 +215,6 @@ def create_app():
         app.register_blueprint(auth_bp)
         app.register_blueprint(admin_bp)
         app.register_blueprint(admin_email_bp)
-        app.register_blueprint(errors_bp)
     else:
         app.register_blueprint(onboarding_bp)
         app.register_blueprint(auth_bp)
@@ -308,11 +307,12 @@ def create_app():
         app.register_blueprint(saved_bp)
         app.register_blueprint(dashboard_bp)
         app.register_blueprint(settings_bp)
-        app.register_blueprint(errors_bp)
         if testing_env:
             app.register_blueprint(admin_bp)
             app.register_blueprint(admin_email_bp)
         app.register_blueprint(admin_blocker_bp)
+
+    app.register_blueprint(errors_bp)
 
     # Initialize socket namespaces
     import crunevo.routes.socket_routes  # noqa: F401
