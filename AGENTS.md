@@ -571,3 +571,4 @@
  
 - Added TwoFactorToken model with 2FA login flow and backup codes. (PR twofactor-auth)
 - Added MAINTENANCE_MODE flag with admin toggle and maintenance blueprint (PR maintenance-mode).
+- Added VerificationRequest model with admin approval workflow and profile badges. (PR verification-requests)

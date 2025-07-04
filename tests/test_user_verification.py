@@ -1,4 +1,4 @@
-from crunevo.models import User, Note
+from crunevo.models import User, Note, VerificationRequest
 import html
 import re
 
@@ -42,10 +42,11 @@ def test_admin_can_approve(client, db_session):
         username="stud", email="stud@example.com", activated=True, avatar_url="a"
     )
     user.set_password("pass")
-    db_session.add_all([admin, user])
+    req = VerificationRequest(user=user, info="docs")
+    db_session.add_all([admin, user, req])
     db_session.commit()
     client.post("/login", data={"username": "adm", "password": "pass"})
-    client.post(f"/admin/verificaciones/{user.id}/approve")
+    client.post(f"/admin/verificaciones/{req.id}/approve")
     db_session.refresh(user)
     assert user.verification_level == 2
     client.post("/login", data={"username": "stud", "password": "pass"})
@@ -93,7 +94,8 @@ def test_admin_verification_csrf(client, db_session):
         avatar_url="b",
     )
     user.set_password("pass")
-    db_session.add_all([admin, user])
+    req = VerificationRequest(user=user, info="docs")
+    db_session.add_all([admin, user, req])
     db_session.commit()
 
     client.post("/login", data={"username": "adm", "password": "pass"})
@@ -103,14 +105,45 @@ def test_admin_verification_csrf(client, db_session):
         page = client.get("/admin/verificaciones").data.decode()
         token = _get_csrf_token(page)
 
-        assert (
-            client.post(f"/admin/verificaciones/{user.id}/approve").status_code == 302
-        )
+        assert client.post(f"/admin/verificaciones/{req.id}/approve").status_code == 302
 
         resp = client.post(
-            f"/admin/verificaciones/{user.id}/approve",
+            f"/admin/verificaciones/{req.id}/approve",
             data={"csrf_token": token},
         )
         assert resp.status_code == 302
         user = db_session.get(User, user.id)
         assert user.verification_level == 2
+
+
+def test_submit_and_approve_request(client, db_session):
+    admin = User(
+        username="adm",
+        email="adm@example.com",
+        role="admin",
+        activated=True,
+        avatar_url="a",
+    )
+    admin.set_password("pass")
+    user = User(username="req", email="req@example.com", activated=True, avatar_url="b")
+    user.set_password("pass")
+    db_session.add_all([admin, user])
+    db_session.commit()
+
+    client.post("/login", data={"username": "req", "password": "pass"})
+    resp = client.post(
+        "/configuracion/verificacion",
+        data={"info": "docs"},
+    )
+    assert resp.json.get("success")
+    db_session.refresh(user)
+    assert user.verification_level == 1
+    req = VerificationRequest.query.filter_by(user_id=user.id).first()
+    assert req is not None
+
+    client.post("/login", data={"username": "adm", "password": "pass"})
+    client.post(f"/admin/verificaciones/{req.id}/approve")
+    db_session.refresh(user)
+    db_session.refresh(req)
+    assert user.verification_level == 2
+    assert req.status == "approved"
