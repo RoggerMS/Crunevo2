@@ -8,7 +8,7 @@ from flask import (
     current_app,
     jsonify,
 )
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, logout_user, current_user, login_required
 from crunevo.utils.helpers import activated_required
 from crunevo.cache import login_attempts
 from crunevo.utils.audit import record_auth_event
@@ -17,7 +17,7 @@ import json
 import os
 import cloudinary.uploader
 from werkzeug.utils import secure_filename
-from crunevo.extensions import db
+from crunevo.extensions import db, csrf
 from crunevo.models import User, Note
 from crunevo.utils import spend_credit, record_login, send_notification, add_credit
 from crunevo.constants import CreditReasons
@@ -387,6 +387,31 @@ def reclamar_racha():
             "balance": current_user.credits,
         }
     )
+
+
+@auth_bp.route("/resend-confirmation", methods=["POST"])
+@login_required
+def resend_confirmation():
+    data = request.get_json()
+    new_email = data.get("email") if data else None
+
+    if not new_email or "@" not in new_email:
+        return jsonify(success=False, error="Correo no válido."), 400
+
+    if User.query.filter_by(email=new_email).first():
+        return jsonify(success=False, error="Ese correo ya está en uso."), 400
+
+    current_user.email = new_email
+    current_user.activated = False
+    db.session.commit()
+
+    from crunevo.routes.onboarding_routes import send_confirmation_email
+
+    send_confirmation_email(current_user)
+    return jsonify(success=True)
+
+
+csrf.exempt(resend_confirmation)
 
 
 @auth_bp.route("/perfil/eliminar-cuenta", methods=["POST"])
