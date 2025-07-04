@@ -941,6 +941,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initMissionClaimButtons();
   highlightNewAchievements();
+  initQuickNotes();
   initKeyboardShortcuts();
 
   // Bootstrap collapse handles the mobile menu
@@ -1212,6 +1213,20 @@ function highlightNewAchievements() {
     });
 }
 
+function initQuickNotes() {
+  const textarea = document.getElementById('quickNotesTextarea');
+  const saveBtn = document.getElementById('quickNotesSaveBtn');
+  if (!textarea || !saveBtn) return;
+  textarea.value = localStorage.getItem('quick_notes') || '';
+  saveBtn.addEventListener('click', () => {
+    localStorage.setItem('quick_notes', textarea.value);
+    bootstrap.Modal.getOrCreateInstance(
+      document.getElementById('quickNotesModal')
+    ).hide();
+    showToast('Nota guardada');
+  });
+}
+
 function initKeyboardShortcuts() {
   document.addEventListener('keydown', (e) => {
     if (!e.shiftKey) return;
@@ -1228,6 +1243,12 @@ function initKeyboardShortcuts() {
       window.location.href = window.SHORTCUTS.home;
     } else if (key === 'N') {
       const modal = document.getElementById('crearPublicacionModal');
+      if (modal) {
+        e.preventDefault();
+        bootstrap.Modal.getOrCreateInstance(modal).show();
+      }
+    } else if (key === 'Q') {
+      const modal = document.getElementById('quickNotesModal');
       if (modal) {
         e.preventDefault();
         bootstrap.Modal.getOrCreateInstance(modal).show();

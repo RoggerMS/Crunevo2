@@ -177,6 +177,7 @@
 
     {% if request.endpoint not in ['auth.login', 'onboarding.register'] %}
     {% include 'components/shortcut_help.html' %}
+    {% include 'components/quick_notes.html' %}
     {% endif %}
 
     <!-- Image Modal -->
@@ -250,6 +251,12 @@
         position: fixed;
         bottom: 30px;
         right: 100px;
+        z-index: 1000;
+    }
+    .quick-notes {
+        position: fixed;
+        bottom: 30px;
+        right: 170px;
         z-index: 1000;
     }
     </style>
