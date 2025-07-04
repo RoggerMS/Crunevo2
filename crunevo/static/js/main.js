@@ -951,6 +951,7 @@ function initNotifications() {
   const badge = document.getElementById('notifBadge');
   const icon = document.getElementById('notifIcon');
   const markAll = document.getElementById('markAllRead');
+  const sound = document.getElementById('notifSound');
   if (!list || !badge) return;
 
 function getNotiInfo(msg) {
@@ -988,6 +989,12 @@ function getNotiInfo(msg) {
         if (items.length > notifCount) {
           items.slice(0, items.length - notifCount).forEach((n) => {
             showToast(n.message);
+            if (window.CRUNEVO_CONFIG?.soundEnabled && sound) {
+              try {
+                sound.currentTime = 0;
+                sound.play();
+              } catch {}
+            }
           });
         }
         notifCount = items.length;
