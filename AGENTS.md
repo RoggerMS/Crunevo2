@@ -556,3 +556,4 @@
 - Ensured email confirmation logs the user in after activation to refresh session (PR confirm-login-user).
 - Pending page now polls `/api/user` every few seconds and redirects once the account is activated to avoid getting stuck (PR pending-refresh-status).
 - Mejorado visor de imágenes del feed con fondo oscuro, zoom accesible y flechas internas al estilo de redes sociales (PR photo-modal-advanced).
+- Added real-time online user count with Flask-SocketIO; navbar shows dynamic badge (PR online-count-socket).

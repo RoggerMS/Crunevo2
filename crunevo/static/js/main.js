@@ -916,6 +916,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initNotifications();
   initNotificationFilters();
+  initOnlineCount();
 
   // Auto hide navbar on scroll for all viewports
   let lastScrollTop = 0;
@@ -1027,6 +1028,20 @@ function refreshCartCount() {
   fetch('/store/api/cart_count', { headers: { 'X-Device-Token': getDeviceToken() } })
     .then((r) => r.json())
     .then((data) => updateCartBadge(data.count));
+}
+
+function initOnlineCount() {
+  const badge = document.getElementById('onlineCountBadge');
+  if (!badge || typeof io === 'undefined') return;
+  try {
+    const socket = io('/online', { transports: ['websocket', 'polling'] });
+    socket.on('count', (data) => {
+      badge.textContent = data.count;
+      badge.classList.remove('tw-hidden');
+    });
+  } catch (e) {
+    console.error('Socket.IO unavailable', e);
+  }
 }
 
 function initNotificationFilters() {
