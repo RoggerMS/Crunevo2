@@ -556,3 +556,4 @@
 - Ensured email confirmation logs the user in after activation to refresh session (PR confirm-login-user).
 - Pending page now polls `/api/user` every few seconds and redirects once the account is activated to avoid getting stuck (PR pending-refresh-status).
 - Mejorado visor de imágenes del feed con fondo oscuro, zoom accesible y flechas internas al estilo de redes sociales (PR photo-modal-advanced).
+- Added weather widget on user dashboard fetching data from OpenWeather API with caching via requests. (PR weather-dashboard-widget)
