@@ -545,3 +545,4 @@
 - Mejorado visor de imágenes con fondo oscuro, controles de zoom y flechas centradas. Tarjeta lateral ocupa 100% hasta 400px y botón para abrir imagen en nueva pestaña. (PR photo-modal-pro-style)
 - Separación de plantillas escritorio/móvil para el feed con detección de user-agent y script de recarga. (PR mobile-desktop-separation)
 - Added PWA manifest and service worker with offline caching; registered in base.html (PR pwa-support).
+- Updated service worker caching: removed '/feed', excluded JS from dynamic cache and bumped version to crunevo-v2 (PR pwa-cache-update).
