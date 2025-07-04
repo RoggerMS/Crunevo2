@@ -920,7 +920,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Auto hide navbar on scroll for all viewports
   let lastScrollTop = 0;
   const navbar = document.querySelector('.navbar-crunevo');
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const isMobileUA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   function handleScroll() {
     if (!navbar) return;
@@ -934,7 +934,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   window.addEventListener('scroll', handleScroll);
-  if (isMobile) {
+  if (isMobileUA) {
     window.addEventListener('touchmove', handleScroll, { passive: true });
   }
 
