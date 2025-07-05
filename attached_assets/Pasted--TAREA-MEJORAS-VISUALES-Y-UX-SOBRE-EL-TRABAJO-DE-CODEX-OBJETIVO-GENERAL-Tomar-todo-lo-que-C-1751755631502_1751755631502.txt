@@ -1,0 +1,99 @@
+🎨 TAREA: MEJORAS VISUALES Y UX SOBRE EL TRABAJO DE CODEX
+🔧 OBJETIVO GENERAL:
+Tomar todo lo que Codex ya implementó funcionalmente y transformarlo en una experiencia visual profesional, moderna y agradable, especialmente en:
+
+Diseño responsive (móviles y escritorio).
+
+Posición y estilo de botones.
+
+Animaciones suaves.
+
+Mejor legibilidad y jerarquía visual.
+
+Detalles visuales elegantes que aumenten la calidad percibida.
+
+✅ ÁREAS A MEJORAR VISUALMENTE
+🟣 1. Perfil del Usuario
+Añadir botón flotante (con ícono de lápiz ✏️) para editar foto de perfil y banner, como en Facebook.
+
+Mejores separaciones entre secciones (apuntes subidos, logros, actividad).
+
+Diseño de logros: usar íconos atractivos, color distintivo por tipo (bronce, plata, oro).
+
+Animación o efecto visual al desbloquear un logro.
+
+🟣 2. Feed Principal
+Mejora visual de publicaciones con múltiples imágenes (galería estilo Instagram/Facebook).
+
+Agregar “Quick View” para ver detalles sin abrir toda la publicación.
+
+Mejorar diseño de tarjetas: márgenes, sombras suaves, botones bien alineados.
+
+Añadir íconos pequeños de interacción: comentar, guardar, compartir, agradecer.
+
+🟣 3. Visor de Apuntes
+Agregar botón de “pantalla completa”.
+
+Estilizar el visor para que luzca moderno y limpio (bordes suaves, tipografía adecuada).
+
+Agregar botón flotante para “compartir” y otro para “copiar código embed”.
+
+🟣 4. Sistema de Historias (tipo Instagram)
+Estilizar los contenedores de historias con borde animado (cuando hay historias nuevas).
+
+Efecto visual suave de carga y transición entre historias.
+
+Añadir efecto de sombra o ampliación al tocar una historia.
+
+🟣 5. Tienda (Marketplace)
+Mejorar diseño de producto: que se vean más atractivos con hover dinámico.
+
+Botón flotante de "añadir al carrito" con animación.
+
+Mostrar mini-iconos para tipo de producto (digital, físico).
+
+Rediseñar la tarjeta de producto con badges visuales (ej. “Nuevo”, “Más vendido”, etc.).
+
+🟣 6. Panel de Administración
+Embellecer gráficas del dashboard con colores más suaves y tooltips animados.
+
+Mejorar visualización del heatmap de visitas.
+
+Añadir badges visuales a usuarios verificados o administradores.
+
+🟣 7. Misiones y Gamificación
+Añadir animación ligera al completar misión (confeti, sonido suave).
+
+Mostrar progreso con barras visuales más atractivas (tipo RPG).
+
+Botón de “Reclamar recompensa” con efecto hover o pulsación suave.
+
+🟣 8. Modo Oscuro / Claro
+Ajustar contraste para que todos los textos sean legibles (como ya detectaste).
+
+Armonizar los colores según el modo (no solo cambiar fondo).
+
+Transición suave al cambiar entre modos.
+
+🟣 9. Chat (Privado y Global)
+Mejorar burbujas de mensajes con estilo moderno.
+
+Añadir indicador visual de “en línea”.
+
+Icono claro para grabar y reproducir mensajes de voz.
+
+Agregar posibilidad de guardar mensajes con diseño limpio (ícono de marcador o estrella).
+
+🟣 10. Diseño general y navegación móvil
+Optimizar todos los menús para uso en celular (especialmente el menú hamburguesa).
+
+Asegurar que cada botón sea fácil de tocar con el dedo (accesibilidad).
+
+Añadir botón flotante “Subir arriba” en feeds largos.
+
+💬 CONSIDERACIONES FINALES
+No se necesita crear nuevas funciones, solo mejorar y refinar lo ya creado.
+
+Si encuentra algo que visualmente está mal colocado o poco claro, puede proponer mejoras directamente.
+
+Todos los cambios visuales deben mantener coherencia con la identidad visual de CRUNEVO (color morado, estilo educativo moderno).

@@ -1,0 +1,80 @@
+🧠 CONTEXTO GENERAL DEL PROYECTO CRUNEVO (versión para diseñadores y desarrolladores)
+CRUNEVO es una plataforma educativa social peruana que busca empoderar a los estudiantes mediante herramientas tecnológicas modernas, fomentando el aprendizaje colaborativo, el reconocimiento académico y la participación activa dentro de una comunidad universitaria y escolar.
+
+🎯 ¿Cuál es el objetivo de CRUNEVO?
+Convertirse en el espacio digital ideal para estudiantes donde puedan:
+
+Subir y encontrar apuntes útiles.
+
+Participar en un feed académico parecido a una red social.
+
+Ganar Crolars (moneda interna) por sus aportes y logros.
+
+Acceder a una tienda educativa con recursos digitales y físicos.
+
+Comunicarse entre ellos, participar en misiones, foros, clubes, etc.
+
+Usar una IA integrada como asistente educativo (Crunebot).
+
+Personalizar su perfil, ver estadísticas, y crecer en un ranking visible.
+
+👤 ¿Quiénes son los usuarios principales?
+Estudiantes de secundaria, preuniversitarios, universitarios (especialmente de la UNE - La Cantuta, pero escalable a todo el país).
+También podrán haber tutores, docentes invitados, administradores y estudiantes “mentores”.
+
+🧩 Estructura modular de la plataforma
+CRUNEVO está dividido en módulos principales, cada uno con funciones específicas:
+
+Módulo	Descripción
+📝 Apuntes	Subida, visualización y categorización de recursos académicos (PDF, imágenes).
+📚 Feed Principal	Publicaciones, imágenes, enlaces, interacción estilo red social educativa.
+🏪 Tienda	Productos intercambiables por Crolars o dinero real. Reseñas, filtros y carrito.
+🎖️ Perfil	Avatar, logros, niveles, estadísticas, historial de actividad, personalización.
+💬 Chat	Privado y global, con funciones modernas como audio, archivos y bloqueo.
+🧠 IA	Asistente Crunebot: ayuda académica, orientación y generación de contenido.
+🏆 Misiones	Tareas académicas diarias/semanales que otorgan recompensas.
+🌐 Foro	Preguntas y respuestas tipo Quora/Brainly por tema académico.
+👥 Clubes	Grupos por carrera o interés, con publicaciones privadas y gestión interna.
+🗓️ Eventos	Webinars, talleres, transmisiones en vivo, calendario y recordatorios.
+🛡️ Admin	Panel privado para gestionar usuarios, estadísticas, reportes y mantenimiento.
+
+💰 Sistema de Créditos: CROLARS
+Moneda interna que se gana al subir apuntes, recibir likes, participar en retos, etc.
+
+Sirve para comprar en la tienda o enviar a otros usuarios como agradecimiento.
+
+Sistema gamificado con niveles, logros y certificados descargables.
+
+🎮 Gamificación total
+Logros automáticos, rachas de actividad (hot streaks), retos semanales.
+
+Misiones colaborativas donde toda la comunidad puede lograr objetivos grupales.
+
+Certificados descargables y trofeos visibles en perfil.
+
+🧑‍🎓 Valores clave de CRUNEVO
+Gratuito y accesible.
+
+Visualmente moderno, intuitivo y amigable.
+
+Motiva el mérito académico y el apoyo entre estudiantes.
+
+Fuerte componente social, pero siempre con enfoque educativo.
+
+🎨 Estilo visual esperado
+Paleta morado+blanco con detalles suaves.
+
+Combinación entre una red social (Facebook), una tienda (Mercado Libre) y un campus virtual.
+
+Totalmente responsive y usable desde el celular como prioridad.
+
+🔧 Etapas del desarrollo actual
+Codex (backend) ya implementó toda la funcionalidad base.
+
+Ahora Replit (frontend y UI) debe:
+
+Pulir lo visual.
+
+Mejorar la experiencia del usuario.
+
+Embellecer el sistema para que sea llamativo, intuitivo y profesional.
