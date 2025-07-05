@@ -281,6 +281,7 @@ def create_app():
     from .routes.settings_routes import settings_bp
     from .routes.main_routes import main_bp
     from .routes.story_routes import stories_bp
+    from .routes.developer_routes import developer_bp
 
     is_admin = os.environ.get("ADMIN_INSTANCE") == "1"
     app.config["ADMIN_INSTANCE"] = is_admin
@@ -288,6 +289,7 @@ def create_app():
     app.register_blueprint(health_bp)
     app.register_blueprint(maintenance_bp)
     app.register_blueprint(main_bp)
+    app.register_blueprint(developer_bp)
     app.logger.info("Running in ADMIN mode" if is_admin else "Running in PUBLIC mode")
 
     if is_admin:
