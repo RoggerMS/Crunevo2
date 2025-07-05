@@ -1,4 +1,5 @@
 import os
+import json
 from urllib.parse import urlparse
 from flask import (
     Blueprint,
@@ -32,6 +33,7 @@ from crunevo.utils import (
     send_notification,
     record_activity,
     suggest_categories,
+    translate_fields,
 )
 from crunevo.utils.scoring import update_feed_score
 from crunevo.cache.feed_cache import remove_item
@@ -198,6 +200,9 @@ def upload_note():
         from crunevo.utils import create_feed_item_for_all
 
         create_feed_item_for_all("apunte", note.id)
+        trans_folder = os.path.join(current_app.config["TRANSLATIONS_FOLDER"], "notes")
+        langs = current_app.config.get("NOTE_TRANSLATION_LANGS", ["en"])
+        translate_fields(note.id, note.title, note.description, langs, trans_folder)
         add_credit(current_user, 5, CreditReasons.APUNTE_SUBIDO, related_id=note.id)
         unlock_achievement(current_user, AchievementCodes.PRIMER_APUNTE)
         ref = None
@@ -239,12 +244,39 @@ def categorize_text():
     return jsonify(suggest_categories(text, cats))
 
 
+@notes_bp.route("/<int:note_id>/translation/<string:lang>")
+def note_translation(note_id, lang):
+    folder = os.path.join(current_app.config["TRANSLATIONS_FOLDER"], "notes")
+    path = os.path.join(folder, f"{note_id}.json")
+    if not os.path.exists(path):
+        abort(404)
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        abort(404)
+    if lang not in data:
+        abort(404)
+    return jsonify(data[lang])
+
+
 @notes_bp.route("/<int:note_id>")
 @activated_required
 def detail(note_id):
     note = Note.query.get_or_404(note_id)
     note.views += 1
     db.session.commit()
+
+    trans_folder = os.path.join(current_app.config["TRANSLATIONS_FOLDER"], "notes")
+    trans_path = os.path.join(trans_folder, f"{note.id}.json")
+    translation_langs = []
+    if os.path.exists(trans_path):
+        try:
+            with open(trans_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                translation_langs = list(data.keys())
+        except Exception:
+            translation_langs = []
 
     def get_ext(path):
         if path.startswith("http"):
@@ -260,7 +292,12 @@ def detail(note_id):
     else:
         ftype = "other"
 
-    return render_template("notes/detalle.html", note=note, file_type=ftype)
+    return render_template(
+        "notes/detalle.html",
+        note=note,
+        file_type=ftype,
+        translation_langs=translation_langs,
+    )
 
 
 @notes_bp.route("/<int:note_id>/embed")

@@ -19,6 +19,8 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "static/uploads")
+    TRANSLATIONS_FOLDER = os.getenv("TRANSLATIONS_FOLDER", "static/translations")
+    NOTE_TRANSLATION_LANGS = os.getenv("NOTE_TRANSLATION_LANGS", "en").split(",")
 
     CLOUDINARY_URL = os.getenv("CLOUDINARY_URL")
     if CLOUDINARY_URL:

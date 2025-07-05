@@ -749,6 +749,27 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initNoteViewer === 'function') {
     initNoteViewer();
   }
+  const langSelect = document.getElementById('langSelect');
+  if (langSelect) {
+    const titleEl = document.getElementById('noteTitle');
+    const descEl = document.getElementById('noteDesc');
+    const origTitle = titleEl?.textContent;
+    const origDesc = descEl?.textContent;
+    langSelect.addEventListener('change', (e) => {
+      const lang = e.target.value;
+      if (lang === 'original') {
+        if (titleEl) titleEl.textContent = origTitle;
+        if (descEl) descEl.textContent = origDesc;
+        return;
+      }
+      fetch(`/notes/${langSelect.dataset.noteId}/translation/${lang}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (titleEl && data.title) titleEl.textContent = data.title;
+          if (descEl && data.description) descEl.textContent = data.description;
+        });
+    });
+  }
 
   if (typeof initFeedManager === 'function') {
     initFeedManager();
