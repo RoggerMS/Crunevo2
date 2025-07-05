@@ -30,6 +30,10 @@
       </div>
       {% endif %}
       <a href="{{ url_for('notes.download_note', note_id=note.id) }}" class="btn btn-outline-primary w-100 mb-2">Descargar</a>
+      <form method="post" action="{{ url_for('notes.print_note', note_id=note.id) }}" class="mb-2">
+        {{ csrf.csrf_field() }}
+        <button type="submit" class="btn btn-outline-secondary w-100">Solicitar impresión</button>
+      </form>
       <button type="button" class="btn btn-outline-secondary w-100 mb-2" id="saveBtn">Guardar</button>
       <button type="button" class="btn btn-outline-secondary w-100 share-btn" data-share-url="{{ url_for('notes.view_note', id=note.id, _external=True) }}">Compartir</button>
       <button type="button" class="btn btn-outline-secondary w-100 mb-2 embed-btn" data-embed-url="{{ url_for('notes.embed_note', note_id=note.id, _external=True) }}">Copiar código para incrustar</button>

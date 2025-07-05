@@ -1,0 +1,35 @@
+{% extends 'admin/base_admin.html' %}
+{% from 'components/csrf.html' import csrf_field %}
+{% block admin_content %}
+<h2 class="page-title mb-4">Solicitudes de impresión</h2>
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table id="tablaPrints" class="table table-vcenter card-table" data-datatable>
+        <thead>
+          <tr><th>ID</th><th>Usuario</th><th>Apunte</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr>
+        </thead>
+        <tbody>
+          {% for pr, user, note in prints %}
+          <tr>
+            <td>{{ pr.id }}</td>
+            <td>{{ user.username }}</td>
+            <td><a href="{{ url_for('notes.view_note', id=note.id) }}">{{ note.title }}</a></td>
+            <td>{{ pr.requested_at.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td>{{ 'Completado' if pr.fulfilled else 'Pendiente' }}</td>
+            <td>
+              {% if not pr.fulfilled %}
+              <form method="post" action="{{ url_for('admin.fulfill_print', print_id=pr.id) }}" class="d-inline">
+                {{ csrf_field() }}
+                <button class="btn btn-sm btn-success">Marcar hecho</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -30,6 +30,7 @@ from crunevo.models import (
     Comment,
     PostComment,
     PageView,
+    PrintRequest,
 )
 from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit
@@ -356,6 +357,31 @@ def add_product():
     """Legacy add product route blocked for moderators."""
     flash("Acción no permitida", "danger")
     return redirect(url_for("admin.admin_store_alias"))
+
+
+@admin_bp.route("/prints")
+def manage_prints():
+    """List and manage queued print requests."""
+    prints = (
+        db.session.query(PrintRequest, User, Note)
+        .join(User, PrintRequest.user_id == User.id)
+        .join(Note, PrintRequest.note_id == Note.id)
+        .order_by(PrintRequest.requested_at.desc())
+        .all()
+    )
+    return render_template("admin/manage_prints.html", prints=prints)
+
+
+@admin_bp.route("/prints/<int:print_id>/fulfill", methods=["POST"])
+def fulfill_print(print_id):
+    """Mark a print request as fulfilled."""
+    pr = PrintRequest.query.get_or_404(print_id)
+    pr.fulfilled = True
+    pr.fulfilled_at = datetime.utcnow()
+    db.session.commit()
+    flash("Impresión completada", "success")
+    log_admin_action(f"Marcó impresión {print_id} como completada")
+    return redirect(url_for("admin.manage_prints"))
 
 
 @admin_bp.route("/logs")

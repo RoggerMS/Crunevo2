@@ -601,3 +601,4 @@
 - Added GroupMission model with shared progress and UI elements for group objectives (PR missions-group-objectives).
 - Added UserBlock model with chat blocking and attachment uploads for images and files (PR user-blocks-attachments).
 - Purchase model now stores optional shipping address and message; checkout form collects them (PR purchase-shipping)
+- Added PrintRequest model with /notes/<id>/print queue and admin tools to mark prints as cumplidos (PR notes-print-queue)

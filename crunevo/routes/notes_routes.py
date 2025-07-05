@@ -24,6 +24,7 @@ from crunevo.models import (
     Report,
     User,
     Referral,
+    PrintRequest,
 )
 from crunevo.utils.credits import add_credit
 from crunevo.utils import (
@@ -380,6 +381,18 @@ def download_note(note_id):
         unlock_achievement(note.author, AchievementCodes.DESCARGA_100)
 
     return redirect(note.filename)
+
+
+@notes_bp.route("/<int:note_id>/print", methods=["POST"])
+@activated_required
+def print_note(note_id):
+    """Queue a print request for the given note."""
+    note = Note.query.get_or_404(note_id)
+    pr = PrintRequest(user_id=current_user.id, note_id=note.id)
+    db.session.add(pr)
+    db.session.commit()
+    flash("Solicitud de impresión en cola", "success")
+    return redirect(url_for("notes.view_note", id=note.id))
 
 
 @notes_bp.route("/delete/<int:note_id>", methods=["POST"], endpoint="delete_note")
