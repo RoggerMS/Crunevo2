@@ -578,3 +578,4 @@
 
 - Dashboard charts now use real registration and content metrics; docs added (PR admin-dashboard-metrics).
 - Added PageView model to log requests and admin heatmap analytics (PR pageview-analytics).
+- Chat ahora admite mensajes de audio cortos en formatos MP3/OGG con validación de duración y subida a Cloudinary o carpeta local (PR chat-audio-support).
