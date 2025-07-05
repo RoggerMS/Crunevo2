@@ -581,3 +581,4 @@
 - Chat ahora admite mensajes de audio cortos en formatos MP3/OGG con validación de duración y subida a Cloudinary o carpeta local (PR chat-audio-support).
 - Widget de apuntes embebible con ruta /notes/<id>/embed y botón de copiado en detalle (PR notes-embed-widget).
 - Consolidated DOMContentLoaded handlers from courses, events and private chat into main.js (PR domcontent-consolidation).
+- PageView logging commits after each request and skips health endpoints (PR pageview-commit-after-request).
