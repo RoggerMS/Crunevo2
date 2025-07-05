@@ -46,7 +46,7 @@
             <tr>
               <td>{{ user.username if user else 'Anónimo' }}</td>
               <td>{{ c.body[:40] }}{% if c.body|length > 40 %}...{% endif %}</td>
-              <td><a href="{{ url_for('notes.view_note', id=note.id) }}" target="_blank">Apunte {{ note.id }}</a></td>
+              <td><a href="{{ PUBLIC_BASE_URL }}/notes/{{ note.id }}" target="_blank">Apunte {{ note.id }}</a></td>
               <td>
                 <form method="post" action="{{ url_for('admin.approve_comment', ctype='note', cid=c.id) }}" class="d-inline">
                   {{ csrf.csrf_field() }}

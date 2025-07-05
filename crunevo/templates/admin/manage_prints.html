@@ -14,7 +14,7 @@
           <tr>
             <td>{{ pr.id }}</td>
             <td>{{ user.username }}</td>
-            <td><a href="{{ url_for('notes.view_note', id=note.id) }}">{{ note.title }}</a></td>
+            <td><a href="{{ PUBLIC_BASE_URL }}/notes/{{ note.id }}" target="_blank">{{ note.title }}</a></td>
             <td>{{ pr.requested_at.strftime('%d/%m/%Y %H:%M') }}</td>
             <td>{{ 'Completado' if pr.fulfilled else 'Pendiente' }}</td>
             <td>
