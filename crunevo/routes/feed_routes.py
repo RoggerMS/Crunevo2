@@ -112,6 +112,7 @@ def get_weekly_ranking(limit=5):
 def create_post():
     """Create a new feed post."""
     content = request.form.get("content", "").strip()
+    comment_permission = request.form.get("comment_permission", "all")
     files = request.files.getlist("files") or request.files.getlist("file")
 
     valid_files = [f for f in files if f and f.filename]
@@ -139,8 +140,12 @@ def create_post():
             flash("Ocurrió un problema al subir el archivo", "danger")
             return redirect(url_for("feed.view_feed"))
 
+    comment_permission = request.form.get("comment_permission", "all")
     post = Post(
-        content=content, file_url=urls[0] if urls else None, author=current_user
+        content=content,
+        file_url=urls[0] if urls else None,
+        author=current_user,
+        comment_permission=comment_permission,
     )
     db.session.add(post)
     db.session.flush()
@@ -517,6 +522,13 @@ def like_post(post_id):
 @activated_required
 def comment_post(post_id):
     post = Post.query.get_or_404(post_id)
+    if post.comment_permission == "none" and post.author_id != current_user.id:
+        return jsonify({"error": "Comentarios deshabilitados"}), 403
+    if post.comment_permission == "friends" and post.author_id != current_user.id:
+        if hasattr(post.author, "is_friend") and not post.author.is_friend(
+            current_user
+        ):
+            return jsonify({"error": "Solo amigos pueden comentar"}), 403
     body = request.form.get("body", "").strip()
     if not body:
         return jsonify({"error": "Comentario vacío"}), 400
@@ -626,12 +638,19 @@ def editar_post(post_id):
     if post.author_id != current_user.id:
         abort(403)
     content = request.form.get("content", "").strip()
+    comment_permission = request.form.get("comment_permission", post.comment_permission)
     if not content:
         flash("El contenido no puede estar vacío", "danger")
         return redirect(url_for("feed.view_post", post_id=post.id))
+    updated = False
     if content != post.content:
         post.content = content
         post.edited = True
+        updated = True
+    if comment_permission != post.comment_permission:
+        post.comment_permission = comment_permission
+        updated = True
+    if updated:
         db.session.commit()
     flash("Publicación actualizada", "success")
     return redirect(url_for("feed.view_post", post_id=post.id))

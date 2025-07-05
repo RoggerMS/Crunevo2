@@ -720,10 +720,14 @@ function copyLink() {
 function editPost(postId) {
   const card = document.querySelector(`[data-post-id='${postId}']`);
   const textarea = document.querySelector('#editPostForm textarea[name="content"]');
+  const select = document.querySelector('#editPostForm select[name="comment_permission"]');
   const form = document.getElementById('editPostForm');
   if (!card || !textarea || !form) return;
   const contentEl = card.querySelector('.post-content p');
   textarea.value = contentEl ? contentEl.textContent.trim() : '';
+  if (select) {
+    select.value = card.dataset.commentPermission || 'all';
+  }
   form.dataset.postId = postId;
   const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editPostModal'));
   modal.show();
@@ -951,12 +955,14 @@ if (editPostForm) {
   editPostForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.currentTarget;
-    const postId = form.dataset.postId;
-    const content = form.querySelector('textarea[name="content"]').value.trim();
+  const postId = form.dataset.postId;
+  const content = form.querySelector('textarea[name="content"]').value.trim();
+  const permission = form.querySelector('select[name="comment_permission"]').value;
 
-    const formData = new FormData();
-    formData.append('content', content);
-    formData.append('csrf_token', feedManager.getCSRFToken());
+  const formData = new FormData();
+  formData.append('content', content);
+  formData.append('comment_permission', permission);
+  formData.append('csrf_token', feedManager.getCSRFToken());
 
     try {
       const resp = await feedManager.fetchWithCSRF(`/feed/post/editar/${postId}`, {

@@ -52,6 +52,11 @@
                 <div class="modal-body">
                   <textarea name="content" class="form-control border-0 bg-light rounded-3 shadow-none resize-none" rows="3" placeholder="¿Qué estás pensando, {{ current_user.username }}?" style="min-height: 80px;"></textarea>
                   <div id="previewContainer" class="mt-3"></div>
+                  <select name="comment_permission" class="form-select mt-3">
+                    <option value="all">Permitir comentarios</option>
+                    <option value="friends">Solo amigos</option>
+                    <option value="none">Desactivar comentarios</option>
+                  </select>
                   <div class="mt-3 d-flex flex-wrap gap-2">
                     <label class="btn btn-light border d-flex align-items-center gap-2 mb-0">
                       <i class="bi bi-image"></i> <span class="small">Agregar Imagen</span>
@@ -209,6 +214,11 @@
         </div>
         <div class="modal-body">
           <textarea name="content" class="form-control" rows="4" required></textarea>
+          <select name="comment_permission" class="form-select mt-3">
+            <option value="all">Permitir comentarios</option>
+            <option value="friends">Solo amigos</option>
+            <option value="none">Desactivar comentarios</option>
+          </select>
         </div>
         <div class="modal-footer border-0 pt-0">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
