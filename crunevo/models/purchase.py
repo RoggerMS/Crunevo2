@@ -10,6 +10,8 @@ class Purchase(db.Model):
     price_soles = db.Column(db.Numeric(10, 2))
     price_credits = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    shipping_address = db.Column(db.String(255))
+    shipping_message = db.Column(db.Text)
 
     user = db.relationship("User")
     product = db.relationship("Product")

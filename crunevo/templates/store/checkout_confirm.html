@@ -31,6 +31,26 @@
   </div>
   <form method="post">
     {{ csrf.csrf_field() }}
+    <div class="mb-3">
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="shipping_option" id="pickup" value="pickup" checked>
+        <label class="form-check-label" for="pickup">Recoger en tienda</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="shipping_option" id="delivery" value="delivery">
+        <label class="form-check-label" for="delivery">Envío a domicilio</label>
+      </div>
+    </div>
+    <div id="shippingFields" class="tw-hidden">
+      <div class="mb-3">
+        <label for="shippingAddress" class="form-label">Dirección de envío</label>
+        <input type="text" class="form-control" id="shippingAddress" name="shipping_address">
+      </div>
+      <div class="mb-3">
+        <label for="shippingMessage" class="form-label">Mensaje para el vendedor</label>
+        <textarea class="form-control" id="shippingMessage" name="shipping_message" rows="3"></textarea>
+      </div>
+    </div>
     <button class="btn btn-primary">Confirmar compra</button>
   </form>
 </div>

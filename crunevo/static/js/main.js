@@ -814,6 +814,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initEmailPreview();
   }
 
+  if (typeof initCheckoutShipping === 'function') {
+    initCheckoutShipping();
+  }
+
   initCoursesPage();
   initEventList();
   initPrivateChat();
