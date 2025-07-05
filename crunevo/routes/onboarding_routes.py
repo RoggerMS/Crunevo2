@@ -8,6 +8,7 @@ from flask import (
     url_for,
     flash,
     current_app,
+    session,
 )
 from flask_login import login_user, current_user, login_required
 import secrets
@@ -148,7 +149,8 @@ def confirm(token):
     db.session.commit()
     record_auth_event(record.user, "confirm_email")
     login_user(record.user)
-
+    # Remove stale flash messages from previous requests
+    session.pop("_flashes", None)
     flash("¡Correo verificado! Bienvenido a CRUNEVO", "success")
     return redirect(url_for("feed.feed_home"))
 
