@@ -1,0 +1,47 @@
+{% extends 'admin/base_admin.html' %}
+{% block admin_content %}
+<h2 class="page-title mb-4">Analíticas de Visitas</h2>
+<div class="card shadow-sm">
+  <div class="card-body">
+    <canvas id="pageHeatmap" height="400"
+      data-matrix='{{ matrix_data|tojson }}'
+      data-labels-x='{{ labels_x|tojson }}'
+      data-labels-y='{{ labels_y|tojson }}'></canvas>
+  </div>
+</div>
+{% endblock %}
+{% block body_end %}
+  {{ super() }}
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@2.1.1/dist/chartjs-chart-matrix.min.js"></script>
+  <script>
+  function initPageviewHeatmap() {
+    const canvas = document.getElementById('pageHeatmap');
+    if (!canvas) return;
+    const data = JSON.parse(canvas.dataset.matrix || '[]');
+    const labelsX = JSON.parse(canvas.dataset.labelsX || '[]');
+    const labelsY = JSON.parse(canvas.dataset.labelsY || '[]');
+    const max = Math.max(...data.map(d => d.v)) || 1;
+    new Chart(canvas.getContext('2d'), {
+      type: 'matrix',
+      data: { datasets: [{
+        data: data,
+        backgroundColor: ctx => {
+          const v = ctx.dataset.data[ctx.dataIndex].v;
+          return `rgba(102,126,234,${v / max})`;
+        },
+        width: ({chart}) => chart.chartArea.width / labelsX.length - 1,
+        height: ({chart}) => chart.chartArea.height / labelsY.length - 1,
+      }]},
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { position: 'top', ticks: { callback: v => labelsX[v] }, offset: true },
+          y: { ticks: { callback: v => labelsY[v] }, offset: true }
+        }
+      }
+    });
+  }
+  document.addEventListener('DOMContentLoaded', initPageviewHeatmap);
+  </script>
+{% endblock %}

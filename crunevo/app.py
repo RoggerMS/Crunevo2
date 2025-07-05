@@ -149,6 +149,19 @@ def create_app():
     migrate.init_app(app, db)
     socketio.init_app(app)
 
+    @app.before_request
+    def record_page_view():
+        if request.path.startswith("/static/"):
+            return
+        try:
+            from .models import PageView
+
+            db.session.add(PageView(path=request.path))
+            db.session.commit()
+        except Exception as e:  # pragma: no cover - avoid crashing on log error
+            app.logger.error(f"PageView error: {e}")
+            db.session.rollback()
+
     testing_env = os.environ.get("PYTEST_CURRENT_TEST") is not None
 
     # Initialize database if needed (skip during tests)

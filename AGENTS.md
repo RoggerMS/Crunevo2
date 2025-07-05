@@ -577,3 +577,4 @@
 - SiteConfig table stores MAINTENANCE_MODE loaded on startup (PR maintenance-db-flag).
 
 - Dashboard charts now use real registration and content metrics; docs added (PR admin-dashboard-metrics).
+- Added PageView model to log requests and admin heatmap analytics (PR pageview-analytics).
