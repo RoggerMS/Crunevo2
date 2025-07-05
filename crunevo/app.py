@@ -3,6 +3,9 @@ from flask_login import current_user
 import logging
 from logging.handlers import RotatingFileHandler
 import os
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 from .extensions import (
     db,
@@ -43,6 +46,18 @@ def create_app():
     env_rlimit = os.getenv("RATELIMIT_STORAGE_URI")
     if env_rlimit:
         app.config["RATELIMIT_STORAGE_URI"] = env_rlimit
+
+    sentry_dsn = app.config.get("SENTRY_DSN")
+    if sentry_dsn:
+        sentry_logging = LoggingIntegration(
+            level=logging.INFO, event_level=logging.ERROR
+        )
+        sentry_sdk.init(
+            dsn=sentry_dsn,
+            integrations=[FlaskIntegration(), sentry_logging],
+            environment=app.config.get("SENTRY_ENVIRONMENT"),
+            traces_sample_rate=app.config.get("SENTRY_TRACES_RATE", 0),
+        )
 
     @app.context_processor
     def inject_globals():
