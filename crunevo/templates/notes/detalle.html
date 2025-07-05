@@ -31,6 +31,7 @@
       <a href="{{ url_for('notes.download_note', note_id=note.id) }}" class="btn btn-outline-primary w-100 mb-2">Descargar</a>
       <button type="button" class="btn btn-outline-secondary w-100 mb-2" id="saveBtn">Guardar</button>
       <button type="button" class="btn btn-outline-secondary w-100 share-btn" data-share-url="{{ url_for('notes.view_note', id=note.id, _external=True) }}">Compartir</button>
+      <button type="button" class="btn btn-outline-secondary w-100 mb-2 embed-btn" data-embed-url="{{ url_for('notes.embed_note', note_id=note.id, _external=True) }}">Copiar código para incrustar</button>
       {% if current_user.is_authenticated and note.user_id == current_user.id %}
       <a href="{{ url_for('notes.edit_note', note_id=note.id) }}" class="btn btn-outline-secondary w-100 mt-2">Editar</a>
       <form action="{{ url_for('notes.delete_note', note_id=note.id) }}" method="post" onsubmit="return confirm('¿Eliminar este apunte?');" class="mt-2">
