@@ -45,10 +45,19 @@
                                     Emitido el {{ issued[cert_type].issued_at.strftime('%d/%m/%Y') }}
                                 </span>
                             </div>
-                            <a href="{{ url_for('certificate.download_certificate', cert_id=issued[cert_type].id) }}" 
+                            <a href="{{ url_for('certificate.download_certificate', cert_id=issued[cert_type].id) }}"
                                class="btn btn-outline-primary">
                                 <i class="bi bi-download me-1"></i>
                                 Descargar PDF
+                            </a>
+                            <a href="{{ url_for('certificate.share_certificate_link', cert_id=issued[cert_type].id) }}"
+                               class="btn btn-outline-secondary ms-2" target="_blank">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                            <a href="{{ url_for('certificate.post_certificate_linkedin', cert_id=issued[cert_type].id) }}"
+                               class="btn btn-outline-secondary ms-2">
+                                <i class="bi bi-linkedin me-1"></i>
+                                Publicar
                             </a>
                             {% elif cert_type in eligible %}
                             <a href="{{ url_for('certificate.generate_certificate', certificate_type=cert_type) }}" 
@@ -79,9 +88,17 @@
                                 <h6 class="mb-1">{{ cert.title }}</h6>
                                 <small class="text-muted">Emitido: {{ cert.issued_at.strftime('%d de %B de %Y') }}</small>
                             </div>
-                            <a href="{{ url_for('certificate.download_certificate', cert_id=cert.id) }}" 
+                            <a href="{{ url_for('certificate.download_certificate', cert_id=cert.id) }}"
                                class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-download"></i>
+                            </a>
+                            <a href="{{ url_for('certificate.share_certificate_link', cert_id=cert.id) }}"
+                               class="btn btn-sm btn-outline-secondary ms-2" target="_blank">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                            <a href="{{ url_for('certificate.post_certificate_linkedin', cert_id=cert.id) }}"
+                               class="btn btn-sm btn-outline-secondary ms-2">
+                                <i class="bi bi-linkedin"></i>
                             </a>
                         </div>
                     </div>

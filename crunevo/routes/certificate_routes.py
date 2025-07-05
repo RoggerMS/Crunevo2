@@ -1,11 +1,20 @@
-from flask import Blueprint, render_template, send_file, flash, redirect, url_for
+from flask import (
+    Blueprint,
+    render_template,
+    send_file,
+    flash,
+    redirect,
+    url_for,
+    session,
+)
 from flask_login import login_required, current_user
-from crunevo.extensions import db
+from crunevo.extensions import db, oauth
 from crunevo.models.certificate import Certificate
 from crunevo.utils.certificate_generator import (
     generate_certificate_pdf,
     check_certificate_eligibility,
 )
+from crunevo.utils.linkedin import build_share_url, post_to_linkedin
 
 cert_bp = Blueprint("certificate", __name__)
 certificate_bp = cert_bp
@@ -113,3 +122,60 @@ def download_certificate(cert_id):
         download_name=filename,
         mimetype="application/pdf",
     )
+
+
+@cert_bp.route("/certificados/linkedin/authorize")
+@login_required
+def linkedin_authorize():
+    redirect_uri = url_for("certificate.linkedin_callback", _external=True)
+    return oauth.linkedin.authorize_redirect(redirect_uri)
+
+
+@cert_bp.route("/certificados/linkedin/callback")
+@login_required
+def linkedin_callback():
+    token = oauth.linkedin.authorize_access_token()
+    profile = oauth.linkedin.get("me?projection=(id)").json()
+    session["linkedin_token"] = token
+    session["linkedin_id"] = profile.get("id")
+    next_url = session.pop("linkedin_next", url_for("certificate.list_certificates"))
+    flash("LinkedIn conectado", "success")
+    return redirect(next_url)
+
+
+@cert_bp.route("/certificados/linkedin/share/<int:cert_id>")
+@login_required
+def share_certificate_link(cert_id):
+    Certificate.query.filter_by(id=cert_id, user_id=current_user.id).first_or_404()
+    cert_url = url_for(
+        "certificate.download_certificate", cert_id=cert_id, _external=True
+    )
+    return redirect(build_share_url(cert_url))
+
+
+@cert_bp.route("/certificados/linkedin/post/<int:cert_id>")
+@login_required
+def post_certificate_linkedin(cert_id):
+    certificate = Certificate.query.filter_by(
+        id=cert_id, user_id=current_user.id
+    ).first_or_404()
+    if "linkedin_token" not in session or "linkedin_id" not in session:
+        session["linkedin_next"] = url_for(
+            "certificate.post_certificate_linkedin", cert_id=cert_id
+        )
+        return redirect(url_for("certificate.linkedin_authorize"))
+    cert_url = url_for(
+        "certificate.download_certificate", cert_id=cert_id, _external=True
+    )
+    text = f"He obtenido el {certificate.title} en CRUNEVO!"
+    success = post_to_linkedin(
+        session["linkedin_id"],
+        session["linkedin_token"]["access_token"],
+        text,
+        cert_url,
+    )
+    flash(
+        "Publicado en LinkedIn" if success else "No se pudo publicar en LinkedIn",
+        "success" if success else "error",
+    )
+    return redirect(url_for("certificate.list_certificates"))
