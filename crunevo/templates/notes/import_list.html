@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+{% block content %}
+<div class="container py-4">
+  <h3 class="mb-3">Importar archivo desde {{ source|title }}</h3>
+  <ul class="list-group mb-4">
+  {% for f in files %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>{{ f.name }}</span>
+      <form method="post" action="{{ url_for('notes.import_file', source=source, file_id=f.id) }}">
+        {{ csrf.csrf_field() }}
+        <button class="btn btn-primary btn-sm" type="submit">Importar</button>
+      </form>
+    </li>
+  {% else %}
+    <li class="list-group-item">No se encontraron archivos.</li>
+  {% endfor %}
+  </ul>
+  <a href="{{ url_for('notes.upload_note') }}" class="btn btn-secondary">Volver</a>
+</div>
+{% endblock %}

@@ -15,7 +15,8 @@ from flask import (
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required, verified_required
 from werkzeug.utils import secure_filename
-from crunevo.extensions import db, talisman
+from crunevo.extensions import db, talisman, oauth
+from flask import session
 from crunevo.models import (
     Note,
     Comment,
@@ -251,6 +252,84 @@ def upload_note():
 notes_bp.add_url_rule(
     "/upload", endpoint="upload", view_func=upload_note, methods=["GET", "POST"]
 )
+
+
+@notes_bp.route("/import/drive")
+@activated_required
+def drive_authorize():
+    redirect_uri = url_for("notes.drive_callback", _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+
+@notes_bp.route("/import/drive/callback")
+@activated_required
+def drive_callback():
+    token = oauth.google.authorize_access_token()
+    session["drive_token"] = token
+    resp = oauth.google.get(
+        "drive/v3/files",
+        params={"pageSize": 20, "fields": "files(id,name,mimeType)"},
+    )
+    files = resp.json().get("files", [])
+    return render_template("notes/import_list.html", files=files, source="drive")
+
+
+@notes_bp.route("/import/dropbox")
+@activated_required
+def dropbox_authorize():
+    redirect_uri = url_for("notes.dropbox_callback", _external=True)
+    return oauth.dropbox.authorize_redirect(redirect_uri)
+
+
+@notes_bp.route("/import/dropbox/callback")
+@activated_required
+def dropbox_callback():
+    token = oauth.dropbox.authorize_access_token()
+    session["dropbox_token"] = token
+    resp = oauth.dropbox.post("files/list_folder", json={"path": ""})
+    entries = resp.json().get("entries", [])
+    files = [e for e in entries if e.get(".tag") != "folder"]
+    return render_template("notes/import_list.html", files=files, source="dropbox")
+
+
+@notes_bp.route(
+    "/import/<string:source>/<path:file_id>", methods=["POST"], endpoint="import_file"
+)
+@activated_required
+def import_file(source, file_id):
+    if source == "drive":
+        token = session.get("drive_token")
+        if not token:
+            abort(403)
+        meta = oauth.google.get(
+            f"drive/v3/files/{file_id}", params={"fields": "name"}
+        ).json()
+        name = meta.get("name", file_id)
+        res = oauth.google.get(f"drive/v3/files/{file_id}", params={"alt": "media"})
+    elif source == "dropbox":
+        token = session.get("dropbox_token")
+        if not token:
+            abort(403)
+        meta = oauth.dropbox.post("files/get_metadata", json={"path": file_id}).json()
+        name = meta.get("name", file_id)
+        res = oauth.dropbox.post(
+            "files/download",
+            headers={"Dropbox-API-Arg": json.dumps({"path": file_id})},
+        )
+    else:
+        abort(404)
+
+    upload_folder = current_app.config["UPLOAD_FOLDER"]
+    os.makedirs(upload_folder, exist_ok=True)
+    filename = secure_filename(name)
+    path = os.path.join(upload_folder, filename)
+    with open(path, "wb") as f:
+        f.write(res.content)
+
+    note = Note(title=name, filename=path, author=current_user)
+    db.session.add(note)
+    db.session.commit()
+    return redirect(url_for("notes.view_note", id=note.id))
 
 
 @notes_bp.route("/api/tag_suggestions")

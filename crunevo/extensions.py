@@ -7,6 +7,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_talisman import Talisman
 from flask_socketio import SocketIO
+from authlib.integrations.flask_client import OAuth
 
 import errno
 from eventlet import websocket
@@ -42,3 +43,4 @@ def _safe_close(self):
 websocket.WebSocket.close = _safe_close
 
 socketio = SocketIO(async_mode="eventlet")
+oauth = OAuth()

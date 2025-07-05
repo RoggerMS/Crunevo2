@@ -123,3 +123,8 @@ class Config:
     SENTRY_DSN = os.getenv("SENTRY_DSN")
     SENTRY_ENVIRONMENT = os.getenv("SENTRY_ENVIRONMENT", "production")
     SENTRY_TRACES_RATE = float(os.getenv("SENTRY_TRACES_RATE", 0))
+
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+    DROPBOX_CLIENT_ID = os.getenv("DROPBOX_CLIENT_ID")
+    DROPBOX_CLIENT_SECRET = os.getenv("DROPBOX_CLIENT_SECRET")

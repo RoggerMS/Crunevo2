@@ -39,3 +39,4 @@ pyotp==2.9.0
 boto3==1.34.14
 mutagen==1.47.0
 sentry-sdk==2.32.0
+Authlib==1.2.1
