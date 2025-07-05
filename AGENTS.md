@@ -592,3 +592,4 @@
 - Added automatic note categorization suggestions when uploading notes (PR note-categorizer).
 - Posts now support a `comment_permission` setting (`all`, `friends`, `none`) with forms and comment endpoint enforcing it (PR comment-permission).
 - Introduced Story model with expiry, /stories routes and scheduled cleanup (PR stories-feature).
+- Events now include notification_times and recurring; calendar JSON endpoint and missions auto-activate before linked events (PR events-calendar-missions)

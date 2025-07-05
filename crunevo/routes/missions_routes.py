@@ -11,6 +11,7 @@ from crunevo.models import (
     Purchase,
     Referral,
     DeviceClaim,
+    Event,
 )
 from crunevo.extensions import db
 from crunevo.utils.credits import add_credit
@@ -21,12 +22,38 @@ missions_bp = Blueprint("missions", __name__, url_prefix="/misiones")
 
 def compute_mission_states(user):
     """Return progress information for all missions of a user."""
-    one_day_ago = datetime.utcnow() - timedelta(days=1)
+    now = datetime.utcnow()
+    one_day_ago = now - timedelta(days=1)
 
     missions = Mission.query.all()
     progress_dict = {}
+    upcoming_window = now + timedelta(days=7)
+    changes = False
 
     for m in missions:
+        if m.event_id:
+            event = Event.query.get(m.event_id)
+            should_activate = False
+            if event:
+                should_activate = (
+                    event.event_date <= upcoming_window and event.event_date > now
+                )
+            if m.is_active != should_activate:
+                m.is_active = should_activate
+                changes = True
+
+    if changes:
+        db.session.commit()
+
+    for m in missions:
+        if m.event_id and not m.is_active:
+            progress_dict[m.id] = {
+                "progreso": 0,
+                "completada": False,
+                "reclamada": False,
+                "id": None,
+            }
+            continue
         progress = 0
 
         # 📝 Subir apuntes

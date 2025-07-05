@@ -33,6 +33,8 @@ from .referido import Referral  # noqa: F401
 from .device_claim import DeviceClaim  # noqa: F401
 from .achievement_popup import AchievementPopup  # noqa: F401
 from .club import Club, ClubMember  # noqa: F401
+from .event import Event  # noqa: F401
+from .event_participation import EventParticipation  # noqa: F401
 from .two_factor_token import TwoFactorToken  # noqa: F401
 from .verification_request import VerificationRequest  # noqa: F401
 from .user_activity import UserActivity  # noqa: F401
