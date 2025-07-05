@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for, flash, current_app
+from flask import Flask, request, redirect, url_for, flash, current_app, g
 from flask_login import current_user
 import logging
 from logging.handlers import RotatingFileHandler
@@ -151,18 +151,34 @@ def create_app():
 
     @app.before_request
     def record_page_view():
-        if request.path.startswith("/static/"):
+        if (
+            request.path.startswith("/static/")
+            or request.path in {"/healthz", "/ping"}
+            or request.path.startswith("/socket.io")
+        ):
             return
         try:
             from .models import PageView
 
-            db.session.add(PageView(path=request.path))
-            db.session.commit()
+            if not hasattr(g, "page_views"):
+                g.page_views = []
+            g.page_views.append(PageView(path=request.path))
         except Exception as e:  # pragma: no cover - avoid crashing on log error
             app.logger.error(f"PageView error: {e}")
-            db.session.rollback()
 
     testing_env = os.environ.get("PYTEST_CURRENT_TEST") is not None
+
+    @app.after_request
+    def commit_page_view(response):
+        page_views = getattr(g, "page_views", None)
+        if page_views:
+            try:
+                db.session.add_all(page_views)
+                db.session.commit()
+            except Exception as e:  # pragma: no cover - avoid crashing on log error
+                app.logger.error(f"PageView error: {e}")
+                db.session.rollback()
+        return response
 
     # Initialize database if needed (skip during tests)
     with app.app_context():
