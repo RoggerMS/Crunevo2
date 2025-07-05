@@ -178,6 +178,8 @@ def finish():
         elif avatar_url:
             current_user.avatar_url = avatar_url
         current_user.about = request.form.get("bio")
+        current_user.career = request.form.get("career")
+        current_user.interests = request.form.get("interests")
         db.session.commit()
         return redirect(url_for("feed.feed_home"))
     return render_template("onboarding/finish.html")

@@ -1,4 +1,5 @@
-from crunevo.models import Notification
+from crunevo.models import Notification, User
+from crunevo.utils import send_notification
 
 
 def login(client, username, password="secret"):
@@ -26,3 +27,29 @@ def test_mark_all_read(client, db_session, test_user):
     assert (
         Notification.query.filter_by(user_id=test_user.id, is_read=False).count() == 0
     )
+
+
+def test_send_notification_filter(db_session):
+    u1 = User(
+        username="law",
+        email="law@example.com",
+        activated=True,
+        avatar_url="a",
+        career="law",
+    )
+    u1.set_password("secret")
+    u2 = User(
+        username="eng",
+        email="eng@example.com",
+        activated=True,
+        avatar_url="a",
+        career="engineering",
+    )
+    u2.set_password("secret")
+    db_session.add_all([u1, u2])
+    db_session.commit()
+
+    send_notification(message="Hola", career="law")
+
+    assert Notification.query.filter_by(user_id=u1.id).count() == 1
+    assert Notification.query.filter_by(user_id=u2.id).count() == 0

@@ -20,6 +20,8 @@ def index():
 def update_personal():
     username = request.form.get("username")
     about = request.form.get("about")
+    career = request.form.get("career")
+    interests = request.form.get("interests")
     changed = False
     if username is not None:
         username = username.strip()
@@ -33,6 +35,10 @@ def update_personal():
             changed = True
     if about is not None:
         current_user.about = about
+    if career is not None:
+        current_user.career = career
+    if interests is not None:
+        current_user.interests = interests
     db.session.commit()
     return jsonify(success=True, changed_username=changed)
 
