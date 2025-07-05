@@ -7,10 +7,17 @@
       <button class="btn btn-sm btn-warning me-2" type="submit">
         {% if current_app.config.MAINTENANCE_MODE %}Desactivar{% else %}Activar{% endif %} mantenimiento
       </button>
-    </form>
-    <button class="btn btn-sm btn-outline-primary me-2 admin-theme-toggle" data-theme-toggle data-bs-toggle="tooltip" title="Modo claro / oscuro">
-      <i class="bi"></i>
-    </button>
+      </form>
+      <form method="post" action="{{ url_for('admin.set_post_retention') }}" class="d-inline me-2">
+        {{ csrf_field() }}
+        <div class="input-group input-group-sm" style="width: 8rem;">
+          <input type="number" name="days" min="1" class="form-control" value="{{ current_app.config.POST_RETENTION_DAYS }}" title="Días de retención">
+          <button class="btn btn-secondary" type="submit">Guardar</button>
+        </div>
+      </form>
+      <button class="btn btn-sm btn-outline-primary me-2 admin-theme-toggle" data-theme-toggle data-bs-toggle="tooltip" title="Modo claro / oscuro">
+        <i class="bi"></i>
+      </button>
     <a class="btn btn-sm btn-danger" href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
   </div>
 </header>
