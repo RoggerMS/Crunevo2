@@ -115,11 +115,321 @@ p {
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-normal);
   overflow: hidden;
+  position: relative;
 }
 
 .card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
+}
+
+/* ==========================================================================
+   Floating Action Buttons
+   ========================================================================== */
+
+.floating-edit-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #8B5CF6, #9F7AEA);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.floating-edit-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+  background: linear-gradient(135deg, #7C3AED, #8B5CF6);
+}
+
+.card:hover .floating-edit-btn,
+.profile-header:hover .floating-edit-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.floating-cart-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #8B5CF6, #9F7AEA);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+}
+
+.floating-cart-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 35px rgba(139, 92, 246, 0.4);
+}
+
+.floating-cart-btn .cart-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #F59E0B;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   Achievement Badges with Animations
+   ========================================================================== */
+
+.achievement-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.achievement-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(45deg, currentColor, transparent, currentColor);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: subtract;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.achievement-badge:hover::before {
+  opacity: 1;
+}
+
+.achievement-badge.bronze {
+  background: linear-gradient(135deg, #CD7F32, #B8860B);
+  color: #CD7F32;
+}
+
+.achievement-badge.silver {
+  background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+  color: #C0C0C0;
+}
+
+.achievement-badge.gold {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #FFD700;
+}
+
+.achievement-badge.diamond {
+  background: linear-gradient(135deg, #8B5CF6, #9F7AEA);
+  color: #8B5CF6;
+}
+
+.achievement-badge:hover {
+  transform: scale(1.1);
+}
+
+.achievement-unlock {
+  animation: achievementPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes achievementPop {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   Instagram-style Story Rings
+   ========================================================================== */
+
+.story-ring {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(45deg, #8B5CF6, #9F7AEA, #10B981);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.story-ring.viewed {
+  background: var(--crunevo-gray-300);
+}
+
+.story-ring:hover {
+  transform: scale(1.05);
+}
+
+.story-ring .story-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid white;
+  object-fit: cover;
+}
+
+.story-ring.animated {
+  animation: storyPulse 2s infinite;
+}
+
+@keyframes storyPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* ==========================================================================
+   Modern Progress Bars
+   ========================================================================== */
+
+.progress-modern {
+  height: 12px;
+  background: var(--crunevo-gray-200);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-modern .progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #8B5CF6, #9F7AEA);
+  border-radius: 6px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-modern .progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.2) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.2) 75%,
+    transparent 75%
+  );
+  background-size: 20px 20px;
+  animation: progressShimmer 1s linear infinite;
+}
+
+@keyframes progressShimmer {
+  0% {
+    background-position: -20px 0;
+  }
+  100% {
+    background-position: 20px 0;
+  }
+}
+
+/* ==========================================================================
+   Hover Effects for Products
+   ========================================================================== */
+
+.product-card {
+  position: relative;
+  background: white;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--crunevo-gray-200);
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-color: var(--crunevo-primary);
+}
+
+.product-card .product-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card .product-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(139, 92, 246, 0.1) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.product-card:hover .product-image::after {
+  transform: translateX(100%);
+}
+
+.product-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, #F59E0B, #EAB308);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 2;
+}
+
+.product-badge.new {
+  background: linear-gradient(135deg, #10B981, #059669);
+}
+
+.product-badge.popular {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
 }
 
 .card-body {

@@ -324,5 +324,6 @@ if ('serviceWorker' in navigator) {
     </script>
 
     {% block body_end %}{% endblock %}
+    <script src="{{ url_for('static', filename='js/enhanced-ui.js') }}" defer></script>
 </body>
 </html>

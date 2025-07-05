@@ -125,36 +125,42 @@
       {% endif %}
     </div>
 
-    <!-- Post Actions -->
-    <div class="post-actions d-flex align-items-center gap-1 border-top pt-3">
-      <!-- Like Button -->
+    <!-- Enhanced Post Actions -->
+    <div class="post-actions-enhanced">
+      <!-- Like Button with Animation -->
       {% set user_reaction = user_reactions.get(post.id) %}
-      <button class="btn btn-ghost flex-fill d-flex align-items-center justify-content-center gap-2 like-btn {{ 'active' if user_reaction else '' }}"
+      <button class="action-btn-enhanced like-btn {{ 'active' if user_reaction else '' }}"
               data-post-id="{{ post.id }}"
               data-reaction="👍">
-        <i class="bi bi-fire{% if user_reaction %} text-danger{% endif %}"></i>
-        <span class="d-none d-sm-inline">Me gusta</span>
-        <span id="likeCount{{ post.id }}" class="badge bg-light text-dark rounded-pill">{{ post.likes or 0 }}</span>
+        <i class="bi bi-heart{% if user_reaction %}-fill{% endif %}"></i>
+        <span>{{ post.likes or 0 }}</span>
       </button>
 
       <!-- Comment Button -->
-      <button class="btn btn-ghost flex-fill d-flex align-items-center justify-content-center gap-2 comment-btn" 
+      <button class="action-btn-enhanced comment-btn" 
               data-post-id="{{ post.id }}">
         <i class="bi bi-chat"></i>
         <span class="d-none d-sm-inline">Comentar</span>
       </button>
 
-      <!-- Share Button -->
-      <button class="btn btn-ghost flex-fill d-flex align-items-center justify-content-center gap-2 share-btn" 
+      <!-- Share Button with Options -->
+      <button class="action-btn-enhanced share-btn" 
               data-share-url="{{ url_for('feed.view_post', post_id=post.id, _external=True) }}">
         <i class="bi bi-share"></i>
         <span class="d-none d-sm-inline">Compartir</span>
       </button>
 
-      <!-- Save Button -->
-      <button class="btn btn-ghost d-flex align-items-center justify-content-center save-btn" 
+      <!-- Quick View Button -->
+      <button class="action-btn-enhanced quick-view-btn" 
               data-post-id="{{ post.id }}"
-              style="width: 40px; height: 40px;">
+              data-tooltip="Vista rápida">
+        <i class="bi bi-eye"></i>
+      </button>
+
+      <!-- Save Button -->
+      <button class="action-btn-enhanced save-btn" 
+              data-post-id="{{ post.id }}"
+              data-tooltip="Guardar">
         <i class="bi bi-bookmark"></i>
       </button>
     </div>

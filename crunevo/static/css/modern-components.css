@@ -408,14 +408,265 @@
 .spinner-modern {
   width: 2rem;
   height: 2rem;
-  border: 3px solid rgba(102, 126, 234, 0.2);
+  border: 3px solid rgba(139, 92, 246, 0.2);
   border-radius: 50%;
-  border-top-color: #667eea;
+  border-top-color: #8B5CF6;
   animation: spin 1s ease-in-out infinite;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   MISSION COMPLETION ANIMATIONS
+   ============================================ */
+
+.mission-complete-animation {
+  position: relative;
+  overflow: hidden;
+}
+
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #8B5CF6;
+  animation: confettiFall 3s linear infinite;
+}
+
+.confetti-piece:nth-child(odd) {
+  background: #F59E0B;
+  animation-delay: 0.5s;
+}
+
+.confetti-piece:nth-child(3n) {
+  background: #10B981;
+  animation-delay: 1s;
+}
+
+.confetti-piece:nth-child(4n) {
+  background: #EF4444;
+  animation-delay: 1.5s;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.reward-claim-btn {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.reward-claim-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+}
+
+.reward-claim-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.reward-claim-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.reward-claim-btn:active {
+  transform: translateY(0);
+}
+
+.reward-claim-btn.claimed {
+  background: var(--crunevo-gray-400);
+  cursor: not-allowed;
+}
+
+.reward-claim-btn.claimed:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* ============================================
+   ENHANCED TOOLTIPS
+   ============================================ */
+
+.tooltip-enhanced {
+  position: relative;
+  cursor: help;
+}
+
+.tooltip-enhanced::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(17, 24, 39, 0.95);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.tooltip-enhanced::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  border: 6px solid transparent;
+  border-top-color: rgba(17, 24, 39, 0.95);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tooltip-enhanced:hover::before,
+.tooltip-enhanced:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+/* ============================================
+   SCROLL TO TOP BUTTON
+   ============================================ */
+
+.scroll-to-top {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #8B5CF6, #9F7AEA);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  z-index: 1000;
+}
+
+.scroll-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.scroll-to-top:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+}
+
+.scroll-to-top:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   ENHANCED NOTIFICATION TOASTS
+   ============================================ */
+
+.toast-notification {
+  background: white;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(20px);
+  border-left: 4px solid var(--crunevo-primary);
+  overflow: hidden;
+  position: relative;
+}
+
+.toast-notification::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #8B5CF6, #9F7AEA);
+  animation: toastProgress 5s linear;
+}
+
+@keyframes toastProgress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.toast-notification.success {
+  border-left-color: #10B981;
+}
+
+.toast-notification.success::before {
+  background: linear-gradient(90deg, #10B981, #059669);
+}
+
+.toast-notification.warning {
+  border-left-color: #F59E0B;
+}
+
+.toast-notification.warning::before {
+  background: linear-gradient(90deg, #F59E0B, #EAB308);
+}
+
+.toast-notification.error {
+  border-left-color: #EF4444;
+}
+
+.toast-notification.error::before {
+  background: linear-gradient(90deg, #EF4444, #DC2626);
+}
+
+[data-bs-theme="dark"] .toast-notification {
+  background: rgba(30, 30, 46, 0.95);
+  color: #f8f9fa;
 }
 
 /* ============================================

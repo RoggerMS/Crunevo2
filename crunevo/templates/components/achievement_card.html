@@ -1,11 +1,18 @@
-<div class="card text-center tw-bg-gradient-to-r tw-from-purple-500/20 tw-to-indigo-500/20 achievement-card" data-bs-toggle="tooltip" title="{{ description }}" id="achievement-{{ a.badge_code or code }}">
-  <div class="card-body p-2">
-    <i class="bi {{ icon }} fs-3"></i>
-    <div class="fw-bold">{{ title }}</div>
-    {% if timestamp %}<small class="text-muted">{{ timestamp|timesince }}</small>{% endif %}
-    {% if a.achievement and a.achievement.credit_reward %}
-    <div class="text-success">+{{ a.achievement.credit_reward }} crolars</div>
-    {% endif %}
+<div class="achievement-item achievement-unlock" 
+     data-achievement-id="{{ a.badge_code or code }}"
+     data-tooltip="{{ description }}"
+     id="achievement-{{ a.badge_code or code }}">
+  <div class="achievement-badge {{ 'gold' if a.achievement and a.achievement.credit_reward >= 50 else 'silver' if a.achievement and a.achievement.credit_reward >= 20 else 'bronze' }}">
+    <i class="bi {{ icon }} achievement-icon"></i>
   </div>
+  <div class="achievement-title">{{ title }}</div>
+  {% if timestamp %}
+  <small class="achievement-date text-muted">{{ timestamp|timesince }}</small>
+  {% endif %}
+  {% if a.achievement and a.achievement.credit_reward %}
+  <div class="achievement-reward">
+    <span class="badge badge-modern-success">+{{ a.achievement.credit_reward }} crolars</span>
+  </div>
+  {% endif %}
 </div>
 
