@@ -39,6 +39,13 @@ IS_ADMIN = os.environ.get("ADMIN_INSTANCE") == "1"
 auth_bp = Blueprint("auth", __name__)
 
 
+def _has_2fa_table() -> bool:
+    """Return True if the TwoFactorToken table exists."""
+    from sqlalchemy import inspect
+
+    return inspect(db.engine).has_table("two_factor_token")
+
+
 @auth_bp.route("/register")
 def redirect_register():
     return redirect(url_for("onboarding.register"))
@@ -78,7 +85,13 @@ def login():
             if not user.activated:
                 login_user(user)
                 return redirect(url_for("onboarding.pending"))
-            if user.two_factor and user.two_factor.confirmed_at:
+            record = None
+            if _has_2fa_table():
+                try:
+                    record = user.two_factor
+                except Exception:
+                    db.session.rollback()
+            if record and record.confirmed_at:
                 session["2fa_user_id"] = user.id
                 session["next"] = request.args.get("next")
                 return redirect(url_for("auth.verify_token"))
@@ -103,7 +116,13 @@ def verify_token():
     if not user_id:
         return redirect(url_for("auth.login"))
     user = User.query.get(user_id)
-    record = user.two_factor
+    if not _has_2fa_table():
+        return redirect(url_for("auth.login"))
+    record = None
+    try:
+        record = user.two_factor
+    except Exception:
+        db.session.rollback()
     if not record or not record.confirmed_at:
         return redirect(url_for("auth.login"))
     if request.method == "POST":
@@ -149,6 +168,8 @@ def _generate_backup_codes(n=5):
 @auth_bp.route("/2fa/setup", methods=["GET", "POST"])
 @login_required
 def setup_2fa():
+    if not _has_2fa_table():
+        return redirect(url_for("auth.perfil"))
     record = TwoFactorToken.query.filter_by(user_id=current_user.id).first()
     if request.method == "POST":
         if not record:
@@ -184,6 +205,8 @@ def setup_2fa():
 @auth_bp.route("/2fa/backup", methods=["POST"])
 @login_required
 def regen_backup_codes():
+    if not _has_2fa_table():
+        return redirect(url_for("auth.setup_2fa"))
     record = current_user.two_factor
     if not record or not record.confirmed_at:
         return redirect(url_for("auth.setup_2fa"))
