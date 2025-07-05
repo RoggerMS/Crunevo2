@@ -16,6 +16,7 @@ from .extensions import (
     limiter,
     talisman,
     socketio,
+    oauth,
 )
 from flask_wtf.csrf import CSRFError
 
@@ -147,6 +148,25 @@ def create_app():
     login_manager.init_app(app)
     mail.init_app(app)
     csrf.init_app(app)
+    oauth.init_app(app)
+    oauth.register(
+        name="google",
+        client_id=app.config.get("GOOGLE_CLIENT_ID"),
+        client_secret=app.config.get("GOOGLE_CLIENT_SECRET"),
+        access_token_url="https://oauth2.googleapis.com/token",
+        authorize_url="https://accounts.google.com/o/oauth2/v2/auth",
+        api_base_url="https://www.googleapis.com/",
+        client_kwargs={"scope": "https://www.googleapis.com/auth/drive.readonly"},
+    )
+    oauth.register(
+        name="dropbox",
+        client_id=app.config.get("DROPBOX_CLIENT_ID"),
+        client_secret=app.config.get("DROPBOX_CLIENT_SECRET"),
+        access_token_url="https://api.dropboxapi.com/oauth2/token",
+        authorize_url="https://www.dropbox.com/oauth2/authorize",
+        api_base_url="https://api.dropboxapi.com/2/",
+        client_kwargs={"token_endpoint_auth_method": "client_secret_post"},
+    )
     limiter._storage_uri = app.config.get("RATELIMIT_STORAGE_URI")
     limiter.init_app(app)
     if app.config.get("ENABLE_TALISMAN", True):

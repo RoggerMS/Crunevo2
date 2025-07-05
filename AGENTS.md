@@ -608,3 +608,4 @@
 - Added scheduled cleanup job for inactive posts with admin-configurable retention days (PR inactive-post-cleanup)
 - Integrated Sentry error monitoring with logging integration and setup docs (PR sentry-monitoring)
 - Added local SHA-256 hashing on note uploads to detect duplicates, blocking the upload and notifying moderators (PR note-plagiarism-check).
+- Added OAuth import from Google Drive and Dropbox allowing file import to notes (PR drive-dropbox-import).

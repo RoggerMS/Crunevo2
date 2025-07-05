@@ -53,6 +53,10 @@
             <div class="mb-4">
               <label for="file" class="form-label">Archivo *</label>
               <input class="form-control" type="file" id="file" name="file" accept="application/pdf,image/*" required>
+              <div class="mt-2">
+                <a href="{{ url_for('notes.drive_authorize') }}" class="btn btn-outline-secondary btn-sm me-2">Importar Drive</a>
+                <a href="{{ url_for('notes.dropbox_authorize') }}" class="btn btn-outline-secondary btn-sm">Importar Dropbox</a>
+              </div>
             </div>
             <canvas id="pdfPreview" class="w-100 border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;"></canvas>
             <img loading="lazy" id="imgPreview" class="img-fluid border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;" />
