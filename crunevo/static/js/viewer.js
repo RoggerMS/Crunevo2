@@ -1,6 +1,19 @@
+let annotationHandler = null;
+function setAnnotationHook(fn) {
+  annotationHandler = typeof fn === 'function' ? fn : null;
+}
+
 function initNoteViewer() {
   const container = document.getElementById('noteViewer');
   if (!container) return;
+  const fullBtn = document.getElementById('fullscreenBtn');
+  fullBtn?.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      container.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
+  });
   const type = container.dataset.type;
   const url = container.dataset.url;
   if (type === 'pdf' && typeof pdfjsLib !== 'undefined') {
@@ -51,6 +64,11 @@ function initNoteViewer() {
         renderPage(pageNum);
       }
     });
+    canvas.addEventListener('dblclick', (ev) => {
+      if (annotationHandler) {
+        annotationHandler({ page: pageNum, x: ev.offsetX, y: ev.offsetY });
+      }
+    });
   } else if (type === 'image') {
     const img = document.createElement('img');
     img.src = url;
@@ -63,3 +81,5 @@ function initNoteViewer() {
     container.appendChild(p);
   }
 }
+
+window.setAnnotationHook = setAnnotationHook;
