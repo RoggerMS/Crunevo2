@@ -19,6 +19,7 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "static/uploads")
+    INVOICE_FOLDER = os.getenv("INVOICE_FOLDER", "static/invoices")
     TRANSLATIONS_FOLDER = os.getenv("TRANSLATIONS_FOLDER", "static/translations")
     NOTE_TRANSLATION_LANGS = os.getenv("NOTE_TRANSLATION_LANGS", "en").split(",")
 
