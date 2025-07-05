@@ -576,3 +576,4 @@
 - Added weekly database backup job uploading to S3 via apscheduler (PR db-backup).
 - SiteConfig table stores MAINTENANCE_MODE loaded on startup (PR maintenance-db-flag).
 
+- Dashboard charts now use real registration and content metrics; docs added (PR admin-dashboard-metrics).

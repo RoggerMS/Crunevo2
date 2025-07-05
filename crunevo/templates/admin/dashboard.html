@@ -305,10 +305,10 @@ document.addEventListener('DOMContentLoaded', function() {
   new Chart(growthCtx, {
     type: 'line',
     data: {
-      labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+      labels: {{ reg_labels|tojson }},
       datasets: [{
         label: 'Nuevos usuarios',
-        data: [12, 19, 15, 25, 22, 18, 28],
+        data: {{ reg_counts|tojson }},
         borderColor: '#667eea',
         backgroundColor: 'rgba(102, 126, 234, 0.1)',
         tension: 0.4,
@@ -341,15 +341,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Activity Chart
   const activityCtx = document.getElementById('activityChart').getContext('2d');
+  const activityData = {{ content_counts|tojson }};
   new Chart(activityCtx, {
     type: 'doughnut',
     data: {
-      labels: ['Posts', 'Apuntes', 'Comentarios', 'Compras'],
+      labels: Object.keys(activityData),
       datasets: [{
-        data: [40, 30, 20, 10],
+        data: Object.values(activityData),
         backgroundColor: [
           '#667eea',
-          '#764ba2', 
+          '#764ba2',
           '#f093fb',
           '#f5576c'
         ],
