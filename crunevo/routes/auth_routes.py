@@ -244,6 +244,7 @@ def perfil():
         Note,
         PostComment,
         Comment,
+        Purchase,
     )
     from crunevo.constants import ACHIEVEMENT_CATEGORIES
 
@@ -368,6 +369,7 @@ def perfil():
     referidos_completados = 0
     enlace_referido = None
     creditos_referidos = 0
+    purchases = None
     if tab == "misiones":
         from crunevo.routes.missions_routes import (
             compute_mission_states,
@@ -383,6 +385,12 @@ def perfil():
             .all()
         )
         group_progress = compute_group_mission_states(current_user)
+    elif tab == "compras":
+        purchases = (
+            Purchase.query.filter_by(user_id=current_user.id)
+            .order_by(Purchase.timestamp.desc())
+            .all()
+        )
     elif tab == "referidos":
         from crunevo.models import Referral
         from crunevo.models import Credit
@@ -427,6 +435,7 @@ def perfil():
         completed_missions_count=completed_missions_count,
         participation_percentage=participation_percentage,
         recent_activities=recent_activities,
+        purchases=purchases,
     )
 
 

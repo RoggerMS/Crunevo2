@@ -121,6 +121,10 @@
                href="{{ url_for('auth.perfil', tab='misiones') }}">
               <i class="bi bi-trophy"></i> Misiones
             </a>
+            <a class="nav-link {% if tab == 'compras' %}active{% endif %}"
+               href="{{ url_for('auth.perfil', tab='compras') }}">
+              <i class="bi bi-receipt"></i> Compras
+            </a>
             <a class="nav-link {% if tab == 'logros' %}active{% endif %}"
                href="{{ url_for('auth.perfil', tab='logros') }}">
               <i class="bi bi-award"></i> Logros
@@ -309,6 +313,36 @@
         <!-- Missions Tab -->
         <div class="tab-pane fade {% if tab == 'misiones' %}show active{% endif %}" id="missions-tab">
           {% include 'auth/missions_tab.html' %}
+        </div>
+
+        <!-- Purchases Tab -->
+        <div class="tab-pane fade {% if tab == 'compras' %}show active{% endif %}" id="purchases-tab">
+          {% for compra in purchases or [] %}
+          <div class="card mb-3">
+            <div class="row g-0">
+              <div class="col-md-2 text-center">
+                <img loading="lazy" src="{{ compra.product.image_url or '/static/img/producto-default.png' }}" class="img-fluid rounded-start">
+              </div>
+              <div class="col-md-10">
+                <div class="card-body">
+                  <h5 class="card-title">{{ compra.product.name }}</h5>
+                  <p class="card-text text-muted">Comprado el {{ compra.timestamp.strftime('%d/%m/%Y') }}</p>
+                  {% if compra.price_soles %}
+                  <p class="card-text text-primary">S/ {{ '%.2f'|format(compra.price_soles) }}</p>
+                  {% elif compra.price_credits %}
+                  <p class="card-text text-warning">{{ compra.price_credits }} crolars</p>
+                  {% endif %}
+                  <a href="{{ url_for('store.download_receipt', purchase_id=compra.id) }}" class="btn btn-outline-secondary btn-sm me-2">Descargar comprobante</a>
+                  {% if compra.product.download_url %}
+                  <a href="{{ compra.product.download_url }}" target="_blank" class="btn btn-success btn-sm">Descargar</a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <p class="text-muted">Aún no has comprado nada.</p>
+          {% endfor %}
         </div>
 
         <!-- Achievements Tab -->

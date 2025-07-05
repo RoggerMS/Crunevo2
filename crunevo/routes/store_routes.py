@@ -9,9 +9,10 @@ from flask import (
     send_file,
     jsonify,
 )
-import io
+import os
 from datetime import datetime, timedelta
 from flask_login import current_user
+from flask import current_app
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db, limiter
 from crunevo.models import (
@@ -375,6 +376,7 @@ def checkout():
     if shipping_option == "delivery":
         shipping_address = request.form.get("shipping_address")
     shipping_message = request.form.get("shipping_message")
+    purchases_created = []
     for item in cart_items:
         product = item["product"]
         qty = item["quantity"]
@@ -394,11 +396,16 @@ def checkout():
             timestamp=datetime.utcnow(),
         )
         db.session.add(purchase)
+        purchases_created.append(purchase)
         product.stock -= qty
         if qty == 1 and product.download_url and not download_url:
             download_url = product.download_url
 
     db.session.commit()
+    from crunevo.utils.invoice import generate_invoice
+
+    for purchase in purchases_created:
+        generate_invoice(purchase)
     session.pop("cart", None)
     return render_template("store/checkout_success.html", download_url=download_url)
 
@@ -483,33 +490,15 @@ def download_receipt(purchase_id: int):
     purchase = Purchase.query.filter_by(
         id=purchase_id, user_id=current_user.id
     ).first_or_404()
-    buffer = io.BytesIO()
-    from reportlab.lib.pagesizes import letter
-    from reportlab.pdfgen import canvas
+    folder = current_app.config.get("INVOICE_FOLDER", "static/invoices")
+    filename = f"invoice_{purchase.id}.pdf"
+    path = os.path.join(folder, filename)
+    if not os.path.exists(path):
+        from crunevo.utils.invoice import generate_invoice
 
-    c = canvas.Canvas(buffer, pagesize=letter)
-    c.setFont("Helvetica", 14)
-    c.drawString(100, 750, "Comprobante de compra")
-    c.setFont("Helvetica", 12)
-    c.drawString(100, 720, f"Producto: {purchase.product.name}")
-    if purchase.price_soles:
-        precio = f"S/ {float(purchase.price_soles):.2f}"
-    elif purchase.price_credits:
-        precio = f"{purchase.price_credits} crolars"
-    else:
-        precio = "—"
-    c.drawString(100, 700, f"Precio: {precio}")
-    c.drawString(
-        100,
-        680,
-        f"Fecha: {purchase.timestamp.strftime('%d/%m/%Y %H:%M')}",
-    )
-    c.drawString(100, 660, f"Código de transacción: {purchase.id}")
-    c.showPage()
-    c.save()
-    buffer.seek(0)
+        generate_invoice(purchase)
     return send_file(
-        buffer,
+        path,
         mimetype="application/pdf",
         as_attachment=True,
         download_name=f"comprobante_{purchase.id}.pdf",

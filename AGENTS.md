@@ -613,3 +613,4 @@
 - Added `career` and `interests` fields to users with notifications filtered by these attributes (PR user-career-interests).
 - Added LinkedIn sharing and posting for certificates with OAuth integration (PR linkedin-share)
 - Added Internship model with application routes and filters by field/location (PR internship-system).
+- Generated PDF invoices after each purchase and added profile tab to download them (PR invoice-download).
