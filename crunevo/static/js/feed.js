@@ -367,7 +367,10 @@ class FeedManager {
         body: formData
       });
 
-      if (response.ok) {
+      if (response.status === 202) {
+        this.showToast('Comentario pendiente de aprobación', 'info');
+        input.value = '';
+      } else if (response.ok) {
         const comment = await response.json();
         this.addCommentToUI(comment);
         input.value = '';

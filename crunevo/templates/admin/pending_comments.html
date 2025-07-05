@@ -1,0 +1,72 @@
+{% extends 'admin/base_admin.html' %}
+{% import 'components/csrf.html' as csrf %}
+{% block admin_content %}
+<h2 class="page-title mb-4">Comentarios pendientes</h2>
+<div class="row row-cards">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header"><h3 class="card-title">Publicaciones</h3></div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-vcenter card-table" data-datatable>
+            <thead><tr><th>Autor</th><th>Comentario</th><th>Post</th><th>Acciones</th></tr></thead>
+            <tbody>
+            {% for c, post, user in post_comments %}
+            <tr>
+              <td>{{ user.username if user else 'Anónimo' }}</td>
+              <td>{{ c.body[:40] }}{% if c.body|length > 40 %}...{% endif %}</td>
+              <td><a href="{{ url_for('feed.view_post', post_id=post.id) }}" target="_blank">Post {{ post.id }}</a></td>
+              <td>
+                <form method="post" action="{{ url_for('admin.approve_comment', ctype='post', cid=c.id) }}" class="d-inline">
+                  {{ csrf.csrf_field() }}
+                  <button class="btn btn-success btn-sm">Aprobar</button>
+                </form>
+                <form method="post" action="{{ url_for('admin.reject_comment', ctype='post', cid=c.id) }}" class="d-inline ms-1">
+                  {{ csrf.csrf_field() }}
+                  <button class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 mt-4">
+    <div class="card shadow-sm">
+      <div class="card-header"><h3 class="card-title">Apuntes</h3></div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-vcenter card-table" data-datatable>
+            <thead><tr><th>Autor</th><th>Comentario</th><th>Apunte</th><th>Acciones</th></tr></thead>
+            <tbody>
+            {% for c, note, user in note_comments %}
+            <tr>
+              <td>{{ user.username if user else 'Anónimo' }}</td>
+              <td>{{ c.body[:40] }}{% if c.body|length > 40 %}...{% endif %}</td>
+              <td><a href="{{ url_for('notes.view_note', id=note.id) }}" target="_blank">Apunte {{ note.id }}</a></td>
+              <td>
+                <form method="post" action="{{ url_for('admin.approve_comment', ctype='note', cid=c.id) }}" class="d-inline">
+                  {{ csrf.csrf_field() }}
+                  <button class="btn btn-success btn-sm">Aprobar</button>
+                </form>
+                <form method="post" action="{{ url_for('admin.reject_comment', ctype='note', cid=c.id) }}" class="d-inline ms-1">
+                  {{ csrf.csrf_field() }}
+                  <button class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', initDataTables);
+</script>
+{% endblock %}

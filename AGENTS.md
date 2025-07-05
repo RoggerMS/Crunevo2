@@ -602,3 +602,4 @@
 - Added UserBlock model with chat blocking and attachment uploads for images and files (PR user-blocks-attachments).
 - Purchase model now stores optional shipping address and message; checkout form collects them (PR purchase-shipping)
 - Added PrintRequest model with /notes/<id>/print queue and admin tools to mark prints as cumplidos (PR notes-print-queue)
+- Comments admit anonymous posting stored as pending; admin queue allows approving or rejecting them (PR anonymous-comment-review)

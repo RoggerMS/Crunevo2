@@ -8,3 +8,4 @@ class PostComment(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     post_id = db.Column(db.Integer, db.ForeignKey("post.id"))
+    pending = db.Column(db.Boolean, default=False, index=True)

@@ -8,3 +8,4 @@ class Comment(db.Model):
     created_at = db.Column("timestamp", db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     note_id = db.Column(db.Integer, db.ForeignKey("note.id"))
+    pending = db.Column(db.Boolean, default=False, index=True)
