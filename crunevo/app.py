@@ -167,6 +167,15 @@ def create_app():
         api_base_url="https://api.dropboxapi.com/2/",
         client_kwargs={"token_endpoint_auth_method": "client_secret_post"},
     )
+    oauth.register(
+        name="linkedin",
+        client_id=app.config.get("LINKEDIN_CLIENT_ID"),
+        client_secret=app.config.get("LINKEDIN_CLIENT_SECRET"),
+        access_token_url="https://www.linkedin.com/oauth/v2/accessToken",
+        authorize_url="https://www.linkedin.com/oauth/v2/authorization",
+        api_base_url="https://api.linkedin.com/v2/",
+        client_kwargs={"scope": "r_liteprofile w_member_social"},
+    )
     limiter._storage_uri = app.config.get("RATELIMIT_STORAGE_URI")
     limiter.init_app(app)
     if app.config.get("ENABLE_TALISMAN", True):
