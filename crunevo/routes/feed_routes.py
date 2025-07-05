@@ -519,7 +519,6 @@ def like_post(post_id):
 
 
 @feed_bp.route("/comment/<int:post_id>", methods=["POST"])
-@activated_required
 def comment_post(post_id):
     post = Post.query.get_or_404(post_id)
     if post.comment_permission == "none" and post.author_id != current_user.id:
@@ -532,23 +531,28 @@ def comment_post(post_id):
     body = request.form.get("body", "").strip()
     if not body:
         return jsonify({"error": "Comentario vacío"}), 400
-    comment = PostComment(body=body, author=current_user, post=post)
+    if current_user.is_authenticated:
+        comment = PostComment(body=body, author=current_user, post=post)
+    else:
+        comment = PostComment(body=body, post=post, pending=True)
     db.session.add(comment)
     db.session.commit()
-    record_activity("comment_post", comment.id, "post")
-    if post.author_id != current_user.id:
-        send_notification(
-            post.author_id,
-            f"{current_user.username} comentó tu publicación",
-            url_for("feed.view_post", post_id=post.id),
+    if current_user.is_authenticated:
+        record_activity("comment_post", comment.id, "post")
+        if post.author_id != current_user.id:
+            send_notification(
+                post.author_id,
+                f"{current_user.username} comentó tu publicación",
+                url_for("feed.view_post", post_id=post.id),
+            )
+        return jsonify(
+            {
+                "body": comment.body,
+                "author": comment.author.username,
+                "timestamp": comment.timestamp.strftime("%Y-%m-%d %H:%M"),
+            }
         )
-    return jsonify(
-        {
-            "body": comment.body,
-            "author": comment.author.username,
-            "timestamp": comment.timestamp.strftime("%Y-%m-%d %H:%M"),
-        }
-    )
+    return jsonify({"pending": True}), 202
 
 
 @feed_bp.route("/api/comments/<int:post_id>")
@@ -557,7 +561,7 @@ def api_comments(post_id):
     """Return recent comments for a post."""
     post = Post.query.get_or_404(post_id)
     comments = (
-        PostComment.query.filter_by(post_id=post.id)
+        PostComment.query.filter_by(post_id=post.id, pending=False)
         .order_by(PostComment.timestamp.desc())
         .limit(50)
         .all()

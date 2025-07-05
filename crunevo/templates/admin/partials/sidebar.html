@@ -43,6 +43,9 @@
   <a class="nav-link {% if request.endpoint == 'admin.verification_requests' %}active{% endif %}" href="{{ url_for('admin.verification_requests') }}">
     <i class="ti ti-check me-2"></i> Verificaciones
   </a>
+  <a class="nav-link {% if request.endpoint == 'admin.pending_comments' %}active{% endif %}" href="{{ url_for('admin.pending_comments') }}">
+    <i class="ti ti-message me-2"></i> Comentarios pendientes
+  </a>
   {% if 'admin.manage_achievements' in url_for.__globals__.get('current_app', {}).view_functions %}
   <a class="nav-link {% if request.endpoint == 'admin.manage_achievements' %}active{% endif %}" href="{{ url_for('admin.manage_achievements') }}">
     <i class="ti ti-award me-2"></i> Logros

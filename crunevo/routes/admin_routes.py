@@ -352,6 +352,56 @@ def approve_verification(request_id):
     return redirect(url_for("admin.verification_requests"))
 
 
+@admin_bp.route("/pending-comments")
+def pending_comments():
+    """Review queue for anonymous comments."""
+    post_comments = (
+        db.session.query(PostComment, Post, User)
+        .join(Post, PostComment.post_id == Post.id)
+        .outerjoin(User, PostComment.author_id == User.id)
+        .filter(PostComment.pending.is_(True))
+        .all()
+    )
+    note_comments = (
+        db.session.query(Comment, Note, User)
+        .join(Note, Comment.note_id == Note.id)
+        .outerjoin(User, Comment.user_id == User.id)
+        .filter(Comment.pending.is_(True))
+        .all()
+    )
+    return render_template(
+        "admin/pending_comments.html",
+        post_comments=post_comments,
+        note_comments=note_comments,
+    )
+
+
+@admin_bp.route("/pending-comments/<string:ctype>/<int:cid>/approve", methods=["POST"])
+def approve_comment(ctype, cid):
+    """Approve a pending comment."""
+    model = PostComment if ctype == "post" else Comment
+    comment = model.query.get_or_404(cid)
+    comment.pending = False
+    if isinstance(comment, Comment):
+        comment.note.comments_count += 1
+    db.session.commit()
+    flash("Comentario aprobado", "success")
+    log_admin_action(f"Aprob\u00f3 comentario {cid}")
+    return redirect(url_for("admin.pending_comments"))
+
+
+@admin_bp.route("/pending-comments/<string:ctype>/<int:cid>/reject", methods=["POST"])
+def reject_comment(ctype, cid):
+    """Delete a pending comment."""
+    model = PostComment if ctype == "post" else Comment
+    comment = model.query.get_or_404(cid)
+    db.session.delete(comment)
+    db.session.commit()
+    flash("Comentario eliminado", "success")
+    log_admin_action(f"Elimin\u00f3 comentario {cid}")
+    return redirect(url_for("admin.pending_comments"))
+
+
 @admin_bp.route("/products/new", methods=["POST"])
 def add_product():
     """Legacy add product route blocked for moderators."""

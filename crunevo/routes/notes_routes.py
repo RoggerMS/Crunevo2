@@ -296,31 +296,38 @@ notes_bp.add_url_rule("/<int:id>", endpoint="view_note", view_func=detail)
 
 
 @notes_bp.route("/<int:note_id>/comment", methods=["POST"])
-@activated_required
 def add_comment(note_id):
     note = Note.query.get_or_404(note_id)
     body = request.form["body"]
-    comment = Comment(body=body, author=current_user, note=note)
-    db.session.add(comment)
-    note.comments_count += 1
-    db.session.commit()
-    record_activity("comment_note", comment.id, "note")
-    if note.user_id != current_user.id:
-        send_notification(
-            note.user_id,
-            f"{current_user.username} comentó tu apunte",
-            url_for("notes.view_note", id=note.id),
-        )
-    update_feed_score(note.id)
-    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        return jsonify(
-            {
-                "body": comment.body,
-                "author": comment.author.username,
-                "timestamp": comment.created_at.strftime("%Y-%m-%d %H:%M"),
-            }
-        )
-    return redirect(url_for("notes.view_note", id=note_id))
+    if current_user.is_authenticated:
+        comment = Comment(body=body, author=current_user, note=note)
+        db.session.add(comment)
+        note.comments_count += 1
+        db.session.commit()
+        record_activity("comment_note", comment.id, "note")
+        if note.user_id != current_user.id:
+            send_notification(
+                note.user_id,
+                f"{current_user.username} comentó tu apunte",
+                url_for("notes.view_note", id=note.id),
+            )
+        update_feed_score(note.id)
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify(
+                {
+                    "body": comment.body,
+                    "author": comment.author.username,
+                    "timestamp": comment.created_at.strftime("%Y-%m-%d %H:%M"),
+                }
+            )
+        return redirect(url_for("notes.view_note", id=note_id))
+    else:
+        comment = Comment(body=body, note=note, pending=True)
+        db.session.add(comment)
+        db.session.commit()
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({"pending": True}), 202
+        return redirect(url_for("notes.view_note", id=note_id))
 
 
 @notes_bp.route("/<int:note_id>/like", methods=["POST"])
