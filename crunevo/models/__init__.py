@@ -36,3 +36,4 @@ from .club import Club, ClubMember  # noqa: F401
 from .two_factor_token import TwoFactorToken  # noqa: F401
 from .verification_request import VerificationRequest  # noqa: F401
 from .user_activity import UserActivity  # noqa: F401
+from .site_config import SiteConfig  # noqa: F401

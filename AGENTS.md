@@ -574,3 +574,5 @@
 - Added VerificationRequest model with admin approval workflow and profile badges. (PR verification-requests)
 - Added UserActivity model tracking posts, comments and logins with new dashboard activity page. (PR user-activity-tracking)
 - Added weekly database backup job uploading to S3 via apscheduler (PR db-backup).
+- SiteConfig table stores MAINTENANCE_MODE loaded on startup (PR maintenance-db-flag).
+
