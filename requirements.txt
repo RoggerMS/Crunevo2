@@ -37,3 +37,4 @@ openai>=1.0.0
 eventlet==0.35.2
 pyotp==2.9.0
 boto3==1.34.14
+mutagen==1.47.0

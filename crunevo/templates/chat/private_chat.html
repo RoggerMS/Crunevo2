@@ -83,7 +83,11 @@
           {% for message in messages %}
           <div class="message-bubble {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}">
             <div class="bubble-content {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}">
-              {{ message.content }}
+              {% if message.content.endswith('.mp3') or message.content.endswith('.ogg') %}
+                <audio controls src="{{ message.content }}" class="w-100 mt-1"></audio>
+              {% else %}
+                {{ message.content }}
+              {% endif %}
             </div>
             <div class="message-time">{{ message.timestamp.strftime('%H:%M') }}</div>
           </div>
@@ -91,9 +95,13 @@
         </div>
         
         <div class="card-footer">
-          <form id="messageForm" class="d-flex gap-2">
-            <input type="text" id="messageInput" class="form-control" 
-                   placeholder="Escribe un mensaje..." maxlength="1000" required>
+          <form id="messageForm" class="d-flex gap-2" enctype="multipart/form-data">
+            <input type="text" id="messageInput" class="form-control"
+                   placeholder="Escribe un mensaje..." maxlength="1000">
+            <input type="file" id="audioInput" accept=".mp3,.ogg" class="form-control d-none">
+            <button type="button" id="audioBtn" class="btn btn-outline-secondary" aria-label="Adjuntar audio">
+              <i class="bi bi-mic"></i>
+            </button>
             <button type="submit" class="btn btn-primary">
               <i class="bi bi-send"></i>
             </button>
@@ -108,6 +116,8 @@
 document.addEventListener('DOMContentLoaded', function() {
   const form = document.getElementById('messageForm');
   const input = document.getElementById('messageInput');
+  const audioInput = document.getElementById('audioInput');
+  const audioBtn = document.getElementById('audioBtn');
   const container = document.getElementById('messagesContainer');
   const partnerId = {{ partner.id }};
   let lastMessageId = {{ messages[-1].id if messages else 0 }};
@@ -116,27 +126,32 @@ document.addEventListener('DOMContentLoaded', function() {
   container.scrollTop = container.scrollHeight;
   
   // Enviar mensaje
+  audioBtn.addEventListener('click', () => audioInput.click());
+
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     const content = input.value.trim();
-    if (!content) return;
-    
+    const file = audioInput.files[0];
+    if (!content && !file) return;
+
+    const formData = new FormData();
+    formData.append('content', content);
+    formData.append('receiver_id', partnerId);
+    formData.append('is_global', 'false');
+    if (file) formData.append('audio', file);
+
     fetch('/chat/enviar', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content
       },
-      body: JSON.stringify({
-        content: content,
-        receiver_id: partnerId,
-        is_global: false
-      })
+      body: formData
     })
     .then(response => response.json())
     .then(data => {
       if (data.status === 'ok') {
         input.value = '';
+        audioInput.value = '';
         addMessage(data.message, true);
         lastMessageId = data.message.id;
       }
@@ -162,9 +177,13 @@ document.addEventListener('DOMContentLoaded', function() {
   function addMessage(message, isSent) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message-bubble ${isSent ? 'sent' : 'received'}`;
+    let body = message.content || '';
+    if (message.audio_url) {
+      body += `<audio controls src="${message.audio_url}" class="w-100 mt-1"></audio>`;
+    }
     messageDiv.innerHTML = `
       <div class="bubble-content ${isSent ? 'sent' : 'received'}">
-        ${message.content}
+        ${body}
       </div>
       <div class="message-time">${new Date(message.timestamp).toLocaleTimeString()}</div>
     `;

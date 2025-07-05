@@ -106,11 +106,15 @@
         <div id="chatContainer" class="chat-container">
           {% for message in messages %}
           <div class="message-item {% if message.sender_id == current_user.id %}own{% endif %}">
-            <img src="{{ message.sender.avatar_url or url_for('static', filename='img/default.png') }}" 
+            <img src="{{ message.sender.avatar_url or url_for('static', filename='img/default.png') }}"
                  alt="{{ message.sender.username }}" class="user-avatar">
             <div class="message-content">
               <div class="fw-semibold small">{{ message.sender.username }}</div>
-              {{ message.content }}
+              {% if message.content.endswith('.mp3') or message.content.endswith('.ogg') %}
+                <audio controls src="{{ message.content }}" class="w-100 mt-1"></audio>
+              {% else %}
+                {{ message.content }}
+              {% endif %}
               <div class="message-meta">
                 {{ message.timestamp.strftime('%H:%M') }}
               </div>
@@ -120,9 +124,13 @@
         </div>
         
         <div class="chat-input">
-          <form id="messageForm" class="d-flex gap-2">
+          <form id="messageForm" class="d-flex gap-2" enctype="multipart/form-data">
             <input type="text" id="messageInput" class="form-control rounded-pill"
-                   placeholder="Escribe un mensaje..." maxlength="1000" required>
+                   placeholder="Escribe un mensaje..." maxlength="1000">
+            <input type="file" id="audioInput" accept=".mp3,.ogg" class="form-control d-none">
+            <button type="button" id="audioBtn" class="btn btn-outline-secondary rounded-pill" aria-label="Adjuntar audio">
+              <i class="bi bi-mic"></i>
+            </button>
             <button type="submit" class="btn btn-primary rounded-pill">
               <i class="bi bi-send"></i>
             </button>
@@ -165,6 +173,8 @@
 document.addEventListener('DOMContentLoaded', function() {
   const form = document.getElementById('messageForm');
   const input = document.getElementById('messageInput');
+  const audioInput = document.getElementById('audioInput');
+  const audioBtn = document.getElementById('audioBtn');
   const container = document.getElementById('chatContainer');
   let lastMessageId = {{ messages[-1].id if messages else 0 }};
   
@@ -172,26 +182,31 @@ document.addEventListener('DOMContentLoaded', function() {
   container.scrollTop = container.scrollHeight;
   
   // Send message
+  audioBtn.addEventListener('click', () => audioInput.click());
+
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     const content = input.value.trim();
-    if (!content) return;
-    
+    const file = audioInput.files[0];
+    if (!content && !file) return;
+
+    const formData = new FormData();
+    formData.append('content', content);
+    formData.append('is_global', 'true');
+    if (file) formData.append('audio', file);
+
     fetch('/chat/enviar', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content
       },
-      body: JSON.stringify({
-        content: content,
-        is_global: true
-      })
+      body: formData
     })
     .then(response => response.json())
     .then(data => {
       if (data.status === 'ok') {
         input.value = '';
+        audioInput.value = '';
         addMessage(data.message);
         lastMessageId = data.message.id;
       }
@@ -242,12 +257,16 @@ document.addEventListener('DOMContentLoaded', function() {
   function addMessage(message) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message-item ${message.sender_id === {{ current_user.id }} ? 'own' : ''}`;
+    let body = message.content || '';
+    if (message.audio_url) {
+      body += `<audio controls src="${message.audio_url}" class="w-100 mt-1"></audio>`;
+    }
     messageDiv.innerHTML = `
-      <img src="${message.sender_avatar || '/static/img/default.png'}" 
+      <img src="${message.sender_avatar || '/static/img/default.png'}"
            alt="${message.sender_username}" class="user-avatar">
       <div class="message-content">
         <div class="fw-semibold small">${message.sender_username}</div>
-        ${message.content}
+        ${body}
         <div class="message-meta">
           ${new Date(message.timestamp).toLocaleTimeString()}
         </div>

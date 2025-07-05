@@ -1,4 +1,13 @@
-from flask import Blueprint, render_template, request, jsonify, url_for, redirect, flash
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    jsonify,
+    url_for,
+    redirect,
+    flash,
+    current_app,
+)
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
@@ -7,6 +16,10 @@ from crunevo.utils import send_notification
 from sqlalchemy import or_, and_
 from crunevo.cache.active_users import mark_online, get_active_ids
 from crunevo.utils.content_filter import sanitize_message
+from werkzeug.utils import secure_filename
+import os
+import cloudinary.uploader
+from mutagen import File as AudioFile
 
 chat_bp = Blueprint("chat", __name__, url_prefix="/chat")
 
@@ -124,10 +137,41 @@ def private_chat(user_id):
 @activated_required
 def send_message():
     """Enviar mensaje (global o privado)"""
-    data = request.get_json() or request.form
+    data = request.form
+    audio = request.files.get("audio")
     content = sanitize_message(data.get("content", "").strip())
     receiver_id = data.get("receiver_id")
     is_global = data.get("is_global", False)
+
+    audio_url = None
+    if audio and audio.filename:
+        ext = os.path.splitext(audio.filename)[1].lower()
+        if ext not in {".mp3", ".ogg"}:
+            return jsonify({"error": "Formato de audio no permitido"}), 400
+        try:
+            info = AudioFile(audio)
+            if info and info.info.length > 30:
+                return jsonify({"error": "Audio demasiado largo"}), 400
+        except Exception:
+            pass
+
+        cloud_url = current_app.config.get("CLOUDINARY_URL")
+        try:
+            if cloud_url:
+                res = cloudinary.uploader.upload(audio, resource_type="auto")
+                audio_url = res["secure_url"]
+            else:
+                filename = secure_filename(audio.filename)
+                upload_folder = current_app.config["UPLOAD_FOLDER"]
+                os.makedirs(upload_folder, exist_ok=True)
+                filepath = os.path.join(upload_folder, filename)
+                audio.save(filepath)
+                audio_url = filepath
+        except Exception:
+            current_app.logger.exception("Error al subir audio")
+            return jsonify({"error": "No se pudo subir el audio"}), 500
+
+        content = audio_url
 
     if not content:
         return jsonify({"error": "Mensaje vacío"}), 400
@@ -155,10 +199,14 @@ def send_message():
             url_for("chat.private_chat", user_id=current_user.id),
         )
 
+    msg_dict = message.to_dict()
+    msg_dict["sender_avatar"] = current_user.avatar_url
+    if audio_url:
+        msg_dict["audio_url"] = audio_url
     return jsonify(
         {
             "status": "ok",
-            "message": message.to_dict(),
+            "message": msg_dict,
             "timestamp": message.timestamp.strftime("%H:%M"),
         }
     )
@@ -181,7 +229,14 @@ def get_global_messages():
         .all()
     )
 
-    return jsonify([msg.to_dict() for msg in messages])
+    def augment(msg):
+        data = msg.to_dict()
+        data["sender_avatar"] = msg.sender.avatar_url
+        if msg.content.endswith((".mp3", ".ogg")):
+            data["audio_url"] = msg.content
+        return data
+
+    return jsonify([augment(m) for m in messages])
 
 
 @chat_bp.route("/mensajes/privados/<int:user_id>")
@@ -209,7 +264,14 @@ def get_private_messages(user_id):
         .all()
     )
 
-    return jsonify([msg.to_dict() for msg in messages])
+    def augment(msg):
+        data = msg.to_dict()
+        data["sender_avatar"] = msg.sender.avatar_url
+        if msg.content.endswith((".mp3", ".ogg")):
+            data["audio_url"] = msg.content
+        return data
+
+    return jsonify([augment(m) for m in messages])
 
 
 @chat_bp.route("/usuarios/buscar")
