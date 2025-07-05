@@ -582,3 +582,4 @@
 - Widget de apuntes embebible con ruta /notes/<id>/embed y botón de copiado en detalle (PR notes-embed-widget).
 - Consolidated DOMContentLoaded handlers from courses, events and private chat into main.js (PR domcontent-consolidation).
 - PageView logging commits after each request and skips health endpoints (PR pageview-commit-after-request).
+- Patched eventlet websocket close to ignore EBADF and prevent noisy 'Bad file descriptor' logs (PR websocket-ebadf-fix).
