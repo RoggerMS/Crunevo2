@@ -24,6 +24,7 @@ from crunevo.models import (
     Product,
     ProductLog,
     FeedItem,
+    SiteConfig,
     VerificationRequest,
 )
 from crunevo.utils.helpers import admin_required
@@ -343,14 +344,24 @@ def run_ranking():
 def toggle_maintenance():
     """Toggle maintenance mode."""
     current = current_app.config.get("MAINTENANCE_MODE", False)
-    current_app.config["MAINTENANCE_MODE"] = not current
+    new_value = not current
+    current_app.config["MAINTENANCE_MODE"] = new_value
+
+    cfg = SiteConfig.query.filter_by(key="maintenance_mode").first()
+    if cfg:
+        cfg.value = "1" if new_value else "0"
+    else:
+        cfg = SiteConfig(key="maintenance_mode", value="1" if new_value else "0")
+        db.session.add(cfg)
+    db.session.commit()
+
     log_admin_action(
-        "Activ\u00f3 mantenimiento" if not current else "Desactiv\u00f3 mantenimiento"
+        "Activ\u00f3 mantenimiento" if new_value else "Desactiv\u00f3 mantenimiento"
     )
     flash(
         (
             "Modo mantenimiento activado"
-            if not current
+            if new_value
             else "Modo mantenimiento desactivado"
         ),
         "success",

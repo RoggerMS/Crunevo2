@@ -161,6 +161,15 @@ def create_app():
             except Exception as e:
                 app.logger.error(f"Database initialization error: {e}")
 
+        try:
+            from .models import SiteConfig
+
+            cfg = SiteConfig.query.filter_by(key="maintenance_mode").first()
+            if cfg:
+                app.config["MAINTENANCE_MODE"] = cfg.value == "1"
+        except Exception as e:  # pragma: no cover - safeguard on startup
+            app.logger.error(f"Error loading maintenance flag: {e}")
+
     from .routes.onboarding_routes import bp as onboarding_bp
     from .routes.auth_routes import auth_bp
     from .routes.notes_routes import notes_bp
