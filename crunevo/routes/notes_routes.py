@@ -26,7 +26,12 @@ from crunevo.models import (
     Referral,
 )
 from crunevo.utils.credits import add_credit
-from crunevo.utils import unlock_achievement, send_notification, record_activity
+from crunevo.utils import (
+    unlock_achievement,
+    send_notification,
+    record_activity,
+    suggest_categories,
+)
 from crunevo.utils.scoring import update_feed_score
 from crunevo.cache.feed_cache import remove_item
 from crunevo.constants import CreditReasons, AchievementCodes
@@ -118,6 +123,7 @@ def upload_note():
             return redirect(url_for("notes.upload_note"))
 
         description = request.form.get("description", "")
+        category = request.form.get("category", "")
         f = request.files.get("file")
         if not f or not f.filename:
             flash("Selecciona un archivo", "danger")
@@ -165,12 +171,18 @@ def upload_note():
             flash("Ocurrió un problema al subir el archivo", "danger")
             return redirect(url_for("notes.upload_note"))
 
+        if not category:
+            cats = current_app.config.get("NOTE_CATEGORIES", [])
+            suggested = suggest_categories(f"{title} {description}", cats)
+            if suggested:
+                category = suggested[0]
+
         note = Note(
             title=title,
             description=description,
             filename=filepath,
             tags=request.form.get("tags"),
-            category=request.form.get("category"),
+            category=category,
             language=request.form.get("language"),
             reading_time=request.form.get("reading_time"),
             content_type=request.form.get("content_type"),
@@ -215,6 +227,15 @@ notes_bp.add_url_rule(
 def tag_suggestions():
     """Return predefined tag suggestions."""
     return jsonify(current_app.config.get("TAG_SUGGESTIONS", []))
+
+
+@notes_bp.route("/api/categorize", methods=["POST"])
+def categorize_text():
+    """Return category suggestions for provided text."""
+    data = request.get_json() or {}
+    text = data.get("text", "")
+    cats = current_app.config.get("NOTE_CATEGORIES", [])
+    return jsonify(suggest_categories(text, cats))
 
 
 @notes_bp.route("/<int:note_id>")

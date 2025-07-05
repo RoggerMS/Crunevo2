@@ -28,6 +28,7 @@
                 <option value="{{ cat }}">{{ cat }}</option>
                 {% endfor %}
               </select>
+              <div class="mt-2" id="categorySuggestions"></div>
             </div>
 
 
@@ -144,6 +145,10 @@
     const imgPrev = document.getElementById('imgPreview');
     const form = document.getElementById('noteUploadForm');
     const btn = document.getElementById('uploadBtn');
+    const catSelect = document.getElementById('category');
+    const catBox = document.getElementById('categorySuggestions');
+    const descInput = document.getElementById('description');
+    const titleInput = document.getElementById('title');
 
     fileInput.addEventListener('change', () => {
       const file = fileInput.files[0];
@@ -182,6 +187,30 @@
     const tagContainer = document.getElementById('tagsContainer');
     const hiddenTags = document.getElementById('tagsHidden');
     const picked = [];
+
+    function fetchCategorySuggestions() {
+      const text = `${titleInput.value} ${descInput.value}`.trim();
+      if (!text) return;
+      fetch('{{ url_for('notes.categorize_text') }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      })
+        .then(r => r.json())
+        .then(data => {
+          catBox.innerHTML = '';
+          data.forEach(c => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-sm btn-outline-primary me-1 mb-1';
+            btn.textContent = c;
+            btn.addEventListener('click', () => {
+              catSelect.value = c;
+            });
+            catBox.appendChild(btn);
+          });
+        });
+    }
 
     function renderTags() {
       tagContainer.innerHTML = '';
@@ -232,6 +261,9 @@
     tagInput.addEventListener('input', () => {
       showSuggestions(tagInput.value.trim());
     });
+
+    titleInput.addEventListener('blur', fetchCategorySuggestions);
+    descInput.addEventListener('blur', fetchCategorySuggestions);
 
     tagInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && tagInput.value.trim()) {
