@@ -26,7 +26,7 @@ from crunevo.models import (
     Referral,
 )
 from crunevo.utils.credits import add_credit
-from crunevo.utils import unlock_achievement, send_notification
+from crunevo.utils import unlock_achievement, send_notification, record_activity
 from crunevo.utils.scoring import update_feed_score
 from crunevo.cache.feed_cache import remove_item
 from crunevo.constants import CreditReasons, AchievementCodes
@@ -254,6 +254,7 @@ def add_comment(note_id):
     db.session.add(comment)
     note.comments_count += 1
     db.session.commit()
+    record_activity("comment_note", comment.id, "note")
     if note.user_id != current_user.id:
         send_notification(
             note.user_id,

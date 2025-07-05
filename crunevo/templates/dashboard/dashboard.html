@@ -5,6 +5,7 @@
 <div class="row">
   <div class="col-lg-8">
     <h1 class="mb-4 fw-bold">Dashboard</h1>
+    <a class="btn btn-sm btn-primary" href="{{ url_for('dashboard.activity') }}">Mi actividad</a>
   </div>
   <div class="col-lg-4">
     {% include 'dashboard/_weather.html' %}

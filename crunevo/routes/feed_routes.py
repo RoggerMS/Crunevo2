@@ -36,6 +36,7 @@ from crunevo.utils import (
     create_feed_item_for_all,
     unlock_achievement,
     send_notification,
+    record_activity,
 )
 from crunevo.utils.credits import add_credit, spend_credit
 from crunevo.constants import CreditReasons, AchievementCodes
@@ -146,6 +147,7 @@ def create_post():
     for url in urls:
         db.session.add(PostImage(post_id=post.id, url=url))
     db.session.commit()
+    record_activity("post_created", post.id, "post")
     create_feed_item_for_all("post", post.id)
     flash("Publicación creada")
     return redirect(url_for("feed.view_feed"))
@@ -521,6 +523,7 @@ def comment_post(post_id):
     comment = PostComment(body=body, author=current_user, post=post)
     db.session.add(comment)
     db.session.commit()
+    record_activity("comment_post", comment.id, "post")
     if post.author_id != current_user.id:
         send_notification(
             post.author_id,

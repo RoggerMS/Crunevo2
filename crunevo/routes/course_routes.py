@@ -3,6 +3,7 @@ from flask_login import current_user
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
 from crunevo.models import Course, SavedCourse
+from crunevo.utils import record_activity
 from sqlalchemy import desc
 
 course_bp = Blueprint("courses", __name__, url_prefix="/cursos")
@@ -116,6 +117,7 @@ def toggle_save_course(course_id):
         message = "Curso guardado exitosamente"
 
     db.session.commit()
+    record_activity(f"course_{action}", course.id, "course")
 
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return jsonify({"action": action, "message": message})

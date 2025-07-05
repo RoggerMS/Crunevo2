@@ -3,9 +3,10 @@ from __future__ import annotations
 import asyncio
 import requests
 from flask import Blueprint, render_template, request, jsonify, current_app
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 from crunevo.cache import weather_cache
+from crunevo.models import UserActivity
 
 
 dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
@@ -15,6 +16,18 @@ dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 @login_required
 def index():
     return render_template("dashboard/dashboard.html")
+
+
+@dashboard_bp.get("/activity")
+@login_required
+def activity():
+    activities = (
+        UserActivity.query.filter_by(user_id=current_user.id)
+        .order_by(UserActivity.timestamp.desc())
+        .limit(50)
+        .all()
+    )
+    return render_template("dashboard/activity.html", activities=activities)
 
 
 async def fetch_weather(lat: float, lon: float) -> dict | None:
