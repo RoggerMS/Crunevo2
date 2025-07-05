@@ -12,6 +12,8 @@ class Event(db.Model):
     is_featured = db.Column(db.Boolean, default=False)
     rewards = db.Column(db.Text)  # JSON string with reward details
     category = db.Column(db.String(50))
+    jitsi_url = db.Column(db.String(255))
+    zoom_url = db.Column(db.String(255))
     notification_times = db.Column(db.JSON)
     recurring = db.Column(db.String(20))
 

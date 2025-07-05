@@ -63,7 +63,15 @@
                         </div>
                     </div>
                     {% endif %}
-                    
+
+                    {% if event.jitsi_url or event.zoom_url %}
+                    <div class="ratio ratio-16x9 mb-4">
+                        <iframe src="{{ event.jitsi_url or event.zoom_url }}"
+                                allow="camera; microphone; display-capture"
+                                allowfullscreen style="border:0;"></iframe>
+                    </div>
+                    {% endif %}
+
                     <!-- Participation Buttons -->
                     {% if current_user.is_authenticated and event.is_upcoming %}
                     <div class="participation-section">
@@ -117,6 +125,12 @@
                             <strong>Participantes:</strong><br>
                             <span class="text-muted">{{ participant_count }} personas</span>
                         </div>
+                        {% if event.jitsi_url or event.zoom_url %}
+                        <div class="mb-3">
+                            <strong>Enlace:</strong><br>
+                            <a href="{{ event.jitsi_url or event.zoom_url }}" class="link-primary" target="_blank">Unirse a la reunión</a>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
