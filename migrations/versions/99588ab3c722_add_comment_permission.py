@@ -23,21 +23,31 @@ depends_on = None
 
 def upgrade():
     conn = op.get_bind()
-    with op.batch_alter_table("post", schema=None) as batch_op:
-        if not has_col("post", "comment_permission", conn):
-            batch_op.add_column(
-                sa.Column(
-                    "comment_permission",
-                    sa.String(length=10),
-                    nullable=False,
-                    server_default="all",
-                )
-            )
-    op.execute(
-        "UPDATE post SET comment_permission='all' WHERE comment_permission IS NULL"
-    )
-    with op.batch_alter_table("post", schema=None) as batch_op:
-        batch_op.alter_column("comment_permission", server_default=None)
+    added = False
+    if not has_col("post", "comment_permission", conn):
+        op.add_column(
+            "post",
+            sa.Column(
+                "comment_permission",
+                sa.String(length=10),
+                nullable=False,
+                server_default="all",
+            ),
+            schema=None,
+            if_not_exists=True,
+        )
+        added = True
+
+    if added:
+        op.execute(
+            "UPDATE post SET comment_permission='all' WHERE comment_permission IS NULL"
+        )
+        op.alter_column(
+            "post",
+            "comment_permission",
+            server_default=None,
+            schema=None,
+        )
 
 
 def downgrade():

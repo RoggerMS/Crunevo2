@@ -596,3 +596,4 @@
 - Events now include notification_times and recurring; calendar JSON endpoint and missions auto-activate before linked events (PR events-calendar-missions)
 - Fixed is_active column migration using server_default=sa.text('true') to avoid PostgreSQL type mismatch (PR mission-boolean-default-fix).
 - Added migration ensuring two_factor_token table is created if missing (PR twofactor-migration-fix).
+- Migration fix for comment_permission column using op.add_column with if_not_exists (PR comment-permission-migration-fix)
