@@ -119,3 +119,7 @@ class Config:
     )
 
     POST_RETENTION_DAYS = int(os.getenv("POST_RETENTION_DAYS", 30))
+
+    SENTRY_DSN = os.getenv("SENTRY_DSN")
+    SENTRY_ENVIRONMENT = os.getenv("SENTRY_ENVIRONMENT", "production")
+    SENTRY_TRACES_RATE = float(os.getenv("SENTRY_TRACES_RATE", 0))

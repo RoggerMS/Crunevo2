@@ -186,6 +186,10 @@ Si necesitas el token desde JavaScript puedes leerlo con:
 ```javascript
 document.querySelector('meta[name="csrf-token"]').content;
 ```
+
+### Error Monitoring
+
+To capture errors with [Sentry](https://sentry.io/), set the `SENTRY_DSN` environment variable. Additional options `SENTRY_ENVIRONMENT` and `SENTRY_TRACES_RATE` can fine-tune alerts and performance sampling. See `docs/error_monitoring.md` for details.
 ## Visor de PDF integrado (PDF.js)
 
 Desde el commit `Load PDF.js locally`, CRUNEVO utiliza una versión local de PDF.js para visualizar apuntes PDF directamente en el navegador. Esto evita errores por bloqueo de red al cargar desde CDNs y mejora la compatibilidad con Cloudinary.
