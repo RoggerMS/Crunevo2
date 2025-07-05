@@ -5,6 +5,7 @@
   <div class="row g-4">
     <div class="col-md-9 order-md-2">
       <div id="noteViewer" data-url="{{ note.filename }}" data-type="{{ file_type }}"></div>
+      <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="fullscreenBtn">Pantalla completa</button>
       <p class="text-muted small mt-2"><a href="{{ url_for('notes.download_note', note_id=note.id) }}">Descargar archivo</a></p>
     </div>
     <div class="col-md-3 order-md-1">
