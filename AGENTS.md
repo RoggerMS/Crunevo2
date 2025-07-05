@@ -594,3 +594,4 @@
 - Introduced Story model with expiry, /stories routes and scheduled cleanup (PR stories-feature).
 - Onboarding confirm route refreshes user before login to fix feed redirect issue (PR confirm-login-refresh).
 - Events now include notification_times and recurring; calendar JSON endpoint and missions auto-activate before linked events (PR events-calendar-missions)
+- Fixed is_active column migration using server_default=sa.text('true') to avoid PostgreSQL type mismatch (PR mission-boolean-default-fix).
