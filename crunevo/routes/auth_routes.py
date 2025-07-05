@@ -20,7 +20,13 @@ import cloudinary.uploader
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db, csrf
 from crunevo.models import User, Note, TwoFactorToken
-from crunevo.utils import spend_credit, record_login, send_notification, add_credit
+from crunevo.utils import (
+    spend_credit,
+    record_login,
+    send_notification,
+    add_credit,
+    record_activity,
+)
 from crunevo.constants import CreditReasons
 from crunevo.utils.login_streak import streak_reward
 from datetime import date, datetime, timedelta
@@ -78,6 +84,7 @@ def login():
                 return redirect(url_for("auth.verify_token"))
             login_user(user)
             record_login(user)
+            record_activity("login")
             if admin_mode:
                 return redirect(url_for("admin.dashboard"))
             next_page = request.args.get("next")
@@ -112,6 +119,7 @@ def verify_token():
         if valid:
             login_user(user)
             record_login(user)
+            record_activity("login")
             session.pop("2fa_user_id", None)
             next_page = session.pop("next", None)
             admin_mode = current_app.config.get("ADMIN_INSTANCE")
