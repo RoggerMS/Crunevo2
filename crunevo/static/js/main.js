@@ -1399,24 +1399,30 @@ function initPrivateChat() {
   const input = document.getElementById('messageInput');
   const audioInput = document.getElementById('audioInput');
   const audioBtn = document.getElementById('audioBtn');
+  const fileInput = document.getElementById('fileInput');
+  const fileBtn = document.getElementById('fileBtn');
   container.scrollTop = container.scrollHeight;
   audioBtn?.addEventListener('click', () => audioInput?.click());
+  fileBtn?.addEventListener('click', () => fileInput?.click());
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
     const content = input.value.trim();
     const file = audioInput.files[0];
-    if (!content && !file) return;
+    const attach = fileInput.files[0];
+    if (!content && !file && !attach) return;
     const fd = new FormData();
     fd.append('content', content);
     fd.append('receiver_id', partnerId);
     fd.append('is_global', 'false');
     if (file) fd.append('audio', file);
+    if (attach) fd.append('file', attach);
     csrfFetch('/chat/enviar', { method: 'POST', body: fd })
       .then((r) => r.json())
       .then((data) => {
         if (data.status === 'ok') {
           input.value = '';
           audioInput.value = '';
+          if (fileInput) fileInput.value = '';
           addMessage(data.message, true);
           lastId = data.message.id;
         }
@@ -1438,6 +1444,14 @@ function initPrivateChat() {
     let body = message.content || '';
     if (message.audio_url) {
       body += `<audio controls src="${message.audio_url}" class="w-100 mt-1"></audio>`;
+    }
+    if (message.attachment_url) {
+      const ext = message.attachment_url.split('.').pop().toLowerCase();
+      if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+        body += `<img src="${message.attachment_url}" class="img-fluid mt-1" />`;
+      } else {
+        body += `<a href="${message.attachment_url}" target="_blank" class="d-block mt-1">Archivo adjunto</a>`;
+      }
     }
     div.innerHTML = `<div class="bubble-content ${sent ? 'sent' : 'received'}">${body}</div><div class="message-time">${new Date(
       message.timestamp
@@ -1538,25 +1552,31 @@ function initGlobalChat() {
   const input = document.getElementById('messageInput');
   const audioInput = document.getElementById('audioInput');
   const audioBtn = document.getElementById('audioBtn');
+  const fileInput = document.getElementById('fileInput');
+  const fileBtn = document.getElementById('fileBtn');
   let lastId = parseInt(container.dataset.lastId || '0', 10);
   container.scrollTop = container.scrollHeight;
   audioBtn?.addEventListener('click', () => audioInput?.click());
+  fileBtn?.addEventListener('click', () => fileInput?.click());
 
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
     const content = input.value.trim();
     const file = audioInput.files[0];
-    if (!content && !file) return;
+    const attach = fileInput.files[0];
+    if (!content && !file && !attach) return;
     const fd = new FormData();
     fd.append('content', content);
     fd.append('is_global', 'true');
     if (file) fd.append('audio', file);
+    if (attach) fd.append('file', attach);
     csrfFetch('/chat/enviar', { method: 'POST', body: fd })
       .then((r) => r.json())
       .then((data) => {
         if (data.status === 'ok') {
           input.value = '';
           audioInput.value = '';
+          if (fileInput) fileInput.value = '';
           addMessage(data.message);
           lastId = data.message.id;
         }
@@ -1610,6 +1630,14 @@ function initGlobalChat() {
     let body = message.content || '';
     if (message.audio_url) {
       body += `<audio controls src="${message.audio_url}" class="w-100 mt-1"></audio>`;
+    }
+    if (message.attachment_url) {
+      const ext = message.attachment_url.split('.').pop().toLowerCase();
+      if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+        body += `<img src="${message.attachment_url}" class="img-fluid mt-1" />`;
+      } else {
+        body += `<a href="${message.attachment_url}" target="_blank" class="d-block mt-1">Archivo adjunto</a>`;
+      }
     }
     div.innerHTML = `
       <img src="${message.sender_avatar || '/static/img/default.png'}" alt="${message.sender_username}" class="user-avatar">
