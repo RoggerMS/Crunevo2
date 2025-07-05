@@ -14,7 +14,7 @@ from flask import (
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required, verified_required
 from werkzeug.utils import secure_filename
-from crunevo.extensions import db
+from crunevo.extensions import db, talisman
 from crunevo.models import (
     Note,
     Comment,
@@ -30,6 +30,7 @@ from crunevo.utils import unlock_achievement, send_notification, record_activity
 from crunevo.utils.scoring import update_feed_score
 from crunevo.cache.feed_cache import remove_item
 from crunevo.constants import CreditReasons, AchievementCodes
+from crunevo.app import DEFAULT_CSP
 import cloudinary.uploader
 
 notes_bp = Blueprint("notes", __name__, url_prefix="/notes")
@@ -238,6 +239,33 @@ def detail(note_id):
         ftype = "other"
 
     return render_template("notes/detalle.html", note=note, file_type=ftype)
+
+
+@notes_bp.route("/<int:note_id>/embed")
+@talisman(
+    content_security_policy={**DEFAULT_CSP, "frame-ancestors": "*"},
+    frame_options="ALLOWALL",
+)
+def embed_note(note_id):
+    note = Note.query.get_or_404(note_id)
+    note.views += 1
+    db.session.commit()
+
+    def get_ext(path):
+        if path.startswith("http"):
+            path = urlparse(path).path
+        path = path.split("?")[0]
+        return os.path.splitext(path)[1].lower()
+
+    ext = get_ext(note.filename)
+    if ext == ".pdf":
+        ftype = "pdf"
+    elif ext in {".jpg", ".jpeg", ".png", ".webp"}:
+        ftype = "image"
+    else:
+        ftype = "other"
+
+    return render_template("notes/embed.html", note=note, file_type=ftype)
 
 
 # Alias endpoint for backward compatibility with templates using

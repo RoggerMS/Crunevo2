@@ -868,6 +868,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  document.querySelectorAll('.embed-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const url = btn.dataset.embedUrl;
+      if (!url) return;
+      const code = `<iframe src="${url}" style="border:none;width:100%;height:500px;"></iframe>`;
+      navigator.clipboard.writeText(code).then(() => {
+        showToast('Código copiado');
+      });
+    });
+  });
+
   // Feed interactions are handled by FeedManager in feed.js
 
   if (window.HAS_STORE) {
