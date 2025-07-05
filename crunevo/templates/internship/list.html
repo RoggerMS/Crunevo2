@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Prácticas{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <h1 class="mb-3">Prácticas</h1>
+  <form method="get" class="row g-2 mb-4">
+    <div class="col-md-4">
+      <input type="text" name="field" class="form-control" placeholder="Área" value="{{ field }}">
+    </div>
+    <div class="col-md-4">
+      <input type="text" name="location" class="form-control" placeholder="Ubicación" value="{{ location }}">
+    </div>
+    <div class="col-md-4">
+      <button class="btn btn-primary w-100" type="submit">Filtrar</button>
+    </div>
+  </form>
+  <div class="list-group">
+    {% for internship in internships %}
+    <a href="{{ url_for('internship.view_internship', internship_id=internship.id) }}" class="list-group-item list-group-item-action">
+      <h5 class="mb-1">{{ internship.title }}</h5>
+      <small class="text-muted">{{ internship.company }} - {{ internship.location }}</small>
+    </a>
+    {% else %}
+    <p>No hay resultados.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

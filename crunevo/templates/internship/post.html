@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+
+{% block title %}Publicar Práctica{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <h1 class="mb-3">Publicar Práctica</h1>
+  <form method="post" class="card p-4">
+    {{ csrf.csrf_field() }}
+    <div class="mb-3">
+      <label class="form-label">Título</label>
+      <input type="text" name="title" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Descripción</label>
+      <textarea name="description" class="form-control" rows="4"></textarea>
+    </div>
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Área</label>
+        <input type="text" name="field" class="form-control">
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Ubicación</label>
+        <input type="text" name="location" class="form-control">
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Empresa</label>
+        <input type="text" name="company" class="form-control">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Publicar</button>
+  </form>
+</div>
+{% endblock %}
