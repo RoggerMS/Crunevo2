@@ -7,6 +7,8 @@ from reportlab.pdfgen import canvas
 def generate_invoice(purchase):
     """Create a PDF invoice for the given purchase and return its path."""
     folder = current_app.config.get("INVOICE_FOLDER", "static/invoices")
+    if not os.path.isabs(folder):
+        folder = os.path.join(current_app.root_path, folder)
     os.makedirs(folder, exist_ok=True)
     filename = f"invoice_{purchase.id}.pdf"
     path = os.path.join(folder, filename)
