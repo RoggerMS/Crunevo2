@@ -8,3 +8,4 @@ from .notify import send_notification  # noqa: F401
 from .user_activity import record_activity  # noqa: F401
 from .note_categorizer import suggest_categories  # noqa: F401
 from .note_translation import translate_fields  # noqa: F401
+from . import plagiarism  # noqa: F401

@@ -138,6 +138,29 @@ def upload_note():
             flash("El archivo debe ser un PDF o imagen (JPG/PNG)", "danger")
             return redirect(url_for("notes.upload_note"))
 
+        from crunevo.utils import plagiarism
+
+        file_hash = plagiarism.compute_hash(f.stream)
+        duplicate_id = plagiarism.get_duplicate(file_hash)
+        if duplicate_id:
+            report = Report(
+                user_id=current_user.id,
+                description=f"Duplicate note attempt matches {duplicate_id}",
+            )
+            db.session.add(report)
+            admin = User.query.filter_by(role="admin").first()
+            if admin:
+                send_notification(
+                    admin.id,
+                    f"Posible plagio al subir nota coincidente con {duplicate_id}",
+                )
+            db.session.commit()
+            flash(
+                "El archivo parece ser una copia de otro apunte y se revisará.",
+                "danger",
+            )
+            return redirect(url_for("notes.upload_note"))
+
         cloud_url = current_app.config.get("CLOUDINARY_URL")
         try:
             if cloud_url:
@@ -197,6 +220,7 @@ def upload_note():
         db.session.add(note)
         current_user.points += 10
         db.session.commit()
+        plagiarism.record_hash(note.id, file_hash)
         from crunevo.utils import create_feed_item_for_all
 
         create_feed_item_for_all("apunte", note.id)
