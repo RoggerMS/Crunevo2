@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, jsonify
+from flask import Blueprint, render_template, flash, jsonify, url_for
 from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models.event import Event
@@ -118,3 +118,20 @@ def leave_event(event_id):
 
     flash(f"Has abandonado el evento {event.title}")
     return jsonify({"success": True})
+
+
+@event_bp.route("/eventos/calendario")
+def events_calendar():
+    events = Event.query.all()
+    data = [
+        {
+            "id": e.id,
+            "title": e.title,
+            "start": e.event_date.isoformat(),
+            "notification_times": e.notification_times,
+            "recurring": e.recurring,
+            "url": url_for("event.view_event", event_id=e.id),
+        }
+        for e in events
+    ]
+    return jsonify(data)
