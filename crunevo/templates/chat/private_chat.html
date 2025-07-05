@@ -79,7 +79,7 @@
           </div>
         </div>
         
-        <div id="messagesContainer" class="chat-messages d-flex flex-column">
+        <div id="messagesContainer" class="chat-messages d-flex flex-column" data-partner-id="{{ partner.id }}" data-last-id="{{ messages[-1].id if messages else 0 }}">
           {% for message in messages %}
           <div class="message-bubble {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}">
             <div class="bubble-content {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}">
@@ -112,84 +112,4 @@
   </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('messageForm');
-  const input = document.getElementById('messageInput');
-  const audioInput = document.getElementById('audioInput');
-  const audioBtn = document.getElementById('audioBtn');
-  const container = document.getElementById('messagesContainer');
-  const partnerId = {{ partner.id }};
-  let lastMessageId = {{ messages[-1].id if messages else 0 }};
-  
-  // Scroll al final
-  container.scrollTop = container.scrollHeight;
-  
-  // Enviar mensaje
-  audioBtn.addEventListener('click', () => audioInput.click());
-
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const content = input.value.trim();
-    const file = audioInput.files[0];
-    if (!content && !file) return;
-
-    const formData = new FormData();
-    formData.append('content', content);
-    formData.append('receiver_id', partnerId);
-    formData.append('is_global', 'false');
-    if (file) formData.append('audio', file);
-
-    fetch('/chat/enviar', {
-      method: 'POST',
-      headers: {
-        'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content
-      },
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === 'ok') {
-        input.value = '';
-        audioInput.value = '';
-        addMessage(data.message, true);
-        lastMessageId = data.message.id;
-      }
-    })
-    .catch(console.error);
-  });
-  
-  // Polling para nuevos mensajes
-  setInterval(function() {
-    fetch(`/chat/mensajes/privados/${partnerId}?since_id=${lastMessageId}`)
-    .then(response => response.json())
-    .then(messages => {
-      messages.forEach(msg => {
-        if (msg.sender_id !== {{ current_user.id }}) {
-          addMessage(msg, false);
-        }
-        lastMessageId = Math.max(lastMessageId, msg.id);
-      });
-    })
-    .catch(console.error);
-  }, 2000);
-  
-  function addMessage(message, isSent) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message-bubble ${isSent ? 'sent' : 'received'}`;
-    let body = message.content || '';
-    if (message.audio_url) {
-      body += `<audio controls src="${message.audio_url}" class="w-100 mt-1"></audio>`;
-    }
-    messageDiv.innerHTML = `
-      <div class="bubble-content ${isSent ? 'sent' : 'received'}">
-        ${body}
-      </div>
-      <div class="message-time">${new Date(message.timestamp).toLocaleTimeString()}</div>
-    `;
-    container.appendChild(messageDiv);
-    container.scrollTop = container.scrollHeight;
-  }
-});
-</script>
 {% endblock %}

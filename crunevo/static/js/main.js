@@ -814,6 +814,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initEmailPreview();
   }
 
+  initCoursesPage();
+  initEventList();
+  initPrivateChat();
+
   const avatarInput = document.getElementById('avatarFileInput');
   const avatarPreview = document.getElementById('avatarPreview');
   const avatarUrlInput = document.getElementById('avatarUrlInput');
@@ -1266,4 +1270,174 @@ function initKeyboardShortcuts() {
       }
     }
   });
+}
+
+function initCoursesPage() {
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const courseItems = document.querySelectorAll('.course-item');
+  if (!filterBtns.length) return;
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', function () {
+      filterBtns.forEach((b) => b.classList.remove('active'));
+      this.classList.add('active');
+      const selected = this.dataset.category;
+      courseItems.forEach((item) => {
+        const cat = item.dataset.category;
+        const premium = item.dataset.premium === 'True';
+        const show =
+          selected === 'all' ||
+          (selected === 'premium' && premium) ||
+          selected === cat;
+        if (show) {
+          item.style.display = 'block';
+          item.style.animation = 'fadeInUp 0.5s ease';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+}
+
+function enrollCourse(courseId) {
+  csrfFetch('/courses/enroll', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ course_id: courseId }),
+  })
+    .then((r) => r.json())
+    .then((data) => {
+      if (data.success) {
+        showToast('¡Te has inscrito exitosamente!', 'success');
+        setTimeout(() => location.reload(), 1500);
+      } else {
+        showToast(data.message || 'Error al inscribirse', 'error');
+      }
+    })
+    .catch(() => showToast('Error de conexión', 'error'));
+}
+
+function buyCourse(courseId) {
+  window.location.href = `/courses/${courseId}/purchase`;
+}
+
+function showPremiumModal() {
+  const modalEl = document.getElementById('premiumModal');
+  if (modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
+}
+
+window.enrollCourse = enrollCourse;
+window.buyCourse = buyCourse;
+window.showPremiumModal = showPremiumModal;
+
+function initEventList() {
+  document.querySelectorAll('[data-tab]').forEach((tab) => {
+    tab.addEventListener('click', function (e) {
+      e.preventDefault();
+      document
+        .querySelectorAll('[data-tab]')
+        .forEach((t) => t.classList.remove('active'));
+      this.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach((c) => {
+        c.style.display = 'none';
+      });
+      const target =
+        this.dataset.tab === 'upcoming'
+          ? 'upcoming-events'
+          : this.dataset.tab === 'past'
+          ? 'past-events'
+          : 'my-events';
+      document.getElementById(target).style.display = 'block';
+    });
+  });
+}
+
+async function joinEvent(eventId) {
+  const btn = document.querySelector(`button[onclick="joinEvent(${eventId})"]`);
+  if (!btn) return;
+  const original = btn.innerHTML;
+  btn.innerHTML =
+    '<div class="spinner-border spinner-border-sm me-1"></div>Inscribiendo...';
+  btn.disabled = true;
+  try {
+    const r = await csrfFetch(`/evento/${eventId}/participar`, { method: 'POST' });
+    const data = await r.json();
+    if (r.ok) {
+      btn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Inscrito';
+      btn.classList.add('btn-success');
+      const countEl = document.getElementById(`participants-${eventId}`);
+      if (countEl) {
+        const current = parseInt(countEl.textContent.split(' ')[0]) || 0;
+        countEl.textContent = `${current + 1} participantes`;
+      }
+      showToast('¡Te has inscrito al evento exitosamente! 🎉', 'success');
+    } else {
+      btn.innerHTML = original;
+      btn.disabled = false;
+      showToast(data.error || 'Error al inscribirse', 'error');
+    }
+  } catch {
+    btn.innerHTML = original;
+    btn.disabled = false;
+    showToast('Error de conexión', 'error');
+  }
+}
+
+window.joinEvent = joinEvent;
+
+function initPrivateChat() {
+  const container = document.getElementById('messagesContainer');
+  if (!container) return;
+  const partnerId = container.dataset.partnerId;
+  let lastId = parseInt(container.dataset.lastId || '0', 10);
+  const form = document.getElementById('messageForm');
+  const input = document.getElementById('messageInput');
+  const audioInput = document.getElementById('audioInput');
+  const audioBtn = document.getElementById('audioBtn');
+  container.scrollTop = container.scrollHeight;
+  audioBtn?.addEventListener('click', () => audioInput?.click());
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const content = input.value.trim();
+    const file = audioInput.files[0];
+    if (!content && !file) return;
+    const fd = new FormData();
+    fd.append('content', content);
+    fd.append('receiver_id', partnerId);
+    fd.append('is_global', 'false');
+    if (file) fd.append('audio', file);
+    csrfFetch('/chat/enviar', { method: 'POST', body: fd })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.status === 'ok') {
+          input.value = '';
+          audioInput.value = '';
+          addMessage(data.message, true);
+          lastId = data.message.id;
+        }
+      });
+  });
+  setInterval(() => {
+    fetch(`/chat/mensajes/privados/${partnerId}?since_id=${lastId}`)
+      .then((r) => r.json())
+      .then((msgs) => {
+        msgs.forEach((m) => {
+          if (m.sender_id !== window.CURRENT_USER_ID) addMessage(m, false);
+          lastId = Math.max(lastId, m.id);
+        });
+      });
+  }, 2000);
+  function addMessage(message, sent) {
+    const div = document.createElement('div');
+    div.className = `message-bubble ${sent ? 'sent' : 'received'}`;
+    let body = message.content || '';
+    if (message.audio_url) {
+      body += `<audio controls src="${message.audio_url}" class="w-100 mt-1"></audio>`;
+    }
+    div.innerHTML = `<div class="bubble-content ${sent ? 'sent' : 'received'}">${body}</div><div class="message-time">${new Date(
+      message.timestamp
+    ).toLocaleTimeString()}</div>`;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+  }
 }
