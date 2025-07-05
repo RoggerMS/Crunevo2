@@ -605,3 +605,4 @@
 - Comments admit anonymous posting stored as pending; admin queue allows approving or rejecting them (PR anonymous-comment-review)
 - Added optional video conference URLs on events with Jitsi/Zoom embed (PR event-video-links).
 - Added note translation helper using Google Translate API with language switcher in viewer (PR note-translate-switcher)
+- Added scheduled cleanup job for inactive posts with admin-configurable retention days (PR inactive-post-cleanup)

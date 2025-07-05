@@ -117,3 +117,5 @@ class Config:
         "true",
         "yes",
     )
+
+    POST_RETENTION_DAYS = int(os.getenv("POST_RETENTION_DAYS", 30))

@@ -196,6 +196,9 @@ def create_app():
             cfg = SiteConfig.query.filter_by(key="maintenance_mode").first()
             if cfg:
                 app.config["MAINTENANCE_MODE"] = cfg.value == "1"
+            cfg = SiteConfig.query.filter_by(key="post_retention_days").first()
+            if cfg:
+                app.config["POST_RETENTION_DAYS"] = int(cfg.value)
         except Exception as e:  # pragma: no cover - safeguard on startup
             app.logger.error(f"Error loading maintenance flag: {e}")
 
@@ -371,12 +374,14 @@ def create_app():
         from .jobs.cleanup_auth_events import cleanup_auth_events
         from .jobs.backup_db import backup_database
         from .jobs.cleanup_stories import cleanup_stories
+        from .jobs.cleanup_inactive_posts import cleanup_inactive_posts
 
         scheduler = BackgroundScheduler()
         scheduler.add_job(decay_scores, IntervalTrigger(hours=1))
         scheduler.add_job(cleanup_auth_events, IntervalTrigger(hours=24))
         scheduler.add_job(backup_database, IntervalTrigger(weeks=1))
         scheduler.add_job(cleanup_stories, IntervalTrigger(hours=1))
+        scheduler.add_job(cleanup_inactive_posts, IntervalTrigger(hours=24))
         scheduler.start()
         app.scheduler = scheduler
 

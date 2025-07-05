@@ -485,6 +485,28 @@ def toggle_maintenance():
     return redirect(url_for("admin.dashboard"))
 
 
+@admin_bp.route("/set-post-retention", methods=["POST"])
+def set_post_retention():
+    """Update inactive post retention period in days."""
+    days = request.form.get("days", type=int)
+    if not days or days < 1:
+        flash("Número de días inválido", "danger")
+        return redirect(url_for("admin.dashboard"))
+
+    current_app.config["POST_RETENTION_DAYS"] = days
+    cfg = SiteConfig.query.filter_by(key="post_retention_days").first()
+    if cfg:
+        cfg.value = str(days)
+    else:
+        cfg = SiteConfig(key="post_retention_days", value=str(days))
+        db.session.add(cfg)
+    db.session.commit()
+
+    log_admin_action(f"Actualizó retención de posts a {days} días")
+    flash("Retención de posts actualizada", "success")
+    return redirect(url_for("admin.dashboard"))
+
+
 @admin_bp.route(
     "/delete-post/<int:post_id>", methods=["POST"], endpoint="delete_post_admin"
 )
