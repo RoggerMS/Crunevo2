@@ -590,3 +590,4 @@
 - Consolidated DOMContentLoaded handlers from store/store.html, chat/global.html, ia/chat.html and dashboard/_weather.html into main.js (PR domcontent-store-chat).
 - Added test ensuring users can access the feed after confirming their email (PR confirm-feed-access-test).
 - Added automatic note categorization suggestions when uploading notes (PR note-categorizer).
+- Posts now support a `comment_permission` setting (`all`, `friends`, `none`) with forms and comment endpoint enforcing it (PR comment-permission).

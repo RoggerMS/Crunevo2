@@ -3,7 +3,7 @@
 {% set reaction_counts = reaction_counts if reaction_counts is defined else {} %}
 {% set user_reactions = user_reactions if user_reactions is defined else {} %}
 {% import 'components/image_gallery.html' as gallery %}
-<article class="feed-post-card post-card" data-post-id="{{ post.id }}">
+<article class="feed-post-card post-card" data-post-id="{{ post.id }}" data-comment-permission="{{ post.comment_permission }}">
   <div class="post-body p-4">
     <!-- Post Header -->
     <div class="d-flex align-items-center gap-3 mb-3">

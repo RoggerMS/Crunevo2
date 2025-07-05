@@ -38,6 +38,10 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return verify_hash(self.password_hash, password)
 
+    def is_friend(self, other_user):
+        """Placeholder friendship check."""
+        return False
+
 
 @login_manager.user_loader
 def load_user(user_id):
