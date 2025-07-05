@@ -598,3 +598,4 @@
 - Added migration ensuring two_factor_token table is created if missing (PR twofactor-migration-fix).
 - Migration fix for comment_permission column using op.add_column with if_not_exists (PR comment-permission-migration-fix)
 - Added fullscreen toggle and annotation hook in viewer.js with button in note detail (PR note-viewer-fullscreen)
+- Added GroupMission model with shared progress and UI elements for group objectives (PR missions-group-objectives).

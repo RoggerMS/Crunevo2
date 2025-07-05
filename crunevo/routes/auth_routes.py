@@ -361,17 +361,28 @@ def perfil():
 
     misiones = None
     progresos = None
+    group_missions = None
+    group_progress = None
     referidos = None
     total_referidos = 0
     referidos_completados = 0
     enlace_referido = None
     creditos_referidos = 0
     if tab == "misiones":
-        from crunevo.routes.missions_routes import compute_mission_states
-        from crunevo.models import Mission
+        from crunevo.routes.missions_routes import (
+            compute_mission_states,
+            compute_group_mission_states,
+        )
+        from crunevo.models import Mission, GroupMission
 
         misiones = Mission.query.all()
         progresos = compute_mission_states(current_user)
+        group_missions = (
+            GroupMission.query.join(GroupMission.participants)
+            .filter_by(user_id=current_user.id)
+            .all()
+        )
+        group_progress = compute_group_mission_states(current_user)
     elif tab == "referidos":
         from crunevo.models import Referral
         from crunevo.models import Credit
@@ -404,6 +415,8 @@ def perfil():
         tab=tab,
         misiones=misiones,
         progresos=progresos,
+        group_missions=group_missions,
+        group_progress=group_progress,
         referidos=referidos,
         total_referidos=total_referidos,
         referidos_completados=referidos_completados,

@@ -955,6 +955,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
     initMissionClaimButtons();
+    initGroupMissionClaimButtons();
     highlightNewAchievements();
     initQuickNotes();
     initKeyboardShortcuts();
@@ -1214,6 +1215,46 @@ function claimMission(missionId, button) {
             button.innerHTML = '<i class="bi bi-gift"></i> Reclamar';
             showToast('Error al reclamar la misión', 'error');
         });
+}
+
+function claimGroupMission(groupId, button) {
+    button.disabled = true;
+    button.innerHTML = '<i class="bi bi-hourglass"></i> Reclamando...';
+
+    csrfFetch(`/misiones/reclamar_mision_grupal/${groupId}`, { method: 'POST' })
+        .then((r) => {
+            if (!r.ok) throw new Error('fail');
+
+            const card = button.closest('.mission-card');
+            if (card) card.classList.add('bounce-once', 'fade-in');
+
+            const modalEl = document.getElementById('missionClaimModal');
+            if (modalEl) {
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+                modalEl.addEventListener('hidden.bs.modal', () => location.reload(), { once: true });
+            } else {
+                location.reload();
+            }
+
+            button.innerHTML = '<i class="bi bi-check-circle"></i> Completada';
+            button.className = 'btn btn-success btn-sm';
+            button.disabled = true;
+        })
+        .catch(() => {
+            button.disabled = false;
+            button.innerHTML = '<i class="bi bi-gift"></i> Reclamar';
+            showToast('Error al reclamar la misión', 'error');
+        });
+}
+
+function initGroupMissionClaimButtons() {
+    document.querySelectorAll('.claim-group-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.missionId;
+            if (id) claimGroupMission(id, btn);
+        });
+    });
 }
 
 function initMissionClaimButtons() {
