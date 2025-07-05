@@ -23,6 +23,12 @@
             {% elif compra.price_credits %}
               <p class="card-text text-warning">{{ compra.price_credits }} crolars</p>
             {% endif %}
+            {% if compra.shipping_address %}
+              <p class="card-text tw-mb-1"><strong>Envío a:</strong> {{ compra.shipping_address }}</p>
+            {% endif %}
+            {% if compra.shipping_message %}
+              <p class="card-text"><em>{{ compra.shipping_message }}</em></p>
+            {% endif %}
             {% if compra.product.download_url %}
               <a href="{{ compra.product.download_url }}" target="_blank" class="btn btn-success btn-sm me-2">Descargar</a>
             {% endif %}

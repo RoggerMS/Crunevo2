@@ -370,6 +370,11 @@ def checkout():
         )
 
     download_url = None
+    shipping_option = request.form.get("shipping_option")
+    shipping_address = None
+    if shipping_option == "delivery":
+        shipping_address = request.form.get("shipping_address")
+    shipping_message = request.form.get("shipping_message")
     for item in cart_items:
         product = item["product"]
         qty = item["quantity"]
@@ -384,6 +389,8 @@ def checkout():
             product_id=product.id,
             quantity=qty,
             price_soles=product.price,
+            shipping_address=shipping_address,
+            shipping_message=shipping_message,
             timestamp=datetime.utcnow(),
         )
         db.session.add(purchase)
