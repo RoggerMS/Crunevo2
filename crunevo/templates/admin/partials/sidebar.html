@@ -25,6 +25,9 @@
   <a class="nav-link {% if request.endpoint == 'admin.stats_page' %}active{% endif %}" href="{{ url_for('admin.stats_page') }}">
     <i class="ti ti-chart-bar me-2"></i> Estadísticas
   </a>
+  <a class="nav-link {% if request.endpoint == 'admin.pageviews' %}active{% endif %}" href="{{ url_for('admin.pageviews') }}">
+    <i class="ti ti-chart-heatmap me-2"></i> Pageviews
+  </a>
   {% endif %}
   <a class="nav-link {% if request.endpoint == 'admin.manage_credits' %}active{% endif %}" href="{{ url_for('admin.manage_credits') }}">
     <i class="ti ti-coin me-2"></i> Crolars

@@ -29,6 +29,7 @@ from crunevo.models import (
     EmailToken,
     Comment,
     PostComment,
+    PageView,
 )
 from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit
@@ -473,6 +474,46 @@ def stats_api():
         )
 
     return jsonify({"registration_stats": list(reversed(stats))})
+
+
+@admin_bp.route("/pageviews")
+def pageviews():
+    """Display heatmap of page views."""
+    week_ago = datetime.utcnow() - timedelta(days=6)
+    rows = (
+        db.session.query(
+            PageView.path,
+            db.func.date(PageView.timestamp).label("d"),
+            db.func.count().label("c"),
+        )
+        .filter(PageView.timestamp >= week_ago)
+        .group_by(PageView.path, db.func.date(PageView.timestamp))
+        .all()
+    )
+    totals = {}
+    for r in rows:
+        totals[r.path] = totals.get(r.path, 0) + r.c
+    top_paths = [
+        p for p, _ in sorted(totals.items(), key=lambda x: x[1], reverse=True)[:5]
+    ]
+    days = [week_ago.date() + timedelta(days=i) for i in range(7)]
+    matrix = []
+    for y, path in enumerate(top_paths):
+        for x, day in enumerate(days):
+            count = 0
+            for r in rows:
+                if r.path == path and r.d == day:
+                    count = r.c
+                    break
+            matrix.append({"x": x, "y": y, "v": count})
+    labels_x = [d.strftime("%d/%m") for d in days]
+    labels_y = top_paths
+    return render_template(
+        "admin/pageviews.html",
+        matrix_data=matrix,
+        labels_x=labels_x,
+        labels_y=labels_y,
+    )
 
 
 def log_admin_action(action):
