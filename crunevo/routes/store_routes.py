@@ -491,6 +491,8 @@ def download_receipt(purchase_id: int):
         id=purchase_id, user_id=current_user.id
     ).first_or_404()
     folder = current_app.config.get("INVOICE_FOLDER", "static/invoices")
+    if not os.path.isabs(folder):
+        folder = os.path.join(current_app.root_path, folder)
     filename = f"invoice_{purchase.id}.pdf"
     path = os.path.join(folder, filename)
     if not os.path.exists(path):
