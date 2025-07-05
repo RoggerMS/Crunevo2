@@ -26,6 +26,9 @@ from crunevo.models import (
     FeedItem,
     SiteConfig,
     VerificationRequest,
+    EmailToken,
+    Comment,
+    PostComment,
 )
 from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit
@@ -58,9 +61,42 @@ def dashboard():
 
     # Recent activity (last 7 days)
     week_ago = datetime.utcnow() - timedelta(days=7)
-    new_users_week = 0
+
+    # Registration stats using first EmailToken per user
+    subq = (
+        db.session.query(
+            EmailToken.user_id, db.func.min(EmailToken.created_at).label("joined")
+        )
+        .group_by(EmailToken.user_id)
+        .subquery()
+    )
+    registrations = (
+        db.session.query(
+            db.func.date(subq.c.joined).label("d"), db.func.count().label("c")
+        )
+        .filter(subq.c.joined >= week_ago.date())
+        .group_by(db.func.date(subq.c.joined))
+        .all()
+    )
+    reg_map = {r.d: r.c for r in registrations}
+    reg_labels = []
+    reg_counts = []
+    for i in range(7):
+        day = week_ago.date() + timedelta(days=i)
+        reg_labels.append(day.strftime("%d/%m"))
+        reg_counts.append(reg_map.get(day, 0))
+
+    new_users_week = sum(reg_counts)
     new_notes_week = Note.query.filter(Note.created_at >= week_ago).count()
     new_posts_week = Post.query.filter(Post.created_at >= week_ago).count()
+
+    # Content distribution counts
+    content_counts = {
+        "Posts": Post.query.count(),
+        "Apuntes": Note.query.count(),
+        "Comentarios": Comment.query.count() + PostComment.query.count(),
+        "Compras": Purchase.query.count(),
+    }
 
     # Top users by activity
     top_users = db.session.query(User).order_by(User.points.desc()).limit(10).all()
@@ -93,6 +129,9 @@ def dashboard():
         most_active_clubs=most_active_clubs,
         total_crolars_circulation=total_crolars_circulation,
         total_purchases=total_purchases,
+        reg_labels=reg_labels,
+        reg_counts=reg_counts,
+        content_counts=content_counts,
     )
 
 
