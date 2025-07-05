@@ -88,7 +88,25 @@ DNS notes:
 
 ### Background tasks
 
-Feed items are inserted synchronously using an in-memory queue, so no external worker is required.
+Feed items are inserted synchronously using an in-memory queue, so no external
+worker is required. Additional maintenance jobs run with
+[`apscheduler`](https://apscheduler.readthedocs.io/) when the environment
+variable `SCHEDULER=1`.
+
+### Respaldo de base de datos
+
+Al activar el scheduler se ejecuta semanalmente un respaldo de la base de
+datos mediante `pg_dump`. El archivo resultante se sube a S3 si defines:
+
+```bash
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+BACKUP_BUCKET=nombre-del-bucket
+```
+
+Opcionalmente puedes establecer `BACKUP_PREFIX` para el directorio dentro del
+bucket. Si `BACKUP_BUCKET` no está definido, las copias se guardan localmente en
+`BACKUP_DIR` (por defecto `backups/`).
 
 ### Migrations
 

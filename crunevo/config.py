@@ -106,6 +106,10 @@ class Config:
         "Matemática,Historia,Biología,Comunicación",
     ).split(",")
 
+    BACKUP_BUCKET = os.getenv("BACKUP_BUCKET")
+    BACKUP_PREFIX = os.getenv("BACKUP_PREFIX", "backups")
+    BACKUP_DIR = os.getenv("BACKUP_DIR", "backups")
+
     MAINTENANCE_MODE = os.getenv("MAINTENANCE_MODE", "0").lower() in (
         "1",
         "true",

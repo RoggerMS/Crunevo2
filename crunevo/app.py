@@ -329,10 +329,12 @@ def create_app():
         from apscheduler.triggers.interval import IntervalTrigger
         from .jobs.decay import decay_scores
         from .jobs.cleanup_auth_events import cleanup_auth_events
+        from .jobs.backup_db import backup_database
 
         scheduler = BackgroundScheduler()
         scheduler.add_job(decay_scores, IntervalTrigger(hours=1))
         scheduler.add_job(cleanup_auth_events, IntervalTrigger(hours=24))
+        scheduler.add_job(backup_database, IntervalTrigger(weeks=1))
         scheduler.start()
         app.scheduler = scheduler
 
