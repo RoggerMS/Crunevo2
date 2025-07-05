@@ -954,10 +954,15 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('touchmove', handleScroll, { passive: true });
   }
 
-  initMissionClaimButtons();
-  highlightNewAchievements();
-  initQuickNotes();
-  initKeyboardShortcuts();
+    initMissionClaimButtons();
+    highlightNewAchievements();
+    initQuickNotes();
+    initKeyboardShortcuts();
+
+    initWeatherWidget();
+    initStorePage();
+    initGlobalChat();
+    initChatIA();
 
   // Bootstrap collapse handles the mobile menu
 
@@ -1441,3 +1446,314 @@ function initPrivateChat() {
     container.scrollTop = container.scrollHeight;
   }
 }
+
+function initWeatherWidget() {
+  const widget = document.getElementById('weatherWidget');
+  if (!widget) return;
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const { latitude, longitude } = pos.coords;
+    const resp = await fetch(`/dashboard/weather?lat=${latitude}&lon=${longitude}`);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    document.getElementById('weatherCity').textContent = data.city;
+    document.getElementById('weatherTemp').textContent = `${data.temp}°C - ${data.desc}`;
+    document.getElementById('weatherIcon').src = data.icon;
+  });
+}
+
+function initStorePage() {
+  const grid = document.getElementById('productsGrid');
+  if (!grid) return;
+  const categoryBtns = document.querySelectorAll('.category-btn');
+  const productItems = document.querySelectorAll('.product-item');
+  const currencyToggle = document.querySelectorAll('input[name="currency"]');
+
+  categoryBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      categoryBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      const selected = btn.dataset.category;
+      productItems.forEach((item) => {
+        const cat = item.dataset.category;
+        const prem = item.dataset.premium;
+        const offer = item.dataset.offer;
+        let show = false;
+        if (selected === 'all') show = true;
+        else if (selected === 'premium' && prem === 'premium') show = true;
+        else if (selected === 'offers' && offer === 'offers') show = true;
+        else if (selected === cat) show = true;
+        item.style.display = show ? 'block' : 'none';
+        if (show) item.style.animation = 'fadeInUp 0.5s ease';
+      });
+    });
+  });
+
+  currencyToggle.forEach((radio) => {
+    radio.addEventListener('change', () => {
+      updatePrices(radio.value);
+    });
+  });
+
+  function updatePrices(currency) {
+    document
+      .querySelectorAll('.price-current, .price-original')
+      .forEach((el) => {
+        const pen = el.dataset.pen;
+        const usd = el.dataset.usd;
+        el.textContent = currency === 'USD' ? `$ ${usd}` : `S/ ${pen}`;
+      });
+  }
+
+  window.addToCart = function (productId) {
+    csrfFetch(`/store/add/${productId}`, { method: 'POST' })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.count !== undefined) {
+          showToast('Producto agregado al carrito', 'success');
+          updateCartBadge(data.count);
+        } else {
+          showToast('Error al agregar al carrito', 'error');
+        }
+      })
+      .catch(() => showToast('Error de conexión', 'error'));
+  };
+
+  window.viewProduct = function (productId) {
+    window.location.href = `/store/product/${productId}`;
+  };
+
+  window.scrollToOffers = function () {
+    document.querySelector('[data-category="offers"]')?.click();
+    window.scrollTo({ top: grid.offsetTop - 100, behavior: 'smooth' });
+  };
+
+  refreshCartCount();
+}
+
+function initGlobalChat() {
+  const container = document.getElementById('chatContainer');
+  if (!container) return;
+  const form = document.getElementById('messageForm');
+  const input = document.getElementById('messageInput');
+  const audioInput = document.getElementById('audioInput');
+  const audioBtn = document.getElementById('audioBtn');
+  let lastId = parseInt(container.dataset.lastId || '0', 10);
+  container.scrollTop = container.scrollHeight;
+  audioBtn?.addEventListener('click', () => audioInput?.click());
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const content = input.value.trim();
+    const file = audioInput.files[0];
+    if (!content && !file) return;
+    const fd = new FormData();
+    fd.append('content', content);
+    fd.append('is_global', 'true');
+    if (file) fd.append('audio', file);
+    csrfFetch('/chat/enviar', { method: 'POST', body: fd })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.status === 'ok') {
+          input.value = '';
+          audioInput.value = '';
+          addMessage(data.message);
+          lastId = data.message.id;
+        }
+      })
+      .catch(console.error);
+  });
+
+  setInterval(() => {
+    fetch(`/chat/mensajes/global?since_id=${lastId}`)
+      .then((r) => r.json())
+      .then((msgs) => {
+        msgs.forEach((msg) => {
+          if (msg.sender_id !== window.CURRENT_USER_ID) addMessage(msg);
+          lastId = Math.max(lastId, msg.id);
+        });
+      })
+      .catch(console.error);
+  }, 2000);
+
+  function refreshActiveUsers() {
+    fetch('/chat/ping', { method: 'POST' });
+    fetch('/chat/usuarios/activos')
+      .then((r) => r.json())
+      .then((list) => {
+        const box = document.querySelector('.active-users');
+        if (!box) return;
+        box.innerHTML = list
+          .map(
+            (u) => `
+          <div class="user-item" onclick="startPrivateChat(${u.id})">
+            <div class="position-relative">
+              <img src="${u.avatar_url || '/static/img/default.png'}" class="user-avatar" alt="${u.username}">
+              <div class="status-indicator"></div>
+            </div>
+            <div class="flex-grow-1">
+              <div class="fw-semibold">${u.username}</div>
+              <small class="text-muted">${u.role.charAt(0).toUpperCase() + u.role.slice(1)}</small>
+            </div>
+          </div>`
+          )
+          .join('');
+      });
+  }
+
+  refreshActiveUsers();
+  setInterval(refreshActiveUsers, 15000);
+
+  function addMessage(message) {
+    const div = document.createElement('div');
+    div.className = `message-item ${message.sender_id === window.CURRENT_USER_ID ? 'own' : ''}`;
+    let body = message.content || '';
+    if (message.audio_url) {
+      body += `<audio controls src="${message.audio_url}" class="w-100 mt-1"></audio>`;
+    }
+    div.innerHTML = `
+      <img src="${message.sender_avatar || '/static/img/default.png'}" alt="${message.sender_username}" class="user-avatar">
+      <div class="message-content">
+        <div class="fw-semibold small">${message.sender_username}</div>
+        ${body}
+        <div class="message-meta">
+          ${new Date(message.timestamp).toLocaleTimeString()}
+        </div>
+      </div>`;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+window.startPrivateChat = function (userId) {
+  window.location.href = `/chat/privado/${userId}`;
+};
+
+function initChatIA() {
+  const chatForm = document.getElementById('chat-form');
+  if (!chatForm) return;
+  const messageInput = document.getElementById('message-input');
+  const chatMessages = document.getElementById('chat-messages');
+  const sendButton = document.getElementById('send-button');
+  const typingIndicator = document.getElementById('typing-indicator');
+
+  chatForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    sendMessage();
+  });
+
+  document.querySelectorAll('.quick-question').forEach((button) => {
+    button.addEventListener('click', () => {
+      const question = button.dataset.question;
+      messageInput.value = question;
+      sendMessage();
+    });
+  });
+
+  function sendMessage() {
+    const message = messageInput.value.trim();
+    if (!message) return;
+    messageInput.disabled = true;
+    sendButton.disabled = true;
+    addMessageToChat(message, 'sent', 'Tú');
+    messageInput.value = '';
+    showTypingIndicator();
+    csrfFetch('/ia/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        hideTypingIndicator();
+        if (data.answer) {
+          addMessageToChat(data.answer, 'received', 'Crunebot');
+        } else {
+          addMessageToChat('Lo siento, ha ocurrido un error. Inténtalo de nuevo.', 'received', 'Crunebot');
+        }
+      })
+      .catch((error) => {
+        hideTypingIndicator();
+        console.error('Error:', error);
+        addMessageToChat('Error de conexión. Por favor, inténtalo de nuevo.', 'received', 'Crunebot');
+      })
+      .finally(() => {
+        messageInput.disabled = false;
+        sendButton.disabled = false;
+        messageInput.focus();
+      });
+  }
+
+  function addMessageToChat(message, type, sender) {
+    const container = document.createElement('div');
+    container.className = 'message-container mb-4';
+    const currentTime = new Date().toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    const avatar =
+      type === 'received'
+        ? '/static/img/default.png'
+        : chatMessages.dataset.userAvatar || '/static/img/default.png';
+    container.innerHTML = `
+      <div class="message ${type}">
+        <div class="message-content">
+          <div class="message-header mb-2">
+            <img src="${avatar}" alt="${sender}" class="rounded-circle me-2" width="32" height="32">
+            <span class="fw-semibold">${sender}</span>
+            <span class="text-muted small ms-2">${currentTime}</span>
+          </div>
+          <div class="message-bubble ${type}-bubble">
+            ${formatMessage(message)}
+          </div>
+        </div>
+      </div>`;
+    chatMessages.appendChild(container);
+    scrollToBottom();
+  }
+
+  function formatMessage(message) {
+    return message
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/\n/g, '<br>');
+  }
+
+  function showTypingIndicator() {
+    typingIndicator.style.display = 'block';
+  }
+
+  function hideTypingIndicator() {
+    typingIndicator.style.display = 'none';
+  }
+
+  function scrollToBottom() {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  messageInput.focus();
+}
+
+window.clearChat = function () {
+  if (confirm('¿Estás seguro de que quieres limpiar la conversación?')) {
+    const chatMessages = document.getElementById('chat-messages');
+    const welcome = chatMessages.firstElementChild;
+    chatMessages.innerHTML = '';
+    if (welcome) chatMessages.appendChild(welcome);
+  }
+};
+
+window.saveConversation = function () {
+  csrfFetch('/ia/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ conversation: 'todo' }),
+  })
+    .then((r) => r.json())
+    .then(() => showToast('Conversación guardada', { delay: 3000 }))
+    .catch(() => showToast('Error al guardar la conversación', { delay: 3000 }));
+};
+
+window.attachFile = function () {
+  alert('Función de adjuntar archivo próximamente disponible');
+};

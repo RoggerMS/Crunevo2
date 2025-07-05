@@ -7,18 +7,3 @@
     </div>
   </div>
 </div>
-<script>
-function loadWeather() {
-  if (!navigator.geolocation) return;
-  navigator.geolocation.getCurrentPosition(async (pos) => {
-    const { latitude, longitude } = pos.coords;
-    const resp = await fetch(`/dashboard/weather?lat=${latitude}&lon=${longitude}`);
-    if (!resp.ok) return;
-    const data = await resp.json();
-    document.getElementById('weatherCity').textContent = data.city;
-    document.getElementById('weatherTemp').textContent = `${data.temp}°C - ${data.desc}`;
-    document.getElementById('weatherIcon').src = data.icon;
-  });
-}
-document.addEventListener('DOMContentLoaded', loadWeather);
-</script>

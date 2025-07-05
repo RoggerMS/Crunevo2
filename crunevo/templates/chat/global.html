@@ -103,7 +103,7 @@
           <small>Conecta con toda la comunidad estudiantil</small>
         </div>
         
-        <div id="chatContainer" class="chat-container">
+        <div id="chatContainer" class="chat-container" data-last-id="{{ messages[-1].id if messages else 0 }}">
           {% for message in messages %}
           <div class="message-item {% if message.sender_id == current_user.id %}own{% endif %}">
             <img src="{{ message.sender.avatar_url or url_for('static', filename='img/default.png') }}"
@@ -169,116 +169,4 @@
   </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('messageForm');
-  const input = document.getElementById('messageInput');
-  const audioInput = document.getElementById('audioInput');
-  const audioBtn = document.getElementById('audioBtn');
-  const container = document.getElementById('chatContainer');
-  let lastMessageId = {{ messages[-1].id if messages else 0 }};
-  
-  // Auto scroll to bottom
-  container.scrollTop = container.scrollHeight;
-  
-  // Send message
-  audioBtn.addEventListener('click', () => audioInput.click());
-
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const content = input.value.trim();
-    const file = audioInput.files[0];
-    if (!content && !file) return;
-
-    const formData = new FormData();
-    formData.append('content', content);
-    formData.append('is_global', 'true');
-    if (file) formData.append('audio', file);
-
-    fetch('/chat/enviar', {
-      method: 'POST',
-      headers: {
-        'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content
-      },
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === 'ok') {
-        input.value = '';
-        audioInput.value = '';
-        addMessage(data.message);
-        lastMessageId = data.message.id;
-      }
-    })
-    .catch(console.error);
-  });
-  
-  // Poll for new messages
-  setInterval(function() {
-    fetch(`/chat/mensajes/global?since_id=${lastMessageId}`)
-    .then(response => response.json())
-    .then(messages => {
-      messages.forEach(msg => {
-        if (msg.sender_id !== {{ current_user.id }}) {
-          addMessage(msg);
-        }
-        lastMessageId = Math.max(lastMessageId, msg.id);
-      });
-    })
-    .catch(console.error);
-  }, 2000);
-
-  // Ping and update active users
-  function refreshActiveUsers() {
-    fetch('/chat/ping', { method: 'POST' });
-    fetch('/chat/usuarios/activos')
-      .then(r => r.json())
-      .then(list => {
-        const box = document.querySelector('.active-users');
-        if (!box) return;
-        box.innerHTML = list.map(u => `
-          <div class="user-item" onclick="startPrivateChat(${u.id})">
-            <div class="position-relative">
-              <img src="${u.avatar_url || '/static/img/default.png'}" class="user-avatar" alt="${u.username}">
-              <div class="status-indicator"></div>
-            </div>
-            <div class="flex-grow-1">
-              <div class="fw-semibold">${u.username}</div>
-              <small class="text-muted">${u.role.charAt(0).toUpperCase() + u.role.slice(1)}</small>
-            </div>
-          </div>
-        `).join('');
-      });
-  }
-  refreshActiveUsers();
-  setInterval(refreshActiveUsers, 15000);
-  
-  function addMessage(message) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message-item ${message.sender_id === {{ current_user.id }} ? 'own' : ''}`;
-    let body = message.content || '';
-    if (message.audio_url) {
-      body += `<audio controls src="${message.audio_url}" class="w-100 mt-1"></audio>`;
-    }
-    messageDiv.innerHTML = `
-      <img src="${message.sender_avatar || '/static/img/default.png'}"
-           alt="${message.sender_username}" class="user-avatar">
-      <div class="message-content">
-        <div class="fw-semibold small">${message.sender_username}</div>
-        ${body}
-        <div class="message-meta">
-          ${new Date(message.timestamp).toLocaleTimeString()}
-        </div>
-      </div>
-    `;
-    container.appendChild(messageDiv);
-    container.scrollTop = container.scrollHeight;
-  }
-});
-
-function startPrivateChat(userId) {
-  window.location.href = `/chat/privado/${userId}`;
-}
-</script>
 {% endblock %}
