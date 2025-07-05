@@ -147,8 +147,9 @@ def confirm(token):
         if total_done >= 10:
             unlock_achievement(ref.invitador, AchievementCodes.EMBAJADOR_CRUNEVO)
     db.session.commit()
+    db.session.refresh(record.user)
     record_auth_event(record.user, "confirm_email")
-    login_user(record.user)
+    login_user(record.user, fresh=True)
     # Remove stale flash messages from previous requests
     session.pop("_flashes", None)
     flash("¡Correo verificado! Bienvenido a CRUNEVO", "success")
