@@ -10,7 +10,7 @@ def has_col(table: str, column: str, conn) -> bool:
 
 
 revision = "add_purchase_shipping_fields"
-down_revision = ("add_group_mission", "add_user_block_and_message_attachment")
+down_revision = ("add_group_mission", "user_block_attachment")
 branch_labels = None
 depends_on = None
 
