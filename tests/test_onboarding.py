@@ -107,3 +107,21 @@ def test_pending_redirects_when_active(client, test_user):
     resp = client.get("/onboarding/pending")
     assert resp.status_code == 302
     assert resp.headers["Location"].endswith("/")
+
+
+# new test
+
+
+def test_confirm_logs_in_and_allows_feed_access(client, db_session):
+    user = User(username="logincheck", email="logincheck@example.com")
+    user.set_password("StrongPassw0rd!")
+    db_session.add(user)
+    db_session.commit()
+    token = EmailToken(user_id=user.id, email=user.email)
+    db_session.add(token)
+    db_session.commit()
+    resp = client.get(f"/onboarding/confirm/{token.token}")
+    assert resp.status_code == 302
+    assert resp.headers["Location"].endswith("/feed/")
+    resp2 = client.get("/feed/", follow_redirects=False)
+    assert resp2.status_code == 200

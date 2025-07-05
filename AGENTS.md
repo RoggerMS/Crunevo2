@@ -587,3 +587,4 @@
 - Added tests for PageView logging, admin pageviews analytics and maintenance mode persistence (PR pageviews-maintenance-tests).
 - Cleared stale flash messages on email confirmation (PR confirm-flash-clear).
 - Auth routes now verify the `two_factor_token` table exists before using TwoFactorToken to prevent login failures when migrations are missing (PR twofactor-table-check).
+- Added test ensuring users can access the feed after confirming their email (PR confirm-feed-access-test).
