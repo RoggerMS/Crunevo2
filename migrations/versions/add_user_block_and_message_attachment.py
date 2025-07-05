@@ -1,6 +1,6 @@
 """add user_block table and message attachment_url column
 
-Revision ID: add_user_block_and_message_attachment
+Revision ID: user_block_attachment
 Revises: add_story_model
 Create Date: 2025-07-15 00:00:00.000000
 """
@@ -19,7 +19,7 @@ def has_col(table: str, column: str, conn) -> bool:
     return any(c["name"] == column for c in inspector.get_columns(table))
 
 
-revision = "add_user_block_and_message_attachment"
+revision = "user_block_attachment"
 down_revision = "2ae2987611ab"
 branch_labels = None
 depends_on = None
