@@ -21,6 +21,8 @@ class User(UserMixin, db.Model):
     verification_level = db.Column(db.SmallInteger, default=0)
     avatar_url = db.Column(db.String(255), default=DEFAULT_AVATAR_URL)
     about = db.Column(db.Text)
+    career = db.Column(db.String(120))
+    interests = db.Column(db.Text)
     credit_history = db.relationship("Credit", back_populates="user", lazy=True)
     notes = db.relationship("Note", backref="author", lazy=True)
     posts = db.relationship(

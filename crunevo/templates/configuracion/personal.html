@@ -34,3 +34,39 @@
     </div>
   </div>
 </section>
+
+<section id="career" class="mb-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Carrera</h5>
+    </div>
+    <div class="card-body">
+      <form id="careerForm" class="settings-form" method="post" action="{{ url_for('settings.update_personal') }}">
+        {{ csrf.csrf_field() }}
+        <div class="mb-3">
+          <label for="career" class="form-label">Carrera</label>
+          <input type="text" class="form-control" id="career" name="career" value="{{ current_user.career }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section id="interests" class="mb-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Intereses</h5>
+    </div>
+    <div class="card-body">
+      <form id="interestsForm" class="settings-form" method="post" action="{{ url_for('settings.update_personal') }}">
+        {{ csrf.csrf_field() }}
+        <div class="mb-3">
+          <label for="interests" class="form-label">Intereses (separados por comas)</label>
+          <input type="text" class="form-control" id="interests" name="interests" value="{{ current_user.interests }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </form>
+    </div>
+  </div>
+</section>
