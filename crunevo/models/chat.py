@@ -9,6 +9,7 @@ class Message(db.Model):
         db.Integer, db.ForeignKey("user.id"), nullable=True
     )  # None para chat global
     content = db.Column(db.Text, nullable=False)
+    attachment_url = db.Column(db.String(255))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     is_global = db.Column(db.Boolean, default=False)
     is_read = db.Column(db.Boolean, default=False)
@@ -28,6 +29,7 @@ class Message(db.Model):
             "receiver_id": self.receiver_id,
             "receiver_username": self.receiver.username if self.receiver else None,
             "content": self.content,
+            "attachment_url": self.attachment_url,
             "timestamp": self.timestamp.isoformat(),
             "is_global": self.is_global,
             "is_read": self.is_read,
