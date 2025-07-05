@@ -9,6 +9,8 @@ class Mission(db.Model):
     goal = db.Column(db.Integer, default=1)
     credit_reward = db.Column(db.Integer, default=0)
     achievement_code = db.Column(db.String(50))
+    event_id = db.Column(db.Integer, db.ForeignKey("event.id"))
+    is_active = db.Column(db.Boolean, default=True)
 
 
 class UserMission(db.Model):
