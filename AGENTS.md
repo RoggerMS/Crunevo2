@@ -612,3 +612,4 @@
 - Exposed read-only API endpoints with rate limiting and added developer API key generation (PR developer-api-endpoints).
 - Added `career` and `interests` fields to users with notifications filtered by these attributes (PR user-career-interests).
 - Added LinkedIn sharing and posting for certificates with OAuth integration (PR linkedin-share)
+- Added Internship model with application routes and filters by field/location (PR internship-system).

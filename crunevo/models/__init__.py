@@ -45,3 +45,5 @@ from .group_mission import GroupMission, GroupMissionParticipant  # noqa: F401
 from .user_block import UserBlock  # noqa: F401
 from .print_request import PrintRequest  # noqa: F401
 from .api_key import APIKey  # noqa: F401
+
+from .internship import Internship, InternshipApplication  # noqa: F401
