@@ -616,3 +616,4 @@
 - Generated PDF invoices after each purchase and added profile tab to download them (PR invoice-download).
 - Shortened Alembic revision ID to `user_block_attachment` and updated dependencies to fit varchar(32) limit (PR revision-length-fix).
 - Dropped leftover sequence before creating `user_block` table to avoid UniqueViolation on repeated migrations (PR user-block-sequence-fix).
+- Admin prints and comments now link to PUBLIC_BASE_URL/notes/<id> since notes blueprint isn't loaded in admin.

@@ -42,7 +42,7 @@
             <tr>
               <td>{{ user.username }}</td>
               <td>{{ c.body[:40] }}{% if c.body|length > 40 %}...{% endif %}</td>
-              <td><a href="{{ url_for('notes.view_note', id=note.id) }}" target="_blank">Apunte {{ note.id }}</a></td>
+              <td><a href="{{ PUBLIC_BASE_URL }}/notes/{{ note.id }}" target="_blank">Apunte {{ note.id }}</a></td>
               <td>
                 <form method="post" action="{{ url_for('admin.delete_comment', comment_id=c.id) }}" class="d-inline">
                   {{ csrf_field() }}
