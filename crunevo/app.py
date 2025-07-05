@@ -242,6 +242,7 @@ def create_app():
     from .routes.dashboard_routes import dashboard_bp
     from .routes.settings_routes import settings_bp
     from .routes.main_routes import main_bp
+    from .routes.story_routes import stories_bp
 
     is_admin = os.environ.get("ADMIN_INSTANCE") == "1"
     app.config["ADMIN_INSTANCE"] = is_admin
@@ -260,6 +261,7 @@ def create_app():
         app.register_blueprint(auth_bp)
         app.register_blueprint(notes_bp)
         app.register_blueprint(feed_bp)
+        app.register_blueprint(stories_bp)
         app.add_url_rule(
             "/api/feed",
             endpoint="feed.api_feed_alias",
@@ -368,11 +370,13 @@ def create_app():
         from .jobs.decay import decay_scores
         from .jobs.cleanup_auth_events import cleanup_auth_events
         from .jobs.backup_db import backup_database
+        from .jobs.cleanup_stories import cleanup_stories
 
         scheduler = BackgroundScheduler()
         scheduler.add_job(decay_scores, IntervalTrigger(hours=1))
         scheduler.add_job(cleanup_auth_events, IntervalTrigger(hours=24))
         scheduler.add_job(backup_database, IntervalTrigger(weeks=1))
+        scheduler.add_job(cleanup_stories, IntervalTrigger(hours=1))
         scheduler.start()
         app.scheduler = scheduler
 

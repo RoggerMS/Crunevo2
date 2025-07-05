@@ -591,3 +591,4 @@
 - Added test ensuring users can access the feed after confirming their email (PR confirm-feed-access-test).
 - Added automatic note categorization suggestions when uploading notes (PR note-categorizer).
 - Posts now support a `comment_permission` setting (`all`, `friends`, `none`) with forms and comment endpoint enforcing it (PR comment-permission).
+- Introduced Story model with expiry, /stories routes and scheduled cleanup (PR stories-feature).

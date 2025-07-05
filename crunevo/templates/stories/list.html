@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex flex-wrap gap-3">
+    {% for story in stories %}
+    <div>
+      <img src="{{ story.image_url }}" alt="story" class="img-fluid rounded" style="max-height:200px">
+      <small class="text-muted d-block">{{ story.user.username }}</small>
+    </div>
+    {% else %}
+    <p>No hay historias disponibles.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
