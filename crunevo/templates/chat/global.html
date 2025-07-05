@@ -115,6 +115,14 @@
               {% else %}
                 {{ message.content }}
               {% endif %}
+              {% if message.attachment_url %}
+                {% set ext = message.attachment_url.split('.')[-1].lower() %}
+                {% if ext in ['jpg','jpeg','png','gif','webp'] %}
+                  <img src="{{ message.attachment_url }}" class="img-fluid mt-1" alt="Adjunto">
+                {% else %}
+                  <a href="{{ message.attachment_url }}" target="_blank" class="d-block mt-1">Archivo adjunto</a>
+                {% endif %}
+              {% endif %}
               <div class="message-meta">
                 {{ message.timestamp.strftime('%H:%M') }}
               </div>
@@ -128,8 +136,12 @@
             <input type="text" id="messageInput" class="form-control rounded-pill"
                    placeholder="Escribe un mensaje..." maxlength="1000">
             <input type="file" id="audioInput" accept=".mp3,.ogg" class="form-control d-none">
+            <input type="file" id="fileInput" class="form-control d-none">
             <button type="button" id="audioBtn" class="btn btn-outline-secondary rounded-pill" aria-label="Adjuntar audio">
               <i class="bi bi-mic"></i>
+            </button>
+            <button type="button" id="fileBtn" class="btn btn-outline-secondary rounded-pill" aria-label="Adjuntar archivo">
+              <i class="bi bi-paperclip"></i>
             </button>
             <button type="submit" class="btn btn-primary rounded-pill">
               <i class="bi bi-send"></i>

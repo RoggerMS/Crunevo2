@@ -41,3 +41,4 @@ from .user_activity import UserActivity  # noqa: F401
 from .site_config import SiteConfig  # noqa: F401
 from .page_view import PageView  # noqa: F401
 from .story import Story  # noqa: F401
+from .user_block import UserBlock  # noqa: F401

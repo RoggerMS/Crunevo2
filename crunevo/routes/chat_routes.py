@@ -11,7 +11,7 @@ from flask import (
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
-from crunevo.models import Message, User
+from crunevo.models import Message, User, UserBlock
 from crunevo.utils import send_notification
 from sqlalchemy import or_, and_
 from crunevo.cache.active_users import mark_online, get_active_ids
@@ -139,11 +139,13 @@ def send_message():
     """Enviar mensaje (global o privado)"""
     data = request.form
     audio = request.files.get("audio")
+    attachment = request.files.get("file")
     content = sanitize_message(data.get("content", "").strip())
     receiver_id = data.get("receiver_id")
     is_global = data.get("is_global", False)
 
     audio_url = None
+    attachment_url = None
     if audio and audio.filename:
         ext = os.path.splitext(audio.filename)[1].lower()
         if ext not in {".mp3", ".ogg"}:
@@ -173,17 +175,51 @@ def send_message():
 
         content = audio_url
 
-    if not content:
+    if attachment and attachment.filename:
+        cloud_url = current_app.config.get("CLOUDINARY_URL")
+        try:
+            if cloud_url:
+                res = cloudinary.uploader.upload(attachment, resource_type="auto")
+                attachment_url = res["secure_url"]
+            else:
+                filename = secure_filename(attachment.filename)
+                upload_folder = current_app.config["UPLOAD_FOLDER"]
+                os.makedirs(upload_folder, exist_ok=True)
+                filepath = os.path.join(upload_folder, filename)
+                attachment.save(filepath)
+                attachment_url = filepath
+        except Exception:
+            current_app.logger.exception("Error al subir archivo")
+            return jsonify({"error": "No se pudo subir el archivo"}), 500
+
+    if not content and not attachment_url:
         return jsonify({"error": "Mensaje vacío"}), 400
 
     if len(content) > 1000:
         return jsonify({"error": "Mensaje muy largo"}), 400
+
+    if receiver_id:
+        block = UserBlock.query.filter(
+            db.or_(
+                db.and_(
+                    UserBlock.blocker_id == int(receiver_id),
+                    UserBlock.blocked_id == current_user.id,
+                ),
+                db.and_(
+                    UserBlock.blocker_id == current_user.id,
+                    UserBlock.blocked_id == int(receiver_id),
+                ),
+            )
+        ).first()
+        if block:
+            return jsonify({"error": "No puedes enviar mensajes a este usuario"}), 403
 
     # Crear mensaje
     message = Message(
         sender_id=current_user.id,
         receiver_id=int(receiver_id) if receiver_id else None,
         content=content,
+        attachment_url=attachment_url,
         is_global=bool(is_global),
     )
 
@@ -203,6 +239,8 @@ def send_message():
     msg_dict["sender_avatar"] = current_user.avatar_url
     if audio_url:
         msg_dict["audio_url"] = audio_url
+    if attachment_url:
+        msg_dict["attachment_url"] = attachment_url
     return jsonify(
         {
             "status": "ok",
@@ -234,6 +272,8 @@ def get_global_messages():
         data["sender_avatar"] = msg.sender.avatar_url
         if msg.content.endswith((".mp3", ".ogg")):
             data["audio_url"] = msg.content
+        if msg.attachment_url:
+            data["attachment_url"] = msg.attachment_url
         return data
 
     return jsonify([augment(m) for m in messages])
@@ -269,6 +309,8 @@ def get_private_messages(user_id):
         data["sender_avatar"] = msg.sender.avatar_url
         if msg.content.endswith((".mp3", ".ogg")):
             data["audio_url"] = msg.content
+        if msg.attachment_url:
+            data["attachment_url"] = msg.attachment_url
         return data
 
     return jsonify([augment(m) for m in messages])
