@@ -28,6 +28,9 @@ depends_on = None
 def upgrade():
     conn = op.get_bind()
     if not has_table("user_block", conn):
+        # drop leftover sequence from aborted attempts to avoid duplicate
+        # sequence errors when creating the table
+        op.execute(sa.text("DROP SEQUENCE IF EXISTS user_block_id_seq CASCADE"))
         op.create_table(
             "user_block",
             sa.Column("id", sa.Integer(), primary_key=True),
