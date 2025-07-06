@@ -639,3 +639,4 @@
 - Actualizado correo de confirmación indicando que el enlace es válido por 1 hora (PR confirm-link-validity).
 - Finish route activates user and refreshes session to prevent stuck pending state (PR onboarding-finish-activate-login).
 - Finish route refreshes user and clears flashes; added test ensuring feed access after completing profile (PR finish-refresh-test).
+- Fixed UnboundLocalError in onboarding register GET by only sending email after POST and returning template on GET (PR register-user-fix).
