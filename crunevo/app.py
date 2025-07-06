@@ -402,6 +402,10 @@ def create_app():
         app.register_blueprint(dashboard_bp)
         app.register_blueprint(settings_bp)
         app.register_blueprint(personal_space_bp)
+
+        from .routes.carrera_routes import carrera_bp
+        app.register_blueprint(carrera_bp)
+
         if testing_env:
             app.register_blueprint(admin_bp)
             app.register_blueprint(admin_email_bp)

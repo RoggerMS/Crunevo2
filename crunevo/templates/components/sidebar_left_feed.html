@@ -121,6 +121,13 @@
           </a>
         </li>
 
+        <li>
+          <a href="{{ url_for('carrera.index') if 'carrera.index' in url_for.__globals__.get('current_app', {}).view_functions else '/micarrera' }}" class="nav-link {{ 'active' if request.endpoint == 'carrera.index' }}">
+            <i class="bi bi-mortarboard"></i>
+            <span class="fw-semibold">Mi Carrera</span>
+          </a>
+        </li>
+
         {% if 'ia.ia_chat' in url_for.__globals__.get('current_app', {}).view_functions %}
         <li>
           <a href="{{ url_for('ia.ia_chat') }}" class="nav-link {{ 'active' if request.endpoint == 'ia.ia_chat' }}">
