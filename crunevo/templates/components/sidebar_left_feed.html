@@ -55,27 +55,7 @@
         </li>
 
         <li>
-          <a href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals<pad><pad><pad><pad>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-__.get('current_app', {}).view_functions else '/notes' }}" class="nav-link {{ 'active' if request.endpoint == 'notes.list_notes' }}">
-
-            <a href="{{ url_for('personal_space.index') if 'personal_space.index' in url_for.__globals__.get('current_app', {}).view_functions else '/personal_space' }}" class="nav-link {{ 'active' if request.endpoint == 'personal_space.index' }}">
+          <a href="{{ url_for('personal_space.index') if 'personal_space.index' in url_for.__globals__.get('current_app', {}).view_functions else '/personal_space' }}" class="nav-link {{ 'active' if request.endpoint == 'personal_space.index' }}">
             <i class="bi bi-house-gear"></i>
             <span class="fw-semibold">Mi Espacio Personal</span>
           </a>
@@ -84,7 +64,6 @@ __.get('current_app', {}).view_functions else '/notes' }}" class="nav-link {{ 'a
 
         <li>
           <a href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}" class="nav-link {{ 'active' if request.endpoint == 'notes.list_notes' }}">
-
             <i class="bi bi-journal-text"></i>
             <span class="fw-semibold">Apuntes</span>
             <span class="badge bg-primary rounded-pill ms-auto">{{ current_user.notes|length }}</span>

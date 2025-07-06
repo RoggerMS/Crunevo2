@@ -43,11 +43,19 @@ from .page_view import PageView  # noqa: F401
 from .story import Story  # noqa: F401
 from .group_mission import GroupMission, GroupMissionParticipant  # noqa: F401
 from .user_block import UserBlock  # noqa: F401
-from .personal_block import PersonalBlock
-from .league import AcademicTeam, TeamMember, LeagueMonth, TeamAction
-from .knowledge_backpack import KnowledgeBackpack, LearningEntry, BackpackAchievement
-from .challenges import GhostMentorChallenge, GhostMentorResponse, MasterQuestion, MasterQuestionAttempt
-from .hall_1000 import CrolarsHallMember, PremiumContent, HallRaffle, RaffleParticipant  # noqa: F401
+from .personal_block import PersonalBlock  # noqa: F401
+from .league import AcademicTeam, TeamMember, LeagueMonth, TeamAction  # noqa: F401
+from .knowledge_backpack import KnowledgeBackpack  # noqa: F401
+from .knowledge_backpack import LearningEntry  # noqa: F401
+from .knowledge_backpack import BackpackAchievement  # noqa: F401
+from .challenges import GhostMentorChallenge  # noqa: F401
+from .challenges import GhostMentorResponse  # noqa: F401
+from .challenges import MasterQuestion  # noqa: F401
+from .challenges import MasterQuestionAttempt  # noqa: F401
+from .hall_1000 import CrolarsHallMember  # noqa: F401
+from .hall_1000 import PremiumContent  # noqa: F401
+from .hall_1000 import HallRaffle  # noqa: F401
+from .hall_1000 import RaffleParticipant  # noqa: F401
 from .print_request import PrintRequest  # noqa: F401
 from .api_key import APIKey  # noqa: F401
 

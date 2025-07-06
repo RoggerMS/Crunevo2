@@ -627,3 +627,4 @@
 
 - Reordered sidebar item "Mi Espacio Personal" under "Mi Perfil" and centered profile icon on mobile navbar while removing "Buscar" and "Mi Espacio" links (PR mobile-nav-sidebar-reorder).
 - Implemented comprehensive 'Mi Carrera' module with career-filtered posts, notes, courses, clubs, events, chat and featured students tabs, with JS and CSS integration (PR career-module).
+- Fixed Replit gamification feature errors, restored sidebar template, removed empty migration and ensured tests pass (PR replit-gamification-fixes).
