@@ -125,3 +125,19 @@ def test_confirm_logs_in_and_allows_feed_access(client, db_session):
     assert resp.headers["Location"].endswith("/feed/")
     resp2 = client.get("/feed/", follow_redirects=False)
     assert resp2.status_code == 200
+
+
+# new test for flash message
+
+
+def test_confirm_shows_success_no_pending(client, db_session):
+    user = User(username="msgcheck", email="msgcheck@example.com")
+    user.set_password("StrongPassw0rd!")
+    db_session.add(user)
+    db_session.commit()
+    token = EmailToken(user_id=user.id, email=user.email)
+    db_session.add(token)
+    db_session.commit()
+    resp = client.get(f"/onboarding/confirm/{token.token}", follow_redirects=True)
+    assert b"Correo verificado" in resp.data
+    assert b"Primero debes confirmar tu correo" not in resp.data
