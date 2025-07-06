@@ -149,7 +149,9 @@ def confirm(token):
     db.session.commit()
     db.session.refresh(record.user)
     record_auth_event(record.user, "confirm_email")
-    login_user(record.user, fresh=True)
+    # Force login to ensure session updates even if a different user
+    # was previously authenticated
+    login_user(record.user, fresh=True, force=True)
     # Remove stale flash messages from previous requests
     session.pop("_flashes", None)
     flash("¡Correo verificado! Bienvenido a CRUNEVO", "success")
