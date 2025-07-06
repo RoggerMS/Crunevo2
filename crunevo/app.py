@@ -129,9 +129,10 @@ def create_app():
             "CART_COUNT": sum(session.get("cart", {}).values()),
             "URGENT_REPORTS": urgent_count,
             "NEW_ACHIEVEMENTS": new_achievements,
+            "get_hall_membership": get_hall_membership,
         }
 
-    from .utils.helpers import timesince
+    from .utils.helpers import timesince, get_hall_membership
     from .cache.link_preview import extract_first_url, get_preview
 
     app.jinja_env.filters["timesince"] = timesince
