@@ -2,6 +2,9 @@ from functools import wraps
 from datetime import datetime
 from flask import redirect, url_for, flash
 from flask_login import current_user, login_required
+from sqlalchemy.exc import SQLAlchemyError
+
+from crunevo.extensions import db
 
 
 def admin_required(f):
@@ -86,6 +89,17 @@ def verified_required(f):
         return f(*args, **kwargs)
 
     return decorated
+
+
+def get_hall_membership(user):
+    """Return hall membership or None if table is missing."""
+    try:
+        from crunevo.models.hall_1000 import CrolarsHallMember
+
+        return CrolarsHallMember.query.filter_by(user_id=user.id).first()
+    except SQLAlchemyError:
+        db.session.rollback()
+        return None
 
 
 def timesince(dt):

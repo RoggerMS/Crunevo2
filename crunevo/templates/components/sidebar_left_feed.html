@@ -146,7 +146,7 @@
           </a>
         </li>
         {% if current_user.is_authenticated %}
-          {% set hall_member = current_user.hall_membership %}
+          {% set hall_member = get_hall_membership(current_user) %}
           {% if hall_member or (current_user.credits >= 1000) %}
           <li class="nav-item">
             <a href="{{ url_for('hall.index') if 'hall.index' in url_for.__globals__.get('current_app', {}).view_functions else '/sala1000' }}" class="nav-link">
