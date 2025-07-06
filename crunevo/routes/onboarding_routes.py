@@ -53,7 +53,7 @@ def register():
     if request.method == "POST":
         email = request.form["email"]
         if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
-            flash("Ingresa un correo v\u00e1lido", "danger")
+            flash("Ingresa un correo válido", "danger")
             return render_template("onboarding/register.html"), 400
         password = request.form["password"]
         if (
@@ -98,15 +98,18 @@ def register():
                         db.session.commit()
                 except (ProgrammingError, OperationalError):
                     db.session.rollback()
-    success, error = send_confirmation_email(user)
-    if not success:
-        flash(
-            "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
-            "danger",
-        )
-        if error:
-            flash(error, "danger")
-    return redirect(url_for("onboarding.confirm_sent"))
+
+        success, error = send_confirmation_email(user)
+        if not success:
+            flash(
+                "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
+                "danger",
+            )
+            if error:
+                flash(error, "danger")
+        return redirect(url_for("onboarding.confirm_sent"))
+
+    return render_template("onboarding/register.html")
 
 
 @bp.route("/confirm")
