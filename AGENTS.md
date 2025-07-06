@@ -644,3 +644,4 @@
 - Mobile bottom nav and navbar career links use fallback to '/micarrera' when the career blueprint is missing (PR career-link-fallback).
 - Enhanced personal space with Notion-style notes, Trello-style tasks and dashboard metrics (PR personal-space-workspace).
 - Activated and fixed personal space: suggestions create blocks, initial template via "Comenzar" button, dark mode syncs with global theme and API routes require activated login (PR personal-space-activation).
+- Focus mode hides navbars and sidebars, includes floating exit button (PR focus-mode-ui).

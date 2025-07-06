@@ -614,6 +614,20 @@
     box-shadow: 0 16px 48px rgba(99, 102, 241, 0.2);
 }
 
+.focus-mode .navbar,
+.focus-mode .sidebar-left,
+.focus-mode .sidebar-right,
+.focus-mode .mobile-bottom-nav {
+    display: none !important;
+}
+
+.exit-focus-btn {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    z-index: 1100;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .ps-title {
