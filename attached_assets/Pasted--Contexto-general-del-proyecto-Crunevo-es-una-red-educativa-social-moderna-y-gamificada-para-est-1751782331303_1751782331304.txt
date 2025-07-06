@@ -1,0 +1,101 @@
+📌 Contexto general del proyecto:
+Crunevo es una red educativa social, moderna y gamificada para estudiantes universitarios del Perú. Permite subir apuntes, ganar Crolars (moneda interna), completar misiones, acceder a recompensas y cursos. Ya cuenta con autenticación, feed, apuntes, tienda, misiones, referidos, perfil, sistema de créditos y diseño responsive. Este SuperPROMPT 8 busca llevar el sistema a un nuevo nivel con funciones avanzadas e inteligentes.
+
+🎯 OBJETIVO GENERAL
+Implementar las siguientes funcionalidades nuevas, asegurando que queden bien integradas visual y funcionalmente dentro del ecosistema actual.
+Al final del desarrollo, todo debe quedar unido bajo criterio, bien conectado y con coherencia visual, técnica y de experiencia de usuario.
+No deben dejarse elementos sueltos, fuera de lugar o desconectados del sistema principal.
+
+🏆 1. Modo Liga Académica (Retos mensuales por equipos)
+Sistema de competencia mensual por equipos de hasta 5 personas.
+
+Características:
+
+Inscripción abierta (crear/unirse a equipo).
+
+Página /liga:
+
+Ranking mensual.
+
+Progreso por puntaje.
+
+Avatares de equipos.
+
+Crolars, logros y premios visuales al equipo ganador.
+
+🎒 2. Mochila de Conocimientos + Bitácora de Aprendizaje
+Espacio personal inteligente para cada usuario, en ruta /mochila o integrada al perfil.
+
+Incluye:
+
+Mochila visual: apuntes subidos, cursos completados, misiones, logros.
+
+Bitácora editable (diario académico personal).
+
+Botón para exportar bitácora en PDF.
+
+Visual moderno, soporte claro/oscuro.
+
+👻 3. Desafío del Mentor Fantasma
+Reto especial que aparece en el feed 1 vez por semana.
+
+Características:
+
+Generado por IA (Crunebot).
+
+Tarjeta con animación especial.
+
+Límite de tiempo visible.
+
+Premios: crolars aleatorios, insignias, contenido secreto.
+
+🎓 4. Pregunta Maestra del Día
+Reto de rapidez. Solo una persona puede responderlo correctamente.
+
+Funcionamiento:
+
+Se muestra una pregunta difícil al día.
+
+El primero en responder correctamente gana:
+
+50 Crolars.
+
+Insignia del Día.
+
+La tarjeta se bloquea al ser respondida.
+
+🏛️ 5. Sala de los 1000 Crolars
+Sistema especial desbloqueado solo al gastar 1000 Crolars acumulados.
+
+Funcionamiento:
+
+No es por tener, sino por haberlos gastado.
+
+Al cumplir la condición, se desbloquea:
+
+Sala especial.
+
+Cursos premium.
+
+Acceso a sorteos u objetos especiales.
+
+Visualmente impactante y bien integrada.
+
+🧠 INSTRUCCIONES GENERALES
+Integrar todo dentro del sistema actual con diseño coherente (morado, responsivo, limpio, social).
+
+No romper estructuras previas.
+
+Reutilizar componentes y lógicas existentes si aplica (misiones, logros, feed, perfil).
+
+Incluir descripciones o mini-tutoriales para cada funcionalidad si son necesarias.
+
+En partes sensibles (recompensas, ligas), incluir términos y condiciones visibles o accesibles.
+
+Toda lógica debe ser modular, clara y documentada.
+
+⚠️ IMPORTANTE:
+Al finalizar todas las funcionalidades, usa criterio para unirlas bien.
+No dejar partes sueltas ni desconectadas.
+Si algo no encaja bien, rediseñarlo o ajustarlo para que fluya con el resto del sistema.
+Debe sentirse como una sola experiencia fluida, no como módulos separados.
