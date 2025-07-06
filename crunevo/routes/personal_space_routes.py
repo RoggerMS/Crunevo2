@@ -84,35 +84,29 @@ def create_block():
     elif data["block_type"] == "enlace":
         block.set_metadata({"url": "", "description": ""})
     elif data["block_type"] == "tarea":
-        block.set_metadata({
-            "completed": False,
-            "priority": "medium",
-            "due_date": "",
-            "category": "",
-            "attachments": []
-        })
-    elif data["block_type"] == "kanban":
-        block.set_metadata({
-            "columns": {
-                "Por hacer": [],
-                "En curso": [],
-                "Hecho": []
+        block.set_metadata(
+            {
+                "completed": False,
+                "priority": "medium",
+                "due_date": "",
+                "category": "",
+                "attachments": [],
             }
-        })
+        )
+    elif data["block_type"] == "kanban":
+        block.set_metadata({"columns": {"Por hacer": [], "En curso": [], "Hecho": []}})
     elif data["block_type"] == "objetivo":
-        block.set_metadata({
-            "status": "no_iniciada",
-            "progress": 0,
-            "deadline": "",
-            "frequency": "una_vez",
-            "category": "academica"
-        })
+        block.set_metadata(
+            {
+                "status": "no_iniciada",
+                "progress": 0,
+                "deadline": "",
+                "frequency": "una_vez",
+                "category": "academica",
+            }
+        )
     elif data["block_type"] == "bloque":
-        block.set_metadata({
-            "grouped_blocks": [],
-            "subject": "",
-            "expandable": True
-        })
+        block.set_metadata({"grouped_blocks": [], "subject": "", "expandable": True})
 
     # Set metadata if provided
     if "metadata" in data:
@@ -221,7 +215,8 @@ def get_smart_suggestions():
         PersonalBlock.query.filter_by(user_id=current_user.id)
         .filter(PersonalBlock.block_type.in_(["meta", "objetivo"]))
         .filter(
-            PersonalBlock.created_at >= datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+            PersonalBlock.created_at
+            >= datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
         )
         .count()
     )
@@ -237,9 +232,11 @@ def get_smart_suggestions():
         )
 
     # Check for overdue tasks and reminders
-    overdue_items = PersonalBlock.query.filter_by(user_id=current_user.id).filter(
-        PersonalBlock.block_type.in_(["recordatorio", "tarea"])
-    ).all()
+    overdue_items = (
+        PersonalBlock.query.filter_by(user_id=current_user.id)
+        .filter(PersonalBlock.block_type.in_(["recordatorio", "tarea"]))
+        .all()
+    )
 
     overdue_count = sum(1 for item in overdue_items if item.is_overdue())
 
@@ -285,12 +282,12 @@ def get_smart_suggestions():
 
     # Suggest creating blocks for organization
     total_blocks = PersonalBlock.query.filter_by(user_id=current_user.id).count()
-    
+
     if total_blocks >= 5:
         block_count = PersonalBlock.query.filter_by(
             user_id=current_user.id, block_type="bloque"
         ).count()
-        
+
         if block_count == 0:
             suggestions.append(
                 {
@@ -308,7 +305,7 @@ def get_default_icon(block_type):
     """Get default icon for block type"""
     icons = {
         "nota": "bi-journal-text",
-        "lista": "bi-check2-square", 
+        "lista": "bi-check2-square",
         "meta": "bi-target",
         "recordatorio": "bi-alarm",
         "frase": "bi-quote",
@@ -316,6 +313,6 @@ def get_default_icon(block_type):
         "tarea": "bi-clipboard-check",
         "kanban": "bi-kanban",
         "objetivo": "bi-trophy",
-        "bloque": "bi-grid-3x3"
+        "bloque": "bi-grid-3x3",
     }
     return icons.get(block_type, "bi-card-text")

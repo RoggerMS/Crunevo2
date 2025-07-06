@@ -58,7 +58,8 @@
         <span>Tienda</span>
       </a>
 
-    <a href="{{ url_for('carrera.index') }}" class="nav-item">
+    <a href="{{ url_for('carrera.index') if 'carrera.index' in url_for.__globals__.get('current_app', {}).view_functions else '/micarrera' }}"
+       class="nav-item {{ 'active' if request.endpoint == 'carrera.index' }}">
       <i class="bi bi-mortarboard"></i>
       <span>Carrera</span>
     </a>
