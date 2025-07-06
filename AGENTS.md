@@ -626,3 +626,4 @@
 - Added test to ensure only success flash after email confirmation and no pending redirect (PR confirm-feed-flash-test).
 
 - Reordered sidebar item "Mi Espacio Personal" under "Mi Perfil" and centered profile icon on mobile navbar while removing "Buscar" and "Mi Espacio" links (PR mobile-nav-sidebar-reorder).
+- Implemented comprehensive 'Mi Carrera' module with career-filtered posts, notes, courses, clubs, events, chat and featured students tabs, with JS and CSS integration (PR career-module).
