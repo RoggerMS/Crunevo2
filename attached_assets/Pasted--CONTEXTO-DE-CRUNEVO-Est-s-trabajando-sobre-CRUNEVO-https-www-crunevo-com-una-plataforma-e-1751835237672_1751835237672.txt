@@ -1,0 +1,152 @@
+🚀 CONTEXTO DE CRUNEVO
+
+Estás trabajando sobre CRUNEVO (https://www.crunevo.com), una plataforma educativa moderna, gamificada, con feed social, apuntes, tienda, cursos, ranking, misiones, etc. Cada usuario tiene una moneda virtual llamada **Crólares (Crolars)** y su propio perfil educativo.
+
+Ahora vas a transformar la vista `/espacio-personal` en un **centro completo de herramientas académicas tipo Notion, Trello y Miro**, llamado **Mi Espacio Personal**.
+
+---
+
+🎯 OBJETIVO GENERAL
+
+Implementar una vista moderna, productiva y personalizada donde los estudiantes puedan organizar sus ideas, tareas, metas, planes y herramientas educativas, todo de forma visual y fácil de usar.
+
+---
+
+🧩 MÓDULOS A INCLUIR
+
+### 1. 📘 BITÁCORA INTELIGENTE (Estilo Notion)
+
+- Crear notas rápidas o detalladas en bloques.
+- Cada nota puede tener:
+  - Título
+  - Contenido enriquecido (texto, listas, links, emojis)
+  - Categoría o materia
+  - Estado (pendiente / en desarrollo / finalizado)
+  - Etiquetas de color
+  - Fecha de creación / modificación
+- Edición inline y eliminación segura.
+- Diseño tipo tarjetas (cards) o bloques expansibles.
+- Guardar por usuario (cada estudiante ve solo sus notas).
+
+---
+
+### 2. ✅ GESTOR DE TAREAS TIPO KANBAN (Estilo Trello)
+
+- Tablero con columnas:
+  - Por defecto: “Por hacer”, “En curso”, “Hecho”.
+  - Opcional: permitir crear columnas personalizadas.
+- Cada tarea tiene:
+  - Título + descripción
+  - Estado editable (drag & drop entre columnas)
+  - Prioridad (Alta / Media / Baja)
+  - Fecha límite (con alerta visual)
+  - Checkbox de completado
+  - Etiquetas
+  - Posibilidad de adjuntar un archivo o link
+- Guardar automáticamente y por usuario.
+
+---
+
+### 3. 🎯 METAS ACADÉMICAS
+
+- Crear metas semanales, mensuales o personalizadas.
+- Incluir:
+  - Nombre de la meta
+  - Descripción
+  - Deadline
+  - Frecuencia (una vez / cada semana / cada mes)
+  - Categoría (personal, académica, emocional…)
+- Mostrar en tarjetas con colores según estado:
+  - No iniciada / En progreso / Cumplida / Vencida
+- Opción para duplicar metas pasadas.
+
+---
+
+### 4. 🧠 SUGERENCIAS INTELIGENTES
+
+- Analizar la actividad del usuario (si no ha subido apuntes, hecho tareas, etc.).
+- Mostrar recomendaciones arriba como:
+  - “Crea tu primera nota de estudio”
+  - “Establece una meta para esta semana”
+  - “¿Quieres revisar tus tareas pendientes?”
+- Aplicar IA en el futuro (opcional).
+
+---
+
+### 5. 🗂️ BLOQUES PERSONALIZADOS
+
+- Permitir crear **bloques reutilizables** con:
+  - Notas agrupadas
+  - Tareas agrupadas
+  - Metas por materia
+- Cada bloque puede:
+  - Tener un nombre (ej: “Matemáticas”, “Proyectos”, “Extraescolares”)
+  - Tener un ícono personalizable
+  - Colapsarse o expandirse
+
+---
+
+### 6. 🧪 HERRAMIENTAS ADICIONALES (Prototipos visuales)
+
+Prepara estructura para incluir pronto:
+
+- 📅 **Agenda semanal integrada** (como mini calendario visual)
+- 🔄 **Sincronización con eventos del calendario académico**
+- 📊 **Progreso general del usuario** (cuántas metas cumple, tareas completas, etc.)
+- 📦 **Mini-centro de recursos personales** (guardar PDFs, links o videos de estudio)
+
+---
+
+🎨 INTERFAZ Y EXPERIENCIA
+
+- Estilo visual similar a Notion y Trello.
+- Diseño totalmente responsive (móvil y escritorio).
+- Compatibilidad con modo oscuro y claro.
+- Efectos visuales suaves (transiciones, hover, shadow).
+- Carga progresiva de datos (AJAX o similar).
+- Iconos intuitivos (usar librerías como Tabler Icons o Lucide).
+
+---
+
+🧠 FUNCIONALIDADES TÉCNICAS
+
+- Cada módulo debe estar vinculado al `user_id` actual.
+- Rutas claras:
+  - `/espacio-personal/tareas`
+  - `/espacio-personal/notas`
+  - `/espacio-personal/metas`
+  - `/espacio-personal/bloques`
+- Backend con Flask (ya disponible).
+- Conexión con base de datos (PostgreSQL).
+- Guardar toda la información en tablas nuevas, si es necesario:
+  - `notes`, `tasks`, `goals`, `blocks` (todas con `user_id`).
+- Si no hay datos aún, mostrar mensaje motivacional y CTA para empezar.
+
+---
+
+🔒 SEGURIDAD Y USABILIDAD
+
+- Validar todo por sesión activa.
+- Solo el usuario puede ver/modificar su espacio personal.
+- Mostrar confirmación antes de eliminar cualquier contenido.
+- Guardar automáticamente o mostrar botón "Guardar".
+
+---
+
+📦 OPCIONAL: CENTRO DE EXTENSIONES
+
+- Estructura visual para que en el futuro los usuarios puedan **añadir más herramientas** (tipo widgets o apps internas).
+- Mostrar botón “+ Añadir herramienta” (por ahora no funcional, solo decorativo).
+
+---
+
+✅ ENTREGA ESPERADA
+
+- Sistema funcional y visualmente integrado con CRUNEVO.
+- Al menos los 4 primeros módulos funcionando.
+- Plantillas HTML + rutas Flask + modelos (si aplica).
+- Archivos CSS o JS separados si es necesario.
+- Todo guardado en base de datos por usuario.
+
+---
+
