@@ -193,10 +193,7 @@ def finish():
         current_user.about = request.form.get("bio")
         current_user.career = request.form.get("career")
         current_user.interests = request.form.get("interests")
-        # Ensure the user is activated and session updated
-        current_user.activated = True
         db.session.commit()
-        login_user(current_user, fresh=True, force=True)
         return redirect(url_for("feed.feed_home"))
     return render_template("onboarding/finish.html")
 
