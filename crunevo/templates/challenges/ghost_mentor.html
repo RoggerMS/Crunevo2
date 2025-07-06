@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Desafío Mentor Fantasma - CRUNEVO{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="h3 mb-4">Desafío Mentor Fantasma</h1>
+  {% if active_challenge %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">{{ active_challenge.title }}</h5>
+      <p class="card-text">{{ active_challenge.description }}</p>
+      {% if user_response %}
+      <div class="alert alert-success">Ya enviaste tu respuesta.</div>
+      {% else %}
+      <form method="post" action="{{ url_for('challenges.submit_ghost_response') }}">
+        {% include 'components/csrf.html' %}
+        {{ csrf_field() }}
+        <input type="hidden" name="challenge_id" value="{{ active_challenge.id }}">
+        <div class="mb-3">
+          <textarea name="response" class="form-control" rows="4" required></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit">Enviar respuesta</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+  <p class="text-muted">No hay desafíos activos por el momento.</p>
+  {% endif %}
+
+  {% if recent_challenges %}
+  <h2 class="h5">Desafíos recientes</h2>
+  <ul class="list-group mb-4">
+    {% for ch in recent_challenges %}
+    <li class="list-group-item">{{ ch.title }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+{% endblock %}

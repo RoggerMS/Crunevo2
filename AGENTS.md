@@ -632,3 +632,4 @@
 - Added table_exists helper and login requirement to activated_required; routes skip queries if tables are missing (PR log-error-fix).
 - Relaxed default Flask-Limiter to 1000/day and removed limits from store and developer routes, keeping limits only on login and onboarding (PR rate-limit-tweak).
 - Improved email confirmation flow: activated_required refreshes user from DB, added 429 error page, and removed 'Mi Espacio' from mobile nav (PR email-activation-fix).
+- Added missing templates for Ghost Mentor challenge and League team creation; fixed backpack template when table missing (PR log-fixes-templates).
