@@ -1,0 +1,152 @@
+10. 🧠 Sistema de Recomendaciones Inteligentes
+Objetivo: Mostrar productos relacionados o populares en función del comportamiento.
+
+En la vista de detalle /store/product/<id>:
+
+Mostrar 4 productos sugeridos: misma categoría o más vendidos.
+
+“También te podría interesar…” con scroll horizontal tipo carrusel.
+
+En /store:
+
+Bloque "Populares esta semana", dinámico.
+
+Diseño: Tarjetas pequeñas con mini imagen, título y precio, dentro de card-group.
+
+11. 🛒 Carrito con Persistencia
+Objetivo: Mantener los productos agregados aunque el usuario cierre sesión o la página.
+
+Funcionalidad:
+
+Guardado en localStorage o en la base de datos si está logueado.
+
+Botón flotante tipo carrito (bi-cart), muestra contador de ítems.
+
+Modal lateral (offcanvas-end) con resumen: productos, precio total, botón “Ir a pagar”.
+
+12. 🧾 Historial de Compras
+Objetivo: Mostrar a cada usuario sus pedidos anteriores.
+
+Ruta: /perfil/compras
+
+Datos: fecha, productos, Crolars gastados, estado (entregado, pendiente, cancelado).
+
+Diseño:
+
+Timeline visual con badges por estado.
+
+Botón “Ver detalle” abre un modal con desglose completo.
+
+13. 🎁 Productos con Variantes (colores, tallas, formatos)
+Ejemplo: Un cuaderno con 3 colores o una guía en PDF y en físico.
+
+Vista de producto:
+
+Sección: “Elegir formato” → radio buttons visuales.
+
+Al cambiar variante, cambia imagen y precio.
+
+14. 💎 Productos Destacados y Badges Visuales
+Objetivo: Resaltar lo mejor de la tienda.
+
+Tipos de badges:
+
+“⭐ Recomendado”
+
+“🔥 Tendencia”
+
+“📦 Últimas unidades”
+
+“🎓 Popular en tu carrera” (si está logueado).
+
+Posición: esquina superior izquierda, colores vivos.
+
+15. 🛍️ Packs Educativos o Combos
+Objetivo: Vender varios productos en uno solo.
+
+Ejemplo: “Combo Universitario” → incluye: guía de estudio, plantilla editable y recursos descargables.
+
+Vista de producto tipo combo:
+
+Lista de lo que incluye.
+
+Precio con ahorro en Crolars (“ahorra 30%”).
+
+16. 💬 Reseñas de Usuarios
+Objetivo: Generar confianza y comunidad.
+
+Cada producto puede recibir:
+
+⭐⭐⭐⭐⭐ estrellas
+
+Comentario breve
+
+Votos “¿Te fue útil esta reseña?”
+
+Los productos muestran media de rating al lado del nombre.
+
+17. 📥 Productos Gratuitos
+Objetivo: Permitir recursos libres para todos.
+
+Botón “Descargar gratis” visible si el precio = 0.
+
+Opción de agradecer con 5 Crolars como donación opcional.
+
+18. 🎨 Personalización de Productos Digitales
+Ejemplo: Si compras una plantilla editable, puedes:
+
+Escribir tu nombre.
+
+Elegir color (oscuro/claro).
+
+Descargar versión personalizada.
+
+19. 📦 Seguimiento de Entrega (físicos)
+Para el futuro, si CRUNEVO envía productos físicos:
+
+Usuario ve el estado en /perfil/compras.
+
+Estados: Preparando, En camino, Entregado.
+
+Animación tipo barra de progreso con íconos.
+
+20. 📣 Alertas por Oferta o Disponibilidad
+Objetivo: Aumentar conversiones.
+
+En producto sin stock: botón “Avísame cuando esté disponible”.
+
+Usuario recibe correo o notificación cuando se reponga.
+
+En productos rebajados: “¡Precio rebajado solo por hoy!”
+
+🔄 Extras de Diseño/Usabilidad
+21. 🌓 Compatibilidad Total con Dark Mode
+Colores bien contrastados para tarjetas, filtros, precios.
+
+Animaciones suaves para transiciones.
+
+22. 🎥 Video de presentación por producto (opcional)
+Sección de video embebido desde YouTube/Cloudinary.
+
+Ideal para cursos o guías explicadas.
+
+23. 📚 Clasificación por Carrera
+Filtro adicional: “Mostrar solo productos útiles para [Educación/Matemática/Arte/etc.]”
+
+Guardar carrera seleccionada del usuario logueado.
+
+24. 🔖 Wishlist pública o privada
+Botón ❤️ para guardar favoritos.
+
+Página /perfil/favoritos
+
+Opción para hacer pública la lista con URL.
+
+25. 💬 Preguntas sobre el producto
+Similar a Amazon:
+
+Preguntas/respuestas visibles
+
+Otros estudiantes pueden responder
+
+Notificación si responden tu pregunta

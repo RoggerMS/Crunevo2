@@ -1,0 +1,113 @@
+🔷 1. Sistema de Eventos Académicos
+Permite mostrar y gestionar eventos educativos (webinars, talleres, concursos, lives).
+
+Funciones clave:
+
+Página /eventos con vista de todos los eventos activos y pasados.
+
+Tarjetas visuales con título, fecha, imagen y botón de inscripción.
+
+Modal con información detallada + botón "Participar".
+
+Backend con validación de cupos, fechas y participantes.
+
+Panel para admins que permita:
+
+Crear evento.
+
+Editar y eliminar eventos.
+
+Visualizar lista de inscritos.
+
+Mostrar eventos próximos en el feed (dentro de una caja o banner lateral).
+
+Mostrar en el perfil del usuario una sección tipo: "Eventos a los que asistiré" y "Eventos pasados".
+
+🔷 2. Sistema de Clubes Académicos
+Permite crear, descubrir y participar en clubes por intereses académicos.
+
+Funciones clave:
+
+Página /clubes con explorador, filtros por categoría (Ciencia, Letras, Arte, etc.) y botón “Unirme”.
+
+Vista de cada club con:
+
+Portada visual.
+
+Descripción y objetivos.
+
+Publicaciones internas (foro del club).
+
+Lista de miembros y líderes.
+
+Botón para abandonar club.
+
+Crear club (formulario con logo, nombre, descripción y categoría).
+
+Opción para que los clubes puedan tener:
+
+Chat interno (se puede dejar activado para más adelante).
+
+Recursos subidos dentro del club (PDF, imágenes, links).
+
+Perfil del usuario muestra los clubes en los que participa.
+
+🔷 3. Sistema de Votaciones Académicas
+Permite lanzar preguntas con opciones tipo encuesta, visibles en el feed.
+
+Características clave:
+
+Desde el input principal de publicaciones: nuevo tipo llamado “Encuesta”.
+
+Formulario con:
+
+Pregunta principal (máx 120 caracteres).
+
+2 a 4 opciones de respuesta.
+
+Fecha límite de votación.
+
+En el feed: tarjeta con diseño especial para encuestas.
+
+Votación anónima con resultados visibles después de votar o cuando cierra.
+
+Bonus de Crolars al crear o participar en encuestas (opcional).
+
+Filtros rápidos para ver las encuestas más votadas o las activas actualmente.
+
+🔷 4. Sistema de Duelo Académico entre Estudiantes ("Modo Reto")
+Permite que un estudiante desafíe a otro con una pregunta o problema educativo.
+
+Características principales:
+
+Página /retos para ver desafíos recientes.
+
+Modal “Lanzar Reto”:
+
+Escoger categoría académica.
+
+Escribir la pregunta o problema.
+
+Asignar recompensa en Crolars (opcional).
+
+El usuario desafiado recibe una notificación.
+
+Si responde correctamente, gana la recompensa.
+
+Sistema de validación:
+
+El retador puede marcar la respuesta como válida.
+
+O puede ser evaluada por moderadores si hay desacuerdo.
+
+Perfil del usuario muestra los retos ganados y lanzados.
+
+Ranking de estudiantes con más retos superados.
+
+📌 Resumen Visual Final
+N°	Funcionalidad	Estado
+1	Sistema de Eventos Académicos	✅ Incluir
+2	Sistema de Clubes Académicos	✅ Incluir
+3	Votaciones Académicas	✅ Incluir
+4	Duelo Académico (1 vs 1)	✅ Incluir
+
