@@ -74,6 +74,17 @@
 
 
 __.get('current_app', {}).view_functions else '/notes' }}" class="nav-link {{ 'active' if request.endpoint == 'notes.list_notes' }}">
+
+            <a href="{{ url_for('personal_space.index') if 'personal_space.index' in url_for.__globals__.get('current_app', {}).view_functions else '/personal_space' }}" class="nav-link {{ 'active' if request.endpoint == 'personal_space.index' }}">
+            <i class="bi bi-house-gear"></i>
+            <span class="fw-semibold">Mi Espacio Personal</span>
+          </a>
+        </li>
+
+
+        <li>
+          <a href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}" class="nav-link {{ 'active' if request.endpoint == 'notes.list_notes' }}">
+
             <i class="bi bi-journal-text"></i>
             <span class="fw-semibold">Apuntes</span>
             <span class="badge bg-primary rounded-pill ms-auto">{{ current_user.notes|length }}</span>
@@ -128,12 +139,6 @@ __.get('current_app', {}).view_functions else '/notes' }}" class="nav-link {{ 'a
           <a href="{{ url_for('ranking.index') if 'ranking.index' in url_for.__globals__.get('current_app', {}).view_functions else '/ranking' }}" class="nav-link {{ 'active' if request.endpoint == 'ranking.index' }}">
             <i class="bi bi-award"></i>
             <span class="fw-semibold">Ranking</span>
-          </a>
-        </li>
-          <li>
-          <a href="{{ url_for('personal_space.index') if 'personal_space.index' in url_for.__globals__.get('current_app', {}).view_functions else '/personal_space' }}" class="nav-link {{ 'active' if request.endpoint == 'personal_space.index' }}">
-            <i class="bi bi-house-gear"></i>
-            <span class="fw-semibold">Mi Espacio Personal</span>
           </a>
         </li>
 
