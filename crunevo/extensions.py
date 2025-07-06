@@ -20,7 +20,8 @@ migrate = Migrate()
 login_manager = LoginManager()
 mail = Mail()
 csrf = CSRFProtect()
-limiter = Limiter(key_func=get_remote_address, default_limits=["200 per day"])
+# Relax default rate limits to avoid blocking normal usage
+limiter = Limiter(key_func=get_remote_address, default_limits=["1000 per day"])
 talisman = Talisman()
 # Use eventlet for async WebSocket support
 

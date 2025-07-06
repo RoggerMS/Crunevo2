@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request, g
 from flask_login import login_required, current_user
 from flask_limiter.util import get_remote_address
 
-from crunevo.extensions import db, limiter
+from crunevo.extensions import db
 from crunevo.models import Post, Note, APIKey
 
 
@@ -37,7 +37,6 @@ def api_key_required(f):
 
 
 @developer_bp.route("/recent-posts")
-@limiter.limit("30 per minute", key_func=api_key_func)
 @api_key_required
 def recent_posts():
     posts = Post.query.order_by(Post.created_at.desc()).limit(10).all()
@@ -50,7 +49,6 @@ def recent_posts():
 
 
 @developer_bp.route("/popular-notes")
-@limiter.limit("30 per minute", key_func=api_key_func)
 @api_key_required
 def popular_notes():
     notes = Note.query.order_by(Note.likes.desc()).limit(10).all()
