@@ -1,0 +1,309 @@
+
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+
+{% block title %}Mi Carrera - {{ user_career }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3">
+  <div class="row">
+    <!-- Main Content -->
+    <div class="col-12">
+      <!-- Header Section -->
+      <div class="career-header bg-gradient text-white rounded-4 p-4 mb-4">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h1 class="h2 mb-2">
+              <i class="bi bi-mortarboard-fill me-2"></i>
+              Mi Carrera: {{ user_career }}
+            </h1>
+            <p class="mb-0 opacity-90">Tu carrera, tu comunidad académica</p>
+          </div>
+          <div class="col-md-4 text-md-end">
+            <div class="d-flex flex-wrap gap-3 justify-content-md-end">
+              <div class="stat-item">
+                <div class="h5 mb-0">{{ career_stats.total_students }}</div>
+                <small>Estudiantes</small>
+              </div>
+              <div class="stat-item">
+                <div class="h5 mb-0">{{ career_stats.total_notes }}</div>
+                <small>Apuntes</small>
+              </div>
+              <div class="stat-item">
+                <div class="h5 mb-0">{{ career_stats.total_clubs }}</div>
+                <small>Clubes</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-body p-0">
+          <nav class="nav nav-pills nav-fill career-nav">
+            <a class="nav-link {% if tab == 'publicaciones' %}active{% endif %}" 
+               data-tab="publicaciones" href="#publicaciones">
+              <i class="bi bi-chat-dots me-2"></i>Publicaciones
+            </a>
+            <a class="nav-link {% if tab == 'apuntes' %}active{% endif %}" 
+               data-tab="apuntes" href="#apuntes">
+              <i class="bi bi-journal-text me-2"></i>Apuntes
+            </a>
+            <a class="nav-link {% if tab == 'cursos' %}active{% endif %}" 
+               data-tab="cursos" href="#cursos">
+              <i class="bi bi-play-circle me-2"></i>Cursos
+            </a>
+            <a class="nav-link {% if tab == 'clubes' %}active{% endif %}" 
+               data-tab="clubes" href="#clubes">
+              <i class="bi bi-people me-2"></i>Clubes
+            </a>
+            <a class="nav-link {% if tab == 'eventos' %}active{% endif %}" 
+               data-tab="eventos" href="#eventos">
+              <i class="bi bi-calendar-event me-2"></i>Eventos
+            </a>
+            <a class="nav-link {% if tab == 'chat' %}active{% endif %}" 
+               data-tab="chat" href="#chat">
+              <i class="bi bi-chat-square-dots me-2"></i>Chat
+              <span class="badge bg-success ms-1" id="activeUsersCount">0</span>
+            </a>
+            <a class="nav-link {% if tab == 'destacados' %}active{% endif %}" 
+               data-tab="destacados" href="#destacados">
+              <i class="bi bi-star me-2"></i>Destacados
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Publicaciones Tab -->
+        <div class="tab-pane {% if tab == 'publicaciones' %}show active{% endif %}" id="publicaciones">
+          <div class="row">
+            <div class="col-lg-8">
+              <!-- Post Form -->
+              <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                  <form id="postForm">
+                    {{ csrf.csrf_field() }}
+                    <div class="d-flex gap-3">
+                      <img src="{{ current_user.avatar_url }}" alt="Avatar" 
+                           class="rounded-circle" width="48" height="48">
+                      <div class="flex-grow-1">
+                        <textarea class="form-control border-0 bg-light" 
+                                  rows="3" 
+                                  placeholder="¿Qué quieres compartir con tu carrera?"
+                                  name="content" 
+                                  id="postContent"></textarea>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                          <small class="text-muted">
+                            <i class="bi bi-users me-1"></i>
+                            Visible para estudiantes de {{ user_career }}
+                          </small>
+                          <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send me-1"></i>Publicar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Posts List -->
+              <div id="postsList">
+                <!-- Posts loaded via AJAX -->
+              </div>
+
+              <!-- Load More Button -->
+              <div class="text-center mt-4">
+                <button class="btn btn-outline-primary" id="loadMorePosts">
+                  Cargar más publicaciones
+                </button>
+              </div>
+            </div>
+
+            <div class="col-lg-4">
+              <!-- Career Info -->
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h6 class="fw-bold mb-3">
+                    <i class="bi bi-info-circle me-2"></i>Información
+                  </h6>
+                  <p class="text-muted small">
+                    Esta es tu comunidad académica de {{ user_career }}. 
+                    Aquí puedes conectar con estudiantes de tu misma carrera 
+                    de diferentes universidades.
+                  </p>
+                  <div class="border-top pt-3 mt-3">
+                    <div class="d-flex justify-content-between mb-2">
+                      <span class="text-muted">Estudiantes:</span>
+                      <span class="fw-bold">{{ career_stats.total_students }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                      <span class="text-muted">Publicaciones:</span>
+                      <span class="fw-bold">{{ career_stats.total_posts }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                      <span class="text-muted">Apuntes:</span>
+                      <span class="fw-bold">{{ career_stats.total_notes }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Apuntes Tab -->
+        <div class="tab-pane" id="apuntes">
+          <div class="row">
+            <div class="col-12">
+              <!-- Filter Bar -->
+              <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-md-6">
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" class="form-control" 
+                               placeholder="Buscar por curso..." 
+                               id="courseFilter">
+                      </div>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                      <button class="btn btn-primary" onclick="window.location.href='{{ url_for('notes.upload') }}'">
+                        <i class="bi bi-plus-circle me-1"></i>Subir Apunte
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notes Grid -->
+              <div class="row g-4" id="notesList">
+                <!-- Notes loaded via AJAX -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cursos Tab -->
+        <div class="tab-pane" id="cursos">
+          <div class="row g-4" id="coursesList">
+            <!-- Courses loaded via AJAX -->
+          </div>
+        </div>
+
+        <!-- Clubes Tab -->
+        <div class="tab-pane" id="clubes">
+          <div class="row">
+            <div class="col-md-8">
+              <div class="row g-4" id="clubsList">
+                <!-- Clubs loaded via AJAX -->
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h6 class="fw-bold mb-3">
+                    <i class="bi bi-info-circle me-2"></i>Sobre los Clubes
+                  </h6>
+                  <p class="text-muted small">
+                    Únete a clubes de tu carrera para colaborar en proyectos, 
+                    estudiar en grupo y hacer networking profesional.
+                  </p>
+                  <button class="btn btn-outline-primary btn-sm w-100" 
+                          onclick="window.location.href='{{ url_for('club.create_club') }}'">
+                    <i class="bi bi-plus-circle me-1"></i>Crear Club
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Eventos Tab -->
+        <div class="tab-pane" id="eventos">
+          <div class="row g-4" id="eventsList">
+            <!-- Events loaded via AJAX -->
+          </div>
+        </div>
+
+        <!-- Chat Tab -->
+        <div class="tab-pane" id="chat">
+          <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-0">
+                    <i class="bi bi-chat-square-dots me-2"></i>
+                    Chat de {{ user_career }}
+                  </h6>
+                </div>
+                <div>
+                  <span class="badge bg-success" id="chatActiveUsers">0 activos</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <div id="chatMessages" class="chat-messages p-3" style="height: 400px; overflow-y: auto;">
+                <!-- Messages loaded via AJAX -->
+              </div>
+              <div class="border-top p-3">
+                <form id="chatForm">
+                  <div class="input-group">
+                    <input type="text" class="form-control" 
+                           placeholder="Escribe tu mensaje..." 
+                           id="chatInput" 
+                           maxlength="500">
+                    <button class="btn btn-primary" type="submit">
+                      <i class="bi bi-send"></i>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Destacados Tab -->
+        <div class="tab-pane" id="destacados">
+          <div class="row">
+            <div class="col-12">
+              <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                  <h5 class="mb-3">
+                    <i class="bi bi-star-fill text-warning me-2"></i>
+                    Estudiantes Destacados de {{ user_career }}
+                  </h5>
+                  <p class="text-muted">
+                    Estudiantes con mayor participación y aportes en la comunidad.
+                  </p>
+                </div>
+              </div>
+              
+              <div class="row g-4" id="featuredUsersList">
+                <!-- Featured users loaded via AJAX -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Spinner -->
+<div id="loadingSpinner" class="text-center d-none py-4">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/carrera.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,99 @@
+Vamos a desarrollar un módulo completo e inteligente para CRUNEVO.
+
+### 🎯 Nombre del módulo: “Mi Carrera” – Centro Académico por Carrera
+
+Este módulo debe estar completamente funcional, sin dejar partes a medias. Úsalo como si fuera una mini-red académica interna por carrera. Debe seguir el estilo visual y técnico de CRUNEVO, integrado en el navbar superior con la etiqueta “Mi Carrera”.
+
+---
+
+## 🌟 Objetivo:
+Permitir a los estudiantes ver y participar en un espacio público y colaborativo donde solo hay contenido (posts, apuntes, eventos, cursos, etc.) de su misma carrera, sin importar la universidad. Todo lo que se ve en esta sección está filtrado por `carrera`.
+
+---
+
+## 🧱 Estructura general del módulo:
+
+### 1. Acceso y ubicación:
+- Añadir “Mi Carrera” al navbar superior.
+- Dentro de esta vista, usar subpestañas (tabs) para navegar:
+
+  - 🗞️ Publicaciones
+  - 📚 Apuntes
+  - 🎓 Cursos / Clases
+  - 🏛️ Clubes
+  - 🎤 Eventos próximos
+  - 💬 Chat de Carrera
+  - 🧑‍🎓 Estudiantes Destacados
+
+---
+
+### 2. Contenido por pestaña:
+
+#### 🗞️ Publicaciones
+- Mostrar publicaciones públicas hechas por estudiantes de la misma carrera.
+- Se permite publicar desde esta vista.
+- Las publicaciones se muestran con autor, texto, fecha y carrera.
+
+#### 📚 Apuntes
+- Mostrar apuntes públicos subidos por usuarios de la misma carrera.
+- Vista tipo cards o lista.
+- Filtros por curso o etiqueta.
+
+#### 🎓 Cursos
+- Listado de cursos recomendados por carrera (subidos por admins o moderadores).
+- Mostrar videos, PDFs o enlaces.
+
+#### 🏛️ Clubes
+- Mostrar clubes relevantes a la carrera actual.
+- Permitir solicitud para unirse desde esta vista.
+
+#### 🎤 Eventos
+- Mostrar eventos próximos relacionados con la carrera.
+- Posibilidad de marcar como “interesado” o “asistiré”.
+
+#### 💬 Chat de Carrera
+- Chat público por carrera, visible solo para miembros con esa carrera asignada.
+- Debe permitir mensajes en tiempo real (puede usarse una base básica o simulación).
+- Mostrar cuántos usuarios están activos en el chat.
+
+#### 🧑‍🎓 Estudiantes destacados
+- Mostrar usuarios con más aportes, apuntes o participación dentro de esa carrera.
+
+---
+
+## 📌 Otras funciones:
+- Si el usuario no tiene carrera asignada, obligar a elegir antes de entrar.
+- Permitir cambiar de carrera desde el perfil.
+- Todo el contenido debe estar automáticamente filtrado por la carrera del usuario.
+- Las publicaciones o aportes que se suban desde esta sección deben quedar etiquetadas como “visibles en Mi Carrera”.
+
+---
+
+## 🧠 Sugerencias extra (si hay tiempo):
+- 📢 Noticias relevantes de la carrera (manuales o vía RSS).
+- 🧩 Recomendaciones automáticas: “Hay 4 nuevos apuntes esta semana en tu carrera”.
+- 💡 Mostrar mensaje inspirador arriba: “Tu carrera, tu comunidad”.
+
+---
+
+## 🛠️ Archivos sugeridos:
+- `routes/carrera_routes.py`
+- `models/carrera.py` (si no existe aún)
+- `templates/carrera/index.html` con tabs
+- Componentes: `card_post.html`, `card_apunte.html`, `chat_carrera.html`, etc.
+- Estilos y JS: `carrera.css`, `carrera.js`
+
+---
+
+## ⚙️ Stack recomendado:
+- Backend: Flask
+- Frontend: HTML + Tailwind o Bootstrap
+- AJAX para cargar contenido por tab
+- Chat: puede ser inicial como mensajes simples guardados por carrera
+
+---
+
+## 🔚 Resultado esperado:
+Un centro completo, funcional y público por carrera, accesible desde el navbar superior. Todo el contenido debe ser visible solo para quienes tienen la misma carrera, y debe permitir interacción, publicación y visualización fluida.
+
+Desarrolla el sistema **completo**, con todo lo necesario para que funcione sin ayuda externa. Usa tu criterio profesional para terminar cualquier parte que requiera ajustes visuales o lógicos.
