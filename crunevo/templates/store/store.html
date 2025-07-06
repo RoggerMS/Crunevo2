@@ -1,454 +1,986 @@
-{% extends 'base.html' %}
-{% block title %}Tienda CRUNEVO - Productos Educativos{% endblock %}
 
-{% block head_extra %}
+{% extends 'base.html' %}
+
+{% block title %}Marketplace CRUNEVO{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
 <style>
-.store-hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+/* Modern Marketplace Layout */
+.marketplace-hero {
+  background: linear-gradient(135deg, #6366F1 0%, #10B981 100%);
   color: white;
   padding: 3rem 0;
   margin-bottom: 2rem;
 }
 
-.premium-badge {
-  background: linear-gradient(135deg, #ffd700 0%, #ffed4a 100%);
-  color: #1a202c;
-  font-weight: bold;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 10;
+.marketplace-hero h1 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
 }
 
-.offer-badge {
-  background: #e53e3e;
-  color: white;
-  font-weight: bold;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 10;
+.marketplace-hero p {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  opacity: 0.9;
 }
 
-.product-card {
+/* Grid System */
+@media (max-width: 575.98px) {
+  .product-grid {
+    --bs-gutter-x: 0.5rem;
+  }
+  .product-grid .col {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+}
+
+@media (min-width: 576px) {
+  .product-grid .col {
+    flex: 0 0 auto;
+    width: 33.33333333%;
+  }
+}
+
+@media (min-width: 768px) {
+  .product-grid .col {
+    flex: 0 0 auto;
+    width: 25%;
+  }
+}
+
+@media (min-width: 992px) {
+  .product-grid .col {
+    flex: 0 0 auto;
+    width: 20%;
+  }
+}
+
+/* Sidebar Filters */
+.filter-sidebar {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 100px;
+}
+
+.filter-section {
+  margin-bottom: 2rem;
+}
+
+.filter-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #1E293B;
+  margin-bottom: 0.75rem;
+}
+
+.filter-checkbox {
+  margin-bottom: 0.5rem;
+}
+
+.filter-checkbox input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.price-range {
+  margin-bottom: 1rem;
+}
+
+.btn-apply-filters {
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
   border: none;
-  border-radius: 15px;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  color: white;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.btn-apply-filters:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* Product Cards */
+.product-card {
+  background: white;
+  border: none;
+  border-radius: 0.75rem;
   overflow: hidden;
-  transition: all 0.3s ease;
-  position: relative;
+  transition: all 0.2s ease-in-out;
   height: 100%;
+  min-height: 320px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+}
+
+.product-image-container {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  border-radius: 0.5rem 0.5rem 0 0;
 }
 
 .product-image {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+.product-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 2;
+}
+
+.badge-new {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: white;
+}
+
+.badge-popular {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+  color: white;
+}
+
+.badge-offer {
+  background: linear-gradient(135deg, #F59E0B, #EAB308);
+  color: white;
+}
+
+.product-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.product-card:hover .product-overlay {
+  opacity: 1;
+}
+
+.product-info {
+  padding: 1rem;
+}
+
+.product-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1E293B;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.price-section {
+.product-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #10B981;
+  margin-bottom: 0.5rem;
+}
+
+.product-rating {
   display: flex;
   align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.product-rating .stars {
+  color: #F59E0B;
+  margin-right: 0.5rem;
+}
+
+.product-rating .rating-count {
+  font-size: 0.8rem;
+  color: #64748B;
+}
+
+.product-actions {
+  display: flex;
   gap: 0.5rem;
-  margin: 1rem 0;
 }
 
-.price-current {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #28a745;
-}
-
-.price-original {
-  text-decoration: line-through;
-  color: #6c757d;
-  font-size: 1rem;
-}
-
-.discount-percent {
-  background: #e53e3e;
+.btn-quick-view {
+  flex: 1;
+  background: #6366F1;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
   color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 10px;
-  font-size: 0.75rem;
-  font-weight: bold;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
-.category-tabs {
-  background: white;
-  border-radius: 15px;
-  padding: 1rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+.btn-quick-view:hover {
+  background: #5855EB;
+  color: white;
 }
-[data-bs-theme="dark"] .category-tabs {
-  background: #1f2937;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+
+.btn-add-cart {
+  background: #10B981;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.btn-add-cart:hover {
+  background: #059669;
+  color: white;
+}
+
+/* Featured Products */
+.featured-section {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(16, 185, 129, 0.05));
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 3rem;
+}
+
+.featured-carousel {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: #6366F1 transparent;
+}
+
+.featured-card {
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+/* Category Filters */
+.category-filters {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .category-btn {
-  border: none;
   background: transparent;
-  padding: 0.75rem 1.5rem;
-  border-radius: 25px;
+  border: 2px solid #E2E8F0;
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
   margin: 0.25rem;
-  transition: all 0.3s;
+  color: #64748B;
   font-weight: 500;
-  color: #1a202c;
-}
-[data-bs-theme="dark"] .category-btn {
-  color: #f1f5f9;
+  transition: all 0.2s ease;
 }
 
+.category-btn:hover,
 .category-btn.active {
-  background: #667eea;
+  background: #6366F1;
+  border-color: #6366F1;
   color: white;
 }
 
-.category-btn:hover {
-  background: rgba(102, 126, 234, 0.1);
-}
-
-.offers-banner {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
-  color: white;
-  padding: 2rem;
-  border-radius: 15px;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.premium-section {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 2rem;
-  border-radius: 15px;
-  margin-bottom: 2rem;
-}
-
-.currency-toggle {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 100;
-}
-
-/* Uniform carousel panel sizing */
-#storeCarousel .carousel-item > div {
-  min-height: 300px;
-  padding: 3rem;
-  display: flex;
-  align-items: center;
-}
-
-.store-hero,
-.offers-banner,
-.premium-section {
-  margin-bottom: 0;
-}
-
-/* Square product thumbnails */
-.product-image {
-  aspect-ratio: 1 / 1;
-  height: auto;
-}
-
-/* Dark mode visibility fixes */
-[data-bs-theme="dark"] #storeCarousel .carousel-item > div {
-  color: #f8f8f8;
-}
-[data-bs-theme="dark"] .category-btn {
-  color: #f8f8f8;
-}
-
-/* Floating cart button */
-.floating-cart-btn {
+/* Mobile Responsiveness */
+@media (max-width: 991.98px) {
+  .filter-sidebar {
+    display: none;
+  }
+  
+  .mobile-filter-btn {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #8B5CF6;
-    color: white;
+    z-index: 1000;
+    background: #6366F1;
     border: none;
     border-radius: 50%;
     width: 60px;
     height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    z-index: 1000;
-    transition: background-color 0.3s ease;
-}
-
-.floating-cart-btn:hover {
-    background-color: #7C3AED;
-}
-
-.cart-count {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: #e44d26;
     color: white;
-    font-size: 0.75rem;
-    padding: 3px 6px;
-    border-radius: 50%;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  }
 }
 
-[data-tooltip] {
-  position: relative;
-  display: inline-block;
-}
-
-[data-tooltip]:before {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
+/* Request Product Floating Button */
+.btn-request-product {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #F59E0B, #EAB308);
+  border: none;
+  border-radius: 50%;
   color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s, visibility 0.3s;
-  margin-bottom: 5px;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  z-index: 999;
+  transition: all 0.2s ease;
 }
 
-[data-tooltip]:hover:before {
-  opacity: 1;
-  visibility: visible;
+.btn-request-product:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+/* Loading States */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #E2E8F0;
+  border-top: 4px solid #6366F1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Dark Mode Support */
+[data-bs-theme="dark"] .product-card {
+  background: #334155;
+  border: 1px solid #475569;
+}
+
+[data-bs-theme="dark"] .product-title {
+  color: #F1F5F9;
+}
+
+[data-bs-theme="dark"] .filter-sidebar {
+  background: #334155;
+  border: 1px solid #475569;
+}
+
+[data-bs-theme="dark"] .filter-title {
+  color: #F1F5F9;
+}
+
+[data-bs-theme="dark"] .category-filters {
+  background: #334155;
+  border: 1px solid #475569;
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Currency Toggle -->
-<div class="currency-toggle">
-  <div class="btn-group" role="group">
-    <input type="radio" class="btn-check" name="currency" id="currency-pen" value="PEN" checked>
-    <label class="btn btn-outline-primary btn-sm" for="currency-pen">S/</label>
-
-    <input type="radio" class="btn-check" name="currency" id="currency-usd" value="USD">
-    <label class="btn btn-outline-primary btn-sm" for="currency-usd">$</label>
+<div class="container-fluid">
+  <!-- Hero Section -->
+  <div class="marketplace-hero">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h1>🛍️ Marketplace CRUNEVO</h1>
+          <p class="lead">Descubre recursos educativos, plantillas, cursos y más para potenciar tu aprendizaje</p>
+        </div>
+        <div class="col-lg-4 text-end">
+          <div class="d-flex align-items-center justify-content-end">
+            <i class="bi bi-coin me-2 fs-3"></i>
+            <span class="fs-4 fw-bold">{{ current_user.credits }} Crolars</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- Hero / Offers / Premium carousel -->
-<div id="storeCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <div class="store-hero">
-        <div class="container text-center">
-          <h1 class="display-4 fw-bold mb-3">🛒 Tienda CRUNEVO</h1>
-          <p class="lead">Descubre productos educativos exclusivos y mejora tu experiencia de aprendizaje</p>
-          <div class="row justify-content-center mt-4">
-            <div class="col-md-8">
-              <div class="d-flex justify-content-center gap-3">
-                <div class="text-center">
-                  <i class="bi bi-shield-check display-6"></i>
-                  <p class="small mt-2">Productos Verificados</p>
+  <div class="container-fluid px-3">
+    <div class="row g-4">
+      <!-- Desktop Sidebar Filters -->
+      <div class="col-lg-3 d-none d-lg-block">
+        <div class="filter-sidebar">
+          <form id="filterForm">
+            <!-- Categories -->
+            <div class="filter-section">
+              <h6 class="filter-title">Categorías</h6>
+              {% for category in categories %}
+              <div class="filter-checkbox">
+                <input type="checkbox" name="categories" value="{{ category }}" id="cat-{{ loop.index }}">
+                <label for="cat-{{ loop.index }}">{{ category }}</label>
+              </div>
+              {% endfor %}
+            </div>
+
+            <!-- Price Range -->
+            <div class="filter-section">
+              <h6 class="filter-title">Rango de Precio</h6>
+              <div class="price-range">
+                <label for="priceRange" class="form-label">Hasta {{ max_price or 100 }} Crolars</label>
+                <input type="range" class="form-range" id="priceRange" min="0" max="{{ max_price or 100 }}" value="{{ max_price or 100 }}">
+                <div class="d-flex justify-content-between">
+                  <small>0</small>
+                  <small>{{ max_price or 100 }}</small>
                 </div>
-                <div class="text-center">
-                  <i class="bi bi-truck display-6"></i>
-                  <p class="small mt-2">Entrega Digital</p>
+              </div>
+            </div>
+
+            <!-- Tags -->
+            <div class="filter-section">
+              <h6 class="filter-title">Etiquetas</h6>
+              <div class="filter-checkbox">
+                <input type="checkbox" name="tags" value="premium" id="tag-premium">
+                <label for="tag-premium">⭐ Premium</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" name="tags" value="offers" id="tag-offers">
+                <label for="tag-offers">🔥 Ofertas</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" name="tags" value="digital" id="tag-digital">
+                <label for="tag-digital">💻 Digital</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" name="tags" value="physical" id="tag-physical">
+                <label for="tag-physical">📦 Físico</label>
+              </div>
+            </div>
+
+            <!-- Stock -->
+            <div class="filter-section">
+              <h6 class="filter-title">Stock</h6>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="onlyAvailable">
+                <label class="form-check-label" for="onlyAvailable">
+                  Solo disponibles
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-apply-filters">
+              <i class="bi bi-funnel me-2"></i>Aplicar Filtros
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-lg-9">
+        <!-- Featured Products -->
+        {% if featured_products %}
+        <div class="featured-section">
+          <h3 class="fw-bold mb-3">⭐ Productos Destacados</h3>
+          <div class="featured-carousel">
+            {% for product in featured_products %}
+            <div class="featured-card">
+              <div class="card product-card">
+                <div class="product-image-container">
+                  <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}" 
+                       class="product-image" alt="{{ product.name }}">
+                  {% if product.is_new %}
+                  <div class="product-badge badge-new">NUEVO</div>
+                  {% elif product.is_popular %}
+                  <div class="product-badge badge-popular">POPULAR</div>
+                  {% endif %}
                 </div>
-                <div class="text-center">
-                  <i class="bi bi-coin display-6"></i>
-                  <p class="small mt-2">Paga con Crolars</p>
+                <div class="product-info">
+                  <h6 class="product-title">{{ product.name }}</h6>
+                  <div class="product-price">
+                    {% if product.price_credits %}
+                      {{ product.price_credits }} Crolars
+                    {% else %}
+                      S/ {{ product.price }}
+                    {% endif %}
+                  </div>
+                  <button class="btn btn-quick-view w-100" onclick="viewProduct({{ product.id }})">
+                    Ver Producto
+                  </button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Category Filters -->
+        <div class="category-filters">
+          <h5 class="fw-bold mb-3">Explorar por Categoría</h5>
+          <div class="d-flex flex-wrap">
+            <button class="category-btn active" data-category="all">
+              <i class="bi bi-grid me-1"></i>Todos
+            </button>
+            <button class="category-btn" data-category="education">
+              <i class="bi bi-book me-1"></i>Educación
+            </button>
+            <button class="category-btn" data-category="technology">
+              <i class="bi bi-laptop me-1"></i>Tecnología
+            </button>
+            <button class="category-btn" data-category="templates">
+              <i class="bi bi-file-earmark me-1"></i>Plantillas
+            </button>
+            <button class="category-btn" data-category="courses">
+              <i class="bi bi-play-circle me-1"></i>Cursos
+            </button>
+            <button class="category-btn" data-category="premium">
+              <i class="bi bi-star me-1"></i>Premium
+            </button>
+          </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="row product-grid g-3" id="productsGrid">
+          {% for product in products %}
+          <div class="col product-item" 
+               data-category="{{ product.category or 'education' }}"
+               data-price="{{ product.price_credits or product.price }}"
+               data-stock="{{ product.stock }}">
+            <div class="card product-card">
+              <div class="product-image-container">
+                <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}" 
+                     class="product-image" alt="{{ product.name }}">
+                
+                {% if product.is_new %}
+                <div class="product-badge badge-new">NUEVO</div>
+                {% elif product.is_popular %}
+                <div class="product-badge badge-popular">POPULAR</div>
+                {% elif product.discount_percent %}
+                <div class="product-badge badge-offer">-{{ product.discount_percent }}%</div>
+                {% endif %}
+
+                <div class="product-overlay">
+                  <button class="btn btn-light btn-sm" onclick="viewProduct({{ product.id }})">
+                    <i class="bi bi-eye me-1"></i>Ver Detalles
+                  </button>
+                </div>
+              </div>
+
+              <div class="product-info">
+                <h6 class="product-title">{{ product.name }}</h6>
+                
+                {% if ratings.get(product.id) %}
+                <div class="product-rating">
+                  <div class="stars">
+                    {% for i in range(5) %}
+                      {% if i < ratings[product.id]|round %}
+                        <i class="bi bi-star-fill"></i>
+                      {% else %}
+                        <i class="bi bi-star"></i>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                  <span class="rating-count">({{ product.review_count or 0 }})</span>
+                </div>
+                {% endif %}
+
+                <div class="product-price">
+                  {% if product.price_credits %}
+                    {{ product.price_credits }} Crolars
+                  {% else %}
+                    S/ {{ product.price }}
+                  {% endif %}
+                </div>
+
+                {% if product.stock < 1 %}
+                <div class="alert alert-warning py-1 px-2 small mb-2">
+                  Sin stock
+                </div>
+                {% elif product.stock < 5 %}
+                <div class="alert alert-info py-1 px-2 small mb-2">
+                  Últimas {{ product.stock }} unidades
+                </div>
+                {% endif %}
+
+                <div class="product-actions">
+                  <button class="btn-quick-view" onclick="viewProduct({{ product.id }})">
+                    Ver Producto
+                  </button>
+                  {% if product.stock > 0 and product.id not in purchased_ids %}
+                  <button class="btn-add-cart" onclick="addToCart({{ product.id }})">
+                    <i class="bi bi-cart-plus"></i>
+                  </button>
+                  {% endif %}
                 </div>
               </div>
             </div>
           </div>
+          {% endfor %}
+        </div>
+
+        <!-- Load More -->
+        <div class="text-center mt-4">
+          <button class="btn btn-outline-primary btn-lg" id="loadMore" style="display: none;">
+            <i class="bi bi-arrow-down-circle me-2"></i>Cargar Más Productos
+          </button>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+          <div class="spinner"></div>
         </div>
       </div>
     </div>
-    <div class="carousel-item">
-      <div class="offers-banner text-center">
-        <div class="container">
-          <h2>🔥 ¡Ofertas Especiales!</h2>
-          <p class="mb-3">Aprovecha descuentos de hasta 50% en productos seleccionados</p>
-          <button class="btn btn-light btn-lg" onclick="scrollToOffers()">Ver Ofertas</button>
-        </div>
-      </div>
-    </div>
-    <div class="carousel-item">
-      <div class="premium-section">
-        <div class="container">
-          <div class="row align-items-center">
-            <div class="col-md-8">
-              <h2>✨ CRUNEVO+ Premium</h2>
-              <p class="mb-3">Accede a contenido exclusivo, cursos premium y beneficios especiales</p>
-              <ul class="list-unstyled">
-                <li><i class="bi bi-check-circle me-2"></i>Cursos exclusivos de alta calidad</li>
-                <li><i class="bi bi-check-circle me-2"></i>Descuentos especiales en la tienda</li>
-                <li><i class="bi bi-check-circle me-2"></i>Badge premium en tu perfil</li>
-                <li><i class="bi bi-check-circle me-2"></i>Soporte prioritario</li>
-              </ul>
-            </div>
-            <div class="col-md-4 text-center">
-              <div class="price-section justify-content-center">
-                <span class="price-current">S/ 29.90</span>
-                <span class="price-original">S/ 49.90</span>
-              </div>
-              <button class="btn btn-warning btn-lg fw-bold text-dark">
-                <i class="bi bi-star me-2"></i>Obtener CRUNEVO+
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#storeCarousel" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Anterior</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#storeCarousel" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Siguiente</span>
-  </button>
-</div>
-
-<div class="container">
-
-  <!-- Category Tabs -->
-  <div class="category-tabs">
-    <div class="d-flex flex-wrap justify-content-center">
-      <button class="category-btn active" data-category="all">
-        <i class="bi bi-grid me-1"></i>Todos
-      </button>
-      <button class="category-btn" data-category="premium">
-        <i class="bi bi-star me-1"></i>Premium
-      </button>
-      <button class="category-btn" data-category="offers">
-        <i class="bi bi-fire me-1"></i>Ofertas
-      </button>
-      <button class="category-btn" data-category="education">
-        <i class="bi bi-book me-1"></i>Educación
-      </button>
-      <button class="category-btn" data-category="technology">
-        <i class="bi bi-laptop me-1"></i>Tecnología
-      </button>
-      <button class="category-btn" data-category="courses">
-        <i class="bi bi-play-circle me-1"></i>Cursos
-      </button>
-    </div>
-  </div>
-
-  <!-- Products Grid -->
-  <div class="row g-4" id="productsGrid">
-    {% for product in products %}
-    <div class="col-lg-4 col-md-6 product-item" 
-         data-category="{{ product.category or 'education' }}"
-         data-premium="{{ 'premium' if product.is_premium else 'regular' }}"
-         data-offer="{{ 'offers' if product.discount_percent else 'regular' }}">
-      <div class="card product-card shadow-sm h-100">
-        <!-- Badges -->
-        {% if product.is_premium %}
-        <div class="premium-badge">
-          <i class="bi bi-star me-1"></i>PREMIUM
-        </div>
-        {% endif %}
-
-        {% if product.discount_percent %}
-        <div class="offer-badge">
-          -{{ product.discount_percent }}%
-        </div>
-        {% endif %}
-
-        <!-- Product Image -->
-        <div class="product-image d-flex align-items-center justify-content-center">
-          {% if product.first_image or product.image %}
-          <img src="{{ product.first_image or product.image }}" alt="{{ product.name }}"
-               class="img-fluid w-100 h-100" style="object-fit: cover;">
-          {% else %}
-          <img src="{{ url_for('static', filename='img/default_product.png') }}" alt="Sin imagen"
-               class="img-fluid w-100 h-100" style="object-fit: cover;">
-          {% endif %}
-        </div>
-
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">{{ product.name }}</h5>
-          <p class="card-text text-muted flex-grow-1">{{ product.description[:100] }}...</p>
-
-          <!-- Price Section -->
-          <div class="price-section">
-            {% if product.discount_percent %}
-            <span class="price-current" data-pen="{{ product.discounted_price }}" data-usd="{{ (product.discounted_price|float / 3.8)|round(2) }}">
-              S/ {{ product.discounted_price }}
-            </span>
-            <span class="price-original" data-pen="{{ product.price }}" data-usd="{{ (product.price|float / 3.8)|round(2) }}">
-              S/ {{ product.price }}
-            </span>
-            <span class="discount-percent">-{{ product.discount_percent }}%</span>
-            {% else %}
-            <span class="price-current" data-pen="{{ product.price }}" data-usd="{{ (product.price|float / 3.8)|round(2) }}">
-              S/ {{ product.price }}
-            </span>
-            {% endif %}
-          </div>
-
-          <!-- Stock Info -->
-          {% if product.stock < 10 and product.stock > 0 %}
-          <div class="alert alert-warning py-2 mb-2">
-            <i class="bi bi-exclamation-triangle me-1"></i>
-            ¡Solo quedan {{ product.stock }} unidades!
-          </div>
-          {% endif %}
-
-          <!-- Actions -->
-          <div class="d-grid gap-2 mt-auto">
-            {% if product.stock > 0 %}
-            <button class="btn btn-primary" onclick="addToCart({{ product.id }})">
-              <i class="bi bi-cart-plus me-2"></i>Agregar al Carrito
-            </button>
-            <button class="btn btn-outline-primary btn-sm" onclick="viewProduct({{ product.id }})">
-              <i class="bi bi-eye me-1"></i>Ver Detalles
-            </button>
-            {% else %}
-            <button class="btn btn-secondary" disabled>
-              <i class="bi bi-x-circle me-2"></i>Agotado
-            </button>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-
-  <!-- Load More Button -->
-  <div class="text-center mt-5">
-    <button class="btn btn-outline-primary btn-lg" id="loadMoreBtn">
-      <i class="bi bi-arrow-down me-2"></i>Cargar Más Productos
-    </button>
   </div>
 </div>
 
-{% endblock %}
-
-<!-- Floating Cart Button -->
-<button class="floating-cart-btn" data-tooltip="Ver carrito">
-  <i class="bi bi-cart3"></i>
-  <span class="cart-count" style="display: none;">0</span>
+<!-- Mobile Filter Button -->
+<button class="mobile-filter-btn d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#mobileFilters">
+  <i class="bi bi-funnel"></i>
 </button>
 
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/sw-store.js') }}"></script>
+<!-- Request Product Button -->
+<button class="btn-request-product" data-bs-toggle="modal" data-bs-target="#requestProductModal">
+  <i class="bi bi-plus-lg"></i>
+</button>
+
+<!-- Mobile Filters Offcanvas -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileFilters">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Filtros</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <!-- Same filter content as sidebar -->
+    <form id="mobileFilterForm">
+      <!-- Categories -->
+      <div class="filter-section">
+        <h6 class="filter-title">Categorías</h6>
+        {% for category in categories %}
+        <div class="filter-checkbox">
+          <input type="checkbox" name="categories" value="{{ category }}" id="mobile-cat-{{ loop.index }}">
+          <label for="mobile-cat-{{ loop.index }}">{{ category }}</label>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Price Range -->
+      <div class="filter-section">
+        <h6 class="filter-title">Rango de Precio</h6>
+        <div class="price-range">
+          <label for="mobilePriceRange" class="form-label">Hasta {{ max_price or 100 }} Crolars</label>
+          <input type="range" class="form-range" id="mobilePriceRange" min="0" max="{{ max_price or 100 }}" value="{{ max_price or 100 }}">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-apply-filters">
+        <i class="bi bi-funnel me-2"></i>Aplicar Filtros
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Request Product Modal -->
+<div class="modal fade" id="requestProductModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-plus-circle me-2"></i>Solicitar Producto
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="requestProductForm">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="productName" class="form-label">Nombre del Producto</label>
+              <input type="text" class="form-control" id="productName" required>
+            </div>
+            <div class="col-md-6">
+              <label for="productCategory" class="form-label">Categoría</label>
+              <select class="form-select" id="productCategory" required>
+                <option value="">Seleccionar...</option>
+                <option value="education">Educación</option>
+                <option value="technology">Tecnología</option>
+                <option value="templates">Plantillas</option>
+                <option value="courses">Cursos</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label for="productDescription" class="form-label">Descripción</label>
+              <textarea class="form-control" id="productDescription" rows="3" required></textarea>
+            </div>
+            <div class="col-md-6">
+              <label for="productImage" class="form-label">Imagen (opcional)</label>
+              <input type="file" class="form-control" id="productImage" accept="image/*">
+            </div>
+            <div class="col-md-6">
+              <label for="suggestedPrice" class="form-label">Precio Sugerido (Crolars)</label>
+              <input type="number" class="form-control" id="suggestedPrice" min="0">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="submitProductRequest()">
+          <i class="bi bi-send me-2"></i>Enviar Solicitud
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Enhanced marketplace functionality
+document.addEventListener('DOMContentLoaded', function() {
+  initializeMarketplace();
+});
+
+function initializeMarketplace() {
+  // Category filtering
+  const categoryBtns = document.querySelectorAll('.category-btn');
+  const productItems = document.querySelectorAll('.product-item');
+
+  categoryBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Update active state
+      categoryBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Filter products
+      const category = btn.dataset.category;
+      filterProducts(category);
+    });
+  });
+
+  // Filter form submission
+  document.getElementById('filterForm')?.addEventListener('submit', handleFilterSubmit);
+  document.getElementById('mobileFilterForm')?.addEventListener('submit', handleFilterSubmit);
+
+  // Price range updates
+  document.getElementById('priceRange')?.addEventListener('input', updatePriceDisplay);
+  document.getElementById('mobilePriceRange')?.addEventListener('input', updatePriceDisplay);
+}
+
+function filterProducts(category) {
+  const productItems = document.querySelectorAll('.product-item');
+  
+  productItems.forEach(item => {
+    const itemCategory = item.dataset.category;
+    const show = category === 'all' || itemCategory === category;
+    
+    if (show) {
+      item.style.display = 'block';
+      item.style.animation = 'fadeInUp 0.5s ease';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+function handleFilterSubmit(e) {
+  e.preventDefault();
+  
+  // Collect filter values
+  const formData = new FormData(e.target);
+  const filters = {
+    categories: formData.getAll('categories'),
+    tags: formData.getAll('tags'),
+    priceMax: document.getElementById('priceRange')?.value || document.getElementById('mobilePriceRange')?.value,
+    onlyAvailable: formData.get('onlyAvailable') === 'on'
+  };
+
+  // Apply filters
+  applyFilters(filters);
+  
+  // Close mobile offcanvas if open
+  const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('mobileFilters'));
+  if (offcanvas) {
+    offcanvas.hide();
+  }
+}
+
+function applyFilters(filters) {
+  const productItems = document.querySelectorAll('.product-item');
+  
+  productItems.forEach(item => {
+    let show = true;
+    
+    // Category filter
+    if (filters.categories.length > 0) {
+      const itemCategory = item.dataset.category;
+      show = show && filters.categories.includes(itemCategory);
+    }
+    
+    // Price filter
+    if (filters.priceMax) {
+      const itemPrice = parseFloat(item.dataset.price) || 0;
+      show = show && itemPrice <= parseFloat(filters.priceMax);
+    }
+    
+    // Stock filter
+    if (filters.onlyAvailable) {
+      const itemStock = parseInt(item.dataset.stock) || 0;
+      show = show && itemStock > 0;
+    }
+    
+    // Apply visibility
+    item.style.display = show ? 'block' : 'none';
+    if (show) {
+      item.style.animation = 'fadeInUp 0.5s ease';
+    }
+  });
+}
+
+function updatePriceDisplay(e) {
+  const value = e.target.value;
+  const label = e.target.previousElementSibling;
+  if (label) {
+    label.textContent = `Hasta ${value} Crolars`;
+  }
+}
+
+function viewProduct(productId) {
+  window.location.href = `/store/product/${productId}`;
+}
+
+function addToCart(productId) {
+  fetch(`/store/add/${productId}`, {
+    method: 'POST',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.count !== undefined) {
+      showToast('Producto agregado al carrito', 'success');
+      updateCartBadge(data.count);
+    } else {
+      showToast('Error al agregar al carrito', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showToast('Error de conexión', 'error');
+  });
+}
+
+function submitProductRequest() {
+  const form = document.getElementById('requestProductForm');
+  const formData = new FormData(form);
+  
+  // Show loading state
+  const submitBtn = event.target;
+  const originalText = submitBtn.innerHTML;
+  submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Enviando...';
+  submitBtn.disabled = true;
+
+  // Simulate API call (replace with actual endpoint)
+  setTimeout(() => {
+    showToast('Solicitud enviada correctamente', 'success');
+    
+    // Reset form and close modal
+    form.reset();
+    bootstrap.Modal.getInstance(document.getElementById('requestProductModal')).hide();
+    
+    // Reset button
+    submitBtn.innerHTML = originalText;
+    submitBtn.disabled = false;
+  }, 1500);
+}
+
+function showToast(message, type = 'info') {
+  // Create toast element if it doesn't exist
+  let toastContainer = document.getElementById('toast-container');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'toast-container';
+    toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+    toastContainer.style.zIndex = '9999';
+    document.body.appendChild(toastContainer);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'primary'} border-0`;
+  toast.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">
+        <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+        ${message}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  `;
+
+  toastContainer.appendChild(toast);
+  const bsToast = new bootstrap.Toast(toast);
+  bsToast.show();
+
+  // Remove toast after it's hidden
+  toast.addEventListener('hidden.bs.toast', () => {
+    toast.remove();
+  });
+}
+
+function updateCartBadge(count) {
+  const badge = document.querySelector('.cart-badge');
+  if (badge) {
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'inline' : 'none';
+  }
+}
+
+// Infinite scroll (if needed)
+let isLoading = false;
+let page = 1;
+
+window.addEventListener('scroll', () => {
+  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000 && !isLoading) {
+    loadMoreProducts();
+  }
+});
+
+function loadMoreProducts() {
+  if (isLoading) return;
+  
+  isLoading = true;
+  page++;
+  
+  const spinner = document.getElementById('loadingSpinner');
+  if (spinner) spinner.style.display = 'block';
+
+  // Simulate API call for more products
+  setTimeout(() => {
+    // Add new products to grid
+    const grid = document.getElementById('productsGrid');
+    
+    // Reset loading state
+    isLoading = false;
+    if (spinner) spinner.style.display = 'none';
+  }, 1000);
+}
+</script>
 {% endblock %}

@@ -1,152 +1,608 @@
+
 {% extends 'base.html' %}
-{% import 'components/csrf.html' as csrf %}
-{% block title %}{{ product.name }} - Tienda{% endblock %}
-{% block meta_description %}{{ (product.description or '')[:160] }}{% endblock %}
+
+{% block title %}{{ product.name }} - Marketplace CRUNEVO{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/store_detail.css') }}">
+{% endblock %}
+
 {% block content %}
-<div class="container py-4">
-  <div class="row">
-    <div class="col-md-6">
-      <img loading="lazy" id="mainImage" src="{{ product.first_image or '/static/img/producto-default.png' }}" class="img-fluid rounded shadow-sm mb-2" alt="{{ product.name }}">
-      {% if product.image_urls %}
-        <div class="d-flex gap-2">
-          {% for url in product.image_urls %}
-            <img loading="lazy" src="{{ url }}" data-src="{{ url }}" class="img-thumbnail product-thumb" style="width: 70px; cursor: pointer;">
+<div class="container-fluid px-3 py-4">
+  <div class="row g-4">
+    <!-- Product Gallery -->
+    <div class="col-md-5">
+      <div class="product-gallery">
+        <img id="mainImage" 
+             src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}" 
+             class="main-image w-100" 
+             alt="{{ product.name }}">
+        
+        {% if product.image_urls and product.image_urls|length > 1 %}
+        <div class="thumbnail-list">
+          {% for image_url in product.image_urls %}
+          <img src="{{ image_url }}" 
+               class="thumbnail {{ 'active' if loop.first else '' }}" 
+               alt="Vista {{ loop.index }}"
+               onclick="changeMainImage('{{ image_url }}', this)">
           {% endfor %}
         </div>
-      {% endif %}
-    </div>
-    <div class="col-md-6">
-      <h2>{{ product.name }}
-        <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="d-inline ms-2">
-          {{ csrf.csrf_field() }}
-          <button class="btn btn-sm btn-light border-0" type="submit">
-            <i class="bi {% if is_favorite %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
-          </button>
-        </form>
-      </h2>
-      <div class="mb-2">
-        {% for _ in range(avg_rating|round(0,'floor')|int) %}<i class="bi bi-star-fill text-warning"></i>{% endfor %}
-        {% for _ in range(5 - avg_rating|round(0,'floor')|int) %}<i class="bi bi-star text-warning"></i>{% endfor %}
-        <small class="text-muted">{{ '%.1f'|format(avg_rating) }}</small>
+        {% endif %}
       </div>
-      <p class="text-muted">S/ {{ '%.2f'|format(product.price) }}{% if product.price_credits %} <br><small>o {{ product.price_credits }} crolars</small>{% endif %}</p>
-      <p>{{ product.description or "Sin descripción detallada." }}</p>
-      {% if product.stock > 0 %}
-        <span class="badge bg-success mb-3">En stock</span>
-      {% else %}
-        <span class="badge bg-secondary mb-3">Sin stock</span>
-      {% endif %}
-      {% if purchased and not product.allow_multiple %}
-        <span class="badge bg-secondary mb-3">Adquirido</span>
-      {% endif %}
-      {% if purchased and product.download_url %}
-        <a href="{{ product.download_url }}" class="btn btn-success w-100 mb-2" target="_blank">Descargar</a>
-      {% endif %}
-      {% if product.price_credits and current_user.is_authenticated %}
-        {% if not product.allow_multiple and purchased %}
-          {% if not product.download_url %}
-            <button class="btn btn-outline-secondary w-100 mb-2" disabled data-bs-toggle="tooltip" title="Ya tienes este producto">Canjear</button>
-          {% endif %}
-        {% elif current_user.credits >= product.price_credits %}
-          <form method="post" action="{{ url_for('store.redeem_product', product_id=product.id) }}" class="mb-2">
-            {{ csrf.csrf_field() }}
-            <button class="btn btn-primary w-100" type="submit">Canjear</button>
-          </form>
-        {% else %}
-          <button class="btn btn-outline-secondary w-100 mb-2" disabled>Requiere {{ product.price_credits }} crolars</button>
-        {% endif %}
-      {% elif product.price_credits and not current_user.is_authenticated %}
-        <a href="{{ url_for('auth.login') }}" class="btn btn-primary w-100 mb-2">Inicia sesión</a>
-      {% endif %}
-        {% if not product.credits_only %}
-          {% if product.stock > 0 %}
-            {% if not product.allow_multiple and purchased %}
-              {% if not product.download_url %}
-                <button class="btn btn-outline-secondary w-100 mb-2" disabled data-bs-toggle="tooltip" title="Ya tienes este producto">Comprar ahora</button>
-                <a class="btn btn-primary w-100 disabled" tabindex="-1" aria-disabled="true" data-bs-toggle="tooltip" title="Ya tienes este producto">Agregar al carrito</a>
-              {% endif %}
-            {% else %}
-              <form method="post" action="{{ url_for('store.buy_product', product_id=product.id) }}" class="mb-2">
-                {{ csrf.csrf_field() }}
-                <button class="btn btn-success w-100" type="submit">Comprar ahora</button>
-              </form>
-              <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-primary w-100">Agregar al carrito</a>
+    </div>
+
+    <!-- Product Info -->
+    <div class="col-md-7">
+      <div class="product-detail-info">
+        <!-- Product Header -->
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h1 class="product-detail-title">{{ product.name }}</h1>
+            
+            <!-- Rating -->
+            {% if avg_rating > 0 %}
+            <div class="d-flex align-items-center mb-3">
+              <div class="text-warning me-2">
+                {% for i in range(5) %}
+                  {% if i < avg_rating|round %}
+                    <i class="bi bi-star-fill"></i>
+                  {% else %}
+                    <i class="bi bi-star"></i>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <span class="fw-semibold">{{ "%.1f"|format(avg_rating) }}</span>
+              <span class="text-muted ms-1">({{ reviews|length }} reseñas)</span>
+            </div>
             {% endif %}
-          {% else %}
-            <button class="btn btn-outline-secondary w-100" disabled>Sin stock</button>
+          </div>
+          
+          <!-- Wishlist Button -->
+          <button class="btn-wishlist {{ 'active' if is_favorite else '' }}" 
+                  onclick="toggleFavorite({{ product.id }}, this)">
+            <i class="bi bi-heart{{ '-fill' if is_favorite else '' }}"></i>
+          </button>
+        </div>
+
+        <!-- Price -->
+        <div class="mb-4">
+          <div class="product-detail-price">
+            {% if product.price_credits %}
+              {{ product.price_credits }} Crolars
+            {% else %}
+              S/ {{ product.price }}
+            {% endif %}
+          </div>
+          
+          {% if product.discount_percent %}
+          <div class="d-flex align-items-center">
+            <span class="text-decoration-line-through text-muted me-2">
+              {% if product.price_credits %}
+                {{ (product.price_credits / (1 - product.discount_percent/100))|round|int }} Crolars
+              {% else %}
+                S/ {{ (product.price / (1 - product.discount_percent/100))|round(2) }}
+              {% endif %}
+            </span>
+            <span class="badge bg-danger">-{{ product.discount_percent }}%</span>
+          </div>
           {% endif %}
+        </div>
+
+        <!-- Stock Indicator -->
+        <div class="mb-3">
+          {% if product.stock > 10 %}
+            <span class="stock-indicator stock-high">
+              <i class="bi bi-check-circle me-1"></i>En stock
+            </span>
+          {% elif product.stock > 5 %}
+            <span class="stock-indicator stock-medium">
+              <i class="bi bi-exclamation-triangle me-1"></i>Pocas unidades
+            </span>
+          {% elif product.stock > 0 %}
+            <span class="stock-indicator stock-low">
+              <i class="bi bi-exclamation-circle me-1"></i>Últimas {{ product.stock }} unidades
+            </span>
+          {% else %}
+            <span class="stock-indicator stock-out">
+              <i class="bi bi-x-circle me-1"></i>Sin stock
+            </span>
+          {% endif %}
+        </div>
+
+        <!-- Product Variants (if any) -->
+        {% if product.variants %}
+        <div class="variant-selector">
+          <h6 class="fw-semibold mb-2">Formato:</h6>
+          <div class="variant-options">
+            {% for variant in product.variants %}
+            <div class="variant-option">
+              <input type="radio" id="variant-{{ variant.id }}" name="variant" value="{{ variant.id }}">
+              <label for="variant-{{ variant.id }}">{{ variant.name }}</label>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
         {% endif %}
-      <button id="shareBtn" class="btn btn-outline-secondary w-100 mt-2" type="button"><i class="bi bi-share"></i> Compartir</button>
+
+        <!-- Actions -->
+        <div class="product-actions">
+          {% if product.stock > 0 and not purchased %}
+            {% if product.price_credits %}
+            <button class="btn-buy-now" onclick="redeemProduct({{ product.id }})">
+              <i class="bi bi-coin me-2"></i>Canjear Ahora
+            </button>
+            {% else %}
+            <button class="btn-buy-now" onclick="buyProduct({{ product.id }})">
+              <i class="bi bi-credit-card me-2"></i>Comprar Ahora
+            </button>
+            {% endif %}
+            
+            <button class="btn-add-to-cart" onclick="addToCart({{ product.id }})">
+              <i class="bi bi-cart-plus me-2"></i>Agregar al Carrito
+            </button>
+          {% elif purchased %}
+            <div class="alert alert-success mb-0">
+              <i class="bi bi-check-circle me-2"></i>Ya adquiriste este producto
+            </div>
+          {% else %}
+            <button class="btn btn-outline-secondary" disabled>
+              <i class="bi bi-x-circle me-2"></i>Sin stock
+            </button>
+          {% endif %}
+          
+          <button class="btn-share" onclick="shareProduct()">
+            <i class="bi bi-share"></i>
+          </button>
+        </div>
+
+        <!-- Quick Info -->
+        <div class="row g-3 mt-4">
+          <div class="col-6">
+            <div class="text-center p-3 bg-light rounded">
+              <i class="bi bi-truck fs-4 text-primary mb-2 d-block"></i>
+              <small class="fw-semibold">Entrega Digital</small>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="text-center p-3 bg-light rounded">
+              <i class="bi bi-shield-check fs-4 text-success mb-2 d-block"></i>
+              <small class="fw-semibold">Compra Segura</small>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="row mt-4">
-    <div class="col-md-8">
-      <h4>Opiniones</h4>
-      {% for review in reviews %}
-        <div class="border rounded p-2 mb-2">
-          <div class="d-flex justify-content-between">
-            <div>
-              {% for _ in range(review.rating) %}<i class="bi bi-star-fill text-warning"></i>{% endfor %}
-              {% for _ in range(5 - review.rating) %}<i class="bi bi-star text-warning"></i>{% endfor %}
+  <!-- Product Details Sections -->
+  <div class="row g-4 mt-4">
+    <div class="col-lg-8">
+      <!-- Description -->
+      <div class="product-info-section">
+        <h3 class="section-title">
+          <i class="bi bi-info-circle"></i>Descripción
+        </h3>
+        <div class="product-detail-description">
+          {{ product.description|safe if product.description else 'Sin descripción disponible.' }}
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      {% if reviews %}
+      <div class="product-info-section">
+        <h3 class="section-title">
+          <i class="bi bi-star"></i>Reseñas ({{ reviews|length }})
+        </h3>
+        
+        {% for review in reviews %}
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-author">
+              <img src="{{ review.user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                   class="review-avatar" alt="{{ review.user.username }}">
+              <div>
+                <div class="fw-semibold">{{ review.user.username }}</div>
+                <div class="review-rating">
+                  {% for i in range(5) %}
+                    {% if i < review.rating %}
+                      <i class="bi bi-star-fill"></i>
+                    {% else %}
+                      <i class="bi bi-star"></i>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
             </div>
-            <small class="text-muted">{{ review.user.username }} - {{ review.timestamp.strftime('%d/%m/%Y') }}</small>
+            <div class="review-date">
+              {{ review.timestamp.strftime('%d/%m/%Y') }}
+            </div>
           </div>
           <p class="mb-0">{{ review.comment }}</p>
         </div>
-      {% else %}
-        <p class="text-muted">Aún no hay opiniones.</p>
-      {% endfor %}
-      {% if purchased %}
-        <form method="post" action="{{ url_for('store.add_review', product_id=product.id) }}" class="mt-3">
-          {{ csrf.csrf_field() }}
-          <div class="mb-2">
-            <label for="rating" class="form-label small">Calificación</label>
-            <select id="rating" name="rating" class="form-select form-select-sm" required>
-              {% for i in range(1,6) %}
-                <option value="{{ i }}">{{ i }} estrella{{ 's' if i > 1 else '' }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="mb-2">
-            <label for="comment" class="form-label small">Comentario</label>
-            <textarea id="comment" name="comment" class="form-control form-control-sm" rows="3" placeholder="Comparte tu experiencia..."></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary btn-sm">Enviar Reseña</button>
-        </form>
-      {% endif %}
-    </div>
-  </div>
+        {% endfor %}
 
-  <div class="row mt-4">
-    <div class="col-md-8">
-      <h4>Preguntas y respuestas</h4>
-      {% for q in questions %}
-        <div class="border rounded p-2 mb-2">
-          <p class="mb-1"><strong>{{ q.user.username }}:</strong> {{ q.body }}</p>
-          {% for a in q.answers %}
-            <p class="mb-1 ms-3"><i class="bi bi-reply"></i> <strong>{{ a.user.username }}:</strong> {{ a.body }}</p>
-          {% endfor %}
-          <form method="post" action="{{ url_for('store.add_answer', question_id=q.id) }}" class="ms-3 mt-2">
-            {{ csrf.csrf_field() }}
-            <div class="input-group input-group-sm">
-              <input name="body" class="form-control" placeholder="Responder..." required>
-              <button class="btn btn-outline-secondary" type="submit">Enviar</button>
+        {% if purchased and not user_has_reviewed %}
+        <div class="mt-4">
+          <h5>Deja tu reseña</h5>
+          <form action="{{ url_for('store.add_review', product_id=product.id) }}" method="POST">
+            {{ csrf_token() }}
+            <div class="mb-3">
+              <label class="form-label">Calificación</label>
+              <div class="rating-input">
+                {% for i in range(1, 6) %}
+                <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" required>
+                <label for="star{{ i }}" class="star-label">
+                  <i class="bi bi-star"></i>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="comment" class="form-label">Comentario</label>
+              <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-send me-2"></i>Enviar Reseña
+            </button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Questions -->
+      <div class="product-info-section">
+        <h3 class="section-title">
+          <i class="bi bi-question-circle"></i>Preguntas y Respuestas
+        </h3>
+        
+        {% if questions %}
+        {% for question in questions %}
+        <div class="question-card">
+          <div class="question-header">
+            <div class="question-author">
+              <img src="{{ question.user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                   class="question-avatar" alt="{{ question.user.username }}">
+              <div>
+                <div class="fw-semibold">{{ question.user.username }}</div>
+                <div class="question-meta">{{ question.timestamp.strftime('%d/%m/%Y') }}</div>
+              </div>
+            </div>
+          </div>
+          <p class="fw-semibold mb-2">{{ question.body }}</p>
+          
+          {% if question.answers %}
+          <div class="answer-list">
+            {% for answer in question.answers %}
+            <div class="answer-item">
+              <div class="d-flex align-items-center mb-2">
+                <img src="{{ answer.user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                     class="question-avatar me-2" alt="{{ answer.user.username }}">
+                <div>
+                  <div class="fw-semibold">{{ answer.user.username }}</div>
+                  <div class="question-meta">{{ answer.timestamp.strftime('%d/%m/%Y') }}</div>
+                </div>
+              </div>
+              <p class="mb-0">{{ answer.body }}</p>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Answer Form -->
+          <form action="{{ url_for('store.add_answer', question_id=question.id) }}" method="POST" class="mt-3">
+            {{ csrf_token() }}
+            <div class="input-group">
+              <input type="text" class="form-control" name="body" placeholder="Responder..." required>
+              <button type="submit" class="btn btn-outline-primary">
+                <i class="bi bi-reply"></i>
+              </button>
             </div>
           </form>
         </div>
-      {% else %}
-        <p class="text-muted">No hay preguntas aún.</p>
-      {% endfor %}
-      <form method="post" action="{{ url_for('store.add_question', product_id=product.id) }}" class="mt-3">
-        {{ csrf.csrf_field() }}
-        <div class="mb-2">
-          <label for="questionBody" class="form-label small">Pregunta</label>
-          <textarea id="questionBody" name="body" class="form-control" rows="2" required></textarea>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Ask Question Form -->
+        <div class="mt-4">
+          <h5>Hacer una pregunta</h5>
+          <form action="{{ url_for('store.add_question', product_id=product.id) }}" method="POST">
+            {{ csrf_token() }}
+            <div class="input-group">
+              <input type="text" class="form-control" name="body" placeholder="¿Tienes alguna pregunta sobre este producto?" required>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-send"></i>
+              </button>
+            </div>
+          </form>
         </div>
-        <button class="btn btn-primary btn-sm" type="submit">Enviar pregunta</button>
-      </form>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+      <!-- Recommendations -->
+      <div class="product-info-section">
+        <h3 class="section-title">
+          <i class="bi bi-lightbulb"></i>También te podría interesar
+        </h3>
+        
+        <div class="row g-3">
+          {% for rec_product in recommended_products[:4] %}
+          <div class="col-6">
+            <div class="recommendation-card" onclick="viewProduct({{ rec_product.id }})">
+              <img src="{{ rec_product.first_image or url_for('static', filename='img/default_product.png') }}" 
+                   class="recommendation-image" alt="{{ rec_product.name }}">
+              <div class="recommendation-info">
+                <h6 class="recommendation-title">{{ rec_product.name }}</h6>
+                <div class="recommendation-price">
+                  {% if rec_product.price_credits %}
+                    {{ rec_product.price_credits }} Crolars
+                  {% else %}
+                    S/ {{ rec_product.price }}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Product Stats -->
+      <div class="product-info-section">
+        <h3 class="section-title">
+          <i class="bi bi-graph-up"></i>Estadísticas
+        </h3>
+        
+        <div class="row g-3 text-center">
+          <div class="col-6">
+            <div class="p-3 bg-light rounded">
+              <div class="fs-4 fw-bold text-primary">{{ product.view_count or 0 }}</div>
+              <small class="text-muted">Visualizaciones</small>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 bg-light rounded">
+              <div class="fs-4 fw-bold text-success">{{ product.purchase_count or 0 }}</div>
+              <small class="text-muted">Ventas</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seller Info -->
+      <div class="product-info-section">
+        <h3 class="section-title">
+          <i class="bi bi-shop"></i>Vendido por CRUNEVO
+        </h3>
+        
+        <div class="text-center">
+          <img src="{{ url_for('static', filename='img/icon-192.png') }}" 
+               class="rounded-circle mb-3" width="64" height="64" alt="CRUNEVO">
+          <h6 class="fw-bold">CRUNEVO</h6>
+          <p class="text-muted small">Marketplace educativo oficial</p>
+          
+          <div class="row g-2 text-center">
+            <div class="col-6">
+              <div class="p-2 bg-light rounded">
+                <div class="fw-bold text-success">4.8★</div>
+                <small class="text-muted">Rating</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 bg-light rounded">
+                <div class="fw-bold text-primary">100%</div>
+                <small class="text-muted">Respuesta</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<style>
+/* Rating input styles */
+.rating-input {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.rating-input input[type="radio"] {
+  display: none;
+}
+
+.star-label {
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #E2E8F0;
+  transition: color 0.2s ease;
+}
+
+.rating-input input[type="radio"]:checked ~ .star-label,
+.rating-input input[type="radio"]:checked + .star-label,
+.star-label:hover {
+  color: #F59E0B;
+}
+
+/* Dark mode adjustments */
+[data-bs-theme="dark"] .bg-light {
+  background-color: #475569 !important;
+}
+</style>
+
+<script>
+function changeMainImage(src, thumbnail) {
+  document.getElementById('mainImage').src = src;
+  
+  // Update active thumbnail
+  document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+  thumbnail.classList.add('active');
+}
+
+function toggleFavorite(productId, button) {
+  fetch(`/store/favorite/${productId}`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      const icon = button.querySelector('i');
+      const isActive = button.classList.contains('active');
+      
+      if (isActive) {
+        button.classList.remove('active');
+        icon.className = 'bi bi-heart';
+        showToast('Producto eliminado de favoritos', 'info');
+      } else {
+        button.classList.add('active');
+        icon.className = 'bi bi-heart-fill';
+        showToast('Producto agregado a favoritos', 'success');
+      }
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showToast('Error al actualizar favoritos', 'error');
+  });
+}
+
+function addToCart(productId) {
+  fetch(`/store/add/${productId}`, {
+    method: 'POST',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.count !== undefined) {
+      showToast('Producto agregado al carrito', 'success');
+      updateCartBadge(data.count);
+    } else {
+      showToast('Error al agregar al carrito', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showToast('Error de conexión', 'error');
+  });
+}
+
+function redeemProduct(productId) {
+  if (confirm('¿Confirmas el canje de este producto?')) {
+    fetch(`/store/redeem/${productId}`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        return response.text().then(text => {
+          throw new Error(text);
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showToast('Error al canjear producto', 'error');
+    });
+  }
+}
+
+function buyProduct(productId) {
+  if (confirm('¿Confirmas la compra de este producto?')) {
+    fetch(`/store/buy/${productId}`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        return response.text().then(text => {
+          throw new Error(text);
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showToast('Error al comprar producto', 'error');
+    });
+  }
+}
+
+function shareProduct() {
+  const url = window.location.href;
+  const title = document.querySelector('.product-detail-title').textContent;
+  
+  if (navigator.share) {
+    navigator.share({
+      title: title,
+      text: `Mira este producto en CRUNEVO: ${title}`,
+      url: url
+    });
+  } else {
+    // Fallback: copy to clipboard
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('Enlace copiado al portapapeles', 'success');
+    });
+  }
+}
+
+function viewProduct(productId) {
+  window.location.href = `/store/product/${productId}`;
+}
+
+function showToast(message, type = 'info') {
+  let toastContainer = document.getElementById('toast-container');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'toast-container';
+    toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+    toastContainer.style.zIndex = '9999';
+    document.body.appendChild(toastContainer);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'primary'} border-0`;
+  toast.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">
+        <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+        ${message}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  `;
+
+  toastContainer.appendChild(toast);
+  const bsToast = new bootstrap.Toast(toast);
+  bsToast.show();
+
+  toast.addEventListener('hidden.bs.toast', () => {
+    toast.remove();
+  });
+}
+
+function updateCartBadge(count) {
+  const badge = document.querySelector('.cart-badge');
+  if (badge) {
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'inline' : 'none';
+  }
+}
+</script>
 {% endblock %}
