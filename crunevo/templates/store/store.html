@@ -406,14 +406,14 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="store-container">
   <!-- Hero Section -->
   <div class="marketplace-hero">
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-8">
           <h1>🛍️ Marketplace CRUNEVO</h1>
-          <p class="lead">Descubre recursos educativos, plantillas, cursos y más para potenciar tu aprendizaje</p>
+          <p>Descubre recursos educativos, plantillas, cursos y más para potenciar tu aprendizaje</p>
         </div>
         <div class="col-lg-4 text-end">
           <div class="d-flex align-items-center justify-content-end">
@@ -431,13 +431,24 @@
       <div class="col-lg-3 d-none d-lg-block">
         <div class="filter-sidebar">
           <form id="filterForm">
+            <!-- Search -->
+            <div class="filter-section">
+              <h6 class="filter-title">Buscar</h6>
+              <div class="search-input">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" class="form-control" placeholder="Buscar productos..." id="searchInput">
+              </div>
+            </div>
+
             <!-- Categories -->
             <div class="filter-section">
               <h6 class="filter-title">Categorías</h6>
               {% for category in categories %}
               <div class="filter-checkbox">
                 <input type="checkbox" name="categories" value="{{ category }}" id="cat-{{ loop.index }}">
-                <label for="cat-{{ loop.index }}">{{ category }}</label>
+                <label for="cat-{{ loop.index }}">
+                  <i class="bi bi-folder me-2"></i>{{ category }}
+                </label>
               </div>
               {% endfor %}
             </div>
@@ -455,30 +466,61 @@
               </div>
             </div>
 
-            <!-- Tags -->
+            <!-- Educational Tags -->
             <div class="filter-section">
-              <h6 class="filter-title">Etiquetas</h6>
+              <h6 class="filter-title">Tipo de Producto</h6>
+              <div class="filter-checkbox">
+                <input type="checkbox" name="tags" value="notes" id="tag-notes">
+                <label for="tag-notes">
+                  <i class="bi bi-journal-text me-2"></i>Apuntes
+                </label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" name="tags" value="templates" id="tag-templates">
+                <label for="tag-templates">
+                  <i class="bi bi-file-earmark-text me-2"></i>Plantillas
+                </label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" name="tags" value="courses" id="tag-courses">
+                <label for="tag-courses">
+                  <i class="bi bi-play-circle me-2"></i>Cursos
+                </label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" name="tags" value="materials" id="tag-materials">
+                <label for="tag-materials">
+                  <i class="bi bi-box me-2"></i>Materiales
+                </label>
+              </div>
+            </div>
+
+            <!-- Special Tags -->
+            <div class="filter-section">
+              <h6 class="filter-title">Especiales</h6>
               <div class="filter-checkbox">
                 <input type="checkbox" name="tags" value="premium" id="tag-premium">
-                <label for="tag-premium">⭐ Premium</label>
+                <label for="tag-premium">
+                  <i class="bi bi-star-fill me-2"></i>Premium
+                </label>
               </div>
               <div class="filter-checkbox">
                 <input type="checkbox" name="tags" value="offers" id="tag-offers">
-                <label for="tag-offers">🔥 Ofertas</label>
+                <label for="tag-offers">
+                  <i class="bi bi-fire me-2"></i>Ofertas
+                </label>
               </div>
               <div class="filter-checkbox">
-                <input type="checkbox" name="tags" value="digital" id="tag-digital">
-                <label for="tag-digital">💻 Digital</label>
-              </div>
-              <div class="filter-checkbox">
-                <input type="checkbox" name="tags" value="physical" id="tag-physical">
-                <label for="tag-physical">📦 Físico</label>
+                <input type="checkbox" name="tags" value="new" id="tag-new">
+                <label for="tag-new">
+                  <i class="bi bi-lightning me-2"></i>Nuevos
+                </label>
               </div>
             </div>
 
             <!-- Stock -->
             <div class="filter-section">
-              <h6 class="filter-title">Stock</h6>
+              <h6 class="filter-title">Disponibilidad</h6>
               <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="onlyAvailable">
                 <label class="form-check-label" for="onlyAvailable">
@@ -499,32 +541,52 @@
         <!-- Featured Products -->
         {% if featured_products %}
         <div class="featured-section">
-          <h3 class="fw-bold mb-3">⭐ Productos Destacados</h3>
+          <h3 class="fw-bold mb-3">
+            <i class="bi bi-star-fill me-2"></i>Productos Destacados
+          </h3>
           <div class="featured-carousel">
             {% for product in featured_products %}
             <div class="featured-card">
-              <div class="card product-card">
+              <div class="product-card">
                 <div class="product-image-container">
                   <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}" 
                        class="product-image" alt="{{ product.name }}">
+                  
                   {% if product.is_new %}
                   <div class="product-badge badge-new">NUEVO</div>
                   {% elif product.is_popular %}
                   <div class="product-badge badge-popular">POPULAR</div>
+                  {% elif product.is_featured %}
+                  <div class="product-badge badge-premium">DESTACADO</div>
                   {% endif %}
+
+                  <button class="wishlist-btn" onclick="toggleFavorite({{ product.id }}, this)">
+                    <i class="bi bi-heart"></i>
+                  </button>
                 </div>
+                
                 <div class="product-info">
+                  <div class="product-category">{{ product.category or 'Educación' }}</div>
                   <h6 class="product-title">{{ product.name }}</h6>
-                  <div class="product-price">
-                    {% if product.price_credits %}
-                      {{ product.price_credits }} Crolars
-                    {% else %}
-                      S/ {{ product.price }}
+                  
+                  <div class="product-pricing">
+                    <div class="product-price">
+                      {% if product.price_credits %}
+                        {{ product.price_credits }} Crolars
+                      {% else %}
+                        S/ {{ product.price }}
+                      {% endif %}
+                    </div>
+                    {% if product.price_credits and product.price %}
+                    <div class="price-alternative">o S/ {{ product.price }}</div>
                     {% endif %}
                   </div>
-                  <button class="btn btn-quick-view w-100" onclick="viewProduct({{ product.id }})">
-                    Ver Producto
-                  </button>
+
+                  <div class="product-actions">
+                    <button class="btn-add-cart" onclick="addToCart({{ product.id }})">
+                      <i class="bi bi-cart-plus me-2"></i>Agregar
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -533,39 +595,41 @@
         </div>
         {% endif %}
 
-        <!-- Category Filters -->
+        <!-- Category Quick Filters -->
         <div class="category-filters">
-          <h5 class="fw-bold mb-3">Explorar por Categoría</h5>
+          <h5 class="fw-bold mb-3">
+            <i class="bi bi-grid me-2"></i>Explorar por Categoría
+          </h5>
           <div class="d-flex flex-wrap">
             <button class="category-btn active" data-category="all">
-              <i class="bi bi-grid me-1"></i>Todos
+              <i class="bi bi-grid-3x3-gap"></i>Todos
             </button>
             <button class="category-btn" data-category="education">
-              <i class="bi bi-book me-1"></i>Educación
+              <i class="bi bi-book"></i>Educación
             </button>
             <button class="category-btn" data-category="technology">
-              <i class="bi bi-laptop me-1"></i>Tecnología
+              <i class="bi bi-laptop"></i>Tecnología
             </button>
             <button class="category-btn" data-category="templates">
-              <i class="bi bi-file-earmark me-1"></i>Plantillas
+              <i class="bi bi-file-earmark"></i>Plantillas
             </button>
             <button class="category-btn" data-category="courses">
-              <i class="bi bi-play-circle me-1"></i>Cursos
+              <i class="bi bi-play-circle"></i>Cursos
             </button>
             <button class="category-btn" data-category="premium">
-              <i class="bi bi-star me-1"></i>Premium
+              <i class="bi bi-star"></i>Premium
             </button>
           </div>
         </div>
 
         <!-- Products Grid -->
-        <div class="row product-grid g-3" id="productsGrid">
+        <div class="product-grid" id="productsGrid">
           {% for product in products %}
-          <div class="col product-item" 
+          <div class="product-item" 
                data-category="{{ product.category or 'education' }}"
                data-price="{{ product.price_credits or product.price }}"
                data-stock="{{ product.stock }}">
-            <div class="card product-card">
+            <div class="product-card">
               <div class="product-image-container">
                 <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}" 
                      class="product-image" alt="{{ product.name }}">
@@ -576,16 +640,18 @@
                 <div class="product-badge badge-popular">POPULAR</div>
                 {% elif product.discount_percent %}
                 <div class="product-badge badge-offer">-{{ product.discount_percent }}%</div>
+                {% elif product.is_featured %}
+                <div class="product-badge badge-premium">PREMIUM</div>
                 {% endif %}
 
-                <div class="product-overlay">
-                  <button class="btn btn-light btn-sm" onclick="viewProduct({{ product.id }})">
-                    <i class="bi bi-eye me-1"></i>Ver Detalles
-                  </button>
-                </div>
+                <button class="wishlist-btn {{ 'active' if product.id in favorite_ids else '' }}" 
+                        onclick="toggleFavorite({{ product.id }}, this)">
+                  <i class="bi bi-heart{{ '-fill' if product.id in favorite_ids else '' }}"></i>
+                </button>
               </div>
 
               <div class="product-info">
+                <div class="product-category">{{ product.category or 'Educación' }}</div>
                 <h6 class="product-title">{{ product.name }}</h6>
                 
                 {% if ratings.get(product.id) %}
@@ -603,31 +669,52 @@
                 </div>
                 {% endif %}
 
-                <div class="product-price">
-                  {% if product.price_credits %}
-                    {{ product.price_credits }} Crolars
-                  {% else %}
-                    S/ {{ product.price }}
+                <div class="product-pricing">
+                  <div class="product-price">
+                    {% if product.price_credits %}
+                      {{ product.price_credits }} Crolars
+                    {% else %}
+                      S/ {{ product.price }}
+                    {% endif %}
+                  </div>
+                  {% if product.price_credits and product.price %}
+                  <div class="price-alternative">o S/ {{ product.price }}</div>
                   {% endif %}
                 </div>
 
                 {% if product.stock < 1 %}
-                <div class="alert alert-warning py-1 px-2 small mb-2">
-                  Sin stock
+                <div class="stock-indicator stock-out">
+                  <i class="bi bi-x-circle me-1"></i>Sin stock
                 </div>
                 {% elif product.stock < 5 %}
-                <div class="alert alert-info py-1 px-2 small mb-2">
-                  Últimas {{ product.stock }} unidades
+                <div class="stock-indicator stock-low">
+                  <i class="bi bi-exclamation-circle me-1"></i>Últimas {{ product.stock }} unidades
+                </div>
+                {% elif product.stock < 10 %}
+                <div class="stock-indicator stock-medium">
+                  <i class="bi bi-exclamation-triangle me-1"></i>Pocas unidades
+                </div>
+                {% else %}
+                <div class="stock-indicator stock-high">
+                  <i class="bi bi-check-circle me-1"></i>Disponible
                 </div>
                 {% endif %}
 
                 <div class="product-actions">
-                  <button class="btn-quick-view" onclick="viewProduct({{ product.id }})">
-                    Ver Producto
-                  </button>
                   {% if product.stock > 0 and product.id not in purchased_ids %}
                   <button class="btn-add-cart" onclick="addToCart({{ product.id }})">
-                    <i class="bi bi-cart-plus"></i>
+                    <i class="bi bi-cart-plus me-2"></i>Agregar
+                  </button>
+                  <button class="btn-quick-view" onclick="viewProduct({{ product.id }})">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  {% elif product.id in purchased_ids %}
+                  <button class="btn-quick-view w-100" onclick="viewProduct({{ product.id }})">
+                    <i class="bi bi-check-circle me-2"></i>Ya tienes este producto
+                  </button>
+                  {% else %}
+                  <button class="btn-quick-view w-100" disabled>
+                    <i class="bi bi-x-circle me-2"></i>Sin stock
                   </button>
                   {% endif %}
                 </div>
@@ -638,7 +725,7 @@
         </div>
 
         <!-- Load More -->
-        <div class="text-center mt-4">
+        <div class="text-center mt-5">
           <button class="btn btn-outline-primary btn-lg" id="loadMore" style="display: none;">
             <i class="bi bi-arrow-down-circle me-2"></i>Cargar Más Productos
           </button>
@@ -768,11 +855,23 @@ function initializeMarketplace() {
       categoryBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      // Filter products
+      // Filter products with animation
       const category = btn.dataset.category;
-      filterProducts(category);
+      filterProductsWithAnimation(category);
     });
   });
+
+  // Search functionality
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        searchProducts(e.target.value);
+      }, 300);
+    });
+  }
 
   // Filter form submission
   document.getElementById('filterForm')?.addEventListener('submit', handleFilterSubmit);
@@ -781,21 +880,79 @@ function initializeMarketplace() {
   // Price range updates
   document.getElementById('priceRange')?.addEventListener('input', updatePriceDisplay);
   document.getElementById('mobilePriceRange')?.addEventListener('input', updatePriceDisplay);
+
+  // Initialize animations
+  animateProductsOnLoad();
 }
 
-function filterProducts(category) {
+function filterProductsWithAnimation(category) {
   const productItems = document.querySelectorAll('.product-item');
   
+  // First, fade out all items
+  productItems.forEach((item, index) => {
+    item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    item.style.opacity = '0';
+    item.style.transform = 'translateY(10px)';
+  });
+  
+  // Then show/hide and animate relevant items
+  setTimeout(() => {
+    productItems.forEach((item, index) => {
+      const itemCategory = item.dataset.category;
+      const show = category === 'all' || itemCategory === category;
+      
+      if (show) {
+        item.style.display = 'block';
+        setTimeout(() => {
+          item.style.opacity = '1';
+          item.style.transform = 'translateY(0)';
+        }, index * 50); // Staggered animation
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }, 300);
+}
+
+function searchProducts(query) {
+  const productItems = document.querySelectorAll('.product-item');
+  const searchTerm = query.toLowerCase().trim();
+  
   productItems.forEach(item => {
-    const itemCategory = item.dataset.category;
-    const show = category === 'all' || itemCategory === category;
+    const title = item.querySelector('.product-title').textContent.toLowerCase();
+    const category = item.querySelector('.product-category').textContent.toLowerCase();
+    const matches = title.includes(searchTerm) || category.includes(searchTerm);
     
-    if (show) {
+    if (searchTerm === '' || matches) {
       item.style.display = 'block';
-      item.style.animation = 'fadeInUp 0.5s ease';
+      item.style.opacity = '1';
+      item.style.transform = 'translateY(0)';
     } else {
       item.style.display = 'none';
     }
+  });
+}
+
+function animateProductsOnLoad() {
+  const productItems = document.querySelectorAll('.product-item');
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, index) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }, index * 100);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  
+  productItems.forEach(item => {
+    item.style.opacity = '0';
+    item.style.transform = 'translateY(20px)';
+    item.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(item);
   });
 }
 
@@ -866,6 +1023,12 @@ function viewProduct(productId) {
 }
 
 function addToCart(productId) {
+  // Add visual feedback
+  const button = event.target.closest('.btn-add-cart');
+  const originalText = button.innerHTML;
+  button.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+  button.disabled = true;
+
   fetch(`/store/add/${productId}`, {
     method: 'POST',
     headers: {
@@ -876,14 +1039,83 @@ function addToCart(productId) {
   .then(response => response.json())
   .then(data => {
     if (data.count !== undefined) {
+      // Success animation
+      button.innerHTML = '<i class="bi bi-check-circle"></i>';
+      button.style.background = 'var(--success-green)';
+      
       showToast('Producto agregado al carrito', 'success');
       updateCartBadge(data.count);
+      
+      // Reset button after animation
+      setTimeout(() => {
+        button.innerHTML = originalText;
+        button.style.background = '';
+        button.disabled = false;
+      }, 2000);
     } else {
+      button.innerHTML = originalText;
+      button.disabled = false;
       showToast('Error al agregar al carrito', 'error');
     }
   })
   .catch(error => {
     console.error('Error:', error);
+    button.innerHTML = originalText;
+    button.disabled = false;
+    showToast('Error de conexión', 'error');
+  });
+}
+
+function toggleFavorite(productId, button) {
+  const icon = button.querySelector('i');
+  const isActive = button.classList.contains('active');
+  
+  // Optimistic UI update
+  if (isActive) {
+    button.classList.remove('active');
+    icon.className = 'bi bi-heart';
+  } else {
+    button.classList.add('active');
+    icon.className = 'bi bi-heart-fill';
+    // Add pulse animation
+    button.style.animation = 'pulse 0.6s ease';
+    setTimeout(() => button.style.animation = '', 600);
+  }
+
+  fetch(`/store/favorite/${productId}`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      showToast(
+        isActive ? 'Producto eliminado de favoritos' : 'Producto agregado a favoritos', 
+        'success'
+      );
+    } else {
+      // Revert UI changes if request failed
+      if (isActive) {
+        button.classList.add('active');
+        icon.className = 'bi bi-heart-fill';
+      } else {
+        button.classList.remove('active');
+        icon.className = 'bi bi-heart';
+      }
+      showToast('Error al actualizar favoritos', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    // Revert UI changes
+    if (isActive) {
+      button.classList.add('active');
+      icon.className = 'bi bi-heart-fill';
+    } else {
+      button.classList.remove('active');
+      icon.className = 'bi bi-heart';
+    }
     showToast('Error de conexión', 'error');
   });
 }
