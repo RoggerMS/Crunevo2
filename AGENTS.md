@@ -637,3 +637,4 @@
 - Onboarding confirm ahora redirige a /onboarding/finish si el perfil usa datos por defecto y se actualizan las pruebas (PR onboarding-finish-redirect).
 
 - Actualizado correo de confirmación indicando que el enlace es válido por 1 hora (PR confirm-link-validity).
+- Finish route activates user and refreshes session to prevent stuck pending state (PR onboarding-finish-activate-login).
