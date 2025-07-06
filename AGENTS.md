@@ -647,3 +647,4 @@
 - Focus mode hides navbars and sidebars, includes floating exit button (PR focus-mode-ui).
 - Suggestion buttons now redirect to personal_space.create_goal and personal_space.create_kanban routes instead of creating blocks directly (PR personal-space-suggestions-routes).
 - Confirmed personal_block table represents personal_space; no additional model added (PR personal-space-schema-review).
+- Added API tests for creating, updating, deleting and reordering personal space blocks (PR personal-space-api-tests).
