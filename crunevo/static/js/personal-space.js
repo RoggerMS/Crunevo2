@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 let sortableInstance = null;
 let currentEditingBlock = null;
-let isDarkMode = localStorage.getItem('darkMode') === 'true';
+let isDarkMode = (localStorage.getItem('theme') || document.documentElement.dataset.bsTheme) === 'dark';
 let isFocusMode = false;
 
 function initializePersonalSpace() {
@@ -23,10 +23,14 @@ function initializePersonalSpace() {
 }
 
 function initializeDarkMode() {
+    const html = document.documentElement;
     if (isDarkMode) {
-        document.documentElement.classList.add('dark-mode');
-        updateDarkModeButton();
+        html.classList.add('dark-mode');
+    } else {
+        html.classList.remove('dark-mode');
     }
+    html.dataset.bsTheme = isDarkMode ? 'dark' : 'light';
+    updateDarkModeButton();
 }
 
 function initializeSortable() {
@@ -48,7 +52,7 @@ function initializeEventListeners() {
     // Add block buttons
     document.getElementById('addBlockBtn')?.addEventListener('click', showAddBlockModal);
     document.getElementById('floatingAddBtn')?.addEventListener('click', showAddBlockModal);
-    document.getElementById('createFirstBlock')?.addEventListener('click', showAddBlockModal);
+    document.getElementById('createFirstBlock')?.addEventListener('click', startPersonalSpace);
 
     // Control buttons
     document.getElementById('darkModeToggle')?.addEventListener('click', toggleDarkMode);
@@ -296,6 +300,17 @@ function handleModalEvents(e) {
     }
 }
 
+function apiCreateBlock(blockData) {
+    return fetch('/espacio-personal/api/blocks', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify(blockData)
+    }).then(response => response.json());
+}
+
 function createNewBlock(type) {
     const blockData = {
         block_type: type,
@@ -305,46 +320,35 @@ function createNewBlock(type) {
         metadata: getDefaultMetadata(type)
     };
 
-    fetch('/espacio-personal/api/blocks', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken()
-        },
-        body: JSON.stringify(blockData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Close modal
-            bootstrap.Modal.getInstance(document.getElementById('addBlockModal')).hide();
+    apiCreateBlock(blockData)
+        .then(data => {
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('addBlockModal'))?.hide();
 
-            // Add new block to grid
-            const blockElement = createBlockElement(data.block);
-            blockElement.classList.add('new-block');
+                const blockElement = createBlockElement(data.block);
+                blockElement.classList.add('new-block');
 
-            const grid = document.getElementById('blocksGrid');
-            const emptyState = grid.querySelector('.empty-state');
-            if (emptyState) {
-                emptyState.remove();
+                const grid = document.getElementById('blocksGrid');
+                const emptyState = grid.querySelector('.empty-state');
+                if (emptyState) {
+                    emptyState.remove();
+                }
+
+                grid.appendChild(blockElement);
+
+                setTimeout(() => {
+                    showEditBlockModal(data.block.id);
+                }, 500);
+
+                showNotification('Bloque creado exitosamente', 'success');
+            } else {
+                showNotification(data.message || 'Error al crear el bloque', 'error');
             }
-
-            grid.appendChild(blockElement);
-
-            // Show edit modal immediately
-            setTimeout(() => {
-                showEditBlockModal(data.block.id);
-            }, 500);
-
-            showNotification('Bloque creado exitosamente', 'success');
-        } else {
-            showNotification(data.message || 'Error al crear el bloque', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error creating block:', error);
-        showNotification('Error de conexión', 'error');
-    });
+        })
+        .catch(error => {
+            console.error('Error creating block:', error);
+            showNotification('Error de conexión', 'error');
+        });
 }
 
 function getDefaultTitle(type) {
@@ -374,6 +378,36 @@ function getDefaultMetadata(type) {
         default:
             return {};
     }
+}
+
+function startPersonalSpace() {
+    const initial = [
+        { type: 'nota', title: 'Bitácora de inicio' },
+        { type: 'kanban', title: 'Mi Tablero Kanban' },
+        { type: 'objetivo', title: 'Objetivo de ejemplo' }
+    ];
+    let chain = Promise.resolve();
+    initial.forEach((item) => {
+        const data = {
+            block_type: item.type,
+            title: item.title,
+            content: '',
+            color: 'indigo',
+            metadata: getDefaultMetadata(item.type)
+        };
+        chain = chain.then(() =>
+            apiCreateBlock(data).then((res) => {
+                if (res.success) {
+                    const grid = document.getElementById('blocksGrid');
+                    const empty = grid.querySelector('.empty-state');
+                    if (empty) empty.remove();
+                    const el = createBlockElement(res.block);
+                    grid.appendChild(el);
+                }
+            })
+        );
+    });
+    chain.then(() => showNotification('Espacio inicial creado', 'success'));
 }
 
 // Block Editing Functions
@@ -834,8 +868,10 @@ function updateBlockOrder() {
 // UI Controls
 function toggleDarkMode() {
     isDarkMode = !isDarkMode;
-    document.documentElement.classList.toggle('dark-mode', isDarkMode);
-    localStorage.setItem('darkMode', isDarkMode.toString());
+    const html = document.documentElement;
+    html.classList.toggle('dark-mode', isDarkMode);
+    html.dataset.bsTheme = isDarkMode ? 'dark' : 'light';
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
     updateDarkModeButton();
 }
 
@@ -893,13 +929,19 @@ function handleSuggestionClick(e) {
         const action = suggestionCard.dataset.action;
 
         switch (action) {
-            case 'create_goal_block':
-                createNewBlock('meta');
+            case 'create_objetivo_block':
+                createNewBlock('objetivo');
                 break;
-            case 'create_note_block':
+            case 'create_nota_block':
                 createNewBlock('nota');
                 break;
-            case 'show_overdue_reminders':
+            case 'create_kanban_block':
+                createNewBlock('kanban');
+                break;
+            case 'create_bloque_block':
+                createNewBlock('bloque');
+                break;
+            case 'show_overdue_items':
                 showOverdueReminders();
                 break;
         }
