@@ -46,7 +46,9 @@
         <a class="nav-link" href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}"><i class="bi bi-shop me-1"></i>Tienda</a>
         <a class="nav-link" href="{{ url_for('ranking.show_ranking') }}"><i class="bi bi-trophy me-1"></i>Ranking</a>
         <a class="nav-link" href="{{ url_for('courses.list_courses') if 'courses.list_courses' in url_for.__globals__.get('current_app', {}).view_functions else '/cursos' }}"><i class="bi bi-play-circle-fill me-1"></i>Cursos</a>
-        <a class="nav-link" href="{{ url_for('carrera.index') }}"><i class="bi bi-mortarboard"></i> Mi Carrera</a>
+        <a class="nav-link" href="{{ url_for('carrera.index') if 'carrera.index' in url_for.__globals__.get('current_app', {}).view_functions else '/micarrera' }}">
+          <i class="bi bi-mortarboard"></i> Mi Carrera
+        </a>
       </div>
 
       <ul class="navbar-nav ms-auto align-items-center gap-2">

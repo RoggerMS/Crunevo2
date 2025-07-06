@@ -61,7 +61,7 @@ class PersonalBlock(db.Model):
                 if column_name.lower() in ["hecho", "completado", "finalizado"]:
                     completed_tasks += len(tasks)
                 total_tasks += len(tasks)
-            
+
             if total_tasks == 0:
                 return 0
             return int((completed_tasks / total_tasks) * 100)
@@ -72,29 +72,25 @@ class PersonalBlock(db.Model):
         """Get color based on priority or type"""
         metadata = self.get_metadata()
         priority = metadata.get("priority", "medium")
-        
-        priority_colors = {
-            "high": "red",
-            "medium": "amber", 
-            "low": "green"
-        }
-        
+
+        priority_colors = {"high": "red", "medium": "amber", "low": "green"}
+
         return priority_colors.get(priority, self.color)
 
     def get_status_badge(self):
         """Get status badge for different block types"""
         metadata = self.get_metadata()
-        
+
         if self.block_type == "objetivo":
             status = metadata.get("status", "no_iniciada")
             status_map = {
                 "no_iniciada": {"text": "No iniciada", "color": "gray"},
                 "en_progreso": {"text": "En progreso", "color": "blue"},
                 "cumplida": {"text": "Cumplida", "color": "green"},
-                "vencida": {"text": "Vencida", "color": "red"}
+                "vencida": {"text": "Vencida", "color": "red"},
             }
             return status_map.get(status, status_map["no_iniciada"])
-        
+
         elif self.block_type == "tarea":
             if metadata.get("completed", False):
                 return {"text": "Completada", "color": "green"}
@@ -102,17 +98,17 @@ class PersonalBlock(db.Model):
                 return {"text": "Vencida", "color": "red"}
             else:
                 return {"text": "Pendiente", "color": "blue"}
-        
+
         return {"text": "Activo", "color": "blue"}
 
     def get_due_days(self):
         """Get days until due date"""
         metadata = self.get_metadata()
         due_date_str = metadata.get("due_date") or metadata.get("deadline")
-        
+
         if not due_date_str:
             return None
-            
+
         try:
             due_date = datetime.fromisoformat(due_date_str.replace("Z", "+00:00"))
             diff = due_date - datetime.utcnow()

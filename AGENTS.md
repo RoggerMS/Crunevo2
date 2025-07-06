@@ -641,3 +641,4 @@
 - Finish route refreshes user and clears flashes; added test ensuring feed access after completing profile (PR finish-refresh-test).
 - Fixed UnboundLocalError in onboarding register GET by only sending email after POST and returning template on GET (PR register-user-fix).
 - Mobile bottom nav store link uses fallback to "/" when store blueprint missing to prevent BuildError (PR store-link-fallback).
+- Mobile bottom nav and navbar career links use fallback to '/micarrera' when the career blueprint is missing (PR career-link-fallback).
