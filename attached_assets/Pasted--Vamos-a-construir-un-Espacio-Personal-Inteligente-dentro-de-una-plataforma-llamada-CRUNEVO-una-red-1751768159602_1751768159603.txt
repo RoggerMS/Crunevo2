@@ -1,0 +1,129 @@
+ Vamos a construir un Espacio Personal Inteligente dentro de una plataforma llamada CRUNEVO (una red social académica para estudiantes).
+
+🌟 Objetivo:
+
+Crear una vista privada y personalizable tipo Notion, donde cada estudiante pueda escribir, organizar y visualizar lo más importante de su vida académica. Debe ser bonito, funcional, responsivo, y altamente usable.
+
+🧱 Estructura técnica base:
+
+1. Modelo PersonalBlock:
+
+id
+
+user_id (relación con el estudiante)
+
+tipo (nota, lista, meta, recordatorio, frase, enlace, widget)
+
+contenido (JSON flexible o string largo)
+
+orden (para drag & drop)
+
+creado_en
+
+actualizado_en
+
+destacado (booleano)
+
+2. Vista principal /espacio-personal
+
+Grid visual de tarjetas (tipo tablero Notion / Trello).
+
+Cada tarjeta representa un bloque creado por el usuario.
+
+Botón flotante "+ Añadir bloque", con selector de tipo.
+
+Soporte para Drag & Drop en escritorio y mobile.
+
+Guardado automático de orden.
+
+Diseño responsivo 100% (móvil/tablet/PC).
+
+Compatible con modo oscuro.
+
+🧩 Tipos de bloque iniciales:
+
+📝 Nota rápida
+
+Editor simple tipo textarea o Markdown.
+
+Botón para marcar como importante o destacar.
+
+✅ Lista de tareas
+
+Checkbox por tarea.
+
+Estado dinámico (completado o pendiente).
+
+Indicador visual del % completado.
+
+🎯 Metas
+
+Campo de meta + fecha objetivo + barra de progreso.
+
+Puede tener subtareas relacionadas.
+
+💭 Frase motivacional
+
+Selector aleatorio desde una base o frase propia.
+
+Estilo de tarjeta más decorativa.
+
+🔗 Enlace educativo
+
+Enlace con mini preview visual (favicon o título del sitio).
+
+Puede vincular apuntes, cursos o recursos externos.
+
+📌 Recordatorio
+
+Título + descripción + fecha límite.
+
+Alerta visual si está próximo o vencido.
+
+🧰 Herramientas adicionales incluidas:
+
+🌙 Modo claro/oscuro automático según hora del sistema.
+
+💾 Guardado automático al escribir (AJAX).
+
+🖱️ Tooltips al pasar por cada ícono (UX amable).
+
+📅 Vista “Focus Mode”: oculta todo menos las notas.
+
+🧠 Motor de sugerencias: “Aún no has registrado metas esta semana”, etc.
+
+🎨 Selección de color o ícono para cada bloque (personalización ligera).
+
+🔒 Todo es privado por defecto. En el futuro se podrá compartir solo si se desea.
+
+🎁 Extras creativos (pueden estar como TODO si no da tiempo):
+
+🎨 Fondo personalizable (selector entre 4 fondos motivacionales).
+
+📤 Exportar bloque a PDF.
+
+🔗 Insertar un bloque dentro de una publicación o apunte.
+
+📌 Widget: mini contador de Crolars o progreso en misiones.
+
+⚙️ Stack sugerido:
+
+Backend: Python (Flask)
+
+Frontend: HTML + Tailwind o Bootstrap 5 (moderno y ligero)
+
+DB: PostgreSQL o SQLite si es local
+
+Guardado: Fetch o Axios para peticiones AJAX
+
+🔚 Resultado esperado:
+
+Un módulo moderno y limpio, donde el estudiante sienta que puede organizar su mente y sus objetivos. El diseño debe inspirar productividad, con colores suaves, íconos bien elegidos y animaciones sutiles.
+
+Explícame al final:
+
+Cómo integrar esta vista con el perfil ya existente.
+
+Cómo se cargan y guardan los bloques.
+
+Cómo se puede escalar esta función en el futuro (multi-tableros, widgets).
