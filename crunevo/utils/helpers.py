@@ -3,8 +3,17 @@ from datetime import datetime
 from flask import redirect, url_for, flash
 from flask_login import current_user, login_required
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import inspect
 
 from crunevo.extensions import db
+
+
+def table_exists(table_name: str) -> bool:
+    """Return True if the given table exists in the database."""
+    try:
+        return inspect(db.engine).has_table(table_name)
+    except SQLAlchemyError:
+        return False
 
 
 def admin_required(f):
@@ -31,6 +40,7 @@ def full_admin_required(f):
 
 def activated_required(f):
     @wraps(f)
+    @login_required
     def decorated_function(*args, **kwargs):
         if not current_user.activated:
             flash("Debes activar tu cuenta para acceder a esta función.", "warning")

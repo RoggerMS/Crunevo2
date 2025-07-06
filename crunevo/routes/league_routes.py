@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, jsonify, redirect, url_fo
 from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models.league import AcademicTeam, TeamMember, LeagueMonth, TeamAction
-from crunevo.utils.helpers import activated_required
+from crunevo.utils.helpers import activated_required, table_exists
 from datetime import datetime
 from sqlalchemy import desc
 
@@ -14,6 +14,17 @@ league_bp = Blueprint("league", __name__, url_prefix="/liga")
 @activated_required
 def index():
     """Academic League main page"""
+
+    if not table_exists("team_member"):
+        flash("Función no disponible", "warning")
+        return render_template(
+            "league/index.html",
+            user_team=None,
+            top_teams=[],
+            total_teams=0,
+            total_participants=0,
+            current_league=None,
+        )
 
     # Get current user's team
     user_team = None

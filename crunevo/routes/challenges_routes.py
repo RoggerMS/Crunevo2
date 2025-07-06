@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, flash
 from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models.challenges import (
@@ -7,7 +7,7 @@ from crunevo.models.challenges import (
     MasterQuestion,
     MasterQuestionAttempt,
 )
-from crunevo.utils.helpers import activated_required
+from crunevo.utils.helpers import activated_required, table_exists
 from crunevo.utils.credits import add_credit
 from crunevo.constants import CreditReasons
 from datetime import datetime, timedelta, date
@@ -21,6 +21,14 @@ challenges_bp = Blueprint("challenges", __name__, url_prefix="/desafios")
 @activated_required
 def ghost_mentor():
     """Ghost Mentor Challenge page"""
+    if not table_exists("ghost_mentor_challenge"):
+        flash("Función no disponible", "warning")
+        return render_template(
+            "challenges/ghost_mentor.html",
+            active_challenge=None,
+            user_response=None,
+            recent_challenges=[],
+        )
     # Get active challenge
     active_challenge = GhostMentorChallenge.query.filter(
         GhostMentorChallenge.is_active.is_(True),
