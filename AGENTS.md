@@ -633,6 +633,7 @@
 - Relaxed default Flask-Limiter to 1000/day and removed limits from store and developer routes, keeping limits only on login and onboarding (PR rate-limit-tweak).
 - Improved email confirmation flow: activated_required refreshes user from DB, added 429 error page, and removed 'Mi Espacio' from mobile nav (PR email-activation-fix).
 - Added missing templates for Ghost Mentor challenge and League team creation; fixed backpack template when table missing (PR log-fixes-templates).
-
 - Fixed optional alias update to avoid NULL username and added /onboarding/confirm page with redirect after register. Updated test expectations (PR register-confirm-redirect).
+- Onboarding confirm ahora redirige a /onboarding/finish si el perfil usa datos por defecto y se actualizan las pruebas (PR onboarding-finish-redirect).
+
 - Actualizado correo de confirmación indicando que el enlace es válido por 1 hora (PR confirm-link-validity).

@@ -19,6 +19,7 @@ from werkzeug.utils import secure_filename
 from crunevo.extensions import db, limiter, csrf
 from flask_limiter.util import get_remote_address
 from crunevo.models import User, EmailToken
+from crunevo.models.user import DEFAULT_AVATAR_URL
 from crunevo.utils.mailer import send_email
 from crunevo.utils.audit import record_auth_event
 import re
@@ -160,6 +161,9 @@ def confirm(token):
     # Remove stale flash messages from previous requests
     session.pop("_flashes", None)
     flash("¡Correo verificado! Bienvenido a CRUNEVO", "success")
+    user = record.user
+    if user.username == user.email or user.avatar_url == DEFAULT_AVATAR_URL:
+        return redirect(url_for("onboarding.finish"))
     return redirect(url_for("feed.feed_home"))
 
 
