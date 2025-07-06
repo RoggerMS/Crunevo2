@@ -943,13 +943,13 @@ function handleSuggestionClick(e) {
 
         switch (action) {
             case 'create_objetivo_block':
-                createNewBlock('objetivo');
+                window.location.href = '/espacio-personal/objetivo/nuevo';
                 break;
             case 'create_nota_block':
                 createNewBlock('nota');
                 break;
             case 'create_kanban_block':
-                createNewBlock('kanban');
+                window.location.href = '/espacio-personal/kanban/nuevo';
                 break;
             case 'create_bloque_block':
                 createNewBlock('bloque');

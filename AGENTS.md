@@ -645,3 +645,4 @@
 - Enhanced personal space with Notion-style notes, Trello-style tasks and dashboard metrics (PR personal-space-workspace).
 - Activated and fixed personal space: suggestions create blocks, initial template via "Comenzar" button, dark mode syncs with global theme and API routes require activated login (PR personal-space-activation).
 - Focus mode hides navbars and sidebars, includes floating exit button (PR focus-mode-ui).
+- Suggestion buttons now redirect to personal_space.create_goal and personal_space.create_kanban routes instead of creating blocks directly (PR personal-space-suggestions-routes).
