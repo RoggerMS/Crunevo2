@@ -635,3 +635,4 @@
 - Added missing templates for Ghost Mentor challenge and League team creation; fixed backpack template when table missing (PR log-fixes-templates).
 
 - Fixed optional alias update to avoid NULL username and added /onboarding/confirm page with redirect after register. Updated test expectations (PR register-confirm-redirect).
+- Actualizado correo de confirmación indicando que el enlace es válido por 1 hora (PR confirm-link-validity).
