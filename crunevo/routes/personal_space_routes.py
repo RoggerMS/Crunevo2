@@ -34,6 +34,7 @@ def index():
 
 @personal_space_bp.route("/api/blocks", methods=["GET"])
 @login_required
+@activated_required
 def get_blocks():
     """API endpoint to get all user blocks"""
     blocks = (
@@ -47,6 +48,7 @@ def get_blocks():
 
 @personal_space_bp.route("/api/blocks", methods=["POST"])
 @login_required
+@activated_required
 def create_block():
     """Create a new personal block"""
     data = request.get_json()
@@ -128,6 +130,7 @@ def create_block():
 
 @personal_space_bp.route("/api/blocks/<int:block_id>", methods=["PUT"])
 @login_required
+@activated_required
 def update_block(block_id):
     """Update an existing block"""
     block = PersonalBlock.query.filter_by(id=block_id, user_id=current_user.id).first()
@@ -165,6 +168,7 @@ def update_block(block_id):
 
 @personal_space_bp.route("/api/blocks/<int:block_id>", methods=["DELETE"])
 @login_required
+@activated_required
 def delete_block(block_id):
     """Delete a block"""
     block = PersonalBlock.query.filter_by(id=block_id, user_id=current_user.id).first()
@@ -180,6 +184,7 @@ def delete_block(block_id):
 
 @personal_space_bp.route("/api/blocks/reorder", methods=["POST"])
 @login_required
+@activated_required
 def reorder_blocks():
     """Update block order positions"""
     data = request.get_json()
@@ -200,6 +205,7 @@ def reorder_blocks():
 
 @personal_space_bp.route("/api/suggestions")
 @login_required
+@activated_required
 def api_suggestions():
     """Get smart suggestions for the user"""
     suggestions = get_smart_suggestions()
