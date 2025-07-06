@@ -2,6 +2,7 @@ from functools import wraps
 from datetime import datetime
 from flask import redirect, url_for, flash
 from flask_login import current_user, login_required
+from crunevo.models import User
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import inspect
 
@@ -42,9 +43,11 @@ def activated_required(f):
     @wraps(f)
     @login_required
     def decorated_function(*args, **kwargs):
-        if not current_user.activated:
-            flash("Debes activar tu cuenta para acceder a esta función.", "warning")
-            return redirect(url_for("auth.perfil"))
+        if table_exists("user"):
+            user = User.query.get(current_user.id)
+            if not user or not user.activated:
+                flash("Debes activar tu cuenta para acceder a esta función.", "warning")
+                return redirect(url_for("onboarding.pending"))
         return f(*args, **kwargs)
 
     return decorated_function
