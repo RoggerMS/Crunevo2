@@ -112,6 +112,12 @@
             <span class="fw-semibold">Ranking</span>
           </a>
         </li>
+          <li>
+          <a href="{{ url_for('personal_space.index') if 'personal_space.index' in url_for.__globals__.get('current_app', {}).view_functions else '/personal_space' }}" class="nav-link {{ 'active' if request.endpoint == 'personal_space.index' }}">
+            <i class="bi bi-house-gear"></i>
+            <span class="fw-semibold">Mi Espacio Personal</span>
+          </a>
+        </li>
 
         {% if 'ia.ia_chat' in url_for.__globals__.get('current_app', {}).view_functions %}
         <li>

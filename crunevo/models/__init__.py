@@ -43,6 +43,7 @@ from .page_view import PageView  # noqa: F401
 from .story import Story  # noqa: F401
 from .group_mission import GroupMission, GroupMissionParticipant  # noqa: F401
 from .user_block import UserBlock  # noqa: F401
+from .personal_block import PersonalBlock  # noqa: F401
 from .print_request import PrintRequest  # noqa: F401
 from .api_key import APIKey  # noqa: F401
 

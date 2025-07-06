@@ -1,0 +1,184 @@
+
+{% extends 'base.html' %}
+{% block title %}Mi Espacio Personal{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="personal-space-container">
+    <!-- Header -->
+    <div class="ps-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="ps-title">
+                        <i class="bi bi-house-gear me-2"></i>
+                        Mi Espacio Personal
+                    </h1>
+                    <p class="ps-subtitle">Organiza tu vida académica de manera inteligente</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="ps-controls">
+                        <button class="btn btn-outline-primary me-2" id="focusModeBtn">
+                            <i class="bi bi-eye-slash"></i>
+                            Modo Enfoque
+                        </button>
+                        <button class="btn btn-outline-secondary me-2" id="darkModeToggle">
+                            <i class="bi bi-moon"></i>
+                            Modo Oscuro
+                        </button>
+                        <button class="btn btn-primary" id="addBlockBtn">
+                            <i class="bi bi-plus-lg"></i>
+                            Añadir Bloque
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Smart Suggestions -->
+    {% if suggestions %}
+    <div class="ps-suggestions mb-4" id="smartSuggestions">
+        <div class="container-fluid">
+            <h5 class="suggestions-title">
+                <i class="bi bi-lightbulb text-warning"></i>
+                Sugerencias Inteligentes
+            </h5>
+            <div class="suggestions-list">
+                {% for suggestion in suggestions %}
+                <div class="suggestion-card" data-action="{{ suggestion.action }}">
+                    <div class="suggestion-content">
+                        <h6>{{ suggestion.title }}</h6>
+                        <p>{{ suggestion.message }}</p>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary suggestion-btn">
+                        Aplicar
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Blocks Grid -->
+    <div class="ps-grid-container">
+        <div class="container-fluid">
+            <div class="blocks-grid" id="blocksGrid">
+                {% for block in blocks %}
+                {% include 'personal_space/components/block_card.html' %}
+                {% endfor %}
+                
+                {% if not blocks %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="bi bi-plus-circle"></i>
+                    </div>
+                    <h3>¡Bienvenido a tu Espacio Personal!</h3>
+                    <p>Comienza creando tu primer bloque para organizar tu vida académica</p>
+                    <button class="btn btn-primary btn-lg" id="createFirstBlock">
+                        <i class="bi bi-plus-lg"></i>
+                        Crear mi primer bloque
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Add Button (Mobile) -->
+    <button class="floating-add-btn d-md-none" id="floatingAddBtn">
+        <i class="bi bi-plus-lg"></i>
+    </button>
+</div>
+
+<!-- Add Block Modal -->
+<div class="modal fade" id="addBlockModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Añadir Nuevo Bloque</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="block-types-grid">
+                    <div class="block-type-card" data-type="nota">
+                        <div class="block-type-icon">
+                            <i class="bi bi-journal-text"></i>
+                        </div>
+                        <h6>Nota Rápida</h6>
+                        <p>Escribe ideas, pensamientos y apuntes</p>
+                    </div>
+                    
+                    <div class="block-type-card" data-type="lista">
+                        <div class="block-type-icon">
+                            <i class="bi bi-check2-square"></i>
+                        </div>
+                        <h6>Lista de Tareas</h6>
+                        <p>Organiza pendientes con checkboxes</p>
+                    </div>
+                    
+                    <div class="block-type-card" data-type="meta">
+                        <div class="block-type-icon">
+                            <i class="bi bi-target"></i>
+                        </div>
+                        <h6>Meta u Objetivo</h6>
+                        <p>Define metas con progreso visual</p>
+                    </div>
+                    
+                    <div class="block-type-card" data-type="recordatorio">
+                        <div class="block-type-icon">
+                            <i class="bi bi-alarm"></i>
+                        </div>
+                        <h6>Recordatorio</h6>
+                        <p>Avisos con fecha límite</p>
+                    </div>
+                    
+                    <div class="block-type-card" data-type="frase">
+                        <div class="block-type-icon">
+                            <i class="bi bi-quote"></i>
+                        </div>
+                        <h6>Frase Motivacional</h6>
+                        <p>Inspiración y motivación</p>
+                    </div>
+                    
+                    <div class="block-type-card" data-type="enlace">
+                        <div class="block-type-icon">
+                            <i class="bi bi-link-45deg"></i>
+                        </div>
+                        <h6>Enlace Educativo</h6>
+                        <p>Enlaces a recursos útiles</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Block Modal -->
+<div class="modal fade" id="editBlockModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Bloque</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="editBlockContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="saveBlockBtn">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/personal-space.js') }}"></script>
+{% endblock %}

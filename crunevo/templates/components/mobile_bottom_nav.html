@@ -60,6 +60,14 @@
           </div>
           <span class="nav-label">Perfil</span>
         </a>
+      <a href="{{ url_for('store.index') }}" class="nav-item {% if request.endpoint and 'store' in request.endpoint %}active{% endif %}">
+        <i class="bi bi-shop"></i>
+        <span>Tienda</span>
+      </a>
+      <a href="{{ url_for('personal_space.index') }}" class="nav-item {% if request.endpoint and 'personal_space' in request.endpoint %}active{% endif %}">
+        <i class="bi bi-house-gear"></i>
+        <span>Mi Espacio</span>
+      </a>
       </div>
     </div>
   </nav>

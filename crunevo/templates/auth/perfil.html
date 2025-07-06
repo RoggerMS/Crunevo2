@@ -488,6 +488,10 @@
               <a href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}" class="btn btn-outline-warning btn-sm">
                 <i class="bi bi-shop"></i> Tienda
               </a>
+              <a href="{{ url_for('personal_space.index') }}" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-house-gear"></i>
+                Mi Espacio Personal
+              </a>
             </div>
           </div>
         </div>
