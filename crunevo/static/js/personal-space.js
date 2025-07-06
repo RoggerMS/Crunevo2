@@ -57,6 +57,9 @@ function initializeEventListeners() {
     // Control buttons
     document.getElementById('darkModeToggle')?.addEventListener('click', toggleDarkMode);
     document.getElementById('focusModeBtn')?.addEventListener('click', toggleFocusMode);
+    document.getElementById('exitFocusBtn')?.addEventListener('click', () => {
+        if (isFocusMode) toggleFocusMode();
+    });
 
     // Modal events
     document.addEventListener('click', handleModalEvents);
@@ -898,6 +901,16 @@ function updateDarkModeButton() {
 function toggleFocusMode() {
     isFocusMode = !isFocusMode;
     document.querySelector('.personal-space-container').classList.toggle('focus-mode', isFocusMode);
+
+    document.querySelectorAll('.navbar, .sidebar-left, .sidebar-right, .mobile-bottom-nav').forEach(el => {
+        if (!el) return;
+        el.classList.toggle('tw-hidden', isFocusMode);
+    });
+
+    const exitBtn = document.getElementById('exitFocusBtn');
+    if (exitBtn) {
+        exitBtn.classList.toggle('d-none', !isFocusMode);
+    }
 
     const button = document.getElementById('focusModeBtn');
     if (button) {
