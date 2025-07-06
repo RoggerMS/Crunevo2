@@ -621,3 +621,4 @@
 - Renamed PersonalBlock.metadata column to _metadata with property and fixed mobile navbar store link (PR personal-block-metadata-fix).
 - Added Tailwind utility classes to personal space templates and ensured formatting/tests pass (PR personal-space-tailwind-fix).
 - Dropped leftover sequence before creating `personal_block` table to avoid UniqueViolation errors (PR personal-block-sequence-fix).
+- Patched RFC6455WebSocket.close to ignore EBADF errors and remove remaining "Bad file descriptor" logs (PR websocket-rfc6455-fix).

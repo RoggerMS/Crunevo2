@@ -27,7 +27,7 @@ talisman = Talisman()
 # Patch eventlet.websocket to ignore EBADF errors when closing sockets
 
 
-def _safe_close(self):
+def _safe_close_ws(self):
     try:
         self._send_closing_frame(True)
         shutdown_safe(self.socket)
@@ -40,7 +40,21 @@ def _safe_close(self):
         self.socket.close()
 
 
-websocket.WebSocket.close = _safe_close
+def _safe_close_rfc(self, close_data=None):
+    try:
+        self._send_closing_frame(close_data=close_data, ignore_send_errors=True)
+        shutdown_safe(self.socket)
+    except OSError as e:  # pragma: no cover - avoid noisy logs on disconnect
+        if e.errno not in (errno.ENOTCONN, errno.EBADF, errno.ENOTSOCK):
+            self.log.write(
+                "{ctx} socket shutdown error: {e}".format(ctx=self.log_context, e=e)
+            )
+    finally:
+        self.socket.close()
+
+
+websocket.WebSocket.close = _safe_close_ws
+websocket.RFC6455WebSocket.close = _safe_close_rfc
 
 socketio = SocketIO(async_mode="eventlet")
 oauth = OAuth()
