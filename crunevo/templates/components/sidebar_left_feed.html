@@ -55,7 +55,25 @@
         </li>
 
         <li>
-          <a href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}" class="nav-link {{ 'active' if request.endpoint == 'notes.list_notes' }}">
+          <a href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals<pad><pad><pad><pad>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+__.get('current_app', {}).view_functions else '/notes' }}" class="nav-link {{ 'active' if request.endpoint == 'notes.list_notes' }}">
             <i class="bi bi-journal-text"></i>
             <span class="fw-semibold">Apuntes</span>
             <span class="badge bg-primary rounded-pill ms-auto">{{ current_user.notes|length }}</span>
@@ -125,6 +143,35 @@
             <span class="fw-semibold">Mi Carrera</span>
           </a>
         </li>
+        <li class="nav-item">
+          <a href="{{ url_for('league.index') if 'league.index' in url_for.__globals__.get('current_app', {}).view_functions else '/liga' }}" class="nav-link">
+            <i class="bi bi-trophy text-warning"></i>
+            <span class="fw-semibold">Liga Académica</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('backpack.index') if 'backpack.index' in url_for.__globals__.get('current_app', {}).view_functions else '/mochila' }}" class="nav-link">
+            <i class="bi bi-backpack text-info"></i>
+            <span class="fw-semibold">Mi Mochila</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('challenges.ghost_mentor') if 'challenges.ghost_mentor' in url_for.__globals__.get('current_app', {}).view_functions else '/desafios' }}" class="nav-link">
+            <i class="bi bi-lightning text-danger"></i>
+            <span class="fw-semibold">Desafíos</span>
+          </a>
+        </li>
+        {% if current_user.is_authenticated %}
+          {% set hall_member = current_user.hall_membership %}
+          {% if hall_member or (current_user.credits >= 1000) %}
+          <li class="nav-item">
+            <a href="{{ url_for('hall.index') if 'hall.index' in url_for.__globals__.get('current_app', {}).view_functions else '/sala1000' }}" class="nav-link">
+              <i class="bi bi-gem text-purple"></i>
+              <span class="fw-semibold">Sala 1000</span>
+            </a>
+          </li>
+          {% endif %}
+        {% endif %}
 
         {% if 'ia.ia_chat' in url_for.__globals__.get('current_app', {}).view_functions %}
         <li>

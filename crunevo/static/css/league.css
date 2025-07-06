@@ -1,0 +1,318 @@
+
+/* League-specific styles */
+.league-sidebar {
+    position: sticky;
+    top: 80px;
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+
+.league-info-card {
+    background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
+    color: white;
+    border: none;
+}
+
+.league-info-card .card-body {
+    padding: 2rem 1.5rem;
+}
+
+.league-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 1.5rem;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #FDE047;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.user-team-card {
+    border: 2px solid #8B5CF6;
+}
+
+.team-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #E5E7EB;
+}
+
+.team-points {
+    background: #F3F4F6;
+    padding: 0.75rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.points-label {
+    display: block;
+    font-size: 0.875rem;
+    color: #6B7280;
+}
+
+.points-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #8B5CF6;
+}
+
+.join-team-card {
+    background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+    border: 2px dashed #CBD5E1;
+}
+
+.league-header {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.time-remaining {
+    background: #FEF3C7;
+    color: #92400E;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.nav-pills .nav-link {
+    color: #6B7280;
+    background: transparent;
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.nav-pills .nav-link:hover {
+    background: #F3F4F6;
+    color: #8B5CF6;
+}
+
+.nav-pills .nav-link.active {
+    background: #8B5CF6;
+    color: white;
+}
+
+.ranking-card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ranking-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #E5E7EB;
+    transition: background-color 0.2s ease;
+}
+
+.ranking-item:hover {
+    background: #F9FAFB;
+}
+
+.ranking-item:last-child {
+    border-bottom: none;
+}
+
+.ranking-item.podium-1 {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+}
+
+.ranking-item.podium-2 {
+    background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+}
+
+.ranking-item.podium-3 {
+    background: linear-gradient(135deg, #FED7AA 0%, #FDBA74 100%);
+}
+
+.position-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-right: 1rem;
+    position: relative;
+}
+
+.position {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: #374151;
+}
+
+.podium-1 .position,
+.podium-2 .position,
+.podium-3 .position {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 0.875rem;
+}
+
+.team-info {
+    flex-grow: 1;
+    margin-left: 1rem;
+}
+
+.team-name {
+    margin: 0;
+    font-weight: 600;
+    color: #1F2937;
+}
+
+.team-points {
+    text-align: right;
+}
+
+.team-points .points {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #8B5CF6;
+}
+
+.team-points small {
+    color: #6B7280;
+}
+
+.team-card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.team-stats {
+    font-size: 0.875rem;
+}
+
+.team-stats i {
+    margin-right: 0.25rem;
+}
+
+.rules-section {
+    margin-bottom: 2rem;
+}
+
+.rules-section h6 {
+    color: #374151;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #E5E7EB;
+}
+
+.rules-section ul {
+    margin-bottom: 0;
+}
+
+.rules-section li {
+    margin-bottom: 0.5rem;
+    color: #6B7280;
+}
+
+.team-search-item {
+    padding: 1rem;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.team-search-item:hover {
+    background: #F9FAFB;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .league-sidebar {
+        position: static;
+        height: auto;
+        margin-bottom: 2rem;
+    }
+    
+    .league-header {
+        padding: 1rem;
+    }
+    
+    .ranking-item {
+        padding: 0.75rem 1rem;
+    }
+    
+    .team-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .nav-pills .nav-link {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Animation for new teams joining */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.team-card.new-team {
+    animation: slideInUp 0.5s ease;
+}
+
+/* Trophy animations */
+.position-badge i {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* League completion celebration */
+.league-complete {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.league-complete i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}

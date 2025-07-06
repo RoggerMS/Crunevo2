@@ -1,0 +1,330 @@
+
+{% extends "base.html" %}
+
+{% block title %}Liga Académica - CRUNEVO{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/league.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar with league info -->
+        <div class="col-lg-3 col-md-4 d-none d-md-block">
+            <div class="league-sidebar">
+                <div class="card league-info-card mb-4">
+                    <div class="card-body text-center">
+                        <i class="bi bi-trophy text-warning fs-1 mb-3"></i>
+                        <h5 class="card-title text-primary">Liga Académica</h5>
+                        <p class="text-muted">Compite en equipos de hasta 5 estudiantes</p>
+                        <div class="league-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">{{ total_teams }}</span>
+                                <span class="stat-label">Equipos</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">{{ total_participants }}</span>
+                                <span class="stat-label">Participantes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if user_team %}
+                <div class="card user-team-card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ user_team.avatar_url }}" alt="Team Avatar" class="team-avatar me-3">
+                            <div>
+                                <h6 class="mb-1">{{ user_team.name }}</h6>
+                                <small class="text-muted">{{ user_team.member_count }}/5 miembros</small>
+                            </div>
+                        </div>
+                        <div class="team-points mb-3">
+                            <span class="points-label">Puntos del equipo:</span>
+                            <span class="points-value">{{ user_team.points }}</span>
+                        </div>
+                        <a href="{{ url_for('league.team_detail', team_id=user_team.id) }}" class="btn btn-primary btn-sm w-100">
+                            Ver Equipo
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card join-team-card mb-4">
+                    <div class="card-body text-center">
+                        <i class="bi bi-people text-primary fs-2 mb-3"></i>
+                        <h6 class="card-title">¡Únete a la Liga!</h6>
+                        <p class="text-muted small">Crea tu equipo o únete a uno existente</p>
+                        <a href="{{ url_for('league.create_team') }}" class="btn btn-primary btn-sm mb-2 w-100">
+                            Crear Equipo
+                        </a>
+                        <button class="btn btn-outline-primary btn-sm w-100" onclick="showTeamSearch()">
+                            Buscar Equipo
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="col-lg-9 col-md-8">
+            <div class="league-header mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="text-primary mb-1">Liga Académica</h2>
+                        <p class="text-muted">Competencia mensual por equipos</p>
+                    </div>
+                    <div class="league-timer">
+                        {% if current_league %}
+                        <div class="time-remaining">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span id="league-countdown">Cargando...</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- League tabs -->
+            <ul class="nav nav-pills mb-4" id="leagueTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="ranking-tab" data-bs-toggle="pill" data-bs-target="#ranking" type="button" role="tab">
+                        <i class="bi bi-trophy me-2"></i>Ranking
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="teams-tab" data-bs-toggle="pill" data-bs-target="#teams" type="button" role="tab">
+                        <i class="bi bi-people me-2"></i>Equipos
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="rules-tab" data-bs-toggle="pill" data-bs-target="#rules" type="button" role="tab">
+                        <i class="bi bi-info-circle me-2"></i>Reglas
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab content -->
+            <div class="tab-content" id="leagueTabContent">
+                <!-- Ranking tab -->
+                <div class="tab-pane fade show active" id="ranking" role="tabpanel">
+                    <div class="card ranking-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-award text-warning me-2"></i>
+                                Top 10 Equipos del Mes
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="ranking-list">
+                                {% for team in top_teams[:3] %}
+                                <div class="ranking-item podium-{{ loop.index }}">
+                                    <div class="position-badge">
+                                        {% if loop.index == 1 %}
+                                            <i class="bi bi-trophy text-warning"></i>
+                                        {% elif loop.index == 2 %}
+                                            <i class="bi bi-award text-secondary"></i>
+                                        {% else %}
+                                            <i class="bi bi-award text-danger"></i>
+                                        {% endif %}
+                                        <span class="position">{{ loop.index }}</span>
+                                    </div>
+                                    <img src="{{ team.avatar_url }}" alt="Avatar" class="team-avatar">
+                                    <div class="team-info">
+                                        <h6 class="team-name">{{ team.name }}</h6>
+                                        <small class="text-muted">{{ team.member_count }} miembros</small>
+                                    </div>
+                                    <div class="team-points">
+                                        <span class="points">{{ team.points }}</span>
+                                        <small>puntos</small>
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                {% for team in top_teams[3:] %}
+                                <div class="ranking-item">
+                                    <div class="position-badge">
+                                        <span class="position">{{ loop.index + 3 }}</span>
+                                    </div>
+                                    <img src="{{ team.avatar_url }}" alt="Avatar" class="team-avatar">
+                                    <div class="team-info">
+                                        <h6 class="team-name">{{ team.name }}</h6>
+                                        <small class="text-muted">{{ team.member_count }} miembros</small>
+                                    </div>
+                                    <div class="team-points">
+                                        <span class="points">{{ team.points }}</span>
+                                        <small>puntos</small>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teams tab -->
+                <div class="tab-pane fade" id="teams" role="tabpanel">
+                    <div class="row" id="teams-grid">
+                        {% for team in top_teams %}
+                        <div class="col-lg-6 col-xl-4 mb-4">
+                            <div class="card team-card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <img src="{{ team.avatar_url }}" alt="Avatar" class="team-avatar me-3">
+                                        <div>
+                                            <h6 class="mb-1">{{ team.name }}</h6>
+                                            <small class="text-muted">Capitán: {{ team.captain.username }}</small>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted small">{{ team.description or 'Sin descripción' }}</p>
+                                    <div class="team-stats d-flex justify-content-between">
+                                        <span><i class="bi bi-people text-primary"></i> {{ team.member_count }}/5</span>
+                                        <span><i class="bi bi-trophy text-warning"></i> {{ team.points }}</span>
+                                    </div>
+                                    <a href="{{ url_for('league.team_detail', team_id=team.id) }}" class="btn btn-outline-primary btn-sm mt-3 w-100">
+                                        Ver Detalles
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Rules tab -->
+                <div class="tab-pane fade" id="rules" role="tabpanel">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="text-primary mb-4">Reglas de la Liga Académica</h5>
+                            
+                            <div class="rules-section">
+                                <h6><i class="bi bi-people text-primary me-2"></i>Formación de Equipos</h6>
+                                <ul>
+                                    <li>Cada equipo puede tener máximo 5 miembros</li>
+                                    <li>Cualquier estudiante verificado puede crear o unirse a un equipo</li>
+                                    <li>Solo puedes pertenecer a un equipo activo a la vez</li>
+                                </ul>
+                            </div>
+
+                            <div class="rules-section">
+                                <h6><i class="bi bi-trophy text-warning me-2"></i>Sistema de Puntos</h6>
+                                <ul>
+                                    <li><strong>Subir apuntes:</strong> 5 puntos por apunte</li>
+                                    <li><strong>Completar misiones:</strong> 3-10 puntos según dificultad</li>
+                                    <li><strong>Desafío Mentor Fantasma:</strong> 15-25 puntos</li>
+                                    <li><strong>Pregunta Maestra:</strong> 50 puntos (solo al ganador)</li>
+                                    <li><strong>Participación en eventos:</strong> 10-20 puntos</li>
+                                </ul>
+                            </div>
+
+                            <div class="rules-section">
+                                <h6><i class="bi bi-award text-success me-2"></i>Premios</h6>
+                                <ul>
+                                    <li><strong>1er lugar:</strong> 500 Crolars por miembro + insignia especial</li>
+                                    <li><strong>2do lugar:</strong> 300 Crolars por miembro + insignia</li>
+                                    <li><strong>3er lugar:</strong> 200 Crolars por miembro + insignia</li>
+                                    <li><strong>Top 10:</strong> 100 Crolars por miembro</li>
+                                </ul>
+                            </div>
+
+                            <div class="rules-section">
+                                <h6><i class="bi bi-calendar text-info me-2"></i>Competencias</h6>
+                                <ul>
+                                    <li>Las competencias se realizan mensualmente</li>
+                                    <li>Los puntos se reinician cada mes</li>
+                                    <li>Los equipos inactivos pueden ser disueltos</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Team search modal -->
+<div class="modal fade" id="teamSearchModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buscar Equipo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="search-box mb-3">
+                    <input type="text" class="form-control" placeholder="Buscar equipos..." id="teamSearchInput">
+                </div>
+                <div id="teamSearchResults">
+                    <!-- Search results will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/league.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize league countdown
+    {% if current_league %}
+    const endDate = new Date('{{ current_league.end_date.isoformat() }}');
+    updateCountdown(endDate);
+    setInterval(() => updateCountdown(endDate), 1000);
+    {% endif %}
+});
+
+function updateCountdown(endDate) {
+    const now = new Date();
+    const diff = endDate - now;
+    
+    if (diff <= 0) {
+        document.getElementById('league-countdown').textContent = 'Liga finalizada';
+        return;
+    }
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    
+    document.getElementById('league-countdown').textContent = `${days}d ${hours}h restantes`;
+}
+
+function showTeamSearch() {
+    const modal = new bootstrap.Modal(document.getElementById('teamSearchModal'));
+    modal.show();
+    loadAvailableTeams();
+}
+
+function loadAvailableTeams() {
+    fetch('/liga/api/equipos-disponibles')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('teamSearchResults');
+            if (data.teams.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">No hay equipos disponibles</p>';
+                return;
+            }
+            
+            container.innerHTML = data.teams.map(team => `
+                <div class="team-search-item">
+                    <div class="d-flex align-items-center">
+                        <img src="${team.avatar_url}" alt="Avatar" class="team-avatar me-3">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">${team.name}</h6>
+                            <small class="text-muted">${team.member_count}/5 miembros</small>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="joinTeam(${team.id})">
+                            Unirse
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        })
+        .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

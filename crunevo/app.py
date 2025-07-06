@@ -404,7 +404,16 @@ def create_app():
         app.register_blueprint(personal_space_bp)
 
         from .routes.carrera_routes import carrera_bp
+        from .routes.league_routes import league_bp
+        from .routes.backpack_routes import backpack_bp
+        from .routes.challenges_routes import challenges_bp
+        from .routes.hall_routes import hall_bp
+        
         app.register_blueprint(carrera_bp)
+        app.register_blueprint(league_bp)
+        app.register_blueprint(backpack_bp)
+        app.register_blueprint(challenges_bp)
+        app.register_blueprint(hall_bp)
 
         if testing_env:
             app.register_blueprint(admin_bp)

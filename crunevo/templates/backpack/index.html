@@ -1,0 +1,210 @@
+
+{% extends "base.html" %}
+
+{% block title %}Mi Mochila de Conocimientos - CRUNEVO{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/backpack.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 col-md-4 d-none d-md-block">
+            <div class="backpack-sidebar">
+                <div class="card backpack-summary mb-4">
+                    <div class="card-body text-center">
+                        <div class="backpack-icon mb-3">
+                            <i class="bi bi-backpack4 fs-1 text-primary"></i>
+                        </div>
+                        <h5 class="text-primary">Mi Mochila</h5>
+                        <p class="text-muted small">Tu espacio personal de aprendizaje</p>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-number">{{ backpack.total_notes }}</span>
+                                <span class="stat-label">Apuntes</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">{{ backpack.total_courses }}</span>
+                                <span class="stat-label">Cursos</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">{{ backpack.total_missions }}</span>
+                                <span class="stat-label">Misiones</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">{{ achievements|length }}</span>
+                                <span class="stat-label">Logros</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card quick-actions mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">Acciones Rápidas</h6>
+                    </div>
+                    <div class="card-body">
+                        <a href="{{ url_for('backpack.new_entry') }}" class="btn btn-primary btn-sm w-100 mb-2">
+                            <i class="bi bi-plus-circle me-2"></i>Nueva Entrada
+                        </a>
+                        <a href="{{ url_for('backpack.journal') }}" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                            <i class="bi bi-journal-text me-2"></i>Ver Bitácora
+                        </a>
+                        <a href="{{ url_for('backpack.export_pdf') }}" class="btn btn-outline-secondary btn-sm w-100">
+                            <i class="bi bi-file-pdf me-2"></i>Exportar PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="col-lg-9 col-md-8">
+            <div class="backpack-header mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="text-primary mb-1">
+                            <i class="bi bi-backpack4 me-2"></i>
+                            Mochila de Conocimientos
+                        </h2>
+                        <p class="text-muted">Tu espacio personal para organizar y reflexionar sobre tu aprendizaje</p>
+                    </div>
+                    <div class="last-updated">
+                        <small class="text-muted">
+                            Última actualización: {{ backpack.last_updated.strftime('%d/%m/%Y %H:%M') }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress overview -->
+            <div class="row mb-4">
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card progress-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-file-text text-primary fs-1 mb-2"></i>
+                            <h4 class="text-primary">{{ backpack.total_notes }}</h4>
+                            <p class="text-muted small mb-0">Apuntes Subidos</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card progress-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-mortarboard text-success fs-1 mb-2"></i>
+                            <h4 class="text-success">{{ backpack.total_courses }}</h4>
+                            <p class="text-muted small mb-0">Cursos Guardados</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card progress-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-lightning text-warning fs-1 mb-2"></i>
+                            <h4 class="text-warning">{{ backpack.total_missions }}</h4>
+                            <p class="text-muted small mb-0">Misiones Completadas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card progress-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-trophy text-danger fs-1 mb-2"></i>
+                            <h4 class="text-danger">{{ achievements|length }}</h4>
+                            <p class="text-muted small mb-0">Logros Desbloqueados</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent entries and achievements -->
+            <div class="row">
+                <div class="col-lg-8 mb-4">
+                    <div class="card recent-entries">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="bi bi-clock-history me-2"></i>
+                                Entradas Recientes
+                            </h5>
+                            <a href="{{ url_for('backpack.journal') }}" class="btn btn-sm btn-outline-primary">
+                                Ver todas
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_entries %}
+                                {% for entry in recent_entries %}
+                                <div class="entry-item">
+                                    <div class="d-flex">
+                                        <div class="entry-icon">
+                                            <i class="bi bi-{{ 'lightbulb' if entry.entry_type == 'reflection' else 'target' if entry.entry_type == 'goal' else 'star' }}"></i>
+                                        </div>
+                                        <div class="entry-content flex-grow-1">
+                                            <h6 class="entry-title">{{ entry.title }}</h6>
+                                            <p class="entry-preview">{{ entry.content[:100] }}{% if entry.content|length > 100 %}...{% endif %}</p>
+                                            <div class="entry-meta">
+                                                <span class="badge bg-light text-dark">{{ entry.entry_type }}</span>
+                                                <small class="text-muted ms-2">{{ entry.created_at.strftime('%d/%m/%Y') }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="bi bi-journal-plus text-muted fs-1 mb-3"></i>
+                                    <h6 class="text-muted">No hay entradas aún</h6>
+                                    <p class="text-muted small">Comienza a documentar tu proceso de aprendizaje</p>
+                                    <a href="{{ url_for('backpack.new_entry') }}" class="btn btn-primary">
+                                        <i class="bi bi-plus-circle me-2"></i>Crear Primera Entrada
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="card achievements-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-award me-2"></i>
+                                Logros Recientes
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if achievements %}
+                                {% for achievement in achievements[:5] %}
+                                <div class="achievement-item">
+                                    <div class="d-flex align-items-center">
+                                        <div class="achievement-icon me-3">
+                                            <i class="bi bi-{{ achievement.icon }}"></i>
+                                        </div>
+                                        <div class="achievement-info flex-grow-1">
+                                            <h6 class="achievement-title">{{ achievement.title }}</h6>
+                                            <p class="achievement-desc">{{ achievement.description }}</p>
+                                            <small class="text-muted">{{ achievement.earned_at.strftime('%d/%m/%Y') }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center py-3">
+                                    <i class="bi bi-trophy text-muted fs-2 mb-2"></i>
+                                    <p class="text-muted small">Comienza a usar tu mochila para desbloquear logros</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/backpack.js') }}"></script>
+{% endblock %}
