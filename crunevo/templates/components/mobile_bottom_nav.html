@@ -52,7 +52,8 @@
           </div>
           <span class="nav-label">Alertas</span>
         </a>
-      <a href="{{ url_for('store.store_index') }}" class="nav-item {% if request.endpoint and 'store' in request.endpoint %}active{% endif %}">
+      <a href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}"
+         class="nav-item {% if request.endpoint and 'store' in request.endpoint %}active{% endif %}">
         <i class="bi bi-shop"></i>
         <span>Tienda</span>
       </a>
