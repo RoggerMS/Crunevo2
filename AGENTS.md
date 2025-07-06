@@ -622,3 +622,4 @@
 - Added Tailwind utility classes to personal space templates and ensured formatting/tests pass (PR personal-space-tailwind-fix).
 - Dropped leftover sequence before creating `personal_block` table to avoid UniqueViolation errors (PR personal-block-sequence-fix).
 - Patched RFC6455WebSocket.close to ignore EBADF errors and remove remaining "Bad file descriptor" logs (PR websocket-rfc6455-fix).
+- Forzamos login con force=True en la ruta de confirmación para evitar sesiones desactualizadas y redirecciones al pending. (PR confirm-force-login)
