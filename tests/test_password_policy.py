@@ -17,6 +17,6 @@ def test_register_strong_password(client):
             "/onboarding/register",
             data={"email": "ok@example.com", "password": "StrongPassw0rd!"},
         )
-        assert resp.status_code == 200
+        assert resp.status_code == 302
         assert len(outbox) == 1
     assert User.query.filter_by(email="ok@example.com").first() is not None
