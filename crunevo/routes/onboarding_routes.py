@@ -126,6 +126,9 @@ def confirm(token):
         return redirect(url_for("onboarding.register"))
     record.consumed_at = datetime.utcnow()
     record.user.activated = True
+    db.session.commit()
+    db.session.refresh(record.user)
+
     from crunevo.models import Referral, Credit
     from crunevo.utils.credits import add_credit
     from crunevo.constants import CreditReasons, AchievementCodes
@@ -137,6 +140,7 @@ def confirm(token):
         ref = Referral.query.filter_by(invitado_id=record.user.id).first()
     except (ProgrammingError, OperationalError):
         db.session.rollback()
+        ref = None
     if ref and not ref.completado:
         ref.completado = True
         existing = Credit.query.filter_by(
@@ -152,8 +156,7 @@ def confirm(token):
         ).count()
         if total_done >= 10:
             unlock_achievement(ref.invitador, AchievementCodes.EMBAJADOR_CRUNEVO)
-    db.session.commit()
-    db.session.refresh(record.user)
+        db.session.commit()
     record_auth_event(record.user, "confirm_email")
     # Force login to ensure session updates even if a different user
     # was previously authenticated
@@ -193,7 +196,12 @@ def finish():
         current_user.about = request.form.get("bio")
         current_user.career = request.form.get("career")
         current_user.interests = request.form.get("interests")
+        # Ensure the user is activated and session updated
+        current_user.activated = True
         db.session.commit()
+        db.session.refresh(current_user)
+        login_user(current_user, fresh=True, force=True)
+        session.pop("_flashes", None)
         return redirect(url_for("feed.feed_home"))
     return render_template("onboarding/finish.html")
 
