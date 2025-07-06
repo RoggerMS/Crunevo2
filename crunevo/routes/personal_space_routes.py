@@ -1,5 +1,13 @@
 # fmt: off
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for  # noqa: F401
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    jsonify,
+    redirect,
+    url_for,
+    flash,
+)
 # fmt: on
 from flask_login import login_required, current_user
 from crunevo.extensions import db
@@ -322,3 +330,77 @@ def get_default_icon(block_type):
         "bloque": "bi-grid-3x3",
     }
     return icons.get(block_type, "bi-card-text")
+
+
+@personal_space_bp.route("/objetivo/nuevo", methods=["GET", "POST"])
+@login_required
+@activated_required
+def create_goal():
+    """Form to create a new goal block"""
+    if request.method == "POST":
+        max_order = (
+            db.session.query(db.func.max(PersonalBlock.order_position))
+            .filter_by(user_id=current_user.id)
+            .scalar()
+            or 0
+        )
+
+        block = PersonalBlock(
+            user_id=current_user.id,
+            block_type="objetivo",
+            title=request.form.get("title", "Objetivo"),
+            content=request.form.get("content", ""),
+            order_position=max_order + 1,
+            color="indigo",
+            icon=get_default_icon("objetivo"),
+        )
+
+        block.set_metadata(
+            {
+                "status": "no_iniciada",
+                "progress": 0,
+                "deadline": request.form.get("deadline", ""),
+                "frequency": "una_vez",
+                "category": "academica",
+            }
+        )
+
+        db.session.add(block)
+        db.session.commit()
+        flash("Objetivo creado", "success")
+        return redirect(url_for("personal_space.index"))
+
+    return render_template("personal_space/forms/create_goal.html")
+
+
+@personal_space_bp.route("/kanban/nuevo", methods=["GET", "POST"])
+@login_required
+@activated_required
+def create_kanban():
+    """Form to create a new kanban block"""
+    if request.method == "POST":
+        max_order = (
+            db.session.query(db.func.max(PersonalBlock.order_position))
+            .filter_by(user_id=current_user.id)
+            .scalar()
+            or 0
+        )
+
+        block = PersonalBlock(
+            user_id=current_user.id,
+            block_type="kanban",
+            title=request.form.get("title", "Mi Tablero"),
+            content="",
+            order_position=max_order + 1,
+            color="indigo",
+            icon=get_default_icon("kanban"),
+        )
+
+        block.set_metadata({"columns": {"Por hacer": [], "En curso": [], "Hecho": []}})
+
+        db.session.add(block)
+        db.session.commit()
+        flash("Tablero creado", "success")
+        return redirect(url_for("personal_space.index"))
+
+    return render_template("personal_space/forms/create_kanban.html")

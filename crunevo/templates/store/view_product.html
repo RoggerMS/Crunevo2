@@ -1,5 +1,6 @@
 
 {% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
 
 {% block title %}{{ product.name }} - Marketplace CRUNEVO{% endblock %}
 
@@ -226,7 +227,7 @@
         <div class="mt-4">
           <h5>Deja tu reseña</h5>
           <form action="{{ url_for('store.add_review', product_id=product.id) }}" method="POST">
-            {{ csrf_token() }}
+            {{ csrf.csrf_field() }}
             <div class="mb-3">
               <label class="form-label">Calificación</label>
               <div class="rating-input">
@@ -292,7 +293,7 @@
 
           <!-- Answer Form -->
           <form action="{{ url_for('store.add_answer', question_id=question.id) }}" method="POST" class="mt-3">
-            {{ csrf_token() }}
+            {{ csrf.csrf_field() }}
             <div class="input-group">
               <input type="text" class="form-control" name="body" placeholder="Responder..." required>
               <button type="submit" class="btn btn-outline-primary">
@@ -308,7 +309,7 @@
         <div class="mt-4">
           <h5>Hacer una pregunta</h5>
           <form action="{{ url_for('store.add_question', product_id=product.id) }}" method="POST">
-            {{ csrf_token() }}
+            {{ csrf.csrf_field() }}
             <div class="input-group">
               <input type="text" class="form-control" name="body" placeholder="¿Tienes alguna pregunta sobre este producto?" required>
               <button type="submit" class="btn btn-primary">
