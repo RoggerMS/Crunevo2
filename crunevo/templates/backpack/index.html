@@ -74,7 +74,7 @@
                     </div>
                     <div class="last-updated">
                         <small class="text-muted">
-                            Última actualización: {{ backpack.last_updated.strftime('%d/%m/%Y %H:%M') }}
+                            Última actualización: {% if backpack and backpack.last_updated %}{{ backpack.last_updated.strftime('%d/%m/%Y %H:%M') }}{% else %}N/A{% endif %}
                         </small>
                     </div>
                 </div>
