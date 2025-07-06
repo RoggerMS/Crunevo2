@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Demasiadas solicitudes - Crunevo{% endblock %}
+
+{% block content %}
+<div class="error-wrapper tw-flex tw-items-center tw-justify-center">
+  <div class="error-page position-relative text-center">
+    <button class="btn-close position-absolute top-0 end-0 m-3" onclick="this.closest('.error-wrapper').remove()" aria-label="Cerrar error"></button>
+    <div class="error-icon mb-4">
+      <i class="bi bi-hourglass-split display-1 text-warning"></i>
+    </div>
+    <h1 class="display-4 fw-bold text-warning mb-3">¡Demasiadas acciones!</h1>
+    <p class="lead text-muted mb-4">
+      Has realizado demasiadas acciones en poco tiempo. Intenta nuevamente en unos minutos.
+    </p>
+    <a href="{{ url_for('feed.feed_home') }}" class="btn btn-primary btn-lg">
+      <i class="bi bi-house-fill me-2"></i>Regresar al inicio
+    </a>
+  </div>
+</div>
+
+<style>
+.error-page {
+  padding: 2rem;
+  background: rgba(255, 193, 7, 0.03);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 193, 7, 0.1);
+}
+[data-bs-theme="dark"] .error-page {
+  background: rgba(255, 193, 7, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.error-icon {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .error-icon {
+    animation: none;
+  }
+}
+</style>
+{% endblock %}
