@@ -8,7 +8,7 @@ from crunevo.models.knowledge_backpack import (
 )
 from crunevo.models.note import Note
 from crunevo.models.mission import UserMission
-from crunevo.utils.helpers import activated_required
+from crunevo.utils.helpers import activated_required, table_exists
 from datetime import datetime
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
@@ -24,6 +24,14 @@ backpack_bp = Blueprint("backpack", __name__, url_prefix="/mochila")
 @activated_required
 def index():
     """Knowledge Backpack main page"""
+    if not table_exists("knowledge_backpack"):
+        flash("Función no disponible", "warning")
+        return render_template(
+            "backpack/index.html",
+            backpack=None,
+            recent_entries=[],
+            achievements=[],
+        )
     # Get or create user's backpack
     backpack = KnowledgeBackpack.query.filter_by(user_id=current_user.id).first()
     if not backpack:

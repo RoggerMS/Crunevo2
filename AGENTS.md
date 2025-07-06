@@ -629,3 +629,4 @@
 - Implemented comprehensive 'Mi Carrera' module with career-filtered posts, notes, courses, clubs, events, chat and featured students tabs, with JS and CSS integration (PR career-module).
 - Fixed Replit gamification feature errors, restored sidebar template, removed empty migration and ensured tests pass (PR replit-gamification-fixes).
 - Handled missing crolars_hall_member table with get_hall_membership helper and template update (PR hall-membership-safe).
+- Added table_exists helper and login requirement to activated_required; routes skip queries if tables are missing (PR log-error-fix).
