@@ -1,166 +1,66 @@
-
-<div class="block-card {{ block.color }}-block {% if block.is_featured %}featured{% endif %} tw-shadow-md tw-rounded-lg"
-     data-block-id="{{ block.id }}"
-     data-block-type="{{ block.block_type }}">
-    
-    <!-- Block Header -->
+<!-- Enhanced Block Card Component -->
+<div class="block-card {{ block.get_priority_color() }}-border" data-block-id="{{ block.id }}" data-order="{{ block.order_position }}" data-type="{{ block.block_type }}">
     <div class="block-header">
-        <div class="block-icon">
-            <i class="{{ block.icon }}"></i>
-        </div>
-        <div class="block-meta">
-            <h6 class="block-title">{{ block.title or 'Sin título' }}</h6>
-            <small class="block-type-label">
-                {% if block.block_type == 'nota' %}Nota Rápida
-                {% elif block.block_type == 'lista' %}Lista de Tareas
-                {% elif block.block_type == 'meta' %}Meta
-                {% elif block.block_type == 'recordatorio' %}Recordatorio
-                {% elif block.block_type == 'frase' %}Frase Motivacional
-                {% elif block.block_type == 'enlace' %}Enlace Educativo
-                {% endif %}
-            </small>
+        <div class="block-info">
+            <div class="block-icon {{ block.color }}">
+                <i class="{{ block.icon }}"></i>
+            </div>
+            <div class="block-meta">
+                <h6 class="block-title">{{ block.title or 'Sin título' }}</h6>
+                <div class="block-badges">
+                    <span class="block-type-badge">{{ block.block_type|title }}</span>
+                    {% set status = block.get_status_badge() %}
+                    <span class="status-badge {{ status.color }}">{{ status.text }}</span>
+                </div>
+            </div>
         </div>
         <div class="block-actions">
             {% if block.is_featured %}
-            <i class="bi bi-star-fill featured-star" title="Destacado"></i>
+            <i class="featured-star bi bi-star-fill"></i>
             {% endif %}
-            <div class="dropdown">
-                <button class="btn btn-sm btn-ghost" data-bs-toggle="dropdown">
-                    <i class="bi bi-three-dots-vertical"></i>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item edit-block" href="#"><i class="bi bi-pencil"></i> Editar</a></li>
-                    <li><a class="dropdown-item toggle-featured" href="#"><i class="bi bi-star"></i> Destacar</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger delete-block" href="#"><i class="bi bi-trash"></i> Eliminar</a></li>
-                </ul>
-            </div>
+            {% if block.get_due_days() is not none %}
+            <span class="due-indicator {% if block.get_due_days() < 0 %}overdue{% elif block.get_due_days() <= 1 %}urgent{% endif %}">
+                {% if block.get_due_days() < 0 %}
+                    <i class="bi bi-exclamation-triangle"></i>
+                {% elif block.get_due_days() == 0 %}
+                    Hoy
+                {% elif block.get_due_days() == 1 %}
+                    Mañana
+                {% else %}
+                    {{ block.get_due_days() }}d
+                {% endif %}
+            </span>
+            {% endif %}
+            <button class="btn-ghost" onclick="editBlock({{ block.id }})">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn-ghost" onclick="deleteBlock({{ block.id }})">
+                <i class="bi bi-trash"></i>
+            </button>
         </div>
     </div>
 
-    <!-- Block Content -->
     <div class="block-content">
         {% if block.block_type == 'nota' %}
-            <div class="note-content">
-                {% if block.content %}
-                    <p>{{ block.content[:200] }}{% if block.content|length > 200 %}...{% endif %}</p>
-                {% else %}
-                    <p class="text-muted">Haz clic para escribir...</p>
-                {% endif %}
-            </div>
-        
+            {% include 'personal_space/blocks/nota_block.html' %}
+        {% elif block.block_type == 'kanban' %}
+            {% include 'personal_space/blocks/kanban_block.html' %}
+        {% elif block.block_type == 'objetivo' %}
+            {% include 'personal_space/blocks/objetivo_block.html' %}
+        {% elif block.block_type == 'tarea' %}
+            {% include 'personal_space/blocks/tarea_block.html' %}
+        {% elif block.block_type == 'bloque' %}
+            {% include 'personal_space/blocks/bloque_block.html' %}
         {% elif block.block_type == 'lista' %}
-            <div class="task-list-content">
-                {% set tasks = block.get_metadata().get('tasks', []) %}
-                {% if tasks %}
-                    <div class="progress-indicator mb-2">
-                        <div class="progress">
-                            <div class="progress-bar" style="width: {{ block.get_progress_percentage() }}%"></div>
-                        </div>
-                        <small>{{ block.get_progress_percentage() }}% completado</small>
-                    </div>
-                    <div class="task-preview">
-                        {% for task in tasks[:3] %}
-                        <div class="task-item">
-                            <i class="bi {{ 'bi-check-square' if task.get('completed') else 'bi-square' }}"></i>
-                            <span class="{{ 'completed' if task.get('completed') else '' }}">{{ task.get('text', '') }}</span>
-                        </div>
-                        {% endfor %}
-                        {% if tasks|length > 3 %}
-                        <small class="text-muted">y {{ tasks|length - 3 }} más...</small>
-                        {% endif %}
-                    </div>
-                {% else %}
-                    <p class="text-muted">No hay tareas aún</p>
-                {% endif %}
-            </div>
-        
+            {% include 'personal_space/blocks/lista_block.html' %}
         {% elif block.block_type == 'meta' %}
-            <div class="goal-content">
-                {% set metadata = block.get_metadata() %}
-                <div class="goal-progress mb-2">
-                    <div class="progress">
-                        <div class="progress-bar bg-success" style="width: {{ metadata.get('progress', 0) }}%"></div>
-                    </div>
-                    <small>{{ metadata.get('progress', 0) }}% completado</small>
-                </div>
-                {% if metadata.get('target_date') %}
-                <div class="goal-date">
-                    <i class="bi bi-calendar"></i>
-                    <small>Meta: {{ metadata.get('target_date') }}</small>
-                </div>
-                {% endif %}
-                {% if block.content %}
-                <p class="goal-description">{{ block.content[:100] }}...</p>
-                {% endif %}
-            </div>
-        
+            {% include 'personal_space/blocks/meta_block.html' %}
         {% elif block.block_type == 'recordatorio' %}
-            <div class="reminder-content">
-                {% set metadata = block.get_metadata() %}
-                {% if block.is_overdue() %}
-                <div class="alert alert-danger alert-sm">
-                    <i class="bi bi-exclamation-triangle"></i> ¡Vencido!
-                </div>
-                {% endif %}
-                {% if metadata.get('due_date') %}
-                <div class="reminder-date">
-                    <i class="bi bi-calendar-event"></i>
-                    <small>{{ metadata.get('due_date')[:10] }}</small>
-                </div>
-                {% endif %}
-                {% if block.content %}
-                <p>{{ block.content[:150] }}...</p>
-                {% endif %}
-            </div>
-        
+            {% include 'personal_space/blocks/recordatorio_block.html' %}
         {% elif block.block_type == 'frase' %}
-            <div class="quote-content text-center">
-                {% if block.content %}
-                <blockquote class="blockquote">
-                    <p>"{{ block.content }}"</p>
-                </blockquote>
-                {% set metadata = block.get_metadata() %}
-                {% if metadata.get('author') %}
-                <footer class="blockquote-footer">{{ metadata.get('author') }}</footer>
-                {% endif %}
-                {% else %}
-                <p class="text-muted">Añade una frase inspiradora</p>
-                {% endif %}
-            </div>
-        
+            {% include 'personal_space/blocks/frase_block.html' %}
         {% elif block.block_type == 'enlace' %}
-            <div class="link-content">
-                {% set metadata = block.get_metadata() %}
-                {% if metadata.get('url') %}
-                <div class="link-preview">
-                    <div class="link-icon">
-                        <i class="bi bi-link-45deg"></i>
-                    </div>
-                    <div class="link-info">
-                        <h6>{{ block.title or 'Enlace' }}</h6>
-                        {% if metadata.get('description') %}
-                        <p class="text-muted">{{ metadata.get('description')[:100] }}</p>
-                        {% endif %}
-                        <small class="text-primary">{{ metadata.get('url')[:50] }}...</small>
-                    </div>
-                </div>
-                {% else %}
-                <p class="text-muted">Añade un enlace educativo</p>
-                {% endif %}
-            </div>
-        {% endif %}
-    </div>
-
-    <!-- Block Footer -->
-    <div class="block-footer">
-        <small class="text-muted">
-            Actualizado {{ block.updated_at.strftime('%d/%m/%Y') }}
-        </small>
-        {% if block.block_type in ['lista', 'meta'] and block.get_progress_percentage() > 0 %}
-        <div class="progress-badge">
-            {{ block.get_progress_percentage() }}%
-        </div>
+            {% include 'personal_space/blocks/enlace_block.html' %}
         {% endif %}
     </div>
 </div>

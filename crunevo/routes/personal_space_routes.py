@@ -83,6 +83,36 @@ def create_block():
         block.set_metadata({"author": "", "category": "motivacional"})
     elif data["block_type"] == "enlace":
         block.set_metadata({"url": "", "description": ""})
+    elif data["block_type"] == "tarea":
+        block.set_metadata({
+            "completed": False,
+            "priority": "medium",
+            "due_date": "",
+            "category": "",
+            "attachments": []
+        })
+    elif data["block_type"] == "kanban":
+        block.set_metadata({
+            "columns": {
+                "Por hacer": [],
+                "En curso": [],
+                "Hecho": []
+            }
+        })
+    elif data["block_type"] == "objetivo":
+        block.set_metadata({
+            "status": "no_iniciada",
+            "progress": 0,
+            "deadline": "",
+            "frequency": "una_vez",
+            "category": "academica"
+        })
+    elif data["block_type"] == "bloque":
+        block.set_metadata({
+            "grouped_blocks": [],
+            "subject": "",
+            "expandable": True
+        })
 
     # Set metadata if provided
     if "metadata" in data:
@@ -188,10 +218,10 @@ def get_smart_suggestions():
 
     # Check if user has any goals this week
     recent_goals = (
-        PersonalBlock.query.filter_by(user_id=current_user.id, block_type="meta")
+        PersonalBlock.query.filter_by(user_id=current_user.id)
+        .filter(PersonalBlock.block_type.in_(["meta", "objetivo"]))
         .filter(
-            PersonalBlock.created_at
-            >= datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+            PersonalBlock.created_at >= datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
         )
         .count()
     )
@@ -200,26 +230,41 @@ def get_smart_suggestions():
         suggestions.append(
             {
                 "type": "goal",
-                "title": "🎯 Establece una meta",
-                "message": "Aún no has establecido metas esta semana. ¡Define un objetivo académico!",
-                "action": "create_goal_block",
+                "title": "🎯 Establece un objetivo académico",
+                "message": "Define metas semanales o mensuales para mejorar tu rendimiento",
+                "action": "create_objetivo_block",
             }
         )
 
-    # Check for overdue reminders
-    overdue_reminders = PersonalBlock.query.filter_by(
-        user_id=current_user.id, block_type="recordatorio"
+    # Check for overdue tasks and reminders
+    overdue_items = PersonalBlock.query.filter_by(user_id=current_user.id).filter(
+        PersonalBlock.block_type.in_(["recordatorio", "tarea"])
     ).all()
 
-    overdue_count = sum(1 for reminder in overdue_reminders if reminder.is_overdue())
+    overdue_count = sum(1 for item in overdue_items if item.is_overdue())
 
     if overdue_count > 0:
         suggestions.append(
             {
                 "type": "reminder",
-                "title": "⏰ Recordatorios pendientes",
-                "message": f"Tienes {overdue_count} recordatorio(s) vencido(s). ¡Revísalos!",
-                "action": "show_overdue_reminders",
+                "title": "⚠️ Tareas pendientes",
+                "message": f"Tienes {overdue_count} tarea(s) o recordatorio(s) vencido(s)",
+                "action": "show_overdue_items",
+            }
+        )
+
+    # Check if user has no kanban board
+    kanban_count = PersonalBlock.query.filter_by(
+        user_id=current_user.id, block_type="kanban"
+    ).count()
+
+    if kanban_count == 0:
+        suggestions.append(
+            {
+                "type": "kanban",
+                "title": "📋 Crea tu tablero Kanban",
+                "message": "Organiza tus tareas visualmente con un sistema tipo Trello",
+                "action": "create_kanban_block",
             }
         )
 
@@ -232,11 +277,29 @@ def get_smart_suggestions():
         suggestions.append(
             {
                 "type": "note",
-                "title": "📝 Crea tu primera nota",
-                "message": "Organiza tus ideas y pensamientos con notas rápidas",
-                "action": "create_note_block",
+                "title": "📝 Bitácora inteligente",
+                "message": "Comienza tu bitácora de estudio con notas tipo Notion",
+                "action": "create_nota_block",
             }
         )
+
+    # Suggest creating blocks for organization
+    total_blocks = PersonalBlock.query.filter_by(user_id=current_user.id).count()
+    
+    if total_blocks >= 5:
+        block_count = PersonalBlock.query.filter_by(
+            user_id=current_user.id, block_type="bloque"
+        ).count()
+        
+        if block_count == 0:
+            suggestions.append(
+                {
+                    "type": "organization",
+                    "title": "🗂️ Organiza con bloques",
+                    "message": "Agrupa tus elementos por materias o proyectos",
+                    "action": "create_bloque_block",
+                }
+            )
 
     return suggestions
 
@@ -245,10 +308,14 @@ def get_default_icon(block_type):
     """Get default icon for block type"""
     icons = {
         "nota": "bi-journal-text",
-        "lista": "bi-check2-square",
+        "lista": "bi-check2-square", 
         "meta": "bi-target",
         "recordatorio": "bi-alarm",
         "frase": "bi-quote",
         "enlace": "bi-link-45deg",
+        "tarea": "bi-clipboard-check",
+        "kanban": "bi-kanban",
+        "objetivo": "bi-trophy",
+        "bloque": "bi-grid-3x3"
     }
     return icons.get(block_type, "bi-card-text")

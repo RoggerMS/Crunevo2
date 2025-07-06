@@ -1,0 +1,7 @@
+
+<div class="quote-content">
+    <blockquote>"{{ block.content }}"</blockquote>
+    {% if block.get_metadata().get('author') %}
+    <cite>- {{ block.get_metadata().get('author') }}</cite>
+    {% endif %}
+</div>

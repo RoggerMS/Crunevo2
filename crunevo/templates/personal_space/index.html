@@ -73,16 +73,75 @@
                 {% include 'personal_space/components/block_card.html' %}
                 {% endfor %}
                 
-                {% if not blocks %}
+                {% if blocks %}
+                <!-- Dashboard Metrics -->
+                <div class="dashboard-metrics mb-4">
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="bi bi-journal-text text-indigo-500"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-number" id="notasCount">0</span>
+                                <span class="metric-label">Notas</span>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="bi bi-clipboard-check text-emerald-500"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-number" id="tareasCount">0</span>
+                                <span class="metric-label">Tareas</span>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="bi bi-trophy text-amber-500"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-number" id="objetivosCount">0</span>
+                                <span class="metric-label">Objetivos</span>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="bi bi-graph-up text-purple-500"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-number" id="progressAvg">0%</span>
+                                <span class="metric-label">Progreso</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
                 <div class="empty-state">
                     <div class="empty-icon">
                         <i class="bi bi-plus-circle"></i>
                     </div>
                     <h3>¡Bienvenido a tu Espacio Personal!</h3>
-                    <p>Comienza creando tu primer bloque para organizar tu vida académica</p>
+                    <p>Transforma tu experiencia académica con herramientas tipo Notion y Trello</p>
+                    <div class="empty-features">
+                        <div class="feature-item">
+                            <i class="bi bi-journal-text"></i>
+                            <span>Bitácora inteligente</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="bi bi-kanban"></i>
+                            <span>Tableros Kanban</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="bi bi-trophy"></i>
+                            <span>Metas académicas</span>
+                        </div>
+                    </div>
                     <button class="btn btn-primary btn-lg" id="createFirstBlock">
                         <i class="bi bi-plus-lg"></i>
-                        Crear mi primer bloque
+                        Comenzar mi espacio
                     </button>
                 </div>
                 {% endif %}
@@ -106,52 +165,91 @@
             </div>
             <div class="modal-body">
                 <div class="block-types-grid">
-                    <div class="block-type-card" data-type="nota">
-                        <div class="block-type-icon">
-                            <i class="bi bi-journal-text"></i>
+                    <!-- Academic Tools Section -->
+                    <div class="block-section">
+                        <h6 class="block-section-title">🎓 Herramientas Académicas</h6>
+                        
+                        <div class="block-type-card" data-type="nota">
+                            <div class="block-type-icon">
+                                <i class="bi bi-journal-text"></i>
+                            </div>
+                            <h6>Bitácora Inteligente</h6>
+                            <p>Notas enriquecidas estilo Notion</p>
                         </div>
-                        <h6>Nota Rápida</h6>
-                        <p>Escribe ideas, pensamientos y apuntes</p>
+                        
+                        <div class="block-type-card" data-type="kanban">
+                            <div class="block-type-icon">
+                                <i class="bi bi-kanban"></i>
+                            </div>
+                            <h6>Tablero Kanban</h6>
+                            <p>Gestión visual de tareas tipo Trello</p>
+                        </div>
+                        
+                        <div class="block-type-card" data-type="objetivo">
+                            <div class="block-type-icon">
+                                <i class="bi bi-trophy"></i>
+                            </div>
+                            <h6>Objetivo Académico</h6>
+                            <p>Metas con seguimiento y deadlines</p>
+                        </div>
+                        
+                        <div class="block-type-card" data-type="tarea">
+                            <div class="block-type-icon">
+                                <i class="bi bi-clipboard-check"></i>
+                            </div>
+                            <h6>Tarea Individual</h6>
+                            <p>Tareas con prioridad y archivos</p>
+                        </div>
                     </div>
-                    
-                    <div class="block-type-card" data-type="lista">
-                        <div class="block-type-icon">
-                            <i class="bi bi-check2-square"></i>
+
+                    <!-- Organization Section -->
+                    <div class="block-section">
+                        <h6 class="block-section-title">🗂️ Organización</h6>
+                        
+                        <div class="block-type-card" data-type="bloque">
+                            <div class="block-type-icon">
+                                <i class="bi bi-grid-3x3"></i>
+                            </div>
+                            <h6>Bloque Personalizado</h6>
+                            <p>Agrupa elementos por materia</p>
                         </div>
-                        <h6>Lista de Tareas</h6>
-                        <p>Organiza pendientes con checkboxes</p>
+                        
+                        <div class="block-type-card" data-type="lista">
+                            <div class="block-type-icon">
+                                <i class="bi bi-check2-square"></i>
+                            </div>
+                            <h6>Lista de Tareas</h6>
+                            <p>Checklist simple y rápido</p>
+                        </div>
                     </div>
-                    
-                    <div class="block-type-card" data-type="meta">
-                        <div class="block-type-icon">
-                            <i class="bi bi-target"></i>
+
+                    <!-- Personal Tools Section -->
+                    <div class="block-section">
+                        <h6 class="block-section-title">⚡ Herramientas Personales</h6>
+                        
+                        <div class="block-type-card" data-type="recordatorio">
+                            <div class="block-type-icon">
+                                <i class="bi bi-alarm"></i>
+                            </div>
+                            <h6>Recordatorio</h6>
+                            <p>Avisos con fecha límite</p>
                         </div>
-                        <h6>Meta u Objetivo</h6>
-                        <p>Define metas con progreso visual</p>
-                    </div>
-                    
-                    <div class="block-type-card" data-type="recordatorio">
-                        <div class="block-type-icon">
-                            <i class="bi bi-alarm"></i>
+                        
+                        <div class="block-type-card" data-type="frase">
+                            <div class="block-type-icon">
+                                <i class="bi bi-quote"></i>
+                            </div>
+                            <h6>Frase Motivacional</h6>
+                            <p>Inspiración diaria</p>
                         </div>
-                        <h6>Recordatorio</h6>
-                        <p>Avisos con fecha límite</p>
-                    </div>
-                    
-                    <div class="block-type-card" data-type="frase">
-                        <div class="block-type-icon">
-                            <i class="bi bi-quote"></i>
+                        
+                        <div class="block-type-card" data-type="enlace">
+                            <div class="block-type-icon">
+                                <i class="bi bi-link-45deg"></i>
+                            </div>
+                            <h6>Enlace Educativo</h6>
+                            <p>Enlaces a recursos útiles</p>
                         </div>
-                        <h6>Frase Motivacional</h6>
-                        <p>Inspiración y motivación</p>
-                    </div>
-                    
-                    <div class="block-type-card" data-type="enlace">
-                        <div class="block-type-icon">
-                            <i class="bi bi-link-45deg"></i>
-                        </div>
-                        <h6>Enlace Educativo</h6>
-                        <p>Enlaces a recursos útiles</p>
                     </div>
                 </div>
             </div>

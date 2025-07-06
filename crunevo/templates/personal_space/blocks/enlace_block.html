@@ -1,0 +1,10 @@
+
+<div class="link-content">
+    <p>{{ block.content }}</p>
+    {% if block.get_metadata().get('url') %}
+    <a href="{{ block.get_metadata().get('url') }}" target="_blank" class="btn btn-sm btn-outline-primary">
+        <i class="bi bi-link-45deg"></i>
+        Visitar enlace
+    </a>
+    {% endif %}
+</div>

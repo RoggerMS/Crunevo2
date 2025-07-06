@@ -1,4 +1,3 @@
-
 // Personal Space JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     initializePersonalSpace();
@@ -15,10 +14,10 @@ function initializePersonalSpace() {
     initializeSortable();
     initializeEventListeners();
     initializeAutoSave();
-    
+
     // Load initial data
     loadBlocks();
-    
+
     // Set up periodic auto-save
     setInterval(autoSaveChanges, 30000); // Auto-save every 30 seconds
 }
@@ -33,7 +32,7 @@ function initializeDarkMode() {
 function initializeSortable() {
     const grid = document.getElementById('blocksGrid');
     if (!grid) return;
-    
+
     sortableInstance = Sortable.create(grid, {
         animation: 150,
         ghostClass: 'sortable-ghost',
@@ -50,21 +49,21 @@ function initializeEventListeners() {
     document.getElementById('addBlockBtn')?.addEventListener('click', showAddBlockModal);
     document.getElementById('floatingAddBtn')?.addEventListener('click', showAddBlockModal);
     document.getElementById('createFirstBlock')?.addEventListener('click', showAddBlockModal);
-    
+
     // Control buttons
     document.getElementById('darkModeToggle')?.addEventListener('click', toggleDarkMode);
     document.getElementById('focusModeBtn')?.addEventListener('click', toggleFocusMode);
-    
+
     // Modal events
     document.addEventListener('click', handleModalEvents);
     document.getElementById('saveBlockBtn')?.addEventListener('click', saveCurrentBlock);
-    
+
     // Suggestion events
     document.addEventListener('click', handleSuggestionClick);
-    
+
     // Block interaction events
     document.addEventListener('click', handleBlockInteractions);
-    
+
     // Auto-save on content change
     document.addEventListener('input', debounce(handleContentChange, 500));
 }
@@ -99,16 +98,16 @@ function loadBlocks() {
 function renderBlocks(blocks) {
     const grid = document.getElementById('blocksGrid');
     if (!grid) return;
-    
+
     // Clear existing blocks except empty state
     const emptyState = grid.querySelector('.empty-state');
     grid.innerHTML = '';
-    
+
     if (blocks.length === 0 && emptyState) {
         grid.appendChild(emptyState);
         return;
     }
-    
+
     blocks.forEach(block => {
         const blockElement = createBlockElement(block);
         grid.appendChild(blockElement);
@@ -120,9 +119,9 @@ function createBlockElement(block) {
     div.className = `block-card ${block.color}-block ${block.is_featured ? 'featured' : ''}`;
     div.dataset.blockId = block.id;
     div.dataset.blockType = block.block_type;
-    
+
     div.innerHTML = generateBlockHTML(block);
-    
+
     return div;
 }
 
@@ -135,7 +134,7 @@ function generateBlockHTML(block) {
         'frase': 'Frase Motivacional',
         'enlace': 'Enlace Educativo'
     };
-    
+
     return `
         <div class="block-header">
             <div class="block-icon">
@@ -183,7 +182,7 @@ function generateBlockContent(block) {
                     }
                 </div>
             `;
-            
+
         case 'lista':
             const tasks = block.metadata.tasks || [];
             return `
@@ -207,7 +206,7 @@ function generateBlockContent(block) {
                     ` : '<p class="text-muted">No hay tareas aún</p>'}
                 </div>
             `;
-            
+
         case 'meta':
             return `
                 <div class="goal-content">
@@ -226,7 +225,7 @@ function generateBlockContent(block) {
                     ${block.content ? `<p class="goal-description">${block.content.substring(0, 100)}...</p>` : ''}
                 </div>
             `;
-            
+
         case 'recordatorio':
             return `
                 <div class="reminder-content">
@@ -244,7 +243,7 @@ function generateBlockContent(block) {
                     ${block.content ? `<p>${block.content.substring(0, 150)}...</p>` : ''}
                 </div>
             `;
-            
+
         case 'frase':
             return `
                 <div class="quote-content text-center">
@@ -258,7 +257,7 @@ function generateBlockContent(block) {
                     ` : '<p class="text-muted">Añade una frase inspiradora</p>'}
                 </div>
             `;
-            
+
         case 'enlace':
             return `
                 <div class="link-content">
@@ -278,7 +277,7 @@ function generateBlockContent(block) {
                     ` : '<p class="text-muted">Añade un enlace educativo</p>'}
                 </div>
             `;
-            
+
         default:
             return '<p class="text-muted">Contenido no disponible</p>';
     }
@@ -305,7 +304,7 @@ function createNewBlock(type) {
         color: 'indigo',
         metadata: getDefaultMetadata(type)
     };
-    
+
     fetch('/espacio-personal/api/blocks', {
         method: 'POST',
         headers: {
@@ -319,24 +318,24 @@ function createNewBlock(type) {
         if (data.success) {
             // Close modal
             bootstrap.Modal.getInstance(document.getElementById('addBlockModal')).hide();
-            
+
             // Add new block to grid
             const blockElement = createBlockElement(data.block);
             blockElement.classList.add('new-block');
-            
+
             const grid = document.getElementById('blocksGrid');
             const emptyState = grid.querySelector('.empty-state');
             if (emptyState) {
                 emptyState.remove();
             }
-            
+
             grid.appendChild(blockElement);
-            
+
             // Show edit modal immediately
             setTimeout(() => {
                 showEditBlockModal(data.block.id);
             }, 500);
-            
+
             showNotification('Bloque creado exitosamente', 'success');
         } else {
             showNotification(data.message || 'Error al crear el bloque', 'error');
@@ -381,9 +380,9 @@ function getDefaultMetadata(type) {
 function handleBlockInteractions(e) {
     const blockCard = e.target.closest('.block-card');
     if (!blockCard) return;
-    
+
     const blockId = blockCard.dataset.blockId;
-    
+
     if (e.target.closest('.edit-block')) {
         e.preventDefault();
         showEditBlockModal(blockId);
@@ -401,10 +400,10 @@ function handleBlockInteractions(e) {
 function showEditBlockModal(blockId) {
     const blockCard = document.querySelector(`[data-block-id="${blockId}"]`);
     if (!blockCard) return;
-    
+
     const blockType = blockCard.dataset.blockType;
     currentEditingBlock = blockId;
-    
+
     // Get current block data
     fetch(`/espacio-personal/api/blocks`)
         .then(response => response.json())
@@ -428,7 +427,7 @@ function renderEditForm(block) {
     const content = document.getElementById('editBlockContent');
     const form = generateEditForm(block);
     content.innerHTML = form;
-    
+
     // Initialize form interactions
     initializeEditFormInteractions(block);
 }
@@ -453,9 +452,9 @@ function generateEditForm(block) {
             </div>
         </div>
     `;
-    
+
     let specificForm = '';
-    
+
     switch (block.block_type) {
         case 'nota':
             specificForm = `
@@ -465,7 +464,7 @@ function generateEditForm(block) {
                 </div>
             `;
             break;
-            
+
         case 'lista':
             const tasks = block.metadata.tasks || [];
             specificForm = `
@@ -492,7 +491,7 @@ function generateEditForm(block) {
                 </div>
             `;
             break;
-            
+
         case 'meta':
             specificForm = `
                 <div class="mb-3">
@@ -512,7 +511,7 @@ function generateEditForm(block) {
                 </div>
             `;
             break;
-            
+
         case 'recordatorio':
             specificForm = `
                 <div class="mb-3">
@@ -535,7 +534,7 @@ function generateEditForm(block) {
                 </div>
             `;
             break;
-            
+
         case 'frase':
             specificForm = `
                 <div class="mb-3">
@@ -548,7 +547,7 @@ function generateEditForm(block) {
                 </div>
             `;
             break;
-            
+
         case 'enlace':
             specificForm = `
                 <div class="mb-3">
@@ -562,7 +561,7 @@ function generateEditForm(block) {
             `;
             break;
     }
-    
+
     return baseForm + specificForm;
 }
 
@@ -575,7 +574,7 @@ function initializeEditFormInteractions(block) {
             progressValue.textContent = this.value;
         });
     }
-    
+
     // Task management for lists
     if (block.block_type === 'lista') {
         document.getElementById('addTaskBtn')?.addEventListener('click', addNewTask);
@@ -590,7 +589,7 @@ function initializeEditFormInteractions(block) {
 function addNewTask() {
     const tasksList = document.getElementById('tasksList');
     const newIndex = tasksList.children.length;
-    
+
     const taskHTML = `
         <div class="task-item-edit mb-2" data-task-index="${newIndex}">
             <div class="input-group">
@@ -604,28 +603,28 @@ function addNewTask() {
             </div>
         </div>
     `;
-    
+
     tasksList.insertAdjacentHTML('beforeend', taskHTML);
 }
 
 function saveCurrentBlock() {
     if (!currentEditingBlock) return;
-    
+
     const blockCard = document.querySelector(`[data-block-id="${currentEditingBlock}"]`);
     const blockType = blockCard.dataset.blockType;
-    
+
     const updateData = {
         title: document.getElementById('blockTitle')?.value || '',
         color: document.getElementById('blockColor')?.value || 'indigo',
         metadata: {}
     };
-    
+
     // Collect specific data based on block type
     switch (blockType) {
         case 'nota':
             updateData.content = document.getElementById('noteContent')?.value || '';
             break;
-            
+
         case 'lista':
             const tasks = [];
             document.querySelectorAll('.task-item-edit').forEach(item => {
@@ -637,30 +636,30 @@ function saveCurrentBlock() {
             });
             updateData.metadata.tasks = tasks;
             break;
-            
+
         case 'meta':
             updateData.content = document.getElementById('goalContent')?.value || '';
             updateData.metadata.progress = parseInt(document.getElementById('goalProgress')?.value || 0);
             updateData.metadata.target_date = document.getElementById('targetDate')?.value || '';
             break;
-            
+
         case 'recordatorio':
             updateData.content = document.getElementById('reminderContent')?.value || '';
             updateData.metadata.due_date = document.getElementById('dueDate')?.value || '';
             updateData.metadata.priority = document.getElementById('priority')?.value || 'medium';
             break;
-            
+
         case 'frase':
             updateData.content = document.getElementById('quoteContent')?.value || '';
             updateData.metadata.author = document.getElementById('quoteAuthor')?.value || '';
             break;
-            
+
         case 'enlace':
             updateData.metadata.url = document.getElementById('linkUrl')?.value || '';
             updateData.metadata.description = document.getElementById('linkDescription')?.value || '';
             break;
     }
-    
+
     // Save to server
     fetch(`/espacio-personal/api/blocks/${currentEditingBlock}`, {
         method: 'PUT',
@@ -675,10 +674,10 @@ function saveCurrentBlock() {
         if (data.success) {
             // Close modal
             bootstrap.Modal.getInstance(document.getElementById('editBlockModal')).hide();
-            
+
             // Update block in UI
             updateBlockInUI(data.block);
-            
+
             showNotification('Bloque actualizado correctamente', 'success');
         } else {
             showNotification(data.message || 'Error al actualizar el bloque', 'error');
@@ -702,7 +701,7 @@ function deleteBlock(blockId) {
     if (!confirm('¿Estás seguro de que quieres eliminar este bloque?')) {
         return;
     }
-    
+
     fetch(`/espacio-personal/api/blocks/${blockId}`, {
         method: 'DELETE',
         headers: {
@@ -717,10 +716,10 @@ function deleteBlock(blockId) {
                 blockCard.style.transition = 'all 0.3s ease';
                 blockCard.style.transform = 'scale(0)';
                 blockCard.style.opacity = '0';
-                
+
                 setTimeout(() => {
                     blockCard.remove();
-                    
+
                     // Show empty state if no blocks left
                     const grid = document.getElementById('blocksGrid');
                     if (grid.children.length === 0) {
@@ -740,7 +739,7 @@ function deleteBlock(blockId) {
                     }
                 }, 300);
             }
-            
+
             showNotification('Bloque eliminado', 'success');
         } else {
             showNotification(data.message || 'Error al eliminar el bloque', 'error');
@@ -755,7 +754,7 @@ function deleteBlock(blockId) {
 function toggleBlockFeatured(blockId) {
     const blockCard = document.querySelector(`[data-block-id="${blockId}"]`);
     const isFeatured = blockCard.classList.contains('featured');
-    
+
     fetch(`/espacio-personal/api/blocks/${blockId}`, {
         method: 'PUT',
         headers: {
@@ -770,10 +769,10 @@ function toggleBlockFeatured(blockId) {
     .then(data => {
         if (data.success) {
             blockCard.classList.toggle('featured', data.block.is_featured);
-            
+
             const starIcon = blockCard.querySelector('.featured-star');
             const toggleButton = blockCard.querySelector('.toggle-featured');
-            
+
             if (data.block.is_featured) {
                 if (!starIcon) {
                     const actionsDiv = blockCard.querySelector('.block-actions');
@@ -790,7 +789,7 @@ function toggleBlockFeatured(blockId) {
                     toggleButton.innerHTML = '<i class="bi bi-star"></i> Destacar';
                 }
             }
-            
+
             showNotification(data.block.is_featured ? 'Bloque destacado' : 'Destacado removido', 'success');
         } else {
             showNotification(data.message || 'Error al actualizar el bloque', 'error');
@@ -812,7 +811,7 @@ function updateBlockOrder() {
             });
         }
     });
-    
+
     fetch('/espacio-personal/api/blocks/reorder', {
         method: 'POST',
         headers: {
@@ -845,7 +844,7 @@ function updateDarkModeButton() {
     if (button) {
         const icon = button.querySelector('i');
         const text = button.querySelector('span') || button.lastChild;
-        
+
         if (isDarkMode) {
             icon.className = 'bi bi-sun';
             if (text.nodeType === Node.TEXT_NODE) {
@@ -863,12 +862,12 @@ function updateDarkModeButton() {
 function toggleFocusMode() {
     isFocusMode = !isFocusMode;
     document.querySelector('.personal-space-container').classList.toggle('focus-mode', isFocusMode);
-    
+
     const button = document.getElementById('focusModeBtn');
     if (button) {
         const icon = button.querySelector('i');
         const text = button.querySelector('span') || button.lastChild;
-        
+
         if (isFocusMode) {
             icon.className = 'bi bi-eye';
             if (text.nodeType === Node.TEXT_NODE) {
@@ -892,7 +891,7 @@ function handleSuggestionClick(e) {
     if (e.target.closest('.suggestion-btn')) {
         const suggestionCard = e.target.closest('.suggestion-card');
         const action = suggestionCard.dataset.action;
-        
+
         switch (action) {
             case 'create_goal_block':
                 createNewBlock('meta');
@@ -904,15 +903,15 @@ function handleSuggestionClick(e) {
                 showOverdueReminders();
                 break;
         }
-        
+
         // Hide the suggestion
         suggestionCard.style.transition = 'all 0.3s ease';
         suggestionCard.style.transform = 'translateX(100%)';
         suggestionCard.style.opacity = '0';
-        
+
         setTimeout(() => {
             suggestionCard.remove();
-            
+
             // Hide suggestions container if empty
             const suggestionsContainer = document.getElementById('smartSuggestions');
             if (suggestionsContainer && suggestionsContainer.querySelectorAll('.suggestion-card').length === 0) {
@@ -928,7 +927,7 @@ function showOverdueReminders() {
         if (block.querySelector('.alert-danger')) {
             block.scrollIntoView({ behavior: 'smooth', block: 'center' });
             block.style.animation = 'pulse 2s infinite';
-            
+
             setTimeout(() => {
                 block.style.animation = '';
             }, 4000);
@@ -955,7 +954,7 @@ function autoSaveChanges() {
 // Utility Functions
 function formatDate(dateString) {
     if (!dateString) return '';
-    
+
     try {
         const date = new Date(dateString);
         return date.toLocaleDateString('es-ES', {
@@ -970,7 +969,7 @@ function formatDate(dateString) {
 
 function formatDateForInput(dateString) {
     if (!dateString) return '';
-    
+
     try {
         const date = new Date(dateString);
         return date.toISOString().slice(0, 16);
@@ -993,7 +992,7 @@ function showNotification(message, type = 'info') {
         }
         return;
     }
-    
+
     // Fallback notification
     const toast = document.createElement('div');
     toast.className = `toast-notification ${type}`;
@@ -1004,10 +1003,10 @@ function showNotification(message, type = 'info') {
             <button type="button" class="btn-close btn-sm ms-2" onclick="this.parentElement.parentElement.remove()"></button>
         </div>
     `;
-    
+
     const container = document.querySelector('.toast-container') || createToastContainer();
     container.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.remove();
     }, 5000);
@@ -1052,3 +1051,226 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Enhanced Personal Space JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize features
+    initializeSortable();
+    initializeModals();
+    initializeControls();
+    loadSuggestions();
+    updateDashboardMetrics();
+    initializeKanbanBoards();
+    setupAutoSave();
+});
+
+function loadSuggestions() {
+    fetch('/espacio-personal/api/suggestions')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.suggestions.length > 0) {
+                showSuggestions(data.suggestions);
+            }
+        })
+        .catch(error => console.error('Error loading suggestions:', error));
+}
+
+function updateDashboardMetrics() {
+    const blocks = document.querySelectorAll('.block-card');
+    const metrics = {
+        notas: 0,
+        tareas: 0,
+        objetivos: 0,
+        totalProgress: 0,
+        progressCount: 0
+    };
+
+    blocks.forEach(block => {
+        const type = block.dataset.type;
+
+        switch(type) {
+            case 'nota':
+                metrics.notas++;
+                break;
+            case 'tarea':
+            case 'lista':
+            case 'kanban':
+                metrics.tareas++;
+                break;
+            case 'objetivo':
+            case 'meta':
+                metrics.objetivos++;
+                break;
+        }
+
+        // Calculate average progress
+        const progressBar = block.querySelector('.progress-bar');
+        if (progressBar) {
+            const progress = parseInt(progressBar.style.width) || 0;
+            metrics.totalProgress += progress;
+            metrics.progressCount++;
+        }
+    });
+
+    // Update DOM
+    const notasElement = document.getElementById('notasCount');
+    const tareasElement = document.getElementById('tareasCount');
+    const objetivosElement = document.getElementById('objetivosCount');
+    const progressElement = document.getElementById('progressAvg');
+
+    if (notasElement) notasElement.textContent = metrics.notas;
+    if (tareasElement) tareasElement.textContent = metrics.tareas;
+    if (objetivosElement) objetivosElement.textContent = metrics.objetivos;
+
+    if (progressElement) {
+        const avgProgress = metrics.progressCount > 0 ? 
+            Math.round(metrics.totalProgress / metrics.progressCount) : 0;
+        progressElement.textContent = `${avgProgress}%`;
+    }
+}
+
+function initializeKanbanBoards() {
+    document.querySelectorAll('.kanban-columns').forEach(kanban => {
+        const kanbanId = kanban.dataset.kanbanId;
+
+        kanban.querySelectorAll('.column-tasks').forEach(column => {
+            new Sortable(column, {
+                group: `kanban-${kanbanId}`,
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: function(evt) {
+                    saveKanbanState(kanbanId);
+                }
+            });
+        });
+    });
+}
+
+function saveKanbanState(kanbanId) {
+    const kanban = document.querySelector(`[data-kanban-id="${kanbanId}"]`);
+    const columns = {};
+
+    kanban.querySelectorAll('.column-tasks').forEach(column => {
+        const columnName = column.dataset.columnTasks;
+        const tasks = [];
+
+        column.querySelectorAll('.kanban-task').forEach(task => {
+            tasks.push({
+                title: task.querySelector('h6').textContent,
+                description: task.querySelector('p')?.textContent || '',
+                priority: task.querySelector('.task-priority')?.classList.contains('priority-high') ? 'high' : 
+                         task.querySelector('.task-priority')?.classList.contains('priority-medium') ? 'medium' : 'low'
+            });
+        });
+
+        columns[columnName] = tasks;
+    });
+
+    // Save to backend
+    fetch(`/espacio-personal/api/blocks/${kanbanId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: JSON.stringify({
+            metadata: { columns: columns }
+        })
+    }).catch(error => console.error('Error saving kanban:', error));
+}
+
+function toggleTask(blockId) {
+    const checkbox = event.target;
+    const completed = checkbox.checked;
+
+    fetch(`/espacio-personal/api/blocks/${blockId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: JSON.stringify({
+            metadata: { completed: completed }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateDashboardMetrics();
+            // Update visual state
+            const card = checkbox.closest('.block-card');
+            const title = card.querySelector('.block-title');
+            if (completed) {
+                title.classList.add('completed');
+            } else {
+                title.classList.remove('completed');
+            }
+        }
+    })
+    .catch(error => console.error('Error updating task:', error));
+}
+
+function openKanban(blockId) {
+    // Open kanban management modal
+    window.location.href = `/espacio-personal/kanban/${blockId}`;
+}
+
+function manageBloque(blockId) {
+    // Open block management interface
+    editBlock(blockId);
+}
+
+function toggleBloque(blockId) {
+    const card = document.querySelector(`[data-block-id="${blockId}"]`);
+    const content = card.querySelector('.bloque-content');
+    const chevron = card.querySelector('.bi-chevron-down');
+
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        chevron.style.transform = 'rotate(0deg)';
+    } else {
+        content.style.display = 'none';
+        chevron.style.transform = 'rotate(-90deg)';
+    }
+}
+
+function setupAutoSave() {
+    // Auto-save functionality for content changes
+    document.addEventListener('input', debounce(function(e) {
+        if (e.target.matches('[data-autosave]')) {
+            const blockId = e.target.closest('.block-card').dataset.blockId;
+            autoSaveBlock(blockId, e.target);
+        }
+    }, 1000));
+}
+
+function autoSaveBlock(blockId, element) {
+    const data = {};
+
+    if (element.classList.contains('block-title-edit')) {
+        data.title = element.textContent;
+    } else if (element.classList.contains('block-content-edit')) {
+        data.content = element.textContent;
+    }
+
+    fetch(`/espacio-personal/api/blocks/${blockId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: JSON.stringify(data)
+    }).catch(error => console.error('Auto-save error:', error));
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}

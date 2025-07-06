@@ -10,7 +10,7 @@ class PersonalBlock(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     block_type = db.Column(
         db.String(50), nullable=False
-    )  # nota, lista, meta, recordatorio, frase, enlace
+    )  # nota, lista, meta, recordatorio, frase, enlace, tarea, kanban, objetivo
     title = db.Column(db.String(200), default="")
     content = db.Column(db.Text, default="")
     _metadata = db.Column(
@@ -50,10 +50,75 @@ class PersonalBlock(db.Model):
             completed = sum(1 for task in tasks if task.get("completed", False))
             return int((completed / len(tasks)) * 100)
 
-        elif self.block_type == "meta":
+        elif self.block_type == "meta" or self.block_type == "objetivo":
             return metadata.get("progress", 0)
 
+        elif self.block_type == "kanban":
+            columns = metadata.get("columns", {})
+            total_tasks = 0
+            completed_tasks = 0
+            for column_name, tasks in columns.items():
+                if column_name.lower() in ["hecho", "completado", "finalizado"]:
+                    completed_tasks += len(tasks)
+                total_tasks += len(tasks)
+            
+            if total_tasks == 0:
+                return 0
+            return int((completed_tasks / total_tasks) * 100)
+
         return 0
+
+    def get_priority_color(self):
+        """Get color based on priority or type"""
+        metadata = self.get_metadata()
+        priority = metadata.get("priority", "medium")
+        
+        priority_colors = {
+            "high": "red",
+            "medium": "amber", 
+            "low": "green"
+        }
+        
+        return priority_colors.get(priority, self.color)
+
+    def get_status_badge(self):
+        """Get status badge for different block types"""
+        metadata = self.get_metadata()
+        
+        if self.block_type == "objetivo":
+            status = metadata.get("status", "no_iniciada")
+            status_map = {
+                "no_iniciada": {"text": "No iniciada", "color": "gray"},
+                "en_progreso": {"text": "En progreso", "color": "blue"},
+                "cumplida": {"text": "Cumplida", "color": "green"},
+                "vencida": {"text": "Vencida", "color": "red"}
+            }
+            return status_map.get(status, status_map["no_iniciada"])
+        
+        elif self.block_type == "tarea":
+            if metadata.get("completed", False):
+                return {"text": "Completada", "color": "green"}
+            elif self.is_overdue():
+                return {"text": "Vencida", "color": "red"}
+            else:
+                return {"text": "Pendiente", "color": "blue"}
+        
+        return {"text": "Activo", "color": "blue"}
+
+    def get_due_days(self):
+        """Get days until due date"""
+        metadata = self.get_metadata()
+        due_date_str = metadata.get("due_date") or metadata.get("deadline")
+        
+        if not due_date_str:
+            return None
+            
+        try:
+            due_date = datetime.fromisoformat(due_date_str.replace("Z", "+00:00"))
+            diff = due_date - datetime.utcnow()
+            return diff.days
+        except (ValueError, AttributeError):
+            return None
 
     def is_overdue(self):
         """Check if reminder is overdue"""
