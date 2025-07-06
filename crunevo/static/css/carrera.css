@@ -1,0 +1,266 @@
+
+/* Career Module Styles */
+.career-header {
+  background: linear-gradient(135deg, #1E40AF 0%, #059669 100%);
+}
+
+.career-nav .nav-link {
+  color: #64748B;
+  border: none;
+  padding: 1rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.career-nav .nav-link:hover {
+  color: #1E40AF;
+  background-color: #F1F5F9;
+}
+
+.career-nav .nav-link.active {
+  color: #1E40AF;
+  background-color: #EFF6FF;
+  border-bottom: 3px solid #1E40AF;
+}
+
+.career-nav .nav-link i {
+  font-size: 1.1rem;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-item .h5 {
+  color: white;
+  font-weight: 700;
+}
+
+.stat-item small {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.75rem;
+}
+
+/* Post Form */
+.post-form-card {
+  border: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Chat Styles */
+.chat-messages {
+  background-color: #FAFAFA;
+}
+
+.chat-message {
+  margin-bottom: 1rem;
+}
+
+.chat-message .message-content {
+  background: white;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.chat-message.own-message .message-content {
+  background: #1E40AF;
+  color: white;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.chat-message .message-header {
+  font-size: 0.75rem;
+  color: #64748B;
+  margin-bottom: 0.25rem;
+}
+
+/* Cards */
+.career-card {
+  border: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.career-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Note Card */
+.note-card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.note-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.note-card .card-header {
+  background: linear-gradient(135deg, #EFF6FF 0%, #F0FDF4 100%);
+  border-bottom: 1px solid #E2E8F0;
+}
+
+/* Course Card */
+.course-card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.course-thumbnail {
+  height: 200px;
+  background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.course-thumbnail i {
+  font-size: 3rem;
+  color: #64748B;
+}
+
+/* Club Card */
+.club-card {
+  border: none;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.club-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.club-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Event Card */
+.event-card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.event-image {
+  height: 150px;
+  background: linear-gradient(135deg, #7C3AED 0%, #1E40AF 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.event-image i {
+  font-size: 2.5rem;
+  color: white;
+}
+
+/* User Card */
+.user-card {
+  border: none;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.user-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.user-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Badges */
+.badge-career {
+  background: linear-gradient(135deg, #1E40AF 0%, #059669 100%);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+}
+
+.badge-difficulty {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.badge-beginner {
+  background-color: #10B981;
+  color: white;
+}
+
+.badge-intermediate {
+  background-color: #F59E0B;
+  color: white;
+}
+
+.badge-advanced {
+  background-color: #EF4444;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .career-nav .nav-link {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .career-nav .nav-link i {
+    font-size: 1rem;
+  }
+  
+  .stat-item {
+    margin-bottom: 1rem;
+  }
+  
+  .chat-messages {
+    height: 300px !important;
+  }
+}
+
+/* Loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Tab content animations */
+.tab-pane {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

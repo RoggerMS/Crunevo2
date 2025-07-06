@@ -624,3 +624,5 @@
 - Patched RFC6455WebSocket.close to ignore EBADF errors and remove remaining "Bad file descriptor" logs (PR websocket-rfc6455-fix).
 - Forzamos login con force=True en la ruta de confirmación para evitar sesiones desactualizadas y redirecciones al pending. (PR confirm-force-login)
 - Added test to ensure only success flash after email confirmation and no pending redirect (PR confirm-feed-flash-test).
+
+- Reordered sidebar item "Mi Espacio Personal" under "Mi Perfil" and centered profile icon on mobile navbar while removing "Buscar" and "Mi Espacio" links (PR mobile-nav-sidebar-reorder).
