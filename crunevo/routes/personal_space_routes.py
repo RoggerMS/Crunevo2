@@ -1,11 +1,13 @@
 
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for
+# fmt: off
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for  # noqa: F401
+# fmt: on
 from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models.personal_block import PersonalBlock
 from crunevo.utils.helpers import activated_required
 from datetime import datetime
-import json
+import json  # noqa: F401
 
 personal_space_bp = Blueprint('personal_space', __name__, url_prefix='/espacio-personal')
 

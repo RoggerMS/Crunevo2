@@ -618,3 +618,4 @@
 - Dropped leftover sequence before creating `user_block` table to avoid UniqueViolation on repeated migrations (PR user-block-sequence-fix).
 - Admin prints and comments now link to PUBLIC_BASE_URL/notes/<id> since notes blueprint isn't loaded in admin.
 - Fixed invoice path resolution using current_app.root_path to avoid FileNotFoundError when downloading receipts (PR invoice-path-fix).
+- Renamed PersonalBlock.metadata column to _metadata with property and fixed mobile navbar store link (PR personal-block-metadata-fix).

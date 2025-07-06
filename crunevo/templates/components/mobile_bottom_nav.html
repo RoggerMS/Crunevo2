@@ -60,7 +60,7 @@
           </div>
           <span class="nav-label">Perfil</span>
         </a>
-      <a href="{{ url_for('store.index') }}" class="nav-item {% if request.endpoint and 'store' in request.endpoint %}active{% endif %}">
+      <a href="{{ url_for('store.store_index') }}" class="nav-item {% if request.endpoint and 'store' in request.endpoint %}active{% endif %}">
         <i class="bi bi-shop"></i>
         <span>Tienda</span>
       </a>
