@@ -620,3 +620,4 @@
 - Fixed invoice path resolution using current_app.root_path to avoid FileNotFoundError when downloading receipts (PR invoice-path-fix).
 - Renamed PersonalBlock.metadata column to _metadata with property and fixed mobile navbar store link (PR personal-block-metadata-fix).
 - Added Tailwind utility classes to personal space templates and ensured formatting/tests pass (PR personal-space-tailwind-fix).
+- Dropped leftover sequence before creating `personal_block` table to avoid UniqueViolation errors (PR personal-block-sequence-fix).
