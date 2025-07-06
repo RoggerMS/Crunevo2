@@ -30,41 +30,44 @@ def activated_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.activated:
-            flash('Debes activar tu cuenta para acceder a esta función.', 'warning')
-            return redirect(url_for('auth.perfil'))
+            flash("Debes activar tu cuenta para acceder a esta función.", "warning")
+            return redirect(url_for("auth.perfil"))
         return f(*args, **kwargs)
+
     return decorated_function
 
 
 def career_required(f):
     """Decorator to ensure user has a career assigned"""
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.career:
-            flash('Debes asignar una carrera para acceder a esta función.', 'warning')
-            return redirect(url_for('auth.perfil') + '?tab=personal')
+            flash("Debes asignar una carrera para acceder a esta función.", "warning")
+            return redirect(url_for("auth.perfil") + "?tab=personal")
         return f(*args, **kwargs)
+
     return decorated_function
 
 
 def get_available_careers():
     """Get list of available careers"""
     return [
-        'Ingeniería de Sistemas',
-        'Ingeniería Industrial',
-        'Ingeniería Civil',
-        'Administración de Empresas',
-        'Contabilidad',
-        'Marketing',
-        'Psicología',
-        'Derecho',
-        'Medicina',
-        'Enfermería',
-        'Arquitectura',
-        'Diseño Gráfico',
-        'Comunicaciones',
-        'Educación',
-        'Economía'
+        "Ingeniería de Sistemas",
+        "Ingeniería Industrial",
+        "Ingeniería Civil",
+        "Administración de Empresas",
+        "Contabilidad",
+        "Marketing",
+        "Psicología",
+        "Derecho",
+        "Medicina",
+        "Enfermería",
+        "Arquitectura",
+        "Diseño Gráfico",
+        "Comunicaciones",
+        "Educación",
+        "Economía",
     ]
 
 

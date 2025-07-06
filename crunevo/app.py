@@ -408,7 +408,7 @@ def create_app():
         from .routes.backpack_routes import backpack_bp
         from .routes.challenges_routes import challenges_bp
         from .routes.hall_routes import hall_bp
-        
+
         app.register_blueprint(carrera_bp)
         app.register_blueprint(league_bp)
         app.register_blueprint(backpack_bp)
