@@ -623,3 +623,4 @@
 - Dropped leftover sequence before creating `personal_block` table to avoid UniqueViolation errors (PR personal-block-sequence-fix).
 - Patched RFC6455WebSocket.close to ignore EBADF errors and remove remaining "Bad file descriptor" logs (PR websocket-rfc6455-fix).
 - Reordered sidebar item "Mi Espacio Personal" under "Mi Perfil" and centered profile icon on mobile navbar while removing "Buscar" and "Mi Espacio" links (PR mobile-nav-sidebar-reorder).
+- Implemented comprehensive 'Mi Carrera' module with career-filtered posts, notes, courses, clubs, events, chat and featured students tabs, with JS and CSS integration (PR career-module).
