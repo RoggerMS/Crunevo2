@@ -97,16 +97,21 @@ def register():
                         db.session.commit()
                 except (ProgrammingError, OperationalError):
                     db.session.rollback()
-        success, error = send_confirmation_email(user)
-        if not success:
-            flash(
-                "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
-                "danger",
-            )
-            if error:
-                flash(error, "danger")
-        return render_template("onboarding/confirm.html")
-    return render_template("onboarding/register.html")
+    success, error = send_confirmation_email(user)
+    if not success:
+        flash(
+            "No se pudo enviar el correo de confirmación. Inténtalo más tarde.",
+            "danger",
+        )
+        if error:
+            flash(error, "danger")
+    return redirect(url_for("onboarding.confirm_sent"))
+
+
+@bp.route("/confirm")
+def confirm_sent():
+    """Display page instructing the user to check their email."""
+    return render_template("onboarding/confirm.html")
 
 
 @bp.route("/confirm/<token>")
@@ -162,7 +167,9 @@ def confirm(token):
 @login_required
 def finish():
     if request.method == "POST":
-        current_user.username = request.form.get("alias")
+        alias = request.form.get("alias")
+        if alias:
+            current_user.username = alias
         avatar_url = request.form.get("avatar_url")
         avatar_file = request.files.get("avatar_file")
         if avatar_file and avatar_file.filename:
