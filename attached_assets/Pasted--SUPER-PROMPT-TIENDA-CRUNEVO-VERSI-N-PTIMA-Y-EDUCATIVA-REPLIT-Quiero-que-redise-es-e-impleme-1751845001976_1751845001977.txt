@@ -1,0 +1,142 @@
+🟣 SUPER PROMPT — TIENDA CRUNEVO: VERSIÓN ÓPTIMA Y EDUCATIVA (REPLIT)
+Quiero que rediseñes e implementes la tienda de CRUNEVO como si fuera una app profesional moderna, con detalles visuales, excelente experiencia móvil y estructura responsiva. Esta tienda forma parte de una red social educativa, así que debe sentirse como una tienda académica dinámica y amigable, con diseño intuitivo y fresco.
+
+🧩 FUNCIONES PRINCIPALES (BASE)
+Vista de productos en tarjetas cuadradas
+
+En móviles: usar 2 columnas visibles con scroll infinito o paginación visual.
+
+En tablets o pantallas medianas: 3 columnas.
+
+En escritorio: 4 o 5 columnas o más si el ancho lo permite.
+
+Altura y tamaño del cuadrado adaptable (preferencia por diseño tipo Instagram Shop).
+
+Cada tarjeta debe incluir:
+
+Imagen cuadrada del producto.
+
+Título.
+
+Precio en S/ (Soles) y en Crolars (si aplica).
+
+Badge visual si está en oferta o si es nuevo.
+
+Botón "Agregar al carrito" siempre visible, incluso sin pasar el mouse.
+
+Modal de producto
+
+Al hacer clic en un producto se abre un modal o página con:
+
+Imagen destacada grande.
+
+Galería de imágenes si existen más.
+
+Descripción detallada.
+
+Precio en S/ y Crolars.
+
+Stock visible.
+
+Botón destacado: "Agregar al carrito" con animación.
+
+Botón de “Ver más detalles” o “Comprar ahora”.
+
+Buscador inteligente
+
+Barra de búsqueda con autocompletado AJAX.
+
+Filtros: por precio, categoría, stock disponible, más populares.
+
+Toggle visual de filtros para móviles.
+
+Diseño visual de la tienda
+
+Paleta de colores en tonos morado elegante + blanco y grises modernos.
+
+Sombra suave en las tarjetas (como las tiendas de Instagram / Shopee).
+
+Bordes redondeados (rounded-xl o 2xl).
+
+Transiciones suaves (hover y clic).
+
+Íconos modernos: carrito, corazón, lupa, filtros (usar Lucide o similar).
+
+Compatible con modo claro y oscuro.
+
+Carrito visible
+
+Ícono flotante o fijo en la parte superior derecha.
+
+Al hacer clic: mostrar los productos añadidos con subtotal.
+
+Permitir aumentar/disminuir cantidad o eliminar.
+
+Mostrar botón "Finalizar compra" (aunque por ahora puede estar deshabilitado).
+
+🛍️ CARACTERÍSTICAS ADICIONALES
+Sistema de favoritos
+
+Ícono de corazón (toggle visual).
+
+Productos favoritos aparecen en /favoritos.
+
+Recompensas por comprar
+
+Si el producto otorga Crolars extra, mostrar un badge:
+
+🎁 +20 Crolars con esta compra
+
+Reseñas visuales
+
+Mostrar debajo del producto la calificación promedio (⭐️⭐️⭐️⭐️☆).
+
+Modal para ver opiniones de otros estudiantes.
+
+Posibilidad de dejar reseñas luego de la compra.
+
+Categorías inteligentes
+
+Mostrar filtros rápidos por tipo de producto:
+
+Apuntes descargables.
+
+Materiales físicos.
+
+Accesorios educativos.
+
+Cursos / Certificados.
+
+Cada uno con su ícono propio y diseño visual.
+
+🧠 CONTEXTO PARA REPLIT
+Esta tienda es parte de una red social educativa peruana, por lo que debe verse seria, fresca y profesional.
+
+Los precios están en Soles (S/), nunca en dólares.
+
+La moneda interna se llama Crolars, y también debe mostrarse.
+
+La tienda no es independiente: está dentro de un ecosistema social con perfiles, feed, foros, etc.
+
+El diseño debe destacar por su limpieza, funcionalidad móvil y facilidad de uso para estudiantes de secundaria y universitarios.
+
+Usa imágenes genéricas de ejemplo, como libros, útiles, plantillas, etc.
+
+Si algún producto no tiene imagen, usar un placeholder académico visualmente agradable.
+
+📌 ELEMENTOS TÉCNICOS Y RESPONSIVOS
+Usa TailwindCSS (preferencia) o estilos compatibles con Bootstrap 5 si es necesario.
+
+Layout responsivo:
+
+En móviles debe priorizar verticalidad, botones grandes y fácil interacción.
+
+En PC mostrar navegación lateral si es posible.
+
+Implementa store.css exclusivo con clases específicas para la tienda.
+
+Las tarjetas deben tener min-h-[200px] y max-w-[280px] ajustable según dispositivo.
+
+✅ OBJETIVO
+Crear una experiencia de compra atractiva, responsiva, educativa y profesional, como si fuera la tienda de una gran plataforma de estudiantes.
+
