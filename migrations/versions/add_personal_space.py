@@ -8,11 +8,10 @@ Create Date: 2025-01-05 12:00:00.000000
 """
 from alembic import op
 import sqlalchemy as sa
-from datetime import datetime
 
 # revision identifiers, used by Alembic.
 revision = 'add_personal_space'
-down_revision = 'complete_missing_models'
+down_revision = 'add_internship_models'
 branch_labels = None
 depends_on = None
 
