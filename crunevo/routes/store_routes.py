@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from flask_login import current_user
 from flask import current_app
 from crunevo.utils.helpers import activated_required
-from crunevo.extensions import db, limiter
+from crunevo.extensions import db
 from crunevo.models import (
     Product,
     ProductLog,
@@ -158,7 +158,6 @@ def view_product(product_id):
 
 @store_bp.route("/product/<int:product_id>/review", methods=["POST"])
 @activated_required
-@limiter.limit("5 per minute")
 def add_review(product_id: int):
     """Allow a user to leave a review for a purchased product."""
     if not has_purchased(current_user.id, product_id):

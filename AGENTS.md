@@ -630,3 +630,4 @@
 - Fixed Replit gamification feature errors, restored sidebar template, removed empty migration and ensured tests pass (PR replit-gamification-fixes).
 - Handled missing crolars_hall_member table with get_hall_membership helper and template update (PR hall-membership-safe).
 - Added table_exists helper and login requirement to activated_required; routes skip queries if tables are missing (PR log-error-fix).
+- Relaxed default Flask-Limiter to 1000/day and removed limits from store and developer routes, keeping limits only on login and onboarding (PR rate-limit-tweak).
