@@ -644,37 +644,38 @@ function clearAllFilters() {
     }
 }
 
-function openProductRequestModal() {
+
+function openPublishProductModal() {
     const modal = new bootstrap.Modal(
-        document.getElementById('productRequestModal')
+        document.getElementById('publishProductModal')
     );
     modal.show();
 }
 
 // Expose functions for inline event handlers
 window.clearAllFilters = clearAllFilters;
-window.openProductRequestModal = openProductRequestModal;
+window.openPublishProductModal = openPublishProductModal;
 window.toggleSidebar = toggleSidebar;
 
 // Initialize store when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     window.store = new CrunevoStore();
 
-    // Product request form handler
-    const requestForm = document.getElementById('productRequestForm');
-    if (requestForm) {
-        requestForm.addEventListener('submit', async function(e) {
+    // Publish product form handler
+    const publishForm = document.getElementById('publishProductForm');
+    if (publishForm) {
+        publishForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalHTML = submitBtn.innerHTML;
 
-            submitBtn.innerHTML = '<div class="spinner-border spinner-border-sm me-2" role="status"></div>Enviando...';
+            submitBtn.innerHTML = '<div class="spinner-border spinner-border-sm me-2" role="status"></div>Publicando...';
             submitBtn.disabled = true;
 
             try {
                 const formData = new FormData(this);
-                const response = await fetch('/store/solicitar-producto', {
+                const response = await fetch('/store/publicar-producto', {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -683,23 +684,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 if (response.ok) {
-                    // Show success toast
-                    window.store.showToast('requestToast');
-
-                    // Close modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('productRequestModal'));
+                    window.store.showToast('publishToast');
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('publishProductModal'));
                     modal.hide();
-
-                    // Reset form
                     this.reset();
                 } else {
-                    throw new Error('Error submitting request');
+                    throw new Error('Error submitting product');
                 }
             } catch (error) {
-                console.error('Error submitting product request:', error);
-                window.store.showToast('errorToast', 'Error al enviar la solicitud');
+                console.error('Error publishing product:', error);
+                window.store.showToast('errorToast', 'Error al publicar el producto');
             } finally {
-                // Reset button
                 submitBtn.innerHTML = originalHTML;
                 submitBtn.disabled = false;
             }

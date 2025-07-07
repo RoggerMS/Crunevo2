@@ -17,6 +17,7 @@ class Product(db.Model):
     category = db.Column(db.String(50))
     download_url = db.Column(db.String(255))
     allow_multiple = db.Column(db.Boolean, default=True)
+    is_approved = db.Column(db.Boolean, default=True)
 
     @property
     def first_image(self) -> str | None:

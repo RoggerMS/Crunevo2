@@ -649,3 +649,33 @@ def my_requests():
         .all()
     )
     return render_template("store/my_requests.html", requests=reqs)
+
+
+@store_bp.route("/publicar-producto", methods=["POST"])
+@activated_required
+def publish_product():
+    name = request.form.get("name", "").strip()
+    price = request.form.get("price", type=float) or 0
+    stock = request.form.get("stock", type=int) or 0
+    category = request.form.get("category")
+    description = request.form.get("description")
+    image = request.files.get("image")
+
+    image_url = None
+    if image:
+        from crunevo.utils.image_optimizer import upload_optimized_image
+
+        image_url = upload_optimized_image(image, folder="products")
+
+    product = Product(
+        name=name,
+        price=price,
+        stock=stock,
+        category=category,
+        description=description,
+        image=image_url,
+        is_approved=False,
+    )
+    db.session.add(product)
+    db.session.commit()
+    return "OK"
