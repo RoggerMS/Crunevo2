@@ -35,7 +35,7 @@
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3" id="notesList">
 {% for note in notes %}
   <div class="col">
-    {% include 'components/note_card.html' %}
+    {% include 'components/note_card.html' with note=note, show_quick_view=True %}
   </div>
 {% endfor %}
 </div>
@@ -49,6 +49,7 @@ document.getElementById('noteSearch').addEventListener('input', function(e){
       data.forEach(n => {
         list.appendChild(createNoteCard(n));
       });
+      initPdfPreviews();
     });
 });
 
@@ -57,50 +58,69 @@ function createNoteCard(n) {
   col.className = 'col';
 
   const card = document.createElement('article');
-  card.className = 'card h-100 shadow-sm';
+  card.className = 'card note-card shadow-sm rounded-4 h-100';
 
-  const canvas = document.createElement('canvas');
-  canvas.className = 'pdf-thumb card-img-top';
-  canvas.dataset.pdf = n.filename;
+  const preview = document.createElement('div');
+  preview.className = 'note-preview text-center p-3 bg-light-subtle';
+
+  const ext = n.filename.split('?')[0].split('.').pop().toLowerCase();
+  if (ext === 'pdf') {
+    const canvas = document.createElement('canvas');
+    canvas.className = 'pdf-thumb w-100';
+    canvas.dataset.pdf = n.filename;
+    canvas.style.height = '220px';
+    preview.appendChild(canvas);
+  } else if (['jpg','jpeg','png','webp'].includes(ext)) {
+    const img = document.createElement('img');
+    img.src = n.filename;
+    img.className = 'img-fluid rounded w-100';
+    img.style.height = '220px';
+    img.style.objectFit = 'cover';
+    preview.appendChild(img);
+  } else {
+    const div = document.createElement('div');
+    div.className = 'text-muted';
+    div.style.height = '220px';
+    div.style.display = 'flex';
+    div.style.flexDirection = 'column';
+    div.style.justifyContent = 'center';
+    div.innerHTML = '<i class="bi bi-file-earmark fs-1"></i><small>Vista previa no disponible</small>';
+    preview.appendChild(div);
+  }
 
   const body = document.createElement('div');
-  body.className = 'card-body d-flex flex-column';
+  body.className = 'card-body d-flex flex-column justify-content-between';
 
   const title = document.createElement('h6');
-  title.className = 'card-title';
+  title.className = 'fw-bold text-dark mb-2';
   title.textContent = n.title;
 
-  const tagDiv = document.createElement('div');
-  tagDiv.className = 'mb-2';
-  (n.tags || '').split(',').forEach(t => {
-    t = t.trim();
-    if (!t) return;
-    const span = document.createElement('span');
-    span.className = 'badge bg-secondary me-1';
-    span.textContent = t;
-    tagDiv.appendChild(span);
-  });
+  const stats = document.createElement('div');
+  stats.className = 'd-flex justify-content-between align-items-center small text-muted';
+  stats.innerHTML = `<span><i class="bi bi-eye me-1"></i> ${n.views || 0}</span><span><i class="bi bi-hand-thumbs-up me-1"></i> ${n.likes || 0}</span>`;
 
-  const footer = document.createElement('div');
-  footer.className = 'mt-auto d-flex justify-content-between align-items-center';
+  const btnGroup = document.createElement('div');
+  btnGroup.className = 'btn-group mt-3';
 
   const link = document.createElement('a');
-  link.className = 'btn btn-primary btn-sm';
+  link.className = 'btn btn-outline-primary btn-sm';
   link.href = `/notes/${n.id}`;
   link.textContent = 'Ver detalle';
+  btnGroup.appendChild(link);
 
-  const info = document.createElement('div');
-  info.className = 'text-muted small';
-  info.innerHTML = `<i class="bi bi-eye"></i> ${n.views || 0}` + (n.likes ? ` &nbsp;<i class="bi bi-hand-thumbs-up"></i> ${n.likes}` : '');
-
-  footer.appendChild(link);
-  footer.appendChild(info);
+  if (['pdf','png'].includes(ext)) {
+    const qbtn = document.createElement('button');
+    qbtn.className = 'btn btn-outline-info btn-sm';
+    qbtn.innerHTML = '<i class="bi bi-eye"></i>';
+    qbtn.addEventListener('click', () => openQuickView(n.filename));
+    btnGroup.appendChild(qbtn);
+  }
 
   body.appendChild(title);
-  body.appendChild(tagDiv);
-  body.appendChild(footer);
+  body.appendChild(stats);
+  body.appendChild(btnGroup);
 
-  card.appendChild(canvas);
+  card.appendChild(preview);
   card.appendChild(body);
   col.appendChild(card);
   return col;
@@ -113,6 +133,7 @@ function createNoteCard(n) {
 {% block body_end %}
 {{ super() }}
 <script src="{{ url_for('static', filename='pdfjs/pdf.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/viewer.js') }}"></script>
 <script>
   pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";
   initPdfPreviews();
