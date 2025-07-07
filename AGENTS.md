@@ -657,3 +657,4 @@
 - Added advanced filters with price range slider, stock checkbox, tag list and AJAX refresh (PR store-advanced-filters).
 - Implemented store.search_products API with AJAX search and infinite scroll; removed 'Cargar más' button (PR ajax-store-search).
 - Implementado sistema de solicitudes de productos con modelo ProductRequest, formulario para estudiantes y panel admin de aprobación. Botón flotante en tienda para solicitar. (PR store-product-requests)
+- Added dark-mode variables in store.css and updated components to use them, ensuring theme toggle works (PR store-dark-mode).
