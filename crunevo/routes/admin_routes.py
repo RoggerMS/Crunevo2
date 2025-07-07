@@ -38,6 +38,7 @@ from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit
 from crunevo.utils.ranking import calculate_weekly_ranking
 from crunevo.constants.credit_reasons import CreditReasons
+from crunevo.utils.image_optimizer import upload_optimized_image
 from datetime import datetime, timedelta
 import csv
 import io
@@ -477,6 +478,33 @@ def add_product():
     """Legacy add product route blocked for moderators."""
     flash("Acción no permitida", "danger")
     return redirect(url_for("admin.manage_store"))
+
+
+@admin_bp.route("/products/<int:product_id>/edit", methods=["GET", "POST"])
+def edit_product(product_id):
+    """Edit an existing product."""
+    product = Product.query.get_or_404(product_id)
+    if request.method == "POST":
+        product.name = request.form.get("name", product.name)
+        product.description = request.form.get("description")
+        product.price = request.form.get("price", type=float) or 0
+        product.price_credits = request.form.get("price_credits", type=int)
+        product.stock = request.form.get("stock", type=int) or 0
+        product.is_featured = bool(request.form.get("is_featured"))
+        product.credits_only = bool(request.form.get("credits_only"))
+        product.is_popular = bool(request.form.get("is_popular"))
+        product.is_new = bool(request.form.get("is_new"))
+        if "image" in request.files:
+            image_file = request.files["image"]
+            if image_file and image_file.filename:
+                url = upload_optimized_image(image_file, folder="products")
+                if url:
+                    product.image = url
+        db.session.commit()
+        log_admin_action(f"Editó producto {product.id}")
+        flash("Producto actualizado", "success")
+        return redirect(url_for("admin.manage_store"))
+    return render_template("admin/add_edit_product.html", product=product)
 
 
 @admin_bp.route("/prints")
