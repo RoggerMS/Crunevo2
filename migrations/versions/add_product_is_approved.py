@@ -13,6 +13,7 @@ def has_col(table: str, column: str, conn) -> bool:
     inspector = sa.inspect(conn)
     return any(c["name"] == column for c in inspector.get_columns(table))
 
+
 revision = "add_product_is_approved"
 down_revision = "add_product_request"
 branch_labels = None

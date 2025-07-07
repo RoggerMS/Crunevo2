@@ -658,7 +658,7 @@ window.openPublishProductModal = openPublishProductModal;
 window.toggleSidebar = toggleSidebar;
 
 // Initialize store when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+function initCrunevoStore() {
     window.store = new CrunevoStore();
 
     // Publish product form handler
@@ -712,4 +712,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (closeBtn) {
         closeBtn.addEventListener('click', closeMobileFilters);
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCrunevoStore);
+} else {
+    initCrunevoStore();
+}
