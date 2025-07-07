@@ -1,0 +1,24 @@
+{% extends 'admin/base_admin.html' %}
+{% block admin_content %}
+<h2 class="page-title mb-4">Historial de {{ user.username }}</h2>
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-vcenter card-table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for act in activities %}
+        <tr>
+          <td>{{ act.timestamp.strftime('%d/%m/%Y %H:%M') }}</td>
+          <td>{{ act.action }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

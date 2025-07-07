@@ -167,7 +167,7 @@
     {% endif %}
 
     <!-- Mobile bottom navigation -->
-    {% if request.endpoint not in ['auth.login', 'onboarding.register'] %}
+    {% if request.endpoint not in ['auth.login', 'onboarding.register'] and not config.ADMIN_INSTANCE %}
     {% include 'components/mobile_bottom_nav.html' %}
     {% endif %}
 
