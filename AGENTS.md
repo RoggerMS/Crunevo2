@@ -666,3 +666,4 @@
 - Restored product grid layout, limited card width to 320px and corrected cart count endpoint (PR store-grid-js-fix).
 - Mejorada accesibilidad del marketplace: botones con íconos tienen title, campos de dirección con placeholder y overlays usan role="button" (PR accessibility-html-fix).
 - Exposed openProductRequestModal and clearAllFilters on window to avoid ReferenceError when used inline (PR store-js-global-functions).
+- Added note to README explaining how to resolve Fly.io warning about the app not listening on 0.0.0.0:8080 (PR fly-port-doc).
