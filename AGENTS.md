@@ -661,3 +661,6 @@
 - Precios en soles estandarizados y visibles solo si product.price > 0 en plantillas de tienda (PR store-price-standard)
 - Ajustadas reglas de .product-image y contenedor para que las imágenes se mantengan cuadradas con object-fit: cover (PR product-image-square).
 - Importación de macro CSRF añadida en store.html para evitar UndefinedError (PR store-csrf-import-fix).
+- Reviewed redesigned marketplace; tests passed (116) and functionality stable. Suggest optimizing CSS/JS size and modularizing store.js (PR store-design-review).
+- Fixed store.css not loading by using head_extra block and removed stray </meta> tag in store.html (PR store-css-load-fix).
+- Restored product grid layout, limited card width to 320px and corrected cart count endpoint (PR store-grid-js-fix).
