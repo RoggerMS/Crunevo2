@@ -1,1218 +1,493 @@
-
 {% extends 'base.html' %}
 
-{% block title %}Marketplace CRUNEVO{% endblock %}
+{% block title %}🛍️ Tienda CRUNEVO - Marketplace Educativo{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
-<style>
-/* Modern Marketplace Layout */
-.marketplace-hero {
-  background: linear-gradient(135deg, #6366F1 0%, #10B981 100%);
-  color: white;
-  padding: 3rem 0;
-  margin-bottom: 2rem;
-}
-
-.marketplace-hero h1 {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-}
-
-.marketplace-hero p {
-  font-family: 'Inter', sans-serif;
-  font-size: 1.1rem;
-  opacity: 0.9;
-}
-
-/* Grid System */
-@media (max-width: 575.98px) {
-  .product-grid {
-    --bs-gutter-x: 0.5rem;
-  }
-  .product-grid .col {
-    flex: 0 0 auto;
-    width: 50%;
-  }
-}
-
-@media (min-width: 576px) {
-  .product-grid .col {
-    flex: 0 0 auto;
-    width: 33.33333333%;
-  }
-}
-
-@media (min-width: 768px) {
-  .product-grid .col {
-    flex: 0 0 auto;
-    width: 25%;
-  }
-}
-
-@media (min-width: 992px) {
-  .product-grid .col {
-    flex: 0 0 auto;
-    width: 20%;
-  }
-}
-
-/* Sidebar Filters */
-.filter-sidebar {
-  background: #ffffff;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  position: sticky;
-  top: 100px;
-}
-
-.filter-section {
-  margin-bottom: 2rem;
-}
-
-.filter-title {
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #1E293B;
-  margin-bottom: 0.75rem;
-}
-
-.filter-checkbox {
-  margin-bottom: 0.5rem;
-}
-
-.filter-checkbox input[type="checkbox"] {
-  margin-right: 0.5rem;
-}
-
-.price-range {
-  margin-bottom: 1rem;
-}
-
-.btn-apply-filters {
-  background: linear-gradient(135deg, #6366F1, #8B5CF6);
-  border: none;
-  border-radius: 0.75rem;
-  padding: 0.75rem 1.5rem;
-  font-weight: 600;
-  color: white;
-  width: 100%;
-  transition: all 0.2s ease;
-}
-
-.btn-apply-filters:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-}
-
-/* Product Cards */
-.product-card {
-  background: white;
-  border: none;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  transition: all 0.2s ease-in-out;
-  height: 100%;
-  min-height: 320px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.12);
-}
-
-.product-image-container {
-  position: relative;
-  aspect-ratio: 4/3;
-  overflow: hidden;
-  border-radius: 0.5rem 0.5rem 0 0;
-}
-
-.product-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.product-card:hover .product-image {
-  transform: scale(1.05);
-}
-
-.product-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-  z-index: 2;
-}
-
-.badge-new {
-  background: linear-gradient(135deg, #10B981, #059669);
-  color: white;
-}
-
-.badge-popular {
-  background: linear-gradient(135deg, #EF4444, #DC2626);
-  color: white;
-}
-
-.badge-offer {
-  background: linear-gradient(135deg, #F59E0B, #EAB308);
-  color: white;
-}
-
-.product-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.product-card:hover .product-overlay {
-  opacity: 1;
-}
-
-.product-info {
-  padding: 1rem;
-}
-
-.product-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #1E293B;
-  margin-bottom: 0.5rem;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.product-price {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #10B981;
-  margin-bottom: 0.5rem;
-}
-
-.product-rating {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.75rem;
-}
-
-.product-rating .stars {
-  color: #F59E0B;
-  margin-right: 0.5rem;
-}
-
-.product-rating .rating-count {
-  font-size: 0.8rem;
-  color: #64748B;
-}
-
-.product-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-quick-view {
-  flex: 1;
-  background: #6366F1;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.5rem;
-  color: white;
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.btn-quick-view:hover {
-  background: #5855EB;
-  color: white;
-}
-
-.btn-add-cart {
-  background: #10B981;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  color: white;
-  transition: all 0.2s ease;
-}
-
-.btn-add-cart:hover {
-  background: #059669;
-  color: white;
-}
-
-/* Featured Products */
-.featured-section {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(16, 185, 129, 0.05));
-  border-radius: 1rem;
-  padding: 2rem;
-  margin-bottom: 3rem;
-}
-
-.featured-carousel {
-  display: flex;
-  gap: 1rem;
-  overflow-x: auto;
-  padding-bottom: 1rem;
-  scrollbar-width: thin;
-  scrollbar-color: #6366F1 transparent;
-}
-
-.featured-card {
-  min-width: 200px;
-  flex-shrink: 0;
-}
-
-/* Category Filters */
-.category-filters {
-  background: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.category-btn {
-  background: transparent;
-  border: 2px solid #E2E8F0;
-  border-radius: 2rem;
-  padding: 0.5rem 1rem;
-  margin: 0.25rem;
-  color: #64748B;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.category-btn:hover,
-.category-btn.active {
-  background: #6366F1;
-  border-color: #6366F1;
-  color: white;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 991.98px) {
-  .filter-sidebar {
-    display: none;
-  }
-  
-  .mobile-filter-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-    background: #6366F1;
-    border: none;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    color: white;
-    font-size: 1.2rem;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-  }
-}
-
-/* Request Product Floating Button */
-.btn-request-product {
-  position: fixed;
-  bottom: 24px;
-  left: 24px;
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #F59E0B, #EAB308);
-  border: none;
-  border-radius: 50%;
-  color: white;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-  z-index: 999;
-  transition: all 0.2s ease;
-}
-
-.btn-request-product:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
-}
-
-/* Loading States */
-.loading-spinner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 3rem;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #E2E8F0;
-  border-top: 4px solid #6366F1;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Dark Mode Support */
-[data-bs-theme="dark"] .product-card {
-  background: #334155;
-  border: 1px solid #475569;
-}
-
-[data-bs-theme="dark"] .product-title {
-  color: #F1F5F9;
-}
-
-[data-bs-theme="dark"] .filter-sidebar {
-  background: #334155;
-  border: 1px solid #475569;
-}
-
-[data-bs-theme="dark"] .filter-title {
-  color: #F1F5F9;
-}
-
-[data-bs-theme="dark"] .category-filters {
-  background: #334155;
-  border: 1px solid #475569;
-}
-</style>
 {% endblock %}
 
 {% block content %}
-<div class="store-container">
+<div class="store-wrapper">
   <!-- Hero Section -->
-  <div class="marketplace-hero">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-8">
+  <section class="store-hero">
+    <div class="container-fluid">
+      <div class="hero-content">
+        <div class="hero-text">
           <h1>🛍️ Marketplace CRUNEVO</h1>
-          <p>Descubre recursos educativos, plantillas, cursos y más para potenciar tu aprendizaje</p>
+          <p>Productos educativos y accesorios para estudiantes. ¡Canjea con Crolars o compra directamente!</p>
         </div>
-        <div class="col-lg-4 text-end">
-          <div class="d-flex align-items-center justify-content-end">
-            <i class="bi bi-coin me-2 fs-3"></i>
-            <span class="fs-4 fw-bold">{{ current_user.credits }} Crolars</span>
+        <div class="hero-balance">
+          <div class="balance-card">
+            <i class="bi bi-coin"></i>
+            <div class="balance-info">
+              <span class="balance-amount">{{ current_user.credits }}</span>
+              <span class="balance-label">Crolars</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="container-fluid px-3">
-    <div class="row g-4">
-      <!-- Desktop Sidebar Filters -->
-      <div class="col-lg-3 d-none d-lg-block">
-        <div class="filter-sidebar">
-          <form id="filterForm">
-            <!-- Search -->
-            <div class="filter-section">
-              <h6 class="filter-title">Buscar</h6>
-              <div class="search-input">
-                <i class="bi bi-search search-icon"></i>
-                <input type="text" class="form-control" placeholder="Buscar productos..." id="searchInput">
-              </div>
+  <!-- Featured Products Carousel -->
+  {% if featured_products %}
+  <section class="featured-section">
+    <div class="container-fluid">
+      <h2 class="section-title">⭐ Productos Destacados</h2>
+      <div class="featured-carousel">
+        {% for product in featured_products %}
+        <div class="featured-card">
+          <div class="featured-image">
+            <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}" 
+                 alt="{{ product.name }}" loading="lazy">
+            {% if product.is_new %}
+            <span class="badge badge-new">NUEVO</span>
+            {% endif %}
+            {% if product.price == 0 and product.price_credits == 0 %}
+            <span class="badge badge-free">GRATIS</span>
+            {% endif %}
+          </div>
+          <div class="featured-info">
+            <h3>{{ product.name }}</h3>
+            <div class="featured-prices">
+              {% if product.price > 0 %}
+              <span class="price-soles">S/ {{ "%.2f"|format(product.price|float) }}</span>
+              {% endif %}
+              {% if product.price_credits %}
+              <span class="price-crolars">{{ product.price_credits }} Crolars</span>
+              {% endif %}
             </div>
-
-            <!-- Categories -->
-            <div class="filter-section">
-              <h6 class="filter-title">Categorías</h6>
-              {% for category in categories %}
-              <div class="filter-checkbox">
-                <input type="checkbox" name="categories" value="{{ category }}" id="cat-{{ loop.index }}">
-                <label for="cat-{{ loop.index }}">
-                  <i class="bi bi-folder me-2"></i>{{ category }}
-                </label>
-              </div>
-              {% endfor %}
-            </div>
-
-            <!-- Price Range -->
-            <div class="filter-section">
-              <h6 class="filter-title">Rango de Precio</h6>
-              <div class="price-range">
-                <label for="priceRange" class="form-label">Hasta {{ max_price or 100 }} Crolars</label>
-                <input type="range" class="form-range" id="priceRange" min="0" max="{{ max_price or 100 }}" value="{{ max_price or 100 }}">
-                <div class="d-flex justify-content-between">
-                  <small>0</small>
-                  <small>{{ max_price or 100 }}</small>
-                </div>
-              </div>
-            </div>
-
-            <!-- Educational Tags -->
-            <div class="filter-section">
-              <h6 class="filter-title">Tipo de Producto</h6>
-              <div class="filter-checkbox">
-                <input type="checkbox" name="tags" value="notes" id="tag-notes">
-                <label for="tag-notes">
-                  <i class="bi bi-journal-text me-2"></i>Apuntes
-                </label>
-              </div>
-              <div class="filter-checkbox">
-                <input type="checkbox" name="tags" value="templates" id="tag-templates">
-                <label for="tag-templates">
-                  <i class="bi bi-file-earmark-text me-2"></i>Plantillas
-                </label>
-              </div>
-              <div class="filter-checkbox">
-                <input type="checkbox" name="tags" value="courses" id="tag-courses">
-                <label for="tag-courses">
-                  <i class="bi bi-play-circle me-2"></i>Cursos
-                </label>
-              </div>
-              <div class="filter-checkbox">
-                <input type="checkbox" name="tags" value="materials" id="tag-materials">
-                <label for="tag-materials">
-                  <i class="bi bi-box me-2"></i>Materiales
-                </label>
-              </div>
-            </div>
-
-            <!-- Special Tags -->
-            <div class="filter-section">
-              <h6 class="filter-title">Especiales</h6>
-              <div class="filter-checkbox">
-                <input type="checkbox" name="tags" value="premium" id="tag-premium">
-                <label for="tag-premium">
-                  <i class="bi bi-star-fill me-2"></i>Premium
-                </label>
-              </div>
-              <div class="filter-checkbox">
-                <input type="checkbox" name="tags" value="offers" id="tag-offers">
-                <label for="tag-offers">
-                  <i class="bi bi-fire me-2"></i>Ofertas
-                </label>
-              </div>
-              <div class="filter-checkbox">
-                <input type="checkbox" name="tags" value="new" id="tag-new">
-                <label for="tag-new">
-                  <i class="bi bi-lightning me-2"></i>Nuevos
-                </label>
-              </div>
-            </div>
-
-            <!-- Stock -->
-            <div class="filter-section">
-              <h6 class="filter-title">Disponibilidad</h6>
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="onlyAvailable">
-                <label class="form-check-label" for="onlyAvailable">
-                  Solo disponibles
-                </label>
-              </div>
-            </div>
-
-            <button type="submit" class="btn-apply-filters">
-              <i class="bi bi-funnel me-2"></i>Aplicar Filtros
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <!-- Main Content -->
-      <div class="col-lg-9">
-        <!-- Featured Products -->
-        {% if featured_products %}
-        <div class="featured-section">
-          <h3 class="fw-bold mb-3">
-            <i class="bi bi-star-fill me-2"></i>Productos Destacados
-          </h3>
-          <div class="featured-carousel">
-            {% for product in featured_products %}
-            <div class="featured-card">
-              <div class="product-card">
-                <div class="product-image-container">
-                  <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}" 
-                       class="product-image" alt="{{ product.name }}">
-                  
-                  {% if product.is_new %}
-                  <div class="product-badge badge-new">NUEVO</div>
-                  {% elif product.is_popular %}
-                  <div class="product-badge badge-popular">POPULAR</div>
-                  {% elif product.is_featured %}
-                  <div class="product-badge badge-premium">DESTACADO</div>
-                  {% endif %}
-
-                  <button class="wishlist-btn" onclick="toggleFavorite({{ product.id }}, this)">
-                    <i class="bi bi-heart"></i>
-                  </button>
-                </div>
-                
-                <div class="product-info">
-                  <div class="product-category">{{ product.category or 'Educación' }}</div>
-                  <h6 class="product-title">{{ product.name }}</h6>
-                  
-                  <div class="product-pricing">
-                    <div class="product-price">
-                      {% if product.price_credits %}
-                        {{ product.price_credits }} Crolars
-                      {% else %}
-                        S/ {{ product.price }}
-                      {% endif %}
-                    </div>
-                    {% if product.price_credits and product.price %}
-                    <div class="price-alternative">o S/ {{ product.price }}</div>
-                    {% endif %}
-                  </div>
-
-                  <div class="product-actions">
-                    <button class="btn-add-cart" onclick="addToCart({{ product.id }})">
-                      <i class="bi bi-cart-plus me-2"></i>Agregar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
+            <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn-featured">
+              Ver Producto
+            </a>
           </div>
         </div>
-        {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
 
-        <!-- Category Quick Filters -->
-        <div class="category-filters">
-          <h5 class="fw-bold mb-3">
-            <i class="bi bi-grid me-2"></i>Explorar por Categoría
-          </h5>
-          <div class="d-flex flex-wrap">
-            <button class="category-btn active" data-category="all">
-              <i class="bi bi-grid-3x3-gap"></i>Todos
-            </button>
-            <button class="category-btn" data-category="education">
-              <i class="bi bi-book"></i>Educación
-            </button>
-            <button class="category-btn" data-category="technology">
-              <i class="bi bi-laptop"></i>Tecnología
-            </button>
-            <button class="category-btn" data-category="templates">
-              <i class="bi bi-file-earmark"></i>Plantillas
-            </button>
-            <button class="category-btn" data-category="courses">
-              <i class="bi bi-play-circle"></i>Cursos
-            </button>
-            <button class="category-btn" data-category="premium">
-              <i class="bi bi-star"></i>Premium
-            </button>
+  <!-- Main Store Content -->
+  <div class="container-fluid store-main">
+    <div class="store-layout">
+      <!-- Sidebar Filters -->
+      <aside class="store-sidebar">
+        <div class="filters-container">
+          <h3>🔍 Filtros</h3>
+
+          <!-- Search -->
+          <div class="filter-group">
+            <label class="filter-label">Buscar producto</label>
+            <div class="search-box">
+              <i class="bi bi-search"></i>
+              <input type="text" id="productSearch" placeholder="Buscar..." class="search-input">
+            </div>
+          </div>
+
+          <!-- Categories -->
+          <div class="filter-group">
+            <label class="filter-label">Categorías</label>
+            <div class="category-grid">
+              <a href="{{ url_for('store.store_index') }}" 
+                 class="category-item {{ 'active' if not categoria else '' }}">
+                <i class="bi bi-grid"></i>
+                <span>Todos</span>
+              </a>
+              {% for cat in categories %}
+              <a href="{{ url_for('store.store_index', categoria=cat) }}" 
+                 class="category-item {{ 'active' if categoria == cat else '' }}">
+                {% if cat == 'Tecnología' %}
+                <i class="bi bi-phone"></i>
+                {% elif cat == 'Accesorios' %}
+                <i class="bi bi-bag"></i>
+                {% elif cat == 'Cuadernos' %}
+                <i class="bi bi-journal"></i>
+                {% elif cat == 'Comestibles' %}
+                <i class="bi bi-cup-hot"></i>
+                {% else %}
+                <i class="bi bi-box"></i>
+                {% endif %}
+                <span>{{ cat }}</span>
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Quick Filters -->
+          <div class="filter-group">
+            <label class="filter-label">Filtros rápidos</label>
+            <div class="quick-filters">
+              <a href="{{ url_for('store.store_index', free=1) }}" class="quick-filter">
+                <i class="bi bi-gift"></i> Gratis
+              </a>
+              <a href="{{ url_for('store.store_index', top=1) }}" class="quick-filter">
+                <i class="bi bi-fire"></i> Populares
+              </a>
+              <a href="{{ url_for('store.view_favorites') }}" class="quick-filter">
+                <i class="bi bi-heart"></i> Favoritos
+              </a>
+            </div>
+          </div>
+
+          <!-- Cart Summary -->
+          <div class="filter-group cart-summary">
+            <a href="{{ url_for('store.view_cart') }}" class="cart-link">
+              <i class="bi bi-cart3"></i>
+              <div class="cart-info">
+                <span class="cart-title">Mi Carrito</span>
+                <span class="cart-count" id="cartCount">0</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Products Grid -->
+      <main class="products-main">
+        <div class="products-header">
+          <div class="results-info">
+            <h2>
+              {% if categoria %}
+              {{ categoria }}
+              {% elif request.args.get('free') %}
+              Productos Gratuitos
+              {% elif request.args.get('top') %}
+              Más Populares
+              {% else %}
+              Todos los Productos
+              {% endif %}
+            </h2>
+            <span class="results-count">{{ products|length }} productos encontrados</span>
+          </div>
+
+          <!-- Sort Options -->
+          <div class="sort-options">
+            <select id="sortSelect" class="sort-select">
+              <option value="featured">Destacados</option>
+              <option value="price-low">Precio: Menor a Mayor</option>
+              <option value="price-high">Precio: Mayor a Menor</option>
+              <option value="newest">Más Nuevos</option>
+              <option value="popular">Más Populares</option>
+            </select>
           </div>
         </div>
 
         <!-- Products Grid -->
-        <div class="product-grid" id="productsGrid">
+        <div class="products-grid" id="productsGrid">
           {% for product in products %}
-          <div class="product-item" 
-               data-category="{{ product.category or 'education' }}"
-               data-price="{{ product.price_credits or product.price }}"
-               data-stock="{{ product.stock }}">
-            <div class="product-card">
-              <div class="product-image-container">
-                <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}" 
-                     class="product-image" alt="{{ product.name }}">
-                
-                {% if product.is_new %}
-                <div class="product-badge badge-new">NUEVO</div>
-                {% elif product.is_popular %}
-                <div class="product-badge badge-popular">POPULAR</div>
-                {% elif product.discount_percent %}
-                <div class="product-badge badge-offer">-{{ product.discount_percent }}%</div>
-                {% elif product.is_featured %}
-                <div class="product-badge badge-premium">PREMIUM</div>
-                {% endif %}
+          <div class="product-card" data-category="{{ product.category }}" data-price="{{ product.price }}" data-credits="{{ product.price_credits or 0 }}">
+            <div class="product-image-container">
+              <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}" 
+                   alt="{{ product.name }}" 
+                   class="product-image"
+                   loading="lazy">
 
-                <button class="wishlist-btn {{ 'active' if product.id in favorite_ids else '' }}" 
-                        onclick="toggleFavorite({{ product.id }}, this)">
+              <!-- Product Badges -->
+              <div class="product-badges">
+                {% if product.is_new %}
+                <span class="badge badge-new">NUEVO</span>
+                {% endif %}
+                {% if product.is_popular %}
+                <span class="badge badge-popular">POPULAR</span>
+                {% endif %}
+                {% if product.stock < 5 and product.stock > 0 %}
+                <span class="badge badge-low-stock">¡Últimas {{ product.stock }}!</span>
+                {% endif %}
+                {% if product.stock == 0 %}
+                <span class="badge badge-out-stock">AGOTADO</span>
+                {% endif %}
+              </div>
+
+              <!-- Favorite Button -->
+              <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="favorite-form">
+                {{ csrf.csrf_field() }}
+                <button type="submit" class="favorite-btn {{ 'active' if product.id in favorite_ids else '' }}">
                   <i class="bi bi-heart{{ '-fill' if product.id in favorite_ids else '' }}"></i>
                 </button>
-              </div>
+              </form>
 
-              <div class="product-info">
-                <div class="product-category">{{ product.category or 'Educación' }}</div>
-                <h6 class="product-title">{{ product.name }}</h6>
-                
-                {% if ratings.get(product.id) %}
-                <div class="product-rating">
-                  <div class="stars">
-                    {% for i in range(5) %}
-                      {% if i < ratings[product.id]|round %}
-                        <i class="bi bi-star-fill"></i>
-                      {% else %}
-                        <i class="bi bi-star"></i>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                  <span class="rating-count">({{ product.review_count or 0 }})</span>
-                </div>
-                {% endif %}
-
-                <div class="product-pricing">
-                  <div class="product-price">
-                    {% if product.price_credits %}
-                      {{ product.price_credits }} Crolars
-                    {% else %}
-                      S/ {{ product.price }}
-                    {% endif %}
-                  </div>
-                  {% if product.price_credits and product.price %}
-                  <div class="price-alternative">o S/ {{ product.price }}</div>
-                  {% endif %}
-                </div>
-
-                {% if product.stock < 1 %}
-                <div class="stock-indicator stock-out">
-                  <i class="bi bi-x-circle me-1"></i>Sin stock
-                </div>
-                {% elif product.stock < 5 %}
-                <div class="stock-indicator stock-low">
-                  <i class="bi bi-exclamation-circle me-1"></i>Últimas {{ product.stock }} unidades
-                </div>
-                {% elif product.stock < 10 %}
-                <div class="stock-indicator stock-medium">
-                  <i class="bi bi-exclamation-triangle me-1"></i>Pocas unidades
-                </div>
-                {% else %}
-                <div class="stock-indicator stock-high">
-                  <i class="bi bi-check-circle me-1"></i>Disponible
-                </div>
-                {% endif %}
-
-                <div class="product-actions">
-                  {% if product.stock > 0 and product.id not in purchased_ids %}
-                  <button class="btn-add-cart" onclick="addToCart({{ product.id }})">
-                    <i class="bi bi-cart-plus me-2"></i>Agregar
-                  </button>
-                  <button class="btn-quick-view" onclick="viewProduct({{ product.id }})">
-                    <i class="bi bi-eye"></i>
-                  </button>
-                  {% elif product.id in purchased_ids %}
-                  <button class="btn-quick-view w-100" onclick="viewProduct({{ product.id }})">
-                    <i class="bi bi-check-circle me-2"></i>Ya tienes este producto
-                  </button>
-                  {% else %}
-                  <button class="btn-quick-view w-100" disabled>
-                    <i class="bi bi-x-circle me-2"></i>Sin stock
-                  </button>
-                  {% endif %}
-                </div>
+              <!-- Quick View Overlay -->
+              <div class="product-overlay">
+                <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn-quick-view">
+                  <i class="bi bi-eye"></i> Ver Detalles
+                </a>
               </div>
             </div>
+
+            <div class="product-info">
+              <h3 class="product-name">{{ product.name }}</h3>
+
+              {% if product.description %}
+              <p class="product-description">{{ product.description[:60] }}{% if product.description|length > 60 %}...{% endif %}</p>
+              {% endif %}
+
+              <div class="product-prices">
+                {% if product.price > 0 %}
+                <div class="price-soles">
+                  <i class="bi bi-currency-dollar"></i>
+                  <span>S/ {{ "%.2f"|format(product.price|float) }}</span>
+                </div>
+                {% endif %}
+                {% if product.price_credits %}
+                <div class="price-crolars">
+                  <i class="bi bi-coin"></i>
+                  <span>{{ product.price_credits }} Crolars</span>
+                </div>
+                {% endif %}
+                {% if product.price == 0 and not product.price_credits %}
+                <div class="price-free">
+                  <i class="bi bi-gift"></i>
+                  <span>GRATIS</span>
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Stock Info -->
+              {% if product.stock > 0 %}
+              <div class="stock-info">
+                <i class="bi bi-check-circle text-success"></i>
+                <span>{{ product.stock }} disponibles</span>
+              </div>
+              {% else %}
+              <div class="stock-info out-of-stock">
+                <i class="bi bi-x-circle text-danger"></i>
+                <span>Sin stock</span>
+              </div>
+              {% endif %}
+
+              <!-- Action Buttons -->
+              <div class="product-actions">
+                {% if product.stock > 0 %}
+                  {% if product.price_credits and (not product.credits_only or product.price == 0) %}
+                  <form method="post" action="{{ url_for('store.redeem_product', product_id=product.id) }}" class="action-form">
+                    {{ csrf.csrf_field() }}
+                    <button type="submit" class="btn-crolars" 
+                            {% if current_user.credits < product.price_credits %}disabled{% endif %}>
+                      <i class="bi bi-coin"></i>
+                      {% if current_user.credits >= product.price_credits %}
+                      Canjear
+                      {% else %}
+                      Crolars insuficientes
+                      {% endif %}
+                    </button>
+                  </form>
+                  {% endif %}
+
+                  {% if product.price > 0 and not product.credits_only %}
+                  <form method="post" action="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="action-form">
+                    {{ csrf.csrf_field() }}
+                    <button type="submit" class="btn-cart">
+                      <i class="bi bi-cart-plus"></i>
+                      Agregar
+                    </button>
+                  </form>
+                  {% endif %}
+
+                  {% if product.price == 0 and not product.price_credits %}
+                  <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn-free">
+                    <i class="bi bi-download"></i>
+                    Obtener Gratis
+                  </a>
+                  {% endif %}
+                {% else %}
+                <button class="btn-disabled" disabled>
+                  <i class="bi bi-x-circle"></i>
+                  Sin Stock
+                </button>
+                {% endif %}
+              </div>
+
+              <!-- Purchased Indicator -->
+              {% if product.id in purchased_ids %}
+              <div class="purchased-indicator">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>Ya adquirido</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% else %}
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="bi bi-box-seam"></i>
+            </div>
+            <h3>No hay productos disponibles</h3>
+            <p>No se encontraron productos que coincidan con tus filtros.</p>
+            <a href="{{ url_for('store.store_index') }}" class="btn-primary">Ver todos los productos</a>
           </div>
           {% endfor %}
         </div>
 
-        <!-- Load More -->
-        <div class="text-center mt-5">
-          <button class="btn btn-outline-primary btn-lg" id="loadMore" style="display: none;">
-            <i class="bi bi-arrow-down-circle me-2"></i>Cargar Más Productos
+        <!-- Load More / Pagination -->
+        {% if products|length >= 20 %}
+        <div class="load-more-section">
+          <button class="btn-load-more" id="loadMoreBtn">
+            <i class="bi bi-arrow-down-circle"></i>
+            Cargar más productos
           </button>
         </div>
+        {% endif %}
+      </main>
+    </div>
+  </div>
 
-        <!-- Loading Spinner -->
-        <div class="loading-spinner" id="loadingSpinner" style="display: none;">
-          <div class="spinner"></div>
-        </div>
-      </div>
+  <!-- Floating Cart Button (Mobile) -->
+  <div class="floating-cart d-lg-none">
+    <a href="{{ url_for('store.view_cart') }}" class="floating-cart-btn">
+      <i class="bi bi-cart3"></i>
+      <span class="cart-badge" id="mobileCartCount">0</span>
+    </a>
+  </div>
+</div>
+
+<!-- Toast Notifications -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="cartToast" class="toast" role="alert">
+    <div class="toast-header">
+      <i class="bi bi-cart-check text-success me-2"></i>
+      <strong class="me-auto">Carrito</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body">
+      Producto agregado al carrito
     </div>
   </div>
 </div>
 
-<!-- Mobile Filter Button -->
-<button class="mobile-filter-btn d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#mobileFilters">
-  <i class="bi bi-funnel"></i>
-</button>
+{% endblock %}
 
-<!-- Request Product Button -->
-<button class="btn-request-product" data-bs-toggle="modal" data-bs-target="#requestProductModal">
-  <i class="bi bi-plus-lg"></i>
-</button>
-
-<!-- Mobile Filters Offcanvas -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileFilters">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title">Filtros</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-  </div>
-  <div class="offcanvas-body">
-    <!-- Same filter content as sidebar -->
-    <form id="mobileFilterForm">
-      <!-- Categories -->
-      <div class="filter-section">
-        <h6 class="filter-title">Categorías</h6>
-        {% for category in categories %}
-        <div class="filter-checkbox">
-          <input type="checkbox" name="categories" value="{{ category }}" id="mobile-cat-{{ loop.index }}">
-          <label for="mobile-cat-{{ loop.index }}">{{ category }}</label>
-        </div>
-        {% endfor %}
-      </div>
-
-      <!-- Price Range -->
-      <div class="filter-section">
-        <h6 class="filter-title">Rango de Precio</h6>
-        <div class="price-range">
-          <label for="mobilePriceRange" class="form-label">Hasta {{ max_price or 100 }} Crolars</label>
-          <input type="range" class="form-range" id="mobilePriceRange" min="0" max="{{ max_price or 100 }}" value="{{ max_price or 100 }}">
-        </div>
-      </div>
-
-      <button type="submit" class="btn-apply-filters">
-        <i class="bi bi-funnel me-2"></i>Aplicar Filtros
-      </button>
-    </form>
-  </div>
-</div>
-
-<!-- Request Product Modal -->
-<div class="modal fade" id="requestProductModal" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">
-          <i class="bi bi-plus-circle me-2"></i>Solicitar Producto
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <form id="requestProductForm">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label for="productName" class="form-label">Nombre del Producto</label>
-              <input type="text" class="form-control" id="productName" required>
-            </div>
-            <div class="col-md-6">
-              <label for="productCategory" class="form-label">Categoría</label>
-              <select class="form-select" id="productCategory" required>
-                <option value="">Seleccionar...</option>
-                <option value="education">Educación</option>
-                <option value="technology">Tecnología</option>
-                <option value="templates">Plantillas</option>
-                <option value="courses">Cursos</option>
-              </select>
-            </div>
-            <div class="col-12">
-              <label for="productDescription" class="form-label">Descripción</label>
-              <textarea class="form-control" id="productDescription" rows="3" required></textarea>
-            </div>
-            <div class="col-md-6">
-              <label for="productImage" class="form-label">Imagen (opcional)</label>
-              <input type="file" class="form-control" id="productImage" accept="image/*">
-            </div>
-            <div class="col-md-6">
-              <label for="suggestedPrice" class="form-label">Precio Sugerido (Crolars)</label>
-              <input type="number" class="form-control" id="suggestedPrice" min="0">
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary" onclick="submitProductRequest()">
-          <i class="bi bi-send me-2"></i>Enviar Solicitud
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
+{% block extra_js %}
 <script>
-// Enhanced marketplace functionality
+// Store functionality
 document.addEventListener('DOMContentLoaded', function() {
-  initializeMarketplace();
+    // Update cart count
+    updateCartCount();
+
+    // Search functionality
+    const searchInput = document.getElementById('productSearch');
+    const productsGrid = document.getElementById('productsGrid');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            filterProducts();
+        });
+    }
+
+    // Sort functionality
+    const sortSelect = document.getElementById('sortSelect');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            sortProducts(this.value);
+        });
+    }
+
+    // Add to cart forms
+    document.querySelectorAll('.action-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (this.action.includes('add_to_cart')) {
+                e.preventDefault();
+                addToCart(this);
+            }
+        });
+    });
+
+    // Favorite forms
+    document.querySelectorAll('.favorite-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            toggleFavorite(this);
+        });
+    });
 });
 
-function initializeMarketplace() {
-  // Category filtering
-  const categoryBtns = document.querySelectorAll('.category-btn');
-  const productItems = document.querySelectorAll('.product-item');
+function updateCartCount() {
+    fetch('/store/api/cart_count')
+        .then(response => response.json())
+        .then(data => {
+            const counts = document.querySelectorAll('#cartCount, #mobileCartCount');
+            counts.forEach(el => el.textContent = data.count);
+        });
+}
 
-  categoryBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      // Update active state
-      categoryBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+function addToCart(form) {
+    const formData = new FormData(form);
 
-      // Filter products with animation
-      const category = btn.dataset.category;
-      filterProductsWithAnimation(category);
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        updateCartCount();
+        showToast('cartToast');
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
-  });
+}
 
-  // Search functionality
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) {
-    let searchTimeout;
-    searchInput.addEventListener('input', (e) => {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => {
-        searchProducts(e.target.value);
-      }, 300);
+function toggleFavorite(form) {
+    const button = form.querySelector('.favorite-btn');
+    const icon = button.querySelector('i');
+
+    fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form)
+    })
+    .then(response => {
+        if (response.ok) {
+            button.classList.toggle('active');
+            icon.className = button.classList.contains('active') ? 
+                'bi bi-heart-fill' : 'bi bi-heart';
+        }
     });
-  }
-
-  // Filter form submission
-  document.getElementById('filterForm')?.addEventListener('submit', handleFilterSubmit);
-  document.getElementById('mobileFilterForm')?.addEventListener('submit', handleFilterSubmit);
-
-  // Price range updates
-  document.getElementById('priceRange')?.addEventListener('input', updatePriceDisplay);
-  document.getElementById('mobilePriceRange')?.addEventListener('input', updatePriceDisplay);
-
-  // Initialize animations
-  animateProductsOnLoad();
 }
 
-function filterProductsWithAnimation(category) {
-  const productItems = document.querySelectorAll('.product-item');
-  
-  // First, fade out all items
-  productItems.forEach((item, index) => {
-    item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-    item.style.opacity = '0';
-    item.style.transform = 'translateY(10px)';
-  });
-  
-  // Then show/hide and animate relevant items
-  setTimeout(() => {
-    productItems.forEach((item, index) => {
-      const itemCategory = item.dataset.category;
-      const show = category === 'all' || itemCategory === category;
-      
-      if (show) {
-        item.style.display = 'block';
-        setTimeout(() => {
-          item.style.opacity = '1';
-          item.style.transform = 'translateY(0)';
-        }, index * 50); // Staggered animation
-      } else {
-        item.style.display = 'none';
-      }
+function filterProducts() {
+    const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+    const products = document.querySelectorAll('.product-card');
+
+    products.forEach(product => {
+        const name = product.querySelector('.product-name').textContent.toLowerCase();
+        const description = product.querySelector('.product-description')?.textContent.toLowerCase() || '';
+
+        if (name.includes(searchTerm) || description.includes(searchTerm)) {
+            product.style.display = 'block';
+        } else {
+            product.style.display = 'none';
+        }
     });
-  }, 300);
 }
 
-function searchProducts(query) {
-  const productItems = document.querySelectorAll('.product-item');
-  const searchTerm = query.toLowerCase().trim();
-  
-  productItems.forEach(item => {
-    const title = item.querySelector('.product-title').textContent.toLowerCase();
-    const category = item.querySelector('.product-category').textContent.toLowerCase();
-    const matches = title.includes(searchTerm) || category.includes(searchTerm);
-    
-    if (searchTerm === '' || matches) {
-      item.style.display = 'block';
-      item.style.opacity = '1';
-      item.style.transform = 'translateY(0)';
-    } else {
-      item.style.display = 'none';
-    }
-  });
-}
-
-function animateProductsOnLoad() {
-  const productItems = document.querySelectorAll('.product-item');
-  
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, index) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => {
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0)';
-        }, index * 100);
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  
-  productItems.forEach(item => {
-    item.style.opacity = '0';
-    item.style.transform = 'translateY(20px)';
-    item.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    observer.observe(item);
-  });
-}
-
-function handleFilterSubmit(e) {
-  e.preventDefault();
-  
-  // Collect filter values
-  const formData = new FormData(e.target);
-  const filters = {
-    categories: formData.getAll('categories'),
-    tags: formData.getAll('tags'),
-    priceMax: document.getElementById('priceRange')?.value || document.getElementById('mobilePriceRange')?.value,
-    onlyAvailable: formData.get('onlyAvailable') === 'on'
-  };
-
-  // Apply filters
-  applyFilters(filters);
-  
-  // Close mobile offcanvas if open
-  const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('mobileFilters'));
-  if (offcanvas) {
-    offcanvas.hide();
-  }
-}
-
-function applyFilters(filters) {
-  const productItems = document.querySelectorAll('.product-item');
-  
-  productItems.forEach(item => {
-    let show = true;
-    
-    // Category filter
-    if (filters.categories.length > 0) {
-      const itemCategory = item.dataset.category;
-      show = show && filters.categories.includes(itemCategory);
-    }
-    
-    // Price filter
-    if (filters.priceMax) {
-      const itemPrice = parseFloat(item.dataset.price) || 0;
-      show = show && itemPrice <= parseFloat(filters.priceMax);
-    }
-    
-    // Stock filter
-    if (filters.onlyAvailable) {
-      const itemStock = parseInt(item.dataset.stock) || 0;
-      show = show && itemStock > 0;
-    }
-    
-    // Apply visibility
-    item.style.display = show ? 'block' : 'none';
-    if (show) {
-      item.style.animation = 'fadeInUp 0.5s ease';
-    }
-  });
-}
-
-function updatePriceDisplay(e) {
-  const value = e.target.value;
-  const label = e.target.previousElementSibling;
-  if (label) {
-    label.textContent = `Hasta ${value} Crolars`;
-  }
-}
-
-function viewProduct(productId) {
-  window.location.href = `/store/product/${productId}`;
-}
-
-function addToCart(productId) {
-  // Add visual feedback
-  const button = event.target.closest('.btn-add-cart');
-  const originalText = button.innerHTML;
-  button.innerHTML = '<i class="bi bi-hourglass-split"></i>';
-  button.disabled = true;
-
-  fetch(`/store/add/${productId}`, {
-    method: 'POST',
-    headers: {
-      'X-Requested-With': 'XMLHttpRequest',
-      'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
-    }
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.count !== undefined) {
-      // Success animation
-      button.innerHTML = '<i class="bi bi-check-circle"></i>';
-      button.style.background = 'var(--success-green)';
-      
-      showToast('Producto agregado al carrito', 'success');
-      updateCartBadge(data.count);
-      
-      // Reset button after animation
-      setTimeout(() => {
-        button.innerHTML = originalText;
-        button.style.background = '';
-        button.disabled = false;
-      }, 2000);
-    } else {
-      button.innerHTML = originalText;
-      button.disabled = false;
-      showToast('Error al agregar al carrito', 'error');
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    button.innerHTML = originalText;
-    button.disabled = false;
-    showToast('Error de conexión', 'error');
-  });
-}
-
-function toggleFavorite(productId, button) {
-  const icon = button.querySelector('i');
-  const isActive = button.classList.contains('active');
-  
-  // Optimistic UI update
-  if (isActive) {
-    button.classList.remove('active');
-    icon.className = 'bi bi-heart';
-  } else {
-    button.classList.add('active');
-    icon.className = 'bi bi-heart-fill';
-    // Add pulse animation
-    button.style.animation = 'pulse 0.6s ease';
-    setTimeout(() => button.style.animation = '', 600);
-  }
-
-  fetch(`/store/favorite/${productId}`, {
-    method: 'POST',
-    headers: {
-      'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
-    }
-  })
-  .then(response => {
-    if (response.ok) {
-      showToast(
-        isActive ? 'Producto eliminado de favoritos' : 'Producto agregado a favoritos', 
-        'success'
-      );
-    } else {
-      // Revert UI changes if request failed
-      if (isActive) {
-        button.classList.add('active');
-        icon.className = 'bi bi-heart-fill';
-      } else {
-        button.classList.remove('active');
-        icon.className = 'bi bi-heart';
-      }
-      showToast('Error al actualizar favoritos', 'error');
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    // Revert UI changes
-    if (isActive) {
-      button.classList.add('active');
-      icon.className = 'bi bi-heart-fill';
-    } else {
-      button.classList.remove('active');
-      icon.className = 'bi bi-heart';
-    }
-    showToast('Error de conexión', 'error');
-  });
-}
-
-function submitProductRequest() {
-  const form = document.getElementById('requestProductForm');
-  const formData = new FormData(form);
-  
-  // Show loading state
-  const submitBtn = event.target;
-  const originalText = submitBtn.innerHTML;
-  submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Enviando...';
-  submitBtn.disabled = true;
-
-  // Simulate API call (replace with actual endpoint)
-  setTimeout(() => {
-    showToast('Solicitud enviada correctamente', 'success');
-    
-    // Reset form and close modal
-    form.reset();
-    bootstrap.Modal.getInstance(document.getElementById('requestProductModal')).hide();
-    
-    // Reset button
-    submitBtn.innerHTML = originalText;
-    submitBtn.disabled = false;
-  }, 1500);
-}
-
-function showToast(message, type = 'info') {
-  // Create toast element if it doesn't exist
-  let toastContainer = document.getElementById('toast-container');
-  if (!toastContainer) {
-    toastContainer = document.createElement('div');
-    toastContainer.id = 'toast-container';
-    toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
-    toastContainer.style.zIndex = '9999';
-    document.body.appendChild(toastContainer);
-  }
-
-  const toast = document.createElement('div');
-  toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'primary'} border-0`;
-  toast.innerHTML = `
-    <div class="d-flex">
-      <div class="toast-body">
-        <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
-        ${message}
-      </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-    </div>
-  `;
-
-  toastContainer.appendChild(toast);
-  const bsToast = new bootstrap.Toast(toast);
-  bsToast.show();
-
-  // Remove toast after it's hidden
-  toast.addEventListener('hidden.bs.toast', () => {
-    toast.remove();
-  });
-}
-
-function updateCartBadge(count) {
-  const badge = document.querySelector('.cart-badge');
-  if (badge) {
-    badge.textContent = count;
-    badge.style.display = count > 0 ? 'inline' : 'none';
-  }
-}
-
-// Infinite scroll (if needed)
-let isLoading = false;
-let page = 1;
-
-window.addEventListener('scroll', () => {
-  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000 && !isLoading) {
-    loadMoreProducts();
-  }
-});
-
-function loadMoreProducts() {
-  if (isLoading) return;
-  
-  isLoading = true;
-  page++;
-  
-  const spinner = document.getElementById('loadingSpinner');
-  if (spinner) spinner.style.display = 'block';
-
-  // Simulate API call for more products
-  setTimeout(() => {
-    // Add new products to grid
+function sortProducts(sortBy) {
     const grid = document.getElementById('productsGrid');
-    
-    // Reset loading state
-    isLoading = false;
-    if (spinner) spinner.style.display = 'none';
-  }, 1000);
+    const products = Array.from(grid.querySelectorAll('.product-card'));
+
+    products.sort((a, b) => {
+        switch(sortBy) {
+            case 'price-low':
+                return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+            case 'price-high':
+                return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+            case 'newest':
+                return b.querySelector('.badge-new') ? 1 : -1;
+            case 'popular':
+                return b.querySelector('.badge-popular') ? 1 : -1;
+            default:
+                return 0;
+        }
+    });
+
+    products.forEach(product => grid.appendChild(product));
+}
+
+function showToast(toastId) {
+    const toast = new bootstrap.Toast(document.getElementById(toastId));
+    toast.show();
 }
 </script>
 {% endblock %}
