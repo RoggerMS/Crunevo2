@@ -23,6 +23,7 @@ from crunevo.models import (
     AdminLog,
     Product,
     ProductLog,
+    UserActivity,
     FeedItem,
     SiteConfig,
     VerificationRequest,
@@ -157,6 +158,51 @@ def manage_users():
     )
 
     return render_template("admin/manage_users.html", users=users, search=search)
+
+
+@admin_bp.route("/users/<int:user_id>/history")
+def user_activity(user_id):
+    """Display recent activity for a user."""
+    user = User.query.get_or_404(user_id)
+    activities = (
+        UserActivity.query.filter_by(user_id=user.id)
+        .order_by(UserActivity.timestamp.desc())
+        .all()
+    )
+    return render_template(
+        "admin/user_history.html", user=user, activities=activities
+    )
+
+
+@admin_bp.route("/users/<int:user_id>/role", methods=["POST"])
+def update_user_role(user_id):
+    """Change a user's role."""
+    user = User.query.get_or_404(user_id)
+    role = request.form.get("role")
+    if role not in {"student", "moderator", "admin"}:
+        flash("Rol inválido", "danger")
+    else:
+        user.role = role
+        db.session.commit()
+        flash("Rol actualizado", "success")
+        log_admin_action(f"Cambió rol de {user.username} a {role}")
+    return redirect(url_for("admin.manage_users"))
+
+
+@admin_bp.route("/users/<int:user_id>/toggle", methods=["GET"])
+def toggle_user_status(user_id):
+    """Activate or deactivate a user."""
+    user = User.query.get_or_404(user_id)
+    user.activated = not user.activated
+    db.session.commit()
+    flash(
+        "Usuario activado" if user.activated else "Usuario desactivado",
+        "success",
+    )
+    log_admin_action(
+        f"Toggled user {user.username} to {'activo' if user.activated else 'inactivo'}"
+    )
+    return redirect(url_for("admin.manage_users"))
 
 
 @admin_bp.route("/clubs")
@@ -314,6 +360,29 @@ def export_users():
     return response
 
 
+@admin_bp.route("/export/products")
+def export_products():
+    """Export products to CSV"""
+    products = Product.query.all()
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["ID", "Nombre", "Precio", "Crolars", "Stock"])
+    for p in products:
+        writer.writerow([
+            p.id,
+            p.name,
+            f"{p.price:.2f}",
+            p.price_credits or "",
+            p.stock,
+        ])
+
+    output.seek(0)
+    response = make_response(output.getvalue())
+    response.headers["Content-Type"] = "text/csv"
+    response.headers["Content-Disposition"] = "attachment; filename=products_export.csv"
+    return response
+
+
 @admin_bp.route("/store/history")
 def product_history():
     """View history of product actions"""
@@ -328,9 +397,10 @@ def product_history():
 
 
 @admin_bp.route("/store")
-def admin_store_alias():
-    """Serve the public store under the admin prefix."""
-    return store_index()
+def manage_store():
+    """Admin interface for managing store products."""
+    products = Product.query.order_by(Product.id.desc()).all()
+    return render_template("admin/manage_store.html", products=products)
 
 
 @admin_bp.route("/verificaciones")
@@ -407,7 +477,7 @@ def reject_comment(ctype, cid):
 def add_product():
     """Legacy add product route blocked for moderators."""
     flash("Acción no permitida", "danger")
-    return redirect(url_for("admin.admin_store_alias"))
+    return redirect(url_for("admin.manage_store"))
 
 
 @admin_bp.route("/prints")
