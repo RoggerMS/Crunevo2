@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Bitácora - Mochila{% endblock %}
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/backpack.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h5 mb-0">Bitácora de Aprendizaje</h1>
+    <a href="{{ url_for('backpack.new_entry') }}" class="btn btn-primary btn-sm">Nueva Entrada</a>
+  </div>
+  {% if backpack and entries %}
+    {% for entry in entries %}
+    <div class="journal-entry">
+      <div class="entry-header">
+        <h5 class="mb-1">{{ entry.title }}</h5>
+        <span class="badge entry-type-badge entry-type-{{ entry.entry_type }}">{{ entry.entry_type }}</span>
+      </div>
+      <div class="entry-content">{{ entry.content }}</div>
+      {% if entry.tags %}
+      <div class="entry-tags">
+        {% for tag in entry.tags.split(',') %}
+        <span class="tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <small class="text-muted">{{ entry.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+    </div>
+    {% endfor %}
+  {% elif backpack %}
+    <p class="text-muted">Aún no has agregado entradas.</p>
+  {% else %}
+    <p class="text-muted">Función no disponible.</p>
+  {% endif %}
+</div>
+{% endblock %}
