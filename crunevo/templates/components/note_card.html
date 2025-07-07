@@ -1,38 +1,37 @@
 {% import 'components/csrf.html' as csrf %}
-<article class="card h-100 shadow-sm">
-  <canvas class="pdf-thumb card-img-top" data-pdf="{{ note.filename }}"></canvas>
-  <div class="card-body d-flex flex-column">
-    <h6 class="card-title">{{ note.title }}</h6>
-    <div class="mb-2">
-      {% for tag in (note.tags or '').split(',') %}
-      <span class="badge bg-secondary me-1">{{ tag }}</span>
-      {% endfor %}
+{% set show_quick = show_quick_view if show_quick_view is defined else False %}
+{% set ext = note.filename.split('?')[0].rsplit('.', 1)[-1].lower() %}
+<article class="card note-card shadow-sm rounded-4 h-100">
+  <div class="note-preview text-center p-3 bg-light-subtle">
+    {% if ext == 'pdf' %}
+      <canvas class="pdf-thumb w-100" data-pdf="{{ note.filename }}" style="height:220px"></canvas>
+    {% elif ext in ['jpg','jpeg','png','webp'] %}
+      <img src="{{ note.filename }}" class="img-fluid rounded w-100" style="height:220px; object-fit: cover;" alt="preview">
+    {% else %}
+      <div class="text-muted" style="height:220px; display:flex; flex-direction:column; justify-content:center;">
+        <i class="bi bi-file-earmark fs-1"></i>
+        <small>Vista previa no disponible</small>
+      </div>
+    {% endif %}
+  </div>
+  <div class="card-body d-flex flex-column justify-content-between">
+    <h6 class="fw-bold text-dark mb-2">{{ note.title }}</h6>
+    <div class="d-flex justify-content-between align-items-center small text-muted">
+      <span><i class="bi bi-eye me-1"></i> {{ note.views }}</span>
+      <span><i class="bi bi-hand-thumbs-up me-1"></i> {{ note.likes or 0 }}</span>
     </div>
-    <div class="mt-auto d-flex justify-content-between align-items-center">
-      <div>
-        <a href="{{ url_for('notes.view_note', id=note.id) }}" class="btn btn-primary btn-sm">Ver detalle</a>
-        {% if current_user.is_authenticated %}
-          {% if note.user_id == current_user.id %}
-            <a href="{{ url_for('notes.edit_note', note_id=note.id) }}" class="btn btn-outline-secondary btn-sm">Editar</a>
-            <form action="{{ url_for('notes.delete_note', note_id=note.id) }}" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este apunte?');">
-              {{ csrf.csrf_field() }}
-              <button type="submit" class="btn btn-outline-danger btn-sm">🗑️</button>
-            </form>
-          {% else %}
-            <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#reportNote{{ note.id }}">Reportar</button>
-            {% if current_user.role == 'admin' and config.ADMIN_INSTANCE %}
-            <form action="{{ url_for('admin.delete_note_admin', note_id=note.id) }}" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este apunte?');">
-              {{ csrf.csrf_field() }}
-              <button type="submit" class="btn btn-outline-danger btn-sm">🗑️</button>
-            </form>
-            {% endif %}
-          {% endif %}
-        {% endif %}
-      </div>
-      <div class="text-muted small">
-        <i class="bi bi-eye"></i> {{ note.views }}
-        {% if note.likes %}&nbsp;<i class="bi bi-hand-thumbs-up"></i> {{ note.likes }}{% endif %}
-      </div>
+    <div class="btn-group mt-3">
+      <a href="{{ url_for('notes.view_note', id=note.id) }}" class="btn btn-outline-primary btn-sm">Ver detalle</a>
+      {% if current_user.is_authenticated and note.user_id == current_user.id %}
+      <a href="{{ url_for('notes.edit_note', note_id=note.id) }}" class="btn btn-outline-secondary btn-sm">Editar</a>
+      {% else %}
+      <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#reportNote{{ note.id }}">Reportar</button>
+      {% endif %}
+      {% if show_quick and ext in ['pdf','png'] %}
+      <button class="btn btn-outline-info btn-sm" onclick="openQuickView('{{ note.filename }}')">
+        <i class="bi bi-eye"></i>
+      </button>
+      {% endif %}
     </div>
   </div>
 </article>

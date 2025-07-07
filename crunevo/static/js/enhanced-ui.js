@@ -259,13 +259,13 @@ function initQuickViewModals() {
     const quickViewBtns = document.querySelectorAll('.quick-view-btn');
     quickViewBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            const postId = this.dataset.postId;
-            openQuickView(postId);
+            const target = this.dataset.postId || this.dataset.url;
+            openQuickView(target);
         });
     });
 }
 
-function openQuickView(postId) {
+function openQuickView(target) {
     // Create modal
     const modal = document.createElement('div');
     modal.className = 'modal fade quick-view-modal';
@@ -289,22 +289,28 @@ function openQuickView(postId) {
     document.body.appendChild(modal);
     const modalInstance = new bootstrap.Modal(modal);
     modalInstance.show();
-    
-    // Load post content
-    fetch(`/feed/post/${postId}/quick-view`)
-        .then(response => response.text())
-        .then(html => {
-            modal.querySelector('.modal-body').innerHTML = html;
-        })
-        .catch(error => {
-            console.error('Error loading quick view:', error);
-            modal.querySelector('.modal-body').innerHTML = `
-                <div class="text-center text-danger">
-                    <i class="bi bi-exclamation-triangle fs-1"></i>
-                    <p class="mt-3">Error al cargar el contenido</p>
-                </div>
-            `;
-        });
+
+    const isUrl = typeof target === 'string' && (target.startsWith('http') || target.startsWith('/'));
+    if (isUrl) {
+        const ext = target.split('?')[0].split('.').pop().toLowerCase();
+        modal.querySelector('.modal-body').innerHTML = `<div id="noteViewer" data-url="${target}" data-type="${ext === 'pdf' ? 'pdf' : 'image'}"></div>`;
+        if (typeof initNoteViewer === 'function') initNoteViewer();
+    } else {
+        // Load post content
+        fetch(`/feed/post/${target}/quick-view`)
+            .then(response => response.text())
+            .then(html => {
+                modal.querySelector('.modal-body').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading quick view:', error);
+                modal.querySelector('.modal-body').innerHTML = `
+                    <div class="text-center text-danger">
+                        <i class="bi bi-exclamation-triangle fs-1"></i>
+                        <p class="mt-3">Error al cargar el contenido</p>
+                    </div>`;
+            });
+    }
     
     // Remove modal when hidden
     modal.addEventListener('hidden.bs.modal', function() {
