@@ -615,9 +615,15 @@ function clearAllFilters() {
 }
 
 function openProductRequestModal() {
-    const modal = new bootstrap.Modal(document.getElementById('productRequestModal'));
+    const modal = new bootstrap.Modal(
+        document.getElementById('productRequestModal')
+    );
     modal.show();
 }
+
+// Expose functions for inline event handlers
+window.clearAllFilters = clearAllFilters;
+window.openProductRequestModal = openProductRequestModal;
 
 // Initialize store when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
