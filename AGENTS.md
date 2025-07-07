@@ -659,3 +659,4 @@
 - Implementado sistema de solicitudes de productos con modelo ProductRequest, formulario para estudiantes y panel admin de aprobación. Botón flotante en tienda para solicitar. (PR store-product-requests)
 - Added dark-mode variables in store.css and updated components to use them, ensuring theme toggle works (PR store-dark-mode).
 - Precios en soles estandarizados y visibles solo si product.price > 0 en plantillas de tienda (PR store-price-standard)
+- Ajustadas reglas de .product-image y contenedor para que las imágenes se mantengan cuadradas con object-fit: cover (PR product-image-square).
