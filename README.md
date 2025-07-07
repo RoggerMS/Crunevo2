@@ -69,6 +69,10 @@ This command sets the `DATABASE_URL` secret automatically. Verify it with
 `fly secrets list -a crunevo2`. If the database is stopped, restart it with
 `fly pg restart -a crunevo-db` and then run `fly deploy` again.
 
+If Fly warns that the app is not listening on `0.0.0.0:8080`, double-check that
+your Dockerfile binds Gunicorn to that address and that `internal_port = 8080`
+is set in `fly.toml`. You can inspect startup errors with `fly logs`.
+
 If you want to run the application locally but use a PostgreSQL
 database hosted on Fly.io:
 ```bash
