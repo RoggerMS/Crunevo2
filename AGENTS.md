@@ -660,3 +660,4 @@
 - Added dark-mode variables in store.css and updated components to use them, ensuring theme toggle works (PR store-dark-mode).
 - Precios en soles estandarizados y visibles solo si product.price > 0 en plantillas de tienda (PR store-price-standard)
 - Ajustadas reglas de .product-image y contenedor para que las imágenes se mantengan cuadradas con object-fit: cover (PR product-image-square).
+- Importación de macro CSRF añadida en store.html para evitar UndefinedError (PR store-csrf-import-fix).
