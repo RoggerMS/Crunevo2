@@ -68,9 +68,9 @@
       <button class="btn-disabled" disabled><i class="bi bi-x-circle"></i>Sin Stock</button>
       {% endif %}
     </div>
-    {% if product.id in purchased_ids %}
-    <div class="purchased-indicator"><i class="bi bi-check-circle-fill"></i><span>Ya adquirido</span></div>
-    {% endif %}
+  {% if product.id in purchased_ids %}
+  <div class="purchased-info mt-1"><i class="bi bi-info-circle"></i> <small>Este producto ya está en tu historial de compras</small></div>
+  {% endif %}
   </div>
 </div>
 {% else %}
