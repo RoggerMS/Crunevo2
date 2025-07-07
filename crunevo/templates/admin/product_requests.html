@@ -1,0 +1,38 @@
+{% extends 'admin/base_admin.html' %}
+{% import 'components/csrf.html' as csrf %}
+{% block admin_content %}
+<h2 class="page-title mb-4">Solicitudes de productos</h2>
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-vcenter card-table" data-datatable>
+        <thead>
+          <tr><th>ID</th><th>Usuario</th><th>Nombre</th><th>Categoría</th><th>Estado</th><th>Acciones</th></tr>
+        </thead>
+        <tbody>
+        {% for pr, user in requests %}
+        <tr>
+          <td>{{ pr.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ pr.name }}</td>
+          <td>{{ pr.category or '—' }}</td>
+          <td>{{ pr.status }}</td>
+          <td>
+            <form method="post" action="{{ url_for('admin.update_product_request', req_id=pr.id) }}" class="d-inline">
+              {{ csrf.csrf_field() }}
+              <select name="status" class="form-select form-select-sm d-inline w-auto me-2">
+                <option value="approved" {% if pr.status=='approved' %}selected{% endif %}>Aprobar</option>
+                <option value="rejected" {% if pr.status=='rejected' %}selected{% endif %}>Rechazar</option>
+                <option value="pending" {% if pr.status=='pending' %}selected{% endif %}>Pendiente</option>
+              </select>
+              <button class="btn btn-primary btn-sm" type="submit">Guardar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

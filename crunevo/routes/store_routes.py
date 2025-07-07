@@ -23,6 +23,7 @@ from crunevo.models import (
     Review,
     Question,
     Answer,
+    ProductRequest,
 )
 from crunevo.utils.credits import spend_credit
 from crunevo.constants import CreditReasons, AchievementCodes
@@ -607,3 +608,42 @@ def search_products():
     )
 
     return jsonify({"html": html, "has_next": products.has_next, "page": page})
+
+
+@store_bp.route("/solicitar-producto", methods=["GET", "POST"])
+@activated_required
+def request_product():
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        if not name:
+            flash("El nombre es obligatorio", "danger")
+            return redirect(url_for("store.request_product"))
+        category = request.form.get("category")
+        description = request.form.get("description")
+        price_soles = request.form.get("price_soles", type=float)
+        image_url = request.form.get("image_url")
+        pr = ProductRequest(
+            user_id=current_user.id,
+            name=name,
+            category=category,
+            description=description,
+            price_soles=price_soles,
+            image_url=image_url,
+        )
+        db.session.add(pr)
+        db.session.commit()
+        flash("Solicitud enviada", "success")
+        return redirect(url_for("store.my_requests"))
+
+    return render_template("store/request_product.html")
+
+
+@store_bp.route("/mis-solicitudes")
+@activated_required
+def my_requests():
+    reqs = (
+        ProductRequest.query.filter_by(user_id=current_user.id)
+        .order_by(ProductRequest.created_at.desc())
+        .all()
+    )
+    return render_template("store/my_requests.html", requests=reqs)

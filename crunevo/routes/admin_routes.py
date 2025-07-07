@@ -31,6 +31,7 @@ from crunevo.models import (
     PostComment,
     PageView,
     PrintRequest,
+    ProductRequest,
 )
 from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit
@@ -420,6 +421,32 @@ def manage_prints():
         .all()
     )
     return render_template("admin/manage_prints.html", prints=prints)
+
+
+@admin_bp.route("/product-requests")
+def product_requests():
+    reqs = (
+        db.session.query(ProductRequest, User)
+        .join(User, ProductRequest.user_id == User.id)
+        .order_by(ProductRequest.created_at.desc())
+        .all()
+    )
+    return render_template("admin/product_requests.html", requests=reqs)
+
+
+@admin_bp.route("/product-requests/<int:req_id>/update", methods=["POST"])
+def update_product_request(req_id):
+    pr = ProductRequest.query.get_or_404(req_id)
+    status = request.form.get("status")
+    if status not in {"approved", "rejected", "pending"}:
+        flash("Estado inválido", "danger")
+        return redirect(url_for("admin.product_requests"))
+    pr.status = status
+    pr.updated_at = datetime.utcnow()
+    db.session.commit()
+    flash("Solicitud actualizada", "success")
+    log_admin_action(f"Actualizó solicitud {req_id} a {status}")
+    return redirect(url_for("admin.product_requests"))
 
 
 @admin_bp.route("/prints/<int:print_id>/fulfill", methods=["POST"])
