@@ -757,6 +757,15 @@ html[data-bs-theme="dark"] footer a {
   color: #ccc !important;
 }
 
+.dark-mode footer {
+  background-color: var(--dark-bg);
+  color: var(--light-text);
+}
+
+.dark-mode footer a {
+  color: var(--light-text);
+}
+
 @media (min-width: 768px) {
   .error-page {
     max-width: 500px;
