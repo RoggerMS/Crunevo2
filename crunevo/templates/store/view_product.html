@@ -58,7 +58,7 @@
           <!-- Favorite Button -->
           <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="favorite-form">
             {{ csrf.csrf_field() }}
-            <button type="submit" class="favorite-btn-large {{ 'active' if is_favorite else '' }}">
+            <button type="submit" class="favorite-btn-large {{ 'active' if is_favorite else '' }}" title="Agregar a favoritos">
               <i class="bi bi-heart{{ '-fill' if is_favorite else '' }}"></i>
             </button>
           </form>

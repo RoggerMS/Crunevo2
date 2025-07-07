@@ -57,8 +57,8 @@ body {
 /* Modern card design with enhanced contrast */
 .card {
   background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -234,6 +234,7 @@ body {
 /* Enhanced Navbar */
 .navbar {
   background: linear-gradient(135deg, #8B5CF6, #9F7AEA) !important;
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2);
@@ -265,6 +266,7 @@ body {
   background: rgba(255, 255, 255, 0.15) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   color: white !important;
+  -webkit-backdrop-filter: blur(10px) !important;
   backdrop-filter: blur(10px) !important;
 }
 
@@ -284,6 +286,7 @@ body {
   max-height: 300px;
   overflow-y: auto;
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -304,6 +307,7 @@ body {
   border: none !important;
   border-radius: 12px !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
   backdrop-filter: blur(20px) !important;
   background: rgba(255, 255, 255, 0.95) !important;
 }
@@ -503,6 +507,7 @@ html {
   border-left: 0.25rem solid var(--bs-border-color);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
   margin-bottom: 0.75rem;

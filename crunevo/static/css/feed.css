@@ -226,9 +226,9 @@
   border-radius: 12px;
   padding: 8px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   z-index: 100;
-  -webkit-backdrop-filter: blur(20px);
   top: -60px;
   left: 0;
   display: grid;
@@ -553,6 +553,7 @@ body[data-bs-theme="dark"] .comment-box {
   font-weight: 600;
   font-size: 24px;
   border-radius: 0;
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   z-index: 3;
 }

@@ -225,7 +225,7 @@
               <!-- Favorite Button -->
               <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="favorite-form">
                 {{ csrf.csrf_field() }}
-                <button type="submit" class="favorite-btn {{ 'active' if product.id in favorite_ids else '' }}">
+                <button type="submit" class="favorite-btn {{ 'active' if product.id in favorite_ids else '' }}" title="Agregar a favoritos">
                   <i class="bi bi-heart{{ '-fill' if product.id in favorite_ids else '' }}"></i>
                 </button>
               </form>
@@ -393,7 +393,7 @@
   </button>
 
   <!-- Mobile Off-Canvas Filters -->
-  <div class="offcanvas-overlay" id="offcanvasOverlay" onclick="closeMobileFilters()"></div>
+  <div class="offcanvas-overlay" id="offcanvasOverlay" onclick="closeMobileFilters()" role="button" tabindex="0"></div>
   <div class="offcanvas-filters" id="offcanvasFilters">
     <div class="offcanvas-header">
       <h5 class="offcanvas-title">Filtros</h5>

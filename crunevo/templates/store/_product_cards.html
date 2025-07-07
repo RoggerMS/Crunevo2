@@ -13,7 +13,7 @@
     </div>
     <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="favorite-form">
       {{ csrf.csrf_field() }}
-      <button type="submit" class="favorite-btn {{ 'active' if product.id in favorite_ids else '' }}">
+      <button type="submit" class="favorite-btn {{ 'active' if product.id in favorite_ids else '' }}" title="Agregar a favoritos">
         <i class="bi bi-heart{{ '-fill' if product.id in favorite_ids else '' }}"></i>
       </button>
     </form>
