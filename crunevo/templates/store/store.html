@@ -74,7 +74,8 @@
     <div class="store-layout">
       <!-- Sidebar Filters -->
       <aside class="store-sidebar">
-        <div class="filters-container">
+        <div id="filterOffcanvas" class="filters-container offcanvas-mobile d-none d-lg-block">
+          <button type="button" class="btn-close d-lg-none mb-3" id="closeFilterBtn" aria-label="Cerrar"></button>
           <h3>🔍 Filtros</h3>
 
           <!-- Search -->
@@ -339,6 +340,13 @@
       <i class="bi bi-cart3"></i>
       <span class="cart-badge" id="mobileCartCount">0</span>
     </a>
+  </div>
+
+  <!-- Floating Filter Button (Mobile) -->
+  <div class="floating-filter d-lg-none">
+    <button type="button" class="floating-filter-btn" id="openFilterBtn">
+      <i class="bi bi-funnel-fill"></i>
+    </button>
   </div>
 </div>
 

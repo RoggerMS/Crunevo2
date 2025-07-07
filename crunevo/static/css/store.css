@@ -813,6 +813,68 @@
   text-align: center;
 }
 
+/* Floating Filter */
+.floating-filter {
+  position: fixed;
+  bottom: 6rem;
+  right: 2rem;
+  z-index: 1000;
+}
+
+.floating-filter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  background: var(--primary-purple);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition);
+}
+
+.floating-filter-btn:hover {
+  background: var(--secondary-purple);
+  transform: scale(1.1);
+}
+
+/* Offcanvas Filters */
+#filterOffcanvas {
+  /* start hidden offscreen */
+}
+
+.offcanvas-mobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 80%;
+  max-width: 320px;
+  height: 100vh;
+  overflow-y: auto;
+  background: white;
+  box-shadow: var(--shadow-xl);
+  transform: translateX(-100%);
+  transition: var(--transition);
+  z-index: 1055;
+}
+
+.offcanvas-mobile.open {
+  transform: translateX(0);
+}
+
+@media (min-width: 992px) {
+  .offcanvas-mobile {
+    position: static;
+    transform: none;
+    height: auto;
+    width: auto;
+    box-shadow: none;
+  }
+}
+
 /* ==========================================================================
    Responsive Design
    ========================================================================== */
@@ -978,6 +1040,11 @@
 [data-bs-theme="dark"] .cart-link:hover {
   background: var(--primary-purple);
   color: white;
+}
+
+[data-bs-theme="dark"] .offcanvas-mobile {
+  background: var(--surface-white);
+  border: 1px solid var(--border-light);
 }
 
 /* ==========================================================================

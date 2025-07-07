@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from crunevo.extensions import db
 
@@ -11,15 +10,21 @@ class AcademicDuel(db.Model):
     category = db.Column(db.String(50), nullable=False)
     reward_crolars = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(20), default="pending")  # pending, answered, validated, rejected
+    status = db.Column(
+        db.String(20), default="pending"
+    )  # pending, answered, validated, rejected
     answer = db.Column(db.Text)
     answered_at = db.Column(db.DateTime)
     validated_at = db.Column(db.DateTime)
     is_correct = db.Column(db.Boolean)
-    
+
     # Relationships
-    challenger = db.relationship("User", foreign_keys=[challenger_id], backref="duels_created")
-    challenged = db.relationship("User", foreign_keys=[challenged_id], backref="duels_received")
+    challenger = db.relationship(
+        "User", foreign_keys=[challenger_id], backref="duels_created"
+    )
+    challenged = db.relationship(
+        "User", foreign_keys=[challenged_id], backref="duels_received"
+    )
 
     @property
     def is_pending(self):

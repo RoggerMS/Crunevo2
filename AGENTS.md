@@ -653,3 +653,4 @@
 - Fixed undefined csrf macro in store.html and added missing imports in duel, event and poll routes (PR csrf-macro-fix).
 - Imported csrf macro in view_product.html to fix template error (PR store-view-product-csrf-import).
 - Extracted inline JS from store/store.html to static/js/store.js and loaded via extra_js block (PR store-js-extract).
+- Moved sidebar filter markup into #filterOffcanvas with a floating button on mobile; off-canvas styles and JS toggling added (PR store-filter-offcanvas).
