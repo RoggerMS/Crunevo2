@@ -35,7 +35,9 @@
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3" id="notesList">
 {% for note in notes %}
   <div class="col">
-    {% include 'components/note_card.html' with note=note, show_quick_view=True %}
+    {% with note=note, show_quick_view=True %}
+      {% include 'components/note_card.html' %}
+    {% endwith %}
   </div>
 {% endfor %}
 </div>
