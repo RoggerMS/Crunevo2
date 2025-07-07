@@ -682,3 +682,4 @@
 - Reinstated edit_product route in admin panel to fix manage_store errors (PR admin-edit-link-fix).
 - Added desktop application launcher menu with grid icon, links to profile, personal space, missions, ranking, league, backpack and challenges; CSS and JS integrated (PR desktop-launcher-menu).
 - Added missing backpack templates (journal, new_entry, view_entry) to fix TemplateNotFound errors (PR backpack-templates-fix).
+- Fixed mobile header overlap, restored notes icon in bottom nav and improved notification filters for responsiveness (PR mobile-visual-fixes).

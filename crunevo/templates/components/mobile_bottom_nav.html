@@ -16,7 +16,7 @@
         <a href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '#' }}"
            class="nav-item {{ 'active' if request.endpoint == 'notes.list_notes' }}">
           <div class="nav-icon">
-            <i class="bi bi-journal{{ '-text-fill' if request.endpoint == 'notes.list_notes' }}"></i>
+            <i class="bi bi-file-text"></i>
           </div>
           <span class="nav-label">Apuntes</span>
         </a>
