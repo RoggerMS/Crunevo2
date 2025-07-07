@@ -992,6 +992,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initStorePage();
     initGlobalChat();
     initChatIA();
+    initLauncherMenu();
 
   // Bootstrap collapse handles the mobile menu
 
@@ -1342,6 +1343,20 @@ function initKeyboardShortcuts() {
         e.preventDefault();
         bootstrap.Modal.getOrCreateInstance(modal).show();
       }
+    }
+  });
+}
+
+function initLauncherMenu() {
+  const launcherBtn = document.querySelector('.launcher-toggle');
+  const launcherMenu = document.querySelector('.launcher-menu');
+  if (!launcherBtn || !launcherMenu) return;
+  launcherBtn.addEventListener('click', () => {
+    launcherMenu.classList.toggle('show');
+  });
+  document.addEventListener('click', (e) => {
+    if (!launcherBtn.contains(e.target) && !launcherMenu.contains(e.target)) {
+      launcherMenu.classList.remove('show');
     }
   });
 }
