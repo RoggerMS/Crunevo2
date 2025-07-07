@@ -1,0 +1,301 @@
+
+{% extends "base.html" %}
+
+{% block title %}Retos Académicos - CRUNEVO{% endblock %}
+
+{% block head %}
+<style>
+.duel-card {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    border-radius: 15px;
+    padding: 1.5rem;
+    color: white;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.duel-card:hover {
+    transform: translateY(-5px);
+}
+
+.duel-card.won {
+    background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+}
+
+.duel-card.pending {
+    background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+}
+
+.category-badge {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+.reward-badge {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    color: #333;
+    border-radius: 15px;
+    padding: 0.25rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.answer-section {
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold text-primary">
+                    <i class="bi bi-lightning"></i> Retos Académicos
+                </h2>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('duel.create_duel') }}" class="btn btn-danger">
+                    <i class="bi bi-plus-lg"></i> Crear Reto
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if current_user.is_authenticated and pending_duels %}
+    <!-- Pending Duels for Current User -->
+    <div class="row">
+        <div class="col-12">
+            <h4 class="mb-3"><i class="bi bi-exclamation-triangle"></i> Retos Pendientes para Ti</h4>
+            {% for duel in pending_duels %}
+            <div class="duel-card pending">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <span class="category-badge">{{ duel.category }}</span>
+                        {% if duel.reward_crolars > 0 %}
+                        <span class="reward-badge ms-2">
+                            <i class="bi bi-coin"></i> {{ duel.reward_crolars }} Crolars
+                        </span>
+                        {% endif %}
+                    </div>
+                    <small>{{ duel.created_at.strftime('%d/%m %H:%M') }}</small>
+                </div>
+                
+                <h5 class="fw-bold mb-2">Reto de {{ duel.challenger.username }}</h5>
+                <p class="mb-3">{{ duel.question }}</p>
+                
+                <form class="answer-duel-form" data-duel-id="{{ duel.id }}">
+                    <div class="mb-3">
+                        <textarea 
+                            class="form-control" 
+                            name="answer" 
+                            rows="3" 
+                            placeholder="Escribe tu respuesta aquí..."
+                            required
+                        ></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-light">
+                        <i class="bi bi-send"></i> Enviar Respuesta
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Duels -->
+    <div class="row">
+        <div class="col-12">
+            <h4 class="mb-3"><i class="bi bi-trophy"></i> Retos Recientes</h4>
+            {% if recent_duels %}
+                {% for duel in recent_duels %}
+                <div class="duel-card {% if duel.is_correct %}won{% endif %}">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <span class="category-badge">{{ duel.category }}</span>
+                            {% if duel.reward_crolars > 0 %}
+                            <span class="reward-badge ms-2">
+                                <i class="bi bi-coin"></i> {{ duel.reward_crolars }} Crolars
+                            </span>
+                            {% endif %}
+                        </div>
+                        <small>{{ duel.created_at.strftime('%d/%m %H:%M') }}</small>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-person-fill"></i> Retador</h6>
+                            <p class="fw-bold">{{ duel.challenger.username }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-target"></i> Retado</h6>
+                            <p class="fw-bold">{{ duel.challenged.username }}</p>
+                        </div>
+                    </div>
+                    
+                    <h5 class="fw-bold mb-2">{{ duel.question }}</h5>
+                    
+                    {% if duel.answer %}
+                    <div class="answer-section">
+                        <h6><i class="bi bi-chat-square-text"></i> Respuesta:</h6>
+                        <p class="mb-2">{{ duel.answer }}</p>
+                        {% if duel.status == "validated" %}
+                            {% if duel.is_correct %}
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle"></i> Correcta
+                            </span>
+                            {% else %}
+                            <span class="badge bg-danger">
+                                <i class="bi bi-x-circle"></i> Incorrecta
+                            </span>
+                            {% endif %}
+                        {% else %}
+                        <span class="badge bg-warning">
+                            <i class="bi bi-clock"></i> Esperando validación
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-lightning display-1 text-muted"></i>
+                    <p class="text-muted mt-3">No hay retos disponibles en este momento</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if current_user.is_authenticated and my_duels %}
+    <!-- My Duels -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h4 class="mb-3"><i class="bi bi-person-circle"></i> Mis Retos</h4>
+            {% for duel in my_duels %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="badge bg-secondary">{{ duel.category }}</span>
+                            <h6 class="mt-2 mb-1">{{ duel.question }}</h6>
+                            <small class="text-muted">
+                                {% if duel.challenger_id == current_user.id %}
+                                Retaste a {{ duel.challenged.username }}
+                                {% else %}
+                                {{ duel.challenger.username }} te retó
+                                {% endif %}
+                            </small>
+                        </div>
+                        <div class="text-end">
+                            {% if duel.status == "pending" %}
+                            <span class="badge bg-warning">Pendiente</span>
+                            {% elif duel.status == "answered" %}
+                            <span class="badge bg-info">Respondido</span>
+                            {% elif duel.status == "validated" %}
+                                {% if duel.is_correct %}
+                                <span class="badge bg-success">Correcto</span>
+                                {% else %}
+                                <span class="badge bg-danger">Incorrecto</span>
+                                {% endif %}
+                            {% endif %}
+                            
+                            {% if duel.challenger_id == current_user.id and duel.status == "answered" %}
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-success validate-btn" data-duel-id="{{ duel.id }}" data-correct="true">
+                                    <i class="bi bi-check"></i> Correcta
+                                </button>
+                                <button class="btn btn-sm btn-danger validate-btn" data-duel-id="{{ duel.id }}" data-correct="false">
+                                    <i class="bi bi-x"></i> Incorrecta
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if duel.answer %}
+                    <div class="mt-3 p-3 bg-light rounded">
+                        <strong>Respuesta:</strong> {{ duel.answer }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle duel answers
+    document.querySelectorAll('.answer-duel-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const duelId = this.dataset.duelId;
+            const formData = new FormData(this);
+            
+            if (!formData.get('answer').trim()) {
+                alert('Por favor escribe una respuesta');
+                return;
+            }
+            
+            csrfFetch(`/reto/${duelId}/responder`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.error || 'Error al enviar respuesta');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al procesar la respuesta');
+            });
+        });
+    });
+
+    // Handle validation buttons
+    document.querySelectorAll('.validate-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const duelId = this.dataset.duelId;
+            const isCorrect = this.dataset.correct === 'true';
+            
+            const formData = new FormData();
+            formData.append('is_correct', isCorrect);
+            
+            csrfFetch(`/reto/${duelId}/validar`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.error || 'Error al validar respuesta');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al validar respuesta');
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

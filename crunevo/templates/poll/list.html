@@ -1,0 +1,239 @@
+
+{% extends "base.html" %}
+
+{% block title %}Encuestas Académicas - CRUNEVO{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<style>
+.poll-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 1.5rem;
+    color: white;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.poll-card:hover {
+    transform: translateY(-5px);
+}
+
+.poll-option {
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.poll-option:hover {
+    background: rgba(255,255,255,0.3);
+    border-color: rgba(255,255,255,0.5);
+}
+
+.poll-option.selected {
+    background: rgba(255,255,255,0.4);
+    border-color: #fff;
+}
+
+.poll-results {
+    margin-top: 1rem;
+}
+
+.poll-result-bar {
+    background: rgba(255,255,255,0.3);
+    border-radius: 20px;
+    height: 30px;
+    margin: 0.5rem 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.poll-result-fill {
+    background: linear-gradient(90deg, #10B981, #34D399);
+    height: 100%;
+    border-radius: inherit;
+    transition: width 0.5s ease;
+}
+
+.poll-result-text {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    font-weight: 600;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold text-primary">
+                    <i class="bi bi-bar-chart"></i> Encuestas Académicas
+                </h2>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('poll.create_poll') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Crear Encuesta
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Polls -->
+    <div class="row">
+        <div class="col-12">
+            <h4 class="mb-3"><i class="bi bi-lightning"></i> Encuestas Activas</h4>
+            {% if active_polls %}
+                {% for poll in active_polls %}
+                <div class="poll-card" data-poll-id="{{ poll.id }}">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="fw-bold mb-0">{{ poll.question }}</h5>
+                        <small class="badge bg-light text-dark">
+                            <i class="bi bi-clock"></i> {{ poll.expires_at.strftime('%d/%m %H:%M') }}
+                        </small>
+                    </div>
+                    
+                    <p class="mb-2">
+                        <small>
+                            <i class="bi bi-person"></i> {{ poll.author.username }} • 
+                            <i class="bi bi-bar-chart"></i> {{ poll.total_votes }} votos
+                        </small>
+                    </p>
+
+                    {% if poll.id in user_votes %}
+                        <!-- Show results -->
+                        <div class="poll-results">
+                            {% for option, percentage in poll.get_results() %}
+                            <div class="poll-result-bar">
+                                <div class="poll-result-fill" style="width: {{ percentage }}%"></div>
+                                <div class="poll-result-text">
+                                    {{ option.text }} ({{ "%.1f"|format(percentage) }}%)
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <!-- Show voting options -->
+                        {% if current_user.is_authenticated %}
+                        <form class="poll-vote-form" data-poll-id="{{ poll.id }}">
+                            {% for option in poll.options %}
+                            <div class="poll-option" data-option-id="{{ option.id }}">
+                                <input type="radio" name="option_id" value="{{ option.id }}" id="option_{{ option.id }}" style="display: none;">
+                                <label for="option_{{ option.id }}" class="mb-0 w-100 cursor-pointer">
+                                    {{ option.text }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-light mt-3">
+                                <i class="bi bi-check2"></i> Votar
+                            </button>
+                        </form>
+                        {% else %}
+                        <p class="text-center mt-3">
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light">
+                                Inicia sesión para votar
+                            </a>
+                        </p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-bar-chart display-1 text-muted"></i>
+                    <p class="text-muted mt-3">No hay encuestas activas en este momento</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Closed Polls -->
+    {% if closed_polls %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <h4 class="mb-3"><i class="bi bi-archive"></i> Encuestas Cerradas</h4>
+            {% for poll in closed_polls %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6 class="card-title">{{ poll.question }}</h6>
+                    <div class="poll-results">
+                        {% for option, percentage in poll.get_results() %}
+                        <div class="progress mb-2" style="height: 25px;">
+                            <div class="progress-bar bg-primary" style="width: {{ percentage }}%">
+                                {{ option.text }} ({{ "%.1f"|format(percentage) }}%)
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <small class="text-muted">
+                        {{ poll.total_votes }} votos • Cerrada el {{ poll.expires_at.strftime('%d/%m/%Y %H:%M') }}
+                    </small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle poll option selection
+    document.querySelectorAll('.poll-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const form = this.closest('.poll-vote-form');
+            if (!form) return;
+            
+            // Remove selected class from siblings
+            form.querySelectorAll('.poll-option').forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selected class and check radio
+            this.classList.add('selected');
+            this.querySelector('input[type="radio"]').checked = true;
+        });
+    });
+
+    // Handle poll voting
+    document.querySelectorAll('.poll-vote-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const pollId = this.dataset.pollId;
+            const formData = new FormData(this);
+            
+            if (!formData.get('option_id')) {
+                alert('Por favor selecciona una opción');
+                return;
+            }
+            
+            csrfFetch(`/encuesta/${pollId}/votar`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Refresh to show results
+                } else {
+                    alert(data.error || 'Error al votar');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al procesar el voto');
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

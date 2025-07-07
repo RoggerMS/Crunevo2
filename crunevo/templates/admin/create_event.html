@@ -1,0 +1,60 @@
+
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Crear Evento{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Crear Nuevo Evento</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ csrf_token() }}
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Título *</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="event_date" class="form-label">Fecha y Hora *</label>
+                            <input type="datetime-local" class="form-control" id="event_date" name="event_date" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Categoría</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="">Seleccionar categoría</option>
+                                <option value="Webinar">Webinar</option>
+                                <option value="Taller">Taller</option>
+                                <option value="Concurso">Concurso</option>
+                                <option value="Conferencia">Conferencia</option>
+                                <option value="Live">Live</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="image_url" class="form-label">URL de Imagen</label>
+                            <input type="url" class="form-control" id="image_url" name="image_url">
+                        </div>
+
+                        <div class="text-end">
+                            <a href="{{ url_for('event.admin_list_events') }}" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">Crear Evento</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

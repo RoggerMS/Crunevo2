@@ -409,12 +409,16 @@ def create_app():
         from .routes.backpack_routes import backpack_bp
         from .routes.challenges_routes import challenges_bp
         from .routes.hall_routes import hall_bp
+        from .routes.poll_routes import poll_bp
+        from .routes.duel_routes import duel_bp
 
         app.register_blueprint(carrera_bp)
         app.register_blueprint(league_bp)
         app.register_blueprint(backpack_bp)
         app.register_blueprint(challenges_bp)
         app.register_blueprint(hall_bp)
+        app.register_blueprint(poll_bp)
+        app.register_blueprint(duel_bp)
 
         if testing_env:
             app.register_blueprint(admin_bp)

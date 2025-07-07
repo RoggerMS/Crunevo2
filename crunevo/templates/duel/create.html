@@ -1,0 +1,157 @@
+
+{% extends "base.html" %}
+
+{% block title %}Crear Reto - CRUNEVO{% endblock %}
+
+{% block head %}
+<style>
+.create-duel-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    border-radius: 15px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.form-control, .form-select {
+    background: rgba(255,255,255,0.9);
+    border: none;
+    border-radius: 10px;
+}
+
+.form-control:focus, .form-select:focus {
+    background: white;
+    box-shadow: 0 0 0 0.2rem rgba(255,255,255,0.25);
+}
+
+.reward-selector {
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.credits-display {
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    display: inline-block;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="create-duel-container">
+        <h2 class="text-center mb-4 fw-bold">
+            <i class="bi bi-lightning-charge"></i> Crear Reto Académico
+        </h2>
+        
+        <form method="POST">
+            {{ csrf_token() }}
+            
+            <!-- Target User -->
+            <div class="mb-4">
+                <label for="challenged_username" class="form-label fw-semibold">
+                    <i class="bi bi-person-fill"></i> Usuario a retar *
+                </label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="challenged_username" 
+                    name="challenged_username" 
+                    placeholder="Nombre de usuario"
+                    required
+                >
+                <div class="form-text text-white-50">
+                    Escribe el nombre de usuario exacto
+                </div>
+            </div>
+
+            <!-- Category -->
+            <div class="mb-4">
+                <label for="category" class="form-label fw-semibold">
+                    <i class="bi bi-tag"></i> Categoría *
+                </label>
+                <select class="form-select" id="category" name="category" required>
+                    <option value="">Selecciona una categoría</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat }}">{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Question -->
+            <div class="mb-4">
+                <label for="question" class="form-label fw-semibold">
+                    <i class="bi bi-question-circle"></i> Pregunta o problema *
+                </label>
+                <textarea 
+                    class="form-control" 
+                    id="question" 
+                    name="question" 
+                    rows="5" 
+                    placeholder="Describe tu reto académico de forma clara y precisa..."
+                    required
+                ></textarea>
+                <div class="form-text text-white-50">
+                    Sé específico y claro en tu pregunta
+                </div>
+            </div>
+
+            <!-- Reward -->
+            <div class="mb-4">
+                <label for="reward" class="form-label fw-semibold">
+                    <i class="bi bi-coin"></i> Recompensa (opcional)
+                </label>
+                <div class="reward-selector">
+                    <div class="mb-3">
+                        <span class="credits-display">
+                            <i class="bi bi-wallet2"></i> Tienes {{ current_user.credits }} Crolars
+                        </span>
+                    </div>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="reward" 
+                        name="reward" 
+                        min="0" 
+                        max="{{ current_user.credits }}"
+                        value="0"
+                        placeholder="0"
+                    >
+                    <div class="form-text text-white-50">
+                        Si no responde correctamente, se te devolverán los Crolars
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-light btn-lg px-5">
+                    <i class="bi bi-send"></i> Enviar Reto
+                </button>
+                <a href="{{ url_for('duel.list_duels') }}" class="btn btn-outline-light btn-lg px-5 ms-3">
+                    <i class="bi bi-arrow-left"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const rewardInput = document.getElementById('reward');
+    const maxCredits = {{ current_user.credits }};
+    
+    rewardInput.addEventListener('input', function() {
+        const value = parseInt(this.value) || 0;
+        if (value > maxCredits) {
+            this.value = maxCredits;
+            alert(`No puedes apostar más de ${maxCredits} Crolars`);
+        }
+    });
+});
+</script>
+{% endblock %}
