@@ -1,5 +1,6 @@
 
 {% extends "admin/base_admin.html" %}
+{% import 'components/csrf.html' as csrf %}
 
 {% block title %}Crear Evento{% endblock %}
 
@@ -13,7 +14,7 @@
                 </div>
                 <div class="card-body">
                     <form method="POST">
-                        {{ csrf_token() }}
+                        {{ csrf.csrf_field() }}
                         
                         <div class="mb-3">
                             <label for="title" class="form-label">Título *</label>

@@ -123,4 +123,29 @@ function showToast(toastId) {
             toggleFavorite(this);
         });
     });
+
+    const openBtn = document.getElementById('openFilterBtn');
+    const closeBtn = document.getElementById('closeFilterBtn');
+    const offcanvas = document.getElementById('filterOffcanvas');
+
+    function closeFilters() {
+        if (!offcanvas) return;
+        offcanvas.classList.remove('open');
+        offcanvas.addEventListener(
+            'transitionend',
+            () => offcanvas.classList.add('d-none'),
+            { once: true }
+        );
+    }
+
+    if (openBtn && offcanvas) {
+        openBtn.addEventListener('click', () => {
+            offcanvas.classList.remove('d-none');
+            requestAnimationFrame(() => offcanvas.classList.add('open'));
+        });
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeFilters);
+    }
 })();

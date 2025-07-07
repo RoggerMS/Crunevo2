@@ -1,5 +1,6 @@
 
 {% extends "base.html" %}
+{% import 'components/csrf.html' as csrf %}
 
 {% block title %}Crear Reto - CRUNEVO{% endblock %}
 
@@ -49,7 +50,7 @@
         </h2>
         
         <form method="POST">
-            {{ csrf_token() }}
+            {{ csrf.csrf_field() }}
             
             <!-- Target User -->
             <div class="mb-4">
