@@ -150,6 +150,31 @@ url_for('notes.detail', note_id=42)  => /notes/42
 url_for('notes.view_note', id=42)   => /notes/42
 ```
 
+## Mi Espacio Personal
+
+El panel "Mi Espacio Personal" te permite organizar tareas, metas y notas en un
+tablero privado. Actívalo visitando `/espacio-personal` y presionando el botón
+**Comenzar** para crear tu primer bloque. Puedes añadir distintos tipos de
+bloques y ordenarlos mediante *drag and drop*:
+
+- **Bitácora Inteligente** (`nota`)
+- **Tablero Kanban** (`kanban`)
+- **Objetivo Académico** (`objetivo`)
+- **Tarea Individual** (`tarea`)
+- **Lista de Tareas** (`lista`)
+- **Recordatorio** (`recordatorio`)
+- **Frase Motivacional** (`frase`)
+- **Enlace Educativo** (`enlace`)
+- **Bloque Personalizado** (`bloque`)
+
+El tablero incluye un *modo enfoque* que oculta la navegación y barras laterales
+para eliminar distracciones. Haz clic en **Modo Enfoque** para activarlo (aparece
+un botón flotante para salir). Algunos atajos de teclado disponibles son:
+
+- <kbd>Shift</kbd> + <kbd>H</kbd> – Ir al inicio
+- <kbd>Shift</kbd> + <kbd>N</kbd> – Nueva publicación
+- <kbd>Shift</kbd> + <kbd>Q</kbd> – Notas rápidas
+
 ## Contribuir y correr las pruebas
 
 Instala las dependencias:
