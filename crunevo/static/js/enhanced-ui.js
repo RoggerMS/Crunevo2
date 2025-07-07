@@ -382,7 +382,7 @@ function showShareOptions(button, url) {
 
 // Utility functions
 function updateCartCount() {
-    fetch('/store/cart-count')
+    fetch('/store/api/cart_count')
         .then(response => response.json())
         .then(data => {
             const cartCount = document.querySelector('.floating-cart-btn .cart-count');
