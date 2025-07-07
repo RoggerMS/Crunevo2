@@ -658,3 +658,4 @@
 - Implemented store.search_products API with AJAX search and infinite scroll; removed 'Cargar más' button (PR ajax-store-search).
 - Implementado sistema de solicitudes de productos con modelo ProductRequest, formulario para estudiantes y panel admin de aprobación. Botón flotante en tienda para solicitar. (PR store-product-requests)
 - Added dark-mode variables in store.css and updated components to use them, ensuring theme toggle works (PR store-dark-mode).
+- Precios en soles estandarizados y visibles solo si product.price > 0 en plantillas de tienda (PR store-price-standard)
