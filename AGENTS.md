@@ -651,3 +651,4 @@
 - Documented personal space dashboard and shortcuts in README (PR docs-personal-space-dashboard).
 - Added recommended_products variable in store.view_product to fix template error and show related products (PR store-recommend-fix).
 - Fixed undefined csrf macro in store.html and added missing imports in duel, event and poll routes (PR csrf-macro-fix).
+- Imported csrf macro in view_product.html to fix template error (PR store-view-product-csrf-import).
