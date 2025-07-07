@@ -1,0 +1,83 @@
+{% for product in products %}
+<div class="product-card" data-category="{{ product.category }}" data-price="{{ product.price }}" data-credits="{{ product.price_credits or 0 }}">
+  <div class="product-image-container">
+    <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}"
+         alt="{{ product.name }}"
+         class="product-image"
+         loading="lazy">
+    <div class="product-badges">
+      {% if product.is_new %}<span class="badge badge-new">NUEVO</span>{% endif %}
+      {% if product.is_popular %}<span class="badge badge-popular">POPULAR</span>{% endif %}
+      {% if product.stock < 5 and product.stock > 0 %}<span class="badge badge-low-stock">¡Últimas {{ product.stock }}!</span>{% endif %}
+      {% if product.stock == 0 %}<span class="badge badge-out-stock">AGOTADO</span>{% endif %}
+    </div>
+    <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="favorite-form">
+      {{ csrf.csrf_field() }}
+      <button type="submit" class="favorite-btn {{ 'active' if product.id in favorite_ids else '' }}">
+        <i class="bi bi-heart{{ '-fill' if product.id in favorite_ids else '' }}"></i>
+      </button>
+    </form>
+    <div class="product-overlay">
+      <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn-quick-view">
+        <i class="bi bi-eye"></i> Ver Detalles
+      </a>
+    </div>
+  </div>
+  <div class="product-info">
+    <h3 class="product-name">{{ product.name }}</h3>
+    {% if product.description %}
+    <p class="product-description">{{ product.description[:60] }}{% if product.description|length > 60 %}...{% endif %}</p>
+    {% endif %}
+    <div class="product-prices">
+      {% if product.price > 0 %}
+      <div class="price-soles"><i class="bi bi-currency-dollar"></i><span>S/ {{ "%.2f"|format(product.price|float) }}</span></div>
+      {% endif %}
+      {% if product.price_credits %}
+      <div class="price-crolars"><i class="bi bi-coin"></i><span>{{ product.price_credits }} Crolars</span></div>
+      {% endif %}
+      {% if product.price == 0 and not product.price_credits %}
+      <div class="price-free"><i class="bi bi-gift"></i><span>GRATIS</span></div>
+      {% endif %}
+    </div>
+    {% if product.stock > 0 %}
+    <div class="stock-info"><i class="bi bi-check-circle text-success"></i><span>{{ product.stock }} disponibles</span></div>
+    {% else %}
+    <div class="stock-info out-of-stock"><i class="bi bi-x-circle text-danger"></i><span>Sin stock</span></div>
+    {% endif %}
+    <div class="product-actions">
+      {% if product.stock > 0 %}
+        {% if product.price_credits and (not product.credits_only or product.price == 0) %}
+        <form method="post" action="{{ url_for('store.redeem_product', product_id=product.id) }}" class="action-form">
+          {{ csrf.csrf_field() }}
+          <button type="submit" class="btn-crolars"{% if current_user.credits < product.price_credits %} disabled{% endif %}>
+            <i class="bi bi-coin"></i>
+            {% if current_user.credits >= product.price_credits %}Canjear{% else %}Crolars insuficientes{% endif %}
+          </button>
+        </form>
+        {% endif %}
+        {% if product.price > 0 and not product.credits_only %}
+        <form method="post" action="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="action-form">
+          {{ csrf.csrf_field() }}
+          <button type="submit" class="btn-cart"><i class="bi bi-cart-plus"></i>Agregar</button>
+        </form>
+        {% endif %}
+        {% if product.price == 0 and not product.price_credits %}
+        <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn-free"><i class="bi bi-download"></i>Obtener Gratis</a>
+        {% endif %}
+      {% else %}
+      <button class="btn-disabled" disabled><i class="bi bi-x-circle"></i>Sin Stock</button>
+      {% endif %}
+    </div>
+    {% if product.id in purchased_ids %}
+    <div class="purchased-indicator"><i class="bi bi-check-circle-fill"></i><span>Ya adquirido</span></div>
+    {% endif %}
+  </div>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon"><i class="bi bi-box-seam"></i></div>
+  <h3>No hay productos disponibles</h3>
+  <p>No se encontraron productos que coincidan con tus filtros.</p>
+  <a href="{{ url_for('store.store_index') }}" class="btn-primary">Ver todos los productos</a>
+</div>
+{% endfor %}

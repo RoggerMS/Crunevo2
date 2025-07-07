@@ -246,6 +246,25 @@
   margin-bottom: 2rem;
 }
 
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-item {
+  font-size: 0.9rem;
+}
+
+.apply-btn {
+  width: 100%;
+}
+
+#precioValue {
+  font-weight: 600;
+  margin-left: 0.25rem;
+}
+
 .filter-label {
   display: block;
   font-weight: 500;

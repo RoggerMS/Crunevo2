@@ -654,3 +654,4 @@
 - Imported csrf macro in view_product.html to fix template error (PR store-view-product-csrf-import).
 - Extracted inline JS from store/store.html to static/js/store.js and loaded via extra_js block (PR store-js-extract).
 - Moved sidebar filter markup into #filterOffcanvas with a floating button on mobile; off-canvas styles and JS toggling added (PR store-filter-offcanvas).
+- Added advanced filters with price range slider, stock checkbox, tag list and AJAX refresh (PR store-advanced-filters).
