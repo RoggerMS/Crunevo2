@@ -12,7 +12,12 @@
 {% block content %}
 <div class="store-wrapper">
   <div class="store-container">
-    <h2 class="mb-4 ms-3 mt-3">Marketplace</h2>
+    <h2 class="mb-4 ms-3 mt-3 d-inline-block">Marketplace</h2>
+    {% if current_user.is_authenticated %}
+    <button type="button" class="btn btn-primary btn-publish-product ms-2 mt-3" onclick="openPublishProductModal()">
+      🛒 Publicar producto
+    </button>
+    {% endif %}
     <button type="button" id="toggleSidebarBtn" class="btn btn-light d-none d-lg-inline-flex align-items-center ms-3 mb-2">
       <i class="bi bi-sliders"></i> Filtros
     </button>
@@ -352,20 +357,6 @@
           </button>
         </div>
 
-        <!-- Product Request Section -->
-        <div class="product-request-section">
-          <div class="request-icon">
-            <i class="bi bi-plus-circle"></i>
-          </div>
-          <h3 class="request-title">¿No encuentras lo que buscas?</h3>
-          <p class="request-description">
-            Solicita que agreguemos un producto específico al marketplace. Nuestro equipo revisará tu solicitud y te notificaremos cuando esté disponible.
-          </p>
-          <button type="button" class="btn-request-product" onclick="openProductRequestModal()">
-            <i class="bi bi-send"></i>
-            Solicitar producto
-          </button>
-        </div>
       </main>
     </div>
   </div>
@@ -398,59 +389,58 @@
   </div>
 </div>
 
-<!-- Product Request Modal -->
-<div class="modal fade" id="productRequestModal" tabindex="-1">
+
+<!-- Publish Product Modal -->
+<div class="modal fade" id="publishProductModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Solicitar producto</h5>
+        <h5 class="modal-title">Publicar producto</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form id="productRequestForm">
+      <form id="publishProductForm" enctype="multipart/form-data">
         <div class="modal-body">
           <div class="mb-3">
-            <label for="requestProductName" class="form-label">Nombre del producto *</label>
-            <input type="text" class="form-control" id="requestProductName" required>
+            <label for="publishName" class="form-label">Nombre del producto</label>
+            <input type="text" class="form-control" id="publishName" name="name" required>
           </div>
           <div class="mb-3">
-            <label for="requestCategory" class="form-label">Categoría *</label>
-            <select class="form-select" id="requestCategory" required>
+            <label for="publishPrice" class="form-label">Precio en soles</label>
+            <input type="number" step="0.01" min="0" class="form-control" id="publishPrice" name="price">
+          </div>
+          <div class="mb-3">
+            <label for="publishStock" class="form-label">Stock</label>
+            <input type="number" min="0" class="form-control" id="publishStock" name="stock">
+          </div>
+          <div class="mb-3">
+            <label for="publishCategory" class="form-label">Categoría</label>
+            <select class="form-select" id="publishCategory" name="category">
               <option value="">Seleccionar categoría</option>
-              <option value="Tecnología">Tecnología</option>
-              <option value="Libros">Libros</option>
-              <option value="Accesorios">Accesorios</option>
-              <option value="Cuadernos">Cuadernos</option>
-              <option value="Comestibles">Comestibles</option>
-              <option value="Otro">Otro</option>
+              {% for cat in categories %}
+              <option value="{{ cat }}">{{ cat }}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="mb-3">
-            <label for="requestDescription" class="form-label">Descripción del producto</label>
-            <textarea class="form-control" id="requestDescription" rows="3" 
-                      placeholder="Describe el producto que te gustaría ver en el marketplace..."></textarea>
+            <label for="publishDescription" class="form-label">Descripción</label>
+            <textarea class="form-control" id="publishDescription" name="description" rows="3"></textarea>
           </div>
           <div class="mb-3">
-            <label for="requestImage" class="form-label">Imagen de referencia (opcional)</label>
-            <input type="file" class="form-control" id="requestImage" accept="image/*">
+            <label for="publishImage" class="form-label">Imagen</label>
+            <input type="file" class="form-control" id="publishImage" name="image" accept="image/*">
           </div>
-          <div class="mb-3">
-            <label for="requestComment" class="form-label">Comentarios adicionales</label>
-            <textarea class="form-control" id="requestComment" rows="2" 
-                      placeholder="¿Por qué sería útil este producto para los estudiantes?"></textarea>
+          <div class="alert alert-info" role="alert">
+            🛠️ Este producto será enviado para revisión. Estará visible una vez aprobado por un administrador.
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary">
-            <i class="bi bi-send"></i>
-            Enviar solicitud
-          </button>
+          <button type="submit" class="btn btn-primary">Publicar</button>
         </div>
       </form>
     </div>
   </div>
 </div>
-
 <!-- Toast Notifications -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
   <div id="cartToast" class="toast" role="alert">
@@ -475,16 +465,17 @@
     </div>
   </div>
 
-  <div id="requestToast" class="toast" role="alert">
+  <div id="publishToast" class="toast" role="alert">
     <div class="toast-header">
       <i class="bi bi-check-circle text-success me-2"></i>
-      <strong class="me-auto">Solicitud</strong>
+      <strong class="me-auto">Producto</strong>
       <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
     </div>
     <div class="toast-body">
-      Tu solicitud de producto ha sido enviada exitosamente
+      Producto enviado para revisión
     </div>
   </div>
+
 
   <div id="errorToast" class="toast" role="alert">
     <div class="toast-header">
