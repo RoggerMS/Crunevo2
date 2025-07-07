@@ -684,3 +684,4 @@
 - Added missing backpack templates (journal, new_entry, view_entry) to fix TemplateNotFound errors (PR backpack-templates-fix).
 - Fixed mobile header overlap, restored notes icon in bottom nav and improved notification filters for responsiveness (PR mobile-visual-fixes).
 - Rediseñadas /onboarding/pending y /onboarding/change_email con tarjeta centrada e íconos Bootstrap (PR onboarding-pages-redesign).
+- Mejorados formularios de verificación y botones flotantes reposicionados sobre la barra inferior (PR onboarding-floating-fix).
