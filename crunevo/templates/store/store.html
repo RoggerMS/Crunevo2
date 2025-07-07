@@ -1,7 +1,7 @@
-{% extends 'base.html' %}
-{% import 'components/csrf.html' as csrf %}
 
-{% block title %}🛍️ Tienda CRUNEVO - Marketplace Educativo{% endblock %}
+{% extends 'base.html' %}
+
+{% block title %}🛍️ Marketplace CRUNEVO - Tienda Educativa{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
@@ -11,18 +11,18 @@
 <div class="store-wrapper">
   <!-- Hero Section -->
   <section class="store-hero">
-    <div class="container-fluid">
+    <div class="store-container">
       <div class="hero-content">
         <div class="hero-text">
           <h1>🛍️ Marketplace CRUNEVO</h1>
-          <p>Productos educativos y accesorios para estudiantes. ¡Canjea con Crolars o compra directamente!</p>
+          <p>Descubre productos educativos, tecnología y accesorios diseñados especialmente para estudiantes. ¡Canjea con Crolars o compra directamente con precios exclusivos!</p>
         </div>
         <div class="hero-balance">
           <div class="balance-card">
             <i class="bi bi-coin"></i>
             <div class="balance-info">
-              <span class="balance-amount">{{ current_user.credits }}</span>
-              <span class="balance-label">Crolars</span>
+              <span class="balance-amount">{{ current_user.credits or 0 }}</span>
+              <span class="balance-label">Crolars disponibles</span>
             </div>
           </div>
         </div>
@@ -30,60 +30,46 @@
     </div>
   </section>
 
-  <!-- Featured Products Carousel -->
-  {% if featured_products %}
-  <section class="featured-section">
-    <div class="container-fluid">
-      <h2 class="section-title">⭐ Productos Destacados</h2>
-      <div class="featured-carousel">
-        {% for product in featured_products %}
-        <div class="featured-card">
-          <div class="featured-image">
-            <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}" 
-                 alt="{{ product.name }}" loading="lazy">
-            {% if product.is_new %}
-            <span class="badge badge-new">NUEVO</span>
-            {% endif %}
-            {% if product.price == 0 and product.price_credits == 0 %}
-            <span class="badge badge-free">GRATIS</span>
-            {% endif %}
-          </div>
-          <div class="featured-info">
-            <h3>{{ product.name }}</h3>
-            <div class="featured-prices">
-              {% if product.price > 0 %}
-              <span class="price-soles">S/ {{ "%.2f"|format(product.price|float) }}</span>
-              {% endif %}
-              {% if product.price_credits %}
-              <span class="price-crolars">{{ product.price_credits }} Crolars</span>
-              {% endif %}
-            </div>
-            <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn-featured">
-              Ver Producto
-            </a>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-  </section>
-  {% endif %}
-
-  <!-- Main Store Content -->
-  <div class="container-fluid store-main">
+  <div class="store-container">
     <div class="store-layout">
       <!-- Sidebar Filters -->
       <aside class="store-sidebar">
-        <div id="filterOffcanvas" class="filters-container offcanvas-mobile d-none d-lg-block">
-          <button type="button" class="btn-close d-lg-none mb-3" id="closeFilterBtn" aria-label="Cerrar"></button>
-          <h3>🔍 Filtros</h3>
+        <div class="filters-container">
+          <div class="filters-header">
+            <h3 class="filters-title">🔍 Filtros</h3>
+            <button type="button" class="clear-filters" onclick="clearAllFilters()">
+              Limpiar todo
+            </button>
+          </div>
 
-          <!-- Search -->
+          <!-- Search Filter -->
           <div class="filter-group">
-            <label class="filter-label">Buscar producto</label>
-            <div class="search-box">
-              <i class="bi bi-search"></i>
-              <input type="text" id="productSearch" placeholder="Buscar..." class="search-input">
+            <label class="filter-label">Buscar productos</label>
+            <div class="search-container">
+              <i class="bi bi-search search-icon"></i>
+              <input type="text" 
+                     id="productSearch" 
+                     class="search-input" 
+                     placeholder="Buscar por nombre o descripción..."
+                     autocomplete="off">
+            </div>
+          </div>
+
+          <!-- Price Range Filter -->
+          <div class="filter-group">
+            <label class="filter-label">Rango de precios</label>
+            <div class="price-range-container">
+              <input type="range" 
+                     id="priceRange" 
+                     class="price-range-slider"
+                     min="0" 
+                     max="500" 
+                     value="500"
+                     step="10">
+              <div class="price-range-display">
+                <span>S/ 0</span>
+                <span id="maxPriceDisplay">S/ 500</span>
+              </div>
             </div>
           </div>
 
@@ -91,143 +77,392 @@
           <div class="filter-group">
             <label class="filter-label">Categorías</label>
             <div class="category-grid">
-              <a href="{{ url_for('store.store_index') }}" 
-                 class="category-item {{ 'active' if not categoria else '' }}">
+              <a href="#" class="category-item active" data-category="all">
                 <i class="bi bi-grid"></i>
-                <span>Todos</span>
+                <span>Todos los productos</span>
+                <span class="category-count">{{ products|length }}</span>
               </a>
-              {% for cat in categories %}
-              <a href="{{ url_for('store.store_index', categoria=cat) }}" 
-                 class="category-item {{ 'active' if categoria == cat else '' }}">
-                {% if cat == 'Tecnología' %}
+              {% set category_counts = {} %}
+              {% for product in products %}
+                {% if product.category %}
+                  {% set _ = category_counts.update({product.category: category_counts.get(product.category, 0) + 1}) %}
+                {% endif %}
+              {% endfor %}
+              
+              {% for category, count in category_counts.items() %}
+              <a href="#" class="category-item" data-category="{{ category }}">
+                {% if category == 'Tecnología' %}
                 <i class="bi bi-phone"></i>
-                {% elif cat == 'Accesorios' %}
+                {% elif category == 'Accesorios' %}
                 <i class="bi bi-bag"></i>
-                {% elif cat == 'Cuadernos' %}
+                {% elif category == 'Cuadernos' %}
                 <i class="bi bi-journal"></i>
-                {% elif cat == 'Comestibles' %}
+                {% elif category == 'Comestibles' %}
                 <i class="bi bi-cup-hot"></i>
+                {% elif category == 'Libros' %}
+                <i class="bi bi-book"></i>
                 {% else %}
                 <i class="bi bi-box"></i>
                 {% endif %}
-                <span>{{ cat }}</span>
+                <span>{{ category }}</span>
+                <span class="category-count">{{ count }}</span>
               </a>
               {% endfor %}
             </div>
           </div>
 
-          <!-- Quick Filters -->
+          <!-- Availability Filter -->
           <div class="filter-group">
-            <label class="filter-label">Filtros rápidos</label>
-          <div class="quick-filters">
-            <a href="{{ url_for('store.store_index', free=1) }}" class="quick-filter">
-              <i class="bi bi-gift"></i> Gratis
-            </a>
-            <a href="{{ url_for('store.store_index', top=1) }}" class="quick-filter">
-              <i class="bi bi-fire"></i> Populares
-            </a>
-            <a href="{{ url_for('store.view_favorites') }}" class="quick-filter">
-              <i class="bi bi-heart"></i> Favoritos
-            </a>
-          </div>
-        </div>
-
-        <form id="filtersForm" class="filter-form mt-3">
-          <div class="filter-group">
-            <label class="filter-label" for="precioRange">Precio máximo: <span id="precioValue">{{ precio_max or 500 }}</span></label>
-            <input type="range" class="form-range" min="0" max="500" id="precioRange" name="precio_max" value="{{ precio_max or 500 }}">
-          </div>
-          <div class="filter-group form-check">
-            <input class="form-check-input" type="checkbox" id="stockCheck" name="stock" value="1" {% if request.args.get('stock') %}checked{% endif %}>
-            <label class="form-check-label" for="stockCheck">Solo productos en stock</label>
-          </div>
-          <div class="filter-group">
-            <label class="filter-label">Etiquetas</label>
-            <div class="tag-list">
-              {% set tags_selected = request.args.getlist('tags') %}
-              <label class="tag-item"><input type="checkbox" name="tags" value="Premium" {% if 'Premium' in tags_selected %}checked{% endif %}>Premium</label>
-              <label class="tag-item"><input type="checkbox" name="tags" value="Ofertas" {% if 'Ofertas' in tags_selected %}checked{% endif %}>Ofertas</label>
-              <label class="tag-item"><input type="checkbox" name="tags" value="Digital" {% if 'Digital' in tags_selected %}checked{% endif %}>Digital</label>
-              <label class="tag-item"><input type="checkbox" name="tags" value="Físico" {% if 'Físico' in tags_selected %}checked{% endif %}>Físico</label>
+            <label class="filter-label">Disponibilidad</label>
+            <div class="availability-options">
+              <div class="availability-option active" data-availability="all">
+                <div class="availability-checkbox"></div>
+                <span>Todos los productos</span>
+              </div>
+              <div class="availability-option" data-availability="in-stock">
+                <div class="availability-checkbox"></div>
+                <span>En stock</span>
+              </div>
+              <div class="availability-option" data-availability="low-stock">
+                <div class="availability-checkbox"></div>
+                <span>Pocas unidades</span>
+              </div>
+              <div class="availability-option" data-availability="free">
+                <div class="availability-checkbox"></div>
+                <span>Productos gratuitos</span>
+              </div>
             </div>
           </div>
-          <button type="submit" class="btn btn-primary apply-btn">Aplicar filtros</button>
-        </form>
 
-        <!-- Cart Summary -->
-        <div class="filter-group cart-summary">
-          <a href="{{ url_for('store.view_cart') }}" class="cart-link">
-            <i class="bi bi-cart3"></i>
+          <!-- Cart Summary -->
+          <div class="cart-summary">
+            <a href="{{ url_for('store.view_cart') }}" class="cart-link">
+              <i class="bi bi-cart3 cart-icon"></i>
               <div class="cart-info">
                 <span class="cart-title">Mi Carrito</span>
-                <span class="cart-count" id="cartCount">0</span>
+                <span class="cart-count" id="cartCount">0 productos</span>
               </div>
             </a>
           </div>
         </div>
       </aside>
 
-      <!-- Products Grid -->
+      <!-- Products Main Content -->
       <main class="products-main">
+        <!-- Products Header -->
         <div class="products-header">
           <div class="results-info">
-            <h2>
-              {% if categoria %}
-              {{ categoria }}
-              {% elif request.args.get('free') %}
-              Productos Gratuitos
-              {% elif request.args.get('top') %}
-              Más Populares
-              {% else %}
-              Todos los Productos
-              {% endif %}
-            </h2>
-            <span class="results-count">{{ products|length }} productos encontrados</span>
+            <h2 id="resultsTitle">Todos los productos</h2>
+            <div class="results-meta">
+              <span id="resultsCount">{{ products|length }} productos encontrados</span>
+              <div class="active-filters" id="activeFilters">
+                <!-- Dynamic filter tags will be inserted here -->
+              </div>
+            </div>
           </div>
 
-          <!-- Sort Options -->
-          <div class="sort-options">
+          <div class="sort-controls">
             <select id="sortSelect" class="sort-select">
-              <option value="featured">Destacados</option>
-              <option value="price-low">Precio: Menor a Mayor</option>
-              <option value="price-high">Precio: Mayor a Menor</option>
-              <option value="newest">Más Nuevos</option>
-              <option value="popular">Más Populares</option>
+              <option value="featured">Más destacados</option>
+              <option value="price-low">Precio: Menor a mayor</option>
+              <option value="price-high">Precio: Mayor a menor</option>
+              <option value="newest">Más recientes</option>
+              <option value="popular">Más populares</option>
+              <option value="name">Nombre A-Z</option>
             </select>
+            
+            <div class="view-toggle">
+              <button type="button" class="active" data-view="grid">
+                <i class="bi bi-grid"></i>
+              </button>
+              <button type="button" data-view="list">
+                <i class="bi bi-list"></i>
+              </button>
+            </div>
           </div>
         </div>
 
         <!-- Products Grid -->
         <div class="products-grid" id="productsGrid">
-          {% include 'store/_product_cards.html' %}
-        </div>
-        <div id="productEnd" class="text-center py-4 d-none">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Cargando...</span>
+          {% for product in products %}
+          <div class="product-card" 
+               data-category="{{ product.category or 'other' }}" 
+               data-price="{{ product.price or 0 }}" 
+               data-credits="{{ product.price_credits or 0 }}"
+               data-stock="{{ product.stock or 0 }}"
+               data-name="{{ product.name.lower() }}"
+               data-description="{{ (product.description or '').lower() }}"
+               data-featured="{{ 'true' if product.is_featured else 'false' }}"
+               data-popular="{{ 'true' if product.is_popular else 'false' }}"
+               data-new="{{ 'true' if product.is_new else 'false' }}">
+            
+            <div class="product-image-container">
+              <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}" 
+                   alt="{{ product.name }}" 
+                   class="product-image"
+                   loading="lazy">
+
+              <!-- Product Badges -->
+              <div class="product-badges">
+                {% if product.is_featured %}
+                <span class="badge badge-featured">Destacado</span>
+                {% endif %}
+                {% if product.is_new %}
+                <span class="badge badge-new">Nuevo</span>
+                {% endif %}
+                {% if product.is_popular %}
+                <span class="badge badge-popular">Popular</span>
+                {% endif %}
+                {% if product.stock > 0 and product.stock < 5 %}
+                <span class="badge badge-low-stock">¡Últimas {{ product.stock }}!</span>
+                {% elif product.stock == 0 %}
+                <span class="badge badge-out-stock">Agotado</span>
+                {% endif %}
+              </div>
+
+              <!-- Favorite Button -->
+              <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="favorite-form">
+                {{ csrf.csrf_field() }}
+                <button type="submit" class="favorite-btn {{ 'active' if product.id in favorite_ids else '' }}">
+                  <i class="bi bi-heart{{ '-fill' if product.id in favorite_ids else '' }}"></i>
+                </button>
+              </form>
+
+              <!-- Quick View Overlay -->
+              <div class="product-overlay">
+                <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn-quick-view">
+                  <i class="bi bi-eye"></i> Ver detalles
+                </a>
+              </div>
+            </div>
+
+            <div class="product-info">
+              <h3 class="product-name">{{ product.name }}</h3>
+
+              {% if product.description %}
+              <p class="product-description">{{ product.description }}</p>
+              {% endif %}
+
+              <div class="product-prices">
+                {% if product.price > 0 %}
+                <div class="price-row">
+                  <span class="price-soles">
+                    <i class="bi bi-currency-dollar"></i>
+                    S/ {{ "%.2f"|format(product.price|float) }}
+                  </span>
+                </div>
+                {% endif %}
+                
+                {% if product.price_credits %}
+                <div class="price-row">
+                  <span class="price-crolars">
+                    <i class="bi bi-coin"></i>
+                    {{ product.price_credits }} Crolars
+                  </span>
+                </div>
+                {% endif %}
+                
+                {% if product.price == 0 and not product.price_credits %}
+                <div class="price-row">
+                  <span class="price-free">
+                    <i class="bi bi-gift"></i>
+                    GRATIS
+                  </span>
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Stock Info -->
+              {% if product.stock > 5 %}
+              <div class="stock-info in-stock">
+                <i class="bi bi-check-circle"></i>
+                <span>{{ product.stock }} disponibles</span>
+              </div>
+              {% elif product.stock > 0 %}
+              <div class="stock-info low-stock">
+                <i class="bi bi-exclamation-triangle"></i>
+                <span>¡Solo {{ product.stock }} disponibles!</span>
+              </div>
+              {% else %}
+              <div class="stock-info out-of-stock">
+                <i class="bi bi-x-circle"></i>
+                <span>Sin stock</span>
+              </div>
+              {% endif %}
+
+              <!-- Action Buttons -->
+              <div class="product-actions">
+                {% if product.stock > 0 and product.id not in purchased_ids %}
+                  {% if product.price_credits and (not product.credits_only or product.price == 0) %}
+                  <form method="post" action="{{ url_for('store.redeem_product', product_id=product.id) }}" class="action-form">
+                    {{ csrf.csrf_field() }}
+                    <button type="submit" 
+                            class="btn-primary-action" 
+                            {% if current_user.credits < product.price_credits %}disabled{% endif %}>
+                      <i class="bi bi-coin"></i>
+                      {% if current_user.credits >= product.price_credits %}
+                      Canjear {{ product.price_credits }} Crolars
+                      {% else %}
+                      Crolars insuficientes
+                      {% endif %}
+                    </button>
+                  </form>
+                  {% endif %}
+
+                  {% if product.price > 0 and not product.credits_only %}
+                  <form method="post" action="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="action-form">
+                    {{ csrf.csrf_field() }}
+                    <button type="submit" class="btn-secondary-action">
+                      <i class="bi bi-cart-plus"></i>
+                      Agregar al carrito
+                    </button>
+                  </form>
+                  {% endif %}
+
+                  {% if product.price == 0 and not product.price_credits %}
+                  <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn-free-action">
+                    <i class="bi bi-download"></i>
+                    Obtener gratis
+                  </a>
+                  {% endif %}
+                {% elif product.id in purchased_ids %}
+                <div class="purchased-indicator">
+                  <i class="bi bi-check-circle-fill"></i>
+                  <span>Ya lo tienes</span>
+                </div>
+                {% else %}
+                <button class="btn-disabled-action" disabled>
+                  <i class="bi bi-x-circle"></i>
+                  Sin stock
+                </button>
+                {% endif %}
+              </div>
+            </div>
           </div>
+          {% else %}
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="bi bi-box-seam"></i>
+            </div>
+            <h3>No hay productos disponibles</h3>
+            <p>No se encontraron productos que coincidan con tus filtros actuales.</p>
+            <button type="button" class="btn-primary" onclick="clearAllFilters()">
+              <i class="bi bi-arrow-clockwise"></i>
+              Mostrar todos los productos
+            </button>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+          <div class="spinner"></div>
+        </div>
+
+        <!-- Load More Section -->
+        <div class="load-more-section" id="loadMoreSection" style="display: none;">
+          <button type="button" class="btn-load-more" id="loadMoreBtn">
+            <i class="bi bi-arrow-down-circle"></i>
+            Cargar más productos
+          </button>
+        </div>
+
+        <!-- Product Request Section -->
+        <div class="product-request-section">
+          <div class="request-icon">
+            <i class="bi bi-plus-circle"></i>
+          </div>
+          <h3 class="request-title">¿No encuentras lo que buscas?</h3>
+          <p class="request-description">
+            Solicita que agreguemos un producto específico al marketplace. Nuestro equipo revisará tu solicitud y te notificaremos cuando esté disponible.
+          </p>
+          <button type="button" class="btn-request-product" onclick="openProductRequestModal()">
+            <i class="bi bi-send"></i>
+            Solicitar producto
+          </button>
         </div>
       </main>
     </div>
   </div>
 
-  <!-- Floating Cart Button (Mobile) -->
-  <div class="floating-cart d-lg-none">
-    <a href="{{ url_for('store.view_cart') }}" class="floating-cart-btn">
-      <i class="bi bi-cart3"></i>
-      <span class="cart-badge" id="mobileCartCount">0</span>
-    </a>
+  <!-- Mobile Filter Toggle -->
+  <button type="button" class="mobile-filter-toggle" onclick="toggleMobileFilters()">
+    <i class="bi bi-funnel"></i>
+  </button>
+
+  <!-- Mobile Off-Canvas Filters -->
+  <div class="offcanvas-overlay" id="offcanvasOverlay" onclick="closeMobileFilters()"></div>
+  <div class="offcanvas-filters" id="offcanvasFilters">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Filtros</h5>
+      <button type="button" class="offcanvas-close" onclick="closeMobileFilters()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+    <div class="offcanvas-body">
+      <!-- Mobile filters content will be cloned from sidebar -->
+    </div>
   </div>
 
-  <!-- Floating Filter Button (Mobile) -->
-  <div class="floating-filter d-lg-none">
-    <button type="button" class="floating-filter-btn" id="openFilterBtn">
-      <i class="bi bi-funnel-fill"></i>
-    </button>
-  </div>
-  <div class="floating-request">
-    <a href="{{ url_for('store.request_product') }}" class="floating-request-btn">
-      <i class="bi bi-plus-lg"></i>
+  <!-- Floating Cart Button -->
+  <div class="floating-cart">
+    <a href="{{ url_for('store.view_cart') }}" class="floating-cart-btn">
+      <i class="bi bi-cart3"></i>
+      <span class="cart-badge" id="floatingCartCount">0</span>
     </a>
+  </div>
+</div>
+
+<!-- Product Request Modal -->
+<div class="modal fade" id="productRequestModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Solicitar producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="productRequestForm">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="requestProductName" class="form-label">Nombre del producto *</label>
+            <input type="text" class="form-control" id="requestProductName" required>
+          </div>
+          <div class="mb-3">
+            <label for="requestCategory" class="form-label">Categoría *</label>
+            <select class="form-select" id="requestCategory" required>
+              <option value="">Seleccionar categoría</option>
+              <option value="Tecnología">Tecnología</option>
+              <option value="Libros">Libros</option>
+              <option value="Accesorios">Accesorios</option>
+              <option value="Cuadernos">Cuadernos</option>
+              <option value="Comestibles">Comestibles</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="requestDescription" class="form-label">Descripción del producto</label>
+            <textarea class="form-control" id="requestDescription" rows="3" 
+                      placeholder="Describe el producto que te gustaría ver en el marketplace..."></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="requestImage" class="form-label">Imagen de referencia (opcional)</label>
+            <input type="file" class="form-control" id="requestImage" accept="image/*">
+          </div>
+          <div class="mb-3">
+            <label for="requestComment" class="form-label">Comentarios adicionales</label>
+            <textarea class="form-control" id="requestComment" rows="2" 
+                      placeholder="¿Por qué sería útil este producto para los estudiantes?"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-send"></i>
+            Enviar solicitud
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -240,13 +475,34 @@
       <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
     </div>
     <div class="toast-body">
-      Producto agregado al carrito
+      Producto agregado al carrito exitosamente
+    </div>
+  </div>
+
+  <div id="favoriteToast" class="toast" role="alert">
+    <div class="toast-header">
+      <i class="bi bi-heart-fill text-danger me-2"></i>
+      <strong class="me-auto">Favoritos</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body" id="favoriteToastBody">
+      Producto agregado a favoritos
+    </div>
+  </div>
+
+  <div id="requestToast" class="toast" role="alert">
+    <div class="toast-header">
+      <i class="bi bi-check-circle text-success me-2"></i>
+      <strong class="me-auto">Solicitud</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body">
+      Tu solicitud de producto ha sido enviada exitosamente
     </div>
   </div>
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
-<script src="{{ url_for('static', filename='js/store.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/store.js') }}"></script>
 {% endblock %}
