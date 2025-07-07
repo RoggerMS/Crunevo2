@@ -48,6 +48,8 @@ def get_cart():
 def store_index():
     categoria = request.args.get("categoria")
     precio_max = request.args.get("precio_max", type=float)
+    stock = request.args.get("stock", type=int)
+    tags = request.args.getlist("tags")
     top = request.args.get("top", type=int)
     free = request.args.get("free", type=int)
     pack = request.args.get("pack", type=int)
@@ -59,6 +61,16 @@ def store_index():
         query = query.filter((Product.price == 0) | (Product.price_credits == 0))
     if precio_max is not None:
         query = query.filter(Product.price <= precio_max)
+    if stock:
+        query = query.filter(Product.stock > 0)
+    if "Premium" in tags:
+        query = query.filter(Product.credits_only.is_(True))
+    if "Ofertas" in tags:
+        query = query.filter(Product.is_featured.is_(True))
+    if "Digital" in tags:
+        query = query.filter(Product.download_url.isnot(None))
+    if "Físico" in tags:
+        query = query.filter(Product.download_url.is_(None))
 
     if top:
         from sqlalchemy import func
@@ -98,6 +110,15 @@ def store_index():
         .limit(5)
         .all()
     )
+
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return render_template(
+            "store/_product_cards.html",
+            products=products,
+            favorite_ids=favorite_ids,
+            purchased_ids=purchased_ids,
+        )
+
     return render_template(
         "store/store.html",
         products=products,

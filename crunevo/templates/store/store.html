@@ -119,23 +119,45 @@
           <!-- Quick Filters -->
           <div class="filter-group">
             <label class="filter-label">Filtros rápidos</label>
-            <div class="quick-filters">
-              <a href="{{ url_for('store.store_index', free=1) }}" class="quick-filter">
-                <i class="bi bi-gift"></i> Gratis
-              </a>
-              <a href="{{ url_for('store.store_index', top=1) }}" class="quick-filter">
-                <i class="bi bi-fire"></i> Populares
-              </a>
-              <a href="{{ url_for('store.view_favorites') }}" class="quick-filter">
-                <i class="bi bi-heart"></i> Favoritos
-              </a>
+          <div class="quick-filters">
+            <a href="{{ url_for('store.store_index', free=1) }}" class="quick-filter">
+              <i class="bi bi-gift"></i> Gratis
+            </a>
+            <a href="{{ url_for('store.store_index', top=1) }}" class="quick-filter">
+              <i class="bi bi-fire"></i> Populares
+            </a>
+            <a href="{{ url_for('store.view_favorites') }}" class="quick-filter">
+              <i class="bi bi-heart"></i> Favoritos
+            </a>
+          </div>
+        </div>
+
+        <form id="filtersForm" class="filter-form mt-3">
+          <div class="filter-group">
+            <label class="filter-label" for="precioRange">Precio máximo: <span id="precioValue">{{ precio_max or 500 }}</span></label>
+            <input type="range" class="form-range" min="0" max="500" id="precioRange" name="precio_max" value="{{ precio_max or 500 }}">
+          </div>
+          <div class="filter-group form-check">
+            <input class="form-check-input" type="checkbox" id="stockCheck" name="stock" value="1" {% if request.args.get('stock') %}checked{% endif %}>
+            <label class="form-check-label" for="stockCheck">Solo productos en stock</label>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Etiquetas</label>
+            <div class="tag-list">
+              {% set tags_selected = request.args.getlist('tags') %}
+              <label class="tag-item"><input type="checkbox" name="tags" value="Premium" {% if 'Premium' in tags_selected %}checked{% endif %}>Premium</label>
+              <label class="tag-item"><input type="checkbox" name="tags" value="Ofertas" {% if 'Ofertas' in tags_selected %}checked{% endif %}>Ofertas</label>
+              <label class="tag-item"><input type="checkbox" name="tags" value="Digital" {% if 'Digital' in tags_selected %}checked{% endif %}>Digital</label>
+              <label class="tag-item"><input type="checkbox" name="tags" value="Físico" {% if 'Físico' in tags_selected %}checked{% endif %}>Físico</label>
             </div>
           </div>
+          <button type="submit" class="btn btn-primary apply-btn">Aplicar filtros</button>
+        </form>
 
-          <!-- Cart Summary -->
-          <div class="filter-group cart-summary">
-            <a href="{{ url_for('store.view_cart') }}" class="cart-link">
-              <i class="bi bi-cart3"></i>
+        <!-- Cart Summary -->
+        <div class="filter-group cart-summary">
+          <a href="{{ url_for('store.view_cart') }}" class="cart-link">
+            <i class="bi bi-cart3"></i>
               <div class="cart-info">
                 <span class="cart-title">Mi Carrito</span>
                 <span class="cart-count" id="cartCount">0</span>
@@ -177,148 +199,7 @@
 
         <!-- Products Grid -->
         <div class="products-grid" id="productsGrid">
-          {% for product in products %}
-          <div class="product-card" data-category="{{ product.category }}" data-price="{{ product.price }}" data-credits="{{ product.price_credits or 0 }}">
-            <div class="product-image-container">
-              <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}" 
-                   alt="{{ product.name }}" 
-                   class="product-image"
-                   loading="lazy">
-
-              <!-- Product Badges -->
-              <div class="product-badges">
-                {% if product.is_new %}
-                <span class="badge badge-new">NUEVO</span>
-                {% endif %}
-                {% if product.is_popular %}
-                <span class="badge badge-popular">POPULAR</span>
-                {% endif %}
-                {% if product.stock < 5 and product.stock > 0 %}
-                <span class="badge badge-low-stock">¡Últimas {{ product.stock }}!</span>
-                {% endif %}
-                {% if product.stock == 0 %}
-                <span class="badge badge-out-stock">AGOTADO</span>
-                {% endif %}
-              </div>
-
-              <!-- Favorite Button -->
-              <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="favorite-form">
-                {{ csrf.csrf_field() }}
-                <button type="submit" class="favorite-btn {{ 'active' if product.id in favorite_ids else '' }}">
-                  <i class="bi bi-heart{{ '-fill' if product.id in favorite_ids else '' }}"></i>
-                </button>
-              </form>
-
-              <!-- Quick View Overlay -->
-              <div class="product-overlay">
-                <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn-quick-view">
-                  <i class="bi bi-eye"></i> Ver Detalles
-                </a>
-              </div>
-            </div>
-
-            <div class="product-info">
-              <h3 class="product-name">{{ product.name }}</h3>
-
-              {% if product.description %}
-              <p class="product-description">{{ product.description[:60] }}{% if product.description|length > 60 %}...{% endif %}</p>
-              {% endif %}
-
-              <div class="product-prices">
-                {% if product.price > 0 %}
-                <div class="price-soles">
-                  <i class="bi bi-currency-dollar"></i>
-                  <span>S/ {{ "%.2f"|format(product.price|float) }}</span>
-                </div>
-                {% endif %}
-                {% if product.price_credits %}
-                <div class="price-crolars">
-                  <i class="bi bi-coin"></i>
-                  <span>{{ product.price_credits }} Crolars</span>
-                </div>
-                {% endif %}
-                {% if product.price == 0 and not product.price_credits %}
-                <div class="price-free">
-                  <i class="bi bi-gift"></i>
-                  <span>GRATIS</span>
-                </div>
-                {% endif %}
-              </div>
-
-              <!-- Stock Info -->
-              {% if product.stock > 0 %}
-              <div class="stock-info">
-                <i class="bi bi-check-circle text-success"></i>
-                <span>{{ product.stock }} disponibles</span>
-              </div>
-              {% else %}
-              <div class="stock-info out-of-stock">
-                <i class="bi bi-x-circle text-danger"></i>
-                <span>Sin stock</span>
-              </div>
-              {% endif %}
-
-              <!-- Action Buttons -->
-              <div class="product-actions">
-                {% if product.stock > 0 %}
-                  {% if product.price_credits and (not product.credits_only or product.price == 0) %}
-                  <form method="post" action="{{ url_for('store.redeem_product', product_id=product.id) }}" class="action-form">
-                    {{ csrf.csrf_field() }}
-                    <button type="submit" class="btn-crolars" 
-                            {% if current_user.credits < product.price_credits %}disabled{% endif %}>
-                      <i class="bi bi-coin"></i>
-                      {% if current_user.credits >= product.price_credits %}
-                      Canjear
-                      {% else %}
-                      Crolars insuficientes
-                      {% endif %}
-                    </button>
-                  </form>
-                  {% endif %}
-
-                  {% if product.price > 0 and not product.credits_only %}
-                  <form method="post" action="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="action-form">
-                    {{ csrf.csrf_field() }}
-                    <button type="submit" class="btn-cart">
-                      <i class="bi bi-cart-plus"></i>
-                      Agregar
-                    </button>
-                  </form>
-                  {% endif %}
-
-                  {% if product.price == 0 and not product.price_credits %}
-                  <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn-free">
-                    <i class="bi bi-download"></i>
-                    Obtener Gratis
-                  </a>
-                  {% endif %}
-                {% else %}
-                <button class="btn-disabled" disabled>
-                  <i class="bi bi-x-circle"></i>
-                  Sin Stock
-                </button>
-                {% endif %}
-              </div>
-
-              <!-- Purchased Indicator -->
-              {% if product.id in purchased_ids %}
-              <div class="purchased-indicator">
-                <i class="bi bi-check-circle-fill"></i>
-                <span>Ya adquirido</span>
-              </div>
-              {% endif %}
-            </div>
-          </div>
-          {% else %}
-          <div class="empty-state">
-            <div class="empty-icon">
-              <i class="bi bi-box-seam"></i>
-            </div>
-            <h3>No hay productos disponibles</h3>
-            <p>No se encontraron productos que coincidan con tus filtros.</p>
-            <a href="{{ url_for('store.store_index') }}" class="btn-primary">Ver todos los productos</a>
-          </div>
-          {% endfor %}
+          {% include 'store/_product_cards.html' %}
         </div>
 
         <!-- Load More / Pagination -->

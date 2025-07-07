@@ -148,4 +148,27 @@ function showToast(toastId) {
     if (closeBtn) {
         closeBtn.addEventListener('click', closeFilters);
     }
+
+    const filtersForm = document.getElementById('filtersForm');
+    if (filtersForm) {
+        const precioRange = document.getElementById('precioRange');
+        const precioValue = document.getElementById('precioValue');
+        if (precioRange && precioValue) {
+            precioRange.addEventListener('input', () => {
+                precioValue.textContent = precioRange.value;
+            });
+        }
+        filtersForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const params = new URLSearchParams(new FormData(filtersForm));
+            fetch(`/store?${params.toString()}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            })
+                .then(r => r.text())
+                .then(html => {
+                    document.getElementById('productsGrid').innerHTML = html;
+                    closeFilters();
+                });
+        });
+    }
 })();
