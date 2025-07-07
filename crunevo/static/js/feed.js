@@ -500,7 +500,8 @@ class FeedManager {
       const items = await response.json();
 
       if (items.length === 0) {
-        document.getElementById('feedEnd').style.display = 'none';
+        const end = document.getElementById('feedEnd');
+        if (end) end.style.display = 'none';
         return;
       }
 

@@ -682,7 +682,23 @@ class CareerModule {
     }
 }
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+function initCareerPage() {
     window.careerModule = new CareerModule();
-});
+
+    const tabs = document.querySelectorAll('.career-nav .nav-link');
+    const contents = document.querySelectorAll('.tab-pane');
+
+    tabs.forEach((tab) => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            tabs.forEach((t) => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            contents.forEach((c) => c.classList.add('d-none'));
+            const target = document.getElementById(tab.dataset.tab);
+            if (target) target.classList.remove('d-none');
+        });
+    });
+}
+
+window.initCareerPage = initCareerPage;
