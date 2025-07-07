@@ -655,3 +655,4 @@
 - Extracted inline JS from store/store.html to static/js/store.js and loaded via extra_js block (PR store-js-extract).
 - Moved sidebar filter markup into #filterOffcanvas with a floating button on mobile; off-canvas styles and JS toggling added (PR store-filter-offcanvas).
 - Added advanced filters with price range slider, stock checkbox, tag list and AJAX refresh (PR store-advanced-filters).
+- Implemented store.search_products API with AJAX search and infinite scroll; removed 'Cargar más' button (PR ajax-store-search).
