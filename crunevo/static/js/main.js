@@ -842,6 +842,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initCoursesPage();
   initEventList();
   initPrivateChat();
+  if (typeof initCareerPage === 'function') {
+    initCareerPage();
+  }
 
   const avatarInput = document.getElementById('avatarFileInput');
   const avatarPreview = document.getElementById('avatarPreview');
