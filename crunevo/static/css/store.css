@@ -131,7 +131,7 @@
 
 .featured-card {
   flex: 0 0 280px;
-  background: white;
+  background: var(--surface-white);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
@@ -229,7 +229,7 @@
 }
 
 .filters-container {
-  background: white;
+  background: var(--surface-white);
   border-radius: var(--radius-xl);
   padding: 1.5rem;
   box-shadow: var(--shadow-md);
@@ -427,7 +427,7 @@
   padding: 0.5rem 1rem;
   border: 2px solid var(--border-light);
   border-radius: var(--radius-md);
-  background: white;
+  background: var(--surface-white);
   font-size: 0.9rem;
   min-width: 180px;
 }
@@ -446,7 +446,7 @@
 }
 
 .product-card {
-  background: white;
+  background: var(--surface-white);
   border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: var(--shadow-md);
@@ -539,14 +539,14 @@
 }
 
 .favorite-btn:hover {
-  background: white;
+  background: var(--surface-white);
   color: var(--danger-red);
   transform: scale(1.1);
 }
 
 .favorite-btn.active {
   color: var(--danger-red);
-  background: white;
+  background: var(--surface-white);
 }
 
 .product-overlay {
@@ -569,7 +569,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: white;
+  background: var(--surface-white);
   color: var(--text-dark);
   text-decoration: none;
   border-radius: var(--radius-md);
@@ -740,7 +740,7 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 4rem 2rem;
-  background: white;
+  background: var(--surface-white);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
 }
@@ -901,7 +901,7 @@
   max-width: 320px;
   height: 100vh;
   overflow-y: auto;
-  background: white;
+  background: var(--surface-white);
   box-shadow: var(--shadow-xl);
   transform: translateX(-100%);
   transition: var(--transition);
@@ -1047,7 +1047,7 @@
    Dark Mode Support
    ========================================================================== */
 
-[data-bs-theme="dark"] {
+[data-bs-theme="dark"], .dark-mode {
   --surface-white: #1f2937;
   --surface-light: #111827;
   --surface-gray: #0f172a;
@@ -1056,40 +1056,51 @@
   --border-light: #374151;
 }
 
-[data-bs-theme="dark"] .store-wrapper {
+[data-bs-theme="dark"] .store-wrapper,
+.dark-mode .store-wrapper {
   background: linear-gradient(135deg, var(--surface-light) 0%, var(--surface-gray) 100%);
 }
 
 [data-bs-theme="dark"] .filters-container,
+.dark-mode .filters-container,
 [data-bs-theme="dark"] .product-card,
+.dark-mode .product-card,
 [data-bs-theme="dark"] .featured-card,
-[data-bs-theme="dark"] .empty-state {
+.dark-mode .featured-card,
+[data-bs-theme="dark"] .empty-state,
+.dark-mode .empty-state {
   background: var(--surface-white);
   border: 1px solid var(--border-light);
 }
 
 [data-bs-theme="dark"] .search-input,
-[data-bs-theme="dark"] .sort-select {
+.dark-mode .search-input,
+[data-bs-theme="dark"] .sort-select,
+.dark-mode .sort-select {
   background: var(--surface-white);
   border-color: var(--border-light);
   color: var(--text-dark);
 }
 
 [data-bs-theme="dark"] .category-item:hover,
-[data-bs-theme="dark"] .quick-filter:hover {
+.dark-mode .category-item:hover,
+[data-bs-theme="dark"] .quick-filter:hover,
+.dark-mode .quick-filter:hover {
   background: var(--surface-gray);
 }
 
-[data-bs-theme="dark"] .cart-link {
+[data-bs-theme="dark"] .cart-link,
+.dark-mode .cart-link {
   background: var(--surface-gray);
 }
-
-[data-bs-theme="dark"] .cart-link:hover {
+[data-bs-theme="dark"] .cart-link:hover,
+.dark-mode .cart-link:hover {
   background: var(--primary-purple);
   color: white;
 }
 
-[data-bs-theme="dark"] .offcanvas-mobile {
+[data-bs-theme="dark"] .offcanvas-mobile,
+.dark-mode .offcanvas-mobile {
   background: var(--surface-white);
   border: 1px solid var(--border-light);
 }
