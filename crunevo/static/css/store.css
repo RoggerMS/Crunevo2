@@ -860,6 +860,34 @@
   transform: scale(1.1);
 }
 
+/* Floating Request */
+.floating-request {
+  position: fixed;
+  bottom: 10rem;
+  right: 2rem;
+  z-index: 1000;
+}
+
+.floating-request-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  background: var(--success-green);
+  color: white;
+  border-radius: 50%;
+  text-decoration: none;
+  font-size: 1.5rem;
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition);
+}
+
+.floating-request-btn:hover {
+  background: #059669;
+  transform: scale(1.1);
+}
+
 /* Offcanvas Filters */
 #filterOffcanvas {
   /* start hidden offscreen */

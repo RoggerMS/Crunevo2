@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% import 'components/csrf.html' as csrf %}
+{% block title %}Solicitar Producto{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg">
+        <div class="card-body p-4">
+          <h2 class="mb-4 text-center">Solicitar nuevo producto</h2>
+          <form method="post">
+            {{ csrf.csrf_field() }}
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="name" name="name" placeholder="Nombre" required>
+              <label for="name">Nombre *</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="category" name="category" placeholder="Categoría">
+              <label for="category">Categoría</label>
+            </div>
+            <div class="form-floating mb-3">
+              <textarea class="form-control" id="description" name="description" placeholder="Descripción" style="height: 120px"></textarea>
+              <label for="description">Descripción</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="number" step="0.01" class="form-control" id="price_soles" name="price_soles" placeholder="Precio en soles">
+              <label for="price_soles">Precio S/</label>
+            </div>
+            <div class="form-floating mb-4">
+              <input type="url" class="form-control" id="image_url" name="image_url" placeholder="URL de imagen">
+              <label for="image_url">Imagen (URL)</label>
+            </div>
+            <div class="d-grid">
+              <button class="btn btn-primary" type="submit">Enviar solicitud</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
