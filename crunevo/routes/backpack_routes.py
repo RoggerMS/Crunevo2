@@ -81,6 +81,9 @@ def index():
 def journal():
     """Learning journal page"""
     backpack = get_or_create_backpack(current_user.id)
+    if not backpack:
+        flash("Función no disponible", "warning")
+        return render_template("backpack/journal.html", backpack=None, entries=[])
 
     # Get all learning entries
     entries = (
@@ -99,6 +102,9 @@ def new_entry():
     """Create new learning entry"""
     if request.method == "POST":
         backpack = get_or_create_backpack(current_user.id)
+        if not backpack:
+            flash("Función no disponible", "warning")
+            return redirect(url_for("backpack.new_entry"))
 
         title = request.form.get("title", "").strip()
         content = request.form.get("content", "").strip()
@@ -138,6 +144,10 @@ def new_entry():
 @activated_required
 def view_entry(entry_id):
     """View learning entry"""
+    if not table_exists("learning_entry"):
+        flash("Función no disponible", "warning")
+        return redirect(url_for("backpack.journal"))
+
     entry = LearningEntry.query.get_or_404(entry_id)
 
     # Check if user owns this entry
@@ -153,6 +163,10 @@ def view_entry(entry_id):
 @activated_required
 def edit_entry(entry_id):
     """Edit learning entry"""
+    if not table_exists("learning_entry"):
+        flash("Función no disponible", "warning")
+        return redirect(url_for("backpack.journal"))
+
     entry = LearningEntry.query.get_or_404(entry_id)
 
     # Check if user owns this entry
@@ -184,6 +198,9 @@ def edit_entry(entry_id):
 def export_pdf():
     """Export learning journal to PDF"""
     backpack = get_or_create_backpack(current_user.id)
+    if not backpack:
+        flash("Función no disponible", "warning")
+        return redirect(url_for("backpack.journal"))
     entries = (
         LearningEntry.query.filter_by(backpack_id=backpack.id)
         .order_by(LearningEntry.created_at.desc())
@@ -251,6 +268,8 @@ def export_pdf():
 def get_stats():
     """Get backpack statistics"""
     backpack = get_or_create_backpack(current_user.id)
+    if not backpack:
+        return jsonify({"error": "unavailable"}), 404
 
     # Get monthly entry count
     from sqlalchemy import extract
@@ -290,6 +309,9 @@ def get_stats():
 
 def get_or_create_backpack(user_id):
     """Get or create user's backpack"""
+    if not table_exists("knowledge_backpack"):
+        return None
+
     backpack = KnowledgeBackpack.query.filter_by(user_id=user_id).first()
     if not backpack:
         backpack = create_user_backpack(user_id)
