@@ -439,6 +439,32 @@ def perfil():
     )
 
 
+@auth_bp.route("/perfil/avatar", methods=["POST"])
+@activated_required
+def update_avatar():
+    """Handle avatar update with optional Cloudinary upload."""
+    file = request.files.get("avatar")
+    if not file or not file.filename:
+        flash("No se seleccion\u00f3 ninguna imagen", "danger")
+        return redirect(url_for("auth.perfil"))
+
+    cloud_url = current_app.config.get("CLOUDINARY_URL")
+    if cloud_url:
+        res = cloudinary.uploader.upload(file, resource_type="auto")
+        current_user.avatar_url = res["secure_url"]
+    else:
+        filename = secure_filename(file.filename)
+        upload_folder = current_app.config["UPLOAD_FOLDER"]
+        os.makedirs(upload_folder, exist_ok=True)
+        filepath = os.path.join(upload_folder, filename)
+        file.save(filepath)
+        current_user.avatar_url = filepath
+
+    db.session.commit()
+    flash("Avatar actualizado")
+    return redirect(url_for("auth.perfil"))
+
+
 @auth_bp.route("/user/<int:user_id>")
 @activated_required
 def public_profile(user_id):
