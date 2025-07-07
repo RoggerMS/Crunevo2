@@ -8,6 +8,10 @@
   margin-bottom: 1.5rem;
 }
 
+[data-bs-theme="dark"] .career-header {
+  background: linear-gradient(135deg, #3b3b58, #1e293b);
+}
+
 .career-nav .nav-link {
   color: #64748B;
   border: none;

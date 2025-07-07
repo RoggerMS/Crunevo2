@@ -671,3 +671,4 @@
 - Permite publicar productos desde la tienda con modal y ruta /store/publicar-producto; productos se crean con is_approved=False (PR store-user-publish).
 - Added gradient header and basic tab navigation for Mi Carrera; initialization moved to main.js to avoid extra DOMContentLoaded listener (PR career-header-fix).
 - Moved publish product button to header and fixed store initialization for sidebar toggle (PR store-publish-btn-pos).
+- Fixed Mi Carrera header gradient visibility in light mode, added dark theme styles and footer now adapts to theme automatically (PR career-header-gradient-fix).
