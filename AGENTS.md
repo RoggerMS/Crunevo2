@@ -667,3 +667,4 @@
 - Mejorada accesibilidad del marketplace: botones con íconos tienen title, campos de dirección con placeholder y overlays usan role="button" (PR accessibility-html-fix).
 - Exposed openProductRequestModal and clearAllFilters on window to avoid ReferenceError when used inline (PR store-js-global-functions).
 - Added note to README explaining how to resolve Fly.io warning about the app not listening on 0.0.0.0:8080 (PR fly-port-doc).
+- Sidebar in store page can be collapsed with a new button, hero header removed and product grid shows up to 5 items per row (PR store-collapse-sidebar).

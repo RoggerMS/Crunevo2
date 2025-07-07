@@ -11,28 +11,11 @@
 
 {% block content %}
 <div class="store-wrapper">
-  <!-- Hero Section -->
-  <section class="store-hero">
-    <div class="store-container">
-      <div class="hero-content">
-        <div class="hero-text">
-          <h1>🛍️ Marketplace CRUNEVO</h1>
-          <p>Descubre productos educativos, tecnología y accesorios diseñados especialmente para estudiantes. ¡Canjea con Crolars o compra directamente con precios exclusivos!</p>
-        </div>
-        <div class="hero-balance">
-          <div class="balance-card">
-            <i class="bi bi-coin"></i>
-            <div class="balance-info">
-              <span class="balance-amount">{{ current_user.credits or 0 }}</span>
-              <span class="balance-label">Crolars disponibles</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <div class="store-container">
+    <h2 class="mb-4 ms-3 mt-3">Marketplace</h2>
+    <button type="button" id="toggleSidebarBtn" class="btn btn-light d-none d-lg-inline-flex align-items-center ms-3 mb-2">
+      <i class="bi bi-sliders"></i> Filtros
+    </button>
     <div class="store-layout">
       <!-- Sidebar Filters -->
       <aside class="store-sidebar">

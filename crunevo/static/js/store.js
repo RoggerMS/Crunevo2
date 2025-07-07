@@ -94,6 +94,13 @@ class CrunevoStore {
                 this.toggleMobileFilters();
             });
         }
+
+        const sidebarToggle = document.getElementById('toggleSidebarBtn');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                this.toggleSidebar();
+            });
+        }
     }
 
     setupInfiniteScroll() {
@@ -554,6 +561,23 @@ class CrunevoStore {
         }
     }
 
+    toggleSidebar() {
+        const sidebar = document.querySelector('.store-sidebar');
+        const layout = document.querySelector('.store-layout');
+        const btn = document.getElementById('toggleSidebarBtn');
+
+        if (sidebar && layout && btn) {
+            sidebar.classList.toggle('collapsed');
+            layout.classList.toggle('sidebar-collapsed');
+
+            if (sidebar.classList.contains('collapsed')) {
+                btn.innerHTML = '<i class="bi bi-sliders"></i>';
+            } else {
+                btn.innerHTML = '<i class="bi bi-sliders"></i> Filtros';
+            }
+        }
+    }
+
     closeMobileFilters() {
         const overlay = document.getElementById('offcanvasOverlay');
         const filters = document.getElementById('offcanvasFilters');
@@ -608,6 +632,12 @@ function closeMobileFilters() {
     }
 }
 
+function toggleSidebar() {
+    if (window.store) {
+        window.store.toggleSidebar();
+    }
+}
+
 function clearAllFilters() {
     if (window.store) {
         window.store.clearAllFilters();
@@ -624,6 +654,7 @@ function openProductRequestModal() {
 // Expose functions for inline event handlers
 window.clearAllFilters = clearAllFilters;
 window.openProductRequestModal = openProductRequestModal;
+window.toggleSidebar = toggleSidebar;
 
 // Initialize store when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
