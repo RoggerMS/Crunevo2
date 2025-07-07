@@ -676,3 +676,6 @@
 - Backpack routes now check table_exists to avoid errors when tables are missing (PR backpack-table-check).
 - Fixed store.js initialization block and moved sidebar toggle button next to page title; added extra_js block in base template (PR store-js-init-fix).
 - Updated career header gradient and dark-mode footer styles; defined new CSS tokens (PR career-footer-style-fix).
+- Permitidas compras repetidas en la tienda eliminando el bloqueo "Ya lo tienes" y mostrando aviso informativo (PR store-rebuy-allow).
+- Tarjetas uniformes con flexbox y espacios reducidos; botón anclado y textos compactos (PR store-card-spacing).
+- Filtro de precios ahora usa rango doble hasta S/10,000 y botón "Aplicar filtros" para ejecutar búsqueda (PR store-filter-range-btn).

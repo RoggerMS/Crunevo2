@@ -11,7 +11,8 @@ class CrunevoStore {
         this.searchTimeout = null;
         this.activeFilters = {
             category: 'all',
-            maxPrice: 500,
+            minPrice: 0,
+            maxPrice: 10000,
             availability: 'all',
             search: '',
             sort: 'featured'
@@ -42,11 +43,15 @@ class CrunevoStore {
             });
         }
 
-        // Price range slider
-        const priceRange = document.getElementById('priceRange');
-        if (priceRange) {
-            priceRange.addEventListener('input', (e) => {
-                this.handlePriceChange(e.target.value);
+        // Price range sliders
+        const priceMin = document.getElementById('priceRangeMin');
+        const priceMax = document.getElementById('priceRangeMax');
+        if (priceMin && priceMax) {
+            priceMin.addEventListener('input', () => {
+                this.handlePriceChange(priceMin.value, priceMax.value, 'min');
+            });
+            priceMax.addEventListener('input', () => {
+                this.handlePriceChange(priceMin.value, priceMax.value, 'max');
             });
         }
 
@@ -101,6 +106,13 @@ class CrunevoStore {
                 this.toggleSidebar();
             });
         }
+
+        const applyBtn = document.getElementById('applyFiltersBtn');
+        if (applyBtn) {
+            applyBtn.addEventListener('click', () => {
+                this.applyFilters();
+            });
+        }
     }
 
     setupInfiniteScroll() {
@@ -125,12 +137,16 @@ class CrunevoStore {
 
     initializeFilters() {
         // Initialize price range display
-        const priceRange = document.getElementById('priceRange');
-        const maxPriceDisplay = document.getElementById('maxPriceDisplay');
+        const priceMin = document.getElementById('priceRangeMin');
+        const priceMax = document.getElementById('priceRangeMax');
+        const minDisplay = document.getElementById('minPriceDisplay');
+        const maxDisplay = document.getElementById('maxPriceDisplay');
 
-        if (priceRange && maxPriceDisplay) {
-            maxPriceDisplay.textContent = `S/ ${priceRange.value}`;
-            this.activeFilters.maxPrice = parseInt(priceRange.value);
+        if (priceMin && priceMax && minDisplay && maxDisplay) {
+            minDisplay.textContent = `S/ ${priceMin.value}`;
+            maxDisplay.textContent = `S/ ${priceMax.value}`;
+            this.activeFilters.minPrice = parseInt(priceMin.value);
+            this.activeFilters.maxPrice = parseInt(priceMax.value);
         }
 
         // Set initial active states
@@ -165,18 +181,35 @@ class CrunevoStore {
         clearTimeout(this.searchTimeout);
         this.searchTimeout = setTimeout(() => {
             this.activeFilters.search = query.trim();
-            this.refreshProducts();
         }, 300);
     }
 
-    handlePriceChange(value) {
-        const maxPriceDisplay = document.getElementById('maxPriceDisplay');
-        if (maxPriceDisplay) {
-            maxPriceDisplay.textContent = `S/ ${value}`;
+    handlePriceChange(minValue, maxValue, changed) {
+        const minDisplay = document.getElementById('minPriceDisplay');
+        const maxDisplay = document.getElementById('maxPriceDisplay');
+
+        let min = parseInt(minValue);
+        let max = parseInt(maxValue);
+
+        if (min > max) {
+            if (changed === 'min') {
+                max = min;
+                const maxInput = document.getElementById('priceRangeMax');
+                if (maxInput) maxInput.value = min;
+            } else {
+                min = max;
+                const minInput = document.getElementById('priceRangeMin');
+                if (minInput) minInput.value = max;
+            }
         }
 
-        this.activeFilters.maxPrice = parseInt(value);
-        this.refreshProducts();
+        if (minDisplay && maxDisplay) {
+            minDisplay.textContent = `S/ ${min}`;
+            maxDisplay.textContent = `S/ ${max}`;
+        }
+
+        this.activeFilters.minPrice = min;
+        this.activeFilters.maxPrice = max;
     }
 
     handleCategoryChange(category) {
@@ -187,7 +220,6 @@ class CrunevoStore {
         document.querySelector(`[data-category="${category}"]`).classList.add('active');
 
         this.activeFilters.category = category;
-        this.refreshProducts();
     }
 
     handleAvailabilityChange(availability) {
@@ -198,12 +230,10 @@ class CrunevoStore {
         document.querySelector(`[data-availability="${availability}"]`).classList.add('active');
 
         this.activeFilters.availability = availability;
-        this.refreshProducts();
     }
 
     handleSortChange(sortValue) {
         this.activeFilters.sort = sortValue;
-        this.refreshProducts();
     }
 
     async handleAddToCart(e) {
@@ -312,6 +342,7 @@ class CrunevoStore {
                 page: this.currentPage,
                 q: this.activeFilters.search,
                 categoria: this.activeFilters.category !== 'all' ? this.activeFilters.category : '',
+                precio_min: this.activeFilters.minPrice,
                 precio_max: this.activeFilters.maxPrice,
                 stock: this.activeFilters.availability === 'in-stock' ? 1 : '',
                 free: this.activeFilters.availability === 'free' ? 1 : '',
@@ -366,6 +397,7 @@ class CrunevoStore {
                 page: this.currentPage,
                 q: this.activeFilters.search,
                 categoria: this.activeFilters.category !== 'all' ? this.activeFilters.category : '',
+                precio_min: this.activeFilters.minPrice,
                 precio_max: this.activeFilters.maxPrice,
                 stock: this.activeFilters.availability === 'in-stock' ? 1 : '',
                 free: this.activeFilters.availability === 'free' ? 1 : '',
@@ -442,8 +474,8 @@ class CrunevoStore {
             this.addFilterTag(activeFiltersContainer, 'Categoría', this.activeFilters.category, 'category');
         }
 
-        if (this.activeFilters.maxPrice < 500) {
-            this.addFilterTag(activeFiltersContainer, 'Precio máximo', `S/ ${this.activeFilters.maxPrice}`, 'price');
+        if (this.activeFilters.minPrice > 0 || this.activeFilters.maxPrice < 10000) {
+            this.addFilterTag(activeFiltersContainer, 'Precio', `S/ ${this.activeFilters.minPrice} — S/ ${this.activeFilters.maxPrice}`, 'price');
         }
 
         if (this.activeFilters.availability !== 'all') {
@@ -473,17 +505,20 @@ class CrunevoStore {
             case 'category':
                 this.activeFilters.category = 'all';
                 this.handleCategoryChange('all');
-                return; // handleCategoryChange will call refreshProducts
+                break;
             case 'price':
-                this.activeFilters.maxPrice = 500;
-                const priceRange = document.getElementById('priceRange');
-                if (priceRange) priceRange.value = 500;
-                this.handlePriceChange(500);
-                return; // handlePriceChange will call refreshProducts
+                this.activeFilters.minPrice = 0;
+                this.activeFilters.maxPrice = 10000;
+                const priceMin = document.getElementById('priceRangeMin');
+                const priceMax = document.getElementById('priceRangeMax');
+                if (priceMin) priceMin.value = 0;
+                if (priceMax) priceMax.value = 10000;
+                this.handlePriceChange(0, 10000);
+                break;
             case 'availability':
                 this.activeFilters.availability = 'all';
                 this.handleAvailabilityChange('all');
-                return; // handleAvailabilityChange will call refreshProducts
+                break;
         }
 
         this.refreshProducts();
@@ -493,7 +528,8 @@ class CrunevoStore {
         // Reset all filters
         this.activeFilters = {
             category: 'all',
-            maxPrice: 500,
+            minPrice: 0,
+            maxPrice: 10000,
             availability: 'all',
             search: '',
             sort: 'featured'
@@ -503,11 +539,11 @@ class CrunevoStore {
         const searchInput = document.getElementById('productSearch');
         if (searchInput) searchInput.value = '';
 
-        const priceRange = document.getElementById('priceRange');
-        if (priceRange) {
-            priceRange.value = 500;
-            this.handlePriceChange(500);
-        }
+        const priceMin = document.getElementById('priceRangeMin');
+        const priceMax = document.getElementById('priceRangeMax');
+        if (priceMin) priceMin.value = 0;
+        if (priceMax) priceMax.value = 10000;
+        this.handlePriceChange(0, 10000);
 
         const sortSelect = document.getElementById('sortSelect');
         if (sortSelect) sortSelect.value = 'featured';
@@ -523,6 +559,10 @@ class CrunevoStore {
         });
         document.querySelector('[data-availability="all"]')?.classList.add('active');
 
+        this.refreshProducts();
+    }
+
+    applyFilters() {
         this.refreshProducts();
     }
 
