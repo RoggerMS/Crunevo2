@@ -2,12 +2,12 @@
 {% import 'components/csrf.html' as csrf %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center tw-min-h-screen tw-bg-gradient-to-b tw-from-indigo-50 tw-to-purple-100 dark:tw-from-gray-900 dark:tw-to-gray-800">
-  <div class="card shadow-lg p-4 text-center tw-max-w-md tw-w-full" style="max-width: 500px;">
-    <div class="mb-3">
-      <i class="bi bi-envelope-edit text-purple fs-1"></i>
+<div class="container py-5 d-flex flex-column justify-content-center align-items-center min-vh-100">
+  <div class="card shadow-sm p-4 mx-auto text-center" style="max-width: 420px;">
+    <div class="mb-4">
+      <i class="bi bi-envelope-edit display-1 text-purple"></i>
     </div>
-    <h4 class="mb-3">Cambiar dirección de correo</h4>
+    <h4 class="fw-bold mb-3">Cambiar dirección de correo</h4>
     <form method="POST" action="{{ url_for('onboarding.change_email') }}">
       {{ csrf.csrf_field() }}
       <div class="mb-3">

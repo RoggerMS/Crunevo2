@@ -591,7 +591,7 @@
   opacity: 0;
   visibility: hidden;
   transform: translateY(20px);
-  z-index: 1000;
+  z-index: 1055;
 }
 
 .scroll-to-top.visible {
@@ -607,6 +607,12 @@
 
 .scroll-to-top:active {
   transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .scroll-to-top {
+    bottom: 90px;
+  }
 }
 
 /* ============================================

@@ -153,18 +153,7 @@
     </div>
     {% endif %}
 
-    <!-- Shopping cart button for store pages -->
-    {% if request.path.startswith('/store') and 'store.view_cart' in url_for.__globals__.get('current_app', {}).view_functions %}
-    <a href="{{ url_for('store.view_cart') }}" 
-       class="btn btn-primary rounded-circle position-fixed shadow-lg d-lg-none mobile-overlay-btn"
-       style="bottom: 80px; right: 20px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;">
-      <i class="bi bi-cart fs-5"></i>
-      <span id="mobileCartBadge" 
-            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {% if CART_COUNT == 0 %}tw-hidden{% endif %}">
-        {{ CART_COUNT }}
-      </span>
-    </a>
-    {% endif %}
+
 
     <!-- Mobile bottom navigation -->
     {% if request.endpoint not in ['auth.login', 'onboarding.register'] and not config.ADMIN_INSTANCE %}
@@ -224,14 +213,19 @@
         width: 60px;
         height: 60px;
         border: none;
-        z-index: 1000;
+        z-index: 1055;
         transition: all 0.3s ease;
-        animation: pulse 2s infinite;
+        animation: fadeInUp 0.4s ease both, pulse 2s infinite;
     }
 
     .floating-btn:hover {
         transform: scale(1.1);
         box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4) !important;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes pulse {
@@ -258,13 +252,24 @@
         position: fixed;
         bottom: 30px;
         right: 100px;
-        z-index: 1000;
+        z-index: 1055;
     }
     .quick-notes {
         position: fixed;
         bottom: 30px;
         right: 170px;
-        z-index: 1000;
+        z-index: 1055;
+    }
+
+    @media (max-width: 768px) {
+        .floating-btn,
+        .shortcut-help,
+        .quick-notes {
+            bottom: 90px !important;
+        }
+        main {
+            padding-bottom: 5rem !important;
+        }
     }
     </style>
 
