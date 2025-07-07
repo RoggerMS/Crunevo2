@@ -1,4 +1,13 @@
-from flask import Blueprint, render_template, flash, jsonify, url_for
+from flask import (
+    Blueprint,
+    render_template,
+    flash,
+    jsonify,
+    url_for,
+    request,
+    redirect,
+)
+from datetime import datetime
 from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models.event import Event
@@ -84,8 +93,6 @@ def join_event(event_id):
         return jsonify({"error": "Ya estás participando en este evento"}), 400
 
     # Check if event is still upcoming
-    from datetime import datetime
-
     if event.event_date <= datetime.utcnow():
         return jsonify({"error": "Este evento ya ha terminado"}), 400
 
@@ -140,10 +147,10 @@ def events_calendar():
 @event_bp.route("/admin/eventos")
 @login_required
 def admin_list_events():
-    if not current_user.role in ["admin", "moderator"]:
+    if current_user.role not in ["admin", "moderator"]:
         flash("No tienes permisos para acceder a esta sección", "error")
         return redirect(url_for("event.list_events"))
-    
+
     events = Event.query.order_by(Event.event_date.desc()).all()
     return render_template("admin/events.html", events=events)
 
@@ -151,56 +158,54 @@ def admin_list_events():
 @event_bp.route("/admin/evento/crear", methods=["GET", "POST"])
 @login_required
 def admin_create_event():
-    if not current_user.role in ["admin", "moderator"]:
+    if current_user.role not in ["admin", "moderator"]:
         flash("No tienes permisos para acceder a esta sección", "error")
         return redirect(url_for("event.list_events"))
-    
+
     if request.method == "POST":
         title = request.form.get("title", "").strip()
         description = request.form.get("description", "").strip()
         event_date = request.form.get("event_date")
         category = request.form.get("category", "").strip()
         image_url = request.form.get("image_url", "").strip()
-        
+
         if not all([title, event_date]):
             flash("Título y fecha son obligatorios", "error")
             return redirect(url_for("event.admin_create_event"))
-        
+
         try:
             event_datetime = datetime.strptime(event_date, "%Y-%m-%dT%H:%M")
         except ValueError:
             flash("Formato de fecha inválido", "error")
             return redirect(url_for("event.admin_create_event"))
-        
+
         event = Event(
             title=title,
             description=description,
             event_date=event_datetime,
             category=category,
-            image_url=image_url or None
+            image_url=image_url or None,
         )
-        
+
         db.session.add(event)
         db.session.commit()
-        
+
         flash("Evento creado exitosamente", "success")
         return redirect(url_for("event.admin_list_events"))
-    
+
     return render_template("admin/create_event.html")
 
 
 @event_bp.route("/admin/evento/<int:event_id>/participantes")
 @login_required
 def admin_event_participants(event_id):
-    if not current_user.role in ["admin", "moderator"]:
+    if current_user.role not in ["admin", "moderator"]:
         flash("No tienes permisos para acceder a esta sección", "error")
         return redirect(url_for("event.list_events"))
-    
+
     event = Event.query.get_or_404(event_id)
     participants = EventParticipation.query.filter_by(event_id=event_id).all()
-    
+
     return render_template(
-        "admin/event_participants.html",
-        event=event,
-        participants=participants
+        "admin/event_participants.html", event=event, participants=participants
     )
