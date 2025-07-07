@@ -201,16 +201,11 @@
         <div class="products-grid" id="productsGrid">
           {% include 'store/_product_cards.html' %}
         </div>
-
-        <!-- Load More / Pagination -->
-        {% if products|length >= 20 %}
-        <div class="load-more-section">
-          <button class="btn-load-more" id="loadMoreBtn">
-            <i class="bi bi-arrow-down-circle"></i>
-            Cargar más productos
-          </button>
+        <div id="productEnd" class="text-center py-4 d-none">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
         </div>
-        {% endif %}
       </main>
     </div>
   </div>

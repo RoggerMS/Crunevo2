@@ -45,26 +45,6 @@ function toggleFavorite(form) {
     });
 }
 
-function filterProducts() {
-    const searchTerm = document
-        .getElementById('productSearch')
-        .value.toLowerCase();
-    const products = document.querySelectorAll('.product-card');
-
-    products.forEach(product => {
-        const name = product
-            .querySelector('.product-name')
-            .textContent.toLowerCase();
-        const description =
-            product.querySelector('.product-description')?.textContent.toLowerCase() || '';
-
-        if (name.includes(searchTerm) || description.includes(searchTerm)) {
-            product.style.display = 'block';
-        } else {
-            product.style.display = 'none';
-        }
-    });
-}
 
 function sortProducts(sortBy) {
     const grid = document.getElementById('productsGrid');
@@ -93,12 +73,90 @@ function showToast(toastId) {
     toast.show();
 }
 
+
+function attachFormListeners(root = document) {
+    root.querySelectorAll('.action-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            if (this.action.includes('add_to_cart')) {
+                e.preventDefault();
+                addToCart(this);
+            }
+        });
+    });
+
+    root.querySelectorAll('.favorite-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            toggleFavorite(this);
+        });
+    });
+}
+
+let searchPage = 1;
+let isLoading = false;
+let currentQuery = '';
+let observer;
+const productsGrid = document.getElementById('productsGrid');
+const productEnd = document.getElementById('productEnd');
+const initialHTML = productsGrid ? productsGrid.innerHTML : '';
+
+function loadResults(reset = false) {
+    if (isLoading) return;
+    isLoading = true;
+    productEnd?.classList.remove('d-none');
+
+    const params = new URLSearchParams({ q: currentQuery, page: searchPage });
+    fetch(`/store/api/search?${params.toString()}`)
+        .then(r => r.json())
+        .then(data => {
+            if (reset) productsGrid.innerHTML = '';
+            productsGrid.insertAdjacentHTML('beforeend', data.html);
+            attachFormListeners(productsGrid);
+            if (data.has_next) {
+                searchPage += 1;
+            } else {
+                observer?.disconnect();
+                productEnd.classList.add('d-none');
+            }
+        })
+        .catch(err => console.error(err))
+        .finally(() => {
+            isLoading = false;
+        });
+}
+
+function startSearch(query) {
+    currentQuery = query.trim();
+    searchPage = 1;
+    if (!currentQuery) {
+        productsGrid.innerHTML = initialHTML;
+        attachFormListeners(productsGrid);
+        observer?.disconnect();
+        productEnd?.classList.add('d-none');
+        return;
+    }
+    loadResults(true);
+    observer?.disconnect();
+    if (productEnd) {
+        observer = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                loadResults();
+            }
+        }, { rootMargin: '100px' });
+        observer.observe(productEnd);
+    }
+}
+
 (function initStore() {
     updateCartCount();
 
     const searchInput = document.getElementById('productSearch');
     if (searchInput) {
-        searchInput.addEventListener('input', filterProducts);
+        let debounce;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(debounce);
+            debounce = setTimeout(() => startSearch(searchInput.value), 300);
+        });
     }
 
     const sortSelect = document.getElementById('sortSelect');
@@ -108,21 +166,7 @@ function showToast(toastId) {
         });
     }
 
-    document.querySelectorAll('.action-form').forEach(form => {
-        form.addEventListener('submit', function (e) {
-            if (this.action.includes('add_to_cart')) {
-                e.preventDefault();
-                addToCart(this);
-            }
-        });
-    });
-
-    document.querySelectorAll('.favorite-form').forEach(form => {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            toggleFavorite(this);
-        });
-    });
+    attachFormListeners();
 
     const openBtn = document.getElementById('openFilterBtn');
     const closeBtn = document.getElementById('closeFilterBtn');

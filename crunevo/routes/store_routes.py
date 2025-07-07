@@ -537,3 +537,73 @@ def download_receipt(purchase_id: int):
         as_attachment=True,
         download_name=f"comprobante_{purchase.id}.pdf",
     )
+
+
+@store_bp.route("/api/search")
+@activated_required
+def search_products():
+    """Return paginated product results as HTML for AJAX search."""
+    query_str = request.args.get("q", "").strip()
+    page = request.args.get("page", type=int, default=1)
+
+    categoria = request.args.get("categoria")
+    precio_max = request.args.get("precio_max", type=float)
+    stock = request.args.get("stock", type=int)
+    tags = request.args.getlist("tags")
+    top = request.args.get("top", type=int)
+    free = request.args.get("free", type=int)
+    pack = request.args.get("pack", type=int)
+
+    query = Product.query
+    if categoria:
+        query = query.filter_by(category=categoria)
+    if free:
+        query = query.filter((Product.price == 0) | (Product.price_credits == 0))
+    if precio_max is not None:
+        query = query.filter(Product.price <= precio_max)
+    if stock:
+        query = query.filter(Product.stock > 0)
+    if "Premium" in tags:
+        query = query.filter(Product.credits_only.is_(True))
+    if "Ofertas" in tags:
+        query = query.filter(Product.is_featured.is_(True))
+    if "Digital" in tags:
+        query = query.filter(Product.download_url.isnot(None))
+    if "Físico" in tags:
+        query = query.filter(Product.download_url.is_(None))
+
+    if query_str:
+        from sqlalchemy import or_
+
+        search_filter = or_(
+            Product.name.ilike(f"%{query_str}%"),
+            Product.description.ilike(f"%{query_str}%"),
+        )
+        query = query.filter(search_filter)
+
+    if top:
+        from sqlalchemy import func
+
+        query = (
+            query.outerjoin(Purchase)
+            .group_by(Product.id)
+            .order_by(func.count(Purchase.id).desc())
+        )
+    elif pack:
+        query = query.filter_by(category="Pack")
+
+    products = query.paginate(page=page, per_page=20, error_out=False)
+
+    favorites = FavoriteProduct.query.filter_by(user_id=current_user.id).all()
+    favorite_ids = [fav.product_id for fav in favorites]
+    purchased = Purchase.query.filter_by(user_id=current_user.id).all()
+    purchased_ids = [p.product_id for p in purchased]
+
+    html = render_template(
+        "store/_product_cards.html",
+        products=products.items,
+        favorite_ids=favorite_ids,
+        purchased_ids=purchased_ids,
+    )
+
+    return jsonify({"html": html, "has_next": products.has_next, "page": page})
