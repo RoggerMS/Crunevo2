@@ -6,7 +6,8 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
-{% endblock %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+{% endblock %}</meta>
 
 {% block content %}
 <div class="store-wrapper">
@@ -499,6 +500,17 @@
     </div>
     <div class="toast-body">
       Tu solicitud de producto ha sido enviada exitosamente
+    </div>
+  </div>
+
+  <div id="errorToast" class="toast" role="alert">
+    <div class="toast-header">
+      <i class="bi bi-exclamation-triangle text-danger me-2"></i>
+      <strong class="me-auto">Error</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body" id="errorToastBody">
+      Ha ocurrido un error inesperado
     </div>
   </div>
 </div>

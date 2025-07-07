@@ -9,6 +9,7 @@ from flask import (
     send_file,
     jsonify,
 )
+from flask_wtf.csrf import generate_csrf
 import os
 from datetime import datetime, timedelta
 from flask_login import current_user
@@ -131,6 +132,7 @@ def store_index():
         ratings=ratings,
         featured_products=featured_products,
         top_sellers=top_sellers,
+        csrf_token=generate_csrf,
     )
 
 
