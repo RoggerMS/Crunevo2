@@ -37,7 +37,6 @@ from crunevo.models import (
 from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit
 from crunevo.utils.ranking import calculate_weekly_ranking
-from .store_routes import store_index
 from crunevo.constants.credit_reasons import CreditReasons
 from datetime import datetime, timedelta
 import csv
@@ -169,9 +168,7 @@ def user_activity(user_id):
         .order_by(UserActivity.timestamp.desc())
         .all()
     )
-    return render_template(
-        "admin/user_history.html", user=user, activities=activities
-    )
+    return render_template("admin/user_history.html", user=user, activities=activities)
 
 
 @admin_bp.route("/users/<int:user_id>/role", methods=["POST"])
@@ -368,13 +365,15 @@ def export_products():
     writer = csv.writer(output)
     writer.writerow(["ID", "Nombre", "Precio", "Crolars", "Stock"])
     for p in products:
-        writer.writerow([
-            p.id,
-            p.name,
-            f"{p.price:.2f}",
-            p.price_credits or "",
-            p.stock,
-        ])
+        writer.writerow(
+            [
+                p.id,
+                p.name,
+                f"{p.price:.2f}",
+                p.price_credits or "",
+                p.stock,
+            ]
+        )
 
     output.seek(0)
     response = make_response(output.getvalue())
