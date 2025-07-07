@@ -28,6 +28,7 @@ body {
     padding-top: 56px;
   }
   main {
+    margin-top: 64px;
     padding-top: 1rem;
     margin-bottom: 4rem;
   }
@@ -511,6 +512,8 @@ html {
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
   margin-bottom: 0.75rem;
+  width: 100%;
+  word-wrap: break-word;
 }
 
 .notification-card:hover {

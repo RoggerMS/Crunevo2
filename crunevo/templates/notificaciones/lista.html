@@ -7,12 +7,12 @@
     {{ csrf.csrf_field() }}
     <button class="btn btn-sm btn-outline-secondary">Marcar todo como leído</button>
   </form>
-  <div class="btn-group mb-3" id="notiFilterGroup" role="group">
-    <button class="btn btn-outline-primary active" data-noti-filter="all">Todos</button>
-    <button class="btn btn-outline-warning" data-noti-filter="reaction">❤️ Reacciones</button>
-    <button class="btn btn-outline-info" data-noti-filter="comment">📝 Comentarios</button>
-    <button class="btn btn-outline-danger" data-noti-filter="report">⚠️ Reportes</button>
-    <button class="btn btn-outline-purple" data-noti-filter="achievement">🏆 Logros</button>
+  <div class="d-flex flex-nowrap overflow-auto py-2 gap-2 px-2 mb-3" id="notiFilterGroup" role="group">
+    <button class="btn btn-sm btn-outline-primary active" data-noti-filter="all">Todos</button>
+    <button class="btn btn-sm btn-outline-warning" data-noti-filter="reaction">❤️ Reacciones</button>
+    <button class="btn btn-sm btn-outline-info" data-noti-filter="comment">📝 Comentarios</button>
+    <button class="btn btn-sm btn-outline-danger" data-noti-filter="report">⚠️ Reportes</button>
+    <button class="btn btn-sm btn-outline-purple" data-noti-filter="achievement">🏆 Logros</button>
   </div>
   {% for n in notificaciones %}
   {% set msg = n.message.lower() %}
