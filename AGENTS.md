@@ -670,3 +670,4 @@
 - Sidebar in store page can be collapsed with a new button, hero header removed and product grid shows up to 5 items per row (PR store-collapse-sidebar).
 - Permite publicar productos desde la tienda con modal y ruta /store/publicar-producto; productos se crean con is_approved=False (PR store-user-publish).
 - Added gradient header and basic tab navigation for Mi Carrera; initialization moved to main.js to avoid extra DOMContentLoaded listener (PR career-header-fix).
+- Moved publish product button to header and fixed store initialization for sidebar toggle (PR store-publish-btn-pos).
