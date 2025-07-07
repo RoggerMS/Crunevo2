@@ -1,0 +1,84 @@
+🖼️ Cómo debe lucir visualmente la tienda ideal:
+1. Encabezado del Marketplace
+Título: “📦 Marketplace CRUNEVO”
+
+Subtítulo en azul claro: “Productos para estudiantes. Compra con Crolars o dinero real.”
+
+Mostrar el saldo actual del usuario en Crolars con un ícono (💰 126 Crolars).
+
+Un botón visible tipo “+ Subir Producto” (visible solo para usuarios con permisos), que abra un modal o vista limpia con formulario para enviar el producto a revisión.
+
+2. Diseño de productos
+Tarjetas uniformes de producto, con:
+
+Imagen centrada, proporción cuidada (aspect-ratio 1:1.2 mínimo).
+
+Nombre del producto en negrita.
+
+Precio en soles (“S/1600.00”) y en Crolars (ej: “💰 160000 Crolars”).
+
+Botones: “🛒 Añadir al carrito”, “❤️ Favorito”, “🔍 Ver más”.
+
+Badge si es “Producto Destacado” o “Nuevo”.
+
+3. Filtros laterales avanzados (escritorio) y deslizable (móvil):
+Filtros por:
+
+Categorías (Libros, Tecnología, Accesorios, Ropa, Cursos, Apps, Cuentas, etc.)
+
+Precio (slider con rango dinámico).
+
+Disponibilidad (checkbox: En stock, Agotado).
+
+Tipo de compra: Con Crolars / Con Dinero / Ambos.
+
+El sidebar debe convertirse en un panel off-canvas en móviles, accesible con botón “🔍 Filtros”.
+
+4. AJAX dinámico en búsqueda y scroll infinito:
+Campo de búsqueda con AJAX en tiempo real.
+
+Al escribir “mochila”, aparecen resultados sin recargar la página.
+
+Scroll infinito con animación de carga (“Cargando productos…” con spinner).
+
+Mostrar mensaje cuando ya no haya más productos (“No hay más productos que mostrar”).
+
+5. Formulario para subir productos (con verificación)
+Cuando un usuario sube un producto, se deben llenar los siguientes campos:
+
+Nombre del producto
+
+Categoría
+
+Imagen o galería (máx. 3)
+
+Precio en soles y/o Crolars
+
+Descripción (rich text)
+
+Tags (autocompletado)
+
+Al enviarlo, debe ir a estado “pendiente de aprobación”.
+
+El admin recibe una notificación clara y puede aprobar/rechazar desde su panel.
+
+6. Modo oscuro completo
+El Marketplace debe verse igual de bien en modo oscuro:
+
+Fondo gris oscuro (#1e1e1e o similar)
+
+Tarjetas con fondo #2a2a2a y texto claro.
+
+Imágenes no deben perder visibilidad.
+
+Los botones cambian a colores suaves (ej. púrpura claro en hover).
+
+7. Extra: Carrusel o banners informativos
+En la parte superior podría colocarse un slider con:
+
+Promociones (“Semana del Libro -20%”).
+
+Novedades (“Ahora puedes comprar con Crolars”).
+
+Anuncios útiles para los estudiantes.
+

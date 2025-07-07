@@ -1,0 +1,74 @@
+Objetivo:
+Rediseñar visualmente el Marketplace CRUNEVO para darle un aspecto profesional, intuitivo y completamente funcional, acorde a estándares modernos y responsive para todas las pantallas.
+
+🎨 Diseño visual general:
+
+Fondo limpio (blanco o gris muy claro en modo claro, gris oscuro en modo oscuro).
+
+Tarjetas de productos con esquinas redondeadas, sombra ligera, y hover de escala sutil.
+
+Paleta de colores consistente con CRUNEVO (morados suaves para acentos, tonos neutros para fondos).
+
+Espaciado uniforme y coherente entre elementos.
+
+📱 Responsividad y adaptación móvil:
+
+Sidebar con filtros avanzados en escritorio que se convierte en off-canvas deslizable en móviles.
+
+Menú hamburguesa claro para mostrar filtros en pantallas pequeñas.
+
+🔍 Filtros Avanzados:
+
+Slider interactivo para filtrar por rango de precios.
+
+Checkboxes claros para disponibilidad ("En stock" y "Agotado").
+
+Filtros por etiquetas ("Libros", "Tecnología", "Comida", "Accesorios", etc.).
+
+Aplicación dinámica de filtros mediante AJAX, mostrando un spinner durante la carga.
+
+♾️ Scroll infinito y Búsqueda Dinámica:
+
+Implementar scroll infinito que cargue productos adicionales automáticamente.
+
+Barra de búsqueda que haga consultas AJAX al servidor en tiempo real.
+
+Spinner visual en búsquedas y cargas adicionales.
+
+🛒 Tarjeta de Producto:
+
+Imagen del producto con relación de aspecto consistente y responsiva (no distorsionada).
+
+Nombre del producto claro y visible, precio en soles (S/) y opción de precio en créditos (Crolars).
+
+Botones rápidos: "Ver Producto", "Añadir al carrito" y "Favorito".
+
+Distintivo visual para productos "Destacados" o en promoción.
+
+🌙 Modo oscuro:
+
+Colores adaptados específicamente para una experiencia cómoda en modo oscuro.
+
+Elementos visuales claramente visibles y armoniosos en ambos modos.
+
+📌 Solicitud de Subida de Producto (Nueva funcionalidad):
+
+Botón visible: "Solicitar subir producto".
+
+Formulario sencillo para estudiantes con campos: nombre del producto, categoría, imagen sugerida y comentario adicional.
+
+Estado de aprobación visible en su panel de usuario (pendiente, aprobado, rechazado).
+
+🛠️ Código organizado y mantenible:
+
+Separar toda lógica JS del HTML a un archivo específico static/js/store.js.
+
+CSS específico separado para estilos de tienda static/css/store.css.
+
+Código claramente comentado y estructurado para futuras mejoras.
+
+📝 Requisitos técnicos adicionales:
+
+Asegurar la visualización coherente del precio en soles con prefijo "S/" en todos los productos.
+
+Registrar todos los avances en AGENTS.md.
