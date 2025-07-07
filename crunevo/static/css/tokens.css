@@ -12,6 +12,10 @@
   --gray-100: #f7fafc;
   --gray-50 : #fafbfc;
 
+  /* Extra global colors */
+  --light-text: #f8f9fa;
+  --dark-bg: #1e1e1e;
+
   /* Soft brand colors - elegant and refined */
   --primary : #6b73ff;
   --primary-dark: #5850ec;

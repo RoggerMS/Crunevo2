@@ -49,6 +49,8 @@ def get_cart():
 @activated_required
 def store_index():
     categoria = request.args.get("categoria")
+    precio_min = request.args.get("precio_min", type=float)
+    precio_min = request.args.get("precio_min", type=float)
     precio_max = request.args.get("precio_max", type=float)
     stock = request.args.get("stock", type=int)
     tags = request.args.getlist("tags")
@@ -61,6 +63,10 @@ def store_index():
         query = query.filter_by(category=categoria)
     if free:
         query = query.filter((Product.price == 0) | (Product.price_credits == 0))
+    if precio_min is not None:
+        query = query.filter(Product.price >= precio_min)
+    if precio_min is not None:
+        query = query.filter(Product.price >= precio_min)
     if precio_max is not None:
         query = query.filter(Product.price <= precio_max)
     if stock:
@@ -270,9 +276,6 @@ def redeem_product(product_id):
     if product.stock < 1:
         flash("Producto sin stock", "danger")
         return redirect(url_for("store.view_product", product_id=product.id))
-    if not product.allow_multiple and has_purchased(current_user.id, product.id):
-        flash("Ya adquiriste este producto", "warning")
-        return redirect(url_for("store.view_product", product_id=product.id))
     try:
         spend_credit(
             current_user,
@@ -305,9 +308,6 @@ def buy_product(product_id):
     product = Product.query.get_or_404(product_id)
     if product.stock < 1:
         flash(f"Stock insuficiente para {product.name}", "danger")
-        return redirect(url_for("store.view_product", product_id=product.id))
-    if not product.allow_multiple and has_purchased(current_user.id, product.id):
-        flash("Ya adquiriste este producto", "warning")
         return redirect(url_for("store.view_product", product_id=product.id))
 
     purchase = Purchase(
@@ -417,9 +417,6 @@ def checkout():
         qty = item["quantity"]
         if product.stock < qty:
             flash(f"Stock insuficiente para {product.name}", "danger")
-            continue
-        if not product.allow_multiple and has_purchased(current_user.id, product.id):
-            flash(f"Ya adquiriste {product.name}", "warning")
             continue
         purchase = Purchase(
             user_id=current_user.id,
