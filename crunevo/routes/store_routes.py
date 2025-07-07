@@ -143,6 +143,17 @@ def view_product(product_id):
         .order_by(Question.timestamp.desc())
         .all()
     )
+    # Suggest products from the same category to show in the sidebar
+    from sqlalchemy import func
+
+    recommended_products = (
+        Product.query.filter(
+            Product.id != product.id, Product.category == product.category
+        )
+        .order_by(func.random())
+        .limit(4)
+        .all()
+    )
     db.session.add(ProductLog(product_id=product.id, action="view"))
     db.session.commit()
     return render_template(
@@ -153,6 +164,7 @@ def view_product(product_id):
         avg_rating=avg_rating or 0,
         reviews=reviews,
         questions=questions,
+        recommended_products=recommended_products,
     )
 
 

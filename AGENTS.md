@@ -649,3 +649,4 @@
 - Confirmed personal_block table represents personal_space; no additional model added (PR personal-space-schema-review).
 - Added API tests for creating, updating, deleting and reordering personal space blocks (PR personal-space-api-tests).
 - Documented personal space dashboard and shortcuts in README (PR docs-personal-space-dashboard).
+- Added recommended_products variable in store.view_product to fix template error and show related products (PR store-recommend-fix).
