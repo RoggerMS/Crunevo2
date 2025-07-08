@@ -1139,3 +1139,17 @@ body[data-bs-theme="dark"] .comment-box {
   }
 }
 
+
+.post-image-grid.four-images {
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.post-image-grid.two-images {
+  grid-template-rows: 1fr;
+}
+
+@media (min-width: 768px) {
+  .post-image-grid.four-images img {
+    height: 200px;
+  }
+}
