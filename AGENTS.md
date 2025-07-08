@@ -702,3 +702,4 @@
 - Ensured gallery images stretch properly and modal selection stays within each post (PR gallery-layout-fix).
 - Added grid-row rules for post-image-grid to avoid collapsed layouts (QA post-image-grid-rows).
 - Fixed multi-image preview layout and ensured modal only shows images from the selected post (PR gallery-preview-fix).
+- Ajustada altura de .facebook-gallery con aspect-ratio para evitar recortes de imagenes en escritorio (PR gallery-aspect-ratio-fix).
