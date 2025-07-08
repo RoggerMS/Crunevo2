@@ -2,16 +2,38 @@
 {% set count = images|length %}
 {% set urls = (images | map(attribute='url') | list) if images and (images[0] is mapping or images[0].url is defined) else images %}
 <div class="post-image-wrapper" data-post-id="{{ post_id }}" data-images='{{ urls | tojson }}'>
-  {% set url = urls[0] %}
-  <img src="{{ url }}" class="post-main-image" alt="Imagen 1 de la publicación" loading="lazy" onclick="openImageModal('{{ url }}', 0, '{{ post_id }}')" />
-  {% if count > 1 %}
-  <div class="post-image-grid d-grid gap-2 mt-2" style="grid-template-columns: repeat(3, 1fr);">
-    {% for url in urls[1:4] %}
-    <div class="image-thumb{% if loop.last and count > 4 %} more{% endif %}" onclick="openImageModal('{{ url }}', {{ loop.index0 + 1 }}, '{{ post_id }}')"{% if loop.last and count > 4 %} data-more="+{{ count - 4 }}"{% endif %} role="button" tabindex="0">
-      <img src="{{ url }}" alt="Imagen {{ loop.index + 1 }} de la publicación" loading="lazy" />
+  {% if count == 1 %}
+    <img src="{{ urls[0] }}" class="post-image-single" alt="Imagen 1 de la publicación" loading="lazy" onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}')" />
+  {% elif count == 2 %}
+    <div class="post-image-grid grid-cols-2">
+      {% for url in urls[:2] %}
+      <img src="{{ url }}" class="post-image-grid-item" alt="Imagen {{ loop.index }} de la publicación" loading="lazy" onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}')" />
+      {% endfor %}
     </div>
-    {% endfor %}
-  </div>
+  {% elif count == 3 %}
+    <div class="post-image-grid grid-cols-1-2">
+      <img src="{{ urls[0] }}" class="post-image-large" alt="Imagen 1 de la publicación" loading="lazy" onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}')" />
+      <div class="post-image-row">
+        {% for url in urls[1:3] %}
+        <img src="{{ url }}" class="post-image-small" alt="Imagen {{ loop.index + 1 }} de la publicación" loading="lazy" onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post_id }}')" />
+        {% endfor %}
+      </div>
+    </div>
+  {% elif count == 4 %}
+    <div class="post-image-grid grid-cols-2">
+      {% for url in urls[:4] %}
+      <img src="{{ url }}" class="post-image-grid-item" alt="Imagen {{ loop.index }} de la publicación" loading="lazy" onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}')" />
+      {% endfor %}
+    </div>
+  {% else %}
+    <img src="{{ urls[0] }}" class="post-image-large mb-2" alt="Imagen 1 de la publicación" loading="lazy" onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}')" />
+    <div class="post-image-grid grid-cols-3">
+      {% for url in urls[1:5] %}
+      <div class="image-thumb{% if loop.last and count > 5 %} more{% endif %}" onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post_id }}')"{% if loop.last and count > 5 %} data-more="+{{ count - 5 }}"{% endif %} role="button" tabindex="0">
+        <img src="{{ url }}" class="post-image-grid-item" alt="Imagen {{ loop.index + 1 }} de la publicación" loading="lazy" />
+      </div>
+      {% endfor %}
+    </div>
   {% endif %}
 </div>
 {% endmacro %}

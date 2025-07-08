@@ -693,3 +693,4 @@
 - Galería de imágenes del feed adaptada: primera imagen grande y cuadrícula responsiva para el resto; CSS ajustado (PR feed-gallery-responsive).
 - Perfil mejorado: botones de avatar y banner con previsualización y estadísticas completas (PR profile-banner-fixes)
 - Added test ensuring /notes loads correctly with updated include syntax (QA notes-page-test).
+- Feed gallery fully redesigned for responsive grids and like icon now uses `bi-fire` by default (PR fire-icon-gallery-fix).

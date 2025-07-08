@@ -269,11 +269,10 @@ class FeedManager {
       if (data.status === 'added') {
         btn.classList.add('active');
         if (icon) icon.classList.add('bi-fire', 'text-danger');
-        if (icon) icon.classList.remove('bi-heart', 'bi-heart-fill');
         this.animateButton(btn, '🔥');
       } else if (data.status === 'removed') {
         btn.classList.remove('active');
-        if (icon) icon.classList.remove('bi-fire', 'text-danger');
+        if (icon) icon.classList.remove('text-danger');
         if (icon) icon.classList.add('bi-fire');
       }
 
