@@ -699,3 +699,4 @@
 - Improved gallery overlay condition for 5+ images, pointer cursor and modal navigation via window key events (PR fb-gallery-modal-fix).
 - Fixed modal navigation index handling and added missing image alt attributes (PR gallery-modal-index-fix).
 - Updated main.js selector so photo routes load correctly with new gallery classes (PR gallery-modal-selector-fix).
+- Ensured gallery images stretch properly and modal selection stays within each post (PR gallery-layout-fix).
