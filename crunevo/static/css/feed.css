@@ -791,6 +791,7 @@ body[data-bs-theme="dark"] .comment-box {
 
 .image-thumb {
   position: relative;
+  cursor: pointer;
 }
 
 /* Image gallery overlay for remaining count */
