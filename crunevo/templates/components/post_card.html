@@ -132,7 +132,7 @@
       <button class="action-btn-enhanced like-btn {{ 'active' if user_reaction else '' }}"
               data-post-id="{{ post.id }}"
               data-reaction="👍">
-        <i class="bi bi-heart{% if user_reaction %}-fill{% endif %}"></i>
+        <i class="bi bi-fire{% if user_reaction %} text-danger{% endif %}"></i>
         <span>{{ post.likes or 0 }}</span>
       </button>
 
