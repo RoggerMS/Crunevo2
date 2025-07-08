@@ -851,10 +851,11 @@ function openImageModal(src, index, postId) {
   if (container && container.dataset.images) {
     try {
       imageList = JSON.parse(container.dataset.images);
-    } catch (e) {
+    } catch {
       imageList = [];
     }
-  } else {
+  }
+  if (!imageList.length) {
     const selector = `[data-post-id='${postId}'] .image-thumb img, [data-post-id='${postId}'] > img`;
     imageList = Array.from(document.querySelectorAll(selector)).map((img) => img.src);
   }
@@ -873,7 +874,7 @@ function openImageModal(src, index, postId) {
   const modal = document.getElementById('imageModal');
   modal.classList.remove('hidden');
   document.body.classList.add('photo-modal-open');
-  document.addEventListener('keydown', handleModalKeydown);
+  window.addEventListener('keydown', handleModalKeydown);
   modalImageEl.addEventListener('wheel', handleWheel, { passive: false });
   const prevBtn = modal.querySelector('.modal-nav.prev');
   const nextBtn = modal.querySelector('.modal-nav.next');
@@ -900,7 +901,7 @@ function closeImageModal() {
   document.getElementById('imageModal').classList.add('hidden');
   document.getElementById('imageModalInfo').innerHTML = '';
   document.body.classList.remove('photo-modal-open');
-  document.removeEventListener('keydown', handleModalKeydown);
+  window.removeEventListener('keydown', handleModalKeydown);
   if (modalImageEl) {
     modalImageEl.removeEventListener('wheel', handleWheel);
   }

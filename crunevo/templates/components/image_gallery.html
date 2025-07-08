@@ -30,7 +30,7 @@
     <div class="post-image-grid grid-cols-3">
       <img src="{{ urls[1] }}" class="post-image-grid-item" alt="Imagen 2 de la publicación" loading="lazy" onclick="openImageModal('{{ urls[1] }}', 1, '{{ post_id }}')" />
       <img src="{{ urls[2] }}" class="post-image-grid-item" alt="Imagen 3 de la publicación" loading="lazy" onclick="openImageModal('{{ urls[2] }}', 2, '{{ post_id }}')" />
-      <div class="image-thumb{% if count > 5 %} more{% endif %}" onclick="openImageModal('{{ urls[3] }}', 3, '{{ post_id }}')"{% if count > 5 %} data-more="+{{ count - 4 }}"{% endif %} role="button" tabindex="0">
+      <div class="image-thumb{% if count > 4 %} more{% endif %}" onclick="openImageModal('{{ urls[3] }}', 3, '{{ post_id }}')"{% if count > 4 %} data-more="+{{ count - 4 }}"{% endif %} role="button" tabindex="0">
         <img src="{{ urls[3] }}" class="post-image-grid-item" alt="Imagen 4 de la publicación" loading="lazy" />
       </div>
     </div>
