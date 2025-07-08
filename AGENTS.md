@@ -703,3 +703,4 @@
 - Added grid-row rules for post-image-grid to avoid collapsed layouts (QA post-image-grid-rows).
 - Fixed multi-image preview layout and ensured modal only shows images from the selected post (PR gallery-preview-fix).
 - Ajustada altura de .facebook-gallery con aspect-ratio para evitar recortes de imagenes en escritorio (PR gallery-aspect-ratio-fix).
+- Uniformizado collage de imágenes del feed con aspect-ratio y grid-auto-rows; las imágenes se adaptan sin dejar espacios grises (PR feed-gallery-consistent).

@@ -820,6 +820,7 @@ body[data-bs-theme="dark"] .comment-box {
   height: auto;
   max-height: 500px;
   object-fit: contain;
+  aspect-ratio: auto;
   background: #000;
 }
 
@@ -829,7 +830,8 @@ body[data-bs-theme="dark"] .comment-box {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr;
   gap: 2px;
-  height: 240px;
+  aspect-ratio: 1 / 1;
+  grid-auto-rows: 1fr;
 }
 
 /* Three images layout */
@@ -839,6 +841,7 @@ body[data-bs-theme="dark"] .comment-box {
   grid-template-rows: 1fr 1fr;
   gap: 2px;
   aspect-ratio: 1 / 1;
+  grid-auto-rows: 1fr;
 }
 
 .facebook-gallery .large-image {
@@ -867,6 +870,7 @@ body[data-bs-theme="dark"] .comment-box {
   grid-template-rows: 1fr 1fr;
   gap: 2px;
   aspect-ratio: 1 / 1;
+  grid-auto-rows: 1fr;
 }
 
 /* Five+ images layout */
@@ -876,6 +880,7 @@ body[data-bs-theme="dark"] .comment-box {
   grid-template-rows: 1fr 1fr;
   gap: 2px;
   aspect-ratio: 1 / 1;
+  grid-auto-rows: 1fr;
 }
 
 .facebook-gallery .small-images-grid {
@@ -929,6 +934,10 @@ body[data-bs-theme="dark"] .comment-box {
   transition: all 0.2s ease;
   display: block;
   border: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
 }
 
 .facebook-gallery .gallery-image:hover {
@@ -941,25 +950,23 @@ body[data-bs-theme="dark"] .comment-box {
   .facebook-gallery.three-images,
   .facebook-gallery.five-plus-images {
     grid-template-columns: 1fr;
-    height: auto;
-    aspect-ratio: auto;
+    aspect-ratio: 1 / 1;
   }
-  
+
   .facebook-gallery .large-image {
     grid-row: auto;
-    height: 200px;
+    height: 100%;
   }
-  
+
   .facebook-gallery .small-images-column,
   .facebook-gallery .small-images-grid {
     grid-template-columns: 1fr 1fr;
-    height: 120px;
+    height: auto;
   }
-  
+
   .facebook-gallery.two-images,
   .facebook-gallery.four-images {
-    height: 180px;
-    aspect-ratio: auto;
+    aspect-ratio: 1 / 1;
   }
 }
 
