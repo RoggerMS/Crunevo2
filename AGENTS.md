@@ -697,3 +697,4 @@
 - Gallery layout polished with adaptive heights and overlay for extra images using new two-images/four-images classes (PR feed-gallery-polish).
 - Unified gallery item border-radius and added cursor pointer on overlays (PR feed-gallery-tuning).
 - Improved gallery overlay condition for 5+ images, pointer cursor and modal navigation via window key events (PR fb-gallery-modal-fix).
+- Fixed modal navigation index handling and added missing image alt attributes (PR gallery-modal-index-fix).

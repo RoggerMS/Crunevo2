@@ -847,6 +847,10 @@ function resetZoom() {
 }
 
 function openImageModal(src, index, postId) {
+  if (index === undefined || index === null || isNaN(index)) {
+    console.error('Índice inválido para modal:', index);
+    return;
+  }
   const container = document.querySelector(`[data-post-id='${postId}']`);
   if (container && container.dataset.images) {
     try {
@@ -916,7 +920,7 @@ function nextImage() {
   if (link) link.href = imageList[currentImageIndex];
   updateModalCounter();
   if (currentPostId) {
-    window.history.replaceState({ photo: true }, '', `/feed/post/${currentPostId}/photo/${currentImageIndex + 1}`);
+    updateModalRoute(currentPostId, currentImageIndex);
   }
 }
 
@@ -927,8 +931,13 @@ function prevImage() {
   if (link) link.href = imageList[currentImageIndex];
   updateModalCounter();
   if (currentPostId) {
-    window.history.replaceState({ photo: true }, '', `/feed/post/${currentPostId}/photo/${currentImageIndex + 1}`);
+    updateModalRoute(currentPostId, currentImageIndex);
   }
+}
+
+function updateModalRoute(postId, index) {
+  const url = `/feed/post/${postId}/photo/${index + 1}`;
+  history.replaceState({ photo: true }, '', url);
 }
 
 function updateModalCounter() {
