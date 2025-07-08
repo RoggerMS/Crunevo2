@@ -117,7 +117,7 @@ function initImageGalleryEnhancements() {
     galleryImages.forEach((img, index) => {
         img.addEventListener('click', function() {
             const postId = this.closest('[data-post-id]')?.dataset.postId;
-            openImageModal(postId, index);
+            openImageModal(this.src, index, postId);
         });
         
         // Add loading placeholder
