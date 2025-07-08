@@ -690,3 +690,4 @@
 - Fixed notes list template to avoid Jinja 'with' syntax using variable assignment (QA notes-list-jinja-fix).
 - Updated 429 error page to fallback to '/' when 'feed.feed_home' route is missing, preventing BuildError (QA 429-feed-link-fallback).
 - Foro usa Quill.js para formato enriquecido e imágenes subidas a Cloudinary; preguntas y respuestas guardan HTML limpio (PR forum-rich-editor).
+- Galería de imágenes del feed adaptada: primera imagen grande y cuadrícula responsiva para el resto; CSS ajustado (PR feed-gallery-responsive).
