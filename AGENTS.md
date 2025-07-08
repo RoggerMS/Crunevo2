@@ -694,3 +694,4 @@
 - Perfil mejorado: botones de avatar y banner con previsualización y estadísticas completas (PR profile-banner-fixes)
 - Added test ensuring /notes loads correctly with updated include syntax (QA notes-page-test).
 - Feed gallery fully redesigned for responsive grids and like icon now uses `bi-fire` by default (PR fire-icon-gallery-fix).
+- Gallery layout polished with adaptive heights and overlay for extra images using new two-images/four-images classes (PR feed-gallery-polish).
