@@ -695,3 +695,4 @@
 - Added test ensuring /notes loads correctly with updated include syntax (QA notes-page-test).
 - Feed gallery fully redesigned for responsive grids and like icon now uses `bi-fire` by default (PR fire-icon-gallery-fix).
 - Gallery layout polished with adaptive heights and overlay for extra images using new two-images/four-images classes (PR feed-gallery-polish).
+- Unified gallery item border-radius and added cursor pointer on overlays (PR feed-gallery-tuning).
