@@ -688,3 +688,4 @@
 - Tarjetas del feed sin 'Vista rápida' y apuntes con Vista Rápida y botones unificados (PR notes-feed-card-fix).
 - Mejorado perfil con carga de avatar y vista previa; botón flotante "Guardar cambios" y nueva ruta /perfil/avatar (PR profile-avatar-preview).
 - Fixed notes list template to avoid Jinja 'with' syntax using variable assignment (QA notes-list-jinja-fix).
+- Updated 429 error page to fallback to '/' when 'feed.feed_home' route is missing, preventing BuildError (QA 429-feed-link-fallback).
