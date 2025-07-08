@@ -34,9 +34,9 @@
             </div>
 
             <div class="mb-4">
-              <label for="content" class="form-label fw-bold">Descripción detallada</label>
-              <textarea class="form-control" id="content" name="content" rows="6" 
-                        placeholder="Explica tu duda con el mayor detalle posible..." required></textarea>
+              <label for="questionEditor" class="form-label fw-bold">Descripción detallada</label>
+              <div id="questionEditor" class="quill-editor"></div>
+              <input type="hidden" name="content" required>
               <div class="form-text">Incluye contexto, lo que has intentado y dónde te has atascado</div>
             </div>
 
@@ -64,4 +64,14 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/forum_editor.css') }}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+<script src="{{ url_for('static', filename='js/forum_editor.js') }}"></script>
 {% endblock %}

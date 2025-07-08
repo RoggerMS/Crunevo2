@@ -1,4 +1,17 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+import os
+import bleach
+import cloudinary.uploader
+from werkzeug.utils import secure_filename
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    flash,
+    redirect,
+    url_for,
+    jsonify,
+    current_app,
+)
 from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models.forum import ForumQuestion, ForumAnswer
@@ -6,6 +19,9 @@ from crunevo.utils.credits import add_credit
 from crunevo.constants.credit_reasons import CreditReasons
 
 forum_bp = Blueprint("forum", __name__)
+
+ALLOWED_TAGS = ["p", "br", "strong", "em", "u", "ul", "ol", "li", "a", "img"]
+ALLOWED_ATTRS = {"a": ["href", "target"], "img": ["src", "alt", "style"]}
 
 
 @forum_bp.route("/foro")
@@ -66,6 +82,7 @@ def ask_question():
     if request.method == "POST":
         title = request.form.get("title")
         content = request.form.get("content")
+        content = bleach.clean(content, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS)
         category = request.form.get("category")
 
         if not title or not content or not category:
@@ -104,6 +121,7 @@ def ask_question():
 def answer_question(question_id):
     ForumQuestion.query.get_or_404(question_id)
     content = request.form.get("content")
+    content = bleach.clean(content, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS)
 
     if not content:
         flash("El contenido de la respuesta es requerido", "error")
@@ -162,3 +180,32 @@ def accept_answer(answer_id):
     add_credit(answer.author, 10, CreditReasons.ACTIVIDAD_SOCIAL, related_id=answer.id)
 
     return jsonify({"success": True})
+
+
+@forum_bp.route("/api/upload", methods=["POST"])
+@login_required
+def upload_image():
+    file = request.files.get("file")
+    if not file or not file.filename:
+        return jsonify({"error": "No file"}), 400
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in {".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"}:
+        return jsonify({"error": "Tipo de archivo no permitido"}), 400
+    if request.content_length and request.content_length > 3 * 1024 * 1024:
+        return jsonify({"error": "Archivo demasiado grande"}), 400
+    cloud_url = current_app.config.get("CLOUDINARY_URL")
+    try:
+        if cloud_url:
+            res = cloudinary.uploader.upload(file, resource_type="image")
+            url = res["secure_url"]
+        else:
+            filename = secure_filename(file.filename)
+            folder = current_app.config["UPLOAD_FOLDER"]
+            os.makedirs(folder, exist_ok=True)
+            path = os.path.join(folder, filename)
+            file.save(path)
+            url = path
+    except Exception:
+        current_app.logger.exception("Error al subir imagen del foro")
+        return jsonify({"error": "Upload failed"}), 500
+    return jsonify({"url": url})
