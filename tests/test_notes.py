@@ -29,3 +29,13 @@ def test_delete_note_forbidden(client, db_session, test_user, another_user):
     resp = client.post(f"/notes/delete/{note.id}")
     assert resp.status_code == 403
     assert Note.query.get(note.id) is not None
+
+
+def test_notes_page_loads(client, db_session, test_user):
+    note = Note(title="n", filename="file.pdf", author=test_user)
+    db_session.add(note)
+    db_session.commit()
+    login(client, test_user.username, "secret")
+    resp = client.get("/notes/")
+    assert resp.status_code == 200
+    assert b"notesList" in resp.data
