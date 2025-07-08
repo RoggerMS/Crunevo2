@@ -77,6 +77,23 @@ function updateCreditsDisplay(balance) {
   });
 }
 
+function applyGalleryOrientation() {
+  document.querySelectorAll('.facebook-gallery.two-images').forEach((gal) => {
+    const imgs = gal.querySelectorAll('img');
+    if (imgs.length !== 2) return;
+    const update = () => {
+      if (imgs[0].naturalWidth && imgs[1].naturalWidth) {
+        const vertical = [...imgs].filter((img) => img.naturalHeight > img.naturalWidth).length;
+        gal.classList.add(vertical === 2 ? 'two-vertical' : 'two-horizontal');
+      }
+    };
+    imgs.forEach((img) => {
+      if (img.complete) update();
+      else img.addEventListener('load', update, { once: true });
+    });
+  });
+}
+
 function showReactions(btn) {
   const container = btn.closest('.reaction-container');
   const options = container.querySelector('.reaction-options');
@@ -1029,6 +1046,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initGlobalChat();
     initChatIA();
     initLauncherMenu();
+
+    applyGalleryOrientation();
 
   // Bootstrap collapse handles the mobile menu
 
