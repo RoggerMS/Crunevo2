@@ -465,6 +465,21 @@ def update_avatar():
     return redirect(url_for("auth.perfil"))
 
 
+@auth_bp.route("/perfil/banner", methods=["POST"])
+@activated_required
+def update_banner():
+    file = request.files.get("banner")
+    if not file or not file.filename:
+        flash("No se seleccionó ninguna imagen", "danger")
+        return redirect(url_for("auth.perfil"))
+
+    res = cloudinary.uploader.upload(file, resource_type="image")
+    current_user.banner_url = res["secure_url"]
+    db.session.commit()
+    flash("Banner actualizado")
+    return redirect(url_for("auth.perfil"))
+
+
 @auth_bp.route("/user/<int:user_id>")
 @activated_required
 def public_profile(user_id):

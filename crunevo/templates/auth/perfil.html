@@ -22,14 +22,18 @@
       <div class="card border-0 shadow-sm mb-4 profile-header">
         <div class="position-relative">
           <div class="profile-header-bg position-relative" style="height: 200px;">
-  {% if user.banner_url %}
-  <img src="{{ user.banner_url }}" class="w-100 h-100 object-fit-cover" alt="Banner">
-  {% endif %}
+  <img src="{{ user.banner_url or url_for('static', filename='img/default.png') }}" id="bannerPreview" class="w-100 h-100 object-fit-cover" alt="Banner">
 
   {% if current_user.id == user.id %}
-  <button class="profile-banner-edit" onclick="editBanner()">
-    <i class="bi bi-camera"></i> Cambiar Banner
-  </button>
+  <form id="bannerForm" method="POST" enctype="multipart/form-data"
+        action="{{ url_for('auth.update_banner') }}" class="position-absolute end-0 top-0 p-2">
+    {{ csrf.csrf_field() }}
+    <input type="file" name="banner" id="bannerInput" accept="image/*" hidden>
+    <button type="button" class="profile-banner-edit" onclick="document.getElementById('bannerInput').click()">
+      <i class="bi bi-camera"></i> Cambiar Banner
+    </button>
+    <button type="submit" id="saveBannerBtn" class="btn btn-success d-none mt-2">Guardar Banner</button>
+  </form>
   {% endif %}
 </div>
         </div>
@@ -439,6 +443,15 @@
               </div>
               <div class="progress" style="height: 6px;">
                 <div class="progress-bar bg-success" style="width: {{ participation_percentage }}%"></div>
+              </div>
+
+              <div class="d-flex justify-content-between mb-2">
+                <span><i class="bi bi-journal-text me-1"></i> Apuntes subidos</span>
+                <span class="fw-bold">{{ user.notes|length }}</span>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span><i class="bi bi-coin me-1"></i> Crolars acumulados</span>
+                <span class="fw-bold">{{ user.credits }}</span>
               </div>
             </div>
           </div>
