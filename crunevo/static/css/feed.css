@@ -824,14 +824,23 @@ body[data-bs-theme="dark"] .comment-box {
   background: #000;
 }
 
-/* Two images layout */
+/* Two images base layout */
 .facebook-gallery.two-images {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr;
   gap: 2px;
-  aspect-ratio: 1 / 1;
   grid-auto-rows: 1fr;
+}
+
+/* Two horizontal images stacked */
+.facebook-gallery.two-images.two-horizontal {
+  grid-template-rows: 1fr 1fr;
+  aspect-ratio: 1 / 2;
+}
+
+/* Two vertical images side by side */
+.facebook-gallery.two-images.two-vertical {
+  grid-template-columns: 1fr 1fr;
+  aspect-ratio: 2 / 1;
 }
 
 /* Three images layout */
