@@ -827,6 +827,7 @@ body[data-bs-theme="dark"] .comment-box {
 .facebook-gallery.two-images {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
   gap: 2px;
   height: 240px;
 }
@@ -835,6 +836,7 @@ body[data-bs-theme="dark"] .comment-box {
 .facebook-gallery.three-images {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 2px;
   height: 240px;
 }
@@ -871,6 +873,7 @@ body[data-bs-theme="dark"] .comment-box {
 .facebook-gallery.five-plus-images {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 2px;
   height: 240px;
 }
