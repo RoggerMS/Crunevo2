@@ -698,3 +698,4 @@
 - Unified gallery item border-radius and added cursor pointer on overlays (PR feed-gallery-tuning).
 - Improved gallery overlay condition for 5+ images, pointer cursor and modal navigation via window key events (PR fb-gallery-modal-fix).
 - Fixed modal navigation index handling and added missing image alt attributes (PR gallery-modal-index-fix).
+- Updated main.js selector so photo routes load correctly with new gallery classes (PR gallery-modal-selector-fix).

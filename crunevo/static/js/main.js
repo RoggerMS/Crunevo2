@@ -961,7 +961,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const idx = parseInt(photoMatch[2], 10) - 1;
     const container = document.querySelector(`[data-post-id='${postId}']`);
     if (container) {
-      const imgs = container.querySelectorAll('.image-thumb img, > img');
+      const imgs = container.querySelectorAll('.gallery-image');
       if (imgs[idx]) {
         openImageModal(imgs[idx].src, idx, postId);
       }
