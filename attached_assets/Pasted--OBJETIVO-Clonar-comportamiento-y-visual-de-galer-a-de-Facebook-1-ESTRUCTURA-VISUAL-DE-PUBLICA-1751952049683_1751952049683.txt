@@ -1,0 +1,136 @@
+✅ OBJETIVO: Clonar comportamiento y visual de galería de Facebook
+🧱 1. ESTRUCTURA VISUAL DE PUBLICACIÓN
+Facebook muestra:
+
+Una tarjeta blanca con:
+
+Nombre + verificación + tiempo
+
+Texto del post
+
+Galería de imágenes cuadrada, responsiva y adaptativa
+
+Botones sociales bien distribuidos (Me gusta, Comentar, Compartir)
+
+Contadores y acciones visibles
+
+En CRUNEVO, aplica:
+
+html
+Copiar
+Editar
+<div class="feed-post-card">
+  <div class="post-header">
+    <img class="avatar" src="..." />
+    <div class="user-meta">
+      <strong>rogger</strong> <span class="badge">Verificado</span>
+      <small>Hace 2 días</small>
+    </div>
+  </div>
+
+  <p class="post-text">Texto del post...</p>
+
+  {% include 'components/image_gallery.html' with images=post.images %}
+
+  <div class="post-actions">
+    <span class="btn-like">🔥 Me gusta</span>
+    <span class="btn-comment">💬 Comentar</span>
+    <span class="btn-share">🔗 Compartir</span>
+  </div>
+</div>
+🧠 2. GESTIÓN DE GALERÍA DE IMÁGENES
+🔢 Casos visuales según cantidad:
+1 imagen → centrada, grande.
+
+2 imágenes → 2 columnas, altura fija (240px).
+
+3 imágenes → 1 arriba (grande), 2 abajo (pequeñas).
+
+4 imágenes → cuadrícula 2x2.
+
+5+ imágenes → 1 grande + cuadrícula 3xN con último item mostrando +N.
+
+html
+Copiar
+Editar
+<div class="image-thumb more" data-more="+12">
+  <img src="..." />
+</div>
+Usa loop.index0 al pasar el índice a JS y asegúrate que esté definido correctamente.
+
+🪟 3. MODAL DE IMÁGENES AVANZADO
+Vista idéntica a Facebook (¡clave!):
+Imagen a la izquierda, fondo negro.
+
+A la derecha: información del post, reacciones, comentarios.
+
+Flechas izquierda y derecha (solo si hay más imágenes).
+
+URL actualiza dinámicamente (ej: /feed/post/34/photo/2)
+
+Íconos de cerrar (X), zoom (+), minimizar, abrir imagen, etc.
+
+Código base JS mínimo:
+js
+Copiar
+Editar
+function openImageModal(url, index, postId) {
+  if (isNaN(index)) return;
+
+  const modal = document.getElementById('imageModal');
+  const img = modal.querySelector('.modal-image');
+  img.src = url;
+
+  history.replaceState(null, '', `/feed/post/${postId}/photo/${index}`);
+  modal.classList.add('open');
+}
+Importante:
+
+Debe permitir navegación (← / →) y no perder el estado.
+
+Las flechas deben ocultarse si no hay más imágenes.
+
+No uses rutas con NaN.
+
+⚙️ 4. ERRORES EN LA CONSOLA
+Ya vimos que tienes errores 404 por NaN y otros de accesibilidad (alt, aria-label, etc.). Corrige:
+
+html
+Copiar
+Editar
+<img src="{{ url }}" alt="Imagen {{ loop.index + 1 }}" loading="lazy">
+🎨 5. CSS CLAVE A IMITAR
+.image-thumb.more::after → superposición oscura rgba(0,0,0,0.6) con texto centrado (+12)
+
+Bordes redondeados uniformes (border-radius: 10px)
+
+Transiciones suaves en hover
+
+object-fit: cover para cuadrículas y contain para individuales
+
+Alturas fijas para cuadrículas (160px, 180px, etc.)
+
+🔁 6. BONUS: Reactividad
+Facebook usa display: grid con grid-template-columns adaptativas.
+
+CRUNEVO también debe cambiar de 3 columnas a 2 en móviles (max-width: 768px).
+
+Usa @media queries.
+
+css
+Copiar
+Editar
+@media (max-width: 768px) {
+  .post-image-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+🔚 Resultado esperado
+El feed de CRUNEVO se verá como Facebook.
+
+Cada imagen tendrá navegación fluida.
+
+No habrá errores NaN ni problemas de visualización.
+
+El código estará optimizado y listo para ampliar.
+
