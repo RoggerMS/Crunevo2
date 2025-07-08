@@ -800,6 +800,7 @@ let imageList = [];
 let currentPostId = null;
 let currentScale = 1;
 let modalImageEl;
+let postData = null;
 
 function handleModalKeydown(e) {
   if (e.key === 'Escape') {
@@ -851,6 +852,8 @@ function openImageModal(src, index, postId) {
     console.error('Índice inválido para modal:', index);
     return;
   }
+  
+  // Get image list from data attribute or fallback to DOM search
   const container = document.querySelector(`[data-post-id='${postId}']`);
   if (container && container.dataset.images) {
     try {
@@ -860,45 +863,203 @@ function openImageModal(src, index, postId) {
     }
   }
   if (!imageList.length) {
-    const selector = `[data-post-id='${postId}'] .image-thumb img, [data-post-id='${postId}'] > img`;
+    const selector = `[data-post-id='${postId}'] .gallery-image`;
     imageList = Array.from(document.querySelectorAll(selector)).map((img) => img.src);
   }
+  
   currentImageIndex = index;
   currentPostId = postId;
-  const modalImage = document.getElementById('modalImage');
-  modalImageEl = modalImage;
-  const modalLink = document.getElementById('modalImageLink');
-  const openTab = document.getElementById('openImageNewTab');
-  modalImage.src = src;
-  if (modalLink) modalLink.href = src;
-  if (openTab) openTab.href = src;
   currentScale = 1;
-  applyZoom();
-  modalImage.alt = `Imagen ${index + 1} de la publicación`;
-  const modal = document.getElementById('imageModal');
+  
+  // Create or update modal HTML
+  let modal = document.getElementById('imageModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'imageModal';
+    modal.className = 'image-modal';
+    document.body.appendChild(modal);
+  }
+  
+  modal.innerHTML = `
+    <div class="modal-container">
+      <div class="modal-image-section">
+        <img id="modalImage" src="${src}" alt="Imagen ${index + 1} de ${imageList.length}">
+        
+        <div class="modal-top-controls">
+          <button class="modal-control-btn" onclick="zoomOut()" title="Reducir zoom">
+            <i class="bi bi-dash"></i>
+          </button>
+          <button class="modal-control-btn" onclick="zoomIn()" title="Aumentar zoom">
+            <i class="bi bi-plus"></i>
+          </button>
+          <button class="modal-control-btn" onclick="resetZoom()" title="Tamaño original">
+            <i class="bi bi-arrows-fullscreen"></i>
+          </button>
+          <a href="${src}" target="_blank" class="modal-control-btn" title="Abrir en nueva pestaña">
+            <i class="bi bi-box-arrow-up-right"></i>
+          </a>
+          <button class="modal-control-btn" onclick="closeImageModal()" title="Cerrar">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        
+        ${imageList.length > 1 ? `
+          <button class="modal-nav prev" onclick="prevImage()" title="Imagen anterior">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button class="modal-nav next" onclick="nextImage()" title="Siguiente imagen">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        ` : ''}
+        
+        <div class="modal-counter" id="modalCounter">${index + 1} / ${imageList.length}</div>
+      </div>
+      
+      <div class="modal-info-section" id="imageModalInfo">
+        <div class="d-flex justify-content-center align-items-center h-100">
+          <div class="spinner-border text-primary"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  modalImageEl = modal.querySelector('#modalImage');
   modal.classList.remove('hidden');
   document.body.classList.add('photo-modal-open');
+  
+  // Load post data for right panel
+  loadPostDataForModal(postId);
+  
+  // Event listeners
   window.addEventListener('keydown', handleModalKeydown);
   modalImageEl.addEventListener('wheel', handleWheel, { passive: false });
-  const prevBtn = modal.querySelector('.modal-nav.prev');
-  const nextBtn = modal.querySelector('.modal-nav.next');
-  if (imageList.length > 1) {
-    prevBtn.style.display = '';
-    nextBtn.style.display = '';
-  } else {
-    prevBtn.style.display = 'none';
-    nextBtn.style.display = 'none';
-  }
-  updateModalCounter();
-  fetch(`/feed/api/post/${postId}`)
-    .then((r) => r.json())
-    .then((data) => {
-      document.getElementById('imageModalInfo').innerHTML = data.html;
-    })
-    .catch(() => {
-      document.getElementById('imageModalInfo').textContent = 'Error al cargar';
-    });
+  
+  // Update URL
   window.history.pushState({ photo: true }, '', `/feed/post/${postId}/photo/${index + 1}`);
+}
+
+function loadPostDataForModal(postId) {
+  fetch(`/feed/api/post/${postId}`)
+    .then(response => response.json())
+    .then(data => {
+      const infoSection = document.getElementById('imageModalInfo');
+      if (infoSection) {
+        infoSection.innerHTML = `
+          <div class="modal-post-header">
+            <img src="${data.author?.avatar_url || '/static/img/default.png'}" alt="Avatar">
+            <div class="modal-user-info">
+              <h6>${data.author?.username || 'Usuario'}</h6>
+              <small class="modal-timestamp">${data.created_at || 'Hace tiempo'}</small>
+            </div>
+          </div>
+          
+          ${data.content ? `<div class="modal-post-content">${data.content}</div>` : ''}
+          
+          <div class="modal-post-actions">
+            <button class="modal-action-btn like-btn ${data.user_liked ? 'active' : ''}" data-post-id="${postId}">
+              <i class="bi bi-fire${data.user_liked ? '-fill' : ''}"></i>
+              Me gusta
+            </button>
+            <button class="modal-action-btn comment-btn" data-post-id="${postId}">
+              <i class="bi bi-chat"></i>
+              Comentar
+            </button>
+            <button class="modal-action-btn share-btn" data-post-id="${postId}">
+              <i class="bi bi-share"></i>
+              Compartir
+            </button>
+          </div>
+          
+          <div class="modal-comments-section">
+            ${data.comments ? data.comments.map(comment => `
+              <div class="comment-item d-flex gap-3 mb-3">
+                <img src="${comment.author?.avatar_url || '/static/img/default.png'}" 
+                     class="rounded-circle" width="32" height="32">
+                <div class="flex-grow-1">
+                  <div class="comment-box p-3 rounded-3">
+                    <div class="fw-semibold small mb-1">${comment.author?.username}</div>
+                    <div class="small">${comment.body}</div>
+                  </div>
+                  <div class="small text-muted mt-1">${comment.timestamp || 'Hace tiempo'}</div>
+                </div>
+              </div>
+            `).join('') : '<p class="text-muted text-center">No hay comentarios aún.</p>'}
+          </div>
+          
+          <div class="modal-comment-form">
+            <form onsubmit="submitModalComment(event, '${postId}')">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Escribe un comentario..." required>
+                <button type="submit" class="btn btn-primary">Enviar</button>
+              </div>
+            </form>
+          </div>
+        `;
+        
+        // Re-initialize post interactions for modal
+        initModalPostInteractions();
+      }
+    })
+    .catch(error => {
+      console.error('Error loading post data:', error);
+      document.getElementById('imageModalInfo').innerHTML = 
+        '<div class="text-center text-muted p-3">Error al cargar información del post</div>';
+    });
+}
+
+function initModalPostInteractions() {
+  // Like button in modal
+  const likeBtn = document.querySelector('.modal-action-btn.like-btn');
+  if (likeBtn) {
+    likeBtn.addEventListener('click', (e) => feedManager.handleLike(e));
+  }
+  
+  // Comment button in modal
+  const commentBtn = document.querySelector('.modal-action-btn.comment-btn');
+  if (commentBtn) {
+    commentBtn.addEventListener('click', () => {
+      const input = document.querySelector('.modal-comment-form input');
+      if (input) input.focus();
+    });
+  }
+  
+  // Share button in modal
+  const shareBtn = document.querySelector('.modal-action-btn.share-btn');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', (e) => feedManager.openShareModal(e));
+  }
+}
+
+function submitModalComment(event, postId) {
+  event.preventDefault();
+  const form = event.target;
+  const input = form.querySelector('input');
+  const body = input.value.trim();
+  
+  if (!body) return;
+  
+  const formData = new FormData();
+  formData.append('body', body);
+  formData.append('csrf_token', feedManager.getCSRFToken());
+  
+  fetch(`/feed/comment/${postId}`, {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      input.value = '';
+      loadPostDataForModal(postId); // Reload comments
+      feedManager.showToast('Comentario agregado', 'success');
+    } else {
+      feedManager.showToast('Error al agregar comentario', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error submitting comment:', error);
+    feedManager.showToast('Error de conexión', 'error');
+  });
 }
 
 function closeImageModal() {

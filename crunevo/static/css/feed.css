@@ -794,21 +794,168 @@ body[data-bs-theme="dark"] .comment-box {
   cursor: pointer;
 }
 
-/* Image gallery overlay for remaining count */
-.image-thumb.more::after {
-  content: attr(data-more);
+/* Facebook-style Image Gallery */
+.facebook-gallery-wrapper {
+  margin-top: 12px;
+  margin-bottom: 16px;
+}
+
+.facebook-gallery {
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  background: #f0f2f5;
+}
+
+/* Single image layout */
+.facebook-gallery.single {
+  max-height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.facebook-gallery .single-image {
+  width: 100%;
+  height: auto;
+  max-height: 500px;
+  object-fit: contain;
+  background: #000;
+}
+
+/* Two images layout */
+.facebook-gallery.two-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  height: 240px;
+}
+
+/* Three images layout */
+.facebook-gallery.three-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  height: 240px;
+}
+
+.facebook-gallery .large-image {
+  grid-row: 1 / -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.facebook-gallery .small-images-column {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 2px;
+}
+
+.facebook-gallery .small-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Four images layout */
+.facebook-gallery.four-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2px;
+  height: 240px;
+}
+
+/* Five+ images layout */
+.facebook-gallery.five-plus-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  height: 240px;
+}
+
+.facebook-gallery .small-images-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2px;
+}
+
+.facebook-gallery .grid-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Image container for overlay */
+.facebook-gallery .image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.facebook-gallery .image-container.has-overlay .grid-image {
+  filter: brightness(0.7);
+}
+
+/* Overlay styling */
+.facebook-gallery .image-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.6);
-  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
   cursor: pointer;
+  z-index: 2;
+}
+
+.facebook-gallery .overlay-text {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* General gallery image styling */
+.facebook-gallery .gallery-image {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: block;
+  border: none;
+}
+
+.facebook-gallery .gallery-image:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .facebook-gallery.three-images,
+  .facebook-gallery.five-plus-images {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  
+  .facebook-gallery .large-image {
+    grid-row: auto;
+    height: 200px;
+  }
+  
+  .facebook-gallery .small-images-column,
+  .facebook-gallery .small-images-grid {
+    grid-template-columns: 1fr 1fr;
+    height: 120px;
+  }
+  
+  .facebook-gallery.two-images,
+  .facebook-gallery.four-images {
+    height: 180px;
+  }
 }
 
 /* New responsive gallery layout */
