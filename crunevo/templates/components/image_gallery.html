@@ -10,7 +10,7 @@
            class="gallery-image single-image" 
            alt="Imagen 1 de {{ count }}" 
            loading="lazy" 
-           onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}')" 
+           onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)"
            role="button" 
            tabindex="0" />
     </div>
@@ -22,7 +22,7 @@
            class="gallery-image" 
            alt="Imagen {{ loop.index }} de {{ count }}" 
            loading="lazy" 
-           onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}')" 
+           onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)"
            role="button" 
            tabindex="0" />
       {% endfor %}
@@ -34,7 +34,7 @@
            class="gallery-image large-image" 
            alt="Imagen 1 de {{ count }}" 
            loading="lazy" 
-           onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}')" 
+           onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)"
            role="button" 
            tabindex="0" />
       <div class="small-images-column">
@@ -43,7 +43,7 @@
              class="gallery-image small-image" 
              alt="Imagen {{ loop.index + 1 }} de {{ count }}" 
              loading="lazy" 
-             onclick="openImageModal('{{ url }}', {{ loop.index0 + 1 }}, '{{ post_id }}')" 
+             onclick="openImageModal('{{ url }}', {{ loop.index0 + 1 }}, '{{ post_id }}', event)"
              role="button" 
              tabindex="0" />
         {% endfor %}
@@ -57,7 +57,7 @@
            class="gallery-image" 
            alt="Imagen {{ loop.index }} de {{ count }}" 
            loading="lazy" 
-           onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}')" 
+           onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)"
            role="button" 
            tabindex="0" />
       {% endfor %}
@@ -69,7 +69,7 @@
            class="gallery-image large-image" 
            alt="Imagen 1 de {{ count }}" 
            loading="lazy" 
-           onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}')" 
+           onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)"
            role="button" 
            tabindex="0" />
       <div class="small-images-grid">
@@ -79,12 +79,12 @@
                class="gallery-image grid-image" 
                alt="Imagen {{ loop.index + 1 }} de {{ count }}" 
                loading="lazy" 
-               onclick="openImageModal('{{ url }}', {{ loop.index0 + 1 }}, '{{ post_id }}')" 
+               onclick="openImageModal('{{ url }}', {{ loop.index0 + 1 }}, '{{ post_id }}', event)"
                role="button" 
                tabindex="0" />
           {% if loop.index == 3 and count > 4 %}
-          <div class="image-overlay" 
-               onclick="openImageModal('{{ url }}', {{ loop.index0 + 1 }}, '{{ post_id }}')" 
+          <div class="image-overlay"
+               onclick="openImageModal('{{ url }}', {{ loop.index0 + 1 }}, '{{ post_id }}', event)"
                role="button" 
                tabindex="0">
             <span class="overlay-text">+{{ count - 4 }}</span>

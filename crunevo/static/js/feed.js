@@ -847,14 +847,20 @@ function resetZoom() {
   applyZoom();
 }
 
-function openImageModal(src, index, postId) {
+function openImageModal(src, index, postId, evt) {
   if (index === undefined || index === null || isNaN(index)) {
     console.error('Índice inválido para modal:', index);
     return;
   }
   
-  // Get image list from data attribute or fallback to DOM search
-  const container = document.querySelector(`[data-post-id='${postId}']`);
+  let container = null;
+  if (evt && evt.currentTarget) {
+    container = evt.currentTarget.closest('.facebook-gallery-wrapper');
+  }
+  if (!container) {
+    container = document.querySelector(`[data-post-id='${postId}']`);
+  }
+
   if (container && container.dataset.images) {
     try {
       imageList = JSON.parse(container.dataset.images);
@@ -862,9 +868,8 @@ function openImageModal(src, index, postId) {
       imageList = [];
     }
   }
-  if (!imageList.length) {
-    const selector = `[data-post-id='${postId}'] .gallery-image`;
-    imageList = Array.from(document.querySelectorAll(selector)).map((img) => img.src);
+  if (!imageList.length && container) {
+    imageList = Array.from(container.querySelectorAll('.gallery-image')).map((img) => img.src);
   }
   
   currentImageIndex = index;
