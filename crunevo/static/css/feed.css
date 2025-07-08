@@ -983,10 +983,25 @@ body[data-bs-theme="dark"] .comment-box {
   border-radius: 10px;
 }
 
+
 .post-image-grid {
   display: grid;
   gap: 6px;
   width: 100%;
+}
+
+.post-image-grid img {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 10px;
+}
+
+.post-image-grid.two-images,
+.post-image-grid.four-images {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
 }
 
 
