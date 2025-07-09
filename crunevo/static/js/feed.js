@@ -204,13 +204,13 @@ class CrunevoFeedManager {
         rootMargin: '50px'
       });
 
-      document.querySelectorAll('.gallery-img[data-src]').forEach(img => {
+      document.querySelectorAll('.fb-gallery img[data-src]').forEach(img => {
         imageObserver.observe(img);
       });
     }
 
     // Add loading states to gallery images
-    document.querySelectorAll('.gallery-img').forEach(img => {
+    document.querySelectorAll('.fb-gallery img').forEach(img => {
       if (!img.complete) {
         img.addEventListener('load', () => {
           img.classList.add('loaded');
@@ -271,7 +271,7 @@ class CrunevoFeedManager {
 
   initPostInteractions() {
     // Like buttons with enhanced reactions
-    document.querySelectorAll('.like-btn, .fb-action-btn.like-btn').forEach(btn => {
+    document.querySelectorAll('.fb-action-btn.like-btn').forEach(btn => {
       btn.addEventListener('click', (e) => this.handleLike(e));
       
       // Long press for reaction selector
@@ -292,12 +292,12 @@ class CrunevoFeedManager {
     });
 
     // Comment buttons
-    document.querySelectorAll('.comment-btn, .fb-action-btn.comment-btn, .view-more-comments').forEach(btn => {
+    document.querySelectorAll('.fb-action-btn.comment-btn, .fb-view-more').forEach(btn => {
       btn.addEventListener('click', (e) => this.openCommentModal(e));
     });
 
     // Share buttons
-    document.querySelectorAll('.share-btn, .fb-action-btn.share-btn').forEach(btn => {
+    document.querySelectorAll('.fb-action-btn.share-btn').forEach(btn => {
       btn.addEventListener('click', (e) => this.handleShare(e));
     });
   }
@@ -942,10 +942,10 @@ function openImageModal(src, index, postId, evt) {
   
   let container = null;
   if (evt && evt.currentTarget) {
-    container = evt.currentTarget.closest('.crunevo-gallery-wrapper');
+    container = evt.currentTarget.closest('.fb-gallery-container');
   }
   if (!container) {
-    container = document.querySelector(`[data-post-id='${postId}']`);
+    container = document.querySelector(`[data-post-id='${postId}'] .fb-gallery-container`);
   }
 
   if (container && container.dataset.images) {
@@ -956,7 +956,7 @@ function openImageModal(src, index, postId, evt) {
     }
   }
   if (!imageList.length && container) {
-    imageList = Array.from(container.querySelectorAll('.gallery-img')).map((img) => img.src);
+    imageList = Array.from(container.querySelectorAll('.fb-gallery img')).map((img) => img.src);
   }
   
   currentImageIndex = index;

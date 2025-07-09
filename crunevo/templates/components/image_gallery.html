@@ -1,163 +1,73 @@
-
 {% macro image_gallery(images, post_id) %}
 {% set count = images|length %}
 {% set urls = (images | map(attribute='url') | list) if images and (images[0] is mapping or images[0].url is defined) else images %}
 
-<div class="crunevo-gallery-wrapper" data-post-id="{{ post_id }}" data-images='{{ urls | tojson }}' data-count="{{ count }}">
+<div class="fb-gallery-container" data-post-id="{{ post_id }}" data-images='{{ urls | tojson }}' data-count="{{ count }}">
   {% if count == 1 %}
-    <!-- Single image: centered, large preview -->
-    <div class="crunevo-gallery single-image">
-      <div class="gallery-item" data-index="0">
-        <img src="{{ urls[0] }}" 
-             class="gallery-img single" 
-             alt="Imagen 1 de {{ count }}" 
-             loading="lazy" 
-             onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)"
-             role="button" 
-             tabindex="0"
-             onkeydown="if(event.key==='Enter'||event.key===' ') openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)" />
-      </div>
+    <!-- Single image -->
+    <div class="fb-gallery single">
+      <img src="{{ urls[0] }}" 
+           alt="Imagen" 
+           onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)" />
     </div>
 
   {% elif count == 2 %}
-    <!-- Two images: adaptive based on orientation -->
-    <div class="crunevo-gallery two-images" id="gallery-{{ post_id }}">
+    <!-- Two images side by side -->
+    <div class="fb-gallery two">
       {% for url in urls[:2] %}
-      <div class="gallery-item" data-index="{{ loop.index0 }}">
-        <img src="{{ url }}" 
-             class="gallery-img dual" 
-             alt="Imagen {{ loop.index }} de {{ count }}" 
-             loading="lazy" 
-             onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)"
-             role="button" 
-             tabindex="0"
-             onkeydown="if(event.key==='Enter'||event.key===' ') openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)" />
-      </div>
+      <img src="{{ url }}" 
+           alt="Imagen {{ loop.index }}" 
+           onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)" />
       {% endfor %}
     </div>
 
   {% elif count == 3 %}
-    <!-- Three images: Facebook-style layout -->
-    <div class="crunevo-gallery three-images">
-      <div class="gallery-main">
-        <div class="gallery-item" data-index="0">
-          <img src="{{ urls[0] }}" 
-               class="gallery-img main-img" 
-               alt="Imagen 1 de {{ count }}" 
-               loading="lazy" 
-               onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)"
-               role="button" 
-               tabindex="0"
-               onkeydown="if(event.key==='Enter'||event.key===' ') openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)" />
-        </div>
-      </div>
-      <div class="gallery-side">
-        {% for url in urls[1:3] %}
-        <div class="gallery-item" data-index="{{ loop.index }}">
-          <img src="{{ url }}" 
-               class="gallery-img side-img" 
-               alt="Imagen {{ loop.index + 1 }} de {{ count }}" 
-               loading="lazy" 
-               onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post_id }}', event)"
-               role="button" 
-               tabindex="0"
-               onkeydown="if(event.key==='Enter'||event.key===' ') openImageModal('{{ url }}', {{ loop.index }}, '{{ post_id }}', event)" />
-        </div>
-        {% endfor %}
-      </div>
+    <!-- Three images: main + two side -->
+    <div class="fb-gallery three">
+      <img src="{{ urls[0] }}" 
+           class="img-main"
+           alt="Imagen 1" 
+           onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)" />
+      <img src="{{ urls[1] }}" 
+           class="img-side-1"
+           alt="Imagen 2" 
+           onclick="openImageModal('{{ urls[1] }}', 1, '{{ post_id }}', event)" />
+      <img src="{{ urls[2] }}" 
+           class="img-side-2"
+           alt="Imagen 3" 
+           onclick="openImageModal('{{ urls[2] }}', 2, '{{ post_id }}', event)" />
     </div>
 
   {% elif count == 4 %}
-    <!-- Four images: clean 2x2 grid -->
-    <div class="crunevo-gallery four-images">
+    <!-- Four images in 2x2 grid -->
+    <div class="fb-gallery four">
       {% for url in urls[:4] %}
-      <div class="gallery-item" data-index="{{ loop.index0 }}">
-        <img src="{{ url }}" 
-             class="gallery-img grid-img" 
-             alt="Imagen {{ loop.index }} de {{ count }}" 
-             loading="lazy" 
-             onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)"
-             role="button" 
-             tabindex="0"
-             onkeydown="if(event.key==='Enter'||event.key===' ') openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)" />
-      </div>
+      <img src="{{ url }}" 
+           alt="Imagen {{ loop.index }}" 
+           onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)" />
       {% endfor %}
     </div>
 
   {% else %}
-    <!-- Five+ images: large left + 4-grid right with overlay -->
-    <div class="crunevo-gallery five-plus-images">
-      <div class="gallery-main">
-        <div class="gallery-item" data-index="0">
-          <img src="{{ urls[0] }}"
-               class="gallery-img main-img"
-               alt="Imagen 1 de {{ count }}"
-               loading="lazy"
-               onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)"
-               role="button"
-               tabindex="0"
-               onkeydown="if(event.key==='Enter'||event.key===' ') openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)" />
-        </div>
-      </div>
-      <div class="gallery-grid">
-        {% for url in urls[1:5] %}
-        <div class="gallery-item {% if loop.index == 4 and count > 5 %}has-overlay{% endif %}" data-index="{{ loop.index }}">
-          <img src="{{ url }}"
-               class="gallery-img grid-img"
-               alt="Imagen {{ loop.index + 1 }} de {{ count }}"
-               loading="lazy"
-               onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post_id }}', event)"
-               role="button"
-               tabindex="0"
-               onkeydown="if(event.key==='Enter'||event.key===' ') openImageModal('{{ url }}', {{ loop.index }}, '{{ post_id }}', event)" />
-          {% if loop.index == 4 and count > 5 %}
-          <div class="image-overlay"
-               onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post_id }}', event)"
-               role="button"
-               tabindex="0"
-               onkeydown="if(event.key==='Enter'||event.key===' ') openImageModal('{{ url }}', {{ loop.index }}, '{{ post_id }}', event)">
-            <span class="overlay-text">+{{ count - 5 }}</span>
-          </div>
-          {% endif %}
-        </div>
+    <!-- Five+ images: main + grid with overlay -->
+    <div class="fb-gallery five-plus">
+      <img src="{{ urls[0] }}" 
+           class="img-main"
+           alt="Imagen 1" 
+           onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)" />
+      <div class="img-grid">
+        {% for url in urls[1:4] %}
+        <img src="{{ url }}" 
+             alt="Imagen {{ loop.index + 1 }}" 
+             onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post_id }}', event)" />
         {% endfor %}
+        <div class="img-overlay" 
+             data-count="{{ count - 4 }}"
+             onclick="openImageModal('{{ urls[4] }}', 4, '{{ post_id }}', event)">
+          <img src="{{ urls[4] }}" alt="Más imágenes" />
+        </div>
       </div>
     </div>
   {% endif %}
 </div>
-
-<script>
-// Detect image orientation for two-image layout
-document.addEventListener('DOMContentLoaded', function() {
-  const twoImageGallery = document.getElementById('gallery-{{ post_id }}');
-  if (twoImageGallery) {
-    const images = twoImageGallery.querySelectorAll('.gallery-img');
-    let loadedCount = 0;
-    
-    images.forEach(img => {
-      const checkOrientation = () => {
-        loadedCount++;
-        if (loadedCount === 2) {
-          const img1 = images[0];
-          const img2 = images[1];
-          const isVertical1 = img1.naturalHeight > img1.naturalWidth;
-          const isVertical2 = img2.naturalHeight > img2.naturalWidth;
-          
-          if (isVertical1 && isVertical2) {
-            twoImageGallery.classList.add('two-vertical');
-          } else {
-            twoImageGallery.classList.add('two-horizontal');
-          }
-        }
-      };
-      
-      if (img.complete) {
-        checkOrientation();
-      } else {
-        img.addEventListener('load', checkOrientation);
-      }
-    });
-  }
-});
-</script>
 {% endmacro %}

@@ -1,17 +1,18 @@
+
 {% set post = item.data %}
 {% set author = post.author %}
 {% set reaction_counts = reaction_counts if reaction_counts is defined else {} %}
 {% set user_reactions = user_reactions if user_reactions is defined else {} %}
 {% import 'components/image_gallery.html' as gallery %}
 
-<article class="facebook-post" data-post-id="{{ post.id }}" data-comment-permission="{{ post.comment_permission }}">
+<div class="fb-post" data-post-id="{{ post.id }}" data-comment-permission="{{ post.comment_permission }}">
   <!-- Post Header -->
-  <div class="post-header">
+  <div class="fb-post-header">
     <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}"
          alt="{{ author.username if author else 'Usuario eliminado' }}"
-         class="post-avatar">
-    <div class="post-user-info">
-      <div class="post-username">
+         class="fb-avatar">
+    <div class="fb-user-info">
+      <div class="fb-username">
         {% if author %}
         <a href="{{ url_for('auth.profile_by_username', username=author.username) }}">
           {{ author.username }}
@@ -20,19 +21,19 @@
         Usuario eliminado
         {% endif %}
         {% if author and author.verification_level >= 2 %}
-        <span class="verified-badge">
+        <span class="fb-verified">
           <i class="bi bi-check-circle-fill"></i>
         </span>
         {% endif %}
       </div>
-      <div class="post-timestamp">
+      <div class="fb-timestamp">
         <span data-timestamp="{{ post.created_at.isoformat() }}">{{ post.created_at|timesince }}</span>
         {% if post.edited %}
         · editado
         {% endif %}
       </div>
     </div>
-    <button class="post-options" data-bs-toggle="dropdown" aria-label="Opciones">
+    <button class="fb-options" data-bs-toggle="dropdown" aria-label="Opciones">
       <i class="bi bi-three-dots"></i>
     </button>
     <ul class="dropdown-menu dropdown-menu-end">
@@ -56,23 +57,23 @@
 
   <!-- Post Content -->
   {% if post.content %}
-  <div class="post-text">
+  <div class="fb-content">
     {{ post.content }}
   </div>
   {% endif %}
 
   <!-- Post Images -->
   {% if post.images %}
-  <div class="facebook-gallery-wrapper">
+  <div class="fb-media">
     {{ gallery.image_gallery(post.images, post.id) }}
   </div>
   {% elif post.file_url %}
-  <div class="facebook-gallery-wrapper">
+  <div class="fb-media">
     {% if post.file_url.endswith('.pdf') %}
-    <div class="pdf-attachment">
+    <div class="fb-attachment">
       <i class="bi bi-file-pdf"></i>
       <div>
-        <div class="pdf-title">Documento PDF</div>
+        <div class="attachment-title">Documento PDF</div>
         <a href="{{ post.file_url }}" target="_blank">Ver documento</a>
       </div>
     </div>
@@ -83,7 +84,7 @@
   {% endif %}
 
   <!-- Post Actions -->
-  <div class="facebook-actions">
+  <div class="fb-actions">
     {% set user_reaction = user_reactions.get(post.id) %}
     <button class="fb-action-btn like-btn {{ 'active' if user_reaction else '' }}"
             data-post-id="{{ post.id }}"
@@ -105,26 +106,26 @@
 
   <!-- Quick Comments -->
   {% if post.comments %}
-  <div class="quick-comments">
+  <div class="fb-comments">
     {% for comment in post.comments[:2] %}
-    <div class="comment-item">
+    <div class="fb-comment">
       <img src="{{ comment.author.avatar_url or url_for('static', filename='img/default.png') }}"
            class="comment-avatar" alt="Avatar">
       <div class="comment-content">
-        <div class="comment-box">
+        <div class="comment-bubble">
           <span class="comment-author">{{ comment.author.username }}</span>
           {{ comment.body }}
         </div>
-        <div class="comment-meta">{{ comment.timestamp|timesince }}</div>
+        <div class="comment-time">{{ comment.timestamp|timesince }}</div>
       </div>
     </div>
     {% endfor %}
 
     {% if post.comments|length > 2 %}
-    <button class="view-more-comments comment-btn" data-post-id="{{ post.id }}">
+    <button class="fb-view-more comment-btn" data-post-id="{{ post.id }}">
       Ver todos los comentarios ({{ post.comments|length }})
     </button>
     {% endif %}
   </div>
   {% endif %}
-</article>
+</div>
