@@ -186,7 +186,7 @@ def create_app():
         talisman.init_app(
             app,
             content_security_policy=csp,
-            force_https=True,
+            force_https=not app.config.get("TESTING", False),
             strict_transport_security=True,
         )
     login_manager.login_view = "auth.login"

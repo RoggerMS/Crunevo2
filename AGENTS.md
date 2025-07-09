@@ -708,3 +708,4 @@
 - Improved accessibility: added alt text to various images, aria-labels to icon-only buttons and removed gray background from `.facebook-gallery` (PR accessibility-alt-labels).
 - Galería ajustada como Facebook: dos verticales lado a lado, preview máximo 5 imágenes con overlay '+X' (PR fb-gallery-improve)
 - Multi-image layouts now adapt height automatically without forced aspect ratio (PR gallery-auto-height)
+- Talisman ahora no fuerza HTTPS en modo de pruebas para evitar redirecciones (task feed fix).
