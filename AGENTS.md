@@ -710,3 +710,4 @@
 - Multi-image layouts now adapt height automatically without forced aspect ratio (PR gallery-auto-height)
 - Talisman ahora no fuerza HTTPS en modo de pruebas para evitar redirecciones (task feed fix).
 - Restored base.html to fix blank feed after redesign (PR feed-base-restore).
+- Unificada carga de posts en /feed usando un solo template moderno y API HTML (PR feed-post-unify).
