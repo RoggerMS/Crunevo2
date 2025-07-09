@@ -1,4 +1,3 @@
-
 .sidebar-left-feed .nav-link {
   display: flex;
   align-items: center;
@@ -83,13 +82,13 @@
   color: #fff;
 }
 
-/* Clean feed card structure */
+/* Enhanced Feed Card Structure */
 .feed-card-clean {
   background: rgba(255, 255, 255, 0.98);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 16px;
+  border: 1px solid #E4E6EA;
+  border-radius: 8px;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   overflow: hidden;
 }
@@ -101,8 +100,8 @@
 }
 
 .feed-card-clean:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
 }
 
 [data-bs-theme="dark"] .feed-card-clean:hover {
@@ -801,72 +800,81 @@ body[data-bs-theme="dark"] .comment-box {
 }
 
 .facebook-gallery {
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
   position: relative;
-  align-items: stretch;
-  grid-auto-rows: minmax(0, auto);
+  gap: 2px;
+  background: #F0F2F5;
+}
+
+[data-bs-theme="dark"] .facebook-gallery {
+  background: #2c2c2c;
 }
 
 /* Single image layout */
 .facebook-gallery.single {
-  max-height: 500px;
   display: flex;
   justify-content: center;
   align-items: center;
+  max-height: 450px;
 }
 
 .facebook-gallery .single-image {
   width: 100%;
   height: auto;
-  max-height: 500px;
+  max-height: 450px;
   object-fit: cover;
-  min-height: auto;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-/* Two images base layout */
+.facebook-gallery .single-image:hover {
+  transform: scale(1.02);
+  filter: brightness(1.05);
+}
+
+/* Two images layout */
 .facebook-gallery.two-images {
   display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 2px;
-  grid-auto-rows: 1fr;
+  height: 280px;
 }
 
-/* Two horizontal images stacked */
-.facebook-gallery.two-images.two-horizontal {
-  grid-template-rows: 1fr 1fr;
-  aspect-ratio: 1 / 2;
-}
-
-/* Two vertical images side by side */
-.facebook-gallery.two-images.two-vertical {
-  display: flex;
-  gap: 2px;
-  flex-direction: row;
-  height: auto;
-}
-
-.facebook-gallery.two-images.two-vertical .gallery-image {
-  width: 50%;
-  height: auto;
+.facebook-gallery .two-image {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  aspect-ratio: unset;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.facebook-gallery .two-image:hover {
+  transform: scale(1.03);
+  filter: brightness(1.05);
+  z-index: 2;
 }
 
 /* Three images layout */
 .facebook-gallery.three-images {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
   gap: 2px;
-  aspect-ratio: auto;
-  grid-auto-rows: minmax(0, auto);
+  height: 300px;
 }
 
 .facebook-gallery .large-image {
-  grid-row: 1 / -1;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.facebook-gallery .large-image:hover {
+  transform: scale(1.02);
+  filter: brightness(1.05);
+  z-index: 2;
 }
 
 .facebook-gallery .small-images-column {
@@ -879,6 +887,14 @@ body[data-bs-theme="dark"] .comment-box {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.facebook-gallery .small-image:hover {
+  transform: scale(1.03);
+  filter: brightness(1.05);
+  z-index: 2;
 }
 
 /* Four images layout */
@@ -887,18 +903,15 @@ body[data-bs-theme="dark"] .comment-box {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 2px;
-  aspect-ratio: auto;
-  grid-auto-rows: minmax(0, auto);
+  height: 300px;
 }
 
 /* Five+ images layout */
 .facebook-gallery.five-plus-images {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
   gap: 2px;
-  aspect-ratio: auto;
-  grid-auto-rows: minmax(0, auto);
+  height: 300px;
 }
 
 .facebook-gallery .small-images-grid {
@@ -912,6 +925,14 @@ body[data-bs-theme="dark"] .comment-box {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.facebook-gallery .grid-image:hover {
+  transform: scale(1.03);
+  filter: brightness(1.05);
+  z-index: 2;
 }
 
 /* Image container for overlay */
@@ -931,36 +952,33 @@ body[data-bs-theme="dark"] .comment-box {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 2;
+  z-index: 3;
+  transition: all 0.3s ease;
+}
+
+.facebook-gallery .image-overlay:hover {
+  background: rgba(0, 0, 0, 0.8);
 }
 
 .facebook-gallery .overlay-text {
   color: #ffffff;
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 600;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* General gallery image styling */
 .facebook-gallery .gallery-image {
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   display: block;
   border: none;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  min-height: auto;
-}
-
-.facebook-gallery .gallery-image:hover {
-  transform: scale(1.02);
-  filter: brightness(1.1);
 }
 
 /* Responsive behavior */
@@ -968,149 +986,215 @@ body[data-bs-theme="dark"] .comment-box {
   .facebook-gallery.three-images,
   .facebook-gallery.five-plus-images {
     grid-template-columns: 1fr;
-    aspect-ratio: 1 / 1;
+    grid-template-rows: 2fr 1fr;
+    height: 400px;
   }
 
   .facebook-gallery .large-image {
-    grid-row: auto;
-    height: 100%;
+    grid-row: 1;
   }
 
   .facebook-gallery .small-images-column,
   .facebook-gallery .small-images-grid {
     grid-template-columns: 1fr 1fr;
-    height: auto;
+    grid-template-rows: 1fr;
   }
 
-  .facebook-gallery.two-images:not(.two-vertical),
+  .facebook-gallery.two-images,
   .facebook-gallery.four-images {
-    aspect-ratio: 1 / 1;
+    height: 240px;
+  }
+
+  .facebook-gallery .overlay-text {
+    font-size: 24px;
   }
 }
 
-@media (min-width: 992px) {
+@media (max-width: 480px) {
+  .facebook-gallery.single {
+    max-height: 300px;
+  }
+
+  .facebook-gallery .single-image {
+    max-height: 300px;
+  }
+
+  .facebook-gallery.two-images,
+  .facebook-gallery.four-images {
+    height: 200px;
+  }
+
   .facebook-gallery.three-images,
-  .facebook-gallery.four-images,
   .facebook-gallery.five-plus-images {
-    aspect-ratio: auto;
+    height: 320px;
+  }
+
+  .facebook-gallery .overlay-text {
+    font-size: 20px;
   }
 }
 
-/* New responsive gallery layout */
-.post-image-wrapper {
-  display: block;
+/* Rest of existing CSS remains the same */
+.feed-header-clean {
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+[data-bs-theme="dark"] .feed-header-clean {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.feed-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(102, 126, 234, 0.3);
+}
+
+.feed-user-info h6 {
+  margin: 0;
+  font-weight: 600;
+  color: #1a202c;
+}
+
+[data-bs-theme="dark"] .feed-user-info h6 {
+  color: #f1f5f9;
+}
+
+.feed-timestamp {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+}
+
+[data-bs-theme="dark"] .feed-timestamp {
+  color: #94a3b8;
+}
+
+.feed-content-clean {
+  padding: 1rem 1.25rem;
+}
+
+.feed-text {
+  color: #1e293b;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+[data-bs-theme="dark"] .feed-text {
+  color: #e2e8f0;
+}
+
+.feed-actions-clean {
+  padding: 0.75rem 1.25rem 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+[data-bs-theme="dark"] .feed-actions-clean {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.feed-action-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.feed-action-btn:hover {
+  background: rgba(24, 119, 242, 0.1);
+  color: #1877F2;
+}
+
+[data-bs-theme="dark"] .feed-action-btn {
+  color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .feed-action-btn:hover {
+  background: rgba(24, 119, 242, 0.2);
+  color: #aad4ff;
+}
+
+.feed-action-btn.active {
+  color: #1877F2;
+  background: rgba(24, 119, 242, 0.1);
+}
+
+/* Modern feed post card */
+.feed-post-card {
+  background: #fff;
+  border: 1px solid #E4E6EA;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
   width: 100%;
-  height: auto;
-  border-radius: 10px;
-  overflow: hidden;
+  max-width: none;
+  margin: 0 auto 20px auto;
 }
 
-.post-image-wrapper img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 10px;
-  display: block;
+[data-bs-theme="dark"] .feed-post-card {
+  background: #242526;
+  border: 1px solid #3e4042;
 }
 
-.post-image-single {
-  display: block;
-  margin: 0 auto;
-  max-width: 100%;
-  max-height: 450px;
-  object-fit: contain;
-  background-color: #000;
-  border-radius: 10px;
+.feed-post-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
 }
 
-
-.post-image-grid {
-  display: grid;
-  gap: 6px;
-  width: 100%;
-}
-
-.post-image-grid img {
-  width: 100%;
-  object-fit: cover;
-  display: block;
-  border-radius: 10px;
-}
-
-.post-image-grid.two-images,
-.post-image-grid.four-images {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
-}
-
-
-/* Grid layout for exactly two images */
-.post-image-grid.two-images img {
-  height: 240px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-
-/* Grid layout for exactly four images */
-.post-image-grid.four-images img {
-  height: 180px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-.grid-cols-2 {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.grid-cols-3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-
-/* Grid thumbnails used when more than four images are present */
-.post-image-grid.grid-cols-3 img {
-  height: 160px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-.grid-cols-1-2 {
-  grid-template-columns: 1fr;
-}
-
-.post-image-row {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
-}
-
-
-.post-image-large {
-  width: 100%;
-  height: 260px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-
-.post-image-small {
-  width: 100%;
-  height: 130px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-.post-image-grid-item {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
+/* Hide unnecessary elements on mobile */
 @media (max-width: 768px) {
-  .post-image-grid {
-    grid-template-columns: repeat(2, 1fr);
+  #feed-filtros-principales {
+    display: none !important;
+  }
+
+  .feed-header-clean {
+    padding: 0.75rem 1rem 0.5rem;
+  }
+
+  .feed-content-clean {
+    padding: 0.75rem 1rem;
+  }
+
+  .feed-actions-clean {
+    padding: 0.5rem 1rem 0.75rem;
+  }
+
+  .feed-card-clean {
+    margin-bottom: 1rem;
+    border-radius: 0;
+  }
+
+  .feed-post-card {
+    padding: 12px;
+    margin-bottom: 16px;
+    border-radius: 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  #feedContainer {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  body {
+    background-color: #fff !important;
   }
 }
 
@@ -1120,64 +1204,11 @@ body[data-bs-theme="dark"] .comment-box {
   max-width: none !important;
 }
 
-/* Modern feed post card */
-.feed-post-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  padding: 16px;
-  margin-bottom: 20px;
-  transition: all 0.3s ease;
-  width: 100%;
-  max-width: none;
-  margin: 0 auto;
-}
-[data-bs-theme="dark"] .feed-post-card {
-  background: #1f2937;
-}
-.feed-post-card:hover {
-  transform: scale(1.01);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-}
-.feed-post-card img {
-  border-radius: 8px;
-  max-width: 100%;
-  object-fit: cover;
-  max-height: 300px;
-}
-.feed-post-card .post-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-}
-.feed-post-card .post-actions .btn {
-  border-radius: 20px;
-  transition: all 0.3s ease;
-}
-.feed-post-card .post-actions .btn:hover {
-  background-color: rgba(102, 126, 234, 0.1);
-}
-
 @media (max-width: 768px) {
   #sidebar-right {
     display: none !important;
   }
-  .feed-post-card {
-    padding: 12px;
-    margin-bottom: 16px;
-    border-radius: 0;
-    margin-left: 0;
-    margin-right: 0;
-  }
-  #feedContainer {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-  body {
-    background-color: #fff !important;
-  }
 }
-
 
 .post-image-grid.four-images {
   grid-template-rows: repeat(2, 1fr);

@@ -4,7 +4,7 @@
 {% set urls = (images | map(attribute='url') | list) if images and (images[0] is mapping or images[0].url is defined) else images %}
 <div class="facebook-gallery-wrapper" data-post-id="{{ post_id }}" data-images='{{ urls | tojson }}'>
   {% if count == 1 %}
-    <!-- Single image: large centered -->
+    <!-- Single image: centered, max 450px height -->
     <div class="facebook-gallery single">
       <img src="{{ urls[0] }}" 
            class="gallery-image single-image" 
@@ -15,11 +15,11 @@
            tabindex="0" />
     </div>
   {% elif count == 2 %}
-    <!-- Two images: 2 columns equal height -->
+    <!-- Two images: adaptive layout based on orientation -->
     <div class="facebook-gallery two-images">
       {% for url in urls[:2] %}
       <img src="{{ url }}" 
-           class="gallery-image" 
+           class="gallery-image two-image" 
            alt="Imagen {{ loop.index }} de {{ count }}" 
            loading="lazy" 
            onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)"
@@ -28,7 +28,7 @@
       {% endfor %}
     </div>
   {% elif count == 3 %}
-    <!-- Three images: 1 large left, 2 small right -->
+    <!-- Three images: large left + 2 small right -->
     <div class="facebook-gallery three-images">
       <img src="{{ urls[0] }}" 
            class="gallery-image large-image" 
@@ -54,7 +54,7 @@
     <div class="facebook-gallery four-images">
       {% for url in urls[:4] %}
       <img src="{{ url }}" 
-           class="gallery-image" 
+           class="gallery-image grid-image" 
            alt="Imagen {{ loop.index }} de {{ count }}" 
            loading="lazy" 
            onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)"
@@ -63,7 +63,7 @@
       {% endfor %}
     </div>
   {% else %}
-    <!-- Five+ images: 1 large left, 4-grid right with optional overlay -->
+    <!-- Five+ images: large left + 4-grid right with overlay -->
     <div class="facebook-gallery five-plus-images">
       <img src="{{ urls[0] }}"
            class="gallery-image large-image"

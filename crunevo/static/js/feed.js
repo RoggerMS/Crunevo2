@@ -49,8 +49,6 @@ class FeedManager {
 
   async submitPost(form) {
     const submitBtn = form.querySelector('.feed-submit-btn');
-    const submitText = submitBtn.querySelector('.submit-text');
-    const spinner = submitBtn.querySelector('.spinner-border');
 
     try {
       // Show loading state
@@ -687,120 +685,15 @@ class FeedManager {
   }
 }
 
-// Global share functions
-function shareToWhatsApp() {
-  const url = encodeURIComponent(window.currentShareUrl);
-  const text = encodeURIComponent('¡Mira esta publicación en CRUNEVO!');
-  window.open(`https://wa.me/?text=${text} ${url}`, '_blank');
-}
-
-function shareToTwitter() {
-  const url = encodeURIComponent(window.currentShareUrl);
-  const text = encodeURIComponent('¡Mira esta publicación en CRUNEVO!');
-  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-}
-
-function copyLink() {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(window.currentShareUrl).then(() => {
-      feedManager.showToast('¡Enlace copiado al portapapeles!', 'success');
-      bootstrap.Modal.getInstance(document.getElementById('shareModal')).hide();
-    });
-  } else {
-    // Fallback for older browsers
-    const textArea = document.createElement('textarea');
-    textArea.value = window.currentShareUrl;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-    feedManager.showToast('¡Enlace copiado!', 'success');
-    bootstrap.Modal.getInstance(document.getElementById('shareModal')).hide();
-  }
-}
-
-// Global functions for post actions
-function editPost(postId) {
-  const card = document.querySelector(`[data-post-id='${postId}']`);
-  const textarea = document.querySelector('#editPostForm textarea[name="content"]');
-  const select = document.querySelector('#editPostForm select[name="comment_permission"]');
-  const form = document.getElementById('editPostForm');
-  if (!card || !textarea || !form) return;
-  const contentEl = card.querySelector('.post-content p');
-  textarea.value = contentEl ? contentEl.textContent.trim() : '';
-  if (select) {
-    select.value = card.dataset.commentPermission || 'all';
-  }
-  form.dataset.postId = postId;
-  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editPostModal'));
-  modal.show();
-}
-
-function deletePost(postId) {
-  if (!confirm('¿Estás seguro de que quieres eliminar esta publicación?')) return;
-  feedManager.fetchWithCSRF(`/feed/post/eliminar/${postId}`, { method: 'POST' })
-    .then((resp) => {
-      if (resp.ok) {
-        document.querySelector(`[data-post-id='${postId}']`)?.remove();
-        feedManager.showToast('Publicación eliminada', 'success');
-      } else {
-        feedManager.showToast('Error al eliminar', 'error');
-      }
-    })
-    .catch(() => feedManager.showToast('Error de conexión', 'error'));
-}
-
-function reportPost(postId) {
-  if (confirm('¿Quieres reportar esta publicación?')) {
-    // Implement report functionality
-    feedManager.showToast('Publicación reportada', 'info');
-  }
-}
-
-function copyPostLink(postId) {
-  const url = `${window.location.origin}/feed/post/${postId}`;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => {
-      feedManager.showToast('¡Enlace copiado!', 'success');
-    });
-  }
-}
-
-
-// CSS animations
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes floatUp {
-    0% {
-      transform: translateY(0) scale(1);
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(-30px) scale(1.2);
-      opacity: 0;
-    }
-  }
-  
-  @keyframes fadeOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(-10px); }
-  }
-`;
-document.head.appendChild(style);
-
-// Feed manager initialization handled in main.js
-let feedManager;
-function initFeedManager() {
-  feedManager = new FeedManager();
-}
-window.initFeedManager = initFeedManager;
-
+// Enhanced Image Modal System
 let currentImageIndex = 0;
 let imageList = [];
 let currentPostId = null;
 let currentScale = 1;
 let modalImageEl;
 let postData = null;
+let touchStartX = 0;
+let touchEndX = 0;
 
 function handleModalKeydown(e) {
   if (e.key === 'Escape') {
@@ -813,6 +706,9 @@ function handleModalKeydown(e) {
     zoomIn();
   } else if (e.key === '-') {
     zoomOut();
+  } else if (e.key === ' ') {
+    e.preventDefault();
+    resetZoom();
   }
 }
 
@@ -825,6 +721,28 @@ function handleWheel(e) {
   }
 }
 
+function handleTouchStart(e) {
+  touchStartX = e.changedTouches[0].screenX;
+}
+
+function handleTouchEnd(e) {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipe();
+}
+
+function handleSwipe() {
+  const swipeThreshold = 50;
+  const diff = touchStartX - touchEndX;
+  
+  if (Math.abs(diff) > swipeThreshold) {
+    if (diff > 0) {
+      nextImage(); // Swipe left - next image
+    } else {
+      prevImage(); // Swipe right - previous image
+    }
+  }
+}
+
 function applyZoom() {
   const img = document.getElementById('modalImage');
   if (img) {
@@ -833,7 +751,7 @@ function applyZoom() {
 }
 
 function zoomIn() {
-  currentScale += 0.2;
+  currentScale = Math.min(3, currentScale + 0.2);
   applyZoom();
 }
 
@@ -885,6 +803,8 @@ function openImageModal(src, index, postId, evt) {
     document.body.appendChild(modal);
   }
   
+  const hasMultipleImages = imageList.length > 1;
+  
   modal.innerHTML = `
     <div class="modal-container">
       <div class="modal-image-section">
@@ -908,11 +828,11 @@ function openImageModal(src, index, postId, evt) {
           </button>
         </div>
         
-        ${imageList.length > 1 ? `
-          <button class="modal-nav prev" onclick="prevImage()" title="Imagen anterior">
+        ${hasMultipleImages ? `
+          <button class="modal-nav prev" onclick="prevImage()" title="Imagen anterior" ${index === 0 ? 'style="opacity: 0.5"' : ''}>
             <i class="bi bi-chevron-left"></i>
           </button>
-          <button class="modal-nav next" onclick="nextImage()" title="Siguiente imagen">
+          <button class="modal-nav next" onclick="nextImage()" title="Siguiente imagen" ${index === imageList.length - 1 ? 'style="opacity: 0.5"' : ''}>
             <i class="bi bi-chevron-right"></i>
           </button>
         ` : ''}
@@ -932,15 +852,30 @@ function openImageModal(src, index, postId, evt) {
   modal.classList.remove('hidden');
   document.body.classList.add('photo-modal-open');
   
+  // Add event listeners
+  window.addEventListener('keydown', handleModalKeydown);
+  modalImageEl.addEventListener('wheel', handleWheel, { passive: false });
+  modalImageEl.addEventListener('touchstart', handleTouchStart);
+  modalImageEl.addEventListener('touchend', handleTouchEnd);
+  
   // Load post data for right panel
   loadPostDataForModal(postId);
   
-  // Event listeners
-  window.addEventListener('keydown', handleModalKeydown);
-  modalImageEl.addEventListener('wheel', handleWheel, { passive: false });
-  
   // Update URL
   window.history.pushState({ photo: true }, '', `/feed/post/${postId}/photo/${index + 1}`);
+  
+  // Preload adjacent images for smooth navigation
+  preloadAdjacentImages(index);
+}
+
+function preloadAdjacentImages(currentIndex) {
+  const preloadIndices = [currentIndex - 1, currentIndex + 1];
+  preloadIndices.forEach(idx => {
+    if (idx >= 0 && idx < imageList.length && idx !== currentIndex) {
+      const img = new Image();
+      img.src = imageList[idx];
+    }
+  });
 }
 
 function loadPostDataForModal(postId) {
@@ -1068,36 +1003,64 @@ function submitModalComment(event, postId) {
 }
 
 function closeImageModal() {
-  document.getElementById('imageModal').classList.add('hidden');
-  document.getElementById('imageModalInfo').innerHTML = '';
-  document.body.classList.remove('photo-modal-open');
-  window.removeEventListener('keydown', handleModalKeydown);
-  if (modalImageEl) {
-    modalImageEl.removeEventListener('wheel', handleWheel);
+  const modal = document.getElementById('imageModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    document.getElementById('imageModalInfo').innerHTML = '';
+    document.body.classList.remove('photo-modal-open');
+    window.removeEventListener('keydown', handleModalKeydown);
+    if (modalImageEl) {
+      modalImageEl.removeEventListener('wheel', handleWheel);
+      modalImageEl.removeEventListener('touchstart', handleTouchStart);
+      modalImageEl.removeEventListener('touchend', handleTouchEnd);
+    }
+    currentPostId = null;
+    window.history.back();
   }
-  currentPostId = null;
-  window.history.back();
 }
 
 function nextImage() {
-  currentImageIndex = (currentImageIndex + 1) % imageList.length;
-  document.getElementById('modalImage').src = imageList[currentImageIndex];
-  const link = document.getElementById('modalImageLink');
-  if (link) link.href = imageList[currentImageIndex];
-  updateModalCounter();
-  if (currentPostId) {
-    updateModalRoute(currentPostId, currentImageIndex);
+  if (currentImageIndex < imageList.length - 1) {
+    currentImageIndex++;
+    updateModalImage();
   }
 }
 
 function prevImage() {
-  currentImageIndex = (currentImageIndex - 1 + imageList.length) % imageList.length;
-  document.getElementById('modalImage').src = imageList[currentImageIndex];
-  const link = document.getElementById('modalImageLink');
-  if (link) link.href = imageList[currentImageIndex];
-  updateModalCounter();
-  if (currentPostId) {
-    updateModalRoute(currentPostId, currentImageIndex);
+  if (currentImageIndex > 0) {
+    currentImageIndex--;
+    updateModalImage();
+  }
+}
+
+function updateModalImage() {
+  const modalImg = document.getElementById('modalImage');
+  if (modalImg && imageList[currentImageIndex]) {
+    modalImg.src = imageList[currentImageIndex];
+    modalImg.alt = `Imagen ${currentImageIndex + 1} de ${imageList.length}`;
+    
+    // Update navigation button states
+    const prevBtn = document.querySelector('.modal-nav.prev');
+    const nextBtn = document.querySelector('.modal-nav.next');
+    
+    if (prevBtn) {
+      prevBtn.style.opacity = currentImageIndex === 0 ? '0.5' : '1';
+    }
+    if (nextBtn) {
+      nextBtn.style.opacity = currentImageIndex === imageList.length - 1 ? '0.5' : '1';
+    }
+    
+    updateModalCounter();
+    if (currentPostId) {
+      updateModalRoute(currentPostId, currentImageIndex);
+    }
+    
+    // Reset zoom
+    currentScale = 1;
+    applyZoom();
+    
+    // Preload adjacent images
+    preloadAdjacentImages(currentImageIndex);
   }
 }
 
@@ -1107,7 +1070,10 @@ function updateModalRoute(postId, index) {
 }
 
 function updateModalCounter() {
-  document.getElementById('modalCounter').textContent = `${currentImageIndex + 1} / ${imageList.length}`;
+  const counter = document.getElementById('modalCounter');
+  if (counter) {
+    counter.textContent = `${currentImageIndex + 1} / ${imageList.length}`;
+  }
 }
 
 function outsideImageClick(ev) {
@@ -1116,6 +1082,118 @@ function outsideImageClick(ev) {
   }
 }
 
+// Global share functions
+function shareToWhatsApp() {
+  const url = encodeURIComponent(window.currentShareUrl);
+  const text = encodeURIComponent('¡Mira esta publicación en CRUNEVO!');
+  window.open(`https://wa.me/?text=${text} ${url}`, '_blank');
+}
+
+function shareToTwitter() {
+  const url = encodeURIComponent(window.currentShareUrl);
+  const text = encodeURIComponent('¡Mira esta publicación en CRUNEVO!');
+  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+}
+
+function copyLink() {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(window.currentShareUrl).then(() => {
+      feedManager.showToast('¡Enlace copiado al portapapeles!', 'success');
+      bootstrap.Modal.getInstance(document.getElementById('shareModal')).hide();
+    });
+  } else {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = window.currentShareUrl;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    feedManager.showToast('¡Enlace copiado!', 'success');
+    bootstrap.Modal.getInstance(document.getElementById('shareModal')).hide();
+  }
+}
+
+// Global functions for post actions
+function editPost(postId) {
+  const card = document.querySelector(`[data-post-id='${postId}']`);
+  const textarea = document.querySelector('#editPostForm textarea[name="content"]');
+  const select = document.querySelector('#editPostForm select[name="comment_permission"]');
+  const form = document.getElementById('editPostForm');
+  if (!card || !textarea || !form) return;
+  const contentEl = card.querySelector('.post-content p');
+  textarea.value = contentEl ? contentEl.textContent.trim() : '';
+  if (select) {
+    select.value = card.dataset.commentPermission || 'all';
+  }
+  form.dataset.postId = postId;
+  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editPostModal'));
+  modal.show();
+}
+
+function deletePost(postId) {
+  if (!confirm('¿Estás seguro de que quieres eliminar esta publicación?')) return;
+  feedManager.fetchWithCSRF(`/feed/post/eliminar/${postId}`, { method: 'POST' })
+    .then((resp) => {
+      if (resp.ok) {
+        document.querySelector(`[data-post-id='${postId}']`)?.remove();
+        feedManager.showToast('Publicación eliminada', 'success');
+      } else {
+        feedManager.showToast('Error al eliminar', 'error');
+      }
+    })
+    .catch(() => feedManager.showToast('Error de conexión', 'error'));
+}
+
+function reportPost(postId) {
+  if (confirm('¿Quieres reportar esta publicación?')) {
+    // Implement report functionality
+    feedManager.showToast('Publicación reportada', 'info');
+  }
+}
+
+function copyPostLink(postId) {
+  const url = `${window.location.origin}/feed/post/${postId}`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      feedManager.showToast('¡Enlace copiado!', 'success');
+    });
+  }
+}
+
+// CSS animations
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes floatUp {
+    0% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-30px) scale(1.2);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); }
+  }
+
+  .photo-modal-open {
+    overflow: hidden;
+  }
+`;
+document.head.appendChild(style);
+
+// Feed manager initialization
+let feedManager;
+function initFeedManager() {
+  feedManager = new FeedManager();
+}
+window.initFeedManager = initFeedManager;
+
+// Global exports
 window.openImageModal = openImageModal;
 window.closeImageModal = closeImageModal;
 window.nextImage = nextImage;
@@ -1129,19 +1207,20 @@ window.deletePost = deletePost;
 window.reportPost = reportPost;
 window.copyPostLink = copyPostLink;
 
+// Edit post form handler
 const editPostForm = document.getElementById('editPostForm');
 if (editPostForm) {
   editPostForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.currentTarget;
-  const postId = form.dataset.postId;
-  const content = form.querySelector('textarea[name="content"]').value.trim();
-  const permission = form.querySelector('select[name="comment_permission"]').value;
+    const postId = form.dataset.postId;
+    const content = form.querySelector('textarea[name="content"]').value.trim();
+    const permission = form.querySelector('select[name="comment_permission"]').value;
 
-  const formData = new FormData();
-  formData.append('content', content);
-  formData.append('comment_permission', permission);
-  formData.append('csrf_token', feedManager.getCSRFToken());
+    const formData = new FormData();
+    formData.append('content', content);
+    formData.append('comment_permission', permission);
+    formData.append('csrf_token', feedManager.getCSRFToken());
 
     try {
       const resp = await feedManager.fetchWithCSRF(`/feed/post/editar/${postId}`, {
