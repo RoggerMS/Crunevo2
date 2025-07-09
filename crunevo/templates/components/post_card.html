@@ -41,7 +41,7 @@
 
       <!-- Post actions dropdown -->
       <div class="dropdown">
-        <button class="btn btn-ghost btn-sm rounded-circle" data-bs-toggle="dropdown">
+        <button class="btn btn-ghost btn-sm rounded-circle" data-bs-toggle="dropdown" aria-label="Opciones de publicación">
           <i class="bi bi-three-dots"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
@@ -152,9 +152,10 @@
 
 
       <!-- Save Button -->
-      <button class="action-btn-enhanced save-btn" 
+      <button class="action-btn-enhanced save-btn"
               data-post-id="{{ post.id }}"
-              data-tooltip="Guardar">
+              data-tooltip="Guardar"
+              aria-label="Guardar publicación">
         <i class="bi bi-bookmark"></i>
       </button>
     </div>
