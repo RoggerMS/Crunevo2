@@ -323,17 +323,27 @@ def user_posts(user_id: int):
         .paginate(page=page, per_page=10)
     )
     posts = pagination.items
-    reaction_map = PostReaction.counts_for_posts([p.id for p in posts])
-    user_reactions = PostReaction.reactions_for_user_posts(
-        current_user.id, [p.id for p in posts]
+    post_ids = [p.id for p in posts]
+    reaction_map = PostReaction.counts_for_posts(post_ids)
+    user_reactions = PostReaction.reactions_for_user_posts(current_user.id, post_ids)
+    feed_items = [{"type": "post", "data": p} for p in posts]
+    trending_posts = get_weekly_top_posts(limit=3)
+    trending_counts = PostReaction.counts_for_posts([p.id for p in trending_posts])
+    trending_user_reactions = PostReaction.reactions_for_user_posts(
+        current_user.id, [p.id for p in trending_posts]
     )
     return render_template(
-        "feed/user_posts.html",
-        user=user,
-        posts=posts,
-        pagination=pagination,
+        "feed/feed.html",
+        feed_items=feed_items,
+        categoria=None,
         reaction_counts=reaction_map,
         user_reactions=user_reactions,
+        pagination=pagination,
+        show_streak_claim=False,
+        trending_posts=trending_posts,
+        trending_counts=trending_counts,
+        trending_user_reactions=trending_user_reactions,
+        viewed_user=user,
     )
 
 
@@ -656,6 +666,18 @@ def api_feed():
                 for fi, item in zip(q, items)
             ],
         )
+
+    # Remove duplicate posts by ref_id while preserving order
+    seen = set()
+    unique_items = []
+    for it in items:
+        if it.get("item_type") == "post":
+            pid = it.get("ref_id")
+            if pid in seen:
+                continue
+            seen.add(pid)
+        unique_items.append(it)
+    items = unique_items
     if categoria == "apuntes":
         items = [i for i in items if i.get("item_type") == "apunte"]
     elif categoria == "imagen":

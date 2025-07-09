@@ -225,6 +225,19 @@ def create_app():
                 db.session.rollback()
         return response
 
+    @app.after_request
+    def apply_security_headers(response):
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net"
+        )
+        response.headers["X-Frame-Options"] = "SAMEORIGIN"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = (
+            "camera=(), microphone=(), geolocation=()"
+        )
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        return response
+
     # Initialize database if needed (skip during tests)
     with app.app_context():
         if not testing_env:
