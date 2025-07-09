@@ -83,8 +83,11 @@ function applyGalleryOrientation() {
     if (imgs.length !== 2) return;
     const update = () => {
       if (imgs[0].naturalWidth && imgs[1].naturalWidth) {
-        const vertical = [...imgs].filter((img) => img.naturalHeight > img.naturalWidth).length;
-        gal.classList.add(vertical === 2 ? 'two-vertical' : 'two-horizontal');
+        const ratio1 = imgs[0].naturalHeight / imgs[0].naturalWidth;
+        const ratio2 = imgs[1].naturalHeight / imgs[1].naturalWidth;
+        const isVertical1 = ratio1 > 1.2;
+        const isVertical2 = ratio2 > 1.2;
+        gal.classList.add(isVertical1 && isVertical2 ? 'two-vertical' : 'two-horizontal');
       }
     };
     imgs.forEach((img) => {
