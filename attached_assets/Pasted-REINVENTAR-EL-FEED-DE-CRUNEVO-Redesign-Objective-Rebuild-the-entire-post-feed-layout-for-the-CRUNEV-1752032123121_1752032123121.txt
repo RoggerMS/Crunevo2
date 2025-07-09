@@ -1,0 +1,151 @@
+REINVENTAR EL FEED DE CRUNEVO
+Redesign Objective:
+Rebuild the entire post feed layout for the CRUNEVO social platform, with a focus on a modern, intelligent, and responsive image gallery system that exceeds Facebook’s standard. The goal is not just to match, but to surpass it in usability, clarity, and visual design, while remaining highly functional for educational and social contexts.
+
+📸 Image Gallery System (Core Feature)
+The image gallery must support 1 to 10+ images per post with intelligent layouts, adapting to the number and orientation of the images:
+
+Images	Layout
+1	Centered, large preview, max-height: 450px, object-fit: contain
+2	Adaptive: side-by-side if vertical, stacked if horizontal
+3	Facebook-style: 1 large left, 2 smaller stacked right
+4	Clean 2x2 grid with perfect spacing and rounded corners
+5+	1 large left + 4-grid on right (2x2), last one shows +X overlay
+10+	Modal includes pagination, scrollable navigation, keyboard control
+
+✅ Must detect image orientation (portrait vs landscape) to switch intelligently between .two-horizontal or .two-vertical.
+
+✅ All images must support lazy loading, keyboard navigation, touch gestures, and alt for accessibility.
+
+✅ Clicking any image opens a full-screen modal viewer, with:
+
+Arrow keys ← → to move between images.
+
+ESC to close.
+
+Zoom + / – or double tap.
+
+Spacebar resets zoom.
+
+Preloaded next/prev images for smooth nav.
+
+🔘 Action Button Bar (Enhanced)
+Design the interaction buttons in a new modular interaction row, always visible and responsive, avoiding spacing bugs when values are 0.
+
+🔥 Reactions (uses icon: bi-fire) → expandable hover with emotion choices.
+
+💬 Comments → opens inline or modal comments thread.
+
+🔄 Share → native browser share API for mobile or copy link.
+
+🔖 Save → toggles saved state, UI must change color/icon.
+
+📊 Like/Comment counters must always be visible (default 0).
+
+✅ Spacing must not affect image display under any condition.
+
+✨ Feed Card Redesign (Modern UX)
+Each post card (.post-card) must follow a modern structure with semantic clarity and hierarchy:
+
+Header Section:
+
+Profile picture (rounded, small)
+
+Name + career/role badge + verified icon
+
+Timestamp
+
+Options menu (ellipsis)
+
+Text Content:
+
+Short caption or status update.
+
+Links auto-detected and stylized.
+
+Hashtags (#Matematica) link to filter.
+
+Image Gallery Section:
+
+Uses the smart gallery layouts described above.
+
+Actions Bar (horizontal row):
+
+Always fixed below the image.
+
+Buttons: Reactions · Comments · Share · Save
+
+On mobile, collapses into a scrollable row.
+
+Mobile enhancements:
+
+Optimized padding.
+
+Tap-friendly buttons.
+
+Long press on image opens share menu.
+
+Post meta & accessibility:
+
+role="article" on each post.
+
+aria-label for interactive elements.
+
+Keyboard focus (tabindex) on buttons/images.
+
+🎨 Visual Design Language (CRUNEVO Identity)
+Style must feel academic + social, not corporative.
+
+Color palette:
+
+Primary: #6D28D9 (Crunevo purple)
+
+Accent: #42B883 (educational green)
+
+Light Background: #F0F2F5
+
+Text: #1C1E21 for dark, #E4E6EA borders
+
+Fonts: Segoe UI, Roboto, or system default.
+
+Layout: grid-based, gap: 2px, border-radius: 10px
+
+Effects: hover: scale(1.03), transition: all 0.2s ease
+
+Icons: Bootstrap Icons (bi-*) or Heroicons
+
+Dark Mode: full support with data-bs-theme="dark" styles.
+
+🛠️ Functional Requirements
+⚙️ Must work with Flask backend and Jinja templates.
+
+📎 post_id, openImageModal(url, index, post_id, event) must remain intact.
+
+🔁 Posts load dynamically with support for infinite scroll or pagination.
+
+📱 100% Responsive (mobile-first, scales to desktop).
+
+🔍 Posts can include hashtags, mentions, emojis.
+
+🧪 Additional Improvements (Optional)
+🗂️ Filter by post type: [📝 Apuntes] [📸 Imágenes] [🎥 Video] [🎓 Cursos]
+
+🧠 AI Assistant tag suggestion (#matematica, #dpcc)
+
+🧩 Add-ons for premium users (blurred preview → unlock with Crolars)
+
+🕵️‍♀️ Post visibility: público · solo amigos · privado
+
+📌 Summary for Replit Agent
+You are authorized to modify any HTML, CSS or JS files, including:
+
+image_gallery.html
+
+feed.html
+
+main.js, feed.js
+
+photo-modal.css, feed.css
+
+A full redesign of the post system is requested. The gallery should be intelligent, pixel-perfect, and modern, exceeding Facebook's standard while respecting the educational purpose of CRUNEVO.
+
