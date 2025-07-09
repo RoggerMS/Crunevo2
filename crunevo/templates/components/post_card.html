@@ -36,7 +36,7 @@
       </div>
       
       <div class="post-timestamp">
-        {{ moment(post.created_at).fromNow() }}
+        {{ post.created_at|timesince }}
         {% if post.edited %}
         <span class="edited-indicator">· Editado</span>
         {% endif %}
@@ -185,7 +185,7 @@
             <h6 class="modal-title mb-0" id="commentsModalLabel-{{ post.id }}">
               {{ author.username if author else 'Usuario eliminado' }}
             </h6>
-            <small class="text-muted">{{ moment(post.created_at).fromNow() }}</small>
+            <small class="text-muted">{{ post.created_at|timesince }}</small>
           </div>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -225,7 +225,7 @@
                   <p class="comment-text mb-1">{{ comment.body }}</p>
                 </div>
                 <div class="comment-meta d-flex align-items-center gap-3">
-                  <small class="text-muted">{{ moment(comment.timestamp).fromNow() }}</small>
+                  <small class="text-muted">{{ comment.timestamp|timesince }}</small>
                   <button class="btn btn-link btn-sm p-0 text-muted">Responder</button>
                   {% if current_user.is_authenticated and (current_user.id == comment.author_id or current_user.role in ['admin', 'moderator']) %}
                   <button class="btn btn-link btn-sm p-0 text-danger" onclick="deleteComment('{{ comment.id }}', '{{ post.id }}')">

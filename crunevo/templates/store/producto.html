@@ -1,5 +1,6 @@
 
 {% extends "base.html" %}
+{% import "components/csrf.html" as csrf %}
 
 {% block title %}{{ product.name }} - Tienda CRUNEVO{% endblock %}
 
@@ -110,7 +111,7 @@
             {% if current_user.is_authenticated %}
               {% if product.stock > 0 %}
               <form action="{{ url_for('store.add_to_cart') }}" method="POST" class="add-cart-form">
-                {{ csrf_token() }}
+                {{ csrf.csrf_field() }}
                 <input type="hidden" name="product_id" value="{{ product.id }}">
                 <div class="quantity-selector">
                   <label for="quantity">Cantidad:</label>
@@ -133,7 +134,7 @@
               {% endif %}
               
               <form action="{{ url_for('store.toggle_favorite') }}" method="POST" class="favorite-form">
-                {{ csrf_token() }}
+                {{ csrf.csrf_field() }}
                 <input type="hidden" name="product_id" value="{{ product.id }}">
                 <button type="submit" class="btn-favorite {{ 'active' if is_favorite }}">
                   <i class="bi bi-heart{{ '-fill' if is_favorite else '' }}"></i>
@@ -162,7 +163,7 @@
             </div>
             <div class="meta-item">
               <strong>Agregado:</strong>
-              <span>{{ moment(product.created_at).format('DD/MM/YYYY') }}</span>
+              <span>{{ product.created_at.strftime('%d/%m/%Y') }}</span>
             </div>
           </div>
         </div>
@@ -192,7 +193,7 @@
                     </div>
                   </div>
                 </div>
-                <small class="review-date">{{ moment(review.created_at).fromNow() }}</small>
+                <small class="review-date">{{ review.created_at|timesince }}</small>
               </div>
               <p class="review-content">{{ review.content }}</p>
             </div>
