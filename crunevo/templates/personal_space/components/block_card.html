@@ -31,10 +31,10 @@
                 {% endif %}
             </span>
             {% endif %}
-            <button class="btn-ghost" onclick="editBlock({{ block.id }})">
+            <button class="btn-ghost" onclick="editBlock({{ block.id }})" aria-label="Editar bloque">
                 <i class="bi bi-pencil"></i>
             </button>
-            <button class="btn-ghost" onclick="deleteBlock({{ block.id }})">
+            <button class="btn-ghost" onclick="deleteBlock({{ block.id }})" aria-label="Eliminar bloque">
                 <i class="bi bi-trash"></i>
             </button>
         </div>

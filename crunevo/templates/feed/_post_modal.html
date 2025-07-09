@@ -119,7 +119,7 @@
       </button>
 
       <button class="btn btn-ghost d-flex align-items-center justify-content-center save-btn"
-              data-post-id="{{ post.id }}" style="width: 40px; height: 40px;">
+              data-post-id="{{ post.id }}" style="width: 40px; height: 40px;" aria-label="Guardar publicación">
         <i class="bi bi-bookmark"></i>
       </button>
     </div>
@@ -130,7 +130,7 @@
       {% if post.comments %}
         {% for c in post.comments|sort(attribute='timestamp', reverse=True) %}
         <div class="comment-item d-flex gap-3 mb-3 comment-box">
-          <img src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle" width="32" height="32">
+          <img src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle" width="32" height="32" alt="Avatar de {{ c.author.username }}">
           <div class="flex-grow-1">
             <div class="comment-box p-3 rounded-3">
               <div class="fw-semibold small mb-1">{{ c.author.username }}</div>
