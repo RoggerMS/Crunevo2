@@ -1,12 +1,14 @@
-
-// CRUNEVO Feed System - Enhanced JavaScript
-class CrunevoFeedManager {
+// CRUNEVO Modern Feed System - Facebook-style functionality
+class ModernFeedManager {
   constructor() {
     this.currentPage = 1;
     this.isLoading = false;
     this.currentFilter = 'recientes';
     this.posts = new Map();
     this.imageFiles = [];
+    this.currentImageIndex = 0;
+    this.imageList = [];
+    this.currentPostId = null;
     this.init();
   }
 
@@ -16,13 +18,68 @@ class CrunevoFeedManager {
     this.initFeedFilters();
     this.initInfiniteScroll();
     this.initPostInteractions();
-    this.initStreakClaim();
-    this.initModals();
-    this.initTooltips();
-    this.initQuickButtons();
-    this.initGalleryEnhancements();
+    this.initImageModal();
+    this.initCommentSystem();
+    this.initPostCreation();
+    this.initSkeletonLoading();
   }
 
+  // Initialize post creation form
+  initPostCreation() {
+    const postCreationTrigger = document.querySelector('.post-creation-trigger');
+    const postModal = document.getElementById('crearPublicacionModal');
+
+    if (postCreationTrigger && postModal) {
+      postCreationTrigger.addEventListener('click', () => {
+        const modal = new bootstrap.Modal(postModal);
+        modal.show();
+      });
+    }
+  }
+
+  // Initialize skeleton loading
+  initSkeletonLoading() {
+    this.showSkeletonPosts();
+
+    // Remove skeletons after content loads
+    setTimeout(() => {
+      this.removeSkeletonPosts();
+    }, 1000);
+  }
+
+  showSkeletonPosts() {
+    const container = document.getElementById('feedContainer');
+    if (!container) return;
+
+    const skeletonHTML = `
+      <div class="post-skeleton">
+        <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+          <div class="skeleton-avatar"></div>
+          <div style="flex: 1;">
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line" style="width: 40%; height: 8px;"></div>
+          </div>
+        </div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line medium"></div>
+        <div class="skeleton-line" style="height: 200px; margin-top: 12px;"></div>
+      </div>
+    `;
+
+    // Add 3 skeleton posts
+    for (let i = 0; i < 3; i++) {
+      container.insertAdjacentHTML('afterbegin', skeletonHTML);
+    }
+  }
+
+  removeSkeletonPosts() {
+    document.querySelectorAll('.post-skeleton').forEach(skeleton => {
+      skeleton.classList.add('fade-out');
+      setTimeout(() => skeleton.remove(), 300);
+    });
+  }
+
+  // Initialize feed form
   initFeedForm() {
     const form = document.getElementById('feedForm');
     if (!form) return;
@@ -39,43 +96,22 @@ class CrunevoFeedManager {
         this.autoResizeTextarea(textarea);
         this.updatePostButtonState();
       });
-      
-      // Hashtag and mention detection
-      textarea.addEventListener('input', (e) => {
-        this.handleTextInput(e);
-      });
     }
 
-    form.querySelectorAll('input[type="file"]').forEach((inp) => {
-      inp.addEventListener('change', () => this.updatePostButtonState());
+    // File input handling
+    form.querySelectorAll('input[type="file"]').forEach(input => {
+      input.addEventListener('change', () => this.updatePostButtonState());
     });
 
     this.updatePostButtonState();
   }
 
-  handleTextInput(e) {
-    const text = e.target.value;
-    const cursorPos = e.target.selectionStart;
-    
-    // Simple hashtag detection for future implementation
-    const hashtags = text.match(/#\w+/g) || [];
-    const mentions = text.match(/@\w+/g) || [];
-    
-    // Could implement autocomplete here
-    console.debug('Hashtags found:', hashtags);
-    console.debug('Mentions found:', mentions);
-  }
-
+  // Submit post with modern UI feedback
   async submitPost(form) {
-    const submitBtn = form.querySelector('.feed-submit-btn');
+    const submitBtn = form.querySelector('button[type="submit"]');
 
     try {
       this.setButtonLoading(submitBtn, true);
-
-      const imgInput = document.getElementById('feedImageInput');
-      const dt = new DataTransfer();
-      this.imageFiles.forEach((f) => dt.items.add(f));
-      if (imgInput) imgInput.files = dt.files;
 
       const formData = new FormData(form);
       const response = await this.fetchWithCSRF(form.action || window.location.pathname, {
@@ -88,6 +124,12 @@ class CrunevoFeedManager {
         form.reset();
         this.clearImagePreview();
         this.updatePostButtonState();
+
+        // Close modal if open
+        const modal = bootstrap.Modal.getInstance(document.getElementById('crearPublicacionModal'));
+        if (modal) modal.hide();
+
+        // Refresh feed
         setTimeout(() => window.location.reload(), 1000);
       } else {
         const errorText = await response.text();
@@ -98,421 +140,75 @@ class CrunevoFeedManager {
       this.showToast('Error de conexión. Intenta nuevamente.', 'error');
     } finally {
       this.setButtonLoading(submitBtn, false);
-      this.updatePostButtonState();
     }
   }
 
-  initImagePreview() {
-    const input = document.getElementById('feedImageInput');
-    const preview = document.getElementById('previewContainer');
-
-    if (!input || !preview) return;
-
-    input.addEventListener('change', (e) => {
-      const files = Array.from(e.target.files);
-      files.forEach((file) => {
-        if (
-          file &&
-          file.type.startsWith('image/') &&
-          !this.imageFiles.some(
-            (f) => f.name === file.name && f.size === file.size && f.lastModified === file.lastModified
-          )
-        ) {
-          this.imageFiles.push(file);
-        }
-      });
-      input.value = '';
-      this.updateImagePreviews();
-    });
-  }
-
-  updateImagePreviews() {
-    const container = document.getElementById('previewContainer');
-    if (!container) return;
-    container.innerHTML = '';
-    this.imageFiles.forEach((file, idx) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const div = document.createElement('div');
-        div.className = 'preview-item';
-        div.innerHTML = `
-          <img src="${e.target.result}" class="img-fluid rounded-3 shadow-sm" style="max-height: 150px;">
-          <button type="button" class="btn btn-danger btn-sm rounded-circle remove-btn" data-index="${idx}" aria-label="Eliminar imagen">
-            <i class="bi bi-x"></i>
-          </button>`;
-        container.appendChild(div);
-        div.querySelector('button').addEventListener('click', (ev) => {
-          ev.stopPropagation();
-          this.removeImage(idx);
-        });
-      };
-      reader.readAsDataURL(file);
-    });
-    this.updatePostButtonState();
-  }
-
-  removeImage(index) {
-    this.imageFiles.splice(index, 1);
-    this.updateImagePreviews();
-  }
-
-  clearImagePreview() {
-    this.imageFiles = [];
-    const container = document.getElementById('previewContainer');
-    if (container) container.innerHTML = '';
-    const input = document.getElementById('feedImageInput');
-    if (input) input.value = '';
-    this.updatePostButtonState();
-  }
-
-  updatePostButtonState() {
-    const form = document.getElementById('feedForm');
-    if (!form) return;
-
-    const content = form.querySelector('textarea[name="content"]').value.trim();
-    const fileInputs = form.querySelectorAll('input[type="file"]');
-    let hasFile = this.imageFiles.length > 0;
-
-    fileInputs.forEach(inp => {
-      if (inp.files && inp.files.length > 0) {
-        hasFile = true;
+  // Initialize comment system
+  initCommentSystem() {
+    document.addEventListener('click', (e) => {
+      if (e.target.matches('.comment-btn') || e.target.closest('.comment-btn')) {
+        const btn = e.target.closest('.comment-btn');
+        const postId = btn.dataset.postId;
+        this.toggleComments(postId);
       }
     });
 
-    const submitBtn = form.querySelector('button[type="submit"]');
-    if (submitBtn) {
-      submitBtn.disabled = !(content.length >= 2 || hasFile);
-    }
-  }
+    // Handle comment form submissions
+    document.addEventListener('submit', (e) => {
+      if (e.target.matches('.comment-form')) {
+        e.preventDefault();
+        const form = e.target;
+        const postId = form.dataset.postId;
+        this.submitComment(form, postId);
+      }
+    });
 
-  initGalleryEnhancements() {
-    // Initialize lazy loading for gallery images
-    if ('IntersectionObserver' in window) {
-      const imageObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const img = entry.target;
-            if (img.dataset.src) {
-              img.src = img.dataset.src;
-              img.removeAttribute('data-src');
-              imageObserver.unobserve(img);
-            }
-            img.classList.add('loaded');
-          }
-        });
-      }, {
-        rootMargin: '50px'
-      });
-
-      document.querySelectorAll('.fb-gallery img[data-src]').forEach(img => {
-        imageObserver.observe(img);
-      });
-    }
-
-    // Add loading states to gallery images
-    document.querySelectorAll('.fb-gallery img').forEach(img => {
-      if (!img.complete) {
-        img.addEventListener('load', () => {
-          img.classList.add('loaded');
-        });
-      } else {
-        img.classList.add('loaded');
+    // Handle comment input changes
+    document.addEventListener('input', (e) => {
+      if (e.target.matches('.comment-input')) {
+        const form = e.target.closest('.comment-form');
+        const submitBtn = form.querySelector('.comment-submit-btn');
+        submitBtn.disabled = !e.target.value.trim();
       }
     });
   }
 
-  initFeedFilters() {
-    document.querySelectorAll('[data-filter]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        this.setActiveFilter(btn);
-        this.loadFilteredFeed(btn.dataset.filter);
-      });
-    });
-  }
+  // Toggle comments visibility
+  toggleComments(postId) {
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    if (!commentsSection) return;
 
-  setActiveFilter(activeBtn) {
-    document.querySelectorAll('[data-filter]').forEach(btn => {
-      btn.classList.remove('btn-primary', 'active');
-      btn.classList.add('btn-outline-primary');
-    });
-    activeBtn.classList.remove('btn-outline-primary');
-    activeBtn.classList.add('btn-primary', 'active');
-  }
+    if (commentsSection.style.display === 'none') {
+      commentsSection.style.display = 'block';
+      commentsSection.classList.add('fade-in');
 
-  async loadFilteredFeed(filter) {
-    const container = document.getElementById('feedContainer');
-    const loading = document.getElementById('feedLoading');
-
-    if (!container) return;
-
-    try {
-      this.currentFilter = filter;
-      this.currentPage = 1;
-
-      container.style.opacity = '0.5';
-      if (loading) loading.classList.remove('d-none');
-
-      const response = await fetch(`/feed/api/quickfeed?filter=${filter}`);
-      const data = await response.json();
-
-      container.innerHTML = data.html || '';
-      this.initPostInteractions();
-      this.initGalleryEnhancements();
-
-      this.showToast(`Filtro "${filter}" aplicado`, 'info');
-    } catch (error) {
-      console.error('Error loading filtered feed:', error);
-      this.showToast('Error al cargar contenido', 'error');
-    } finally {
-      container.style.opacity = '1';
-      if (loading) loading.classList.add('d-none');
-    }
-  }
-
-  initPostInteractions() {
-    // Like buttons with enhanced reactions
-    document.querySelectorAll('.fb-action-btn.like-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => this.handleLike(e));
-      
-      // Long press for reaction selector
-      let pressTimer;
-      btn.addEventListener('mousedown', (e) => {
-        pressTimer = setTimeout(() => {
-          this.showReactionSelector(btn);
-        }, 500);
-      });
-      
-      btn.addEventListener('mouseup', () => {
-        clearTimeout(pressTimer);
-      });
-      
-      btn.addEventListener('mouseleave', () => {
-        clearTimeout(pressTimer);
-      });
-    });
-
-    // Comment buttons
-    document.querySelectorAll('.fb-action-btn.comment-btn, .fb-view-more').forEach(btn => {
-      btn.addEventListener('click', (e) => this.openCommentModal(e));
-    });
-
-    // Share buttons
-    document.querySelectorAll('.fb-action-btn.share-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => this.handleShare(e));
-    });
-  }
-
-  showReactionSelector(btn) {
-    // Hide any existing selectors
-    document.querySelectorAll('.reaction-selector').forEach(sel => {
-      sel.classList.remove('show');
-    });
-
-    const selector = document.createElement('div');
-    selector.className = 'reaction-selector show';
-    selector.innerHTML = `
-      <button class="reaction-option" data-reaction="🔥" title="Fuego">🔥</button>
-      <button class="reaction-option" data-reaction="❤️" title="Me encanta">❤️</button>
-      <button class="reaction-option" data-reaction="😂" title="Me divierte">😂</button>
-      <button class="reaction-option" data-reaction="😮" title="Me sorprende">😮</button>
-      <button class="reaction-option" data-reaction="😢" title="Me entristece">😢</button>
-      <button class="reaction-option" data-reaction="😡" title="Me enoja">😡</button>
-    `;
-
-    btn.style.position = 'relative';
-    btn.appendChild(selector);
-
-    // Handle reaction selection
-    selector.querySelectorAll('.reaction-option').forEach(option => {
-      option.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const reaction = option.dataset.reaction;
-        this.handleLike({ currentTarget: btn, reaction });
-        selector.classList.remove('show');
-        setTimeout(() => selector.remove(), 300);
-      });
-    });
-
-    // Auto-hide after 3 seconds
-    setTimeout(() => {
-      if (selector.parentElement) {
-        selector.classList.remove('show');
-        setTimeout(() => selector.remove(), 300);
+      // Focus on comment input
+      const commentInput = commentsSection.querySelector('.comment-input');
+      if (commentInput) {
+        setTimeout(() => commentInput.focus(), 100);
       }
-    }, 3000);
-  }
-
-  async handleLike(e) {
-    e.preventDefault();
-    const btn = e.currentTarget;
-    const postId = btn.dataset.postId;
-    const reaction = e.reaction || btn.dataset.reaction || '🔥';
-
-    if (btn.disabled) return;
-
-    try {
-      btn.disabled = true;
-      
-      const formData = new FormData();
-      formData.append('reaction', reaction);
-      formData.append('csrf_token', this.getCSRFToken());
-
-      const response = await fetch(`/feed/like/${postId}`, {
-        method: 'POST',
-        body: formData
-      });
-
-      const data = await response.json();
-
-      // Update like count
-      const countEl = document.querySelector(`#likeCount${postId}, [data-count-post="${postId}"]`);
-      if (countEl) countEl.textContent = data.likes || 0;
-
-      // Update button state
-      const icon = btn.querySelector('i');
-      if (data.status === 'added') {
-        btn.classList.add('active');
-        if (icon) {
-          icon.classList.add('bi-fire-fill', 'text-danger');
-          icon.classList.remove('bi-fire');
-        }
-        this.animateButton(btn, reaction);
-      } else if (data.status === 'removed') {
-        btn.classList.remove('active');
-        if (icon) {
-          icon.classList.remove('text-danger', 'bi-fire-fill');
-          icon.classList.add('bi-fire');
-        }
-      }
-
-      const message = data.status === 'added' ? 
-        `¡Reaccionaste con ${reaction}!` : 
-        'Reacción removida';
-      this.showToast(message, 'success');
-      
-    } catch (error) {
-      console.error('Error handling like:', error);
-      this.showToast('Error al procesar reacción', 'error');
-    } finally {
-      btn.disabled = false;
-    }
-  }
-
-  handleShare(e) {
-    const btn = e.currentTarget;
-    const postId = btn.dataset.postId;
-    const shareUrl = `${window.location.origin}/feed/post/${postId}`;
-
-    // Native share API for mobile
-    if (navigator.share && /Mobile|Android|iPhone/i.test(navigator.userAgent)) {
-      navigator.share({
-        title: 'Publicación en CRUNEVO',
-        text: '¡Mira esta publicación en CRUNEVO!',
-        url: shareUrl
-      }).catch(console.error);
-      return;
-    }
-
-    // Show custom share menu
-    this.showShareMenu(btn, shareUrl);
-  }
-
-  showShareMenu(btn, shareUrl) {
-    // Hide any existing menus
-    document.querySelectorAll('.share-menu').forEach(menu => {
-      menu.classList.remove('show');
-    });
-
-    const menu = document.createElement('div');
-    menu.className = 'share-menu show';
-    menu.innerHTML = `
-      <button class="share-option" onclick="window.open('https://wa.me/?text=${encodeURIComponent('¡Mira esta publicación! ' + shareUrl)}', '_blank')">
-        <i class="bi bi-whatsapp"></i>
-        <span>WhatsApp</span>
-      </button>
-      <button class="share-option" onclick="window.open('https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent('¡Mira esta publicación en CRUNEVO!')}', '_blank')">
-        <i class="bi bi-twitter"></i>
-        <span>Twitter</span>
-      </button>
-      <button class="share-option" onclick="crunevoFeedManager.copyToClipboard('${shareUrl}')">
-        <i class="bi bi-clipboard"></i>
-        <span>Copiar enlace</span>
-      </button>
-    `;
-
-    btn.style.position = 'relative';
-    btn.appendChild(menu);
-
-    // Auto-hide when clicking outside
-    setTimeout(() => {
-      document.addEventListener('click', function hideMenu(e) {
-        if (!menu.contains(e.target)) {
-          menu.classList.remove('show');
-          setTimeout(() => menu.remove(), 300);
-          document.removeEventListener('click', hideMenu);
-        }
-      });
-    }, 100);
-  }
-
-  copyToClipboard(text) {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(() => {
-        this.showToast('¡Enlace copiado al portapapeles!', 'success');
-      });
     } else {
-      // Fallback
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      this.showToast('¡Enlace copiado!', 'success');
+      commentsSection.classList.add('fade-out');
+      setTimeout(() => {
+        commentsSection.style.display = 'none';
+        commentsSection.classList.remove('fade-out');
+      }, 300);
     }
   }
 
-  openCommentModal(e) {
-    const postId = e.currentTarget.dataset.postId;
-    const modalEl = document.getElementById('commentModal');
-    const bodyEl = document.getElementById('commentModalBody');
-    if (!modalEl || !bodyEl) return;
-    
-    bodyEl.innerHTML = '<div class="text-center p-3"><div class="spinner-border"></div></div>';
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.show();
+  // Submit comment
+  async submitComment(form, postId) {
+    const input = form.querySelector('.comment-input');
+    const submitBtn = form.querySelector('.comment-submit-btn');
+    const body = input.value.trim();
 
-    fetch(`/feed/api/post/${postId}`)
-      .then((r) => r.json())
-      .then((data) => {
-        bodyEl.innerHTML = data.html;
-        const form = bodyEl.querySelector('#commentForm');
-        if (form) {
-          form.onsubmit = (ev) => this.submitComment(ev, postId);
-        }
-        setTimeout(() => {
-          const input = bodyEl.querySelector('#commentForm input[name="body"]');
-          if (input) input.focus();
-        }, 300);
-      })
-      .catch(() => {
-        bodyEl.innerHTML = '<div class="text-center text-muted p-3">Error al cargar publicación</div>';
-      });
-  }
-
-  async submitComment(e, postId) {
-    e.preventDefault();
-    const form = e.target;
-    const input = form.querySelector('input[name="body"]');
-    const submitBtn = form.querySelector('button[type="submit"]');
-
-    if (!input.value.trim()) return;
+    if (!body) return;
 
     try {
       submitBtn.disabled = true;
-      
+
       const formData = new FormData();
-      formData.append('body', input.value.trim());
+      formData.append('body', body);
       formData.append('csrf_token', this.getCSRFToken());
 
       const response = await fetch(`/feed/comment/${postId}`, {
@@ -525,7 +221,7 @@ class CrunevoFeedManager {
         input.value = '';
       } else if (response.ok) {
         const comment = await response.json();
-        this.addCommentToUI(comment);
+        this.addCommentToUI(comment, postId);
         input.value = '';
         this.showToast('Comentario agregado', 'success');
       } else {
@@ -539,39 +235,161 @@ class CrunevoFeedManager {
     }
   }
 
-  addCommentToUI(comment) {
-    const container = document.getElementById('commentsContainer');
-    if (!container) return;
+  // Add comment to UI
+  addCommentToUI(comment, postId) {
+    const commentsContainer = document.querySelector(`#comments-${postId} .comments-container`);
+    if (!commentsContainer) return;
 
-    const commentHtml = `
-      <div class="comment-item d-flex gap-3 mb-3">
-        <img src="${comment.avatar || '/static/img/default.png'}" class="rounded-circle" width="32" height="32">
-        <div class="flex-grow-1">
-          <div class="comment-box p-3 rounded-3">
-            <div class="fw-semibold small mb-1">${comment.author}</div>
-            <div class="small">${comment.body}</div>
+    const commentHTML = `
+      <div class="comment-item fade-in">
+        <div class="comment-avatar">
+          <img src="${comment.avatar || '/static/img/default.png'}" 
+               alt="${comment.author}"
+               class="comment-avatar-img">
+        </div>
+        <div class="comment-content">
+          <div class="comment-bubble">
+            <div class="comment-author">${comment.author}</div>
+            <div class="comment-text">${comment.body}</div>
           </div>
-          <div class="small text-muted mt-1">ahora</div>
+          <div class="comment-meta">
+            <span class="comment-time">ahora</span>
+            <button class="comment-reply-btn">Responder</button>
+          </div>
         </div>
       </div>
     `;
-    
-    container.insertAdjacentHTML('afterbegin', commentHtml);
+
+    commentsContainer.insertAdjacentHTML('beforeend', commentHTML);
+
+    // Update comment count
+    const commentBtn = document.querySelector(`[data-post-id="${postId}"].comment-btn`);
+    if (commentBtn) {
+      const countSpan = commentBtn.querySelector('.action-count');
+      if (countSpan) {
+        const currentCount = parseInt(countSpan.textContent) || 0;
+        countSpan.textContent = currentCount + 1;
+      }
+    }
   }
 
-  async toggleSavePost(e) {
-    const btn = e.currentTarget;
+  // Initialize post interactions
+  initPostInteractions() {
+    // Like buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.matches('.like-btn') || e.target.closest('.like-btn')) {
+        const btn = e.target.closest('.like-btn');
+        this.handleLike(btn);
+      }
+    });
+
+    // Share buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.matches('.share-btn') || e.target.closest('.share-btn')) {
+        const btn = e.target.closest('.share-btn');
+        this.handleShare(btn);
+      }
+    });
+
+    // Save buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.matches('.save-btn') || e.target.closest('.save-btn')) {
+        const btn = e.target.closest('.save-btn');
+        this.handleSave(btn);
+      }
+    });
+  }
+
+  // Handle like button
+  async handleLike(btn) {
+    const postId = btn.dataset.postId;
+    const reaction = btn.dataset.reaction || '🔥';
+
+    if (btn.disabled) return;
+
+    try {
+      btn.disabled = true;
+      btn.classList.add('like-animation');
+
+      const formData = new FormData();
+      formData.append('reaction', reaction);
+      formData.append('csrf_token', this.getCSRFToken());
+
+      const response = await fetch(`/feed/like/${postId}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      // Update like count
+      const countSpan = btn.querySelector('.action-count');
+      if (countSpan) {
+        countSpan.textContent = data.likes || '';
+      }
+
+      // Update button state
+      const icon = btn.querySelector('i');
+      if (data.status === 'added') {
+        btn.classList.add('active');
+        if (icon) {
+          icon.classList.add('bi-fire-fill');
+          icon.classList.remove('bi-fire');
+        }
+        this.showToast(`¡Reaccionaste con ${reaction}!`, 'success');
+      } else if (data.status === 'removed') {
+        btn.classList.remove('active');
+        if (icon) {
+          icon.classList.remove('bi-fire-fill');
+          icon.classList.add('bi-fire');
+        }
+        this.showToast('Reacción removida', 'info');
+      }
+
+    } catch (error) {
+      console.error('Error handling like:', error);
+      this.showToast('Error al procesar reacción', 'error');
+    } finally {
+      btn.disabled = false;
+      setTimeout(() => btn.classList.remove('like-animation'), 300);
+    }
+  }
+
+  // Handle share button
+  handleShare(btn) {
+    const postId = btn.dataset.postId;
+    const shareUrl = `${window.location.origin}/feed/post/${postId}`;
+    const shareTitle = 'Publicación en CRUNEVO';
+    const shareText = '¡Mira esta publicación en CRUNEVO!';
+
+    // Native share API for mobile
+    if (navigator.share && /Mobile|Android|iPhone/i.test(navigator.userAgent)) {
+      navigator.share({
+        title: shareTitle,
+        text: shareText,
+        url: shareUrl
+      }).catch(console.error);
+      return;
+    }
+
+    // Desktop: Copy to clipboard
+    this.copyToClipboard(shareUrl);
+    this.showToast('¡Enlace copiado al portapapeles!', 'success');
+  }
+
+  // Handle save button
+  async handleSave(btn) {
     const postId = btn.dataset.postId;
 
     try {
       btn.disabled = true;
-      
+
       const response = await this.fetchWithCSRF(`/feed/save/${postId}`, {
         method: 'POST'
       });
 
       const data = await response.json();
-      
+
       const icon = btn.querySelector('i');
       if (data.saved) {
         btn.classList.add('active');
@@ -596,36 +414,266 @@ class CrunevoFeedManager {
     }
   }
 
-  initStreakClaim() {
-    const claimBtn = document.getElementById('claimStreakBtn');
-    if (!claimBtn) return;
+  // Initialize image modal
+  initImageModal() {
+    // Close modal on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.currentPostId) {
+        this.closeImageModal();
+      }
+    });
 
-    claimBtn.addEventListener('click', async () => {
-      try {
-        claimBtn.disabled = true;
-        claimBtn.innerHTML = '<div class="spinner-border spinner-border-sm"></div>';
+    // Navigate images with arrow keys
+    document.addEventListener('keydown', (e) => {
+      if (!this.currentPostId) return;
 
-        const response = await this.fetchWithCSRF('/api/reclamar-racha', {
-          method: 'POST'
-        });
-
-        if (response.ok) {
-          const banner = document.getElementById('streakBanner');
-          if (banner) {
-            banner.style.animation = 'fadeOut 0.5s ease-out forwards';
-            setTimeout(() => banner.remove(), 500);
-          }
-          this.showToast('¡Crolars reclamados! 🎉', 'success');
-        } else {
-          this.showToast('Error al reclamar racha', 'error');
-        }
-      } catch (error) {
-        console.error('Error claiming streak:', error);
-        this.showToast('Error de conexión', 'error');
+      if (e.key === 'ArrowRight') {
+        this.nextImage();
+      } else if (e.key === 'ArrowLeft') {
+        this.prevImage();
       }
     });
   }
 
+  // Open image modal
+  openImageModal(src, index, postId, evt) {
+    const container = evt?.currentTarget.closest('.image-gallery-container') || 
+                     document.querySelector(`[data-post-id='${postId}'] .image-gallery-container`);
+
+    if (container && container.dataset.images) {
+      try {
+        this.imageList = JSON.parse(container.dataset.images);
+      } catch {
+        this.imageList = [src];
+      }
+    } else {
+      this.imageList = [src];
+    }
+
+    this.currentImageIndex = index;
+    this.currentPostId = postId;
+
+    // Create modal
+    this.createImageModal(src, index);
+
+    // Update URL
+    window.history.pushState({ photo: true }, '', `/feed/post/${postId}/photo/${index + 1}`);
+  }
+
+  // Create image modal
+  createImageModal(src, index) {
+    const modal = document.createElement('div');
+    modal.id = 'imageModal';
+    modal.className = 'image-modal';
+    modal.innerHTML = `
+      <div class="modal-backdrop" onclick="modernFeedManager.closeImageModal()"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="modal-counter">${index + 1} / ${this.imageList.length}</span>
+          <button class="modal-close" onclick="modernFeedManager.closeImageModal()" aria-label="Cerrar">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <img src="${src}" alt="Imagen ${index + 1}" class="modal-image">
+          ${this.imageList.length > 1 ? `
+            <button class="modal-nav prev" onclick="modernFeedManager.prevImage()" ${index === 0 ? 'disabled' : ''}>
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <button class="modal-nav next" onclick="modernFeedManager.nextImage()" ${index === this.imageList.length - 1 ? 'disabled' : ''}>
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    document.body.classList.add('modal-open');
+
+    // Fade in animation
+    setTimeout(() => modal.classList.add('show'), 10);
+  }
+
+  // Close image modal
+  closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    if (modal) {
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.remove();
+        document.body.classList.remove('modal-open');
+      }, 300);
+    }
+
+    this.currentPostId = null;
+    this.currentImageIndex = 0;
+    this.imageList = [];
+
+    // Restore URL
+    window.history.back();
+  }
+
+  // Navigate to next image
+  nextImage() {
+    if (this.currentImageIndex < this.imageList.length - 1) {
+      this.currentImageIndex++;
+      this.updateModalImage();
+    }
+  }
+
+  // Navigate to previous image
+  prevImage() {
+    if (this.currentImageIndex > 0) {
+      this.currentImageIndex--;
+      this.updateModalImage();
+    }
+  }
+
+  // Update modal image
+  updateModalImage() {
+    const modal = document.getElementById('imageModal');
+    if (!modal) return;
+
+    const img = modal.querySelector('.modal-image');
+    const counter = modal.querySelector('.modal-counter');
+    const prevBtn = modal.querySelector('.modal-nav.prev');
+    const nextBtn = modal.querySelector('.modal-nav.next');
+
+    if (img) {
+      img.src = this.imageList[this.currentImageIndex];
+      img.alt = `Imagen ${this.currentImageIndex + 1}`;
+    }
+
+    if (counter) {
+      counter.textContent = `${this.currentImageIndex + 1} / ${this.imageList.length}`;
+    }
+
+    if (prevBtn) {
+      prevBtn.disabled = this.currentImageIndex === 0;
+    }
+
+    if (nextBtn) {
+      nextBtn.disabled = this.currentImageIndex === this.imageList.length - 1;
+    }
+
+    // Update URL
+    if (this.currentPostId) {
+      window.history.replaceState({ photo: true }, '', `/feed/post/${this.currentPostId}/photo/${this.currentImageIndex + 1}`);
+    }
+  }
+
+  // Initialize image preview for post creation
+  initImagePreview() {
+    const input = document.getElementById('feedImageInput');
+    const preview = document.getElementById('previewContainer');
+
+    if (!input || !preview) return;
+
+    input.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      files.forEach(file => {
+        if (file && file.type.startsWith('image/')) {
+          this.imageFiles.push(file);
+        }
+      });
+      input.value = '';
+      this.updateImagePreviews();
+    });
+  }
+
+  // Update image previews
+  updateImagePreviews() {
+    const container = document.getElementById('previewContainer');
+    if (!container) return;
+
+    container.innerHTML = '';
+    this.imageFiles.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const div = document.createElement('div');
+        div.className = 'preview-item';
+        div.innerHTML = `
+          <img src="${e.target.result}" alt="Vista previa" class="preview-image">
+          <button type="button" class="preview-remove" onclick="modernFeedManager.removeImage(${index})">
+            <i class="bi bi-x"></i>
+          </button>
+        `;
+        container.appendChild(div);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Remove image from preview
+  removeImage(index) {
+    this.imageFiles.splice(index, 1);
+    this.updateImagePreviews();
+    this.updatePostButtonState();
+  }
+
+  // Clear image preview
+  clearImagePreview() {
+    this.imageFiles = [];
+    const container = document.getElementById('previewContainer');
+    if (container) container.innerHTML = '';
+    this.updatePostButtonState();
+  }
+
+  // Initialize feed filters
+  initFeedFilters() {
+    document.querySelectorAll('[data-filter]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        this.setActiveFilter(btn);
+        this.loadFilteredFeed(btn.dataset.filter);
+      });
+    });
+  }
+
+  // Set active filter
+  setActiveFilter(activeBtn) {
+    document.querySelectorAll('[data-filter]').forEach(btn => {
+      btn.classList.remove('btn-primary', 'active');
+      btn.classList.add('btn-outline-primary');
+    });
+    activeBtn.classList.remove('btn-outline-primary');
+    activeBtn.classList.add('btn-primary', 'active');
+  }
+
+  // Load filtered feed
+  async loadFilteredFeed(filter) {
+    const container = document.getElementById('feedContainer');
+    if (!container) return;
+
+    try {
+      this.currentFilter = filter;
+      this.currentPage = 1;
+
+      // Show loading state
+      this.showSkeletonPosts();
+
+      const response = await fetch(`/feed/api/quickfeed?filter=${filter}`);
+      const data = await response.json();
+
+      // Hide skeletons
+      this.removeSkeletonPosts();
+
+      // Update content
+      container.innerHTML = data.html || '';
+
+      // Reinitialize interactions
+      this.initPostInteractions();
+      this.initCommentSystem();
+
+      this.showToast(`Filtro "${filter}" aplicado`, 'info');
+    } catch (error) {
+      console.error('Error loading filtered feed:', error);
+      this.showToast('Error al cargar contenido', 'error');
+      this.removeSkeletonPosts();
+    }
+  }
+
+  // Initialize infinite scroll
   initInfiniteScroll() {
     const sentinel = document.getElementById('feedEnd');
     if (!sentinel) return;
@@ -641,13 +689,13 @@ class CrunevoFeedManager {
     observer.observe(sentinel);
   }
 
+  // Load more posts
   async loadMorePosts() {
     if (this.isLoading) return;
     this.isLoading = true;
 
     try {
       this.currentPage++;
-      console.log('Loading page', this.currentPage);
       const response = await fetch(`/feed/api/feed?page=${this.currentPage}&categoria=${this.currentFilter}&format=html`);
       const data = await response.json();
 
@@ -660,17 +708,17 @@ class CrunevoFeedManager {
       const container = document.getElementById('feedContainer');
       const temp = document.createElement('div');
       temp.innerHTML = data.html;
-      Array.from(temp.children).forEach((el) => {
+
+      Array.from(temp.children).forEach(el => {
         const postId = el.getAttribute('data-post-id');
         if (postId) {
           const exists = container.querySelector(`[data-post-id="${postId}"]`);
           if (exists) return;
         }
+        el.classList.add('fade-in');
         container.appendChild(el);
       });
 
-      this.initPostInteractions();
-      this.initGalleryEnhancements();
     } catch (error) {
       console.error('Error loading more posts:', error);
       this.showToast('Error al cargar más publicaciones', 'error');
@@ -679,79 +727,53 @@ class CrunevoFeedManager {
     }
   }
 
-
-  initModals() {
-    document.querySelectorAll('.modal').forEach(modalEl => {
-      modalEl.addEventListener('hidden.bs.modal', () => {
-        const form = modalEl.querySelector('form');
-        if (form) form.reset();
-      });
-    });
-  }
-
-  initTooltips() {
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(tooltipTriggerEl => {
-      return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-  }
-
-  initQuickButtons() {
-    const modalEl = document.getElementById('crearPublicacionModal');
-    const photoBtn = document.getElementById('photoVideoBtn');
-    if (!modalEl || !photoBtn) return;
-    
-    let openWithImage = false;
-    photoBtn.addEventListener('click', () => {
-      openWithImage = true;
-      bootstrap.Modal.getOrCreateInstance(modalEl).show();
-    });
-    
-    modalEl.addEventListener('shown.bs.modal', () => {
-      if (openWithImage) {
-        document.getElementById('feedImageInput')?.click();
-        openWithImage = false;
-      }
-    });
-  }
-
   // Utility methods
   autoResizeTextarea(textarea) {
     textarea.style.height = 'auto';
     textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
   }
 
+  updatePostButtonState() {
+    const form = document.getElementById('feedForm');
+    if (!form) return;
+
+    const content = form.querySelector('textarea[name="content"]')?.value.trim() || '';
+    const hasImages = this.imageFiles.length > 0;
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    if (submitBtn) {
+      submitBtn.disabled = !(content.length >= 2 || hasImages);
+    }
+  }
+
   setButtonLoading(btn, isLoading) {
-    const text = btn.querySelector('.submit-text, .btn-text');
+    const text = btn.querySelector('.btn-text, .action-text');
     const spinner = btn.querySelector('.spinner-border');
 
     if (isLoading) {
       btn.disabled = true;
-      if (text) text.classList.add('d-none');
-      if (spinner) spinner.classList.remove('d-none');
+      if (text) text.textContent = 'Publicando...';
+      if (!spinner) {
+        btn.insertAdjacentHTML('afterbegin', '<span class="spinner-border spinner-border-sm me-2"></span>');
+      }
     } else {
       btn.disabled = false;
-      if (text) text.classList.remove('d-none');
-      if (spinner) spinner.classList.add('d-none');
+      if (text) text.textContent = 'Publicar';
+      if (spinner) spinner.remove();
     }
   }
 
-  animateButton(btn, emoji) {
-    const rect = btn.getBoundingClientRect();
-    const animEl = document.createElement('div');
-    animEl.textContent = emoji;
-    animEl.style.cssText = `
-      position: fixed;
-      left: ${rect.left + rect.width / 2}px;
-      top: ${rect.top}px;
-      font-size: 1.5rem;
-      pointer-events: none;
-      z-index: 1000;
-      animation: floatUp 1s ease-out forwards;
-    `;
-    
-    document.body.appendChild(animEl);
-    setTimeout(() => animEl.remove(), 1000);
+  copyToClipboard(text) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+    } else {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
   }
 
   async fetchWithCSRF(url, options = {}) {
@@ -771,22 +793,11 @@ class CrunevoFeedManager {
     return token ? token.value : '';
   }
 
-  timeAgo(timestamp) {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now - date) / 1000);
-
-    if (diffInSeconds < 60) return 'ahora';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;
-    return `${Math.floor(diffInSeconds / 86400)}d`;
-  }
-
   showToast(message, type = 'info') {
     const toastContainer = this.getOrCreateToastContainer();
-    
+
     const toast = document.createElement('div');
-    toast.className = `toast align-items-center text-bg-${this.getBootstrapColorClass(type)} border-0`;
+    toast.className = `toast align-items-center text-bg-${this.getBootstrapColorClass(type)} border-0 show`;
     toast.setAttribute('role', 'alert');
     toast.innerHTML = `
       <div class="d-flex">
@@ -797,16 +808,11 @@ class CrunevoFeedManager {
 
     toastContainer.appendChild(toast);
 
-    const bsToast = new bootstrap.Toast(toast, {
-      autohide: true,
-      delay: type === 'error' ? 5000 : 3000
-    });
-    
-    bsToast.show();
-
-    toast.addEventListener('hidden.bs.toast', () => {
-      toast.remove();
-    });
+    // Auto-remove after delay
+    setTimeout(() => {
+      toast.classList.add('fade-out');
+      setTimeout(() => toast.remove(), 300);
+    }, type === 'error' ? 5000 : 3000);
   }
 
   getOrCreateToastContainer() {
@@ -832,593 +838,256 @@ class CrunevoFeedManager {
   }
 }
 
-// Enhanced Image Modal System
-let currentImageIndex = 0;
-let imageList = [];
-let currentPostId = null;
-let currentScale = 1;
-let modalImageEl;
-let postData = null;
-let touchStartX = 0;
-let touchEndX = 0;
-let isDragging = false;
-let dragStartX = 0;
-let dragStartY = 0;
-
-function handleModalKeydown(e) {
-  if (e.key === 'Escape') {
-    closeImageModal();
-  } else if (e.key === 'ArrowRight') {
-    nextImage();
-  } else if (e.key === 'ArrowLeft') {
-    prevImage();
-  } else if (e.key === '+' || e.key === '=') {
-    zoomIn();
-  } else if (e.key === '-') {
-    zoomOut();
-  } else if (e.key === ' ') {
-    e.preventDefault();
-    resetZoom();
-  }
-}
-
-function handleWheel(e) {
-  e.preventDefault();
-  const rect = modalImageEl.getBoundingClientRect();
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-  
-  if (e.deltaY < 0) {
-    zoomIn(e.clientX - centerX, e.clientY - centerY);
-  } else {
-    zoomOut();
-  }
-}
-
-function handleTouchStart(e) {
-  if (e.touches.length === 1) {
-    touchStartX = e.touches[0].screenX;
-    isDragging = currentScale > 1;
-    dragStartX = e.touches[0].clientX;
-    dragStartY = e.touches[0].clientY;
-  }
-}
-
-function handleTouchEnd(e) {
-  if (e.changedTouches.length === 1 && !isDragging) {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-  }
-  isDragging = false;
-}
-
-function handleSwipe() {
-  const swipeThreshold = 50;
-  const diff = touchStartX - touchEndX;
-  
-  if (Math.abs(diff) > swipeThreshold) {
-    if (diff > 0) {
-      nextImage();
-    } else {
-      prevImage();
-    }
-  }
-}
-
-function applyZoom(originX = 0, originY = 0) {
-  const img = document.getElementById('modalImage');
-  if (img) {
-    img.style.transformOrigin = `${originX}px ${originY}px`;
-    img.style.transform = `scale(${currentScale})`;
-    
-    if (currentScale > 1) {
-      img.style.cursor = 'grab';
-    } else {
-      img.style.cursor = 'zoom-in';
-    }
-  }
-}
-
-function zoomIn(originX = 0, originY = 0) {
-  currentScale = Math.min(3, currentScale + 0.25);
-  applyZoom(originX, originY);
-}
-
-function zoomOut() {
-  currentScale = Math.max(0.5, currentScale - 0.25);
-  applyZoom();
-}
-
-function resetZoom() {
-  currentScale = 1;
-  applyZoom();
-}
-
+// Global functions for backwards compatibility
 function openImageModal(src, index, postId, evt) {
-  if (index === undefined || index === null || isNaN(index)) {
-    console.error('Índice inválido para modal:', index);
-    return;
-  }
-  
-  let container = null;
-  if (evt && evt.currentTarget) {
-    container = evt.currentTarget.closest('.fb-gallery-container');
-  }
-  if (!container) {
-    container = document.querySelector(`[data-post-id='${postId}'] .fb-gallery-container`);
-  }
-
-  if (container && container.dataset.images) {
-    try {
-      imageList = JSON.parse(container.dataset.images);
-    } catch {
-      imageList = [];
-    }
-  }
-  if (!imageList.length && container) {
-    imageList = Array.from(container.querySelectorAll('.fb-gallery img')).map((img) => img.src);
-  }
-  
-  currentImageIndex = index;
-  currentPostId = postId;
-  currentScale = 1;
-  
-  // Create or update modal HTML
-  let modal = document.getElementById('imageModal');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'imageModal';
-    modal.className = 'image-modal';
-    document.body.appendChild(modal);
-  }
-  
-  const hasMultipleImages = imageList.length > 1;
-  
-  modal.innerHTML = `
-    <div class="modal-container">
-      <div class="modal-image-section">
-        <img id="modalImage" src="${src}" alt="Imagen ${index + 1} de ${imageList.length}">
-        
-        <div class="modal-top-controls">
-          <button class="modal-control-btn" onclick="zoomOut()" title="Reducir zoom">
-            <i class="bi bi-dash"></i>
-          </button>
-          <button class="modal-control-btn" onclick="zoomIn()" title="Aumentar zoom">
-            <i class="bi bi-plus"></i>
-          </button>
-          <button class="modal-control-btn" onclick="resetZoom()" title="Tamaño original">
-            <i class="bi bi-arrows-fullscreen"></i>
-          </button>
-          <a href="${src}" target="_blank" class="modal-control-btn" title="Abrir en nueva pestaña">
-            <i class="bi bi-box-arrow-up-right"></i>
-          </a>
-          <button class="modal-control-btn" onclick="closeImageModal()" title="Cerrar">
-            <i class="bi bi-x"></i>
-          </button>
-        </div>
-        
-        ${hasMultipleImages ? `
-          <button class="modal-nav prev" onclick="prevImage()" title="Imagen anterior" ${index === 0 ? 'disabled' : ''}>
-            <i class="bi bi-chevron-left"></i>
-          </button>
-          <button class="modal-nav next" onclick="nextImage()" title="Siguiente imagen" ${index === imageList.length - 1 ? 'disabled' : ''}>
-            <i class="bi bi-chevron-right"></i>
-          </button>
-        ` : ''}
-        
-        <div class="modal-counter" id="modalCounter">${index + 1} / ${imageList.length}</div>
-        
-        <div class="touch-indicator">
-          Desliza ← → para navegar<br>
-          Pellizca para hacer zoom
-        </div>
-      </div>
-      
-      <div class="modal-info-section" id="imageModalInfo">
-        <div class="modal-loading">
-          <div class="spinner-border text-primary"></div>
-        </div>
-      </div>
-    </div>
-  `;
-  
-  modalImageEl = modal.querySelector('#modalImage');
-  modal.classList.remove('hidden');
-  modal.classList.add('modal-fade-in');
-  document.body.classList.add('photo-modal-open');
-  
-  // Add event listeners
-  window.addEventListener('keydown', handleModalKeydown);
-  modalImageEl.addEventListener('wheel', handleWheel, { passive: false });
-  modalImageEl.addEventListener('touchstart', handleTouchStart, { passive: true });
-  modalImageEl.addEventListener('touchend', handleTouchEnd, { passive: true });
-  
-  // Double-click to zoom
-  modalImageEl.addEventListener('dblclick', (e) => {
-    if (currentScale === 1) {
-      const rect = modalImageEl.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      zoomIn(x, y);
-    } else {
-      resetZoom();
-    }
-  });
-  
-  // Load post data for right panel
-  loadPostDataForModal(postId);
-  
-  // Update URL
-  window.history.pushState({ photo: true }, '', `/feed/post/${postId}/photo/${index + 1}`);
-  
-  // Preload adjacent images
-  preloadAdjacentImages(index);
-}
-
-function preloadAdjacentImages(currentIndex) {
-  const preloadIndices = [currentIndex - 1, currentIndex + 1];
-  preloadIndices.forEach(idx => {
-    if (idx >= 0 && idx < imageList.length && idx !== currentIndex) {
-      const img = new Image();
-      img.src = imageList[idx];
-    }
-  });
-}
-
-function loadPostDataForModal(postId) {
-  fetch(`/feed/api/post/${postId}`)
-    .then(response => response.json())
-    .then(data => {
-      const infoSection = document.getElementById('imageModalInfo');
-      if (infoSection) {
-        infoSection.innerHTML = `
-          <div class="modal-post-header">
-            <img src="${data.author?.avatar_url || '/static/img/default.png'}" alt="Avatar">
-            <div class="modal-user-info">
-              <h6>${data.author?.username || 'Usuario'}</h6>
-              <small class="modal-timestamp">${data.created_at || 'Hace tiempo'}</small>
-            </div>
-          </div>
-          
-          ${data.content ? `<div class="modal-post-content">${data.content}</div>` : ''}
-          
-          <div class="modal-post-actions">
-            <button class="modal-action-btn like-btn ${data.user_liked ? 'active' : ''}" data-post-id="${postId}">
-              <i class="bi bi-fire${data.user_liked ? '-fill' : ''}"></i>
-              <span>Me gusta</span>
-            </button>
-            <button class="modal-action-btn comment-btn" data-post-id="${postId}">
-              <i class="bi bi-chat"></i>
-              <span>Comentar</span>
-            </button>
-            <button class="modal-action-btn share-btn" data-post-id="${postId}">
-              <i class="bi bi-share"></i>
-              <span>Compartir</span>
-            </button>
-            <button class="modal-action-btn save-btn" data-post-id="${postId}">
-              <i class="bi bi-bookmark"></i>
-              <span>Guardar</span>
-            </button>
-          </div>
-          
-          <div class="modal-comments-section">
-            ${data.comments ? data.comments.map(comment => `
-              <div class="comment-item">
-                <img src="${comment.author?.avatar_url || '/static/img/default.png'}" 
-                     alt="Avatar" width="32" height="32">
-                <div>
-                  <div class="comment-box">
-                    <div class="fw-semibold">${comment.author?.username}</div>
-                    <div class="small">${comment.body}</div>
-                  </div>
-                  <div class="small text-muted mt-1">${comment.timestamp || 'Hace tiempo'}</div>
-                </div>
-              </div>
-            `).join('') : '<p class="text-muted text-center">No hay comentarios aún.</p>'}
-          </div>
-          
-          <div class="modal-comment-form">
-            <form onsubmit="submitModalComment(event, '${postId}')">
-              <div class="input-group">
-                <input type="text" class="form-control" placeholder="Escribe un comentario..." required>
-                <button type="submit" class="btn btn-primary">Enviar</button>
-              </div>
-            </form>
-          </div>
-        `;
-        
-        // Re-initialize post interactions for modal
-        initModalPostInteractions();
-      }
-    })
-    .catch(error => {
-      console.error('Error loading post data:', error);
-      document.getElementById('imageModalInfo').innerHTML = 
-        '<div class="text-center text-muted p-3">Error al cargar información del post</div>';
-    });
-}
-
-function initModalPostInteractions() {
-  // Like button in modal
-  const likeBtn = document.querySelector('.modal-action-btn.like-btn');
-  if (likeBtn) {
-    likeBtn.addEventListener('click', (e) => crunevoFeedManager.handleLike(e));
-  }
-  
-  // Comment button in modal
-  const commentBtn = document.querySelector('.modal-action-btn.comment-btn');
-  if (commentBtn) {
-    commentBtn.addEventListener('click', () => {
-      const input = document.querySelector('.modal-comment-form input');
-      if (input) input.focus();
-    });
-  }
-  
-  // Share button in modal
-  const shareBtn = document.querySelector('.modal-action-btn.share-btn');
-  if (shareBtn) {
-    shareBtn.addEventListener('click', (e) => crunevoFeedManager.handleShare(e));
-  }
-  
-  // Save button in modal
-  const saveBtn = document.querySelector('.modal-action-btn.save-btn');
-  if (saveBtn) {
-    saveBtn.addEventListener('click', (e) => crunevoFeedManager.toggleSavePost(e));
+  if (window.modernFeedManager) {
+    window.modernFeedManager.openImageModal(src, index, postId, evt);
   }
 }
 
-function submitModalComment(event, postId) {
-  event.preventDefault();
-  const form = event.target;
-  const input = form.querySelector('input');
-  const body = input.value.trim();
-  
-  if (!body) return;
-  
-  const formData = new FormData();
-  formData.append('body', body);
-  formData.append('csrf_token', crunevoFeedManager.getCSRFToken());
-  
-  fetch(`/feed/comment/${postId}`, {
-    method: 'POST',
-    body: formData
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success !== false) {
-      input.value = '';
-      loadPostDataForModal(postId); // Reload comments
-      crunevoFeedManager.showToast('Comentario agregado', 'success');
-    } else {
-      crunevoFeedManager.showToast('Error al agregar comentario', 'error');
-    }
-  })
-  .catch(error => {
-    console.error('Error submitting comment:', error);
-    crunevoFeedManager.showToast('Error de conexión', 'error');
-  });
-}
-
-function closeImageModal() {
-  const modal = document.getElementById('imageModal');
-  if (modal) {
-    modal.classList.add('modal-fade-out');
-    modal.classList.remove('modal-fade-in');
-    
-    setTimeout(() => {
-      modal.classList.add('hidden');
-      modal.classList.remove('modal-fade-out');
-      document.getElementById('imageModalInfo').innerHTML = '';
-      document.body.classList.remove('photo-modal-open');
-    }, 300);
-    
-    window.removeEventListener('keydown', handleModalKeydown);
-    if (modalImageEl) {
-      modalImageEl.removeEventListener('wheel', handleWheel);
-      modalImageEl.removeEventListener('touchstart', handleTouchStart);
-      modalImageEl.removeEventListener('touchend', handleTouchEnd);
-    }
-    currentPostId = null;
-    window.history.back();
-  }
-}
-
-function nextImage() {
-  if (currentImageIndex < imageList.length - 1) {
-    currentImageIndex++;
-    updateModalImage();
-  }
-}
-
-function prevImage() {
-  if (currentImageIndex > 0) {
-    currentImageIndex--;
-    updateModalImage();
-  }
-}
-
-function updateModalImage() {
-  const modalImg = document.getElementById('modalImage');
-  if (modalImg && imageList[currentImageIndex]) {
-    modalImg.src = imageList[currentImageIndex];
-    modalImg.alt = `Imagen ${currentImageIndex + 1} de ${imageList.length}`;
-    
-    // Update navigation button states
-    const prevBtn = document.querySelector('.modal-nav.prev');
-    const nextBtn = document.querySelector('.modal-nav.next');
-    
-    if (prevBtn) {
-      prevBtn.disabled = currentImageIndex === 0;
-    }
-    if (nextBtn) {
-      nextBtn.disabled = currentImageIndex === imageList.length - 1;
-    }
-    
-    updateModalCounter();
-    if (currentPostId) {
-      updateModalRoute(currentPostId, currentImageIndex);
-    }
-    
-    // Reset zoom
-    currentScale = 1;
-    applyZoom();
-    
-    // Preload adjacent images
-    preloadAdjacentImages(currentImageIndex);
-  }
-}
-
-function updateModalRoute(postId, index) {
-  const url = `/feed/post/${postId}/photo/${index + 1}`;
-  history.replaceState({ photo: true }, '', url);
-}
-
-function updateModalCounter() {
-  const counter = document.getElementById('modalCounter');
-  if (counter) {
-    counter.textContent = `${currentImageIndex + 1} / ${imageList.length}`;
-  }
-}
-
-// Global functions for post actions
 function editPost(postId) {
-  const card = document.querySelector(`[data-post-id='${postId}']`);
-  const textarea = document.querySelector('#editPostForm textarea[name="content"]');
-  const select = document.querySelector('#editPostForm select[name="comment_permission"]');
-  const form = document.getElementById('editPostForm');
-  
-  if (!card || !textarea || !form) return;
-  
-  const contentEl = card.querySelector('.post-text, .feed-text');
-  textarea.value = contentEl ? contentEl.textContent.trim() : '';
-  
-  if (select) {
-    select.value = card.dataset.commentPermission || 'all';
+  const modal = document.getElementById('editPostModal');
+  if (modal) {
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
   }
-  
-  form.dataset.postId = postId;
-  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editPostModal'));
-  modal.show();
 }
 
 function deletePost(postId) {
   if (!confirm('¿Estás seguro de que quieres eliminar esta publicación?')) return;
-  
-  crunevoFeedManager.fetchWithCSRF(`/feed/post/eliminar/${postId}`, { method: 'POST' })
-    .then((resp) => {
-      if (resp.ok) {
-        document.querySelector(`[data-post-id='${postId}']`)?.remove();
-        crunevoFeedManager.showToast('Publicación eliminada', 'success');
-      } else {
-        crunevoFeedManager.showToast('Error al eliminar', 'error');
+
+  fetch(`/feed/post/eliminar/${postId}`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': window.modernFeedManager?.getCSRFToken() || ''
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+      if (postElement) {
+        postElement.classList.add('fade-out');
+        setTimeout(() => postElement.remove(), 300);
       }
-    })
-    .catch(() => crunevoFeedManager.showToast('Error de conexión', 'error'));
+      window.modernFeedManager?.showToast('Publicación eliminada', 'success');
+    } else {
+      window.modernFeedManager?.showToast('Error al eliminar', 'error');
+    }
+  })
+  .catch(() => {
+    window.modernFeedManager?.showToast('Error de conexión', 'error');
+  });
 }
 
 function reportPost(postId) {
   if (confirm('¿Quieres reportar esta publicación?')) {
-    crunevoFeedManager.showToast('Publicación reportada', 'info');
+    window.modernFeedManager?.showToast('Publicación reportada', 'info');
   }
 }
 
 function copyPostLink(postId) {
   const url = `${window.location.origin}/feed/post/${postId}`;
-  crunevoFeedManager.copyToClipboard(url);
+  if (window.modernFeedManager) {
+    window.modernFeedManager.copyToClipboard(url);
+    window.modernFeedManager.showToast('¡Enlace copiado!', 'success');
+  }
 }
 
-// CSS animations
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes floatUp {
-    0% {
-      transform: translateY(0) scale(1);
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(-30px) scale(1.2);
-      opacity: 0;
+function savePost(postId) {
+  if (window.modernFeedManager) {
+    const btn = document.querySelector(`[data-post-id="${postId}"].save-btn`);
+    if (btn) {
+      window.modernFeedManager.handleSave(btn);
     }
   }
-  
-  @keyframes fadeOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(-10px); }
-  }
-
-  .gallery-img.loaded {
-    opacity: 1;
-    transition: opacity 0.3s ease;
-  }
-
-  .gallery-img:not(.loaded) {
-    opacity: 0.7;
-  }
-`;
-document.head.appendChild(style);
-
-// Feed manager initialization
-let crunevoFeedManager;
-function initFeedManager() {
-  crunevoFeedManager = new CrunevoFeedManager();
 }
 
-// Auto-initialize if DOM is ready
+// Initialize the modern feed manager
+let modernFeedManager;
+
+function initModernFeedManager() {
+  modernFeedManager = new ModernFeedManager();
+  window.modernFeedManager = modernFeedManager;
+}
+
+// Auto-initialize
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initFeedManager);
+  document.addEventListener('DOMContentLoaded', initModernFeedManager);
 } else {
-  initFeedManager();
+  initModernFeedManager();
 }
 
-// Global exports
-window.crunevoFeedManager = crunevoFeedManager;
+// CSS for image modal
+const modalStyles = `
+<style>
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1070;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-modal.show {
+  opacity: 1;
+}
+
+.image-modal .modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+.image-modal .modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.image-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  color: white;
+}
+
+.image-modal .modal-counter {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.image-modal .modal-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.image-modal .modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.image-modal .modal-body {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-modal .modal-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.image-modal .modal-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 12px 16px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.image-modal .modal-nav:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.image-modal .modal-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.image-modal .modal-nav.prev {
+  left: 20px;
+}
+
+.image-modal .modal-nav.next {
+  right: 20px;
+}
+
+.preview-item {
+  position: relative;
+  display: inline-block;
+  margin: 8px;
+}
+
+.preview-image {
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.preview-remove {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #dc3545;
+  border: none;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.preview-remove:hover {
+  background: #c82333;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .image-modal .modal-nav {
+    display: none;
+  }
+
+  .image-modal .modal-content {
+    max-width: 100vw;
+    max-height: 100vh;
+  }
+}
+</style>
+`;
+
+// Add modal styles to head
+document.head.insertAdjacentHTML('beforeend', modalStyles);
+
+// Export for global access
+window.modernFeedManager = modernFeedManager;
 window.openImageModal = openImageModal;
-window.closeImageModal = closeImageModal;
-window.nextImage = nextImage;
-window.prevImage = prevImage;
-window.zoomIn = zoomIn;
-window.zoomOut = zoomOut;
-window.resetZoom = resetZoom;
 window.editPost = editPost;
 window.deletePost = deletePost;
 window.reportPost = reportPost;
 window.copyPostLink = copyPostLink;
-window.initFeedManager = initFeedManager;
-
-// Edit post form handler
-const editPostForm = document.getElementById('editPostForm');
-if (editPostForm) {
-  editPostForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const postId = form.dataset.postId;
-    const content = form.querySelector('textarea[name="content"]').value.trim();
-    const permission = form.querySelector('select[name="comment_permission"]').value;
-
-    const formData = new FormData();
-    formData.append('content', content);
-    formData.append('comment_permission', permission);
-    formData.append('csrf_token', crunevoFeedManager.getCSRFToken());
-
-    try {
-      const resp = await crunevoFeedManager.fetchWithCSRF(`/feed/post/editar/${postId}`, {
-        method: 'POST',
-        body: formData
-      });
-      
-      if (resp.ok) {
-        const card = document.querySelector(`[data-post-id='${postId}']`);
-        const contentEl = card ? card.querySelector('.post-text, .feed-text') : null;
-        if (contentEl) {
-          contentEl.textContent = content;
-        }
-        crunevoFeedManager.showToast('Publicación actualizada', 'success');
-        bootstrap.Modal.getInstance(document.getElementById('editPostModal')).hide();
-      } else {
-        crunevoFeedManager.showToast('Error al editar publicación', 'error');
-      }
-    } catch (error) {
-      crunevoFeedManager.showToast('Error de conexión', 'error');
-    }
-  });
-}
+window.savePost = savePost;

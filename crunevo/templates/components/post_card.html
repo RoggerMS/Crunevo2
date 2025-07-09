@@ -5,76 +5,105 @@
 {% set user_reactions = user_reactions if user_reactions is defined else {} %}
 {% import 'components/image_gallery.html' as gallery %}
 
-<div class="fb-post" data-post-id="{{ post.id }}" data-comment-permission="{{ post.comment_permission }}">
+<article class="facebook-post" data-post-id="{{ post.id }}" data-comment-permission="{{ post.comment_permission }}">
   <!-- Post Header -->
-  <div class="fb-post-header">
-    <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}"
-         alt="{{ author.username if author else 'Usuario eliminado' }}"
-         class="fb-avatar">
-    <div class="fb-user-info">
-      <div class="fb-username">
+  <div class="post-header">
+    <div class="post-avatar">
+      <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}"
+           alt="{{ author.username if author else 'Usuario eliminado' }}"
+           class="avatar-img">
+    </div>
+    
+    <div class="post-user-info">
+      <div class="user-name">
         {% if author %}
-        <a href="{{ url_for('auth.profile_by_username', username=author.username) }}">
+        <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="username-link">
           {{ author.username }}
         </a>
         {% else %}
-        Usuario eliminado
+        <span class="deleted-user">Usuario eliminado</span>
         {% endif %}
+        
         {% if author and author.verification_level >= 2 %}
-        <span class="fb-verified">
+        <span class="verified-badge" title="Usuario verificado">
           <i class="bi bi-check-circle-fill"></i>
         </span>
         {% endif %}
+        
+        {% if author and author.career %}
+        <span class="user-career">{{ author.career }}</span>
+        {% endif %}
       </div>
-      <div class="fb-timestamp">
+      
+      <div class="post-timestamp">
         <span data-timestamp="{{ post.created_at.isoformat() }}">{{ post.created_at|timesince }}</span>
         {% if post.edited %}
-        · editado
+        <span class="edited-indicator">· editado</span>
         {% endif %}
       </div>
     </div>
-    <button class="fb-options" data-bs-toggle="dropdown" aria-label="Opciones">
-      <i class="bi bi-three-dots"></i>
-    </button>
-    <ul class="dropdown-menu dropdown-menu-end">
-      {% if current_user.id == post.author_id %}
-      <li><a class="dropdown-item" href="#" onclick="editPost({{ post.id }})">
-        <i class="bi bi-pencil"></i> Editar
-      </a></li>
-      <li><a class="dropdown-item text-danger" href="#" onclick="deletePost({{ post.id }})">
-        <i class="bi bi-trash"></i> Eliminar
-      </a></li>
-      {% else %}
-      <li><a class="dropdown-item" href="#" onclick="reportPost({{ post.id }})">
-        <i class="bi bi-flag"></i> Reportar
-      </a></li>
-      {% endif %}
-      <li><a class="dropdown-item" href="#" onclick="copyPostLink({{ post.id }})">
-        <i class="bi bi-link-45deg"></i> Copiar enlace
-      </a></li>
-    </ul>
+    
+    <div class="post-options">
+      <button class="options-btn" data-bs-toggle="dropdown" aria-label="Más opciones">
+        <i class="bi bi-three-dots"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        {% if current_user.id == post.author_id %}
+        <li>
+          <a class="dropdown-item" href="#" onclick="editPost({{ post.id }})">
+            <i class="bi bi-pencil-square"></i> Editar publicación
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item delete-option" href="#" onclick="deletePost({{ post.id }})">
+            <i class="bi bi-trash"></i> Eliminar publicación
+          </a>
+        </li>
+        {% else %}
+        <li>
+          <a class="dropdown-item" href="#" onclick="reportPost({{ post.id }})">
+            <i class="bi bi-flag"></i> Reportar contenido
+          </a>
+        </li>
+        {% endif %}
+        <li>
+          <a class="dropdown-item" href="#" onclick="copyPostLink({{ post.id }})">
+            <i class="bi bi-link-45deg"></i> Copiar enlace
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="#" onclick="savePost({{ post.id }})">
+            <i class="bi bi-bookmark"></i> Guardar publicación
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
 
   <!-- Post Content -->
   {% if post.content %}
-  <div class="fb-content">
-    {{ post.content }}
+  <div class="post-content">
+    <p>{{ post.content }}</p>
   </div>
   {% endif %}
 
-  <!-- Post Images -->
+  <!-- Post Media -->
   {% if post.images %}
-  <div class="fb-media">
+  <div class="post-media">
     {{ gallery.image_gallery(post.images, post.id) }}
   </div>
   {% elif post.file_url %}
-  <div class="fb-media">
+  <div class="post-media">
     {% if post.file_url.endswith('.pdf') %}
-    <div class="fb-attachment">
-      <i class="bi bi-file-pdf"></i>
-      <div>
-        <div class="attachment-title">Documento PDF</div>
-        <a href="{{ post.file_url }}" target="_blank">Ver documento</a>
+    <div class="file-attachment">
+      <div class="file-icon">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </div>
+      <div class="file-info">
+        <div class="file-title">Documento PDF</div>
+        <a href="{{ post.file_url }}" target="_blank" class="file-link">
+          <i class="bi bi-download"></i> Descargar archivo
+        </a>
       </div>
     </div>
     {% else %}
@@ -84,48 +113,90 @@
   {% endif %}
 
   <!-- Post Actions -->
-  <div class="fb-actions">
+  <div class="post-actions">
     {% set user_reaction = user_reactions.get(post.id) %}
-    <button class="fb-action-btn like-btn {{ 'active' if user_reaction else '' }}"
+    <button class="action-btn like-btn {{ 'active' if user_reaction else '' }}"
             data-post-id="{{ post.id }}"
-            data-reaction="🔥">
-      <i class="bi bi-fire{% if user_reaction %}-fill{% endif %}"></i>
-      <span>Me gusta</span>
+            data-reaction="🔥"
+            title="Me gusta">
+      <i class="bi bi-fire{{ '-fill' if user_reaction else '' }}"></i>
+      <span class="action-text">Me gusta</span>
+      <span class="action-count">{{ reaction_counts.get(post.id, 0) or '' }}</span>
     </button>
 
-    <button class="fb-action-btn comment-btn" data-post-id="{{ post.id }}">
+    <button class="action-btn comment-btn" 
+            data-post-id="{{ post.id }}"
+            title="Comentar">
       <i class="bi bi-chat"></i>
-      <span>Comentar</span>
+      <span class="action-text">Comentar</span>
+      <span class="action-count">{{ post.comments|length if post.comments else '' }}</span>
     </button>
 
-    <button class="fb-action-btn share-btn" data-post-id="{{ post.id }}">
+    <button class="action-btn share-btn" 
+            data-post-id="{{ post.id }}"
+            title="Compartir">
       <i class="bi bi-share"></i>
-      <span>Compartir</span>
+      <span class="action-text">Compartir</span>
+    </button>
+
+    <button class="action-btn save-btn" 
+            data-post-id="{{ post.id }}"
+            title="Guardar">
+      <i class="bi bi-bookmark"></i>
+      <span class="action-text">Guardar</span>
     </button>
   </div>
 
-  <!-- Quick Comments -->
-  {% if post.comments %}
-  <div class="fb-comments">
-    {% for comment in post.comments[:2] %}
-    <div class="fb-comment">
-      <img src="{{ comment.author.avatar_url or url_for('static', filename='img/default.png') }}"
-           class="comment-avatar" alt="Avatar">
-      <div class="comment-content">
-        <div class="comment-bubble">
-          <span class="comment-author">{{ comment.author.username }}</span>
-          {{ comment.body }}
+  <!-- Comments Section -->
+  <div class="comments-section" id="comments-{{ post.id }}" style="display: none;">
+    <div class="comments-container">
+      {% if post.comments %}
+      {% for comment in post.comments[:3] %}
+      <div class="comment-item">
+        <div class="comment-avatar">
+          <img src="{{ comment.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+               alt="{{ comment.author.username }}"
+               class="comment-avatar-img">
         </div>
-        <div class="comment-time">{{ comment.timestamp|timesince }}</div>
+        <div class="comment-content">
+          <div class="comment-bubble">
+            <div class="comment-author">{{ comment.author.username }}</div>
+            <div class="comment-text">{{ comment.body }}</div>
+          </div>
+          <div class="comment-meta">
+            <span class="comment-time">{{ comment.timestamp|timesince }}</span>
+            <button class="comment-reply-btn">Responder</button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      
+      {% if post.comments|length > 3 %}
+      <div class="view-more-comments">
+        <button class="view-more-btn comment-btn" data-post-id="{{ post.id }}">
+          Ver todos los comentarios ({{ post.comments|length }})
+        </button>
+      </div>
+      {% endif %}
+      {% endif %}
+    </div>
+    
+    <!-- Add Comment Form -->
+    <div class="add-comment-form">
+      <div class="comment-input-container">
+        <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
+             alt="{{ current_user.username }}"
+             class="comment-avatar-img">
+        <form class="comment-form" data-post-id="{{ post.id }}">
+          <input type="text" 
+                 class="comment-input" 
+                 placeholder="Escribe un comentario..."
+                 maxlength="500">
+          <button type="submit" class="comment-submit-btn" disabled>
+            <i class="bi bi-send"></i>
+          </button>
+        </form>
       </div>
     </div>
-    {% endfor %}
-
-    {% if post.comments|length > 2 %}
-    <button class="fb-view-more comment-btn" data-post-id="{{ post.id }}">
-      Ver todos los comentarios ({{ post.comments|length }})
-    </button>
-    {% endif %}
   </div>
-  {% endif %}
-</div>
+</article>

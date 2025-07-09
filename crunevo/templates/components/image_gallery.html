@@ -1,72 +1,74 @@
+
 {% macro image_gallery(images, post_id) %}
 {% set count = images|length %}
 {% set urls = (images | map(attribute='url') | list) if images and (images[0] is mapping or images[0].url is defined) else images %}
 
-<div class="fb-gallery-container" data-post-id="{{ post_id }}" data-images='{{ urls | tojson }}' data-count="{{ count }}">
+<div class="image-gallery-container" data-post-id="{{ post_id }}" data-images='{{ urls | tojson }}' data-count="{{ count }}">
   {% if count == 1 %}
     <!-- Single image -->
-    <div class="fb-gallery single">
+    <div class="image-gallery single">
       <img src="{{ urls[0] }}" 
-           alt="Imagen" 
-           onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)" />
+           alt="Imagen de la publicación" 
+           onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)" 
+           loading="lazy" />
     </div>
 
   {% elif count == 2 %}
     <!-- Two images side by side -->
-    <div class="fb-gallery two">
+    <div class="image-gallery two">
       {% for url in urls[:2] %}
       <img src="{{ url }}" 
-           alt="Imagen {{ loop.index }}" 
-           onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)" />
+           alt="Imagen {{ loop.index }} de {{ count }}" 
+           onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)" 
+           loading="lazy" />
       {% endfor %}
     </div>
 
   {% elif count == 3 %}
-    <!-- Three images: main + two side -->
-    <div class="fb-gallery three">
-      <img src="{{ urls[0] }}" 
-           class="img-main"
-           alt="Imagen 1" 
-           onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)" />
-      <img src="{{ urls[1] }}" 
-           class="img-side-1"
-           alt="Imagen 2" 
-           onclick="openImageModal('{{ urls[1] }}', 1, '{{ post_id }}', event)" />
-      <img src="{{ urls[2] }}" 
-           class="img-side-2"
-           alt="Imagen 3" 
-           onclick="openImageModal('{{ urls[2] }}', 2, '{{ post_id }}', event)" />
+    <!-- Three images: one large, two small -->
+    <div class="image-gallery three">
+      {% for url in urls[:3] %}
+      <img src="{{ url }}" 
+           alt="Imagen {{ loop.index }} de {{ count }}" 
+           onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)" 
+           loading="lazy" />
+      {% endfor %}
     </div>
 
   {% elif count == 4 %}
     <!-- Four images in 2x2 grid -->
-    <div class="fb-gallery four">
+    <div class="image-gallery four">
       {% for url in urls[:4] %}
       <img src="{{ url }}" 
-           alt="Imagen {{ loop.index }}" 
-           onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)" />
+           alt="Imagen {{ loop.index }} de {{ count }}" 
+           onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post_id }}', event)" 
+           loading="lazy" />
       {% endfor %}
     </div>
 
   {% else %}
-    <!-- Five+ images: main + grid with overlay -->
-    <div class="fb-gallery five-plus">
+    <!-- Five or more images: first one large, others in grid with overlay -->
+    <div class="image-gallery five-plus">
       <img src="{{ urls[0] }}" 
-           class="img-main"
-           alt="Imagen 1" 
-           onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)" />
-      <div class="img-grid">
-        {% for url in urls[1:4] %}
+           alt="Imagen 1 de {{ count }}" 
+           onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)" 
+           loading="lazy" />
+      
+      {% for url in urls[1:5] %}
+      {% if loop.index == 4 and count > 5 %}
+      <div class="image-overlay" data-count="{{ count - 4 }}">
         <img src="{{ url }}" 
-             alt="Imagen {{ loop.index + 1 }}" 
-             onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post_id }}', event)" />
-        {% endfor %}
-        <div class="img-overlay" 
-             data-count="{{ count - 4 }}"
-             onclick="openImageModal('{{ urls[4] }}', 4, '{{ post_id }}', event)">
-          <img src="{{ urls[4] }}" alt="Más imágenes" />
-        </div>
+             alt="Imagen {{ loop.index + 1 }} de {{ count }}" 
+             onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post_id }}', event)" 
+             loading="lazy" />
       </div>
+      {% else %}
+      <img src="{{ url }}" 
+           alt="Imagen {{ loop.index + 1 }} de {{ count }}" 
+           onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post_id }}', event)" 
+           loading="lazy" />
+      {% endif %}
+      {% endfor %}
     </div>
   {% endif %}
 </div>
