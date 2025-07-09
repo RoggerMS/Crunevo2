@@ -44,7 +44,7 @@
     </div>
 
     <div class="post-options">
-      <button class="options-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <button class="options-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Opciones">
         <i class="bi bi-three-dots"></i>
       </button>
       <ul class="dropdown-menu dropdown-menu-end">
@@ -145,26 +145,26 @@
 
   <!-- Post Actions -->
   <div class="post-actions">
-    <button class="action-btn like-btn {{ 'active' if user_reactions.get(post.id) }}" 
-            data-post-id="{{ post.id }}" 
+    <button class="fb-action-btn like-btn {{ 'active' if user_reactions.get(post.id) }}"
+            data-post-id="{{ post.id }}"
             data-reaction="🔥">
       <i class="bi bi-fire{{ '-fill' if user_reactions.get(post.id) else '' }}"></i>
       <span class="action-text">Me gusta</span>
       <span class="action-count">{{ post_reactions.get('🔥', '') }}</span>
     </button>
 
-    <button class="action-btn comment-btn" data-post-id="{{ post.id }}" onclick="openCommentsModal('{{ post.id }}')">
+    <button class="fb-action-btn comment-btn" data-post-id="{{ post.id }}" onclick="openCommentsModal('{{ post.id }}')">
       <i class="bi bi-chat"></i>
       <span class="action-text">Comentar</span>
       <span class="action-count">{{ post.comments|length if post.comments|length > 0 else '' }}</span>
     </button>
 
-    <button class="action-btn share-btn" data-post-id="{{ post.id }}">
+    <button class="fb-action-btn share-btn" data-post-id="{{ post.id }}">
       <i class="bi bi-share"></i>
       <span class="action-text">Compartir</span>
     </button>
 
-    <button class="action-btn save-btn" data-post-id="{{ post.id }}">
+    <button class="fb-action-btn save-btn" data-post-id="{{ post.id }}">
       <i class="bi bi-bookmark"></i>
       <span class="action-text">Guardar</span>
     </button>
@@ -172,106 +172,4 @@
 </article>
 
 <!-- Comments Modal -->
-<div class="modal fade" id="commentsModal-{{ post.id }}" tabindex="-1" aria-labelledby="commentsModalLabel-{{ post.id }}" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="d-flex align-items-center">
-          <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}"
-               alt="{{ author.username if author else 'Usuario eliminado' }}"
-               class="rounded-circle me-3"
-               style="width: 40px; height: 40px; object-fit: cover;">
-          <div>
-            <h6 class="modal-title mb-0" id="commentsModalLabel-{{ post.id }}">
-              {{ author.username if author else 'Usuario eliminado' }}
-            </h6>
-            <small class="text-muted">{{ post.created_at|timesince }}</small>
-          </div>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <!-- Post Content in Modal -->
-        <div class="post-content-modal mb-4">
-          {% if post.content %}
-          <p>{{ post.content }}</p>
-          {% endif %}
-          {% if post.images and post.images|length > 0 %}
-          <img src="{{ post.images[0].url if post.images[0].url else post.images[0] }}" 
-               alt="Imagen del post" 
-               class="img-fluid rounded mb-3"
-               style="max-height: 300px; object-fit: cover;">
-          {% elif post.file_url and not post.file_url.endswith('.pdf') %}
-          <img src="{{ post.file_url }}" 
-               alt="Imagen del post" 
-               class="img-fluid rounded mb-3"
-               style="max-height: 300px; object-fit: cover;">
-          {% endif %}
-        </div>
-
-        <!-- Comments List -->
-        <div id="commentsList-{{ post.id }}" class="comments-list">
-          {% for comment in post.comments %}
-          {% if not comment.pending or (current_user.is_authenticated and current_user.role in ['admin', 'moderator']) %}
-          <div class="comment-item mb-3" data-comment-id="{{ comment.id }}">
-            <div class="d-flex">
-              <img src="{{ comment.author.avatar_url if comment.author else url_for('static', filename='img/default.png') }}"
-                   alt="{{ comment.author.username if comment.author else 'Usuario eliminado' }}"
-                   class="rounded-circle me-2"
-                   style="width: 32px; height: 32px; object-fit: cover;">
-              <div class="flex-grow-1">
-                <div class="comment-bubble">
-                  <strong class="comment-author">{{ comment.author.username if comment.author else 'Usuario eliminado' }}</strong>
-                  <p class="comment-text mb-1">{{ comment.body }}</p>
-                </div>
-                <div class="comment-meta d-flex align-items-center gap-3">
-                  <small class="text-muted">{{ comment.timestamp|timesince }}</small>
-                  <button class="btn btn-link btn-sm p-0 text-muted">Responder</button>
-                  {% if current_user.is_authenticated and (current_user.id == comment.author_id or current_user.role in ['admin', 'moderator']) %}
-                  <button class="btn btn-link btn-sm p-0 text-danger" onclick="deleteComment('{{ comment.id }}', '{{ post.id }}')">
-                    Eliminar
-                  </button>
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endif %}
-          {% endfor %}
-        </div>
-      </div>
-      <div class="modal-footer">
-        <!-- Add Comment Form -->
-        {% if current_user.is_authenticated %}
-        <form class="comment-form w-100" data-post-id="{{ post.id }}" onsubmit="submitComment(event, '{{ post.id }}')">
-          <div class="d-flex align-items-center">
-            <img src="{{ current_user.avatar_url }}"
-                 alt="{{ current_user.username }}"
-                 class="rounded-circle me-2"
-                 style="width: 32px; height: 32px; object-fit: cover;">
-            <div class="flex-grow-1 position-relative">
-              <input type="text" 
-                     class="form-control comment-input" 
-                     placeholder="Escribe un comentario..."
-                     name="comment"
-                     required>
-              <button type="submit" 
-                      class="btn btn-primary btn-sm position-absolute"
-                      style="right: 5px; top: 50%; transform: translateY(-50%);"
-                      disabled>
-                <i class="bi bi-send"></i>
-              </button>
-            </div>
-          </div>
-        </form>
-        {% else %}
-        <div class="text-center w-100">
-          <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
-            Inicia sesión para comentar
-          </a>
-        </div>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-</div>
+{% include 'components/comment_modal.html' %}

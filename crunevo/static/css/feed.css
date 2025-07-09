@@ -299,7 +299,7 @@
   gap: 8px;
 }
 
-.action-btn {
+.fb-action-btn {
   flex: 1;
   background: none;
   border: none;
@@ -316,20 +316,20 @@
   gap: 6px;
 }
 
-.action-btn:hover {
+.fb-action-btn:hover {
   background: var(--hover-bg);
   color: var(--text-primary);
 }
 
-.action-btn.active {
+.fb-action-btn.active {
   color: var(--crunevo-primary);
 }
 
-.action-btn.like-btn.active {
+.fb-action-btn.like-btn.active {
   color: var(--error-color);
 }
 
-.action-btn i {
+.fb-action-btn i {
   font-size: 16px;
 }
 
@@ -789,7 +789,7 @@
     display: none;
   }
 
-  .action-btn {
+  .fb-action-btn {
     padding: 8px;
   }
 
@@ -821,7 +821,7 @@
     max-height: 300px;
   }
 
-  .action-btn {
+  .fb-action-btn {
     font-size: 14px;
     padding: 6px 4px;
   }

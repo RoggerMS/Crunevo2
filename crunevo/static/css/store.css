@@ -1212,7 +1212,7 @@
 }
 
 /* Dark Mode Styles */
-[data-theme="dark"] {
+[data-bs-theme="dark"] {
   --gray-50: #1E293B;
   --gray-100: #334155;
   --gray-200: #475569;
@@ -1227,46 +1227,46 @@
   --black: #FFFFFF;
 }
 
-[data-theme="dark"] .store-wrapper {
+[data-bs-theme="dark"] .store-wrapper {
   background: var(--dark-bg);
   color: var(--dark-text);
 }
 
-[data-theme="dark"] .store-sidebar,
-[data-theme="dark"] .products-header,
-[data-theme="dark"] .product-card,
-[data-theme="dark"] .offcanvas-filters {
+[data-bs-theme="dark"] .store-sidebar,
+[data-bs-theme="dark"] .products-header,
+[data-bs-theme="dark"] .product-card,
+[data-bs-theme="dark"] .offcanvas-filters {
   background: var(--dark-card);
   color: var(--dark-text);
 }
 
-[data-theme="dark"] .search-input,
-[data-theme="dark"] .sort-select {
+[data-bs-theme="dark"] .search-input,
+[data-bs-theme="dark"] .sort-select {
   background: var(--dark-card);
   color: var(--dark-text);
   border-color: var(--dark-border);
 }
 
-[data-theme="dark"] .category-item:hover,
-[data-theme="dark"] .availability-option:hover {
+[data-bs-theme="dark"] .category-item:hover,
+[data-bs-theme="dark"] .availability-option:hover {
   background: var(--dark-hover);
 }
 
-[data-theme="dark"] .cart-summary {
+[data-bs-theme="dark"] .cart-summary {
   background: var(--dark-hover);
 }
 
-[data-theme="dark"] .product-request-section {
+[data-bs-theme="dark"] .product-request-section {
   background: var(--dark-card);
   border-color: var(--dark-border);
 }
 
-[data-theme="dark"] .toast {
+[data-bs-theme="dark"] .toast {
   background: var(--dark-card);
   color: var(--dark-text);
 }
 
-[data-theme="dark"] .toast-header {
+[data-bs-theme="dark"] .toast-header {
   background: var(--dark-hover);
   border-color: var(--dark-border);
 }
