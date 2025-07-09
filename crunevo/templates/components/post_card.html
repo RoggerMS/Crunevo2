@@ -131,21 +131,27 @@
       {% set user_reaction = user_reactions.get(post.id) %}
       <button class="action-btn-enhanced like-btn {{ 'active' if user_reaction else '' }}"
               data-post-id="{{ post.id }}"
-              data-reaction="🔥">
+              data-reaction="🔥"
+              title="Me gusta"
+              aria-label="Me gusta">
         <i class="bi bi-fire{% if user_reaction %} text-danger{% endif %}"></i>
         <span>{{ post.likes or 0 }}</span>
       </button>
 
       <!-- Comment Button -->
-      <button class="action-btn-enhanced comment-btn" 
-              data-post-id="{{ post.id }}">
+      <button class="action-btn-enhanced comment-btn"
+              data-post-id="{{ post.id }}"
+              title="Comentar"
+              aria-label="Comentar">
         <i class="bi bi-chat"></i>
         <span class="d-none d-sm-inline">Comentar</span>
       </button>
 
       <!-- Share Button with Options -->
-      <button class="action-btn-enhanced share-btn" 
-              data-share-url="{{ url_for('feed.view_post', post_id=post.id, _external=True) }}">
+      <button class="action-btn-enhanced share-btn"
+              data-share-url="{{ url_for('feed.view_post', post_id=post.id, _external=True) }}"
+              title="Compartir"
+              aria-label="Compartir">
         <i class="bi bi-share"></i>
         <span class="d-none d-sm-inline">Compartir</span>
       </button>
@@ -155,7 +161,8 @@
       <button class="action-btn-enhanced save-btn"
               data-post-id="{{ post.id }}"
               data-tooltip="Guardar"
-              aria-label="Guardar publicación">
+              aria-label="Guardar publicación"
+              title="Guardar">
         <i class="bi bi-bookmark"></i>
       </button>
     </div>
@@ -166,8 +173,9 @@
       <h6 class="small text-muted mb-2">Comentarios recientes</h6>
       {% for comment in post.comments[:2] %}
       <div class="d-flex gap-2 mb-2">
-        <img src="{{ comment.author.avatar_url or url_for('static', filename='img/default.png') }}" 
-             class="rounded-circle" width="24" height="24">
+        <img src="{{ comment.author.avatar_url or url_for('static', filename='img/default.png') }}"
+             class="rounded-circle" width="24" height="24"
+             alt="Avatar de {{ comment.author.username }}">
         <div class="flex-grow-1">
           <div class="comment-box rounded-3 px-3 py-2">
             <div class="small fw-semibold mb-1">{{ comment.author.username }}</div>
@@ -179,7 +187,10 @@
       {% endfor %}
 
       {% if post.comments|length > 2 %}
-      <button class="btn btn-link btn-sm p-0 text-decoration-none comment-btn" data-post-id="{{ post.id }}">
+      <button class="btn btn-link btn-sm p-0 text-decoration-none comment-btn"
+              data-post-id="{{ post.id }}"
+              title="Comentarios"
+              aria-label="Comentarios">
         Ver todos los comentarios ({{ post.comments|length }})
       </button>
       {% endif %}

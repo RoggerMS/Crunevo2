@@ -663,7 +663,16 @@ class CrunevoFeedManager {
       }
 
       const container = document.getElementById('feedContainer');
-      container.insertAdjacentHTML('beforeend', data.html);
+      const temp = document.createElement('div');
+      temp.innerHTML = data.html;
+      Array.from(temp.children).forEach((el) => {
+        const postId = el.getAttribute('data-post-id');
+        if (postId) {
+          const exists = container.querySelector(`[data-post-id="${postId}"]`);
+          if (exists) return;
+        }
+        container.appendChild(el);
+      });
 
       this.initPostInteractions();
       this.initGalleryEnhancements();

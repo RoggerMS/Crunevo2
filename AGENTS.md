@@ -713,3 +713,4 @@
 - Unificada carga de posts en /feed usando un solo template moderno y API HTML (PR feed-post-unify).
 - Limpieza de plantillas del feed: eliminado feed_mobile, list.html y CSS antiguo. feed_routes usa solo feed/feed.html. (PR feed-templates-cleanup)
 - Revisado feed por duplicados y añadido console.log de currentPage en feed.js (PR feed-duplicate-debug).
+- Corregida duplicación de posts antiguos verificando existencia en el DOM y en api_feed; se añadieron headers de seguridad y mejoras de accesibilidad. (PR feed-dup-accessibility-fix)
