@@ -718,3 +718,4 @@
 - Fixed trending.html variables to weekly_posts and top_notes to avoid UndefinedError (PR trending-variable-fix).
 - Replaced moment.js filters with timesince/strftime and ensured CSRF macros in producto.html (PR moment-usage-removal).
 - Comment modal moved to new component, comment.js created, fb-action-btn classes renamed and dark mode fixes for feed and store. JS errors cleaned (PR feed-store-comment-modal).
+- Corregido el botón "Reclamar" de la racha diaria enlazando el evento en feed.js y actualizando los crolars con toast de confirmación (PR streak-claim-btn-fix).

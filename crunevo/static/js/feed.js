@@ -22,6 +22,7 @@ class ModernFeedManager {
     this.initCommentSystem();
     this.initPostCreation();
     this.initSkeletonLoading();
+    this.initStreakClaim();
   }
 
   // Initialize post creation form
@@ -76,6 +77,43 @@ class ModernFeedManager {
     document.querySelectorAll('.post-skeleton').forEach(skeleton => {
       skeleton.classList.add('fade-out');
       setTimeout(() => skeleton.remove(), 300);
+    });
+  }
+
+  // Initialize streak claim button
+  initStreakClaim() {
+    const btn = document.getElementById('claimStreakBtn');
+    if (!btn) return;
+
+    btn.addEventListener('click', async () => {
+      const original = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+      try {
+        const resp = await this.fetchWithCSRF('/api/reclamar-racha', {
+          method: 'POST'
+        });
+        const data = await resp.json();
+        if (data.success) {
+          this.showToast(`\uD83C\uDF89 \u00A1D\u00EDa ${data.day}! Has ganado ${data.credits} crolars`, 'success');
+          const banner = document.getElementById('streakBanner');
+          if (banner) banner.remove();
+          if (typeof updateCreditsDisplay === 'function') {
+            updateCreditsDisplay(data.balance);
+          } else if (window.CRUNEVO_UI?.updateUserCredits) {
+            window.CRUNEVO_UI.updateUserCredits(data.balance);
+          }
+        } else {
+          this.showToast(data.message || 'Error al reclamar', 'error');
+          btn.disabled = false;
+          btn.innerHTML = original;
+        }
+      } catch (err) {
+        console.error('Error claiming streak:', err);
+        this.showToast('Error de conexi\u00F3n', 'error');
+        btn.disabled = false;
+        btn.innerHTML = original;
+      }
     });
   }
 
