@@ -31,15 +31,13 @@ from crunevo.models import (
     Credit,
     Report,
 )
-from crunevo.forms import FeedNoteForm, FeedImageForm
 from crunevo.utils import (
     create_feed_item_for_all,
-    unlock_achievement,
     send_notification,
     record_activity,
 )
 from crunevo.utils.credits import add_credit, spend_credit
-from crunevo.constants import CreditReasons, AchievementCodes
+from crunevo.constants import CreditReasons
 from crunevo.cache.feed_cache import (
     fetch as cache_fetch,
     push_items as cache_push,
@@ -158,98 +156,6 @@ def create_post():
     return redirect(url_for("feed.view_feed"))
 
 
-@feed_bp.route("/list", methods=["GET", "POST"])
-@activated_required
-def edu_feed():
-    note_form = FeedNoteForm()
-    image_form = FeedImageForm()
-
-    if note_form.validate_on_submit() and request.form.get("form_type") == "note":
-        f = note_form.file.data
-        filepath = ""
-        if f and f.filename:
-            cloud_url = current_app.config.get("CLOUDINARY_URL")
-            if cloud_url:
-                result = cloudinary.uploader.upload(f)
-                filepath = result["secure_url"]
-            else:
-                filename = secure_filename(f.filename)
-                upload_folder = current_app.config["UPLOAD_FOLDER"]
-                os.makedirs(upload_folder, exist_ok=True)
-                filepath = os.path.join(upload_folder, filename)
-                f.save(filepath)
-
-        note = Note(
-            title=note_form.title.data,
-            description=note_form.summary.data,
-            filename=filepath,
-            tags=note_form.tags.data,
-            author=current_user,
-        )
-        db.session.add(note)
-        current_user.points += 10
-        db.session.commit()
-        create_feed_item_for_all("apunte", note.id)
-        add_credit(current_user, 5, CreditReasons.APUNTE_SUBIDO, related_id=note.id)
-        unlock_achievement(current_user, AchievementCodes.PRIMER_APUNTE)
-        flash("Apunte publicado")
-        return redirect(url_for("feed.edu_feed"))
-
-    if image_form.validate_on_submit() and request.form.get("form_type") == "image":
-        image = image_form.image.data
-        file_url = None
-        if image and image.filename:
-            cloud_url = current_app.config.get("CLOUDINARY_URL")
-            if cloud_url:
-                result = cloudinary.uploader.upload(image, resource_type="auto")
-                file_url = result["secure_url"]
-            else:
-                filename = secure_filename(image.filename)
-                upload_folder = current_app.config["UPLOAD_FOLDER"]
-                os.makedirs(upload_folder, exist_ok=True)
-                filepath = os.path.join(upload_folder, filename)
-                image.save(filepath)
-                file_url = filepath
-
-        post = Post(
-            content=image_form.title.data or "",
-            file_url=file_url,
-            author=current_user,
-        )
-        db.session.add(post)
-        db.session.commit()
-        create_feed_item_for_all("post", post.id)
-        flash("Publicación creada")
-        return redirect(url_for("feed.edu_feed"))
-
-    feed_items_raw = (
-        FeedItem.query.filter_by(owner_id=current_user.id)
-        .filter(FeedItem.item_type != "apunte")
-        .order_by(FeedItem.created_at.desc())
-        .limit(20)
-        .all()
-    )
-    feed_items = []
-    post_ids = []
-    for item in feed_items_raw:
-        post = Post.query.get(item.ref_id)
-        if post:
-            feed_items.append({"type": "post", "data": post})
-            post_ids.append(post.id)
-
-    reaction_map = PostReaction.counts_for_posts(post_ids)
-    user_reactions = PostReaction.reactions_for_user_posts(current_user.id, post_ids)
-
-    return render_template(
-        "feed/list.html",
-        feed_items=feed_items,
-        reaction_counts=reaction_map,
-        user_reactions=user_reactions,
-        note_form=note_form,
-        image_form=image_form,
-    )
-
-
 @feed_bp.route("/", methods=["GET", "POST"], endpoint="view_feed")
 @activated_required
 def view_feed():
@@ -297,10 +203,7 @@ def view_feed():
     )
     reward = streak_reward(streak.current_day) if streak else 0
 
-    ua = request.user_agent
-    is_mobile = ua.platform in ["android", "iphone"] or ua.browser == "mobile"
-    template = "feed/feed_mobile.html" if is_mobile else "feed/feed.html"
-
+    template = "feed/feed.html"
     return render_template(
         template,
         feed_items=feed_items,
