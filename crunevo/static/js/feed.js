@@ -271,7 +271,7 @@ class CrunevoFeedManager {
 
   initPostInteractions() {
     // Like buttons with enhanced reactions
-    document.querySelectorAll('.like-btn, .action-btn.like-btn').forEach(btn => {
+    document.querySelectorAll('.like-btn, .fb-action-btn.like-btn').forEach(btn => {
       btn.addEventListener('click', (e) => this.handleLike(e));
       
       // Long press for reaction selector
@@ -292,18 +292,13 @@ class CrunevoFeedManager {
     });
 
     // Comment buttons
-    document.querySelectorAll('.comment-btn, .action-btn.comment-btn').forEach(btn => {
+    document.querySelectorAll('.comment-btn, .fb-action-btn.comment-btn, .view-more-comments').forEach(btn => {
       btn.addEventListener('click', (e) => this.openCommentModal(e));
     });
 
     // Share buttons
-    document.querySelectorAll('.share-btn, .action-btn.share-btn').forEach(btn => {
+    document.querySelectorAll('.share-btn, .fb-action-btn.share-btn').forEach(btn => {
       btn.addEventListener('click', (e) => this.handleShare(e));
-    });
-
-    // Save buttons
-    document.querySelectorAll('.save-btn, .action-btn.save-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => this.toggleSavePost(e));
     });
   }
 

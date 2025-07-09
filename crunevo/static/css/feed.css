@@ -620,3 +620,35 @@
     background-color: var(--crunevo-bg-light) !important;
   }
 }
+
+/* PDF Attachment */
+.pdf-attachment {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #F0F2F5;
+  margin: 0 16px 8px;
+  border-radius: 8px;
+}
+
+.pdf-attachment i {
+  font-size: 32px;
+  color: #E74C3C;
+}
+
+.pdf-title {
+  font-weight: 600;
+  color: var(--crunevo-text-dark);
+  margin-bottom: 4px;
+}
+
+.pdf-attachment a {
+  color: #1877F2;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.pdf-attachment a:hover {
+  text-decoration: underline;
+}

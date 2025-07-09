@@ -3,198 +3,128 @@
 {% set reaction_counts = reaction_counts if reaction_counts is defined else {} %}
 {% set user_reactions = user_reactions if user_reactions is defined else {} %}
 {% import 'components/image_gallery.html' as gallery %}
-<article class="feed-post-card post-card" data-post-id="{{ post.id }}" data-comment-permission="{{ post.comment_permission }}">
-  <div class="post-body p-4">
-    <!-- Post Header -->
-    <div class="d-flex align-items-center gap-3 mb-3">
-      <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}"
-           alt="{{ author.username if author else 'Usuario eliminado' }}"
-           class="rounded-circle"
-           width="48"
-           height="48">
-      <div class="flex-grow-1">
-        <div class="d-flex align-items-center gap-2">
-          <h6 class="mb-0 fw-semibold">
-            {% if author %}
-            <a href="{{ url_for('auth.profile_by_username', username=author.username) }}"
-               class="text-decoration-none text-dark">
-              {{ author.username }}
-            </a>
-            {% else %}
-            Usuario eliminado
-            {% endif %}
-          </h6>
-          {% if author and author.verification_level >= 2 %}
-          <span class="badge verified-badge" data-bs-toggle="tooltip" title="Cuenta verificada">
-            <i class="bi bi-check-circle-fill"></i> Verificado
-          </span>
-          {% endif %}
-        </div>
-        <small class="text-muted">
-          <i class="bi bi-clock"></i>
-          <span data-timestamp="{{ post.created_at.isoformat() }}">{{ post.created_at|timesince }}</span>
-          {% if post.edited %}
-          <span class="text-muted"> • editado</span>
-          {% endif %}
-        </small>
-      </div>
 
-      <!-- Post actions dropdown -->
-      <div class="dropdown">
-        <button class="btn btn-ghost btn-sm rounded-circle" data-bs-toggle="dropdown" aria-label="Opciones de publicación">
-          <i class="bi bi-three-dots"></i>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
-          {% if current_user.id == post.author_id %}
-          <li><a class="dropdown-item" href="#" onclick="editPost({{ post.id }})">
-            <i class="bi bi-pencil"></i> Editar
-          </a></li>
-          <li><a class="dropdown-item text-danger" href="#" onclick="deletePost({{ post.id }})">
-            <i class="bi bi-trash"></i> Eliminar
-          </a></li>
-          {% else %}
-          <li><a class="dropdown-item" href="#" onclick="reportPost({{ post.id }})">
-            <i class="bi bi-flag"></i> Reportar
-          </a></li>
-          {% endif %}
-          <li><a class="dropdown-item" href="#" onclick="copyPostLink({{ post.id }})">
-            <i class="bi bi-link-45deg"></i> Copiar enlace
-          </a></li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Post Content -->
-    {% if post.content %}
-    <div class="post-content mb-3">
-      <p class="mb-0 lh-base">{{ post.content }}</p>
-    </div>
-    {% set preview = post.content | link_preview %}
-    {% if preview %}
-    <div class="link-preview card mb-3">
-      <a href="{{ preview.url }}" target="_blank" rel="noopener" class="text-decoration-none">
-        {% if preview.image %}
-        <img src="{{ preview.image }}" class="card-img-top" alt="Vista previa">
-        {% endif %}
-        <div class="card-body">
-          <strong class="card-title">{{ preview.title }}</strong>
-          {% if preview.description %}
-          <p class="card-text small">{{ preview.description }}</p>
-          {% endif %}
-          <small class="text-muted">{{ preview.site_name }}</small>
-        </div>
-      </a>
-    </div>
-    {% endif %}
-    {% endif %}
-
-    <!-- Post Media -->
-    {% if post.images %}
-    {{ gallery.image_gallery(post.images, post.id) }}
-    {% elif post.file_url %}
-    <div class="post-media mb-3">
-      {% if post.file_url.endswith('.pdf') %}
-      <div class="pdf-preview bg-light rounded-3 p-3 text-center">
-        <i class="bi bi-file-pdf text-danger fs-1 mb-2"></i>
-        <p class="mb-2 fw-semibold">Documento PDF</p>
-        <a href="{{ post.file_url }}" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill">
-          <i class="bi bi-download"></i> Ver documento
+<article class="facebook-post" data-post-id="{{ post.id }}" data-comment-permission="{{ post.comment_permission }}">
+  <!-- Post Header -->
+  <div class="post-header">
+    <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}"
+         alt="{{ author.username if author else 'Usuario eliminado' }}"
+         class="post-avatar">
+    <div class="post-user-info">
+      <div class="post-username">
+        {% if author %}
+        <a href="{{ url_for('auth.profile_by_username', username=author.username) }}">
+          {{ author.username }}
         </a>
+        {% else %}
+        Usuario eliminado
+        {% endif %}
+        {% if author and author.verification_level >= 2 %}
+        <span class="verified-badge">
+          <i class="bi bi-check-circle-fill"></i>
+        </span>
+        {% endif %}
       </div>
+      <div class="post-timestamp">
+        <span data-timestamp="{{ post.created_at.isoformat() }}">{{ post.created_at|timesince }}</span>
+        {% if post.edited %}
+        · editado
+        {% endif %}
+      </div>
+    </div>
+    <button class="post-options" data-bs-toggle="dropdown" aria-label="Opciones">
+      <i class="bi bi-three-dots"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      {% if current_user.id == post.author_id %}
+      <li><a class="dropdown-item" href="#" onclick="editPost({{ post.id }})">
+        <i class="bi bi-pencil"></i> Editar
+      </a></li>
+      <li><a class="dropdown-item text-danger" href="#" onclick="deletePost({{ post.id }})">
+        <i class="bi bi-trash"></i> Eliminar
+      </a></li>
       {% else %}
-      {{ gallery.image_gallery([{'url': post.file_url}], post.id) }}
+      <li><a class="dropdown-item" href="#" onclick="reportPost({{ post.id }})">
+        <i class="bi bi-flag"></i> Reportar
+      </a></li>
       {% endif %}
-    </div>
-    {% endif %}
+      <li><a class="dropdown-item" href="#" onclick="copyPostLink({{ post.id }})">
+        <i class="bi bi-link-45deg"></i> Copiar enlace
+      </a></li>
+    </ul>
+  </div>
 
-    <!-- Post Stats -->
-    <div class="post-stats d-flex align-items-center gap-4 mb-3 small text-muted">
-      {% set counts = reaction_counts.get(post.id, {}) %}
-      {% if counts %}
-      <span class="d-flex align-items-center gap-1">
-        {% for reaction, count in counts.items() %}
-        <span>{{ reaction }}</span>
-        {% endfor %}
-        <span>{{ post.likes or 0 }}</span>
-      </span>
-      {% endif %}
+  <!-- Post Content -->
+  {% if post.content %}
+  <div class="post-text">
+    {{ post.content }}
+  </div>
+  {% endif %}
 
-      {% set comment_count = post.comments|length %}
-      {% if comment_count > 0 %}
-      <span>{{ comment_count }} comentario{{ 's' if comment_count > 1 else '' }}</span>
-      {% endif %}
-    </div>
-
-    <!-- Enhanced Post Actions -->
-    <div class="post-actions-enhanced">
-      <!-- Like Button with Animation -->
-      {% set user_reaction = user_reactions.get(post.id) %}
-      <button class="action-btn-enhanced like-btn {{ 'active' if user_reaction else '' }}"
-              data-post-id="{{ post.id }}"
-              data-reaction="🔥"
-              title="Me gusta"
-              aria-label="Me gusta">
-        <i class="bi bi-fire{% if user_reaction %} text-danger{% endif %}"></i>
-        <span>{{ post.likes or 0 }}</span>
-      </button>
-
-      <!-- Comment Button -->
-      <button class="action-btn-enhanced comment-btn"
-              data-post-id="{{ post.id }}"
-              title="Comentar"
-              aria-label="Comentar">
-        <i class="bi bi-chat"></i>
-        <span class="d-none d-sm-inline">Comentar</span>
-      </button>
-
-      <!-- Share Button with Options -->
-      <button class="action-btn-enhanced share-btn"
-              data-share-url="{{ url_for('feed.view_post', post_id=post.id, _external=True) }}"
-              title="Compartir"
-              aria-label="Compartir">
-        <i class="bi bi-share"></i>
-        <span class="d-none d-sm-inline">Compartir</span>
-      </button>
-
-
-      <!-- Save Button -->
-      <button class="action-btn-enhanced save-btn"
-              data-post-id="{{ post.id }}"
-              data-tooltip="Guardar"
-              aria-label="Guardar publicación"
-              title="Guardar">
-        <i class="bi bi-bookmark"></i>
-      </button>
-    </div>
-
-    <!-- Quick Comments Preview -->
-    {% if post.comments %}
-    <div class="quick-comments mt-3 pt-3 border-top">
-      <h6 class="small text-muted mb-2">Comentarios recientes</h6>
-      {% for comment in post.comments[:2] %}
-      <div class="d-flex gap-2 mb-2">
-        <img src="{{ comment.author.avatar_url or url_for('static', filename='img/default.png') }}"
-             class="rounded-circle" width="24" height="24"
-             alt="Avatar de {{ comment.author.username }}">
-        <div class="flex-grow-1">
-          <div class="comment-box rounded-3 px-3 py-2">
-            <div class="small fw-semibold mb-1">{{ comment.author.username }}</div>
-            <div class="small">{{ comment.body }}</div>
-          </div>
-          <div class="small text-muted mt-1">{{ comment.timestamp|timesince }}</div>
-        </div>
+  <!-- Post Images -->
+  {% if post.images %}
+  <div class="facebook-gallery-wrapper">
+    {{ gallery.image_gallery(post.images, post.id) }}
+  </div>
+  {% elif post.file_url %}
+  <div class="facebook-gallery-wrapper">
+    {% if post.file_url.endswith('.pdf') %}
+    <div class="pdf-attachment">
+      <i class="bi bi-file-pdf"></i>
+      <div>
+        <div class="pdf-title">Documento PDF</div>
+        <a href="{{ post.file_url }}" target="_blank">Ver documento</a>
       </div>
-      {% endfor %}
-
-      {% if post.comments|length > 2 %}
-      <button class="btn btn-link btn-sm p-0 text-decoration-none comment-btn"
-              data-post-id="{{ post.id }}"
-              title="Comentarios"
-              aria-label="Comentarios">
-        Ver todos los comentarios ({{ post.comments|length }})
-      </button>
-      {% endif %}
     </div>
+    {% else %}
+    {{ gallery.image_gallery([{'url': post.file_url}], post.id) }}
     {% endif %}
   </div>
+  {% endif %}
+
+  <!-- Post Actions -->
+  <div class="facebook-actions">
+    {% set user_reaction = user_reactions.get(post.id) %}
+    <button class="fb-action-btn like-btn {{ 'active' if user_reaction else '' }}"
+            data-post-id="{{ post.id }}"
+            data-reaction="🔥">
+      <i class="bi bi-fire{% if user_reaction %}-fill{% endif %}"></i>
+      <span>Me gusta</span>
+    </button>
+
+    <button class="fb-action-btn comment-btn" data-post-id="{{ post.id }}">
+      <i class="bi bi-chat"></i>
+      <span>Comentar</span>
+    </button>
+
+    <button class="fb-action-btn share-btn" data-post-id="{{ post.id }}">
+      <i class="bi bi-share"></i>
+      <span>Compartir</span>
+    </button>
+  </div>
+
+  <!-- Quick Comments -->
+  {% if post.comments %}
+  <div class="quick-comments">
+    {% for comment in post.comments[:2] %}
+    <div class="comment-item">
+      <img src="{{ comment.author.avatar_url or url_for('static', filename='img/default.png') }}"
+           class="comment-avatar" alt="Avatar">
+      <div class="comment-content">
+        <div class="comment-box">
+          <span class="comment-author">{{ comment.author.username }}</span>
+          {{ comment.body }}
+        </div>
+        <div class="comment-meta">{{ comment.timestamp|timesince }}</div>
+      </div>
+    </div>
+    {% endfor %}
+
+    {% if post.comments|length > 2 %}
+    <button class="view-more-comments comment-btn" data-post-id="{{ post.id }}">
+      Ver todos los comentarios ({{ post.comments|length }})
+    </button>
+    {% endif %}
+  </div>
+  {% endif %}
 </article>
