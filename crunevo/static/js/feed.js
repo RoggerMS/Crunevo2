@@ -652,6 +652,7 @@ class CrunevoFeedManager {
 
     try {
       this.currentPage++;
+      console.log('Loading page', this.currentPage);
       const response = await fetch(`/feed/api/feed?page=${this.currentPage}&categoria=${this.currentFilter}&format=html`);
       const data = await response.json();
 
