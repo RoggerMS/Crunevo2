@@ -838,6 +838,300 @@ class ModernFeedManager {
   }
 }
 
+// Comments Modal Functions
+function openCommentsModal(postId) {
+  const modal = new bootstrap.Modal(document.getElementById(`commentsModal-${postId}`));
+  modal.show();
+  
+  // Focus on comment input
+  setTimeout(() => {
+    const input = document.querySelector(`#commentsModal-${postId} .comment-input`);
+    if (input) input.focus();
+  }, 300);
+}
+
+function submitComment(event, postId) {
+  event.preventDefault();
+  const form = event.target;
+  const input = form.querySelector('.comment-input');
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const body = input.value.trim();
+
+  if (!body) return;
+
+  // Disable form
+  submitBtn.disabled = true;
+  input.disabled = true;
+
+  const formData = new FormData();
+  formData.append('body', body);
+  formData.append('csrf_token', window.modernFeedManager?.getCSRFToken() || '');
+
+  fetch(`/feed/comment/${postId}`, {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
+    if (response.status === 202) {
+      window.modernFeedManager?.showToast('Comentario pendiente de aprobación', 'info');
+      input.value = '';
+    } else if (response.ok) {
+      return response.json();
+    } else {
+      throw new Error('Error al agregar comentario');
+    }
+  })
+  .then(data => {
+    if (data) {
+      // Add comment to modal
+      addCommentToModal(data, postId);
+      input.value = '';
+      
+      // Update comment count in post
+      updateCommentCount(postId, 1);
+      window.modernFeedManager?.showToast('Comentario agregado', 'success');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    window.modernFeedManager?.showToast('Error al agregar comentario', 'error');
+  })
+  .finally(() => {
+    submitBtn.disabled = false;
+    input.disabled = false;
+  });
+}
+
+function addCommentToModal(comment, postId) {
+  const commentsList = document.getElementById(`commentsList-${postId}`);
+  if (!commentsList) return;
+
+  const commentHTML = `
+    <div class="comment-item mb-3" data-comment-id="${comment.id}">
+      <div class="d-flex">
+        <img src="${comment.avatar || '/static/img/default.png'}"
+             alt="${comment.author}"
+             class="rounded-circle me-2"
+             style="width: 32px; height: 32px; object-fit: cover;">
+        <div class="flex-grow-1">
+          <div class="comment-bubble">
+            <strong class="comment-author">${comment.author}</strong>
+            <p class="comment-text mb-1">${comment.body}</p>
+          </div>
+          <div class="comment-meta d-flex align-items-center gap-3">
+            <small class="text-muted">ahora</small>
+            <button class="btn btn-link btn-sm p-0 text-muted">Responder</button>
+            <button class="btn btn-link btn-sm p-0 text-danger" onclick="deleteComment('${comment.id}', '${postId}')">
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  commentsList.insertAdjacentHTML('beforeend', commentHTML);
+}
+
+function deleteComment(commentId, postId) {
+  if (!confirm('¿Estás seguro de que quieres eliminar este comentario?')) return;
+
+  fetch(`/feed/comment/delete/${commentId}`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': window.modernFeedManager?.getCSRFToken() || ''
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      // Remove from modal
+      const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+      if (commentElement) commentElement.remove();
+      
+      // Update comment count
+      updateCommentCount(postId, -1);
+      window.modernFeedManager?.showToast('Comentario eliminado', 'success');
+    } else {
+      window.modernFeedManager?.showToast('Error al eliminar comentario', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    window.modernFeedManager?.showToast('Error de conexión', 'error');
+  });
+}
+
+function updateCommentCount(postId, increment) {
+  const commentBtn = document.querySelector(`[data-post-id="${postId}"].comment-btn`);
+  if (commentBtn) {
+    const countSpan = commentBtn.querySelector('.action-count');
+    if (countSpan) {
+      const currentCount = parseInt(countSpan.textContent) || 0;
+      const newCount = Math.max(0, currentCount + increment);
+      countSpan.textContent = newCount > 0 ? newCount : '';
+    }
+  }
+}
+
+// Post Interest Functions
+function interestPost(postId) {
+  fetch(`/feed/interest/${postId}`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': window.modernFeedManager?.getCSRFToken() || ''
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'success') {
+      window.modernFeedManager?.showToast('✅ Marcado como interesante', 'success');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    window.modernFeedManager?.showToast('Error al procesar', 'error');
+  });
+}
+
+function notInterestedPost(postId) {
+  if (confirm('¿No te interesa ver este tipo de contenido?')) {
+    fetch(`/feed/not-interested/${postId}`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': window.modernFeedManager?.getCSRFToken() || ''
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        // Hide the post with animation
+        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+        if (postElement) {
+          postElement.style.opacity = '0.5';
+          setTimeout(() => {
+            postElement.style.display = 'none';
+          }, 300);
+        }
+        window.modernFeedManager?.showToast('👍 Gracias por tu feedback', 'info');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      window.modernFeedManager?.showToast('Error al procesar', 'error');
+    });
+  }
+}
+
+// Enhanced Share Function
+function sharePost(postId) {
+  const shareModal = createShareModal(postId);
+  document.body.appendChild(shareModal);
+  shareModal.classList.add('show');
+}
+
+function createShareModal(postId) {
+  const postUrl = `${window.location.origin}/feed/post/${postId}`;
+  const shareText = '¡Mira esta publicación en CRUNEVO!';
+  
+  const modal = document.createElement('div');
+  modal.className = 'share-modal';
+  modal.innerHTML = `
+    <div class="share-modal-content">
+      <div class="share-modal-header">
+        <h3 class="share-modal-title">Compartir publicación</h3>
+        <button class="share-modal-close" onclick="closeShareModal(this)">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      <div class="share-options">
+        <div class="share-option" onclick="copyToClipboard('${postUrl}'); closeShareModal(this); showToast('¡Enlace copiado!', 'success');">
+          <div class="share-option-icon copy">
+            <i class="bi bi-link-45deg"></i>
+          </div>
+          <div class="share-option-text">
+            <div class="share-option-title">Copiar enlace</div>
+            <div class="share-option-desc">Comparte el enlace donde quieras</div>
+          </div>
+        </div>
+        <a href="https://wa.me/?text=${encodeURIComponent(shareText + ' ' + postUrl)}" 
+           target="_blank" 
+           class="share-option"
+           onclick="closeShareModal(this)">
+          <div class="share-option-icon whatsapp">
+            <i class="bi bi-whatsapp"></i>
+          </div>
+          <div class="share-option-text">
+            <div class="share-option-title">WhatsApp</div>
+            <div class="share-option-desc">Comparte en WhatsApp</div>
+          </div>
+        </a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}" 
+           target="_blank" 
+           class="share-option"
+           onclick="closeShareModal(this)">
+          <div class="share-option-icon facebook">
+            <i class="bi bi-facebook"></i>
+          </div>
+          <div class="share-option-text">
+            <div class="share-option-title">Facebook</div>
+            <div class="share-option-desc">Comparte en tu timeline</div>
+          </div>
+        </a>
+        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(postUrl)}" 
+           target="_blank" 
+           class="share-option"
+           onclick="closeShareModal(this)">
+          <div class="share-option-icon twitter">
+            <i class="bi bi-twitter"></i>
+          </div>
+          <div class="share-option-text">
+            <div class="share-option-title">Twitter</div>
+            <div class="share-option-desc">Comparte en Twitter</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  `;
+  
+  // Close on backdrop click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeShareModal(modal);
+    }
+  });
+  
+  return modal;
+}
+
+function closeShareModal(element) {
+  const modal = element.closest ? element.closest('.share-modal') : element;
+  if (modal) {
+    modal.classList.remove('show');
+    setTimeout(() => modal.remove(), 300);
+  }
+}
+
+// Comment input validation
+document.addEventListener('input', (e) => {
+  if (e.target.matches('.comment-input')) {
+    const form = e.target.closest('.comment-form');
+    const submitBtn = form?.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = !e.target.value.trim();
+    }
+  }
+});
+
+// Enhanced share button functionality
+document.addEventListener('click', (e) => {
+  if (e.target.matches('.share-btn') || e.target.closest('.share-btn')) {
+    e.preventDefault();
+    const btn = e.target.closest('.share-btn');
+    const postId = btn.dataset.postId;
+    sharePost(postId);
+  }
+});
+
 // Global functions for backwards compatibility
 function openImageModal(src, index, postId, evt) {
   if (window.modernFeedManager) {

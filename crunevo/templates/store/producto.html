@@ -1,61 +1,318 @@
-{% extends 'base.html' %}
-{% import 'components/csrf.html' as csrf %}
 
-{% block head_extra %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/store_detail.css') }}">
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - Tienda CRUNEVO{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/store_detail.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="container my-5">
-  <div class="row g-4 align-items-start">
-    <div class="col-lg-6 text-center">
-      <img loading="lazy" src="{{ product.image_url or product.image or '/static/img/producto-default.png' }}" class="img-fluid rounded shadow-sm big-product-img" alt="{{ product.name }}">
-    </div>
-    <div class="col-lg-6">
-      <h1 class="h3 fw-bold mb-3">{{ product.name }}
-        <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="d-inline ms-2">
-          {{ csrf.csrf_field() }}
-          <button class="btn btn-sm btn-light border-0" type="submit">
-            <i class="bi {% if is_favorite %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
-          </button>
-        </form>
-      </h1>
-      <p class="text-muted">{{ product.description or 'Sin descripción detallada.' }}</p>
-      {% if product.price > 0 %}
-        <p class="h5"><strong class="text-primary">S/ {{ '%.2f' | format(product.price) }}</strong></p>
-      {% endif %}
-      {% if product.price_credits %}
-        <p class="h5"><strong class="text-warning">{{ product.price_credits }} crolars</strong></p>
-      {% endif %}
-      <div class="mb-2">
-        {% if product.is_new %}<span class="badge bg-success me-1">Nuevo</span>{% endif %}
-        {% if product.is_popular %}<span class="badge bg-danger me-1">Popular</span>{% endif %}
-        {% if product.credits_only %}<span class="badge bg-warning text-dark me-1">Solo crolars</span>{% endif %}
-        {% if product.is_featured %}<span class="badge bg-purple text-white me-1">Destacado</span>{% endif %}
+<div class="product-detail-container">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Product Images -->
+      <div class="col-lg-6">
+        <div class="product-gallery">
+          <div class="main-image-container">
+            <img id="mainProductImage" 
+                 src="{{ product.image_url or url_for('static', filename='img/default_product.png') }}" 
+                 alt="{{ product.name }}"
+                 class="main-product-image"
+                 onclick="openProductImageModal(this.src)">
+            {% if product.stock == 0 %}
+            <div class="stock-overlay">
+              <span class="stock-badge">AGOTADO</span>
+            </div>
+            {% endif %}
+          </div>
+          
+          {% if product.image_urls and product.image_urls|length > 1 %}
+          <div class="thumbnail-gallery">
+            {% for image_url in product.image_urls %}
+            <div class="thumbnail-item {{ 'active' if loop.first }}">
+              <img src="{{ image_url }}" 
+                   alt="{{ product.name }} - Imagen {{ loop.index }}"
+                   class="thumbnail-image"
+                   onclick="changeMainImage(this.src)">
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
       </div>
-      {% if product.stock %}
-        <p class="small text-muted">{{ product.stock }} en stock</p>
-      {% endif %}
-      {% if product.price_credits and current_user.is_authenticated %}
-      <form method="post" action="{{ url_for('store.redeem_product', product_id=product.id) }}" class="d-inline">
-        {{ csrf.csrf_field() }}
-        <button class="btn btn-primary me-2 mb-2" type="submit">Canjear ahora</button>
-      </form>
-      {% elif product.price_credits and not current_user.is_authenticated %}
-      <a href="{{ url_for('auth.login') }}" class="btn btn-primary me-2 mb-2">Inicia sesión</a>
-      {% endif %}
-      {% if not product.credits_only %}
-      <a href="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="btn btn-outline-primary me-2 mb-2">Agregar al carrito</a>
-      {% endif %}
-      <a href="{{ url_for('store.view_cart') }}" class="btn btn-outline-success me-2 mb-2">Ver Carrito</a>
-      <hr>
-      <a href="{{ url_for('store.store_index') }}" class="btn btn-link">← Volver a la tienda</a>
-      {% if product.features %}
-        <hr>
-        <h4 class="mt-4">Características</h4>
-        <p>{{ product.features }}</p>
-      {% endif %}
+
+      <!-- Product Info -->
+      <div class="col-lg-6">
+        <div class="product-info">
+          <div class="product-header">
+            <h1 class="product-title">{{ product.name }}</h1>
+            <button class="share-product-btn" onclick="shareProduct('{{ product.id }}')">
+              <i class="bi bi-share"></i>
+              <span>Compartir</span>
+            </button>
+          </div>
+
+          <div class="product-rating">
+            {% for i in range(5) %}
+            <i class="bi bi-star{{ '-fill' if i < (product.rating or 0) else '' }}"></i>
+            {% endfor %}
+            <span class="rating-text">({{ product.reviews|length }} reseñas)</span>
+          </div>
+
+          <div class="product-prices">
+            <div class="price-soles">
+              <span class="currency">S/</span>
+              <span class="amount">{{ "%.2f"|format(product.price) }}</span>
+            </div>
+            {% if product.price_crolars %}
+            <div class="price-crolars">
+              <i class="bi bi-coin"></i>
+              <span>{{ product.price_crolars }} Crolars</span>
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="product-description">
+            <h3>Descripción</h3>
+            <p>{{ product.description or 'Sin descripción disponible.' }}</p>
+          </div>
+
+          {% if product.features %}
+          <div class="product-features">
+            <h3>Características</h3>
+            <ul class="features-list">
+              {% for feature in product.features %}
+              <li class="feature-item">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>{{ feature }}</span>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+
+          <div class="product-stock">
+            {% if product.stock > 0 %}
+            <span class="stock-available">
+              <i class="bi bi-check-circle"></i>
+              {{ product.stock }} disponible{{ 's' if product.stock != 1 }}
+            </span>
+            {% else %}
+            <span class="stock-unavailable">
+              <i class="bi bi-x-circle"></i>
+              Producto agotado
+            </span>
+            {% endif %}
+          </div>
+
+          <div class="product-actions">
+            {% if current_user.is_authenticated %}
+              {% if product.stock > 0 %}
+              <form action="{{ url_for('store.add_to_cart') }}" method="POST" class="add-cart-form">
+                {{ csrf_token() }}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <div class="quantity-selector">
+                  <label for="quantity">Cantidad:</label>
+                  <div class="quantity-controls">
+                    <button type="button" class="qty-btn minus" onclick="changeQuantity(-1)">-</button>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" class="qty-input">
+                    <button type="button" class="qty-btn plus" onclick="changeQuantity(1)">+</button>
+                  </div>
+                </div>
+                <button type="submit" class="btn-add-cart">
+                  <i class="bi bi-cart-plus"></i>
+                  Agregar al carrito
+                </button>
+              </form>
+              {% else %}
+              <button class="btn-add-cart disabled" disabled>
+                <i class="bi bi-x-circle"></i>
+                Producto agotado
+              </button>
+              {% endif %}
+              
+              <form action="{{ url_for('store.toggle_favorite') }}" method="POST" class="favorite-form">
+                {{ csrf_token() }}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <button type="submit" class="btn-favorite {{ 'active' if is_favorite }}">
+                  <i class="bi bi-heart{{ '-fill' if is_favorite else '' }}"></i>
+                  {{ 'Quitar de favoritos' if is_favorite else 'Agregar a favoritos' }}
+                </button>
+              </form>
+            {% else %}
+            <div class="login-prompt">
+              <p>Inicia sesión para comprar este producto</p>
+              <a href="{{ url_for('auth.login') }}" class="btn-login">
+                <i class="bi bi-box-arrow-in-right"></i>
+                Iniciar sesión
+              </a>
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="product-meta">
+            <div class="meta-item">
+              <strong>Categoría:</strong>
+              <span>{{ product.category or 'General' }}</span>
+            </div>
+            <div class="meta-item">
+              <strong>SKU:</strong>
+              <span>{{ product.id }}</span>
+            </div>
+            <div class="meta-item">
+              <strong>Agregado:</strong>
+              <span>{{ moment(product.created_at).format('DD/MM/YYYY') }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Reviews Section -->
+    {% if product.reviews %}
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="reviews-section">
+          <h3>Reseñas de clientes</h3>
+          <div class="reviews-list">
+            {% for review in product.reviews[:5] %}
+            <div class="review-item">
+              <div class="review-header">
+                <div class="reviewer-info">
+                  <img src="{{ review.user.avatar_url }}" 
+                       alt="{{ review.user.username }}"
+                       class="reviewer-avatar">
+                  <div>
+                    <strong class="reviewer-name">{{ review.user.username }}</strong>
+                    <div class="review-rating">
+                      {% for i in range(5) %}
+                      <i class="bi bi-star{{ '-fill' if i < review.rating else '' }}"></i>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                <small class="review-date">{{ moment(review.created_at).fromNow() }}</small>
+              </div>
+              <p class="review-content">{{ review.content }}</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Related Products -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="related-products">
+          <h3>Productos relacionados</h3>
+          <div class="related-grid">
+            {% for related in related_products[:4] %}
+            <div class="related-product-card">
+              <a href="{{ url_for('store.view_product', id=related.id) }}" class="related-link">
+                <img src="{{ related.image_url or url_for('static', filename='img/default_product.png') }}" 
+                     alt="{{ related.name }}"
+                     class="related-image">
+                <div class="related-info">
+                  <h4 class="related-title">{{ related.name }}</h4>
+                  <div class="related-price">S/ {{ "%.2f"|format(related.price) }}</div>
+                </div>
+              </a>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- Product Image Modal -->
+<div class="modal fade" id="productImageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ product.name }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="modalProductImage" src="" alt="{{ product.name }}" class="img-fluid">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/store.js') }}"></script>
+<script>
+function changeMainImage(src) {
+  document.getElementById('mainProductImage').src = src;
+  
+  // Update active thumbnail
+  document.querySelectorAll('.thumbnail-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  event.target.closest('.thumbnail-item').classList.add('active');
+}
+
+function openProductImageModal(src) {
+  document.getElementById('modalProductImage').src = src;
+  const modal = new bootstrap.Modal(document.getElementById('productImageModal'));
+  modal.show();
+}
+
+function changeQuantity(change) {
+  const input = document.getElementById('quantity');
+  const newValue = parseInt(input.value) + change;
+  const max = parseInt(input.max);
+  const min = parseInt(input.min);
+  
+  if (newValue >= min && newValue <= max) {
+    input.value = newValue;
+  }
+}
+
+function shareProduct(productId) {
+  const url = window.location.href;
+  const title = '{{ product.name }}';
+  const text = `¡Mira este producto en CRUNEVO: ${title}!`;
+  
+  if (navigator.share && /Mobile|Android|iPhone/i.test(navigator.userAgent)) {
+    navigator.share({
+      title: title,
+      text: text,
+      url: url
+    }).catch(console.error);
+  } else {
+    // Copy to clipboard
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('¡Enlace del producto copiado!', 'success');
+    });
+  }
+}
+
+function showToast(message, type = 'info') {
+  // Simple toast implementation
+  const toast = document.createElement('div');
+  toast.className = `toast-notification toast-${type}`;
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${type === 'success' ? '#28a745' : '#007bff'};
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    z-index: 9999;
+    font-weight: 500;
+  `;
+  
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+</script>
 {% endblock %}
