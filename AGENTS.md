@@ -711,3 +711,4 @@
 - Talisman ahora no fuerza HTTPS en modo de pruebas para evitar redirecciones (task feed fix).
 - Restored base.html to fix blank feed after redesign (PR feed-base-restore).
 - Unificada carga de posts en /feed usando un solo template moderno y API HTML (PR feed-post-unify).
+- Limpieza de plantillas del feed: eliminado feed_mobile, list.html y CSS antiguo. feed_routes usa solo feed/feed.html. (PR feed-templates-cleanup)
