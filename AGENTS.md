@@ -709,3 +709,4 @@
 - Galería ajustada como Facebook: dos verticales lado a lado, preview máximo 5 imágenes con overlay '+X' (PR fb-gallery-improve)
 - Multi-image layouts now adapt height automatically without forced aspect ratio (PR gallery-auto-height)
 - Talisman ahora no fuerza HTTPS en modo de pruebas para evitar redirecciones (task feed fix).
+- Restored base.html to fix blank feed after redesign (PR feed-base-restore).
