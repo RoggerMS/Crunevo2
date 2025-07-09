@@ -652,20 +652,17 @@ class CrunevoFeedManager {
 
     try {
       this.currentPage++;
-      const response = await fetch(`/feed/api/feed?page=${this.currentPage}&categoria=${this.currentFilter}`);
-      const items = await response.json();
+      const response = await fetch(`/feed/api/feed?page=${this.currentPage}&categoria=${this.currentFilter}&format=html`);
+      const data = await response.json();
 
-      if (items.length === 0) {
+      if (!data.html || data.count === 0) {
         const end = document.getElementById('feedEnd');
         if (end) end.style.display = 'none';
         return;
       }
 
       const container = document.getElementById('feedContainer');
-      items.forEach(item => {
-        const html = this.renderFeedItem(item);
-        if (html) container.insertAdjacentHTML('beforeend', html);
-      });
+      container.insertAdjacentHTML('beforeend', data.html);
 
       this.initPostInteractions();
       this.initGalleryEnhancements();
@@ -677,48 +674,6 @@ class CrunevoFeedManager {
     }
   }
 
-  renderFeedItem(item) {
-    if (item.item_type === 'post') {
-      return `
-        <div class="post-card" data-post-id="${item.id}">
-          <div class="post-header">
-            <img src="${item.author_avatar || '/static/img/default.png'}" alt="Avatar" class="post-avatar">
-            <div class="post-user-info">
-              <h6 class="post-username">${item.author_username}</h6>
-              <small class="post-timestamp">${item.created_at}</small>
-            </div>
-            <button class="post-options" aria-label="Opciones">
-              <i class="bi bi-three-dots"></i>
-            </button>
-          </div>
-          <div class="post-content">
-            <p class="post-text">${item.content || ''}</p>
-          </div>
-          <div class="post-actions">
-            <div class="action-buttons">
-              <button class="action-btn like-btn" data-post-id="${item.id}">
-                <i class="bi bi-fire"></i>
-                <span>Me gusta</span>
-              </button>
-              <button class="action-btn comment-btn" data-post-id="${item.id}">
-                <i class="bi bi-chat"></i>
-                <span>Comentar</span>
-              </button>
-              <button class="action-btn share-btn" data-post-id="${item.id}">
-                <i class="bi bi-share"></i>
-                <span>Compartir</span>
-              </button>
-              <button class="action-btn save-btn" data-post-id="${item.id}">
-                <i class="bi bi-bookmark"></i>
-                <span>Guardar</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-    return '';
-  }
 
   initModals() {
     document.querySelectorAll('.modal').forEach(modalEl => {

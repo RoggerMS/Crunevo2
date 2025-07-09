@@ -728,6 +728,7 @@ def api_analizar():
 def api_feed():
     page = int(request.args.get("page", 1))
     categoria = request.args.get("categoria")
+    fmt = request.args.get("format")
     start = (page - 1) * 10
     stop = start + 9
     items = [
@@ -762,6 +763,26 @@ def api_feed():
             and i.get("file_url")
             and not i.get("file_url", "").endswith(".pdf")
         ]
+
+    if fmt == "html":
+        post_ids = [i.get("ref_id") for i in items if i.get("item_type") == "post"]
+        if not post_ids:
+            return jsonify({"html": "", "count": 0})
+        posts = Post.query.filter(Post.id.in_(post_ids)).all()
+        post_map = {p.id: p for p in posts}
+        ordered_posts = [post_map[pid] for pid in post_ids if pid in post_map]
+        reaction_map = PostReaction.counts_for_posts(post_ids)
+        user_reactions = PostReaction.reactions_for_user_posts(
+            current_user.id, post_ids
+        )
+        html = render_template(
+            "feed/_posts.html",
+            posts=ordered_posts,
+            reaction_counts=reaction_map,
+            user_reactions=user_reactions,
+        )
+        return jsonify({"html": html, "count": len(ordered_posts)})
+
     return jsonify(items)
 
 
