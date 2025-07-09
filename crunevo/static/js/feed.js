@@ -437,8 +437,8 @@ class ModernFeedManager {
 
   // Open image modal
   openImageModal(src, index, postId, evt) {
-    const container = evt?.currentTarget.closest('.image-gallery-container') || 
-                     document.querySelector(`[data-post-id='${postId}'] .image-gallery-container`);
+    const container = evt?.currentTarget.closest('.facebook-gallery-container') || 
+                     document.querySelector(`[data-post-id='${postId}'] .facebook-gallery-container`);
 
     if (container && container.dataset.images) {
       try {

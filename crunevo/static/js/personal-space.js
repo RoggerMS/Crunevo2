@@ -1329,3 +1329,173 @@ function debounce(func, wait) {
         timeout = setTimeout(later, wait);
     };
 }
+// Personal Space Enhanced Functionality
+class PersonalSpaceManager {
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    this.initDragAndDrop();
+    this.initBlockControls();
+    this.updateWeeklySummary();
+  }
+
+  initDragAndDrop() {
+    const blocksContainer = document.querySelector('.blocks-grid');
+    if (!blocksContainer) return;
+
+    // Make blocks draggable
+    document.querySelectorAll('.block-card').forEach(block => {
+      block.draggable = true;
+      block.addEventListener('dragstart', this.handleDragStart.bind(this));
+      block.addEventListener('dragover', this.handleDragOver.bind(this));
+      block.addEventListener('drop', this.handleDrop.bind(this));
+    });
+  }
+
+  handleDragStart(e) {
+    e.dataTransfer.setData('text/plain', e.target.dataset.blockId);
+    e.target.classList.add('dragging');
+  }
+
+  handleDragOver(e) {
+    e.preventDefault();
+    e.target.classList.add('drag-over');
+  }
+
+  handleDrop(e) {
+    e.preventDefault();
+    const draggedId = e.dataTransfer.getData('text/plain');
+    const targetId = e.target.dataset.blockId;
+    
+    if (draggedId !== targetId) {
+      this.swapBlocks(draggedId, targetId);
+    }
+    
+    document.querySelectorAll('.dragging, .drag-over').forEach(el => {
+      el.classList.remove('dragging', 'drag-over');
+    });
+  }
+
+  swapBlocks(id1, id2) {
+    fetch('/espacio-personal/reorder', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': this.getCSRFToken()
+      },
+      body: JSON.stringify({
+        block1: id1,
+        block2: id2
+      })
+    }).then(response => {
+      if (response.ok) {
+        this.showToast('Bloques reordenados', 'success');
+      }
+    });
+  }
+
+  initBlockControls() {
+    document.addEventListener('click', (e) => {
+      if (e.target.matches('.block-toggle')) {
+        this.toggleBlock(e.target);
+      }
+    });
+  }
+
+  toggleBlock(btn) {
+    const blockContent = btn.closest('.block-card').querySelector('.block-content');
+    const icon = btn.querySelector('i');
+    
+    if (blockContent.style.display === 'none') {
+      blockContent.style.display = 'block';
+      blockContent.classList.add('fade-in');
+      icon.classList.replace('bi-chevron-down', 'bi-chevron-up');
+    } else {
+      blockContent.classList.add('fade-out');
+      setTimeout(() => {
+        blockContent.style.display = 'none';
+        blockContent.classList.remove('fade-out');
+        icon.classList.replace('bi-chevron-up', 'bi-chevron-down');
+      }, 300);
+    }
+  }
+
+  updateWeeklySummary() {
+    // Simulated progress calculation
+    const completed = 2;
+    const total = 5;
+    const percentage = (completed / total) * 100;
+    
+    const progressBar = document.querySelector('.progress-bar');
+    const summaryText = document.querySelector('.progress-summary small');
+    
+    if (progressBar) {
+      progressBar.style.width = `${percentage}%`;
+    }
+    
+    if (summaryText) {
+      summaryText.textContent = `${completed}/${total} objetivos completados esta semana`;
+    }
+  }
+
+  getCSRFToken() {
+    const token = document.querySelector('[name="csrf_token"]');
+    return token ? token.value : '';
+  }
+
+  showToast(message, type = 'info') {
+    // Reuse the toast system from feed.js
+    if (window.modernFeedManager) {
+      window.modernFeedManager.showToast(message, type);
+    }
+  }
+}
+
+// Global functions for block creation
+function createBlock(type) {
+  const modal = document.createElement('div');
+  modal.className = 'modal fade';
+  modal.innerHTML = `
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Crear ${type}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="createBlockForm">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Título</label>
+              <input type="text" class="form-control" name="title" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Contenido</label>
+              <textarea class="form-control" name="content" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Crear</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  const bsModal = new bootstrap.Modal(modal);
+  bsModal.show();
+  
+  modal.addEventListener('hidden.bs.modal', () => {
+    modal.remove();
+  });
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.querySelector('.personal-space-container')) {
+    new PersonalSpaceManager();
+  }
+});

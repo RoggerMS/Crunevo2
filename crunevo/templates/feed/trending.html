@@ -1,354 +1,203 @@
-
 {% extends "base.html" %}
 
-{% block title %}Trending - Crunevo{% endblock %}
+{% block title %}Trending - CRUNEVO{% endblock %}
 
-{% block head_extra %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
 <style>
-.trending-hero {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 50%, #fd79a8 100%);
-  border-radius: 24px;
-  padding: 3rem 2rem;
+.trending-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.trending-header {
   text-align: center;
-  margin-bottom: 2rem;
-  color: white;
-  position: relative;
-  overflow: hidden;
+  margin-bottom: 30px;
 }
 
-.trending-hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
+.trending-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
 }
 
-.trending-hero h1 {
-  position: relative;
-  z-index: 1;
-  font-size: 2.5rem;
-  font-weight: 800;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  margin-bottom: 0.5rem;
-}
-
-.trending-hero p {
-  position: relative;
-  z-index: 1;
-  font-size: 1.1rem;
-  opacity: 0.9;
-  margin-bottom: 0;
-}
-
-.trending-filters {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 20px;
-  padding: 0.5rem;
-  margin-bottom: 2rem;
-  display: flex;
-  gap: 0.25rem;
-  overflow-x: auto;
-}
-
-[data-bs-theme="dark"] .trending-filters {
-  background: rgba(30, 30, 46, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.trending-filters .btn {
-  border-radius: 16px;
-  font-weight: 600;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-}
-
-.trending-filters .btn.active {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+.trending-section {
+  background: var(--post-bg);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  box-shadow: var(--shadow-light);
 }
 
 .section-header {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 16px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--border-color);
 }
 
-[data-bs-theme="dark"] .section-header {
-  background: rgba(30, 30, 46, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.section-icon {
+  font-size: 24px;
+  color: var(--crunevo-primary);
 }
 
-.section-header h3 {
-  margin-bottom: 0.5rem;
-  font-weight: 700;
-  color: #ff6b6b;
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
 }
 
-.section-header p {
-  margin-bottom: 0;
-  color: #6c757d;
-  font-size: 0.9rem;
+.trending-post {
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.trending-card {
-  background: rgba(255, 255, 255, 0.98);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 20px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+.trending-post:last-child {
+  border-bottom: none;
 }
 
-[data-bs-theme="dark"] .trending-card {
-  background: rgba(30, 30, 46, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.post-meta {
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  margin-top: 10px;
 }
 
-.trending-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 32px rgba(255, 107, 107, 0.15);
+.post-stats {
+  display: flex;
+  gap: 15px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .trending-badge {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
   color: white;
-  padding: 0.25rem 0.75rem;
+  padding: 2px 8px;
   border-radius: 12px;
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 600;
-}
-
-.note-preview {
-  background: rgba(255, 107, 107, 0.05);
-  border: 1px solid rgba(255, 107, 107, 0.1);
-  border-radius: 12px;
-  padding: 1rem;
-  margin-top: 1rem;
+  text-transform: uppercase;
 }
 
 @media (max-width: 768px) {
-  .trending-hero {
-    padding: 2rem 1rem;
+  .trending-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
-  
-  .trending-hero h1 {
-    font-size: 2rem;
-  }
-  
-  .section-header {
-    margin-bottom: 1rem;
+
+  .trending-container {
+    padding: 15px;
   }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-0">
-  <div class="row g-0">
-    <!-- Left Sidebar (Desktop) -->
-    <div class="col-lg-3 d-none d-lg-block">
-      {% include 'components/sidebar_left_feed.html' %}
+<div class="trending-container">
+  <div class="trending-header">
+    <h1 class="display-6 mb-2">🔥 Trending en CRUNEVO</h1>
+    <p class="text-muted">Lo más popular esta semana</p>
+  </div>
+
+  <div class="trending-grid">
+    <!-- Publicaciones más votadas -->
+    <div class="trending-section">
+      <div class="section-header">
+        <i class="bi bi-fire section-icon"></i>
+        <h2 class="section-title">Publicaciones más votadas</h2>
+      </div>
+
+      {% for post in trending_posts[:5] %}
+      <div class="trending-post">
+        <div class="d-flex align-items-start gap-3">
+          <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+               alt="{{ post.author.username }}" 
+               class="rounded-circle" 
+               style="width: 40px; height: 40px; object-fit: cover;">
+          <div class="flex-grow-1">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <strong>{{ post.author.username }}</strong>
+              <span class="trending-badge">Popular</span>
+            </div>
+            <p class="mb-2 text-truncate" style="max-width: 300px;">
+              {{ post.content[:100] }}{% if post.content|length > 100 %}...{% endif %}
+            </p>
+            <div class="post-meta">
+              <div class="post-stats">
+                <span class="stat-item">
+                  <i class="bi bi-fire"></i>
+                  <span>{{ post.reactions_count or 0 }}</span>
+                </span>
+                <span class="stat-item">
+                  <i class="bi bi-chat"></i>
+                  <span>{{ post.comments|length or 0 }}</span>
+                </span>
+              </div>
+              <small class="text-muted">{{ post.created_at|timesince }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
     </div>
 
-    <!-- Main Content -->
-    <div class="col-lg-9 col-12">
-      <div class="px-3 px-lg-4">
-        <!-- Hero Section -->
-        <div class="trending-hero mb-3">
-          <h1>🔥 Trending</h1>
-          <p>Lo más popular e impactante de la comunidad educativa</p>
-        </div>
-
-        <div class="mb-4 text-end">
-          <a href="{{ url_for('feed.view_feed') }}" class="btn btn-outline-primary btn-sm">
-            <i class="bi bi-arrow-left"></i> Volver al Feed
-          </a>
-        </div>
-
-        <!-- Filters -->
-        <div class="trending-filters">
-          <button class="btn btn-primary active" data-filter="semana">
-            <i class="bi bi-calendar-week me-1"></i> Esta semana
-          </button>
-          <button class="btn btn-outline-primary" data-filter="mes">
-            <i class="bi bi-calendar-month me-1"></i> Este mes
-          </button>
-          <button class="btn btn-outline-primary" data-filter="populares">
-            <i class="bi bi-fire me-1"></i> Más likes
-          </button>
-          <button class="btn btn-outline-primary" data-filter="comentarios">
-            <i class="bi bi-chat me-1"></i> Más comentarios
-          </button>
-        </div>
-
-        <!-- Desktop Layout: Two Columns -->
-        <div class="row g-4 d-none d-lg-flex">
-          <!-- Left: Popular Posts -->
-          <div class="col-lg-7">
-            <div class="section-header">
-              <h3>📱 Publicaciones Populares</h3>
-              <p>Las publicaciones que más están impactando en la comunidad</p>
-            </div>
-
-            <div id="trendingPosts">
-              {% for post in weekly_posts %}
-              {% set item = {'data': post} %}
-              <div class="trending-card">
-                <div class="trending-badge">#{{ loop.index }}</div>
-                {% include 'components/post_card.html' with context %}
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-
-          <!-- Right: Featured Notes -->
-          <div class="col-lg-5">
-            <div class="section-header">
-              <h3>📚 Apuntes Destacados</h3>
-              <p>Los mejores apuntes de la semana</p>
-            </div>
-
-            {% for note in top_notes %}
-            <div class="trending-card">
-              <div class="d-flex align-items-start gap-3 mb-3">
-                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
-                     style="width: 48px; height: 48px; min-width: 48px;">
-                  <i class="bi bi-file-text"></i>
-                </div>
-                <div class="flex-grow-1">
-                  <h6 class="mb-1 fw-bold">{{ note.title|truncate(50) }}</h6>
-                  <div class="text-muted small">Por {{ note.author.username }}</div>
-                  <div class="text-muted small">{{ note.views or 0 }} vistas</div>
-                </div>
-              </div>
-
-              {% if note.tags %}
-              <div class="mb-2">
-                {% for tag in note.tags.split(',')[:3] %}
-                <span class="badge bg-light text-dark me-1">{{ tag.strip() }}</span>
-                {% endfor %}
-              </div>
-              {% endif %}
-
-              <div class="note-preview">
-                <small>{{ note.description|truncate(100) }}</small>
-              </div>
-
-              <div class="d-flex justify-content-between align-items-center mt-3">
-                <div class="small text-muted">
-                  <i class="bi bi-download me-1"></i>{{ note.downloads or 0 }} descargas
-                </div>
-                <a href="{{ url_for('notes.view_note', id=note.id) }}"
-                   class="btn btn-sm btn-primary rounded-pill">
-                  Ver apunte
-                </a>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-
-        <!-- Mobile Layout: Vertical -->
-        <div class="d-lg-none">
-          <!-- Posts Section -->
-          <div class="section-header">
-            <h3>📱 Publicaciones Populares</h3>
-          </div>
-
-          {% for post in weekly_posts[:5] %}
-          {% set item = {'data': post} %}
-          <div class="trending-card">
-            <div class="trending-badge">#{{ loop.index }}</div>
-            {% include 'components/post_card.html' with context %}
-          </div>
-          {% endfor %}
-
-          <!-- Notes Section -->
-          <div class="section-header mt-4">
-            <h3>📚 Apuntes Destacados</h3>
-          </div>
-
-          {% for note in top_notes %}
-          <div class="trending-card">
-            {% include 'components/note_card.html' with context %}
-          </div>
-          {% endfor %}
-        </div>
-
-        <!-- Empty state -->
-        {% if not weekly_posts and not top_notes %}
-        <div class="text-center py-5">
-          <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body py-5">
-              <i class="bi bi-fire fs-1 text-muted mb-3 d-block"></i>
-              <h4 class="text-muted mb-3">¡Aún no hay trending!</h4>
-              <p class="text-muted mb-4">Sé el primero en crear contenido viral en la comunidad</p>
-              <a href="{{ url_for('feed.view_feed') if 'feed.view_feed' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}" class="btn btn-primary rounded-pill px-4">
-                Ir al Feed
-              </a>
-            </div>
-          </div>
-        </div>
-        {% endif %}
+    <!-- Apuntes más relevantes -->
+    <div class="trending-section">
+      <div class="section-header">
+        <i class="bi bi-journal-bookmark section-icon"></i>
+        <h2 class="section-title">Apuntes más relevantes</h2>
       </div>
+
+      {% for note in trending_notes[:5] %}
+      <div class="trending-post">
+        <div class="d-flex align-items-start gap-3">
+          <img src="{{ note.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+               alt="{{ note.author.username }}" 
+               class="rounded-circle" 
+               style="width: 40px; height: 40px; object-fit: cover;">
+          <div class="flex-grow-1">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <strong>{{ note.author.username }}</strong>
+              <span class="trending-badge">Top semanal</span>
+            </div>
+            <h6 class="mb-1">{{ note.title }}</h6>
+            <p class="mb-2 text-muted small">
+              {{ note.description[:80] }}{% if note.description|length > 80 %}...{% endif %}
+            </p>
+            <div class="post-meta">
+              <div class="post-stats">
+                <span class="stat-item">
+                  <i class="bi bi-download"></i>
+                  <span>{{ note.downloads or 0 }}</span>
+                </span>
+                <span class="stat-item">
+                  <i class="bi bi-star"></i>
+                  <span>{{ note.rating or 0 }}</span>
+                </span>
+              </div>
+              <small class="text-muted">{{ note.created_at|timesince }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
     </div>
   </div>
+
+  <div class="text-center mt-4">
+    <a href="{{ url_for('feed.feed_home') }}" class="btn btn-primary">
+      <i class="bi bi-arrow-left"></i> Volver al Feed
+    </a>
+  </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Filter functionality
-  document.querySelectorAll('[data-filter]').forEach(btn => {
-    btn.addEventListener('click', function() {
-      // Update active state
-      document.querySelectorAll('[data-filter]').forEach(b => {
-        b.classList.remove('btn-primary');
-        b.classList.add('btn-outline-primary');
-        b.classList.remove('active');
-      });
-      this.classList.remove('btn-outline-primary');
-      this.classList.add('btn-primary', 'active');
-      
-      // Load filtered content
-      loadTrendingContent(this.dataset.filter);
-    });
-  });
-});
-
-async function loadTrendingContent(filter) {
-  const container = document.getElementById('trendingPosts');
-  if (!container) return;
-  
-  container.style.opacity = '0.5';
-  
-  try {
-    const response = await fetch(`/feed/api/trending?filter=${filter}`);
-    const data = await response.json();
-    
-    if (data.html) {
-      container.innerHTML = data.html;
-    }
-  } catch (error) {
-    console.error('Error loading trending content:', error);
-  } finally {
-    container.style.opacity = '1';
-  }
-}
-</script>
 {% endblock %}
