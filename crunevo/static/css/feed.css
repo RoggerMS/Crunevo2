@@ -127,8 +127,8 @@
 }
 
 .fb-gallery img {
-  max-width: 100%;
-  height: auto;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   display: block;
   cursor: pointer;
@@ -444,12 +444,5 @@ body {
 }
 
 [data-bs-theme="dark"] .fb-attachment {
-  background: #3A3B3C;}
-
-/* Ensure facebook-post containers expand to fit galleries */
-.facebook-post {
-  display: block;
-  overflow: visible !important;
-  height: auto !important;
-  min-height: unset !important;
+  background: #3A3B3C;
 }
