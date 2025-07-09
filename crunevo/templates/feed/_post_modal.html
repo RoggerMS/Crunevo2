@@ -1,156 +1,407 @@
-{% import 'components/csrf.html' as csrf %}
-{% import 'components/reactions.html' as react %}
-{% import 'components/image_gallery.html' as gallery %}
-<article class="card mb-4 shadow-sm border-0 rounded-4 post-card" data-post-id="{{ post.id }}" data-comment-permission="{{ post.comment_permission }}">
-  <div class="card-body p-4">
-    <!-- Post Header -->
-    <div class="d-flex align-items-center gap-3 mb-3">
-      {% set author = post.author %}
-      {% if author %}
-      <img src="{{ author.avatar_url or url_for('static', filename='img/default.png') }}"
-           class="rounded-circle" width="48" height="48" alt="avatar">
-      <div class="flex-grow-1">
-        <div class="d-flex align-items-center gap-2">
-          <h6 class="mb-0 fw-semibold">
-            <a href="{{ url_for('auth.profile_by_username', username=author.username) }}"
-               class="text-decoration-none text-dark">{{ author.username }}</a>
-          </h6>
-          {% if author.verification_level >= 2 %}
-          <span class="badge verified-badge" data-bs-toggle="tooltip" title="Cuenta verificada">
-            <i class="bi bi-check-circle-fill"></i> Verificado
-          </span>
-          {% endif %}
-        </div>
-        <small class="text-muted">
-          <i class="bi bi-clock"></i>
-          <span data-timestamp="{{ post.created_at.isoformat() }}">{{ post.created_at|timesince }}</span>
-          {% if post.edited %}<span class="text-muted"> • editado</span>{% endif %}
-        </small>
-      </div>
-      {% else %}
-      <img src="{{ url_for('static', filename='img/default.png') }}" class="rounded-circle" width="48" height="48" alt="avatar">
-      <div class="flex-grow-1">
-        <strong class="text-muted">Usuario eliminado</strong>
-      </div>
-      {% endif %}
-    </div>
 
-    <!-- Post Content -->
-    {% if post.content %}
-    <div class="post-content mb-3">
-      <p class="mb-0 lh-base">{{ post.content }}</p>
+<div class="modal-post-container">
+  <div class="modal-post-header">
+    <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+         alt="Avatar de {{ post.author.username }}" 
+         class="modal-post-avatar">
+    <div class="modal-user-info">
+      <h6 class="modal-username">{{ post.author.username }}</h6>
+      {% if post.author.career %}
+      <span class="modal-career-badge">{{ post.author.career }}</span>
+      {% endif %}
+      <small class="modal-timestamp">{{ post.created_at.strftime('%d de %B, %Y') }}</small>
     </div>
-    {% set preview = post.content | link_preview %}
-    {% if preview %}
-    <div class="link-preview card mb-3">
-      <a href="{{ preview.url }}" target="_blank" rel="noopener" class="text-decoration-none">
-        {% if preview.image %}
-        <img src="{{ preview.image }}" class="card-img-top" alt="Vista previa">
-        {% endif %}
-        <div class="card-body">
-          <strong class="card-title">{{ preview.title }}</strong>
-          {% if preview.description %}
-          <p class="card-text small">{{ preview.description }}</p>
-          {% endif %}
-          <small class="text-muted">{{ preview.site_name }}</small>
+  </div>
+
+  {% if post.content %}
+  <div class="modal-post-content">
+    <p class="modal-post-text">{{ post.content }}</p>
+  </div>
+  {% endif %}
+
+  <div class="modal-post-actions">
+    <button class="modal-action-btn like-btn {{ 'active' if user_reaction else '' }}" 
+            data-post-id="{{ post.id }}" 
+            data-reaction="{{ user_reaction or '🔥' }}">
+      <i class="bi bi-fire{{ '-fill' if user_reaction else '' }}"></i>
+      <span>Me gusta</span>
+    </button>
+    <button class="modal-action-btn comment-btn" data-post-id="{{ post.id }}">
+      <i class="bi bi-chat"></i>
+      <span>Comentar</span>
+    </button>
+    <button class="modal-action-btn share-btn" data-post-id="{{ post.id }}">
+      <i class="bi bi-share"></i>
+      <span>Compartir</span>
+    </button>
+    <button class="modal-action-btn save-btn" data-post-id="{{ post.id }}">
+      <i class="bi bi-bookmark"></i>
+      <span>Guardar</span>
+    </button>
+  </div>
+
+  <div class="modal-stats">
+    <div class="modal-stat-item">
+      <i class="bi bi-fire-fill text-danger"></i>
+      <span>{{ reaction_counts.get('🔥', 0) + reaction_counts.get('❤️', 0) + reaction_counts.get('😂', 0) + reaction_counts.get('😮', 0) + reaction_counts.get('😢', 0) + reaction_counts.get('😡', 0) }} reacciones</span>
+    </div>
+    <div class="modal-stat-item">
+      <i class="bi bi-chat"></i>
+      <span>{{ post.comments|length }} comentarios</span>
+    </div>
+  </div>
+
+  <div class="modal-comments-section" id="commentsContainer">
+    {% for comment in post.comments %}
+    {% if not comment.pending %}
+    <div class="comment-item">
+      <img src="{{ comment.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+           alt="Avatar" 
+           class="comment-avatar">
+      <div class="comment-content">
+        <div class="comment-box">
+          <div class="comment-author">{{ comment.author.username }}</div>
+          <div class="comment-text">{{ comment.body }}</div>
         </div>
-      </a>
+        <div class="comment-meta">
+          <small class="text-muted">{{ comment.timestamp.strftime('%d/%m/%Y %H:%M') }}</small>
+        </div>
+      </div>
     </div>
     {% endif %}
-    {% endif %}
-
-    <!-- Post Media -->
-    {% if post.images %}
-    {{ gallery.image_gallery(post.images, post.id) }}
-    {% elif post.file_url %}
-    <div class="post-media mb-3">
-      {% if post.file_url.endswith('.pdf') %}
-      <div class="pdf-preview bg-light rounded-3 p-3 text-center">
-        <i class="bi bi-file-pdf text-danger fs-1 mb-2"></i>
-        <p class="mb-2 fw-semibold">Documento PDF</p>
-        <a href="{{ post.file_url }}" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill">
-          <i class="bi bi-download"></i> Ver documento
-        </a>
-      </div>
-      {% else %}
-      {{ gallery.image_gallery([{'url': post.file_url}], post.id) }}
-      {% endif %}
+    {% endfor %}
+    
+    {% if not post.comments or post.comments|selectattr('pending', 'equalto', false)|list|length == 0 %}
+    <div class="empty-comments">
+      <i class="bi bi-chat text-muted"></i>
+      <p class="text-muted">No hay comentarios aún. ¡Sé el primero en comentar!</p>
     </div>
     {% endif %}
+  </div>
 
-    <!-- Post Stats -->
-    {% set counts = reaction_counts %}
-    <div class="post-stats d-flex align-items-center gap-4 mb-3 small text-muted">
-      {% if counts %}
-      <span class="d-flex align-items-center gap-1">
-        {% for reaction, count in counts.items() %}
-        <span>{{ reaction }}</span>
-        {% endfor %}
-        <span>{{ post.likes or 0 }}</span>
-      </span>
-      {% endif %}
-      {% set comment_count = post.comments|length %}
-      {% if comment_count > 0 %}
-      <span>{{ comment_count }} comentario{{ 's' if comment_count > 1 else '' }}</span>
-      {% endif %}
-    </div>
-
-    <!-- Post Actions -->
-    <div class="post-actions d-flex align-items-center gap-1 border-top pt-3">
-      {% set user_reaction = user_reaction %}
-      <button class="btn btn-ghost flex-fill d-flex align-items-center justify-content-center gap-2 like-btn {{ 'active' if user_reaction else '' }}"
-              data-post-id="{{ post.id }}"
-              data-reaction="👍">
-        <i class="bi bi-fire{% if user_reaction %} text-danger{% endif %}"></i>
-        <span class="d-none d-sm-inline">Me gusta</span>
-        <span id="likeCount{{ post.id }}" class="badge bg-light text-dark rounded-pill">{{ post.likes or 0 }}</span>
-      </button>
-
-      <button class="btn btn-ghost flex-fill d-flex align-items-center justify-content-center gap-2 comment-btn"
-              data-post-id="{{ post.id }}">
-        <i class="bi bi-chat"></i>
-        <span class="d-none d-sm-inline">Comentar</span>
-      </button>
-
-      <button class="btn btn-ghost flex-fill d-flex align-items-center justify-content-center gap-2 share-btn"
-              data-share-url="{{ url_for('feed.view_post', post_id=post.id, _external=True) }}">
-        <i class="bi bi-share"></i>
-        <span class="d-none d-sm-inline">Compartir</span>
-      </button>
-
-      <button class="btn btn-ghost d-flex align-items-center justify-content-center save-btn"
-              data-post-id="{{ post.id }}" style="width: 40px; height: 40px;" aria-label="Guardar publicación">
-        <i class="bi bi-bookmark"></i>
-      </button>
-    </div>
-
-    <!-- Comments -->
-    <h6 class="mt-4 mb-3">Comentarios</h6>
-    <div id="commentsContainer" class="comment-container" data-post-id="{{ post.id }}">
-      {% if post.comments %}
-        {% for c in post.comments|sort(attribute='timestamp', reverse=True) %}
-        <div class="comment-item d-flex gap-3 mb-3 comment-box">
-          <img src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle" width="32" height="32" alt="Avatar de {{ c.author.username }}">
-          <div class="flex-grow-1">
-            <div class="comment-box p-3 rounded-3">
-              <div class="fw-semibold small mb-1">{{ c.author.username }}</div>
-              <div class="small">{{ c.body }}</div>
-            </div>
-            <div class="small text-muted mt-1">{{ c.timestamp|timesince }}</div>
-          </div>
+  <div class="modal-comment-form">
+    <form id="commentForm" onsubmit="return false;">
+      {{ csrf_token() }}
+      <div class="comment-input-group">
+        <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
+             alt="Tu avatar" 
+             class="comment-form-avatar">
+        <div class="comment-input-wrapper">
+          <input type="text" 
+                 name="body" 
+                 class="comment-input" 
+                 placeholder="Escribe un comentario..." 
+                 required
+                 maxlength="500"
+                 autocomplete="off">
+          <button type="submit" class="comment-submit-btn" title="Enviar comentario">
+            <i class="bi bi-send"></i>
+          </button>
         </div>
-        {% endfor %}
-      {% else %}
-        <p class="text-muted" data-empty-msg>Sé el primero en comentar esta publicación.</p>
-      {% endif %}
-    </div>
-
-    <form id="commentForm" method="post" action="{{ url_for('feed.comment_post', post_id=post.id) }}">
-      {{ csrf.csrf_field() }}
-      <div class="input-group mb-2">
-        <input type="text" name="body" class="form-control" placeholder="Añadir comentario" required>
-        <button class="btn btn-primary" type="submit">Enviar</button>
       </div>
     </form>
   </div>
-</article>
+</div>
+
+<style>
+.modal-post-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--crunevo-white);
+  color: var(--crunevo-text-dark);
+}
+
+[data-bs-theme="dark"] .modal-post-container {
+  background: var(--crunevo-white);
+  color: var(--crunevo-text-dark);
+}
+
+.modal-post-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border-bottom: 1px solid var(--crunevo-border);
+}
+
+.modal-post-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--crunevo-primary);
+  object-fit: cover;
+}
+
+.modal-user-info {
+  flex: 1;
+}
+
+.modal-username {
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--crunevo-text-dark);
+}
+
+.modal-career-badge {
+  display: inline-block;
+  background: var(--crunevo-accent);
+  color: white;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+  font-weight: 500;
+}
+
+.modal-timestamp {
+  display: block;
+  font-size: 13px;
+  color: #65676B;
+  margin-top: 2px;
+}
+
+.modal-post-content {
+  padding: 20px;
+  flex: 1;
+  border-bottom: 1px solid var(--crunevo-border);
+}
+
+.modal-post-text {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--crunevo-text-dark);
+  margin: 0;
+  word-wrap: break-word;
+}
+
+.modal-post-actions {
+  display: flex;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--crunevo-border);
+  gap: 8px;
+}
+
+.modal-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: #65676B;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--crunevo-transition);
+}
+
+.modal-action-btn:hover {
+  background: var(--crunevo-hover);
+  color: var(--crunevo-primary);
+}
+
+.modal-action-btn.active {
+  color: var(--crunevo-primary);
+  background: var(--crunevo-hover);
+}
+
+.modal-action-btn i {
+  font-size: 16px;
+}
+
+.modal-stats {
+  display: flex;
+  gap: 24px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--crunevo-border);
+  font-size: 13px;
+}
+
+.modal-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #65676B;
+}
+
+.modal-comments-section {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.comment-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.comment-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.comment-content {
+  flex: 1;
+}
+
+.comment-box {
+  background: var(--crunevo-bg-light);
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 4px;
+}
+
+[data-bs-theme="dark"] .comment-box {
+  background: #3A3B3C;
+}
+
+.comment-author {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--crunevo-text-dark);
+  margin-bottom: 4px;
+}
+
+.comment-text {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--crunevo-text-dark);
+}
+
+.comment-meta {
+  padding-left: 16px;
+}
+
+.empty-comments {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-comments i {
+  font-size: 32px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.modal-comment-form {
+  padding: 16px 20px;
+  border-top: 1px solid var(--crunevo-border);
+}
+
+.comment-input-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.comment-form-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.comment-input-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--crunevo-bg-light);
+  border-radius: 20px;
+  border: 1px solid var(--crunevo-border);
+  padding: 8px 12px;
+}
+
+[data-bs-theme="dark"] .comment-input-wrapper {
+  background: #3A3B3C;
+  border-color: #555;
+}
+
+.comment-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--crunevo-text-dark);
+  outline: none;
+  padding: 4px 8px;
+}
+
+.comment-input::placeholder {
+  color: #65676B;
+}
+
+.comment-submit-btn {
+  background: var(--crunevo-primary);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: var(--crunevo-transition);
+  margin-left: 8px;
+}
+
+.comment-submit-btn:hover {
+  background: #5B21B6;
+  transform: scale(1.05);
+}
+
+.comment-submit-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.comment-submit-btn i {
+  font-size: 14px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modal-post-header,
+  .modal-post-content,
+  .modal-comments-section {
+    padding: 16px;
+  }
+  
+  .modal-post-actions,
+  .modal-stats,
+  .modal-comment-form {
+    padding: 12px 16px;
+  }
+  
+  .modal-action-btn {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  
+  .modal-action-btn span {
+    display: none;
+  }
+  
+  .comment-input-wrapper {
+    padding: 6px 10px;
+  }
+  
+  .comment-submit-btn {
+    width: 28px;
+    height: 28px;
+  }
+}
+</style>

@@ -1,6 +1,6 @@
 
-// Enhanced Feed JavaScript with modern interactions
-class FeedManager {
+// CRUNEVO Feed System - Enhanced JavaScript
+class CrunevoFeedManager {
   constructor() {
     this.currentPage = 1;
     this.isLoading = false;
@@ -20,6 +20,7 @@ class FeedManager {
     this.initModals();
     this.initTooltips();
     this.initQuickButtons();
+    this.initGalleryEnhancements();
   }
 
   initFeedForm() {
@@ -38,6 +39,11 @@ class FeedManager {
         this.autoResizeTextarea(textarea);
         this.updatePostButtonState();
       });
+      
+      // Hashtag and mention detection
+      textarea.addEventListener('input', (e) => {
+        this.handleTextInput(e);
+      });
     }
 
     form.querySelectorAll('input[type="file"]').forEach((inp) => {
@@ -47,11 +53,23 @@ class FeedManager {
     this.updatePostButtonState();
   }
 
+  handleTextInput(e) {
+    const text = e.target.value;
+    const cursorPos = e.target.selectionStart;
+    
+    // Simple hashtag detection for future implementation
+    const hashtags = text.match(/#\w+/g) || [];
+    const mentions = text.match(/@\w+/g) || [];
+    
+    // Could implement autocomplete here
+    console.debug('Hashtags found:', hashtags);
+    console.debug('Mentions found:', mentions);
+  }
+
   async submitPost(form) {
     const submitBtn = form.querySelector('.feed-submit-btn');
 
     try {
-      // Show loading state
       this.setButtonLoading(submitBtn, true);
 
       const imgInput = document.getElementById('feedImageInput');
@@ -70,7 +88,6 @@ class FeedManager {
         form.reset();
         this.clearImagePreview();
         this.updatePostButtonState();
-        // Reload feed or add new post to top
         setTimeout(() => window.location.reload(), 1000);
       } else {
         const errorText = await response.text();
@@ -141,8 +158,10 @@ class FeedManager {
 
   clearImagePreview() {
     this.imageFiles = [];
-    document.getElementById('previewContainer').innerHTML = '';
-    document.getElementById('feedImageInput').value = '';
+    const container = document.getElementById('previewContainer');
+    if (container) container.innerHTML = '';
+    const input = document.getElementById('feedImageInput');
+    if (input) input.value = '';
     this.updatePostButtonState();
   }
 
@@ -164,6 +183,42 @@ class FeedManager {
     if (submitBtn) {
       submitBtn.disabled = !(content.length >= 2 || hasFile);
     }
+  }
+
+  initGalleryEnhancements() {
+    // Initialize lazy loading for gallery images
+    if ('IntersectionObserver' in window) {
+      const imageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            if (img.dataset.src) {
+              img.src = img.dataset.src;
+              img.removeAttribute('data-src');
+              imageObserver.unobserve(img);
+            }
+            img.classList.add('loaded');
+          }
+        });
+      }, {
+        rootMargin: '50px'
+      });
+
+      document.querySelectorAll('.gallery-img[data-src]').forEach(img => {
+        imageObserver.observe(img);
+      });
+    }
+
+    // Add loading states to gallery images
+    document.querySelectorAll('.gallery-img').forEach(img => {
+      if (!img.complete) {
+        img.addEventListener('load', () => {
+          img.classList.add('loaded');
+        });
+      } else {
+        img.classList.add('loaded');
+      }
+    });
   }
 
   initFeedFilters() {
@@ -194,7 +249,6 @@ class FeedManager {
       this.currentFilter = filter;
       this.currentPage = 1;
 
-      // Show loading state
       container.style.opacity = '0.5';
       if (loading) loading.classList.remove('d-none');
 
@@ -203,6 +257,7 @@ class FeedManager {
 
       container.innerHTML = data.html || '';
       this.initPostInteractions();
+      this.initGalleryEnhancements();
 
       this.showToast(`Filtro "${filter}" aplicado`, 'info');
     } catch (error) {
@@ -215,32 +270,88 @@ class FeedManager {
   }
 
   initPostInteractions() {
-    // Like buttons
-    document.querySelectorAll('.like-btn').forEach(btn => {
+    // Like buttons with enhanced reactions
+    document.querySelectorAll('.like-btn, .action-btn.like-btn').forEach(btn => {
       btn.addEventListener('click', (e) => this.handleLike(e));
+      
+      // Long press for reaction selector
+      let pressTimer;
+      btn.addEventListener('mousedown', (e) => {
+        pressTimer = setTimeout(() => {
+          this.showReactionSelector(btn);
+        }, 500);
+      });
+      
+      btn.addEventListener('mouseup', () => {
+        clearTimeout(pressTimer);
+      });
+      
+      btn.addEventListener('mouseleave', () => {
+        clearTimeout(pressTimer);
+      });
     });
 
     // Comment buttons
-    document.querySelectorAll('.comment-btn').forEach(btn => {
+    document.querySelectorAll('.comment-btn, .action-btn.comment-btn').forEach(btn => {
       btn.addEventListener('click', (e) => this.openCommentModal(e));
     });
 
     // Share buttons
-    document.querySelectorAll('.share-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => this.openShareModal(e));
+    document.querySelectorAll('.share-btn, .action-btn.share-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => this.handleShare(e));
     });
 
     // Save buttons
-    document.querySelectorAll('.save-btn').forEach(btn => {
+    document.querySelectorAll('.save-btn, .action-btn.save-btn').forEach(btn => {
       btn.addEventListener('click', (e) => this.toggleSavePost(e));
     });
+  }
+
+  showReactionSelector(btn) {
+    // Hide any existing selectors
+    document.querySelectorAll('.reaction-selector').forEach(sel => {
+      sel.classList.remove('show');
+    });
+
+    const selector = document.createElement('div');
+    selector.className = 'reaction-selector show';
+    selector.innerHTML = `
+      <button class="reaction-option" data-reaction="🔥" title="Fuego">🔥</button>
+      <button class="reaction-option" data-reaction="❤️" title="Me encanta">❤️</button>
+      <button class="reaction-option" data-reaction="😂" title="Me divierte">😂</button>
+      <button class="reaction-option" data-reaction="😮" title="Me sorprende">😮</button>
+      <button class="reaction-option" data-reaction="😢" title="Me entristece">😢</button>
+      <button class="reaction-option" data-reaction="😡" title="Me enoja">😡</button>
+    `;
+
+    btn.style.position = 'relative';
+    btn.appendChild(selector);
+
+    // Handle reaction selection
+    selector.querySelectorAll('.reaction-option').forEach(option => {
+      option.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const reaction = option.dataset.reaction;
+        this.handleLike({ currentTarget: btn, reaction });
+        selector.classList.remove('show');
+        setTimeout(() => selector.remove(), 300);
+      });
+    });
+
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      if (selector.parentElement) {
+        selector.classList.remove('show');
+        setTimeout(() => selector.remove(), 300);
+      }
+    }, 3000);
   }
 
   async handleLike(e) {
     e.preventDefault();
     const btn = e.currentTarget;
     const postId = btn.dataset.postId;
-    const reaction = btn.dataset.reaction || '👍';
+    const reaction = e.reaction || btn.dataset.reaction || '🔥';
 
     if (btn.disabled) return;
 
@@ -259,22 +370,31 @@ class FeedManager {
       const data = await response.json();
 
       // Update like count
-      const countEl = document.querySelector(`#likeCount${postId}`);
+      const countEl = document.querySelector(`#likeCount${postId}, [data-count-post="${postId}"]`);
       if (countEl) countEl.textContent = data.likes || 0;
 
       // Update button state
       const icon = btn.querySelector('i');
       if (data.status === 'added') {
         btn.classList.add('active');
-        if (icon) icon.classList.add('bi-fire', 'text-danger');
-        this.animateButton(btn, '🔥');
+        if (icon) {
+          icon.classList.add('bi-fire-fill', 'text-danger');
+          icon.classList.remove('bi-fire');
+        }
+        this.animateButton(btn, reaction);
       } else if (data.status === 'removed') {
         btn.classList.remove('active');
-        if (icon) icon.classList.remove('text-danger');
-        if (icon) icon.classList.add('bi-fire');
+        if (icon) {
+          icon.classList.remove('text-danger', 'bi-fire-fill');
+          icon.classList.add('bi-fire');
+        }
       }
 
-      this.showToast(data.status === 'added' ? '¡Te gusta esta publicación!' : 'Ya no te gusta esta publicación', 'success');
+      const message = data.status === 'added' ? 
+        `¡Reaccionaste con ${reaction}!` : 
+        'Reacción removida';
+      this.showToast(message, 'success');
+      
     } catch (error) {
       console.error('Error handling like:', error);
       this.showToast('Error al procesar reacción', 'error');
@@ -283,11 +403,86 @@ class FeedManager {
     }
   }
 
+  handleShare(e) {
+    const btn = e.currentTarget;
+    const postId = btn.dataset.postId;
+    const shareUrl = `${window.location.origin}/feed/post/${postId}`;
+
+    // Native share API for mobile
+    if (navigator.share && /Mobile|Android|iPhone/i.test(navigator.userAgent)) {
+      navigator.share({
+        title: 'Publicación en CRUNEVO',
+        text: '¡Mira esta publicación en CRUNEVO!',
+        url: shareUrl
+      }).catch(console.error);
+      return;
+    }
+
+    // Show custom share menu
+    this.showShareMenu(btn, shareUrl);
+  }
+
+  showShareMenu(btn, shareUrl) {
+    // Hide any existing menus
+    document.querySelectorAll('.share-menu').forEach(menu => {
+      menu.classList.remove('show');
+    });
+
+    const menu = document.createElement('div');
+    menu.className = 'share-menu show';
+    menu.innerHTML = `
+      <button class="share-option" onclick="window.open('https://wa.me/?text=${encodeURIComponent('¡Mira esta publicación! ' + shareUrl)}', '_blank')">
+        <i class="bi bi-whatsapp"></i>
+        <span>WhatsApp</span>
+      </button>
+      <button class="share-option" onclick="window.open('https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent('¡Mira esta publicación en CRUNEVO!')}', '_blank')">
+        <i class="bi bi-twitter"></i>
+        <span>Twitter</span>
+      </button>
+      <button class="share-option" onclick="crunevoFeedManager.copyToClipboard('${shareUrl}')">
+        <i class="bi bi-clipboard"></i>
+        <span>Copiar enlace</span>
+      </button>
+    `;
+
+    btn.style.position = 'relative';
+    btn.appendChild(menu);
+
+    // Auto-hide when clicking outside
+    setTimeout(() => {
+      document.addEventListener('click', function hideMenu(e) {
+        if (!menu.contains(e.target)) {
+          menu.classList.remove('show');
+          setTimeout(() => menu.remove(), 300);
+          document.removeEventListener('click', hideMenu);
+        }
+      });
+    }, 100);
+  }
+
+  copyToClipboard(text) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        this.showToast('¡Enlace copiado al portapapeles!', 'success');
+      });
+    } else {
+      // Fallback
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      this.showToast('¡Enlace copiado!', 'success');
+    }
+  }
+
   openCommentModal(e) {
     const postId = e.currentTarget.dataset.postId;
     const modalEl = document.getElementById('commentModal');
     const bodyEl = document.getElementById('commentModalBody');
     if (!modalEl || !bodyEl) return;
+    
     bodyEl.innerHTML = '<div class="text-center p-3"><div class="spinner-border"></div></div>';
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.show();
@@ -308,40 +503,6 @@ class FeedManager {
       .catch(() => {
         bodyEl.innerHTML = '<div class="text-center text-muted p-3">Error al cargar publicación</div>';
       });
-  }
-
-  async loadComments(postId) {
-    const container = document.getElementById('commentsContainer');
-    if (!container) return;
-
-    try {
-      container.innerHTML = '<div class="text-center p-3"><div class="spinner-border spinner-border-sm"></div></div>';
-      
-      const response = await fetch(`/feed/api/comments/${postId}`);
-      const comments = await response.json();
-
-      container.innerHTML = comments.map(comment => `
-        <div class="comment-item d-flex gap-3 mb-3 comment-box">
-          <img src="${comment.avatar}" class="rounded-circle" width="32" height="32">
-          <div class="flex-grow-1">
-            <div class="comment-box p-3 rounded-3">
-              <div class="fw-semibold small mb-1">${comment.author}</div>
-              <div class="small">${comment.body}</div>
-            </div>
-            <div class="small text-muted mt-1">${this.timeAgo(comment.timestamp)}</div>
-          </div>
-        </div>
-      `).join('');
-
-      // Setup comment form
-      const form = document.getElementById('commentForm');
-      if (form) {
-        form.onsubmit = (e) => this.submitComment(e, postId);
-      }
-    } catch (error) {
-      console.error('Error loading comments:', error);
-      container.innerHTML = '<div class="text-center text-muted p-3">Error al cargar comentarios</div>';
-    }
   }
 
   async submitComment(e, postId) {
@@ -388,7 +549,7 @@ class FeedManager {
     if (!container) return;
 
     const commentHtml = `
-      <div class="comment-item d-flex gap-3 mb-3 comment-box">
+      <div class="comment-item d-flex gap-3 mb-3">
         <img src="${comment.avatar || '/static/img/default.png'}" class="rounded-circle" width="32" height="32">
         <div class="flex-grow-1">
           <div class="comment-box p-3 rounded-3">
@@ -401,14 +562,6 @@ class FeedManager {
     `;
     
     container.insertAdjacentHTML('afterbegin', commentHtml);
-  }
-
-  openShareModal(e) {
-    const shareUrl = e.currentTarget.dataset.shareUrl;
-    window.currentShareUrl = shareUrl;
-
-    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('shareModal'));
-    modal.show();
   }
 
   async toggleSavePost(e) {
@@ -426,12 +579,18 @@ class FeedManager {
       
       const icon = btn.querySelector('i');
       if (data.saved) {
-        icon.classList.add('bi-bookmark-fill');
-        icon.classList.remove('bi-bookmark');
+        btn.classList.add('active');
+        if (icon) {
+          icon.classList.add('bi-bookmark-fill');
+          icon.classList.remove('bi-bookmark');
+        }
         this.showToast('Publicación guardada', 'success');
       } else {
-        icon.classList.remove('bi-bookmark-fill');
-        icon.classList.add('bi-bookmark');
+        btn.classList.remove('active');
+        if (icon) {
+          icon.classList.remove('bi-bookmark-fill');
+          icon.classList.add('bi-bookmark');
+        }
         this.showToast('Publicación removida de guardados', 'info');
       }
     } catch (error) {
@@ -509,6 +668,7 @@ class FeedManager {
       });
 
       this.initPostInteractions();
+      this.initGalleryEnhancements();
     } catch (error) {
       console.error('Error loading more posts:', error);
       this.showToast('Error al cargar más publicaciones', 'error');
@@ -518,13 +678,41 @@ class FeedManager {
   }
 
   renderFeedItem(item) {
-    // Basic rendering - can be expanded based on item type
     if (item.item_type === 'post') {
       return `
-        <div class="card mb-4 shadow-sm border-0 rounded-4 post-card">
-          <div class="card-body p-4">
-            <p>${item.content || ''}</p>
-            <small class="text-muted">@${item.author_username}</small>
+        <div class="post-card" data-post-id="${item.id}">
+          <div class="post-header">
+            <img src="${item.author_avatar || '/static/img/default.png'}" alt="Avatar" class="post-avatar">
+            <div class="post-user-info">
+              <h6 class="post-username">${item.author_username}</h6>
+              <small class="post-timestamp">${item.created_at}</small>
+            </div>
+            <button class="post-options" aria-label="Opciones">
+              <i class="bi bi-three-dots"></i>
+            </button>
+          </div>
+          <div class="post-content">
+            <p class="post-text">${item.content || ''}</p>
+          </div>
+          <div class="post-actions">
+            <div class="action-buttons">
+              <button class="action-btn like-btn" data-post-id="${item.id}">
+                <i class="bi bi-fire"></i>
+                <span>Me gusta</span>
+              </button>
+              <button class="action-btn comment-btn" data-post-id="${item.id}">
+                <i class="bi bi-chat"></i>
+                <span>Comentar</span>
+              </button>
+              <button class="action-btn share-btn" data-post-id="${item.id}">
+                <i class="bi bi-share"></i>
+                <span>Compartir</span>
+              </button>
+              <button class="action-btn save-btn" data-post-id="${item.id}">
+                <i class="bi bi-bookmark"></i>
+                <span>Guardar</span>
+              </button>
+            </div>
           </div>
         </div>
       `;
@@ -533,10 +721,8 @@ class FeedManager {
   }
 
   initModals() {
-    // Initialize Bootstrap modals
     document.querySelectorAll('.modal').forEach(modalEl => {
       modalEl.addEventListener('hidden.bs.modal', () => {
-        // Clean up modal content when closed
         const form = modalEl.querySelector('form');
         if (form) form.reset();
       });
@@ -544,7 +730,6 @@ class FeedManager {
   }
 
   initTooltips() {
-    // Initialize Bootstrap tooltips
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(tooltipTriggerEl => {
       return new bootstrap.Tooltip(tooltipTriggerEl);
@@ -555,11 +740,13 @@ class FeedManager {
     const modalEl = document.getElementById('crearPublicacionModal');
     const photoBtn = document.getElementById('photoVideoBtn');
     if (!modalEl || !photoBtn) return;
+    
     let openWithImage = false;
     photoBtn.addEventListener('click', () => {
       openWithImage = true;
       bootstrap.Modal.getOrCreateInstance(modalEl).show();
     });
+    
     modalEl.addEventListener('shown.bs.modal', () => {
       if (openWithImage) {
         document.getElementById('feedImageInput')?.click();
@@ -694,6 +881,9 @@ let modalImageEl;
 let postData = null;
 let touchStartX = 0;
 let touchEndX = 0;
+let isDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
 
 function handleModalKeydown(e) {
   if (e.key === 'Escape') {
@@ -714,20 +904,32 @@ function handleModalKeydown(e) {
 
 function handleWheel(e) {
   e.preventDefault();
+  const rect = modalImageEl.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  
   if (e.deltaY < 0) {
-    zoomIn();
+    zoomIn(e.clientX - centerX, e.clientY - centerY);
   } else {
     zoomOut();
   }
 }
 
 function handleTouchStart(e) {
-  touchStartX = e.changedTouches[0].screenX;
+  if (e.touches.length === 1) {
+    touchStartX = e.touches[0].screenX;
+    isDragging = currentScale > 1;
+    dragStartX = e.touches[0].clientX;
+    dragStartY = e.touches[0].clientY;
+  }
 }
 
 function handleTouchEnd(e) {
-  touchEndX = e.changedTouches[0].screenX;
-  handleSwipe();
+  if (e.changedTouches.length === 1 && !isDragging) {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  }
+  isDragging = false;
 }
 
 function handleSwipe() {
@@ -736,27 +938,34 @@ function handleSwipe() {
   
   if (Math.abs(diff) > swipeThreshold) {
     if (diff > 0) {
-      nextImage(); // Swipe left - next image
+      nextImage();
     } else {
-      prevImage(); // Swipe right - previous image
+      prevImage();
     }
   }
 }
 
-function applyZoom() {
+function applyZoom(originX = 0, originY = 0) {
   const img = document.getElementById('modalImage');
   if (img) {
+    img.style.transformOrigin = `${originX}px ${originY}px`;
     img.style.transform = `scale(${currentScale})`;
+    
+    if (currentScale > 1) {
+      img.style.cursor = 'grab';
+    } else {
+      img.style.cursor = 'zoom-in';
+    }
   }
 }
 
-function zoomIn() {
-  currentScale = Math.min(3, currentScale + 0.2);
-  applyZoom();
+function zoomIn(originX = 0, originY = 0) {
+  currentScale = Math.min(3, currentScale + 0.25);
+  applyZoom(originX, originY);
 }
 
 function zoomOut() {
-  currentScale = Math.max(0.2, currentScale - 0.2);
+  currentScale = Math.max(0.5, currentScale - 0.25);
   applyZoom();
 }
 
@@ -773,7 +982,7 @@ function openImageModal(src, index, postId, evt) {
   
   let container = null;
   if (evt && evt.currentTarget) {
-    container = evt.currentTarget.closest('.facebook-gallery-wrapper');
+    container = evt.currentTarget.closest('.crunevo-gallery-wrapper');
   }
   if (!container) {
     container = document.querySelector(`[data-post-id='${postId}']`);
@@ -787,7 +996,7 @@ function openImageModal(src, index, postId, evt) {
     }
   }
   if (!imageList.length && container) {
-    imageList = Array.from(container.querySelectorAll('.gallery-image')).map((img) => img.src);
+    imageList = Array.from(container.querySelectorAll('.gallery-img')).map((img) => img.src);
   }
   
   currentImageIndex = index;
@@ -829,19 +1038,24 @@ function openImageModal(src, index, postId, evt) {
         </div>
         
         ${hasMultipleImages ? `
-          <button class="modal-nav prev" onclick="prevImage()" title="Imagen anterior" ${index === 0 ? 'style="opacity: 0.5"' : ''}>
+          <button class="modal-nav prev" onclick="prevImage()" title="Imagen anterior" ${index === 0 ? 'disabled' : ''}>
             <i class="bi bi-chevron-left"></i>
           </button>
-          <button class="modal-nav next" onclick="nextImage()" title="Siguiente imagen" ${index === imageList.length - 1 ? 'style="opacity: 0.5"' : ''}>
+          <button class="modal-nav next" onclick="nextImage()" title="Siguiente imagen" ${index === imageList.length - 1 ? 'disabled' : ''}>
             <i class="bi bi-chevron-right"></i>
           </button>
         ` : ''}
         
         <div class="modal-counter" id="modalCounter">${index + 1} / ${imageList.length}</div>
+        
+        <div class="touch-indicator">
+          Desliza ← → para navegar<br>
+          Pellizca para hacer zoom
+        </div>
       </div>
       
       <div class="modal-info-section" id="imageModalInfo">
-        <div class="d-flex justify-content-center align-items-center h-100">
+        <div class="modal-loading">
           <div class="spinner-border text-primary"></div>
         </div>
       </div>
@@ -850,13 +1064,26 @@ function openImageModal(src, index, postId, evt) {
   
   modalImageEl = modal.querySelector('#modalImage');
   modal.classList.remove('hidden');
+  modal.classList.add('modal-fade-in');
   document.body.classList.add('photo-modal-open');
   
   // Add event listeners
   window.addEventListener('keydown', handleModalKeydown);
   modalImageEl.addEventListener('wheel', handleWheel, { passive: false });
-  modalImageEl.addEventListener('touchstart', handleTouchStart);
-  modalImageEl.addEventListener('touchend', handleTouchEnd);
+  modalImageEl.addEventListener('touchstart', handleTouchStart, { passive: true });
+  modalImageEl.addEventListener('touchend', handleTouchEnd, { passive: true });
+  
+  // Double-click to zoom
+  modalImageEl.addEventListener('dblclick', (e) => {
+    if (currentScale === 1) {
+      const rect = modalImageEl.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      zoomIn(x, y);
+    } else {
+      resetZoom();
+    }
+  });
   
   // Load post data for right panel
   loadPostDataForModal(postId);
@@ -864,7 +1091,7 @@ function openImageModal(src, index, postId, evt) {
   // Update URL
   window.history.pushState({ photo: true }, '', `/feed/post/${postId}/photo/${index + 1}`);
   
-  // Preload adjacent images for smooth navigation
+  // Preload adjacent images
   preloadAdjacentImages(index);
 }
 
@@ -898,26 +1125,30 @@ function loadPostDataForModal(postId) {
           <div class="modal-post-actions">
             <button class="modal-action-btn like-btn ${data.user_liked ? 'active' : ''}" data-post-id="${postId}">
               <i class="bi bi-fire${data.user_liked ? '-fill' : ''}"></i>
-              Me gusta
+              <span>Me gusta</span>
             </button>
             <button class="modal-action-btn comment-btn" data-post-id="${postId}">
               <i class="bi bi-chat"></i>
-              Comentar
+              <span>Comentar</span>
             </button>
             <button class="modal-action-btn share-btn" data-post-id="${postId}">
               <i class="bi bi-share"></i>
-              Compartir
+              <span>Compartir</span>
+            </button>
+            <button class="modal-action-btn save-btn" data-post-id="${postId}">
+              <i class="bi bi-bookmark"></i>
+              <span>Guardar</span>
             </button>
           </div>
           
           <div class="modal-comments-section">
             ${data.comments ? data.comments.map(comment => `
-              <div class="comment-item d-flex gap-3 mb-3">
+              <div class="comment-item">
                 <img src="${comment.author?.avatar_url || '/static/img/default.png'}" 
-                     class="rounded-circle" width="32" height="32">
-                <div class="flex-grow-1">
-                  <div class="comment-box p-3 rounded-3">
-                    <div class="fw-semibold small mb-1">${comment.author?.username}</div>
+                     alt="Avatar" width="32" height="32">
+                <div>
+                  <div class="comment-box">
+                    <div class="fw-semibold">${comment.author?.username}</div>
                     <div class="small">${comment.body}</div>
                   </div>
                   <div class="small text-muted mt-1">${comment.timestamp || 'Hace tiempo'}</div>
@@ -951,7 +1182,7 @@ function initModalPostInteractions() {
   // Like button in modal
   const likeBtn = document.querySelector('.modal-action-btn.like-btn');
   if (likeBtn) {
-    likeBtn.addEventListener('click', (e) => feedManager.handleLike(e));
+    likeBtn.addEventListener('click', (e) => crunevoFeedManager.handleLike(e));
   }
   
   // Comment button in modal
@@ -966,7 +1197,13 @@ function initModalPostInteractions() {
   // Share button in modal
   const shareBtn = document.querySelector('.modal-action-btn.share-btn');
   if (shareBtn) {
-    shareBtn.addEventListener('click', (e) => feedManager.openShareModal(e));
+    shareBtn.addEventListener('click', (e) => crunevoFeedManager.handleShare(e));
+  }
+  
+  // Save button in modal
+  const saveBtn = document.querySelector('.modal-action-btn.save-btn');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', (e) => crunevoFeedManager.toggleSavePost(e));
   }
 }
 
@@ -980,7 +1217,7 @@ function submitModalComment(event, postId) {
   
   const formData = new FormData();
   formData.append('body', body);
-  formData.append('csrf_token', feedManager.getCSRFToken());
+  formData.append('csrf_token', crunevoFeedManager.getCSRFToken());
   
   fetch(`/feed/comment/${postId}`, {
     method: 'POST',
@@ -988,26 +1225,33 @@ function submitModalComment(event, postId) {
   })
   .then(response => response.json())
   .then(data => {
-    if (data.success) {
+    if (data.success !== false) {
       input.value = '';
       loadPostDataForModal(postId); // Reload comments
-      feedManager.showToast('Comentario agregado', 'success');
+      crunevoFeedManager.showToast('Comentario agregado', 'success');
     } else {
-      feedManager.showToast('Error al agregar comentario', 'error');
+      crunevoFeedManager.showToast('Error al agregar comentario', 'error');
     }
   })
   .catch(error => {
     console.error('Error submitting comment:', error);
-    feedManager.showToast('Error de conexión', 'error');
+    crunevoFeedManager.showToast('Error de conexión', 'error');
   });
 }
 
 function closeImageModal() {
   const modal = document.getElementById('imageModal');
   if (modal) {
-    modal.classList.add('hidden');
-    document.getElementById('imageModalInfo').innerHTML = '';
-    document.body.classList.remove('photo-modal-open');
+    modal.classList.add('modal-fade-out');
+    modal.classList.remove('modal-fade-in');
+    
+    setTimeout(() => {
+      modal.classList.add('hidden');
+      modal.classList.remove('modal-fade-out');
+      document.getElementById('imageModalInfo').innerHTML = '';
+      document.body.classList.remove('photo-modal-open');
+    }, 300);
+    
     window.removeEventListener('keydown', handleModalKeydown);
     if (modalImageEl) {
       modalImageEl.removeEventListener('wheel', handleWheel);
@@ -1044,10 +1288,10 @@ function updateModalImage() {
     const nextBtn = document.querySelector('.modal-nav.next');
     
     if (prevBtn) {
-      prevBtn.style.opacity = currentImageIndex === 0 ? '0.5' : '1';
+      prevBtn.disabled = currentImageIndex === 0;
     }
     if (nextBtn) {
-      nextBtn.style.opacity = currentImageIndex === imageList.length - 1 ? '0.5' : '1';
+      nextBtn.disabled = currentImageIndex === imageList.length - 1;
     }
     
     updateModalCounter();
@@ -1076,56 +1320,22 @@ function updateModalCounter() {
   }
 }
 
-function outsideImageClick(ev) {
-  if (ev.target.id === 'imageModal') {
-    closeImageModal();
-  }
-}
-
-// Global share functions
-function shareToWhatsApp() {
-  const url = encodeURIComponent(window.currentShareUrl);
-  const text = encodeURIComponent('¡Mira esta publicación en CRUNEVO!');
-  window.open(`https://wa.me/?text=${text} ${url}`, '_blank');
-}
-
-function shareToTwitter() {
-  const url = encodeURIComponent(window.currentShareUrl);
-  const text = encodeURIComponent('¡Mira esta publicación en CRUNEVO!');
-  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-}
-
-function copyLink() {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(window.currentShareUrl).then(() => {
-      feedManager.showToast('¡Enlace copiado al portapapeles!', 'success');
-      bootstrap.Modal.getInstance(document.getElementById('shareModal')).hide();
-    });
-  } else {
-    // Fallback for older browsers
-    const textArea = document.createElement('textarea');
-    textArea.value = window.currentShareUrl;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-    feedManager.showToast('¡Enlace copiado!', 'success');
-    bootstrap.Modal.getInstance(document.getElementById('shareModal')).hide();
-  }
-}
-
 // Global functions for post actions
 function editPost(postId) {
   const card = document.querySelector(`[data-post-id='${postId}']`);
   const textarea = document.querySelector('#editPostForm textarea[name="content"]');
   const select = document.querySelector('#editPostForm select[name="comment_permission"]');
   const form = document.getElementById('editPostForm');
+  
   if (!card || !textarea || !form) return;
-  const contentEl = card.querySelector('.post-content p');
+  
+  const contentEl = card.querySelector('.post-text, .feed-text');
   textarea.value = contentEl ? contentEl.textContent.trim() : '';
+  
   if (select) {
     select.value = card.dataset.commentPermission || 'all';
   }
+  
   form.dataset.postId = postId;
   const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editPostModal'));
   modal.show();
@@ -1133,32 +1343,28 @@ function editPost(postId) {
 
 function deletePost(postId) {
   if (!confirm('¿Estás seguro de que quieres eliminar esta publicación?')) return;
-  feedManager.fetchWithCSRF(`/feed/post/eliminar/${postId}`, { method: 'POST' })
+  
+  crunevoFeedManager.fetchWithCSRF(`/feed/post/eliminar/${postId}`, { method: 'POST' })
     .then((resp) => {
       if (resp.ok) {
         document.querySelector(`[data-post-id='${postId}']`)?.remove();
-        feedManager.showToast('Publicación eliminada', 'success');
+        crunevoFeedManager.showToast('Publicación eliminada', 'success');
       } else {
-        feedManager.showToast('Error al eliminar', 'error');
+        crunevoFeedManager.showToast('Error al eliminar', 'error');
       }
     })
-    .catch(() => feedManager.showToast('Error de conexión', 'error'));
+    .catch(() => crunevoFeedManager.showToast('Error de conexión', 'error'));
 }
 
 function reportPost(postId) {
   if (confirm('¿Quieres reportar esta publicación?')) {
-    // Implement report functionality
-    feedManager.showToast('Publicación reportada', 'info');
+    crunevoFeedManager.showToast('Publicación reportada', 'info');
   }
 }
 
 function copyPostLink(postId) {
   const url = `${window.location.origin}/feed/post/${postId}`;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => {
-      feedManager.showToast('¡Enlace copiado!', 'success');
-    });
-  }
+  crunevoFeedManager.copyToClipboard(url);
 }
 
 // CSS animations
@@ -1180,25 +1386,36 @@ style.textContent = `
     to { opacity: 0; transform: translateY(-10px); }
   }
 
-  .photo-modal-open {
-    overflow: hidden;
+  .gallery-img.loaded {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+
+  .gallery-img:not(.loaded) {
+    opacity: 0.7;
   }
 `;
 document.head.appendChild(style);
 
 // Feed manager initialization
-let feedManager;
+let crunevoFeedManager;
 function initFeedManager() {
-  feedManager = new FeedManager();
+  crunevoFeedManager = new CrunevoFeedManager();
 }
-window.initFeedManager = initFeedManager;
+
+// Auto-initialize if DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initFeedManager);
+} else {
+  initFeedManager();
+}
 
 // Global exports
+window.crunevoFeedManager = crunevoFeedManager;
 window.openImageModal = openImageModal;
 window.closeImageModal = closeImageModal;
 window.nextImage = nextImage;
 window.prevImage = prevImage;
-window.outsideImageClick = outsideImageClick;
 window.zoomIn = zoomIn;
 window.zoomOut = zoomOut;
 window.resetZoom = resetZoom;
@@ -1206,6 +1423,7 @@ window.editPost = editPost;
 window.deletePost = deletePost;
 window.reportPost = reportPost;
 window.copyPostLink = copyPostLink;
+window.initFeedManager = initFeedManager;
 
 // Edit post form handler
 const editPostForm = document.getElementById('editPostForm');
@@ -1220,26 +1438,27 @@ if (editPostForm) {
     const formData = new FormData();
     formData.append('content', content);
     formData.append('comment_permission', permission);
-    formData.append('csrf_token', feedManager.getCSRFToken());
+    formData.append('csrf_token', crunevoFeedManager.getCSRFToken());
 
     try {
-      const resp = await feedManager.fetchWithCSRF(`/feed/post/editar/${postId}`, {
+      const resp = await crunevoFeedManager.fetchWithCSRF(`/feed/post/editar/${postId}`, {
         method: 'POST',
         body: formData
       });
+      
       if (resp.ok) {
         const card = document.querySelector(`[data-post-id='${postId}']`);
-        const contentEl = card ? card.querySelector('.post-content p') : null;
+        const contentEl = card ? card.querySelector('.post-text, .feed-text') : null;
         if (contentEl) {
           contentEl.textContent = content;
         }
-        feedManager.showToast('Publicación actualizada', 'success');
+        crunevoFeedManager.showToast('Publicación actualizada', 'success');
         bootstrap.Modal.getInstance(document.getElementById('editPostModal')).hide();
       } else {
-        feedManager.showToast('Error al editar publicación', 'error');
+        crunevoFeedManager.showToast('Error al editar publicación', 'error');
       }
     } catch (error) {
-      feedManager.showToast('Error de conexión', 'error');
+      crunevoFeedManager.showToast('Error de conexión', 'error');
     }
   });
 }
