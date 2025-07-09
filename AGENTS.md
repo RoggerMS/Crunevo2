@@ -717,3 +717,4 @@
 - Ajustado .fb-post y .fb-gallery para que la tarjeta crezca con imágenes múltiples (PR post-card-auto-height).
 - Fixed trending.html variables to weekly_posts and top_notes to avoid UndefinedError (PR trending-variable-fix).
 - Replaced moment.js filters with timesince/strftime and ensured CSRF macros in producto.html (PR moment-usage-removal).
+- Comment modal moved to new component, comment.js created, fb-action-btn classes renamed and dark mode fixes for feed and store. JS errors cleaned (PR feed-store-comment-modal).

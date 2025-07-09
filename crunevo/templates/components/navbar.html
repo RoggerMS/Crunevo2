@@ -23,7 +23,7 @@
       </div>
     </div>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Menú">
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -98,7 +98,7 @@
           </li>
           {% endif %}
           <li class="nav-item d-none d-lg-block">
-            <a class="nav-link" href="{{ url_for('chat.chat_index') }}">
+            <a class="nav-link" href="{{ url_for('chat.chat_index') }}" aria-label="Chat">
               <i class="bi bi-chat-dots-fill"></i>
             </a>
           </li>
@@ -115,9 +115,7 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-end" style="width: 300px;">
               <li><h6 class="dropdown-header">Notificaciones</h6></li>
-              <div id="notifications-list">
-                <li><span class="dropdown-item-text text-muted">No hay notificaciones</span></li>
-              </div>
+              <li id="notifications-list"><span class="dropdown-item-text text-muted">No hay notificaciones</span></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item text-center" href="{{ url_for('noti.ver_notificaciones') }}">Ver todas</a></li>
             </ul>
