@@ -706,3 +706,4 @@
 - Uniformizado collage de imágenes del feed con aspect-ratio y grid-auto-rows; las imágenes se adaptan sin dejar espacios grises (PR feed-gallery-consistent).
 - Galería ahora detecta orientación de imágenes al haber dos fotos y aplica clases `.two-horizontal` o `.two-vertical` para evitar recortes (PR gallery-orientation-detect).
 - Improved accessibility: added alt text to various images, aria-labels to icon-only buttons and removed gray background from `.facebook-gallery` (PR accessibility-alt-labels).
+- Galería ajustada como Facebook: dos verticales lado a lado, preview máximo 5 imágenes con overlay '+X' (PR fb-gallery-improve)

@@ -837,8 +837,17 @@ body[data-bs-theme="dark"] .comment-box {
 
 /* Two vertical images side by side */
 .facebook-gallery.two-images.two-vertical {
-  grid-template-columns: 1fr 1fr;
-  aspect-ratio: 2 / 1;
+  display: flex;
+  gap: 2px;
+  flex-direction: row;
+  height: auto;
+}
+
+.facebook-gallery.two-images.two-vertical .gallery-image {
+  width: 50%;
+  height: auto;
+  object-fit: cover;
+  aspect-ratio: unset;
 }
 
 /* Three images layout */
@@ -971,7 +980,7 @@ body[data-bs-theme="dark"] .comment-box {
     height: auto;
   }
 
-  .facebook-gallery.two-images,
+  .facebook-gallery.two-images:not(.two-vertical),
   .facebook-gallery.four-images {
     aspect-ratio: 1 / 1;
   }

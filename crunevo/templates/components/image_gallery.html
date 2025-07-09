@@ -63,31 +63,31 @@
       {% endfor %}
     </div>
   {% else %}
-    <!-- Five+ images: 1 large left, 3x grid right with overlay -->
+    <!-- Five+ images: 1 large left, 4-grid right with optional overlay -->
     <div class="facebook-gallery five-plus-images">
-      <img src="{{ urls[0] }}" 
-           class="gallery-image large-image" 
-           alt="Imagen 1 de {{ count }}" 
-           loading="lazy" 
+      <img src="{{ urls[0] }}"
+           class="gallery-image large-image"
+           alt="Imagen 1 de {{ count }}"
+           loading="lazy"
            onclick="openImageModal('{{ urls[0] }}', 0, '{{ post_id }}', event)"
-           role="button" 
+           role="button"
            tabindex="0" />
       <div class="small-images-grid">
-        {% for url in urls[1:4] %}
-        <div class="image-container {% if loop.index == 3 %}has-overlay{% endif %}">
-          <img src="{{ url }}" 
-               class="gallery-image grid-image" 
-               alt="Imagen {{ loop.index + 1 }} de {{ count }}" 
-               loading="lazy" 
+        {% for url in urls[1:5] %}
+        <div class="image-container {% if loop.index == 4 and count > 5 %}has-overlay{% endif %}">
+          <img src="{{ url }}"
+               class="gallery-image grid-image"
+               alt="Imagen {{ loop.index + 1 }} de {{ count }}"
+               loading="lazy"
                onclick="openImageModal('{{ url }}', {{ loop.index0 + 1 }}, '{{ post_id }}', event)"
-               role="button" 
+               role="button"
                tabindex="0" />
-          {% if loop.index == 3 and count > 4 %}
+          {% if loop.index == 4 and count > 5 %}
           <div class="image-overlay"
                onclick="openImageModal('{{ url }}', {{ loop.index0 + 1 }}, '{{ post_id }}', event)"
-               role="button" 
+               role="button"
                tabindex="0">
-            <span class="overlay-text">+{{ count - 4 }}</span>
+            <span class="overlay-text">+{{ count - 5 }}</span>
           </div>
           {% endif %}
         </div>
