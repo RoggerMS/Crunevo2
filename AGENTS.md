@@ -729,3 +729,4 @@
 - /health endpoint now returns plain "ok" with status 200 and test updated (PR health-endpoint-plain).
 - Photo view and API endpoints now allow anonymous access; comment form displays login prompt when not authenticated (PR photo-view-anon-fix).
 - Removed duplicate image modal markup from base.html to ensure photo view loads post details correctly (PR photo-modal-duplicate-fix).
+- Comment modal now reuses image_gallery macro for consistent gallery layout with feed (PR gallery-modal-unify).

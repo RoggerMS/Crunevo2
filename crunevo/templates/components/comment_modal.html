@@ -1,3 +1,4 @@
+{% import 'components/image_gallery.html' as gallery %}
 <!-- Modal de Comentarios con Galería Completa -->
 <div class="modal fade" id="commentsModal-{{ post.id }}" tabindex="-1" aria-labelledby="commentsModalLabel-{{ post.id }}" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
@@ -26,29 +27,11 @@
         </div>
         {% endif %}
 
-        <!-- Galería Completa de Imágenes -->
-        {% if post.images or (post.file_url and not post.file_url.endswith('.pdf')) %}
-        <div class="modal-gallery-container">
-          {% if post.images %}
-            {% set image_count = post.images|length %}
-            {% set image_urls = post.images | map(attribute='url') | list %}
-          {% else %}
-            {% set image_count = 1 %}
-            {% set image_urls = [post.file_url] %}
-          {% endif %}
-
-          <div class="facebook-gallery-modal modal-gallery-vertical" data-post-id="{{ post.id }}" data-images='{{ image_urls | tojson }}'>
-            {% for url in image_urls %}
-            <div class="modal-gallery-item">
-              <img src="{{ url }}"
-                   alt="Imagen {{ loop.index }} de {{ image_count }}"
-                   onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post.id }}', event)"
-                   loading="lazy"
-                   class="modal-gallery-image" />
-            </div>
-            {% endfor %}
-          </div>
-        </div>
+        <!-- Galería de Imágenes -->
+        {% if post.images %}
+        {{ gallery.image_gallery(post.images, post.id) }}
+        {% elif post.file_url and not post.file_url.endswith('.pdf') %}
+        {{ gallery.image_gallery([post.file_url], post.id) }}
         {% endif %}
 
         <!-- Acciones del Post (Me gusta, etc.) -->
