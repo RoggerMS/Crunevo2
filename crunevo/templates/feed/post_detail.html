@@ -6,7 +6,7 @@
 {% block og_description %}{{ og_description or (post.content|striptags)|truncate(100) }}{% endblock %}
 {% if og_image %}{% block og_image %}{{ og_image }}{% endblock %}{% endif %}
 {% block content %}
-<div class="card mb-4 shadow-sm border-0 rounded-4">
+<div class="card mb-4 shadow-sm border-0 rounded-4" data-post-id="{{ post.id }}"{% if photo_index %} data-photo-index="{{ photo_index }}"{% endif %}>
   <div class="card-body p-4">
     <div class="d-flex align-items-center mb-2">
       {% set author = post.author %}
@@ -64,6 +64,11 @@
       </div>
 
       <h6 class="mt-3 mb-2">Comentarios</h6>
+      {% if photo_index %}
+      <div id="comment-section" data-post-id="{{ post.id }}" data-photo-index="{{ photo_index }}">
+        <div class="loader"></div>
+      </div>
+      {% else %}
       <div id="comments{{ post.id }}" class="comment-container" data-post-id="{{ post.id }}">
         {% if post.comments %}
           {% for c in post.comments|sort(attribute='timestamp', reverse=True) %}
@@ -95,6 +100,7 @@
           <button class="btn btn-primary" type="submit">Enviar</button>
         </div>
       </form>
+      {% endif %}
     </div>
   </div>
 {% endblock %}
