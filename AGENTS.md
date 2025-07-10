@@ -667,6 +667,7 @@
 - Mejorada accesibilidad del marketplace: botones con íconos tienen title, campos de dirección con placeholder y overlays usan role="button" (PR accessibility-html-fix).
 - Exposed openProductRequestModal and clearAllFilters on window to avoid ReferenceError when used inline (PR store-js-global-functions).
 - Added note to README explaining how to resolve Fly.io warning about the app not listening on 0.0.0.0:8080 (PR fly-port-doc).
+- Clarified troubleshooting steps for the Fly port warning, suggesting `fly logs -a crunevo2` to verify Gunicorn starts (QA fly-port-troubleshoot).
 - Sidebar in store page can be collapsed with a new button, hero header removed and product grid shows up to 5 items per row (PR store-collapse-sidebar).
 - Permite publicar productos desde la tienda con modal y ruta /store/publicar-producto; productos se crean con is_approved=False (PR store-user-publish).
 - Added gradient header and basic tab navigation for Mi Carrera; initialization moved to main.js to avoid extra DOMContentLoaded listener (PR career-header-fix).
