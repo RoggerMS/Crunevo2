@@ -221,6 +221,9 @@ class ModernFeedManager {
     if (!commentsSection) return;
 
     if (commentsSection.style.display === 'none') {
+      if (commentsSection.dataset.loaded !== 'true') {
+        this.loadComments(postId);
+      }
       commentsSection.style.display = 'block';
       commentsSection.classList.add('fade-in');
 
@@ -236,6 +239,57 @@ class ModernFeedManager {
         commentsSection.classList.remove('fade-out');
       }, 300);
     }
+  }
+
+  async loadComments(postId) {
+    const section = document.getElementById(`comments-${postId}`);
+    if (!section) return;
+    const container = section.querySelector('.comments-container');
+    if (!container) return;
+    try {
+      const resp = await fetch(`/feed/api/comments/${postId}`);
+      const comments = await resp.json();
+      container.innerHTML = '';
+      if (comments.length) {
+        comments.forEach(c => {
+          container.insertAdjacentHTML('beforeend', this.renderComment(c));
+        });
+      } else {
+        container.innerHTML = '<p class="text-muted" data-empty-msg>S\u00e9 el primero en comentar esta publicaci\u00f3n.</p>';
+      }
+      section.dataset.loaded = 'true';
+    } catch (err) {
+      container.innerHTML = '<p class="text-muted">Error al cargar comentarios</p>';
+    }
+  }
+
+  renderComment(comment) {
+    const time = this.formatRelativeTime(comment.timestamp);
+    return `
+      <div class="comment-item d-flex mb-3">
+        <img src="${comment.avatar || '/static/img/default.png'}" class="comment-avatar rounded-circle me-2" alt="${comment.author}" width="32" height="32" style="object-fit:cover;">
+        <div>
+          <div class="comment-bubble">
+            <strong class="comment-author">${comment.author}</strong>
+            <p class="comment-text mb-1">${comment.body}</p>
+          </div>
+          <div class="comment-meta d-flex align-items-center gap-3">
+            <small class="text-muted">${time}</small>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  formatRelativeTime(ts) {
+    const date = new Date(ts);
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (diff < 60) return 'hace unos segundos';
+    const mins = Math.floor(diff / 60);
+    if (mins < 60) return `hace ${mins} minuto${mins !== 1 ? 's' : ''}`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `hace ${hrs} hora${hrs !== 1 ? 's' : ''}`;
+    const days = Math.floor(hrs / 24);
+    return `hace ${days} d\u00eda${days !== 1 ? 's' : ''}`;
   }
 
   // Submit comment
@@ -281,28 +335,9 @@ class ModernFeedManager {
   addCommentToUI(comment, postId) {
     const commentsContainer = document.querySelector(`#comments-${postId} .comments-container`);
     if (!commentsContainer) return;
-
-    const commentHTML = `
-      <div class="comment-item fade-in">
-        <div class="comment-avatar">
-          <img src="${comment.avatar || '/static/img/default.png'}" 
-               alt="${comment.author}"
-               class="comment-avatar-img">
-        </div>
-        <div class="comment-content">
-          <div class="comment-bubble">
-            <div class="comment-author">${comment.author}</div>
-            <div class="comment-text">${comment.body}</div>
-          </div>
-          <div class="comment-meta">
-            <span class="comment-time">ahora</span>
-            <button class="comment-reply-btn">Responder</button>
-          </div>
-        </div>
-      </div>
-    `;
-
-    commentsContainer.insertAdjacentHTML('beforeend', commentHTML);
+    commentsContainer.insertAdjacentHTML('beforeend', this.renderComment(comment));
+    const last = commentsContainer.lastElementChild;
+    if (last) last.scrollIntoView({ behavior: 'smooth' });
 
     // Update comment count
     const commentBtn = document.querySelector(`[data-post-id="${postId}"].comment-btn`);
