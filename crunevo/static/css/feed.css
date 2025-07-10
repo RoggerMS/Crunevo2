@@ -1448,9 +1448,30 @@ select:focus {
     max-height: 250px;
   }
 
-  .modal-gallery-overlay .overlay-text {
-    font-size: 18px;
-  }
+.modal-gallery-overlay .overlay-text {
+  font-size: 18px;
+}
+}
+
+/* Facebook style comment modal */
+.facebook-post-modal .modal-content {
+  max-height: 90vh;
+}
+
+.facebook-post-modal .modal-left {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.facebook-post-modal .image-slide {
+  max-height: 90vh;
+  object-fit: contain;
+}
+
+.facebook-post-modal .modal-right {
+  overflow-y: auto;
 }
 
 /* Reduced motion support */
