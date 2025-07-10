@@ -722,3 +722,5 @@
 - Eliminado modal de comentarios antiguo duplicado, quedando solo la versión con galería completa (PR comment-modal-cleanup).
 
 - Visor de imágenes actualizado con panel lateral y zoom estilo Facebook (PR fb-photo-viewer).
+- Comment modal now uses vertical gallery with fullscreen view on mobile (PR comment-modal-vertical)
+- Fixed comments not loading in photo view by aligning markup and gallery lookup (PR comment-photo-view-fix)
