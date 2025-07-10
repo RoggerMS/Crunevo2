@@ -727,3 +727,4 @@
 - Fixed comments not loading in photo view by aligning markup and gallery lookup (PR comment-photo-view-fix)
 - Photo view route now passes photo_index and loads comments dynamically via dataset (PR photo-view-comments-fix)
 - /health endpoint now returns plain "ok" with status 200 and test updated (PR health-endpoint-plain).
+- Photo view and API endpoints now allow anonymous access; comment form displays login prompt when not authenticated (PR photo-view-anon-fix).

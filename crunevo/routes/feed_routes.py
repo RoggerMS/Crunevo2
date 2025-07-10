@@ -283,7 +283,6 @@ def view_post(post_id: int):
 
 
 @feed_bp.route("/post/<int:post_id>/photo/<int:index>", endpoint="view_post_photo")
-@activated_required
 def view_post_photo(post_id: int, index: int):
     """Display a single image from a post."""
     post = Post.query.get_or_404(post_id)
@@ -495,7 +494,6 @@ def api_comments(post_id):
 
 
 @feed_bp.route("/api/post/<int:post_id>")
-@activated_required
 def api_post_detail(post_id: int):
     """Return rendered HTML for a post used in the comment modal."""
     post = Post.query.get_or_404(post_id)
