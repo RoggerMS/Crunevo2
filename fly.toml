@@ -6,8 +6,6 @@ primary_region = 'bog'
 [build]
   dockerfile = 'Dockerfile'
 
-[deploy]
-  release_command = "flask db upgrade"
 
 [env]
   FLASK_APP = 'crunevo.wsgi:app'
