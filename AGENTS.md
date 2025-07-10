@@ -727,3 +727,4 @@
 - Fixed comments not loading in photo view by aligning markup and gallery lookup (PR comment-photo-view-fix)
 - Photo view route now passes photo_index and loads comments dynamically via dataset (PR photo-view-comments-fix)
 - /health endpoint now returns plain "ok" with status 200 and test updated (PR health-endpoint-plain).
+- Comment modal redesigned with carousel gallery and static backdrop (PR comment-modal-carousel)
