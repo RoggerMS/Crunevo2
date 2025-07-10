@@ -463,9 +463,7 @@ def comment_post(post_id):
             {
                 "body": comment.body,
                 "author": comment.author.username,
-                "avatar": comment.author.avatar_url
-                or url_for("static", filename="img/default.png"),
-                "timestamp": comment.timestamp.isoformat(),
+                "timestamp": comment.timestamp.strftime("%Y-%m-%d %H:%M"),
             }
         )
     return jsonify({"pending": True}), 202
