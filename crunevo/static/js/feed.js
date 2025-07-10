@@ -9,6 +9,10 @@ class ModernFeedManager {
     this.currentImageIndex = 0;
     this.imageList = [];
     this.currentPostId = null;
+    this.currentScale = 1;
+    this.modalImageEl = null;
+    this.touchStartX = 0;
+    this.touchEndX = 0;
     this.init();
   }
 
@@ -454,28 +458,30 @@ class ModernFeedManager {
 
   // Initialize image modal
   initImageModal() {
-    // Close modal on escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && this.currentPostId) {
-        this.closeImageModal();
-      }
-    });
+    document.addEventListener('keydown', (e) => this.handleModalKeydown(e));
+  }
 
-    // Navigate images with arrow keys
-    document.addEventListener('keydown', (e) => {
-      if (!this.currentPostId) return;
-
-      if (e.key === 'ArrowRight') {
-        this.nextImage();
-      } else if (e.key === 'ArrowLeft') {
-        this.prevImage();
-      }
-    });
+  handleModalKeydown(e) {
+    if (!this.currentPostId) return;
+    if (e.key === 'Escape') {
+      this.closeImageModal();
+    } else if (e.key === 'ArrowRight') {
+      this.nextImage();
+    } else if (e.key === 'ArrowLeft') {
+      this.prevImage();
+    } else if (e.key === '+') {
+      this.zoomIn();
+    } else if (e.key === '-') {
+      this.zoomOut();
+    } else if (e.key === ' ') {
+      e.preventDefault();
+      this.resetZoom();
+    }
   }
 
   // Open image modal
   openImageModal(src, index, postId, evt) {
-    const container = evt?.currentTarget.closest('.facebook-gallery-container') || 
+    const container = evt?.currentTarget.closest('.facebook-gallery-container') ||
                      document.querySelector(`[data-post-id='${postId}'] .facebook-gallery-container`);
 
     if (container && container.dataset.images) {
@@ -490,11 +496,9 @@ class ModernFeedManager {
 
     this.currentImageIndex = index;
     this.currentPostId = postId;
+    this.currentScale = 1;
 
-    // Create modal
     this.createImageModal(src, index);
-
-    // Update URL
     window.history.pushState({ photo: true }, '', `/feed/post/${postId}/photo/${index + 1}`);
   }
 
@@ -502,47 +506,63 @@ class ModernFeedManager {
   createImageModal(src, index) {
     const modal = document.createElement('div');
     modal.id = 'imageModal';
-    modal.className = 'image-modal';
+    modal.className = 'image-modal hidden';
+
+    const hasMultiple = this.imageList.length > 1;
     modal.innerHTML = `
-      <div class="modal-backdrop" onclick="modernFeedManager.closeImageModal()"></div>
-      <div class="modal-content">
-        <div class="modal-header">
-          <span class="modal-counter">${index + 1} / ${this.imageList.length}</span>
-          <button class="modal-close" onclick="modernFeedManager.closeImageModal()" aria-label="Cerrar">
-            <i class="bi bi-x-lg"></i>
-          </button>
-        </div>
-        <div class="modal-body">
-          <img src="${src}" alt="Imagen ${index + 1}" class="modal-image">
-          ${this.imageList.length > 1 ? `
-            <button class="modal-nav prev" onclick="modernFeedManager.prevImage()" ${index === 0 ? 'disabled' : ''}>
-              <i class="bi bi-chevron-left"></i>
-            </button>
-            <button class="modal-nav next" onclick="modernFeedManager.nextImage()" ${index === this.imageList.length - 1 ? 'disabled' : ''}>
-              <i class="bi bi-chevron-right"></i>
-            </button>
+      <div class="modal-container" onclick="modernFeedManager.outsideImageClick(event)">
+        <div class="modal-image-section">
+          <img id="modalImage" src="${src}" alt="Imagen ${index + 1}">
+          <div class="modal-top-controls">
+            <button class="modal-control-btn" onclick="modernFeedManager.zoomOut()" title="Reducir zoom"><i class="bi bi-dash"></i></button>
+            <button class="modal-control-btn" onclick="modernFeedManager.zoomIn()" title="Aumentar zoom"><i class="bi bi-plus"></i></button>
+            <button class="modal-control-btn" onclick="modernFeedManager.resetZoom()" title="Tamaño original"><i class="bi bi-arrows-fullscreen"></i></button>
+            <a href="${src}" target="_blank" class="modal-control-btn" title="Abrir en nueva pestaña"><i class="bi bi-box-arrow-up-right"></i></a>
+            <button class="modal-control-btn" onclick="modernFeedManager.closeImageModal()" title="Cerrar"><i class="bi bi-x"></i></button>
+          </div>
+          ${hasMultiple ? `
+            <button class="modal-nav prev" onclick="modernFeedManager.prevImage()" ${index === 0 ? 'style="opacity:0.5"' : ''}><i class="bi bi-chevron-left"></i></button>
+            <button class="modal-nav next" onclick="modernFeedManager.nextImage()" ${index === this.imageList.length - 1 ? 'style="opacity:0.5"' : ''}><i class="bi bi-chevron-right"></i></button>
           ` : ''}
+          <div class="modal-counter" id="modalCounter">${index + 1} / ${this.imageList.length}</div>
         </div>
-      </div>
-    `;
+        <div class="modal-info-section" id="imageModalInfo">
+          <div class="d-flex justify-content-center align-items-center h-100">
+            <div class="spinner-border text-primary"></div>
+          </div>
+        </div>
+      </div>`;
 
     document.body.appendChild(modal);
-    document.body.classList.add('modal-open');
+    document.body.classList.add('photo-modal-open');
 
-    // Fade in animation
-    setTimeout(() => modal.classList.add('show'), 10);
+    this.modalImageEl = modal.querySelector('#modalImage');
+    this.modalImageEl.addEventListener('wheel', (e) => this.handleWheel(e), { passive: false });
+    this.modalImageEl.addEventListener('touchstart', (e) => this.handleTouchStart(e));
+    this.modalImageEl.addEventListener('touchend', (e) => this.handleTouchEnd(e));
+
+    setTimeout(() => modal.classList.remove('hidden'), 10);
+    this.loadPostDataForModal(this.currentPostId);
   }
 
   // Close image modal
   closeImageModal() {
     const modal = document.getElementById('imageModal');
     if (modal) {
-      modal.classList.remove('show');
+      modal.classList.add('hidden');
       setTimeout(() => {
         modal.remove();
-        document.body.classList.remove('modal-open');
+        document.body.classList.remove('photo-modal-open');
       }, 300);
     }
+
+    if (this.modalImageEl) {
+      this.modalImageEl.removeEventListener('wheel', this.handleWheel);
+      this.modalImageEl.removeEventListener('touchstart', this.handleTouchStart);
+      this.modalImageEl.removeEventListener('touchend', this.handleTouchEnd);
+    }
+    this.modalImageEl = null;
+    this.currentScale = 1;
 
     this.currentPostId = null;
     this.currentImageIndex = 0;
@@ -599,6 +619,79 @@ class ModernFeedManager {
     if (this.currentPostId) {
       window.history.replaceState({ photo: true }, '', `/feed/post/${this.currentPostId}/photo/${this.currentImageIndex + 1}`);
     }
+  }
+
+  handleWheel(e) {
+    e.preventDefault();
+    if (e.deltaY < 0) {
+      this.zoomIn();
+    } else {
+      this.zoomOut();
+    }
+  }
+
+  handleTouchStart(e) {
+    this.touchStartX = e.changedTouches[0].screenX;
+  }
+
+  handleTouchEnd(e) {
+    this.touchEndX = e.changedTouches[0].screenX;
+    this.handleSwipe();
+  }
+
+  handleSwipe() {
+    const diff = this.touchStartX - this.touchEndX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        this.nextImage();
+      } else {
+        this.prevImage();
+      }
+    }
+  }
+
+  applyZoom() {
+    if (this.modalImageEl) {
+      this.modalImageEl.style.transform = `scale(${this.currentScale})`;
+    }
+  }
+
+  zoomIn() {
+    this.currentScale = Math.min(3, this.currentScale + 0.2);
+    this.applyZoom();
+  }
+
+  zoomOut() {
+    this.currentScale = Math.max(0.2, this.currentScale - 0.2);
+    this.applyZoom();
+  }
+
+  resetZoom() {
+    this.currentScale = 1;
+    this.applyZoom();
+  }
+
+  outsideImageClick(e) {
+    if (e.target.id === 'imageModal') {
+      this.closeImageModal();
+    }
+  }
+
+  loadPostDataForModal(postId) {
+    fetch(`/feed/api/post/${postId}`)
+      .then(r => r.json())
+      .then(data => {
+        const info = document.getElementById('imageModalInfo');
+        if (info && data.html) {
+          info.innerHTML = data.html;
+          this.initPostInteractions();
+          this.initCommentSystem();
+        }
+      })
+      .catch(() => {
+        const info = document.getElementById('imageModalInfo');
+        if (info) info.innerHTML = '<div class="text-center text-muted p-3">Error al cargar información del post</div>';
+      });
   }
 
   // Initialize image preview for post creation
@@ -1247,171 +1340,6 @@ if (document.readyState === 'loading') {
   initModernFeedManager();
 }
 
-// CSS for image modal
-const modalStyles = `
-<style>
-.image-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1070;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.image-modal.show {
-  opacity: 1;
-}
-
-.image-modal .modal-backdrop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-}
-
-.image-modal .modal-content {
-  position: relative;
-  max-width: 90vw;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.image-modal .modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  color: white;
-}
-
-.image-modal .modal-counter {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.image-modal .modal-close {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  transition: background-color 0.2s;
-}
-
-.image-modal .modal-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.image-modal .modal-body {
-  position: relative;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.image-modal .modal-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-
-.image-modal .modal-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.5);
-  border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 12px 16px;
-  border-radius: 50%;
-  transition: background-color 0.2s;
-}
-
-.image-modal .modal-nav:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.8);
-}
-
-.image-modal .modal-nav:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.image-modal .modal-nav.prev {
-  left: 20px;
-}
-
-.image-modal .modal-nav.next {
-  right: 20px;
-}
-
-.preview-item {
-  position: relative;
-  display: inline-block;
-  margin: 8px;
-}
-
-.preview-image {
-  max-width: 150px;
-  max-height: 150px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.preview-remove {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background: #dc3545;
-  border: none;
-  color: white;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-}
-
-.preview-remove:hover {
-  background: #c82333;
-}
-
-body.modal-open {
-  overflow: hidden;
-}
-
-@media (max-width: 768px) {
-  .image-modal .modal-nav {
-    display: none;
-  }
-
-  .image-modal .modal-content {
-    max-width: 100vw;
-    max-height: 100vh;
-  }
-}
-</style>
-`;
-
-// Add modal styles to head
-document.head.insertAdjacentHTML('beforeend', modalStyles);
 
 // Export for global access
 window.modernFeedManager = modernFeedManager;
