@@ -101,3 +101,210 @@
     </div>
   </div>
 </div>
+<!-- Modal de Comentarios con Galería Completa -->
+<div class="modal fade" id="commentsModal-{{ post.id }}" tabindex="-1" aria-labelledby="commentsModalLabel-{{ post.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <!-- Header del Modal -->
+      <div class="modal-header border-0 pb-0">
+        <div class="d-flex align-items-center">
+          <img src="{{ post.author.avatar_url if post.author else url_for('static', filename='img/default.png') }}" 
+               alt="{{ post.author.username if post.author else 'Usuario eliminado' }}"
+               class="rounded-circle me-3" 
+               style="width: 40px; height: 40px; object-fit: cover;">
+          <div>
+            <h6 class="mb-0 fw-bold">{{ post.author.username if post.author else 'Usuario eliminado' }}</h6>
+            <small class="text-muted">{{ post.created_at|timesince }}</small>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <!-- Contenido del Post -->
+      <div class="modal-body p-0">
+        <!-- Texto del Post -->
+        {% if post.content %}
+        <div class="px-4 py-3">
+          <p class="mb-0">{{ post.content }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Galería Completa de Imágenes -->
+        {% if post.images or (post.file_url and not post.file_url.endswith('.pdf')) %}
+        <div class="modal-gallery-container">
+          {% if post.images %}
+            {% set image_count = post.images|length %}
+            {% set image_urls = post.images | map(attribute='url') | list %}
+          {% else %}
+            {% set image_count = 1 %}
+            {% set image_urls = [post.file_url] %}
+          {% endif %}
+
+          <div class="facebook-gallery-modal" data-post-id="{{ post.id }}" data-images='{{ image_urls | tojson }}'>
+            {% if image_count == 1 %}
+              <!-- Una imagen -->
+              <div class="modal-gallery single-image">
+                <img src="{{ image_urls[0] }}" 
+                     alt="Imagen de la publicación" 
+                     onclick="openImageModal('{{ image_urls[0] }}', 0, '{{ post.id }}', event)" 
+                     loading="lazy" 
+                     class="modal-gallery-image" />
+              </div>
+
+            {% elif image_count == 2 %}
+              <!-- Dos imágenes -->
+              <div class="modal-gallery two-images">
+                {% for url in image_urls[:2] %}
+                <div class="modal-gallery-item">
+                  <img src="{{ url }}" 
+                       alt="Imagen {{ loop.index }} de {{ image_count }}" 
+                       onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post.id }}', event)" 
+                       loading="lazy" 
+                       class="modal-gallery-image" />
+                </div>
+                {% endfor %}
+              </div>
+
+            {% elif image_count == 3 %}
+              <!-- Tres imágenes -->
+              <div class="modal-gallery three-images">
+                <div class="modal-gallery-item main-item">
+                  <img src="{{ image_urls[0] }}" 
+                       alt="Imagen 1 de {{ image_count }}" 
+                       onclick="openImageModal('{{ image_urls[0] }}', 0, '{{ post.id }}', event)" 
+                       loading="lazy" 
+                       class="modal-gallery-image" />
+                </div>
+                <div class="modal-gallery-side">
+                  {% for url in image_urls[1:3] %}
+                  <div class="modal-gallery-item">
+                    <img src="{{ url }}" 
+                         alt="Imagen {{ loop.index + 1 }} de {{ image_count }}" 
+                         onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post.id }}', event)" 
+                         loading="lazy" 
+                         class="modal-gallery-image" />
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+
+            {% elif image_count == 4 %}
+              <!-- Cuatro imágenes -->
+              <div class="modal-gallery four-images">
+                {% for url in image_urls[:4] %}
+                <div class="modal-gallery-item">
+                  <img src="{{ url }}" 
+                       alt="Imagen {{ loop.index }} de {{ image_count }}" 
+                       onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post.id }}', event)" 
+                       loading="lazy" 
+                       class="modal-gallery-image" />
+                </div>
+                {% endfor %}
+              </div>
+
+            {% else %}
+              <!-- Cinco o más imágenes -->
+              <div class="modal-gallery five-plus-images">
+                <div class="modal-gallery-item main-item">
+                  <img src="{{ image_urls[0] }}" 
+                       alt="Imagen 1 de {{ image_count }}" 
+                       onclick="openImageModal('{{ image_urls[0] }}', 0, '{{ post.id }}', event)" 
+                       loading="lazy" 
+                       class="modal-gallery-image" />
+                </div>
+                <div class="modal-gallery-grid">
+                  {% for url in image_urls[1:5] %}
+                  <div class="modal-gallery-item {% if loop.index == 4 and image_count > 5 %}has-overlay{% endif %}">
+                    <img src="{{ url }}" 
+                         alt="Imagen {{ loop.index + 1 }} de {{ image_count }}" 
+                         onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post.id }}', event)" 
+                         loading="lazy" 
+                         class="modal-gallery-image" />
+                    {% if loop.index == 4 and image_count > 5 %}
+                    <div class="modal-gallery-overlay" onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post.id }}', event)">
+                      <span class="overlay-text">+{{ image_count - 4 }}</span>
+                    </div>
+                    {% endif %}
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Acciones del Post (Me gusta, etc.) -->
+        <div class="modal-post-actions px-4 py-2 border-top border-bottom">
+          <div class="d-flex justify-content-around">
+            <button class="modal-action-btn like-btn {{ 'active' if user_reactions.get(post.id) }}"
+                    data-post-id="{{ post.id }}"
+                    data-reaction="🔥">
+              <i class="bi bi-fire{{ '-fill' if user_reactions.get(post.id) else '' }}"></i>
+              <span>Me gusta</span>
+            </button>
+            <button class="modal-action-btn share-btn" data-post-id="{{ post.id }}">
+              <i class="bi bi-share"></i>
+              <span>Compartir</span>
+            </button>
+            <button class="modal-action-btn save-btn" data-post-id="{{ post.id }}">
+              <i class="bi bi-bookmark"></i>
+              <span>Guardar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sección de Comentarios -->
+        <div class="modal-comments-section">
+          <!-- Lista de Comentarios Existentes -->
+          <div class="comments-list" id="commentsList-{{ post.id }}">
+            {% for comment in post.comments[:10] %}
+            <div class="comment-item d-flex mb-3">
+              <img src="{{ comment.author.avatar_url if comment.author else url_for('static', filename='img/default.png') }}" 
+                   alt="{{ comment.author.username if comment.author else 'Usuario' }}"
+                   class="rounded-circle me-2" 
+                   style="width: 32px; height: 32px; object-fit: cover;">
+              <div class="flex-grow-1">
+                <div class="comment-bubble bg-light rounded-3 p-2">
+                  <div class="comment-author fw-semibold small">
+                    {{ comment.author.username if comment.author else 'Usuario eliminado' }}
+                  </div>
+                  <div class="comment-text">{{ comment.body }}</div>
+                </div>
+                <div class="comment-meta mt-1">
+                  <small class="text-muted">{{ comment.timestamp|timesince }}</small>
+                  <button class="btn btn-link btn-sm p-0 ms-2 text-muted">Responder</button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- Formulario para Agregar Comentario -->
+          <div class="add-comment-form mt-3">
+            <form class="comment-form d-flex align-items-center" data-post-id="{{ post.id }}" onsubmit="submitModalComment(event, '{{ post.id }}')">
+              <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                   alt="{{ current_user.username }}"
+                   class="rounded-circle me-2" 
+                   style="width: 32px; height: 32px; object-fit: cover;">
+              <div class="flex-grow-1 position-relative">
+                <input type="text" 
+                       class="form-control comment-input rounded-pill" 
+                       placeholder="Escribe un comentario..." 
+                       name="body"
+                       style="padding-right: 40px;">
+                <button type="submit" 
+                        class="btn position-absolute end-0 top-50 translate-middle-y me-2"
+                        style="border: none; background: none; color: #1877F2;"
+                        disabled>
+                  <i class="bi bi-send-fill"></i>
+                </button>
+              </div>
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

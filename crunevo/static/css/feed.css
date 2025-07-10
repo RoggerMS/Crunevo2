@@ -1142,6 +1142,293 @@ select:focus {
   color: var(--text-secondary);
 }
 
+/* Modal Comments Gallery Styles */
+.modal-gallery-container {
+  margin-bottom: 0;
+}
+
+.facebook-gallery-modal {
+  width: 100%;
+  display: flex;
+  gap: 2px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+}
+
+.modal-gallery-item {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.modal-gallery-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.2s ease;
+  display: block;
+}
+
+.modal-gallery-image:hover {
+  opacity: 0.95;
+}
+
+/* Modal gallery layouts */
+.modal-gallery.single-image {
+  max-height: 400px;
+  min-height: 200px;
+}
+
+.modal-gallery.single-image .modal-gallery-image {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: contain;
+  background: #000;
+}
+
+.modal-gallery.two-images {
+  height: 300px;
+}
+
+.modal-gallery.two-images .modal-gallery-item {
+  flex: 1;
+  height: 100%;
+}
+
+.modal-gallery.three-images {
+  height: 300px;
+}
+
+.modal-gallery.three-images .main-item {
+  flex: 1;
+  height: 100%;
+}
+
+.modal-gallery.three-images .modal-gallery-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modal-gallery.three-images .modal-gallery-side .modal-gallery-item {
+  flex: 1;
+}
+
+.modal-gallery.four-images {
+  height: 300px;
+  flex-wrap: wrap;
+}
+
+.modal-gallery.four-images .modal-gallery-item {
+  width: calc(50% - 1px);
+  height: calc(50% - 1px);
+}
+
+.modal-gallery.five-plus-images {
+  height: 300px;
+}
+
+.modal-gallery.five-plus-images .main-item {
+  flex: 1;
+  height: 100%;
+}
+
+.modal-gallery.five-plus-images .modal-gallery-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2px;
+}
+
+.modal-gallery.five-plus-images .modal-gallery-grid .modal-gallery-item {
+  position: relative;
+}
+
+.modal-gallery-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.modal-gallery-overlay:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.modal-gallery-overlay .overlay-text {
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Modal Post Actions */
+.modal-post-actions {
+  background: var(--post-bg);
+}
+
+.modal-action-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.modal-action-btn:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.modal-action-btn.active {
+  color: var(--crunevo-primary);
+}
+
+.modal-action-btn.like-btn.active {
+  color: var(--error-color);
+}
+
+/* Modal Comments Section */
+.modal-comments-section {
+  padding: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.comments-list {
+  margin-bottom: 20px;
+}
+
+.comment-item {
+  padding: 8px 0;
+}
+
+.comment-bubble {
+  background: var(--hover-bg) !important;
+  border-radius: 16px !important;
+  padding: 8px 12px !important;
+  display: inline-block;
+  max-width: 100%;
+}
+
+[data-bs-theme="dark"] .comment-bubble {
+  background: #3A3B3C !important;
+}
+
+.comment-author {
+  font-size: 13px;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.comment-text {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin: 0;
+}
+
+.comment-meta {
+  margin-left: 12px;
+  margin-top: 4px;
+}
+
+.comment-meta .btn-link {
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text-secondary);
+}
+
+.comment-meta .btn-link:hover {
+  text-decoration: underline;
+  color: var(--text-primary);
+}
+
+/* Add Comment Form */
+.add-comment-form .comment-input {
+  border: 1px solid var(--border-color);
+  background: var(--hover-bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  padding: 8px 45px 8px 12px;
+}
+
+.add-comment-form .comment-input:focus {
+  outline: none;
+  border-color: var(--crunevo-primary);
+  box-shadow: 0 0 0 2px rgba(109, 40, 217, 0.1);
+  background: var(--post-bg);
+}
+
+.add-comment-form .comment-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Responsive adjustments for modal gallery */
+@media (max-width: 768px) {
+  .modal-dialog {
+    max-width: 95vw;
+    margin: 10px auto;
+  }
+
+  .modal-gallery.two-images,
+  .modal-gallery.three-images,
+  .modal-gallery.four-images,
+  .modal-gallery.five-plus-images {
+    height: 250px;
+  }
+
+  .modal-gallery.single-image {
+    max-height: 300px;
+  }
+
+  .modal-gallery-overlay .overlay-text {
+    font-size: 20px;
+  }
+
+  .modal-comments-section {
+    max-height: 300px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-gallery.two-images,
+  .modal-gallery.three-images,
+  .modal-gallery.four-images,
+  .modal-gallery.five-plus-images {
+    height: 200px;
+  }
+
+  .modal-gallery.single-image {
+    max-height: 250px;
+  }
+
+  .modal-gallery-overlay .overlay-text {
+    font-size: 18px;
+  }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   * {

@@ -172,4 +172,6 @@
 </article>
 
 <!-- Comments Modal -->
+{% with post=post, user_reactions=user_reactions %}
 {% include 'components/comment_modal.html' %}
+{% endwith %}
