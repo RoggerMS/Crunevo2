@@ -721,3 +721,4 @@
 - Corregido el botón "Reclamar" de la racha diaria enlazando el evento en feed.js y actualizando los crolars con toast de confirmación (PR streak-claim-btn-fix).
 - Eliminado modal de comentarios antiguo duplicado, quedando solo la versión con galería completa (PR comment-modal-cleanup).
 
+- Visor de imágenes actualizado con panel lateral y zoom estilo Facebook (PR fb-photo-viewer).
