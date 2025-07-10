@@ -308,6 +308,7 @@ def view_post_photo(post_id: int, index: int):
         og_image=image_url,
         og_title=og_title,
         og_description=og_description,
+        photo_index=index,
     )
 
 

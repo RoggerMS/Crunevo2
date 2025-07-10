@@ -725,3 +725,4 @@
 - Visor de imágenes actualizado con panel lateral y zoom estilo Facebook (PR fb-photo-viewer).
 - Comment modal now uses vertical gallery with fullscreen view on mobile (PR comment-modal-vertical)
 - Fixed comments not loading in photo view by aligning markup and gallery lookup (PR comment-photo-view-fix)
+- Photo view route now passes photo_index and loads comments dynamically via dataset (PR photo-view-comments-fix)
