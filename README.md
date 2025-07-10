@@ -72,6 +72,9 @@ This command sets the `DATABASE_URL` secret automatically. Verify it with
 If Fly warns that the app is not listening on `0.0.0.0:8080`, double-check that
 your Dockerfile binds Gunicorn to that address and that `internal_port = 8080`
 is set in `fly.toml`. You can inspect startup errors with `fly logs`.
+If the warning persists even with those settings, run `fly logs -a crunevo2` to
+verify Gunicorn starts correctly. Startup errors will prevent the app from
+binding to port `8080` and trigger this message.
 
 If you want to run the application locally but use a PostgreSQL
 database hosted on Fly.io:
