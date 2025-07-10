@@ -176,31 +176,6 @@
     {% include 'components/quick_notes.html' %}
     {% endif %}
 
-    <!-- Image Modal -->
-    <div id="imageModal" class="image-modal hidden" role="dialog" aria-modal="true" onclick="outsideImageClick(event)" tabindex="-1">
-      <button type="button" class="close" aria-label="Cerrar" onclick="closeImageModal()">✖</button>
-      <div class="modal-body-wrapper">
-        <div class="modal-image-container position-relative">
-          <a id="modalImageLink" target="_blank" rel="noopener">
-            <img class="modal-content" id="modalImage" alt="Imagen">
-          </a>
-          <div class="zoom-controls">
-            <button type="button" aria-label="Acercar" onclick="zoomIn()"><i class="bi bi-plus-lg"></i></button>
-            <button type="button" aria-label="Alejar" onclick="zoomOut()"><i class="bi bi-dash-lg"></i></button>
-            <button type="button" aria-label="Ajustar" onclick="resetZoom()"><i class="bi bi-arrows-fullscreen"></i></button>
-          </div>
-          <button type="button" class="modal-nav prev" aria-label="Imagen anterior" onclick="prevImage()"><i class="bi bi-chevron-left"></i></button>
-          <button type="button" class="modal-nav next" aria-label="Siguiente imagen" onclick="nextImage()"><i class="bi bi-chevron-right"></i></button>
-        </div>
-        <div class="text-center mt-2">
-          <a id="openImageNewTab" target="_blank" class="text-decoration-none link-light" rel="noopener">
-            Abrir imagen <i class="bi bi-box-arrow-up-right"></i>
-          </a>
-        </div>
-        <div id="imageModalInfo" class="modal-details"></div>
-      </div>
-      <div class="modal-counter" id="modalCounter"></div>
-    </div>
 
     <!-- Bootstrap JS -->
     <script src="{{ url_for('static', filename='vendor/bootstrap.bundle.min.js') }}"></script>
