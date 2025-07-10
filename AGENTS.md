@@ -727,4 +727,3 @@
 - Fixed comments not loading in photo view by aligning markup and gallery lookup (PR comment-photo-view-fix)
 - Photo view route now passes photo_index and loads comments dynamically via dataset (PR photo-view-comments-fix)
 - /health endpoint now returns plain "ok" with status 200 and test updated (PR health-endpoint-plain).
-- Comentarios se muestran dentro de la tarjeta expandible y la vista /feed/post/:id comparte la misma sección (PR comment-section-inline).
