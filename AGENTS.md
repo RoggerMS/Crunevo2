@@ -727,6 +727,3 @@
 - Fixed comments not loading in photo view by aligning markup and gallery lookup (PR comment-photo-view-fix)
 - Photo view route now passes photo_index and loads comments dynamically via dataset (PR photo-view-comments-fix)
 - /health endpoint now returns plain "ok" with status 200 and test updated (PR health-endpoint-plain).
-- Reimplemented inline comments in feed with AJAX loading and unified post detail
-  using the same post card component. Comments expand below each post and the
-  detail view shows a "Volver al feed" button. (PR feed-inline-comments)
