@@ -30,7 +30,7 @@
   function openCommentsModal(postId) {
     const modalEl = document.getElementById(`commentsModal-${postId}`);
     if (!modalEl) return;
-    const modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: true });
+    const modal = new bootstrap.Modal(modalEl);
     modal.show();
     setTimeout(() => {
       const input = modalEl.querySelector('.comment-input');
