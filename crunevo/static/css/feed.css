@@ -1156,6 +1156,22 @@ select:focus {
   background: #000;
 }
 
+.modal-gallery-vertical {
+  flex-direction: column;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.modal-gallery-vertical .modal-gallery-item {
+  flex: none;
+}
+.modal-gallery-vertical .modal-gallery-image {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: contain;
+  background: #000;
+}
+
 .modal-gallery-item {
   position: relative;
   overflow: hidden;
@@ -1391,6 +1407,10 @@ select:focus {
     margin: 10px auto;
   }
 
+  .modal-gallery-vertical {
+    max-height: 50vh;
+  }
+
   .modal-gallery.two-images,
   .modal-gallery.three-images,
   .modal-gallery.four-images,
@@ -1418,6 +1438,10 @@ select:focus {
   .modal-gallery.four-images,
   .modal-gallery.five-plus-images {
     height: 200px;
+  }
+
+  .modal-gallery-vertical {
+    max-height: 45vh;
   }
 
   .modal-gallery.single-image {

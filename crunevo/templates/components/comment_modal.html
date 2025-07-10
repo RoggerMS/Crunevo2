@@ -1,6 +1,6 @@
 <!-- Modal de Comentarios con Galería Completa -->
 <div class="modal fade" id="commentsModal-{{ post.id }}" tabindex="-1" aria-labelledby="commentsModalLabel-{{ post.id }}" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
     <div class="modal-content">
       <!-- Header del Modal -->
       <div class="modal-header border-0 pb-0">
@@ -37,96 +37,16 @@
             {% set image_urls = [post.file_url] %}
           {% endif %}
 
-          <div class="facebook-gallery-modal" data-post-id="{{ post.id }}" data-images='{{ image_urls | tojson }}'>
-            {% if image_count == 1 %}
-              <!-- Una imagen -->
-              <div class="modal-gallery single-image">
-                <img src="{{ image_urls[0] }}" 
-                     alt="Imagen de la publicación" 
-                     onclick="openImageModal('{{ image_urls[0] }}', 0, '{{ post.id }}', event)" 
-                     loading="lazy" 
-                     class="modal-gallery-image" />
-              </div>
-
-            {% elif image_count == 2 %}
-              <!-- Dos imágenes -->
-              <div class="modal-gallery two-images">
-                {% for url in image_urls[:2] %}
-                <div class="modal-gallery-item">
-                  <img src="{{ url }}" 
-                       alt="Imagen {{ loop.index }} de {{ image_count }}" 
-                       onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post.id }}', event)" 
-                       loading="lazy" 
-                       class="modal-gallery-image" />
-                </div>
-                {% endfor %}
-              </div>
-
-            {% elif image_count == 3 %}
-              <!-- Tres imágenes -->
-              <div class="modal-gallery three-images">
-                <div class="modal-gallery-item main-item">
-                  <img src="{{ image_urls[0] }}" 
-                       alt="Imagen 1 de {{ image_count }}" 
-                       onclick="openImageModal('{{ image_urls[0] }}', 0, '{{ post.id }}', event)" 
-                       loading="lazy" 
-                       class="modal-gallery-image" />
-                </div>
-                <div class="modal-gallery-side">
-                  {% for url in image_urls[1:3] %}
-                  <div class="modal-gallery-item">
-                    <img src="{{ url }}" 
-                         alt="Imagen {{ loop.index + 1 }} de {{ image_count }}" 
-                         onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post.id }}', event)" 
-                         loading="lazy" 
-                         class="modal-gallery-image" />
-                  </div>
-                  {% endfor %}
-                </div>
-              </div>
-
-            {% elif image_count == 4 %}
-              <!-- Cuatro imágenes -->
-              <div class="modal-gallery four-images">
-                {% for url in image_urls[:4] %}
-                <div class="modal-gallery-item">
-                  <img src="{{ url }}" 
-                       alt="Imagen {{ loop.index }} de {{ image_count }}" 
-                       onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post.id }}', event)" 
-                       loading="lazy" 
-                       class="modal-gallery-image" />
-                </div>
-                {% endfor %}
-              </div>
-
-            {% else %}
-              <!-- Cinco o más imágenes -->
-              <div class="modal-gallery five-plus-images">
-                <div class="modal-gallery-item main-item">
-                  <img src="{{ image_urls[0] }}" 
-                       alt="Imagen 1 de {{ image_count }}" 
-                       onclick="openImageModal('{{ image_urls[0] }}', 0, '{{ post.id }}', event)" 
-                       loading="lazy" 
-                       class="modal-gallery-image" />
-                </div>
-                <div class="modal-gallery-grid">
-                  {% for url in image_urls[1:5] %}
-                  <div class="modal-gallery-item {% if loop.index == 4 and image_count > 5 %}has-overlay{% endif %}">
-                    <img src="{{ url }}" 
-                         alt="Imagen {{ loop.index + 1 }} de {{ image_count }}" 
-                         onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post.id }}', event)" 
-                         loading="lazy" 
-                         class="modal-gallery-image" />
-                    {% if loop.index == 4 and image_count > 5 %}
-                    <div class="modal-gallery-overlay" onclick="openImageModal('{{ url }}', {{ loop.index }}, '{{ post.id }}', event)">
-                      <span class="overlay-text">+{{ image_count - 4 }}</span>
-                    </div>
-                    {% endif %}
-                  </div>
-                  {% endfor %}
-                </div>
-              </div>
-            {% endif %}
+          <div class="facebook-gallery-modal modal-gallery-vertical" data-post-id="{{ post.id }}" data-images='{{ image_urls | tojson }}'>
+            {% for url in image_urls %}
+            <div class="modal-gallery-item">
+              <img src="{{ url }}"
+                   alt="Imagen {{ loop.index }} de {{ image_count }}"
+                   onclick="openImageModal('{{ url }}', {{ loop.index0 }}, '{{ post.id }}', event)"
+                   loading="lazy"
+                   class="modal-gallery-image" />
+            </div>
+            {% endfor %}
           </div>
         </div>
         {% endif %}
