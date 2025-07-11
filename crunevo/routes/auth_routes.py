@@ -263,11 +263,10 @@ def perfil():
     user_level = min(
         10, (current_user.points or 0) // 100 + current_user.verification_level
     )
-
     activity_total = (
         len(current_user.post_comments or [])
         + len(current_user.posts or [])
-        + Note.query.filter_by(user_id=current_user.id).count()
+        + len(current_user.notes or [])
     )
     participation_percentage = (
         min(100, int((activity_total / 30) * 100)) if activity_total else 0
@@ -628,9 +627,7 @@ def delete_account():
 
     for post in current_user.posts:
         db.session.delete(post)
-    from crunevo.models import Note
-
-    for note in Note.query.filter_by(user_id=current_user.id).all():
+    for note in current_user.notes:
         db.session.delete(note)
     for comment in current_user.comments:
         db.session.delete(comment)
