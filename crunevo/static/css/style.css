@@ -769,6 +769,10 @@ html[data-bs-theme="dark"] footer a {
   color: var(--light-text);
 }
 
+.docx-preview {
+  padding: 1rem;
+}
+
 @media (min-width: 768px) {
   .error-page {
     max-width: 500px;
