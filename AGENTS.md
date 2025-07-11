@@ -740,3 +740,4 @@
   DOCX and converts PPTX to PDF with LibreOffice for inline display (PR notes-office-viewer).
 - Notes upload now accepts DOCX and PPTX, storing original files and generating PDF previews. Added download of original PPTX (PR docx-pptx-upload).
 - Added notes_count helper and updated templates to use it, preventing database errors when column missing (PR notes-count-helper).
+- Nota detail ahora usa includes para visor según tipo de archivo y se guarda note.file_type en la base de datos (PR note-file-type-viewer).
