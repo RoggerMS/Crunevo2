@@ -623,13 +623,14 @@ textarea.form-control {
 }
 
 .verified-badge {
-  background: linear-gradient(135deg, var(--crunevo-success), #38a169);
-  color: white;
-  border-radius: var(--radius-lg);
+  background-color: transparent !important;
+  border: none !important;
+  color: #a855f7 !important;
+  border-radius: 4px;
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
+  padding: 4px 8px;
   font-size: 0.7rem;
   font-weight: 600;
 }

@@ -732,3 +732,4 @@
 - Comment modal now reuses image_gallery macro for consistent gallery layout with feed (PR gallery-modal-unify).
 - Navbar cleaned: removed Ranking link, backpack moved into personal space with new block. Launcher menu redesigned with grid of app icons. (PR grid-launcher-refresh)
 - Launcher menu modernized with new component and CSS; floating options icon removed from profile via main.js (PR profile-launcher-redesign)
+- Removed empty 'misiones' item from user dropdown and styled verified badge in purple (PR perfil-menu-badge-fix).
