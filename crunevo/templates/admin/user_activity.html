@@ -3,7 +3,7 @@
 <h3>Actividad reciente de {{ user.username }}</h3>
 <ul>
   <li>Último login: {{ user.last_login or "Desconocido" }}</li>
-  <li>Apuntes subidos: {{ user.notes|length }}</li>
+  <li>Apuntes subidos: {{ notes_count(user) }}</li>
   <li>Comentarios hechos: {{ user.comments|length }}</li>
 </ul>
 {% endblock %}

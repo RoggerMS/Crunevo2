@@ -2,7 +2,7 @@ from functools import wraps
 from datetime import datetime
 from flask import redirect, url_for, flash
 from flask_login import current_user, login_required
-from crunevo.models import User
+from crunevo.models import User, Note
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import inspect
 
@@ -134,3 +134,14 @@ def timesince(dt):
         return f"hace {hours} hora{'s' if hours != 1 else ''}"
     days = hours // 24
     return f"hace {days} d\u00eda{'s' if days != 1 else ''}"
+
+
+def notes_count(user):
+    """Return number of notes for a given user safely."""
+    if not user or not hasattr(user, "id"):
+        return 0
+    try:
+        return Note.query.filter_by(user_id=user.id).count()
+    except SQLAlchemyError:
+        db.session.rollback()
+        return 0
