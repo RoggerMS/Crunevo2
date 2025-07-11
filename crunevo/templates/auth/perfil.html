@@ -367,36 +367,39 @@
 
         <!-- Achievements Tab -->
         <div class="tab-pane fade {% if tab == 'logros' %}show active{% endif %}" id="achievements-tab">
-          <div class="row g-3">
-            {% for achievement in user_achievements %}
-            <div class="col-md-4">
-              <div class="card border-0 shadow-sm text-center achievement-card" id="achievement-{{ achievement.code }}">
+          <div class="mb-3">
+            <div class="progress" style="height: 8px;">
+              <div class="progress-bar bg-success" style="width: {{ (user_achievements|length / total_achievements) * 100 }}%"></div>
+            </div>
+            <small class="text-muted">Has desbloqueado {{ user_achievements|length }}/{{ total_achievements }} logros</small>
+          </div>
+          <div class="row row-cols-2 row-cols-md-3 g-3">
+            {% for code, info in ACHIEVEMENT_DETAILS.items() %}
+            {% set ua = user_achievements_map.get(code) %}
+            <div class="col">
+              <div class="card achievement-card border-0 shadow-sm text-center {% if not ua %}locked{% endif %}" {% if not ua %}data-bs-toggle="tooltip" title="Aún no obtenido"{% endif %}>
                 <div class="card-body p-3">
                   <div class="achievement-icon mb-2">
-                    <i class="bi bi-trophy-fill display-4 text-warning"></i>
+                    <i class="bi {{ info.icon }} display-4 {% if ua %}text-warning{% else %}text-muted{% endif %}"></i>
                   </div>
-                  <h6 class="fw-bold mb-1">{{ achievement.title }}</h6>
-                  <p class="text-muted small mb-2">{{ achievement.description }}</p>
-                  <small class="text-muted">
-                    Desbloqueado {{ achievement.unlocked_date.strftime('%d/%m/%Y') }}
-                  </small>
+                  <h6 class="fw-bold mb-1">{{ info.title }}</h6>
+                  {% if ua %}
+                  <small class="text-muted">{{ ua.timestamp|timesince }}</small>
+                  {% else %}
+                  <small class="text-muted">Bloqueado</small>
+                  {% endif %}
                 </div>
               </div>
             </div>
-            {% else %}
+            {% endfor %}
+            {% if user_achievements|length == 0 %}
             <div class="col-12">
               <div class="text-center py-5">
                 <i class="bi bi-award display-1 text-muted mb-3"></i>
-                <h5 class="text-muted">Sin logros desbloqueados</h5>
-                {% if is_own_profile %}
-                <p class="text-muted mb-3">¡Completa misiones para desbloquear logros!</p>
-                <a href="{{ url_for('auth.perfil', tab='misiones') }}" class="btn btn-primary">
-                  <i class="bi bi-trophy"></i> Ver Misiones
-                </a>
-                {% endif %}
+                <p class="text-muted">Aún no has desbloqueado ningún logro. ¡Sigue participando en CRUNEVO para comenzar!</p>
               </div>
             </div>
-            {% endfor %}
+            {% endif %}
           </div>
         </div>
 

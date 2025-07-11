@@ -246,7 +246,7 @@ def perfil():
         Comment,
         Purchase,
     )
-    from crunevo.constants import ACHIEVEMENT_CATEGORIES
+    from crunevo.constants import ACHIEVEMENT_DETAILS, ACHIEVEMENT_CATEGORIES
 
     saved = SavedPost.query.filter_by(user_id=current_user.id).all()
     posts = [Post.query.get(sp.post_id) for sp in saved if Post.query.get(sp.post_id)]
@@ -352,13 +352,17 @@ def perfil():
     recent_activities = recent_activities[:5]
 
     ach_type = request.args.get("tipo")
-    achievements = current_user.achievements
+    all_user_achievements = current_user.achievements
+    achievements = all_user_achievements
     if ach_type:
         achievements = [
             a
-            for a in achievements
+            for a in all_user_achievements
             if ACHIEVEMENT_CATEGORIES.get(a.badge_code) == ach_type
         ]
+
+    total_achievements = len(ACHIEVEMENT_DETAILS)
+    user_achievements_map = {a.badge_code: a for a in all_user_achievements}
 
     misiones = None
     progresos = None
@@ -436,6 +440,9 @@ def perfil():
         participation_percentage=participation_percentage,
         recent_activities=recent_activities,
         purchases=purchases,
+        total_achievements=total_achievements,
+        user_achievements_map=user_achievements_map,
+        user_achievements=all_user_achievements,
     )
 
 

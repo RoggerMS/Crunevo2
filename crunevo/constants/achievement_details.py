@@ -21,12 +21,12 @@ ACHIEVEMENT_DETAILS = {
         "description": "Ayudaste a otro usuario en el foro",
     },
     "embajador_crunevo": {
-        "title": "Embajador Crunevo \ud83c\udf3c",
+        "title": "Embajador Crunevo",
         "icon": "bi-people-fill",
         "description": "Invitaste a 10 o m\u00e1s usuarios",
     },
     "aliado_educativo": {
-        "title": "Aliado educativo \ud83d\udcac",
+        "title": "Aliado educativo",
         "icon": "bi-chat-square-text",
         "description": "Un referido subi\u00f3 apuntes",
     },

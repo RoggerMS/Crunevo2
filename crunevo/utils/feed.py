@@ -1,5 +1,4 @@
 from crunevo.models import User
-from crunevo.tasks import task_queue, insert_feed_items
 
 
 def create_feed_item_for_all(
@@ -8,6 +7,8 @@ def create_feed_item_for_all(
     """Enqueue creation of feed items for all or selected users."""
     if owner_ids is None:
         owner_ids = [u.id for u in User.query.with_entities(User.id).all()]
+
+    from crunevo.tasks import task_queue, insert_feed_items
 
     task_queue.enqueue(
         insert_feed_items,
