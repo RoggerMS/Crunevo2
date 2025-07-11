@@ -1,0 +1,41 @@
+.launcher-menu {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 240px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  animation: fadeInScale 0.2s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.launcher-item {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  gap: 10px;
+  transition: 0.2s;
+}
+
+.launcher-item i {
+  font-size: 18px;
+  color: #6c63ff;
+}
+
+.launcher-item:hover {
+  background-color: #f0f0ff;
+  cursor: pointer;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
