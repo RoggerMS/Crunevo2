@@ -6,7 +6,11 @@
     <div class="col-md-9 order-md-2">
       <div id="noteViewer" data-url="{{ note.filename }}" data-type="{{ file_type }}"></div>
       <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="fullscreenBtn">Pantalla completa</button>
+      {% if note.original_file_url and file_type == 'pptx' %}
+      <p class="text-muted small mt-2"><a href="{{ url_for('notes.download_note', note_id=note.id) }}">Descargar original (.pptx)</a></p>
+      {% else %}
       <p class="text-muted small mt-2"><a href="{{ url_for('notes.download_note', note_id=note.id) }}">Descargar archivo</a></p>
+      {% endif %}
     </div>
     <div class="col-md-3 order-md-1">
       <h1 class="h5" id="noteTitle">{{ note.title }}</h1>
@@ -38,7 +42,11 @@
         <a href="#" class="btn btn-primary btn-sm mt-2">Canjear ahora</a>
       </div>
       {% endif %}
+      {% if note.original_file_url and file_type == 'pptx' %}
+      <a href="{{ url_for('notes.download_note', note_id=note.id) }}" class="btn btn-outline-primary w-100 mb-2">Descargar original (.pptx)</a>
+      {% else %}
       <a href="{{ url_for('notes.download_note', note_id=note.id) }}" class="btn btn-outline-primary w-100 mb-2">Descargar</a>
+      {% endif %}
       <form method="post" action="{{ url_for('notes.print_note', note_id=note.id) }}" class="mb-2">
         {{ csrf.csrf_field() }}
         <button type="submit" class="btn btn-outline-secondary w-100">Solicitar impresión</button>

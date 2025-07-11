@@ -52,7 +52,7 @@
 
             <div class="mb-4">
               <label for="file" class="form-label">Archivo *</label>
-              <input class="form-control" type="file" id="file" name="file" accept="application/pdf,image/*" required>
+              <input class="form-control" type="file" id="file" name="file" accept=".pdf,.docx,.pptx,image/*" required>
               <div class="mt-2">
                 <a href="{{ url_for('notes.drive_authorize') }}" class="btn btn-outline-secondary btn-sm me-2">Importar Drive</a>
                 <a href="{{ url_for('notes.dropbox_authorize') }}" class="btn btn-outline-secondary btn-sm">Importar Dropbox</a>
@@ -60,6 +60,8 @@
             </div>
             <canvas id="pdfPreview" class="w-100 border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;"></canvas>
             <img loading="lazy" id="imgPreview" class="img-fluid border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;" alt="Vista previa de imagen" />
+            <div id="docxPreview" class="border rounded p-2 mb-3 tw-hidden" style="max-height:400px; overflow:auto;"></div>
+            <p id="fileNamePreview" class="mb-3 tw-hidden"></p>
 
             <div class="mb-3">
               <label class="form-label" for="privacy">Privacidad *</label>
@@ -142,11 +144,14 @@
 {% block body_end %}
   {{ super() }}
   <script src="{{ url_for('static', filename='pdfjs/pdf.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/mammoth.browser.min.js') }}"></script>
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";
     const fileInput = document.getElementById('file');
     const canvas = document.getElementById('pdfPreview');
     const imgPrev = document.getElementById('imgPreview');
+    const docxPrev = document.getElementById('docxPreview');
+    const fileNamePrev = document.getElementById('fileNamePreview');
     const form = document.getElementById('noteUploadForm');
     const btn = document.getElementById('uploadBtn');
     const catSelect = document.getElementById('category');
@@ -158,6 +163,8 @@
       const file = fileInput.files[0];
       canvas.classList.add('tw-hidden');
       imgPrev.classList.add('tw-hidden');
+      docxPrev.classList.add('tw-hidden');
+      fileNamePrev.classList.add('tw-hidden');
       if (!file) return;
       if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
         const reader = new FileReader();
@@ -182,6 +189,24 @@
         imgPrev.src = URL.createObjectURL(file);
         imgPrev.onload = () => URL.revokeObjectURL(imgPrev.src);
         imgPrev.classList.remove('tw-hidden');
+      } else if (file.name.endsWith('.docx')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          mammoth
+            .convertToHtml({ arrayBuffer: e.target.result })
+            .then((result) => {
+              docxPrev.innerHTML = result.value;
+              docxPrev.classList.remove('tw-hidden');
+            })
+            .catch(() => {
+              fileNamePrev.textContent = file.name;
+              fileNamePrev.classList.remove('tw-hidden');
+            });
+        };
+        reader.readAsArrayBuffer(file);
+      } else if (file.name.endsWith('.pptx')) {
+        fileNamePrev.textContent = file.name;
+        fileNamePrev.classList.remove('tw-hidden');
       }
     });
 

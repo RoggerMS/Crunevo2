@@ -138,7 +138,10 @@ def upload_note():
         ext = os.path.splitext(f.filename)[1].lower()
         allowed_exts = {".pdf", ".jpg", ".jpeg", ".png", ".docx", ".pptx"}
         if ext not in allowed_exts:
-            flash("Formato no soportado. Usa PDF, imagen, Word o PowerPoint", "danger")
+            flash(
+                "Formato no soportado. Usa PDF, imagen, Word o PowerPoint",
+                "danger",
+            )
             return redirect(url_for("notes.upload_note"))
 
         from crunevo.utils import plagiarism
@@ -165,12 +168,13 @@ def upload_note():
             return redirect(url_for("notes.upload_note"))
 
         cloud_url = current_app.config.get("CLOUDINARY_URL")
+        original_url = ""
         try:
             if cloud_url:
                 filename = secure_filename(f.filename)
                 public_id = os.path.splitext(filename)[0]
                 if ext == ".pdf":
-                    _ = cloudinary.uploader.upload(
+                    result = cloudinary.uploader.upload(
                         f,
                         resource_type="auto",
                         public_id=f"notes/{public_id}",
@@ -182,6 +186,7 @@ def upload_note():
                         secure=True,
                     )
                     filepath = view_url
+                    original_url = result["secure_url"]
                 elif ext == ".docx":
                     tmpdir = tempfile.mkdtemp()
                     tmp_path = os.path.join(tmpdir, filename)
@@ -193,10 +198,17 @@ def upload_note():
                         format="docx",
                     )
                     filepath = result["secure_url"]
+                    original_url = filepath
                 elif ext == ".pptx":
                     tmpdir = tempfile.mkdtemp()
                     tmp_path = os.path.join(tmpdir, filename)
                     f.save(tmp_path)
+                    orig = cloudinary.uploader.upload(
+                        tmp_path,
+                        resource_type="raw",
+                        public_id=f"notes/{public_id}",
+                        format="pptx",
+                    )
                     subprocess.run(
                         [
                             "soffice",
@@ -224,6 +236,7 @@ def upload_note():
                         secure=True,
                     )
                     filepath = view_url
+                    original_url = orig["secure_url"]
                 else:
                     result = cloudinary.uploader.upload(
                         f,
@@ -231,12 +244,14 @@ def upload_note():
                         public_id=f"notes/{public_id}",
                     )
                     filepath = result["secure_url"]
+                    original_url = filepath
             else:
                 filename = secure_filename(f.filename)
                 upload_folder = current_app.config["UPLOAD_FOLDER"]
                 os.makedirs(upload_folder, exist_ok=True)
                 filepath = os.path.join(upload_folder, filename)
                 f.save(filepath)
+                original_url = filepath
                 if ext == ".pptx":
                     subprocess.run(
                         [
@@ -268,6 +283,7 @@ def upload_note():
             title=title,
             description=description,
             filename=filepath,
+            original_file_url=original_url,
             tags=request.form.get("tags"),
             category=category,
             language=request.form.get("language"),
@@ -447,7 +463,7 @@ def detail(note_id):
         path = path.split("?")[0]
         return os.path.splitext(path)[1].lower()
 
-    ext = get_ext(note.filename)
+    ext = get_ext(note.original_file_url or note.filename)
     if ext == ".pdf":
         ftype = "pdf"
     elif ext in {".jpg", ".jpeg", ".png", ".webp"}:
@@ -483,7 +499,7 @@ def embed_note(note_id):
         path = path.split("?")[0]
         return os.path.splitext(path)[1].lower()
 
-    ext = get_ext(note.filename)
+    ext = get_ext(note.original_file_url or note.filename)
     if ext == ".pdf":
         ftype = "pdf"
     elif ext in {".jpg", ".jpeg", ".png", ".webp"}:
@@ -595,7 +611,8 @@ def download_note(note_id):
     if note.downloads >= 100:
         unlock_achievement(note.author, AchievementCodes.DESCARGA_100)
 
-    return redirect(note.filename)
+    download_url = note.original_file_url or note.filename
+    return redirect(download_url)
 
 
 @notes_bp.route("/<int:note_id>/print", methods=["POST"])
