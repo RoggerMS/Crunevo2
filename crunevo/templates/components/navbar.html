@@ -63,7 +63,40 @@
             <button class="launcher-toggle nav-link" type="button" aria-label="Aplicaciones">
               <i class="bi bi-grid-3x3-gap-fill"></i>
             </button>
-            {% include 'components/launcher_menu_v2.html' %}
+            <div class="app-launcher-grid shadow rounded p-3">
+              <div class="row row-cols-3 g-3">
+                <div class="col text-center">
+                  <a href="{{ url_for('auth.perfil') }}" class="app-icon-btn">
+                    <i class="bi bi-person-circle fs-2 text-primary"></i>
+                    <div class="small mt-1">Perfil</div>
+                  </a>
+                </div>
+                <div class="col text-center">
+                  <a href="{{ url_for('personal_space.index') if 'personal_space.index' in url_for.__globals__.get('current_app', {}).view_functions else '/espacio-personal' }}" class="app-icon-btn">
+                    <i class="bi bi-house-heart fs-2 text-info"></i>
+                    <div class="small mt-1">Espacio</div>
+                  </a>
+                </div>
+                <div class="col text-center">
+                  <a href="/misiones" class="app-icon-btn">
+                    <i class="bi bi-stars fs-2 text-warning"></i>
+                    <div class="small mt-1">Misiones</div>
+                  </a>
+                </div>
+                <div class="col text-center">
+                  <a href="{{ url_for('league.index') if 'league.index' in url_for.__globals__.get('current_app', {}).view_functions else '/liga' }}" class="app-icon-btn">
+                    <i class="bi bi-award fs-2 text-success"></i>
+                    <div class="small mt-1">Liga</div>
+                  </a>
+                </div>
+                <div class="col text-center">
+                  <a href="{{ url_for('challenges.ghost_mentor') if 'challenges.ghost_mentor' in url_for.__globals__.get('current_app', {}).view_functions else '/desafios' }}" class="app-icon-btn">
+                    <i class="bi bi-lightning fs-2 text-danger"></i>
+                    <div class="small mt-1">Desafíos</div>
+                  </a>
+                </div>
+              </div>
+            </div>
           </li>
           {% endif %}
           <li class="nav-item d-none d-lg-block">

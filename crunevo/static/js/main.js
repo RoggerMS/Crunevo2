@@ -1407,18 +1407,11 @@ function initKeyboardShortcuts() {
 
 function initLauncherMenu() {
   const launcherBtn = document.querySelector('.launcher-toggle');
-  const launcherMenu = document.querySelector('.launcher-menu');
+  const launcherMenu = document.querySelector('.app-launcher-grid');
   if (!launcherBtn || !launcherMenu) return;
-  const closeBtn = launcherMenu.querySelector('.launcher-close');
-
   launcherBtn.addEventListener('click', () => {
     launcherMenu.classList.toggle('show');
   });
-  if (closeBtn) {
-    closeBtn.addEventListener('click', () => {
-      launcherMenu.classList.remove('show');
-    });
-  }
   document.addEventListener('click', (e) => {
     if (!launcherBtn.contains(e.target) && !launcherMenu.contains(e.target)) {
       launcherMenu.classList.remove('show');
