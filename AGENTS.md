@@ -739,3 +739,4 @@
 - Added Word (.docx) and PowerPoint (.pptx) viewer for notes. Uses Mammoth.js for
   DOCX and converts PPTX to PDF with LibreOffice for inline display (PR notes-office-viewer).
 - Notes upload now accepts DOCX and PPTX, storing original files and generating PDF previews. Added download of original PPTX (PR docx-pptx-upload).
+- User.notes_count property counts notes without loading them; sidebar and profile stats use this to avoid DB errors if migrations are pending (PR notes-count-fix).
