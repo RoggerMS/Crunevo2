@@ -1,0 +1,29 @@
+<li class="nav-item d-none d-lg-block position-relative">
+  <button class="launcher-toggle nav-link" type="button" aria-label="Aplicaciones">
+    <i class="bi bi-grid-3x3-gap-fill"></i>
+  </button>
+  <div class="app-launcher-grid">
+    <div class="launcher-grid">
+      <a href="{{ url_for('auth.perfil') }}" class="launcher-item">
+        <i class="bi bi-person-circle fs-3 text-primary"></i>
+        <span class="small mt-1">Perfil</span>
+      </a>
+      <a href="{{ url_for('personal_space.index') if 'personal_space.index' in url_for.__globals__.get('current_app', {}).view_functions else '/espacio-personal' }}" class="launcher-item">
+        <i class="bi bi-house-heart fs-3 text-info"></i>
+        <span class="small mt-1">Espacio</span>
+      </a>
+      <a href="/misiones" class="launcher-item">
+        <i class="bi bi-stars fs-3 text-warning"></i>
+        <span class="small mt-1">Misiones</span>
+      </a>
+      <a href="{{ url_for('league.index') if 'league.index' in url_for.__globals__.get('current_app', {}).view_functions else '/liga' }}" class="launcher-item">
+        <i class="bi bi-award fs-3 text-success"></i>
+        <span class="small mt-1">Liga</span>
+      </a>
+      <a href="{{ url_for('challenges.ghost_mentor') if 'challenges.ghost_mentor' in url_for.__globals__.get('current_app', {}).view_functions else '/desafios' }}" class="launcher-item">
+        <i class="bi bi-lightning fs-3 text-danger"></i>
+        <span class="small mt-1">Desafíos</span>
+      </a>
+    </div>
+  </div>
+</li>

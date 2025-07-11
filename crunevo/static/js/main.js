@@ -1049,6 +1049,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initGlobalChat();
     initChatIA();
     initLauncherMenu();
+    removeFloatingOptions();
 
     applyGalleryOrientation();
 
@@ -1417,6 +1418,13 @@ function initLauncherMenu() {
       launcherMenu.classList.remove('show');
     }
   });
+}
+
+function removeFloatingOptions() {
+  const floating =
+    document.querySelector('#floating-options-button') ||
+    document.querySelector('.toast-launcher');
+  if (floating) floating.remove();
 }
 
 function initCoursesPage() {
