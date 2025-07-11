@@ -55,18 +55,23 @@
     <div class="col-lg-4 order-lg-1">
       <h3 class="mb-3">🏆 Logros</h3>
       {% if user.achievements %}
-      <div class="row row-cols-2 g-2 mb-4">
+      <div class="achievements-grid" data-show-more-target>
         {% for a in user.achievements|sort(attribute='timestamp', reverse=True) %}
         {% set info = ACHIEVEMENT_DETAILS.get(a.badge_code, {}) %}
-        {% set icon = info.icon %}
-        {% set title = info.title %}
-        {% set timestamp = a.timestamp %}
-        {% set description = info.description %}
-        <div class="col">
-          {% include 'components/achievement_card.html' %}
+        <div class="achievement-card {% if loop.index > 12 %}d-none extra{% endif %}" data-bs-toggle="tooltip" title="{{ info.description }}">
+          <div class="icon-wrapper mb-2">
+            <i class="bi {{ info.icon }} display-6 text-warning"></i>
+          </div>
+          <h6 class="fw-semibold mb-1">{{ info.title }}</h6>
+          <small class="text-muted">{{ a.timestamp|timesince }}</small>
         </div>
         {% endfor %}
       </div>
+      {% if user.achievements|length > 12 %}
+      <div class="text-center mt-2">
+        <button type="button" class="btn btn-sm btn-outline-primary show-more-btn">Ver todos</button>
+      </div>
+      {% endif %}
       {% else %}
       <p class="text-muted mb-4">Aún no tiene logros.</p>
       {% endif %}
