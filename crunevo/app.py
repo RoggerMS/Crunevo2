@@ -244,8 +244,19 @@ def create_app():
         if not testing_env:
             try:
                 from .utils.db_init import ensure_database_ready
+                from sqlalchemy import inspect, text
 
                 ensure_database_ready()
+
+                # Ensure new columns exist when migrations haven't run
+                inspector = inspect(db.engine)
+                cols = [c["name"] for c in inspector.get_columns("note")]
+                if "file_type" not in cols:
+                    app.logger.info("Adding missing note.file_type column")
+                    db.session.execute(
+                        text("ALTER TABLE note ADD COLUMN file_type VARCHAR(20)")
+                    )
+                    db.session.commit()
             except Exception as e:
                 app.logger.error(f"Database initialization error: {e}")
 
