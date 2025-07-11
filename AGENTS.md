@@ -731,4 +731,3 @@
 - Removed duplicate image modal markup from base.html to ensure photo view loads post details correctly (PR photo-modal-duplicate-fix).
 - Comment modal now reuses image_gallery macro for consistent gallery layout with feed (PR gallery-modal-unify).
 - Navbar cleaned: removed Ranking link, backpack moved into personal space with new block. Launcher menu redesigned with grid of app icons. (PR grid-launcher-refresh)
-- Added launcher_menu_v2 component and stylesheet; hid legacy floating button in perfil (PR launcher-menu-v2)
