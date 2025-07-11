@@ -8,7 +8,18 @@
   <title>{{ note.title }}</title>
 </head>
 <body class="p-2">
-  <div id="noteViewer" data-url="{{ note.filename }}" data-type="{{ file_type }}"></div>
+  {% set ftype = note.file_type or file_type %}
+  {% if ftype == 'pdf' %}
+    {% include 'components/viewer_pdf.html' %}
+  {% elif ftype == 'docx' %}
+    {% include 'components/viewer_docx.html' %}
+  {% elif ftype == 'pptx' %}
+    {% include 'components/viewer_pdf.html' %}
+  {% elif ftype == 'image' %}
+    <img src="{{ note.filename }}" class="img-fluid rounded shadow-sm mx-auto" style="max-width:850px;" alt="Vista previa de imagen">
+  {% else %}
+    <p class="alert alert-info mx-auto" style="max-width:850px;">No se pudo previsualizar este archivo.</p>
+  {% endif %}
   <script src="{{ url_for('static', filename='pdfjs/pdf.min.js') }}"></script>
   <script src="{{ url_for('static', filename='vendor/mammoth.browser.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/viewer.js') }}"></script>

@@ -188,6 +188,7 @@
       } else if (file.type.startsWith('image/')) {
         imgPrev.src = URL.createObjectURL(file);
         imgPrev.onload = () => URL.revokeObjectURL(imgPrev.src);
+        imgPrev.onerror = () => imgPrev.classList.add('tw-hidden');
         imgPrev.classList.remove('tw-hidden');
       } else if (file.name.endsWith('.docx')) {
         const reader = new FileReader();

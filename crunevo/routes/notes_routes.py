@@ -144,6 +144,17 @@ def upload_note():
             )
             return redirect(url_for("notes.upload_note"))
 
+        if ext == ".pdf":
+            ftype = "pdf"
+        elif ext in {".jpg", ".jpeg", ".png", ".webp"}:
+            ftype = "image"
+        elif ext == ".docx":
+            ftype = "docx"
+        elif ext == ".pptx":
+            ftype = "pptx"
+        else:
+            ftype = "other"
+
         from crunevo.utils import plagiarism
 
         file_hash = plagiarism.compute_hash(f.stream)
@@ -284,6 +295,7 @@ def upload_note():
             description=description,
             filename=filepath,
             original_file_url=original_url,
+            file_type=ftype,
             tags=request.form.get("tags"),
             category=category,
             language=request.form.get("language"),
@@ -402,7 +414,19 @@ def import_file(source, file_id):
     with open(path, "wb") as f:
         f.write(res.content)
 
-    note = Note(title=name, filename=path, author=current_user)
+    ext = os.path.splitext(path)[1].lower()
+    if ext == ".pdf":
+        ftype = "pdf"
+    elif ext in {".jpg", ".jpeg", ".png", ".webp"}:
+        ftype = "image"
+    elif ext == ".docx":
+        ftype = "docx"
+    elif ext == ".pptx":
+        ftype = "pptx"
+    else:
+        ftype = "other"
+
+    note = Note(title=name, filename=path, file_type=ftype, author=current_user)
     db.session.add(note)
     db.session.commit()
     return redirect(url_for("notes.view_note", id=note.id))
@@ -463,17 +487,19 @@ def detail(note_id):
         path = path.split("?")[0]
         return os.path.splitext(path)[1].lower()
 
-    ext = get_ext(note.original_file_url or note.filename)
-    if ext == ".pdf":
-        ftype = "pdf"
-    elif ext in {".jpg", ".jpeg", ".png", ".webp"}:
-        ftype = "image"
-    elif ext == ".docx":
-        ftype = "docx"
-    elif ext == ".pptx":
-        ftype = "pptx"
-    else:
-        ftype = "other"
+    ftype = note.file_type
+    if not ftype:
+        ext = get_ext(note.original_file_url or note.filename)
+        if ext == ".pdf":
+            ftype = "pdf"
+        elif ext in {".jpg", ".jpeg", ".png", ".webp"}:
+            ftype = "image"
+        elif ext == ".docx":
+            ftype = "docx"
+        elif ext == ".pptx":
+            ftype = "pptx"
+        else:
+            ftype = "other"
 
     return render_template(
         "notes/detalle.html",
@@ -499,17 +525,19 @@ def embed_note(note_id):
         path = path.split("?")[0]
         return os.path.splitext(path)[1].lower()
 
-    ext = get_ext(note.original_file_url or note.filename)
-    if ext == ".pdf":
-        ftype = "pdf"
-    elif ext in {".jpg", ".jpeg", ".png", ".webp"}:
-        ftype = "image"
-    elif ext == ".docx":
-        ftype = "docx"
-    elif ext == ".pptx":
-        ftype = "pptx"
-    else:
-        ftype = "other"
+    ftype = note.file_type
+    if not ftype:
+        ext = get_ext(note.original_file_url or note.filename)
+        if ext == ".pdf":
+            ftype = "pdf"
+        elif ext in {".jpg", ".jpeg", ".png", ".webp"}:
+            ftype = "image"
+        elif ext == ".docx":
+            ftype = "docx"
+        elif ext == ".pptx":
+            ftype = "pptx"
+        else:
+            ftype = "other"
 
     return render_template("notes/embed.html", note=note, file_type=ftype)
 

@@ -3,14 +3,24 @@
 {% block content %}
 <div class="container-xl my-4">
   <div class="row g-4">
-    <div class="col-md-9 order-md-2">
-      <div id="noteViewer" data-url="{{ note.filename }}" data-type="{{ file_type }}"></div>
-      <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="fullscreenBtn">Pantalla completa</button>
-      {% if note.original_file_url and file_type == 'pptx' %}
-      <p class="text-muted small mt-2"><a href="{{ url_for('notes.download_note', note_id=note.id) }}">Descargar original (.pptx)</a></p>
+    <div class="col-md-9 order-md-2 text-center">
+      {% set ftype = note.file_type or file_type %}
+      {% if ftype == 'pdf' %}
+        {% include 'components/viewer_pdf.html' %}
+      {% elif ftype == 'docx' %}
+        {% include 'components/viewer_docx.html' %}
+      {% elif ftype == 'pptx' %}
+        {% include 'components/viewer_pdf.html' %}
+        {% if note.original_file_url %}
+        <a href="{{ note.original_file_url }}" download class="btn btn-outline-primary btn-sm mt-2">Descargar presentación original (.pptx)</a>
+        {% endif %}
+      {% elif ftype == 'image' %}
+        <img src="{{ note.filename }}" class="img-fluid rounded shadow-sm mx-auto" style="max-width:850px;" alt="Vista previa de imagen">
       {% else %}
-      <p class="text-muted small mt-2"><a href="{{ url_for('notes.download_note', note_id=note.id) }}">Descargar archivo</a></p>
+        <p class="alert alert-info mx-auto" style="max-width:850px;">No se pudo previsualizar este archivo.</p>
       {% endif %}
+      <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="fullscreenBtn">Pantalla completa</button>
+      <p class="text-muted small mt-2"><a href="{{ url_for('notes.download_note', note_id=note.id) }}">Descargar archivo</a></p>
     </div>
     <div class="col-md-3 order-md-1">
       <h1 class="h5" id="noteTitle">{{ note.title }}</h1>
