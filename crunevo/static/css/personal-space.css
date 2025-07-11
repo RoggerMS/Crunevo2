@@ -723,3 +723,15 @@
     background: rgba(239, 68, 68, 0.9);
     color: white;
 }
+
+/* Mochila quick access block */
+.mochila-block {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+}
+
+.dark-mode .mochila-block {
+    background: #1e293b;
+    border-color: #334155;
+}

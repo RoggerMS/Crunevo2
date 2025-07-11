@@ -1407,7 +1407,7 @@ function initKeyboardShortcuts() {
 
 function initLauncherMenu() {
   const launcherBtn = document.querySelector('.launcher-toggle');
-  const launcherMenu = document.querySelector('.launcher-menu');
+  const launcherMenu = document.querySelector('.app-launcher-grid');
   if (!launcherBtn || !launcherMenu) return;
   launcherBtn.addEventListener('click', () => {
     launcherMenu.classList.toggle('show');
