@@ -184,6 +184,7 @@
 
 {% block body_end %}
 <script src="{{ url_for('static', filename='pdfjs/pdf.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/mammoth.browser.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/viewer.js') }}"></script>
 <script>pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";</script>
 {% endblock %}

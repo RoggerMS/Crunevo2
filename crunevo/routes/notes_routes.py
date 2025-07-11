@@ -1,5 +1,7 @@
 import os
 import json
+import subprocess
+import tempfile
 from urllib.parse import urlparse
 from flask import (
     Blueprint,
@@ -134,9 +136,9 @@ def upload_note():
             return redirect(url_for("notes.upload_note"))
 
         ext = os.path.splitext(f.filename)[1].lower()
-        allowed_exts = {".pdf", ".jpg", ".jpeg", ".png"}
+        allowed_exts = {".pdf", ".jpg", ".jpeg", ".png", ".docx", ".pptx"}
         if ext not in allowed_exts:
-            flash("El archivo debe ser un PDF o imagen (JPG/PNG)", "danger")
+            flash("Formato no soportado. Usa PDF, imagen, Word o PowerPoint", "danger")
             return redirect(url_for("notes.upload_note"))
 
         from crunevo.utils import plagiarism
@@ -180,6 +182,48 @@ def upload_note():
                         secure=True,
                     )
                     filepath = view_url
+                elif ext == ".docx":
+                    tmpdir = tempfile.mkdtemp()
+                    tmp_path = os.path.join(tmpdir, filename)
+                    f.save(tmp_path)
+                    result = cloudinary.uploader.upload(
+                        tmp_path,
+                        resource_type="raw",
+                        public_id=f"notes/{public_id}",
+                        format="docx",
+                    )
+                    filepath = result["secure_url"]
+                elif ext == ".pptx":
+                    tmpdir = tempfile.mkdtemp()
+                    tmp_path = os.path.join(tmpdir, filename)
+                    f.save(tmp_path)
+                    subprocess.run(
+                        [
+                            "soffice",
+                            "--headless",
+                            "--convert-to",
+                            "pdf",
+                            "--outdir",
+                            tmpdir,
+                            tmp_path,
+                        ],
+                        check=True,
+                    )
+                    pdf_path = os.path.join(
+                        tmpdir, os.path.splitext(filename)[0] + ".pdf"
+                    )
+                    _ = cloudinary.uploader.upload(
+                        pdf_path,
+                        resource_type="auto",
+                        public_id=f"notes/{public_id}",
+                        format="pdf",
+                    )
+                    view_url, _ = cloudinary.utils.cloudinary_url(
+                        f"notes/{public_id}.pdf",
+                        resource_type="image",
+                        secure=True,
+                    )
+                    filepath = view_url
                 else:
                     result = cloudinary.uploader.upload(
                         f,
@@ -193,6 +237,22 @@ def upload_note():
                 os.makedirs(upload_folder, exist_ok=True)
                 filepath = os.path.join(upload_folder, filename)
                 f.save(filepath)
+                if ext == ".pptx":
+                    subprocess.run(
+                        [
+                            "soffice",
+                            "--headless",
+                            "--convert-to",
+                            "pdf",
+                            "--outdir",
+                            upload_folder,
+                            filepath,
+                        ],
+                        check=True,
+                    )
+                    filepath = os.path.join(
+                        upload_folder, os.path.splitext(filename)[0] + ".pdf"
+                    )
         except Exception:
             current_app.logger.exception("Error al subir el archivo")
             flash("Ocurrió un problema al subir el archivo", "danger")
@@ -392,6 +452,10 @@ def detail(note_id):
         ftype = "pdf"
     elif ext in {".jpg", ".jpeg", ".png", ".webp"}:
         ftype = "image"
+    elif ext == ".docx":
+        ftype = "docx"
+    elif ext == ".pptx":
+        ftype = "pptx"
     else:
         ftype = "other"
 
@@ -424,6 +488,10 @@ def embed_note(note_id):
         ftype = "pdf"
     elif ext in {".jpg", ".jpeg", ".png", ".webp"}:
         ftype = "image"
+    elif ext == ".docx":
+        ftype = "docx"
+    elif ext == ".pptx":
+        ftype = "pptx"
     else:
         ftype = "other"
 

@@ -736,3 +736,5 @@
 - Rediseñados logros en perfil público e interno con tarjetas responsivas, progreso y logros bloqueados; perfil_publico incluye perfil.css y feed.py usa import diferido de tasks (PR achievements-ui-fix).
 - Módulo de logros renovado: tarjetas con tooltips, secciones de desbloqueados y bloqueados, botón 'Ver todos' y soporte responsivo/dark (PR achievements-redesign-modern).
 - Public profile achievements now use modern cards with show-more and icons (PR achievements-public-profile-update).
+- Added Word (.docx) and PowerPoint (.pptx) viewer for notes. Uses Mammoth.js for
+  DOCX and converts PPTX to PDF with LibreOffice for inline display (PR notes-office-viewer).
