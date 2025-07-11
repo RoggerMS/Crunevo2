@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
+
+{% block head_extra %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
+{% endblock %}
 {% block content %}
 <div class="container my-4">
   <div class="text-center mb-5">

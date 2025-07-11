@@ -129,6 +129,12 @@
   border-color: var(--crunevo-primary);
 }
 
+.achievement-item.locked {
+  opacity: 0.5;
+  filter: grayscale(80%);
+  pointer-events: none;
+}
+
 .achievement-icon {
   font-size: 28px;
   margin-bottom: 8px;
