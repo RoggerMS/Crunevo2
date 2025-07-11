@@ -34,7 +34,6 @@
           <li class="nav-item"><a class="nav-link" href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}">Apuntes</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}">Foro</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}">Tienda</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('ranking.show_ranking') }}">Ranking</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('courses.list_courses') if 'courses.list_courses' in url_for.__globals__.get('current_app', {}).view_functions else '/cursos' }}">Cursos</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('chat.chat_index') }}">Chat</a></li>
       </ul>
@@ -44,7 +43,6 @@
         <a class="nav-link" href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}"><i class="bi bi-file-text me-1"></i>Apuntes</a>
         <a class="nav-link" href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}"><i class="bi bi-chat-left-quote me-1"></i>Foro</a>
         <a class="nav-link" href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}"><i class="bi bi-shop me-1"></i>Tienda</a>
-        <a class="nav-link" href="{{ url_for('ranking.show_ranking') }}"><i class="bi bi-trophy me-1"></i>Ranking</a>
         <a class="nav-link" href="{{ url_for('courses.list_courses') if 'courses.list_courses' in url_for.__globals__.get('current_app', {}).view_functions else '/cursos' }}"><i class="bi bi-play-circle-fill me-1"></i>Cursos</a>
         <a class="nav-link" href="{{ url_for('carrera.index') if 'carrera.index' in url_for.__globals__.get('current_app', {}).view_functions else '/micarrera' }}">
           <i class="bi bi-mortarboard"></i> Mi Carrera
@@ -65,35 +63,39 @@
             <button class="launcher-toggle nav-link" type="button" aria-label="Aplicaciones">
               <i class="bi bi-grid-3x3-gap-fill"></i>
             </button>
-            <div class="launcher-menu">
-              <a href="{{ url_for('auth.perfil') }}" class="launcher-item text-decoration-none text-reset">
-                <i class="bi bi-person-circle"></i>
-                <span class="small">Mi Perfil</span>
-              </a>
-              <a href="{{ url_for('personal_space.index') if 'personal_space.index' in url_for.__globals__.get('current_app', {}).view_functions else '/espacio-personal' }}" class="launcher-item text-decoration-none text-reset">
-                <i class="bi bi-house-heart"></i>
-                <span class="small">Espacio Personal</span>
-              </a>
-              <a href="/misiones" class="launcher-item text-decoration-none text-reset">
-                <i class="bi bi-flag"></i>
-                <span class="small">Misiones</span>
-              </a>
-              <a href="{{ url_for('ranking.show_ranking') }}" class="launcher-item text-decoration-none text-reset">
-                <i class="bi bi-bar-chart"></i>
-                <span class="small">Ranking</span>
-              </a>
-              <a href="{{ url_for('league.index') if 'league.index' in url_for.__globals__.get('current_app', {}).view_functions else '/liga' }}" class="launcher-item text-decoration-none text-reset">
-                <i class="bi bi-award"></i>
-                <span class="small">Liga Académica</span>
-              </a>
-              <a href="{{ url_for('backpack.index') if 'backpack.index' in url_for.__globals__.get('current_app', {}).view_functions else '/mochila' }}" class="launcher-item text-decoration-none text-reset">
-                <i class="bi bi-backpack"></i>
-                <span class="small">Mi Mochila</span>
-              </a>
-              <a href="{{ url_for('challenges.ghost_mentor') if 'challenges.ghost_mentor' in url_for.__globals__.get('current_app', {}).view_functions else '/desafios' }}" class="launcher-item text-decoration-none text-reset">
-                <i class="bi bi-lightning"></i>
-                <span class="small">Desafíos</span>
-              </a>
+            <div class="app-launcher-grid shadow rounded p-3">
+              <div class="row row-cols-3 g-3">
+                <div class="col text-center">
+                  <a href="{{ url_for('auth.perfil') }}" class="app-icon-btn">
+                    <i class="bi bi-person-circle fs-2 text-primary"></i>
+                    <div class="small mt-1">Perfil</div>
+                  </a>
+                </div>
+                <div class="col text-center">
+                  <a href="{{ url_for('personal_space.index') if 'personal_space.index' in url_for.__globals__.get('current_app', {}).view_functions else '/espacio-personal' }}" class="app-icon-btn">
+                    <i class="bi bi-house-heart fs-2 text-info"></i>
+                    <div class="small mt-1">Espacio</div>
+                  </a>
+                </div>
+                <div class="col text-center">
+                  <a href="/misiones" class="app-icon-btn">
+                    <i class="bi bi-stars fs-2 text-warning"></i>
+                    <div class="small mt-1">Misiones</div>
+                  </a>
+                </div>
+                <div class="col text-center">
+                  <a href="{{ url_for('league.index') if 'league.index' in url_for.__globals__.get('current_app', {}).view_functions else '/liga' }}" class="app-icon-btn">
+                    <i class="bi bi-award fs-2 text-success"></i>
+                    <div class="small mt-1">Liga</div>
+                  </a>
+                </div>
+                <div class="col text-center">
+                  <a href="{{ url_for('challenges.ghost_mentor') if 'challenges.ghost_mentor' in url_for.__globals__.get('current_app', {}).view_functions else '/desafios' }}" class="app-icon-btn">
+                    <i class="bi bi-lightning fs-2 text-danger"></i>
+                    <div class="small mt-1">Desafíos</div>
+                  </a>
+                </div>
+              </div>
             </div>
           </li>
           {% endif %}
