@@ -1,9 +1,6 @@
 from flask_login import UserMixin
 from crunevo.security.passwords import generate_hash, verify_hash
 from crunevo.extensions import db, login_manager
-from sqlalchemy import func
-
-from .note import Note
 
 # Default avatar used when no image is uploaded
 DEFAULT_AVATAR_URL = (
@@ -46,14 +43,6 @@ class User(UserMixin, db.Model):
     def is_friend(self, other_user):
         """Placeholder friendship check."""
         return False
-
-    @property
-    def notes_count(self) -> int:
-        """Return the number of notes authored by the user without loading them."""
-        return (
-            db.session.query(func.count(Note.id)).filter_by(user_id=self.id).scalar()
-            or 0
-        )
 
 
 @login_manager.user_loader
