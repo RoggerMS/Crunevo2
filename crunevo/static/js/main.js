@@ -1052,6 +1052,7 @@ document.addEventListener('DOMContentLoaded', () => {
     removeFloatingOptions();
 
     applyGalleryOrientation();
+    initAchievementsShowMore();
 
   // Bootstrap collapse handles the mobile menu
 
@@ -1360,6 +1361,22 @@ function highlightNewAchievements() {
         const el = document.getElementById(`achievement-${a.code}`);
         if (el) el.classList.add('bounce-once', 'fade-in');
     });
+}
+
+function initAchievementsShowMore() {
+  document.querySelectorAll('[data-show-more-target]').forEach((section) => {
+    const btn = section.parentElement.querySelector('.show-more-btn');
+    if (!btn) return;
+    const hidden = section.querySelectorAll('.extra');
+    if (hidden.length === 0) {
+      btn.remove();
+      return;
+    }
+    btn.addEventListener('click', () => {
+      hidden.forEach((el) => el.classList.remove('d-none'));
+      btn.remove();
+    });
+  });
 }
 
 function initQuickNotes() {

@@ -734,3 +734,4 @@
 - Launcher menu modernized with new component and CSS; floating options icon removed from profile via main.js (PR profile-launcher-redesign)
 - Removed empty 'misiones' item from user dropdown and styled verified badge in purple (PR perfil-menu-badge-fix).
 - Rediseñados logros en perfil público e interno con tarjetas responsivas, progreso y logros bloqueados; perfil_publico incluye perfil.css y feed.py usa import diferido de tasks (PR achievements-ui-fix).
+- Módulo de logros renovado: tarjetas con tooltips, secciones de desbloqueados y bloqueados, botón 'Ver todos' y soporte responsivo/dark (PR achievements-redesign-modern).

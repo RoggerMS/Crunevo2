@@ -364,6 +364,14 @@ def perfil():
     total_achievements = len(ACHIEVEMENT_DETAILS)
     user_achievements_map = {a.badge_code: a for a in all_user_achievements}
 
+    unlocked_achievements = []
+    locked_achievements = []
+    for code, info in ACHIEVEMENT_DETAILS.items():
+        if code in user_achievements_map:
+            unlocked_achievements.append((code, info))
+        else:
+            locked_achievements.append((code, info))
+
     misiones = None
     progresos = None
     group_missions = None
@@ -443,6 +451,8 @@ def perfil():
         total_achievements=total_achievements,
         user_achievements_map=user_achievements_map,
         user_achievements=all_user_achievements,
+        unlocked_achievements=unlocked_achievements,
+        locked_achievements=locked_achievements,
     )
 
 
