@@ -130,9 +130,10 @@ def create_app():
             "URGENT_REPORTS": urgent_count,
             "NEW_ACHIEVEMENTS": new_achievements,
             "get_hall_membership": get_hall_membership,
+            "notes_count": notes_count,
         }
 
-    from .utils.helpers import timesince, get_hall_membership
+    from .utils.helpers import timesince, get_hall_membership, notes_count
     from .cache.link_preview import extract_first_url, get_preview
 
     app.jinja_env.filters["timesince"] = timesince

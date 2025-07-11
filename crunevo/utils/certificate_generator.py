@@ -6,6 +6,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib import colors
+from crunevo.models import Note
 
 
 def generate_certificate_pdf(user, certificate_type):
@@ -134,7 +135,7 @@ def check_certificate_eligibility(user):
         eligible.append("misiones")
 
     # Check notes uploaded
-    notes_count = len(user.notes) if user.notes else 0
+    notes_count = Note.query.filter_by(user_id=user.id).count()
     if notes_count >= 3:
         eligible.append("apuntes")
 

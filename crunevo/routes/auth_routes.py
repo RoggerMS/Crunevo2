@@ -266,7 +266,7 @@ def perfil():
     activity_total = (
         len(current_user.post_comments or [])
         + len(current_user.posts or [])
-        + len(current_user.notes or [])
+        + Note.query.filter_by(user_id=current_user.id).count()
     )
     participation_percentage = (
         min(100, int((activity_total / 30) * 100)) if activity_total else 0

@@ -32,7 +32,7 @@
               <span class="badge bg-info">{{ user_clubs }} clubes</span>
             </td>
             <td>
-              {% set is_verified = user.notes|length >= 5 and user.completed_missions >= 10 %}
+                {% set is_verified = notes_count(user) >= 5 and user.completed_missions >= 10 %}
               {% if is_verified %}
                 <span class="badge bg-success">
                   <i class="bi bi-check-circle-fill"></i> Verificado
