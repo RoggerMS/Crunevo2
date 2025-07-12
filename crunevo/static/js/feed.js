@@ -1326,12 +1326,45 @@ function savePost(postId) {
   }
 }
 
+function initFabButton() {
+  const container = document.getElementById('fab-container');
+  const mainBtn = document.getElementById('fab-main');
+  if (!container || !mainBtn) return;
+
+  mainBtn.addEventListener('click', function () {
+    const isActive = container.classList.toggle('active');
+    mainBtn.textContent = isActive ? '×' : '+';
+
+    container.querySelectorAll('.fab-sub').forEach((btn, i) => {
+      btn.style.transform = isActive
+        ? `translateY(-${(i + 1) * 60}px)`
+        : 'translateY(0)';
+      btn.classList.toggle('d-none', !isActive);
+    });
+  });
+
+  container.querySelectorAll('.fab-sub').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const action = btn.dataset.action;
+      if (action === 'buscar') {
+        document.getElementById('globalSearch')?.focus();
+      } else if (action === 'notificaciones') {
+        const el = document.getElementById('notificationsDropdown');
+        if (el) bootstrap.Dropdown.getOrCreateInstance(el).toggle();
+      } else if (action === 'ayuda') {
+        window.location.href = '/ia';
+      }
+    });
+  });
+}
+
 // Initialize the modern feed manager
 let modernFeedManager;
 
 function initModernFeedManager() {
   modernFeedManager = new ModernFeedManager();
   window.modernFeedManager = modernFeedManager;
+  initFabButton();
 }
 
 // Auto-initialize
@@ -1350,3 +1383,4 @@ window.deletePost = deletePost;
 window.reportPost = reportPost;
 window.copyPostLink = copyPostLink;
 window.savePost = savePost;
+window.initFabButton = initFabButton;
