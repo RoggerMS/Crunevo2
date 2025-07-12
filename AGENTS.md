@@ -747,3 +747,4 @@
 - Toasts de la tienda ya no se muestran al cargar; main.js solo auto-muestra los que tienen data-autoshow (PR store-toast-trigger-fix).
 - Feed now returns is_saved and user_reaction, keeping save button and reactions active on reload (PR feed-save-reaction-persist).
 - Feed desktop now shows expandable '+' button with search, notifications and chat shortcuts (PR feed-desktop-fab)
+- Floating '+' button now expands to the left showing quick notes, shortcuts and Crunebot (PR feed-fab-left-buttons)
