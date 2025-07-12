@@ -259,8 +259,22 @@
 {{ super() }}
 <div id="fab-container" class="d-none d-lg-block">
   <button id="fab-main" class="fab-button">+</button>
-  <button class="fab-sub d-none" data-bs-toggle="modal" data-bs-target="#quickNotesModal" title="Notas rápidas">📝</button>
-  <button class="fab-sub d-none" data-bs-toggle="modal" data-bs-target="#shortcutHelpModal" title="Atajos">⌨️</button>
-  <button class="fab-sub d-none" onclick="window.location.href='/ia'" title="Hablar con Crunebot">🤖</button>
+  <button class="fab-sub btn rounded-circle shadow-lg tw-text-white d-none"
+          data-bs-toggle="modal" data-bs-target="#quickNotesModal"
+          title="Notas rápidas" style="background-color:#6f42c1;">
+    <i class="bi bi-journal-text fs-5"></i>
+  </button>
+  <button class="fab-sub btn rounded-circle shadow-lg tw-text-white d-none"
+          data-bs-toggle="modal" data-bs-target="#shortcutHelpModal"
+          title="Atajos" style="background-color:#0d6efd;">
+    <i class="bi bi-keyboard fs-5"></i>
+  </button>
+  <button class="fab-sub btn rounded-circle shadow-lg tw-text-white d-none"
+          onclick="window.location.href='/ia'"
+          title="Crunebot" style="background-color:#198754;">
+    <i class="bi bi-robot fs-5"></i>
+  </button>
 </div>
+{% include 'components/quick_notes.html' %}
+{% include 'components/shortcut_help.html' %}
 {% endblock %}
