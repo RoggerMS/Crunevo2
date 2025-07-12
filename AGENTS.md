@@ -750,3 +750,4 @@
 - Floating '+' button now expands to the left showing quick notes, shortcuts and Crunebot (PR feed-fab-left-buttons)
 - FAB buttons unified: quick notes, shortcuts and Crunebot merged into single floating menu; old buttons removed (PR feed-fab-unify)
 - Corregido bloque extra_css en trending.html reemplazándolo por head_extra para que cargue estilos.
+- Added prototype personal space with localStorage blocks and focus/dark modes (PR personal-space-proto).
