@@ -318,6 +318,7 @@ def create_app():
     from .routes.main_routes import main_bp
     from .routes.story_routes import stories_bp
     from .routes.developer_routes import developer_bp
+    from .routes.personal_routes import personal_bp
     from .routes.personal_space_routes import personal_space_bp
 
     is_admin = os.environ.get("ADMIN_INSTANCE") == "1"
@@ -427,6 +428,7 @@ def create_app():
         app.register_blueprint(saved_bp)
         app.register_blueprint(dashboard_bp)
         app.register_blueprint(settings_bp)
+        app.register_blueprint(personal_bp)
         app.register_blueprint(personal_space_bp)
 
         from .routes.carrera_routes import carrera_bp
