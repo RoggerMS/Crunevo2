@@ -145,3 +145,69 @@ function initNoteViewer() {
 }
 
 window.setAnnotationHook = setAnnotationHook;
+
+function initUploadPreview() {
+  const fileInput = document.getElementById('file');
+  if (!fileInput) return;
+  const pdfPrev = document.getElementById('pdfPreview');
+  const imgPrev = document.getElementById('imgPreview');
+  const docxPrev = document.getElementById('docxPreview');
+  const pptPrev = document.getElementById('pptPreview');
+
+  function hideAll() {
+    [pdfPrev, imgPrev, docxPrev, pptPrev].forEach((el) => el && el.classList.add('d-none'));
+  }
+
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    hideAll();
+    if (!file) return;
+    const name = file.name.toLowerCase();
+    if ((file.type === 'application/pdf' || name.endsWith('.pdf')) && pdfPrev && typeof pdfjsLib !== 'undefined') {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const task = pdfjsLib.getDocument({ data: e.target.result });
+        task.promise
+          .then((pdf) => pdf.getPage(1))
+          .then((page) => {
+            const viewport = page.getViewport({ scale: 1.2 });
+            const ctx = pdfPrev.getContext('2d');
+            pdfPrev.width = viewport.width;
+            pdfPrev.height = viewport.height;
+            page.render({ canvasContext: ctx, viewport });
+            pdfPrev.classList.remove('d-none');
+          })
+          .catch(() => pdfPrev.classList.add('d-none'));
+      };
+      reader.readAsArrayBuffer(file);
+    } else if (file.type.startsWith('image/') && imgPrev) {
+      imgPrev.src = URL.createObjectURL(file);
+      imgPrev.onload = () => URL.revokeObjectURL(imgPrev.src);
+      imgPrev.onerror = () => imgPrev.classList.add('d-none');
+      imgPrev.classList.remove('d-none');
+    } else if (name.endsWith('.docx') && docxPrev && typeof mammoth !== 'undefined') {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        mammoth
+          .convertToHtml({ arrayBuffer: e.target.result })
+          .then((result) => {
+            docxPrev.innerHTML = result.value;
+            docxPrev.classList.remove('d-none');
+          })
+          .catch(() => {
+            pptPrev.textContent = file.name;
+            pptPrev.classList.remove('d-none');
+          });
+      };
+      reader.readAsArrayBuffer(file);
+    } else if (name.endsWith('.pptx') && pptPrev) {
+      pptPrev.textContent = file.name;
+      pptPrev.classList.remove('d-none');
+    } else if (pptPrev) {
+      pptPrev.textContent = file.name;
+      pptPrev.classList.remove('d-none');
+    }
+  });
+}
+
+window.initUploadPreview = initUploadPreview;

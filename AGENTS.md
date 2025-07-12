@@ -743,3 +743,4 @@
 - Nota detail ahora usa includes para visor según tipo de archivo y se guarda note.file_type en la base de datos (PR note-file-type-viewer).
 - fly.toml now runs 'flask db upgrade' automatically so new columns like file_type are applied (QA fly-release-db-upgrade).
 - Auto-creation del campo note.file_type si falta en la base de datos para evitar errores en /notes (QA note-file-type-hotfix).
+- Vista previa de archivos en /notes/upload unificada: viewer.js maneja detección y muestra solo pdfPreview, docxPreview, imgPreview o pptPreview. Backend valida un único archivo por nota. (PR notes-upload-preview-fix)

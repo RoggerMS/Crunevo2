@@ -58,10 +58,10 @@
                 <a href="{{ url_for('notes.dropbox_authorize') }}" class="btn btn-outline-secondary btn-sm">Importar Dropbox</a>
               </div>
             </div>
-            <canvas id="pdfPreview" class="w-100 border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;"></canvas>
-            <img loading="lazy" id="imgPreview" class="img-fluid border rounded shadow-sm mb-3 tw-hidden" style="max-height:400px;" alt="Vista previa de imagen" />
-            <div id="docxPreview" class="border rounded p-2 mb-3 tw-hidden" style="max-height:400px; overflow:auto;"></div>
-            <p id="fileNamePreview" class="mb-3 tw-hidden"></p>
+            <canvas id="pdfPreview" class="w-100 border rounded shadow-sm mb-3 d-none" style="max-height:400px;"></canvas>
+            <img loading="lazy" id="imgPreview" class="img-fluid border rounded shadow-sm mb-3 d-none" style="max-height:400px;" alt="Vista previa de imagen" />
+            <div id="docxPreview" class="border rounded p-2 mb-3 d-none" style="max-height:400px; overflow:auto;"></div>
+            <p id="pptPreview" class="mb-3 d-none"></p>
 
             <div class="mb-3">
               <label class="form-label" for="privacy">Privacidad *</label>
@@ -145,71 +145,16 @@
   {{ super() }}
   <script src="{{ url_for('static', filename='pdfjs/pdf.min.js') }}"></script>
   <script src="{{ url_for('static', filename='vendor/mammoth.browser.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/viewer.js') }}"></script>
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";
-    const fileInput = document.getElementById('file');
-    const canvas = document.getElementById('pdfPreview');
-    const imgPrev = document.getElementById('imgPreview');
-    const docxPrev = document.getElementById('docxPreview');
-    const fileNamePrev = document.getElementById('fileNamePreview');
+    initUploadPreview();
     const form = document.getElementById('noteUploadForm');
     const btn = document.getElementById('uploadBtn');
     const catSelect = document.getElementById('category');
     const catBox = document.getElementById('categorySuggestions');
     const descInput = document.getElementById('description');
     const titleInput = document.getElementById('title');
-
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files[0];
-      canvas.classList.add('tw-hidden');
-      imgPrev.classList.add('tw-hidden');
-      docxPrev.classList.add('tw-hidden');
-      fileNamePrev.classList.add('tw-hidden');
-      if (!file) return;
-      if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const task = pdfjsLib.getDocument({ data: e.target.result });
-          task.promise
-            .then((pdf) => pdf.getPage(1))
-            .then((page) => {
-              const viewport = page.getViewport({ scale: 1.2 });
-              const ctx = canvas.getContext('2d');
-              canvas.width = viewport.width;
-              canvas.height = viewport.height;
-              page.render({ canvasContext: ctx, viewport });
-              canvas.classList.remove('tw-hidden');
-            })
-            .catch(() => {
-              canvas.classList.add('tw-hidden');
-            });
-        };
-        reader.readAsArrayBuffer(file);
-      } else if (file.type.startsWith('image/')) {
-        imgPrev.src = URL.createObjectURL(file);
-        imgPrev.onload = () => URL.revokeObjectURL(imgPrev.src);
-        imgPrev.onerror = () => imgPrev.classList.add('tw-hidden');
-        imgPrev.classList.remove('tw-hidden');
-      } else if (file.name.endsWith('.docx')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          mammoth
-            .convertToHtml({ arrayBuffer: e.target.result })
-            .then((result) => {
-              docxPrev.innerHTML = result.value;
-              docxPrev.classList.remove('tw-hidden');
-            })
-            .catch(() => {
-              fileNamePrev.textContent = file.name;
-              fileNamePrev.classList.remove('tw-hidden');
-            });
-        };
-        reader.readAsArrayBuffer(file);
-      } else if (file.name.endsWith('.pptx')) {
-        fileNamePrev.textContent = file.name;
-        fileNamePrev.classList.remove('tw-hidden');
-      }
-    });
 
     const suggestions = {{ suggestions|tojson }};
     const tagInput = document.getElementById('tagsInput');
