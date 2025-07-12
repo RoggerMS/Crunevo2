@@ -753,4 +753,3 @@
 - Added prototype personal space with localStorage blocks and focus/dark modes (PR personal-space-proto).
 - Banner superior eliminado en cursos para que la página inicie con "Mis Cursos Inscritos" (PR courses-banner-remove).
 - Se corrigió la previsualización y subida de imágenes en el modal de publicaciones, limitando tamaño con CSS y enviando los archivos en feed.js (PR feed-upload-image-fix).
-- Habilitado el blueprint personal_routes en /espacio-personal y enlace en menú de usuario (PR personal-space-enable).
