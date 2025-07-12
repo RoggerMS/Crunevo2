@@ -747,7 +747,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  document.querySelectorAll('.toast').forEach((t) => {
+  document.querySelectorAll('.toast[data-autoshow]').forEach((t) => {
     new bootstrap.Toast(t).show();
   });
 
