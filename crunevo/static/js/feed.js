@@ -156,6 +156,9 @@ class ModernFeedManager {
       this.setButtonLoading(submitBtn, true);
 
       const formData = new FormData(form);
+      this.imageFiles.forEach(file => {
+        formData.append('files', file);
+      });
       const response = await this.fetchWithCSRF(form.action || window.location.pathname, {
         method: 'POST',
         body: formData
