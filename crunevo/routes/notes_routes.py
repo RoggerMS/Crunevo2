@@ -130,10 +130,11 @@ def upload_note():
 
         description = request.form.get("description", "")
         category = request.form.get("category", "")
-        f = request.files.get("file")
-        if not f or not f.filename:
-            flash("Selecciona un archivo", "danger")
+        files = request.files.getlist("file")
+        if len(files) != 1 or not files[0].filename:
+            flash("Selecciona un único archivo", "danger")
             return redirect(url_for("notes.upload_note"))
+        f = files[0]
 
         ext = os.path.splitext(f.filename)[1].lower()
         allowed_exts = {".pdf", ".jpg", ".jpeg", ".png", ".docx", ".pptx"}
