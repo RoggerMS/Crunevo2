@@ -257,4 +257,10 @@
 
 {% block body_end %}
 {{ super() }}
+<div id="fab-container" class="d-none d-lg-block">
+  <button id="fab-main" class="fab-button">+</button>
+  <button class="fab-sub d-none" data-action="buscar">🔍</button>
+  <button class="fab-sub d-none" data-action="notificaciones">🔔</button>
+  <button class="fab-sub d-none" data-action="ayuda">💬</button>
+</div>
 {% endblock %}
