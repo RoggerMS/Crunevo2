@@ -189,6 +189,15 @@ def view_feed():
 
     reaction_map = PostReaction.counts_for_posts(post_ids)
     user_reactions = PostReaction.reactions_for_user_posts(current_user.id, post_ids)
+    from crunevo.models import SavedPost
+
+    saved_posts = {
+        sp.post_id: True
+        for sp in SavedPost.query.filter(
+            SavedPost.user_id == current_user.id,
+            SavedPost.post_id.in_(post_ids),
+        ).all()
+    }
     trending_posts = get_weekly_top_posts(limit=3)
     trending_counts = PostReaction.counts_for_posts([p.id for p in trending_posts])
     trending_user_reactions = PostReaction.reactions_for_user_posts(
@@ -210,6 +219,7 @@ def view_feed():
         categoria=categoria,
         reaction_counts=reaction_map,
         user_reactions=user_reactions,
+        saved_posts=saved_posts,
         show_streak_claim=show_streak,
         trending_posts=trending_posts,
         trending_counts=trending_counts,
@@ -241,6 +251,15 @@ def trending():
     user_reactions = PostReaction.reactions_for_user_posts(
         current_user.id, [p.id for p in weekly_posts]
     )
+    from crunevo.models import SavedPost
+
+    saved_posts = {
+        sp.post_id: True
+        for sp in SavedPost.query.filter(
+            SavedPost.user_id == current_user.id,
+            SavedPost.post_id.in_([p.id for p in weekly_posts]),
+        ).all()
+    }
 
     return render_template(
         "feed/trending.html",
@@ -252,6 +271,7 @@ def trending():
         top_users=top_users,
         reaction_counts=reaction_map,
         user_reactions=user_reactions,
+        saved_posts=saved_posts,
     )
 
 
@@ -503,11 +523,18 @@ def api_post_detail(post_id: int):
         .filter_by(user_id=current_user.id, post_id=post.id)
         .scalar()
     )
+    from crunevo.models import SavedPost
+
+    saved = (
+        SavedPost.query.filter_by(user_id=current_user.id, post_id=post.id).first()
+        is not None
+    )
     html = render_template(
         "feed/_post_modal.html",
         post=post,
         reaction_counts=counts,
         user_reaction=my_reaction,
+        saved_posts={post.id: saved},
     )
     return jsonify({"html": html})
 
@@ -688,24 +715,40 @@ def api_feed():
             and not i.get("file_url", "").endswith(".pdf")
         ]
 
+    post_ids = [i.get("ref_id") for i in items if i.get("item_type") == "post"]
+    reaction_map = PostReaction.counts_for_posts(post_ids)
+    user_reactions = PostReaction.reactions_for_user_posts(current_user.id, post_ids)
+    from crunevo.models import SavedPost
+
+    saved_posts = {
+        sp.post_id: True
+        for sp in SavedPost.query.filter(
+            SavedPost.user_id == current_user.id,
+            SavedPost.post_id.in_(post_ids),
+        ).all()
+    }
+
     if fmt == "html":
-        post_ids = [i.get("ref_id") for i in items if i.get("item_type") == "post"]
         if not post_ids:
             return jsonify({"html": "", "count": 0})
         posts = Post.query.filter(Post.id.in_(post_ids)).all()
         post_map = {p.id: p for p in posts}
         ordered_posts = [post_map[pid] for pid in post_ids if pid in post_map]
-        reaction_map = PostReaction.counts_for_posts(post_ids)
-        user_reactions = PostReaction.reactions_for_user_posts(
-            current_user.id, post_ids
-        )
         html = render_template(
             "feed/_posts.html",
             posts=ordered_posts,
             reaction_counts=reaction_map,
             user_reactions=user_reactions,
+            saved_posts=saved_posts,
         )
         return jsonify({"html": html, "count": len(ordered_posts)})
+
+    for it in items:
+        if it.get("item_type") == "post":
+            pid = it.get("ref_id")
+            it["reaction_counts"] = reaction_map.get(pid, {})
+            it["user_reaction"] = user_reactions.get(pid)
+            it["is_saved"] = pid in saved_posts
 
     return jsonify(items)
 

@@ -1,4 +1,6 @@
 
+{% set saved_posts = saved_posts if saved_posts is defined else {} %}
+
 <div class="modal-post-container">
   <div class="modal-post-header">
     <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" 
@@ -34,8 +36,8 @@
       <i class="bi bi-share"></i>
       <span>Compartir</span>
     </button>
-    <button class="modal-action-btn save-btn" data-post-id="{{ post.id }}">
-      <i class="bi bi-bookmark"></i>
+    <button class="modal-action-btn save-btn {{ 'active' if saved_posts.get(post.id) }}" data-post-id="{{ post.id }}">
+      <i class="bi bi-bookmark{{ '-fill' if saved_posts.get(post.id) else '' }}"></i>
       <span>Guardar</span>
     </button>
   </div>

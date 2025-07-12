@@ -1,4 +1,5 @@
 {% import 'components/image_gallery.html' as gallery %}
+{% set saved_posts = saved_posts if saved_posts is defined else {} %}
 <!-- Modal de Comentarios con Galería Completa -->
 <div class="modal fade" id="commentsModal-{{ post.id }}" tabindex="-1" aria-labelledby="commentsModalLabel-{{ post.id }}" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
@@ -47,8 +48,8 @@
               <i class="bi bi-share"></i>
               <span>Compartir</span>
             </button>
-            <button class="modal-action-btn save-btn" data-post-id="{{ post.id }}">
-              <i class="bi bi-bookmark"></i>
+            <button class="modal-action-btn save-btn {{ 'active' if saved_posts.get(post.id) }}" data-post-id="{{ post.id }}">
+              <i class="bi bi-bookmark{{ '-fill' if saved_posts.get(post.id) else '' }}"></i>
               <span>Guardar</span>
             </button>
           </div>
