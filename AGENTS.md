@@ -750,5 +750,6 @@
 - Floating '+' button now expands to the left showing quick notes, shortcuts and Crunebot (PR feed-fab-left-buttons)
 - FAB buttons unified: quick notes, shortcuts and Crunebot merged into single floating menu; old buttons removed (PR feed-fab-unify)
 - Corregido bloque extra_css en trending.html reemplazándolo por head_extra para que cargue estilos.
+- Added prototype personal space with localStorage blocks and focus/dark modes (PR personal-space-proto).
 - Banner superior eliminado en cursos para que la página inicie con "Mis Cursos Inscritos" (PR courses-banner-remove).
 - Se corrigió la previsualización y subida de imágenes en el modal de publicaciones, limitando tamaño con CSS y enviando los archivos en feed.js (PR feed-upload-image-fix).
