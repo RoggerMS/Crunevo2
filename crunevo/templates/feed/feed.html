@@ -259,8 +259,8 @@
 {{ super() }}
 <div id="fab-container" class="d-none d-lg-block">
   <button id="fab-main" class="fab-button">+</button>
-  <button class="fab-sub d-none" data-action="buscar">🔍</button>
-  <button class="fab-sub d-none" data-action="notificaciones">🔔</button>
-  <button class="fab-sub d-none" data-action="ayuda">💬</button>
+  <button class="fab-sub d-none" data-bs-toggle="modal" data-bs-target="#quickNotesModal" title="Notas rápidas">📝</button>
+  <button class="fab-sub d-none" data-bs-toggle="modal" data-bs-target="#shortcutHelpModal" title="Atajos">⌨️</button>
+  <button class="fab-sub d-none" onclick="window.location.href='/ia'" title="Hablar con Crunebot">🤖</button>
 </div>
 {% endblock %}

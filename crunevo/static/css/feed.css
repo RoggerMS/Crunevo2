@@ -1488,10 +1488,14 @@ select:focus {
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.fab-sub {
+
+#fab-container .fab-sub {
   position: absolute;
+  right: 0;
+  transform: translateX(0);
   opacity: 0;
   pointer-events: none;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 #fab-container.active .fab-sub {

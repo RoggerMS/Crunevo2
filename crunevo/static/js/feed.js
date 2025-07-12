@@ -1337,23 +1337,9 @@ function initFabButton() {
 
     container.querySelectorAll('.fab-sub').forEach((btn, i) => {
       btn.style.transform = isActive
-        ? `translateY(-${(i + 1) * 60}px)`
-        : 'translateY(0)';
+        ? `translateX(-${(i + 1) * 60}px)`
+        : 'translateX(0)';
       btn.classList.toggle('d-none', !isActive);
-    });
-  });
-
-  container.querySelectorAll('.fab-sub').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const action = btn.dataset.action;
-      if (action === 'buscar') {
-        document.getElementById('globalSearch')?.focus();
-      } else if (action === 'notificaciones') {
-        const el = document.getElementById('notificationsDropdown');
-        if (el) bootstrap.Dropdown.getOrCreateInstance(el).toggle();
-      } else if (action === 'ayuda') {
-        window.location.href = '/ia';
-      }
     });
   });
 }
