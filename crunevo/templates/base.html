@@ -161,88 +161,14 @@
     {% include 'components/mobile_bottom_nav.html' %}
     {% endif %}
 
-      <!-- Floating Crunebot Button -->
-      {% if current_user.is_authenticated and 'ia.ia_chat' in current_app.view_functions %}
-      <div class="floating-crunebot d-none d-lg-block">
-          <button class="btn btn-primary rounded-circle shadow-lg floating-btn"
-                  onclick="window.location.href='{{ url_for('ia.ia_chat') }}'"
-                  title="Hablar con Crunebot">
-              <i class="bi bi-robot fs-5"></i>
-          </button>
-      </div>
-      {% endif %}
-
-    {% if request.endpoint not in ['auth.login', 'onboarding.register'] %}
-    {% include 'components/shortcut_help.html' %}
-    {% include 'components/quick_notes.html' %}
-    {% endif %}
+    {# Floating quick actions now live inside the FAB on feed pages #}
 
 
     <!-- Bootstrap JS -->
     <script src="{{ url_for('static', filename='vendor/bootstrap.bundle.min.js') }}"></script>
 
     <style>
-    .floating-btn {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 60px;
-        height: 60px;
-        border: none;
-        z-index: 1055;
-        transition: all 0.3s ease;
-        animation: fadeInUp 0.4s ease both, pulse 2s infinite;
-    }
-
-    .floating-btn:hover {
-        transform: scale(1.1);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4) !important;
-    }
-
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes pulse {
-        0% {
-            box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
-        }
-        70% {
-            box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
-        }
-        100% {
-            box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
-        }
-    }
-
-    @media (max-width: 991.98px) {
-        .floating-crunebot {
-            display: none !important;
-        }
-        .shortcut-help {
-            display: none !important;
-        }
-    }
-    .shortcut-help {
-        position: fixed;
-        bottom: 30px;
-        right: 100px;
-        z-index: 1055;
-    }
-    .quick-notes {
-        position: fixed;
-        bottom: 30px;
-        right: 170px;
-        z-index: 1055;
-    }
-
     @media (max-width: 768px) {
-        .floating-btn,
-        .shortcut-help,
-        .quick-notes {
-            bottom: 90px !important;
-        }
         main {
             padding-bottom: 5rem !important;
         }
