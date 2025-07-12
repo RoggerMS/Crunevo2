@@ -745,3 +745,4 @@
 - Auto-creation del campo note.file_type si falta en la base de datos para evitar errores en /notes (QA note-file-type-hotfix).
 - Vista previa de archivos en /notes/upload unificada: viewer.js maneja detección y muestra solo pdfPreview, docxPreview, imgPreview o pptPreview. Backend valida un único archivo por nota. (PR notes-upload-preview-fix)
 - Toasts de la tienda ya no se muestran al cargar; main.js solo auto-muestra los que tienen data-autoshow (PR store-toast-trigger-fix).
+- Feed now returns is_saved and user_reaction, keeping save button and reactions active on reload (PR feed-save-reaction-persist).
