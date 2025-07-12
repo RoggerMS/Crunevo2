@@ -749,3 +749,4 @@
 - Feed desktop now shows expandable '+' button with search, notifications and chat shortcuts (PR feed-desktop-fab)
 - Floating '+' button now expands to the left showing quick notes, shortcuts and Crunebot (PR feed-fab-left-buttons)
 - FAB buttons unified: quick notes, shortcuts and Crunebot merged into single floating menu; old buttons removed (PR feed-fab-unify)
+- Corregido bloque extra_css en trending.html reemplazándolo por head_extra para que cargue estilos.
