@@ -12,7 +12,6 @@ from flask import (
 from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models.block import Block
-from crunevo.models.personal_block import PersonalBlock
 from crunevo.utils.helpers import activated_required
 from datetime import datetime
 import json  # noqa: F401
@@ -246,10 +245,10 @@ def get_smart_suggestions():
 
     # Check if user has any goals this week
     recent_goals = (
-        PersonalBlock.query.filter_by(user_id=current_user.id)
-        .filter(PersonalBlock.block_type.in_(["meta", "objetivo"]))
+        Block.query.filter_by(user_id=current_user.id)
+        .filter(Block.type.in_(["meta", "objetivo"]))
         .filter(
-            PersonalBlock.created_at
+            Block.created_at
             >= datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
         )
         .count()
@@ -267,12 +266,12 @@ def get_smart_suggestions():
 
     # Check for overdue tasks and reminders
     overdue_items = (
-        PersonalBlock.query.filter_by(user_id=current_user.id)
-        .filter(PersonalBlock.block_type.in_(["recordatorio", "tarea"]))
+        Block.query.filter_by(user_id=current_user.id)
+        .filter(Block.type.in_(["recordatorio", "tarea"]))
         .all()
     )
 
-    overdue_count = sum(1 for item in overdue_items if item.is_overdue())
+    overdue_count = sum(1 for item in overdue_items if block_is_overdue(item))
 
     if overdue_count > 0:
         suggestions.append(
@@ -285,9 +284,7 @@ def get_smart_suggestions():
         )
 
     # Check if user has no kanban board
-    kanban_count = PersonalBlock.query.filter_by(
-        user_id=current_user.id, block_type="kanban"
-    ).count()
+    kanban_count = Block.query.filter_by(user_id=current_user.id, type="kanban").count()
 
     if kanban_count == 0:
         suggestions.append(
@@ -300,9 +297,7 @@ def get_smart_suggestions():
         )
 
     # Check if user has no notes
-    notes_count = PersonalBlock.query.filter_by(
-        user_id=current_user.id, block_type="nota"
-    ).count()
+    notes_count = Block.query.filter_by(user_id=current_user.id, type="nota").count()
 
     if notes_count == 0:
         suggestions.append(
@@ -315,11 +310,11 @@ def get_smart_suggestions():
         )
 
     # Suggest creating blocks for organization
-    total_blocks = PersonalBlock.query.filter_by(user_id=current_user.id).count()
+    total_blocks = Block.query.filter_by(user_id=current_user.id).count()
 
     if total_blocks >= 5:
-        block_count = PersonalBlock.query.filter_by(
-            user_id=current_user.id, block_type="bloque"
+        block_count = Block.query.filter_by(
+            user_id=current_user.id, type="bloque"
         ).count()
 
         if block_count == 0:
@@ -352,6 +347,19 @@ def get_default_icon(block_type):
     return icons.get(block_type, "bi-card-text")
 
 
+def block_is_overdue(block):
+    """Check if a Block with due date metadata is overdue"""
+    meta = block.get_metadata()
+    due_date_str = meta.get("due_date") or meta.get("deadline")
+    if not due_date_str:
+        return False
+    try:
+        due_date = datetime.fromisoformat(due_date_str.replace("Z", "+00:00"))
+        return due_date < datetime.utcnow()
+    except (ValueError, TypeError):
+        return False
+
+
 @personal_space_bp.route("/objetivo/nuevo", methods=["GET", "POST"])
 @login_required
 @activated_required
@@ -359,24 +367,23 @@ def create_goal():
     """Form to create a new goal block"""
     if request.method == "POST":
         max_order = (
-            db.session.query(db.func.max(PersonalBlock.order_position))
+            db.session.query(db.func.max(Block.order_index))
             .filter_by(user_id=current_user.id)
             .scalar()
             or 0
         )
 
-        block = PersonalBlock(
+        block = Block(
             user_id=current_user.id,
-            block_type="objetivo",
+            type="objetivo",
             title=request.form.get("title", "Objetivo"),
             content=request.form.get("content", ""),
-            order_position=max_order + 1,
-            color="indigo",
-            icon=get_default_icon("objetivo"),
+            order_index=max_order + 1,
         )
-
         block.set_metadata(
             {
+                "color": "indigo",
+                "icon": get_default_icon("objetivo"),
                 "status": "no_iniciada",
                 "progress": 0,
                 "deadline": request.form.get("deadline", ""),
@@ -400,23 +407,26 @@ def create_kanban():
     """Form to create a new kanban block"""
     if request.method == "POST":
         max_order = (
-            db.session.query(db.func.max(PersonalBlock.order_position))
+            db.session.query(db.func.max(Block.order_index))
             .filter_by(user_id=current_user.id)
             .scalar()
             or 0
         )
 
-        block = PersonalBlock(
+        block = Block(
             user_id=current_user.id,
-            block_type="kanban",
+            type="kanban",
             title=request.form.get("title", "Mi Tablero"),
             content="",
-            order_position=max_order + 1,
-            color="indigo",
-            icon=get_default_icon("kanban"),
+            order_index=max_order + 1,
         )
-
-        block.set_metadata({"columns": {"Por hacer": [], "En curso": [], "Hecho": []}})
+        block.set_metadata(
+            {
+                "color": "indigo",
+                "icon": get_default_icon("kanban"),
+                "columns": {"Por hacer": [], "En curso": [], "Hecho": []},
+            }
+        )
 
         db.session.add(block)
         db.session.commit()
