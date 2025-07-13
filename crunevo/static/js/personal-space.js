@@ -1,8 +1,11 @@
 // Personal Space JavaScript
-document.addEventListener('DOMContentLoaded', function() {
+function initPersonalSpace() {
     console.log('personal-space.js cargado');
     initializePersonalSpace();
-});
+    updateDashboardMetrics();
+    initializeKanbanBoards();
+    setupAutoSave();
+}
 
 let sortableInstance = null;
 let currentEditingBlock = null;
@@ -77,9 +80,7 @@ function initializeEventListeners() {
     // Add block buttons
     document.getElementById('addBlockBtn')?.addEventListener('click', showAddBlockModal);
     document.getElementById('floatingAddBtn')?.addEventListener('click', showAddBlockModal);
-    document.getElementById('createFirstBlock')?.addEventListener('click', () => {
-        createNewBlock('nota');
-    });
+    document.getElementById('createFirstBlock')?.addEventListener('click', startPersonalSpace);
 
     // Control buttons
     document.getElementById('darkModeToggle')?.addEventListener('click', toggleDarkMode);
@@ -153,6 +154,9 @@ function renderBlocks(blocks) {
         const blockElement = createBlockElement(block);
         grid.appendChild(blockElement);
     });
+
+    updateDashboardMetrics();
+    initializeKanbanBoards();
 }
 
 function convertBlock(block) {
@@ -807,6 +811,9 @@ function addBlockToUI(blockData) {
     if (emptyState) emptyState.remove();
     grid.appendChild(element);
     updateDashboardMetrics();
+    if (block.type === 'kanban') {
+        initializeKanbanBoards();
+    }
 }
 
 // Block Actions
@@ -1308,6 +1315,8 @@ function debounce(func, wait) {
     };
 }
 
+window.initPersonalSpace = initPersonalSpace;
+
 // CSS for animations
 const style = document.createElement('style');
 style.textContent = `
@@ -1320,27 +1329,7 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Enhanced Personal Space JavaScript
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize features
-    initializeSortable();
-    initializeModals();
-    initializeControls();
-    loadSuggestions();
-    updateDashboardMetrics();
-    initializeKanbanBoards();
-    setupAutoSave();
-});
-
-function loadSuggestions() {
-    fetch('/espacio-personal/api/suggestions')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.suggestions.length > 0) {
-                showSuggestions(data.suggestions);
-            }
-        })
-        .catch(error => console.error('Error loading suggestions:', error));
-}
+// Legacy enhanced initialization replaced by initPersonalSpace()
 
 function updateDashboardMetrics() {
     const blocks = document.querySelectorAll('.block-card');

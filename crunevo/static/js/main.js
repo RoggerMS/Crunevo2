@@ -865,6 +865,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initCareerPage === 'function') {
     initCareerPage();
   }
+  if (typeof initPersonalSpace === 'function') {
+    initPersonalSpace();
+  }
 
   const avatarInput = document.getElementById('avatarFileInput');
   const avatarPreview = document.getElementById('avatarPreview');
