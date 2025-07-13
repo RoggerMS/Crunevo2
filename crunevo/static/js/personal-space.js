@@ -147,7 +147,6 @@ function renderBlocks(blocks) {
 }
 
 function convertBlock(block) {
-    block.block_type = block.type;
     block.color = block.metadata.color || 'indigo';
     block.icon = block.metadata.icon || DEFAULT_ICONS[block.type] || 'bi-card-text';
     block.progress = computeProgress(block);
@@ -386,7 +385,8 @@ function createNewBlock(type) {
 
     apiCreateBlock(blockData)
         .then(data => {
-            if (data.success) {
+            console.log('create block response', data);
+            if (data.success && data.block) {
                 bootstrap.Modal.getInstance(document.getElementById('addBlockModal'))?.hide();
 
                 const blockElement = createBlockElement(data.block);
@@ -407,6 +407,7 @@ function createNewBlock(type) {
                 showNotification('Bloque creado exitosamente', 'success');
             } else {
                 showNotification(data.message || 'Error al crear el bloque', 'error');
+                setTimeout(() => window.location.reload(), 500);
             }
         })
         .catch(error => {
@@ -1036,7 +1037,14 @@ function handleSuggestionClick(e) {
                         })
                     })
                     .then(res => res.json())
-                    .then(data => { if (data.success) addBlockToUI(data.block); });
+                    .then(data => {
+                        console.log('suggestion create_objetivo_block', data);
+                        if (data.success && data.block) {
+                            addBlockToUI(data.block);
+                        } else {
+                            window.location.reload();
+                        }
+                    });
                 }
                 break;
             case 'create_nota_block':
@@ -1053,7 +1061,14 @@ function handleSuggestionClick(e) {
                         })
                     })
                     .then(res => res.json())
-                    .then(data => { if (data.success) addBlockToUI(data.block); });
+                    .then(data => {
+                        console.log('suggestion create_nota_block', data);
+                        if (data.success && data.block) {
+                            addBlockToUI(data.block);
+                        } else {
+                            window.location.reload();
+                        }
+                    });
                 }
                 break;
             case 'create_kanban_block':
@@ -1070,7 +1085,14 @@ function handleSuggestionClick(e) {
                         })
                     })
                     .then(res => res.json())
-                    .then(data => { if (data.success) addBlockToUI(data.block); });
+                    .then(data => {
+                        console.log('suggestion create_kanban_block', data);
+                        if (data.success && data.block) {
+                            addBlockToUI(data.block);
+                        } else {
+                            window.location.reload();
+                        }
+                    });
                 }
                 break;
             case 'create_bloque_block':
@@ -1302,7 +1324,7 @@ function updateDashboardMetrics() {
     };
 
     blocks.forEach(block => {
-        const type = block.dataset.type;
+        const type = block.dataset.blockType;
 
         switch(type) {
             case 'nota':
