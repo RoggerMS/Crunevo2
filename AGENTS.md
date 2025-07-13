@@ -762,3 +762,4 @@
 - Added Block model, migration and /api/create-block endpoint with JS integration for suggestions (PR personal-space-db-blocks).
 - Personal space now loads blocks from the new Block model, rendering them dynamically with drag & drop and suggestions creating database records. (PR personal-space-blocks-ui)
 - Fully activated personal space blocks using the database: JS calls /api/create-block, block cards use data-block-type, PersonalBlock routes replaced with Block and helper for overdue items. (PR personal-space-full-fix)
+- Fixed personal space buttons: script loads via extra_js, listeners added for #createFirstBlock and smart suggestions using handleSuggestionAction. (PR personal-space-buttons-fix)

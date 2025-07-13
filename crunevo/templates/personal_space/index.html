@@ -55,7 +55,7 @@
                         <h6>{{ suggestion.title }}</h6>
                         <p>{{ suggestion.message }}</p>
                     </div>
-                    <button class="btn btn-sm btn-outline-primary suggestion-btn" aria-label="Aplicar sugerencia" title="Aplicar sugerencia">
+                    <button class="btn btn-sm btn-outline-primary apply-suggestion-btn" aria-label="Aplicar sugerencia" title="Aplicar sugerencia">
                         Aplicar
                     </button>
                 </div>
@@ -288,6 +288,6 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script src="{{ url_for('static', filename='js/personal-space.js') }}"></script>
 {% endblock %}

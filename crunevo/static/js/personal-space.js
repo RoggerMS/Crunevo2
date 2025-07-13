@@ -1,5 +1,6 @@
 // Personal Space JavaScript
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('personal-space.js cargado');
     initializePersonalSpace();
 });
 
@@ -76,7 +77,9 @@ function initializeEventListeners() {
     // Add block buttons
     document.getElementById('addBlockBtn')?.addEventListener('click', showAddBlockModal);
     document.getElementById('floatingAddBtn')?.addEventListener('click', showAddBlockModal);
-    document.getElementById('createFirstBlock')?.addEventListener('click', startPersonalSpace);
+    document.getElementById('createFirstBlock')?.addEventListener('click', () => {
+        createNewBlock('nota');
+    });
 
     // Control buttons
     document.getElementById('darkModeToggle')?.addEventListener('click', toggleDarkMode);
@@ -90,7 +93,13 @@ function initializeEventListeners() {
     document.getElementById('saveBlockBtn')?.addEventListener('click', saveCurrentBlock);
 
     // Suggestion events
-    document.addEventListener('click', handleSuggestionClick);
+    document.querySelectorAll('.apply-suggestion-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const card = btn.closest('.suggestion-card');
+            const action = card?.dataset.action;
+            handleSuggestionAction(action);
+        });
+    });
 
     // Block interaction events
     document.addEventListener('click', handleBlockInteractions);
@@ -1014,6 +1023,26 @@ function toggleFocusMode() {
     const newState = !isFocusMode;
     applyFocusMode(newState);
     localStorage.setItem('focus_mode', newState ? 'on' : 'off');
+}
+
+function handleSuggestionAction(action) {
+    switch (action) {
+        case 'create_nota_block':
+            createNewBlock('nota');
+            break;
+        case 'create_objetivo_block':
+            createNewBlock('objetivo');
+            break;
+        case 'create_kanban_block':
+            createNewBlock('kanban');
+            break;
+        case 'create_bloque_block':
+            createNewBlock('bloque');
+            break;
+        case 'show_overdue_items':
+            showNotification('Revisa tus tareas vencidas', 'info');
+            break;
+    }
 }
 
 // Suggestion Handling
