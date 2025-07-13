@@ -674,6 +674,9 @@ def delete_note(note_id):
     Credit.query.filter_by(
         user_id=current_user.id, related_id=note.id, reason=CreditReasons.APUNTE_SUBIDO
     ).delete()
+    Comment.query.filter_by(note_id=note.id).delete()
+    NoteVote.query.filter_by(note_id=note.id).delete()
+    PrintRequest.query.filter_by(note_id=note.id).delete()
 
     if note.filename.startswith("http") and current_app.config.get("CLOUDINARY_URL"):
         public_id = os.path.splitext(note.filename.rsplit("/", 1)[-1])[0]

@@ -609,6 +609,8 @@ def eliminar_post(post_id):
     feed_items = FeedItem.query.filter_by(item_type="post", ref_id=post.id).all()
     owner_ids = [fi.owner_id for fi in feed_items]
     FeedItem.query.filter_by(item_type="post", ref_id=post.id).delete()
+    PostComment.query.filter_by(post_id=post.id).delete()
+    PostReaction.query.filter_by(post_id=post.id).delete()
     try:
         from crunevo.models import SavedPost
 

@@ -773,3 +773,4 @@
 - Upload form now uses Tom Select with expanded categories and academic levels (PR notes-category-select).
 - Added IA_ENABLED config flag, disabled OpenAI calls when off and provided static quick responses with status badge (PR crunebot-fake-mode).
 - Previsualización de imágenes en el chat, corrección de mensajes privados y diseño más compacto (PR chat-image-preview).
+- Eliminada votación y reacciones al borrar apuntes y publicaciones para evitar violación de claves foráneas (PR fix-cascade-delete).

@@ -30,6 +30,9 @@ from crunevo.models import (
     EmailToken,
     Comment,
     PostComment,
+    PostReaction,
+    NoteVote,
+    SavedPost,
     PageView,
     PrintRequest,
     ProductRequest,
@@ -638,6 +641,9 @@ def delete_post_admin(post_id):
     """Allow admins to delete any post."""
     post = Post.query.get_or_404(post_id)
     FeedItem.query.filter_by(item_type="post", ref_id=post.id).delete()
+    PostComment.query.filter_by(post_id=post.id).delete()
+    PostReaction.query.filter_by(post_id=post.id).delete()
+    SavedPost.query.filter_by(post_id=post.id).delete()
     db.session.delete(post)
     db.session.commit()
     log_admin_action(f"Elimin\u00f3 post {post_id}")
@@ -655,6 +661,9 @@ def delete_note_admin(note_id):
     Credit.query.filter_by(
         user_id=note.user_id, related_id=note.id, reason=CreditReasons.APUNTE_SUBIDO
     ).delete()
+    Comment.query.filter_by(note_id=note.id).delete()
+    NoteVote.query.filter_by(note_id=note.id).delete()
+    PrintRequest.query.filter_by(note_id=note.id).delete()
     db.session.delete(note)
     db.session.commit()
     log_admin_action(f"Elimin\u00f3 apunte {note_id}")
