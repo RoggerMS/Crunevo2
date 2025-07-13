@@ -1,0 +1,5 @@
+{% macro render_block_card(block, get_default_icon) %}
+    {% set color = block.get_metadata().get('color', 'indigo') %}
+    {% set icon = block.get_metadata().get('icon', get_default_icon(block.type)) %}
+    {% include 'personal_space/components/block_card.html' %}
+{% endmacro %}

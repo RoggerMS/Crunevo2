@@ -1,4 +1,4 @@
-from crunevo.models import PersonalBlock, User
+from crunevo.models import User, Block
 
 
 def login(client, username, password="secret"):
@@ -19,7 +19,7 @@ def create_inactive_user(db_session):
 
 
 def test_create_block_requires_login(client):
-    resp = client.post("/espacio-personal/api/blocks", json={"block_type": "nota"})
+    resp = client.post("/espacio-personal/api/blocks", json={"type": "nota"})
     assert resp.status_code == 302
     assert "/login" in resp.headers["Location"]
 
@@ -27,7 +27,7 @@ def test_create_block_requires_login(client):
 def test_create_block_requires_activation(client, db_session):
     user = create_inactive_user(db_session)
     login(client, user.username)
-    resp = client.post("/espacio-personal/api/blocks", json={"block_type": "nota"})
+    resp = client.post("/espacio-personal/api/blocks", json={"type": "nota"})
     assert resp.status_code == 302
     assert "/onboarding/pending" in resp.headers["Location"]
 
@@ -36,17 +36,17 @@ def test_create_block_success(client, db_session, test_user):
     login(client, test_user.username)
     resp = client.post(
         "/espacio-personal/api/blocks",
-        json={"block_type": "nota", "title": "My Note"},
+        json={"type": "nota", "title": "My Note"},
     )
     assert resp.status_code == 200
     data = resp.get_json()
     assert data["success"] is True
     assert data["block"]["title"] == "My Note"
-    assert PersonalBlock.query.filter_by(user_id=test_user.id).count() == 1
+    assert Block.query.filter_by(user_id=test_user.id).count() == 1
 
 
 def test_update_block(client, db_session, test_user, another_user):
-    block = PersonalBlock(user_id=test_user.id, block_type="nota", title="Old")
+    block = Block(user_id=test_user.id, type="nota", title="Old")
     db_session.add(block)
     db_session.commit()
 
@@ -69,7 +69,7 @@ def test_update_block(client, db_session, test_user, another_user):
 
 
 def test_delete_block(client, db_session, test_user, another_user):
-    block = PersonalBlock(user_id=test_user.id, block_type="nota")
+    block = Block(user_id=test_user.id, type="nota")
     db_session.add(block)
     db_session.commit()
 
@@ -77,9 +77,9 @@ def test_delete_block(client, db_session, test_user, another_user):
     resp = client.delete(f"/espacio-personal/api/blocks/{block.id}")
     assert resp.status_code == 200
     assert resp.get_json()["success"] is True
-    assert PersonalBlock.query.get(block.id) is None
+    assert Block.query.get(block.id) is None
 
-    block2 = PersonalBlock(user_id=test_user.id, block_type="nota")
+    block2 = Block(user_id=test_user.id, type="nota")
     db_session.add(block2)
     db_session.commit()
     login(client, another_user.username)
@@ -88,8 +88,8 @@ def test_delete_block(client, db_session, test_user, another_user):
 
 
 def test_reorder_blocks(client, db_session, test_user):
-    b1 = PersonalBlock(user_id=test_user.id, block_type="nota", order_position=1)
-    b2 = PersonalBlock(user_id=test_user.id, block_type="nota", order_position=2)
+    b1 = Block(user_id=test_user.id, type="nota", order_index=1)
+    b2 = Block(user_id=test_user.id, type="nota", order_index=2)
     db_session.add_all([b1, b2])
     db_session.commit()
 
@@ -102,8 +102,8 @@ def test_reorder_blocks(client, db_session, test_user):
     assert resp.get_json()["success"] is True
     db_session.refresh(b1)
     db_session.refresh(b2)
-    assert b2.order_position == 1
-    assert b1.order_position == 2
+    assert b2.order_index == 1
+    assert b1.order_index == 2
 
     resp2 = client.post(
         "/espacio-personal/api/blocks/reorder",
