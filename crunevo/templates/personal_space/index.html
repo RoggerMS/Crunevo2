@@ -76,57 +76,56 @@
     <!-- Blocks Grid -->
     <div class="ps-grid-container">
         <div class="container-fluid">
+            <div class="dashboard-metrics mb-4 {% if not blocks %}d-none{% endif %}" id="dashboardMetrics">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-journal-text text-indigo-500"></i>
+                        </div>
+                        <div class="metric-info">
+                            <span class="metric-number" id="notasCount">0</span>
+                            <span class="metric-label">Notas</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-clipboard-check text-emerald-500"></i>
+                        </div>
+                        <div class="metric-info">
+                            <span class="metric-number" id="tareasCount">0</span>
+                            <span class="metric-label">Tareas</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-trophy text-amber-500"></i>
+                        </div>
+                        <div class="metric-info">
+                            <span class="metric-number" id="objetivosCount">0</span>
+                            <span class="metric-label">Objetivos</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-graph-up text-purple-500"></i>
+                        </div>
+                        <div class="metric-info">
+                            <span class="metric-number" id="progressAvg">0%</span>
+                            <span class="metric-label">Progreso</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="blocks-grid" id="blocksGrid">
                 {% for block in blocks %}
                 {{ ps_macros.render_block_card(block, get_default_icon) }}
                 {% endfor %}
 
-                {% if blocks %}
-                <!-- Dashboard Metrics -->
-                <div class="dashboard-metrics mb-4">
-                    <div class="metrics-grid">
-                        <div class="metric-card">
-                            <div class="metric-icon">
-                                <i class="bi bi-journal-text text-indigo-500"></i>
-                            </div>
-                            <div class="metric-info">
-                                <span class="metric-number" id="notasCount">0</span>
-                                <span class="metric-label">Notas</span>
-                            </div>
-                        </div>
-
-                        <div class="metric-card">
-                            <div class="metric-icon">
-                                <i class="bi bi-clipboard-check text-emerald-500"></i>
-                            </div>
-                            <div class="metric-info">
-                                <span class="metric-number" id="tareasCount">0</span>
-                                <span class="metric-label">Tareas</span>
-                            </div>
-                        </div>
-
-                        <div class="metric-card">
-                            <div class="metric-icon">
-                                <i class="bi bi-trophy text-amber-500"></i>
-                            </div>
-                            <div class="metric-info">
-                                <span class="metric-number" id="objetivosCount">0</span>
-                                <span class="metric-label">Objetivos</span>
-                            </div>
-                        </div>
-
-                        <div class="metric-card">
-                            <div class="metric-icon">
-                                <i class="bi bi-graph-up text-purple-500"></i>
-                            </div>
-                            <div class="metric-info">
-                                <span class="metric-number" id="progressAvg">0%</span>
-                                <span class="metric-label">Progreso</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% else %}
+                {% if not blocks %}
                 <div class="empty-state">
                     <div class="empty-icon">
                         <i class="bi bi-plus-circle"></i>
