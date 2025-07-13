@@ -315,7 +315,7 @@ function handleModalEvents(e) {
 }
 
 function apiCreateBlock(blockData) {
-    return fetch('/espacio-personal/api/blocks', {
+    return fetch('/espacio-personal/api/create-block', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -395,9 +395,18 @@ function getDefaultMetadata(type) {
 }
 
 function startPersonalSpace() {
-    // Create initial blocks: note, kanban and goal
-    ['nota', 'kanban', 'objetivo'].forEach(type => createNewBlock(type));
+    ['nota', 'kanban', 'objetivo'].forEach(type => {
+        fetch('/espacio-personal/api/create-block', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({ type })
+        });
+    });
     showNotification('Espacio inicial creado', 'success');
+    setTimeout(() => window.location.reload(), 500);
 }
 
 // Block Editing Functions
@@ -945,17 +954,44 @@ function handleSuggestionClick(e) {
         switch (action) {
             case 'create_objetivo_block':
                 if (!blockTypeExists('objetivo')) {
-                    createNewBlock('objetivo');
+                    fetch('/espacio-personal/api/create-block', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCsrfToken()
+                        },
+                        body: JSON.stringify({ type: 'objetivo', metadata: { progress: 0 } })
+                    })
+                    .then(res => res.json())
+                    .then(data => { if (data.success) window.location.reload(); });
                 }
                 break;
             case 'create_nota_block':
                 if (!blockTypeExists('nota')) {
-                    createNewBlock('nota');
+                    fetch('/espacio-personal/api/create-block', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCsrfToken()
+                        },
+                        body: JSON.stringify({ type: 'nota' })
+                    })
+                    .then(res => res.json())
+                    .then(data => { if (data.success) window.location.reload(); });
                 }
                 break;
             case 'create_kanban_block':
                 if (!blockTypeExists('kanban')) {
-                    createNewBlock('kanban');
+                    fetch('/espacio-personal/api/create-block', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCsrfToken()
+                        },
+                        body: JSON.stringify({ type: 'kanban', metadata: { columns: { "Por hacer": [], "En curso": [], "Hecho": [] } } })
+                    })
+                    .then(res => res.json())
+                    .then(data => { if (data.success) window.location.reload(); });
                 }
                 break;
             case 'create_bloque_block':
