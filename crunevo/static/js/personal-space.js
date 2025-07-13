@@ -95,11 +95,7 @@ function initializeEventListeners() {
 
     // Suggestion events
     document.querySelectorAll('.apply-suggestion-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const card = btn.closest('.suggestion-card');
-            const action = card?.dataset.action;
-            handleSuggestionAction(action);
-        });
+        btn.addEventListener('click', handleSuggestionClick);
     });
 
     // Block interaction events
@@ -459,7 +455,7 @@ function getDefaultMetadata(type) {
 }
 
 function startPersonalSpace() {
-    ['nota', 'kanban', 'objetivo'].forEach(type => {
+    const requests = ['nota', 'kanban', 'objetivo'].map(type =>
         fetch('/espacio-personal/api/create-block', {
             method: 'POST',
             headers: {
@@ -475,10 +471,12 @@ function startPersonalSpace() {
                     icon: DEFAULT_ICONS[type]
                 }, getDefaultMetadata(type))
             })
-        });
+        })
+    );
+    Promise.all(requests).then(() => {
+        showNotification('Espacio inicial creado', 'success');
+        setTimeout(() => window.location.reload(), 500);
     });
-    showNotification('Espacio inicial creado', 'success');
-    setTimeout(() => window.location.reload(), 500);
 }
 
 // Block Editing Functions
@@ -809,6 +807,8 @@ function addBlockToUI(blockData) {
     const element = createBlockElement(block);
     const emptyState = grid.querySelector('.empty-state');
     if (emptyState) emptyState.remove();
+    const metrics = document.getElementById('dashboardMetrics');
+    metrics?.classList.remove('d-none');
     grid.appendChild(element);
     updateDashboardMetrics();
     if (block.type === 'kanban') {
@@ -1032,30 +1032,10 @@ function toggleFocusMode() {
     localStorage.setItem('focus_mode', newState ? 'on' : 'off');
 }
 
-function handleSuggestionAction(action) {
-    switch (action) {
-        case 'create_nota_block':
-            createNewBlock('nota');
-            break;
-        case 'create_objetivo_block':
-            createNewBlock('objetivo');
-            break;
-        case 'create_kanban_block':
-            createNewBlock('kanban');
-            break;
-        case 'create_bloque_block':
-            createNewBlock('bloque');
-            break;
-        case 'show_overdue_items':
-            showNotification('Revisa tus tareas vencidas', 'info');
-            break;
-    }
-}
-
 // Suggestion Handling
 function handleSuggestionClick(e) {
-    if (e.target.closest('.suggestion-btn')) {
-        const suggestionCard = e.target.closest('.suggestion-card');
+    const suggestionCard = e.currentTarget.closest('.suggestion-card');
+    if (suggestionCard) {
         const action = suggestionCard.dataset.action;
 
         switch (action) {
