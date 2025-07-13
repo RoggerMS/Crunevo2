@@ -789,8 +789,8 @@ class ModernFeedManager {
     const container = document.getElementById('feedContainer');
     if (!container) return;
 
+    if (filter === this.currentFilter && this.currentPage > 1) return;
     const filterChanged = filter !== this.currentFilter;
-    if (!filterChanged && this.currentPage > 1) return;
 
     try {
       this.currentFilter = filter;
@@ -815,7 +815,8 @@ class ModernFeedManager {
       if (!data.html) {
         console.log('Empty HTML received for filter', filter);
       }
-      if (filterChanged || this.currentPage === 1) {
+      if (this.currentPage === 1 || filterChanged) {
+        console.log('[FEED] Actualizando HTML del contenedor');
         container.innerHTML = data.html || '';
       }
 
@@ -861,6 +862,9 @@ class ModernFeedManager {
     });
     if (this.isLoading || this.reachedEnd) return;
     this.isLoading = true;
+    setTimeout(() => {
+      if (this.isLoading) this.isLoading = false;
+    }, 1000);
     const loader = document.getElementById('feed-loader');
     if (loader) {
       loader.style.display = '';

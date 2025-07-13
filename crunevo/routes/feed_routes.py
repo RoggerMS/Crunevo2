@@ -879,7 +879,7 @@ def load_feed():
     post_ids = [p.id for p in posts]
 
     if not posts:
-        return ""
+        return '<div class="no-more-posts text-center">No hay más publicaciones.</div>'
 
     reaction_map = PostReaction.counts_for_posts(post_ids)
     user_reactions = PostReaction.reactions_for_user_posts(current_user.id, post_ids)

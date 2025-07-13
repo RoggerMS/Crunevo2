@@ -778,3 +778,4 @@
 - Corregido scroll infinito del feed: nueva ruta /feed/load con paginación, loader con mensajes y JS que evita peticiones duplicadas (PR feed-scroll-fix).
 - Posts cargados via scroll ya no desaparecen y se eliminó el texto "Cargando más..." dejando solo el spinner (PR feed-loader-text-remove).
 - Añadidos logs de depuración en loadFilteredFeed y loadMorePosts y condición para no limpiar el feed al recargar con el mismo filtro (PR feed-scroll-disappearing-fix).
+- Ajustado loadFilteredFeed para respetar currentPage>1, proteger innerHTML y registrar actualización; loadMorePosts incluye timeout de seguridad y /feed/load muestra mensaje cuando no hay más publicaciones (PR feed-scroll-empty-fix).
