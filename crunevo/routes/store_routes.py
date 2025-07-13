@@ -103,6 +103,7 @@ def store_index():
     from crunevo.constants import STORE_CATEGORIES
 
     categories = [cat for group in STORE_CATEGORIES.values() for cat in group]
+    categories_dict = STORE_CATEGORIES
     favorites = FavoriteProduct.query.filter_by(user_id=current_user.id).all()
     favorite_ids = [fav.product_id for fav in favorites]
     purchased = Purchase.query.filter_by(user_id=current_user.id).all()
@@ -131,6 +132,7 @@ def store_index():
         favorite_ids=favorite_ids,
         purchased_ids=purchased_ids,
         categories=categories,
+        categories_dict=categories_dict,
         categoria=categoria,
         precio_max=precio_max,
         ratings=ratings,
