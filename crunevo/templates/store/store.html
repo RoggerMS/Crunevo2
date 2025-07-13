@@ -435,7 +435,7 @@
             <label for="publishCategory" class="form-label">Categoría</label>
             <select class="form-select" id="publishCategory" name="category" data-placeholder="Seleccionar categoría">
               <option value=""></option>
-              {% for group, cats in categories.items() %}
+              {% for group, cats in categories_dict.items() %}
               <optgroup label="{{ group }}">
                 {% for cat in cats %}
                 <option value="{{ cat }}">{{ cat }}</option>

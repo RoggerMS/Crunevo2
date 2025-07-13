@@ -782,3 +782,4 @@
 - Añadidos console logs en loadMorePosts para depurar HTML y elementos, se inserta cuando falta data-post-id y se muestra mensaje cuando no hay más publicaciones (PR feed-scroll-debug-fix).
 - Marketplace filters toggle: sidebar oculto por defecto y categorías completas en modal con Tom Select (PR store-filters-toggle)
 - Fixed store routes to pass STORE_CATEGORIES dictionary and removed duplicate precio_min logic to avoid Jinja errors (PR store-categories-dict).
+- Fixed publish product modal using category groups via categories_dict (QA store-category-dict-fix).
