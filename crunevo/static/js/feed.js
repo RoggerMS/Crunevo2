@@ -3,6 +3,7 @@ class ModernFeedManager {
   constructor() {
     this.currentPage = 1;
     this.isLoading = false;
+    this.reachedEnd = false;
     this.currentFilter = 'recientes';
     this.posts = new Map();
     this.imageFiles = [];
@@ -783,6 +784,14 @@ class ModernFeedManager {
     try {
       this.currentFilter = filter;
       this.currentPage = 1;
+      this.reachedEnd = false;
+      const loader = document.getElementById('feed-loader');
+      if (loader) {
+        loader.querySelector('.spinner-border')?.classList.remove('d-none');
+        const txt = loader.querySelector('.loader-text');
+        if (txt) txt.textContent = 'Cargando más...';
+        loader.style.display = '';
+      }
 
       // Show loading state
       this.showSkeletonPosts();
@@ -813,36 +822,50 @@ class ModernFeedManager {
     const sentinel = document.getElementById('feedEnd');
     if (!sentinel) return;
 
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !this.isLoading) {
-        this.loadMorePosts();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !this.isLoading && !this.reachedEnd) {
+          this.loadMorePosts();
+        }
+      },
+      {
+        rootMargin: '100px',
       }
-    }, {
-      rootMargin: '100px'
-    });
+    );
 
     observer.observe(sentinel);
+    this.infiniteObserver = observer;
   }
 
   // Load more posts
   async loadMorePosts() {
-    if (this.isLoading) return;
+    if (this.isLoading || this.reachedEnd) return;
     this.isLoading = true;
+    const loader = document.getElementById('feed-loader');
+    if (loader) {
+      loader.style.display = '';
+      loader.querySelector('.spinner-border')?.classList.remove('d-none');
+      const txt = loader.querySelector('.loader-text');
+      if (txt) txt.textContent = 'Cargando más...';
+    }
 
     try {
       this.currentPage++;
-      const response = await fetch(`/feed/api/feed?page=${this.currentPage}&categoria=${this.currentFilter}&format=html`);
-      const data = await response.json();
+      const response = await fetch(`/feed/load?page=${this.currentPage}&categoria=${this.currentFilter}`);
+      const data = await response.text();
 
-      if (!data.html || data.count === 0) {
-        const end = document.getElementById('feedEnd');
-        if (end) end.style.display = 'none';
+      if (data.trim() === '') {
+        const txt = loader?.querySelector('.loader-text');
+        loader?.querySelector('.spinner-border')?.classList.add('d-none');
+        if (txt) txt.textContent = 'No hay más publicaciones.';
+        this.reachedEnd = true;
+        this.infiniteObserver?.unobserve(document.getElementById('feedEnd'));
         return;
       }
 
       const container = document.getElementById('feedContainer');
       const temp = document.createElement('div');
-      temp.innerHTML = data.html;
+      temp.innerHTML = data;
 
       Array.from(temp.children).forEach(el => {
         const postId = el.getAttribute('data-post-id');
@@ -857,6 +880,11 @@ class ModernFeedManager {
     } catch (error) {
       console.error('Error loading more posts:', error);
       this.showToast('Error al cargar más publicaciones', 'error');
+      const txt = loader?.querySelector('.loader-text');
+      loader?.querySelector('.spinner-border')?.classList.add('d-none');
+      if (txt) txt.textContent = 'Error al cargar.';
+      this.reachedEnd = true;
+      this.infiniteObserver?.unobserve(document.getElementById('feedEnd'));
     } finally {
       this.isLoading = false;
     }

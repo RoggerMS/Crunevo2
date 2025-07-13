@@ -216,3 +216,10 @@ def test_eliminar_post_with_reactions(client, db_session, test_user, another_use
     assert Post.query.get(post.id) is None
     assert PostComment.query.filter_by(post_id=post.id).count() == 0
     assert PostReaction.query.filter_by(post_id=post.id).count() == 0
+
+
+def test_feed_load_empty_returns_blank(client, test_user):
+    login(client, test_user.username, "secret")
+    resp = client.get("/feed/load?page=99")
+    assert resp.status_code == 200
+    assert resp.data == b""

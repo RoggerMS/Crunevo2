@@ -844,3 +844,60 @@ def search_posts():
         .all()
     )
     return jsonify([{"id": p.id, "content": p.content[:100]} for p in posts])
+
+
+# Infinite scroll endpoint
+@feed_bp.route("/load")
+@activated_required
+def load_feed():
+    """Return additional feed items for infinite scroll."""
+    page = int(request.args.get("page", 1))
+    categoria = request.args.get("categoria")
+
+    query = FeedItem.query.filter_by(owner_id=current_user.id)
+    if categoria == "apuntes":
+        query = query.filter_by(item_type="apunte")
+    else:
+        query = query.filter(FeedItem.item_type != "apunte")
+
+    pagination = query.order_by(FeedItem.created_at.desc()).paginate(
+        page=page, per_page=10, error_out=False
+    )
+
+    items = pagination.items
+    post_ids = []
+
+    if categoria == "apuntes":
+        notes = [Note.query.get(i.ref_id) for i in items if i.item_type == "apunte"]
+        notes = [n for n in notes if n]
+        return render_template("feed/_notes.html", notes=notes) if notes else ""
+
+    posts = [Post.query.get(i.ref_id) for i in items if i.item_type == "post"]
+    posts = [p for p in posts if p]
+    if categoria == "imagen":
+        posts = [p for p in posts if p.file_url and not p.file_url.endswith(".pdf")]
+    post_ids = [p.id for p in posts]
+
+    if not posts:
+        return ""
+
+    reaction_map = PostReaction.counts_for_posts(post_ids)
+    user_reactions = PostReaction.reactions_for_user_posts(current_user.id, post_ids)
+    from crunevo.models import SavedPost
+
+    saved_posts = {
+        sp.post_id: True
+        for sp in SavedPost.query.filter(
+            SavedPost.user_id == current_user.id,
+            SavedPost.post_id.in_(post_ids),
+        ).all()
+    }
+
+    html = render_template(
+        "feed/_posts.html",
+        posts=posts,
+        reaction_counts=reaction_map,
+        user_reactions=user_reactions,
+        saved_posts=saved_posts,
+    )
+    return html

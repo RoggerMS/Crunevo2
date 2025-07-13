@@ -775,3 +775,4 @@
 - Previsualización de imágenes en el chat, corrección de mensajes privados y diseño más compacto (PR chat-image-preview).
 - Eliminada votación y reacciones al borrar apuntes y publicaciones para evitar violación de claves foráneas (PR fix-cascade-delete).
 - Eliminación de apuntes y posts ahora borra votos/reacciones asociados y maneja IntegrityError para evitar fallos (PR delete-related-cleanup).
+- Corregido scroll infinito del feed: nueva ruta /feed/load con paginación, loader con mensajes y JS que evita peticiones duplicadas (PR feed-scroll-fix).
