@@ -609,6 +609,9 @@ def eliminar_post(post_id):
     feed_items = FeedItem.query.filter_by(item_type="post", ref_id=post.id).all()
     owner_ids = [fi.owner_id for fi in feed_items]
     FeedItem.query.filter_by(item_type="post", ref_id=post.id).delete()
+    PostReaction.query.filter_by(post_id=post.id).delete()
+    PostComment.query.filter_by(post_id=post.id).delete()
+    PostImage.query.filter_by(post_id=post.id).delete()
     try:
         from crunevo.models import SavedPost
 
@@ -616,7 +619,15 @@ def eliminar_post(post_id):
     except Exception:
         pass
     db.session.delete(post)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        flash(
+            "No se pudo eliminar la publicaci\u00f3n por registros relacionados",
+            "danger",
+        )
+        return redirect(url_for("feed.view_post", post_id=post.id))
     for uid in owner_ids:
         try:
             remove_item(uid, "post", post.id)
