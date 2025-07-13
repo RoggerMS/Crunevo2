@@ -10,14 +10,14 @@
   border: 1px solid #dee2e6;
   border-radius: 12px;
   background: rgba(255,255,255,0.05);
-  padding: 1rem 1rem 120px;
+  padding: 0.5rem 0.75rem 80px;
 }
 
 .message-item {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .message-item.own {
@@ -26,7 +26,7 @@
 
 .message-content {
   max-width: 70%;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 18px;
   background: rgba(233, 236, 239, 0.9);
   word-wrap: break-word;
@@ -84,8 +84,25 @@
   position: sticky;
   bottom: 0;
   background: white;
-  padding: 1rem;
+  padding: 0.5rem;
   border-top: 1px solid #dee2e6;
+}
+
+.message-content img {
+  max-width: 60%;
+  max-height: 200px;
+}
+
+#filePreview {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+#filePreview img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 </style>
 {% endblock %}
@@ -132,7 +149,8 @@
         </div>
         
         <div class="chat-input">
-          <form id="messageForm" class="d-flex gap-2" enctype="multipart/form-data">
+          <form id="messageForm" class="d-flex flex-wrap gap-2 align-items-center" enctype="multipart/form-data">
+            <div id="filePreview" class="d-none small"></div>
             <input type="text" id="messageInput" class="form-control rounded-pill"
                    placeholder="Escribe un mensaje..." maxlength="1000">
             <input type="file" id="audioInput" accept=".mp3,.ogg" class="form-control d-none">

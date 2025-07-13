@@ -142,7 +142,8 @@ def send_message():
     attachment = request.files.get("file")
     content = sanitize_message(data.get("content", "").strip())
     receiver_id = data.get("receiver_id")
-    is_global = data.get("is_global", False)
+    is_global_raw = data.get("is_global")
+    is_global = str(is_global_raw).lower() == "true"
 
     audio_url = None
     attachment_url = None

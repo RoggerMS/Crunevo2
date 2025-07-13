@@ -14,13 +14,13 @@
 .chat-messages {
   height: 400px;
   overflow-y: auto;
-  padding: 1rem 1rem 120px;
+  padding: 0.5rem 0.75rem 80px;
   background: rgba(255,255,255,0.02);
 }
 
 .message-bubble {
   max-width: 80%;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
 }
@@ -36,7 +36,7 @@
 }
 
 .bubble-content {
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 18px;
   word-wrap: break-word;
 }
@@ -55,6 +55,23 @@
   font-size: 0.75rem;
   opacity: 0.7;
   margin-top: 0.25rem;
+}
+
+.bubble-content img {
+  max-width: 60%;
+  max-height: 200px;
+}
+
+#filePreview {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+#filePreview img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 </style>
 {% endblock %}
@@ -103,7 +120,8 @@
         </div>
         
         <div class="card-footer">
-          <form id="messageForm" class="d-flex gap-2" enctype="multipart/form-data">
+          <form id="messageForm" class="d-flex flex-wrap gap-2 align-items-center" enctype="multipart/form-data">
+            <div id="filePreview" class="d-none small"></div>
             <input type="text" id="messageInput" class="form-control"
                    placeholder="Escribe un mensaje..." maxlength="1000">
             <input type="file" id="audioInput" accept=".mp3,.ogg" class="form-control d-none">
