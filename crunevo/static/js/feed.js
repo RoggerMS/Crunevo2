@@ -597,7 +597,7 @@ class ModernFeedManager {
     const modal = document.getElementById('imageModal');
     if (!modal) return;
 
-    const img = modal.querySelector('.modal-image');
+    const img = modal.querySelector('#modalImage');
     const counter = modal.querySelector('.modal-counter');
     const prevBtn = modal.querySelector('.modal-nav.prev');
     const nextBtn = modal.querySelector('.modal-nav.next');

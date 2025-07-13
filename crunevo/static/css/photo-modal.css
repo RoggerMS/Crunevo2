@@ -154,7 +154,8 @@
   background: white;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  max-height: 100vh;
+  overflow: hidden;
   border-left: 1px solid #E4E6EA;
 }
 
@@ -259,7 +260,7 @@
 
 /* Comments Section */
 .modal-comments-section {
-  flex: 1;
+  flex-grow: 1;
   padding: 20px;
   overflow-y: auto;
 }
@@ -353,6 +354,7 @@
     max-height: 40vh;
     border-left: none;
     border-top: 1px solid #E4E6EA;
+    overflow: hidden;
   }
   
   [data-bs-theme="dark"] .modal-info-section {
