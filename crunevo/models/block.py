@@ -26,6 +26,52 @@ class Block(db.Model):
     def set_metadata(self, value):
         self.metadata_json = value or {}
 
+    def get_progress_percentage(self):
+        """Calculate completion percentage based on block type."""
+        metadata = self.get_metadata()
+
+        if self.type == "lista":
+            tasks = metadata.get("tasks", [])
+            if not tasks:
+                return 0
+            completed = sum(1 for task in tasks if task.get("completed", False))
+            return int((completed / len(tasks)) * 100)
+
+        if self.type in {"meta", "objetivo"}:
+            return metadata.get("progress", 0)
+
+        if self.type == "kanban":
+            columns = metadata.get("columns", {})
+            total_tasks = 0
+            completed_tasks = 0
+            for column_name, tasks in columns.items():
+                if column_name.lower() in ["hecho", "completado", "finalizado"]:
+                    completed_tasks += len(tasks)
+                total_tasks += len(tasks)
+
+            if total_tasks == 0:
+                return 0
+            return int((completed_tasks / total_tasks) * 100)
+
+        return 0
+
+    def is_overdue(self):
+        """Check if reminder block is overdue based on due_date."""
+        if self.type != "recordatorio":
+            return False
+
+        metadata = self.get_metadata()
+        due_date_str = metadata.get("due_date")
+
+        if not due_date_str:
+            return False
+
+        try:
+            due_date = datetime.fromisoformat(due_date_str.replace("Z", "+00:00"))
+            return due_date < datetime.utcnow()
+        except (ValueError, AttributeError):
+            return False
+
     def to_dict(self):
         return {
             "id": self.id,
