@@ -6,11 +6,12 @@ document.addEventListener('DOMContentLoaded', function() {
 let sortableInstance = null;
 let currentEditingBlock = null;
 let isDarkMode = (localStorage.getItem('theme') || document.documentElement.dataset.bsTheme) === 'dark';
-let isFocusMode = false;
+let isFocusMode = localStorage.getItem('focus_mode') === 'on';
 
 function initializePersonalSpace() {
     // Initialize UI components
     initializeDarkMode();
+    initializeFocusMode();
     initializeSortable();
     initializeEventListeners();
     initializeAutoSave();
@@ -34,6 +35,12 @@ function initializeDarkMode() {
     }
     html.dataset.bsTheme = isDarkMode ? 'dark' : 'light';
     updateDarkModeButton();
+}
+
+function initializeFocusMode() {
+    if (isFocusMode) {
+        applyFocusMode(true);
+    }
 }
 
 function initializeSortable() {
@@ -387,8 +394,8 @@ function getDefaultMetadata(type) {
 }
 
 function startPersonalSpace() {
-    // Create a default note block and hide empty state
-    createNewBlock('nota');
+    // Create initial blocks: note, kanban and goal
+    ['nota', 'kanban', 'objetivo'].forEach(type => createNewBlock(type));
     showNotification('Espacio inicial creado', 'success');
 }
 
@@ -877,18 +884,18 @@ function updateDarkModeButton() {
     }
 }
 
-function toggleFocusMode() {
-    isFocusMode = !isFocusMode;
-    document.querySelector('.personal-space-container').classList.toggle('focus-mode', isFocusMode);
+function applyFocusMode(state) {
+    isFocusMode = state;
+    document.querySelector('.personal-space-container').classList.toggle('focus-mode', state);
 
     document.querySelectorAll('.navbar, .sidebar-left, .sidebar-right, .mobile-bottom-nav').forEach(el => {
         if (!el) return;
-        el.classList.toggle('tw-hidden', isFocusMode);
+        el.classList.toggle('tw-hidden', state);
     });
 
     const exitBtn = document.getElementById('exitFocusBtn');
     if (exitBtn) {
-        exitBtn.classList.toggle('d-none', !isFocusMode);
+        exitBtn.classList.toggle('d-none', !state);
     }
 
     const button = document.getElementById('focusModeBtn');
@@ -896,7 +903,7 @@ function toggleFocusMode() {
         const icon = button.querySelector('i');
         const text = button.querySelector('span') || button.lastChild;
 
-        if (isFocusMode) {
+        if (state) {
             icon.className = 'bi bi-eye';
             if (text.nodeType === Node.TEXT_NODE) {
                 text.textContent = ' Modo Normal';
@@ -912,6 +919,12 @@ function toggleFocusMode() {
             button.classList.add('btn-outline-primary');
         }
     }
+}
+
+function toggleFocusMode() {
+    const newState = !isFocusMode;
+    applyFocusMode(newState);
+    localStorage.setItem('focus_mode', newState ? 'on' : 'off');
 }
 
 // Suggestion Handling

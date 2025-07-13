@@ -756,3 +756,5 @@
 - Habilitado el blueprint personal_routes en /espacio-personal y enlace en menú de usuario (PR personal-space-enable).
 - Restaurado diseño avanzado de espacio personal y eliminado blueprint personal_routes (PR personal-space-restore).
 - Mejoradas funcionalidades del espacio personal: modo oscuro y enfoque persisten, sugerencias inteligentes ocultan tras usarse, y todos los bloques pueden crearse, editarse, eliminarse y reordenarse (PR personal-space-functional).
+
+- Focus mode now persists using localStorage and starting the personal space creates Nota, Kanban and Objetivo blocks. Added aria-labels for accessibility. (PR personal-space-persistence)
