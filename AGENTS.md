@@ -777,3 +777,4 @@
 - Eliminación de apuntes y posts ahora borra votos/reacciones asociados y maneja IntegrityError para evitar fallos (PR delete-related-cleanup).
 - Corregido scroll infinito del feed: nueva ruta /feed/load con paginación, loader con mensajes y JS que evita peticiones duplicadas (PR feed-scroll-fix).
 - Posts cargados via scroll ya no desaparecen y se eliminó el texto "Cargando más..." dejando solo el spinner (PR feed-loader-text-remove).
+- Añadidos logs de depuración en loadFilteredFeed y loadMorePosts y condición para no limpiar el feed al recargar con el mismo filtro (PR feed-scroll-disappearing-fix).

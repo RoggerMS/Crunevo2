@@ -778,10 +778,19 @@ class ModernFeedManager {
 
   // Load filtered feed
   async loadFilteredFeed(filter) {
+    console.log('loadFilteredFeed ACTIVADO');
+    console.log('[DEBUG]', {
+      currentPage: this.currentPage,
+      currentFilter: this.currentFilter,
+      isLoading: this.isLoading,
+      reachedEnd: this.reachedEnd
+    });
+
     const container = document.getElementById('feedContainer');
     if (!container) return;
 
-    if (filter === this.currentFilter) return;
+    const filterChanged = filter !== this.currentFilter;
+    if (!filterChanged && this.currentPage > 1) return;
 
     try {
       this.currentFilter = filter;
@@ -806,7 +815,9 @@ class ModernFeedManager {
       if (!data.html) {
         console.log('Empty HTML received for filter', filter);
       }
-      container.innerHTML = data.html || '';
+      if (filterChanged || this.currentPage === 1) {
+        container.innerHTML = data.html || '';
+      }
 
       // Reinitialize interactions
       this.initPostInteractions();
@@ -842,6 +853,12 @@ class ModernFeedManager {
 
   // Load more posts
   async loadMorePosts() {
+    console.log('[DEBUG]', {
+      currentPage: this.currentPage,
+      currentFilter: this.currentFilter,
+      isLoading: this.isLoading,
+      reachedEnd: this.reachedEnd
+    });
     if (this.isLoading || this.reachedEnd) return;
     this.isLoading = true;
     const loader = document.getElementById('feed-loader');
