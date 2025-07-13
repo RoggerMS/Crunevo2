@@ -1,0 +1,27 @@
+{% macro render_block_card(block) %}
+{% set meta = block.get_metadata() %}
+<div class="block-card indigo-block" data-block-id="{{ block.id }}" data-type="{{ block.type }}">
+    <div class="block-header mb-2">
+        <h6 class="block-title">{{ block.title or 'Sin título' }}</h6>
+    </div>
+    <div class="block-content">
+        {% if block.type == 'nota' %}
+            <p>{{ block.content or '' }}</p>
+        {% elif block.type == 'kanban' %}
+            <table class="table table-bordered table-sm">
+                <thead>
+                    <tr><th>Por hacer</th><th>En curso</th><th>Hecho</th></tr>
+                </thead>
+            </table>
+        {% elif block.type == 'objetivo' %}
+            {% set progress = meta.get('progress', 0) %}
+            <div class="progress mb-2">
+                <div class="progress-bar" style="width: {{ progress }}%"></div>
+            </div>
+            <small>{{ progress }}% completado</small>
+        {% else %}
+            <p>{{ block.content or '' }}</p>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
