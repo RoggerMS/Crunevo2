@@ -8,6 +8,19 @@ let currentEditingBlock = null;
 let isDarkMode = (localStorage.getItem('theme') || document.documentElement.dataset.bsTheme) === 'dark';
 let isFocusMode = localStorage.getItem('focus_mode') === 'on';
 
+const DEFAULT_ICONS = {
+    'nota': 'bi-journal-text',
+    'lista': 'bi-check2-square',
+    'meta': 'bi-target',
+    'recordatorio': 'bi-alarm',
+    'frase': 'bi-quote',
+    'enlace': 'bi-link-45deg',
+    'tarea': 'bi-clipboard-check',
+    'kanban': 'bi-kanban',
+    'objetivo': 'bi-trophy',
+    'bloque': 'bi-grid-3x3'
+};
+
 function initializePersonalSpace() {
     // Initialize UI components
     initializeDarkMode();
@@ -126,17 +139,52 @@ function renderBlocks(blocks) {
         return;
     }
 
-    blocks.forEach(block => {
+    blocks.forEach(b => {
+        const block = convertBlock(b);
         const blockElement = createBlockElement(block);
         grid.appendChild(blockElement);
     });
+}
+
+function convertBlock(block) {
+    block.block_type = block.type;
+    block.color = block.metadata.color || 'indigo';
+    block.icon = block.metadata.icon || DEFAULT_ICONS[block.type] || 'bi-card-text';
+    block.progress = computeProgress(block);
+    return block;
+}
+
+function computeProgress(block) {
+    const meta = block.metadata || {};
+    switch (block.type) {
+        case 'lista':
+            const tasks = meta.tasks || [];
+            if (!tasks.length) return 0;
+            const done = tasks.filter(t => t.completed).length;
+            return Math.round((done / tasks.length) * 100);
+        case 'objetivo':
+        case 'meta':
+            return meta.progress || 0;
+        case 'kanban':
+            const cols = meta.columns || {};
+            let total = 0, completed = 0;
+            Object.entries(cols).forEach(([name, tasks]) => {
+                total += tasks.length;
+                if (['hecho','completado','finalizado'].includes(name.toLowerCase())) {
+                    completed += tasks.length;
+                }
+            });
+            return total ? Math.round((completed/total)*100) : 0;
+        default:
+            return 0;
+    }
 }
 
 function createBlockElement(block) {
     const div = document.createElement('div');
     div.className = `block-card ${block.color}-block ${block.is_featured ? 'featured' : ''}`;
     div.dataset.blockId = block.id;
-    div.dataset.blockType = block.block_type;
+    div.dataset.blockType = block.type;
 
     div.innerHTML = generateBlockHTML(block);
 
@@ -160,7 +208,7 @@ function generateBlockHTML(block) {
             </div>
             <div class="block-meta">
                 <h6 class="block-title">${block.title || 'Sin título'}</h6>
-                <small class="block-type-label">${typeLabels[block.block_type] || 'Bloque'}</small>
+                <small class="block-type-label">${typeLabels[block.type] || 'Bloque'}</small>
             </div>
             <div class="block-actions">
                 ${block.is_featured ? '<i class="bi bi-star-fill featured-star" title="Destacado"></i>' : ''}
@@ -190,7 +238,7 @@ function generateBlockHTML(block) {
 }
 
 function generateBlockContent(block) {
-    switch (block.block_type) {
+    switch (block.type) {
         case 'nota':
             return `
                 <div class="note-content">
@@ -327,11 +375,13 @@ function apiCreateBlock(blockData) {
 
 function createNewBlock(type) {
     const blockData = {
-        block_type: type,
+        type: type,
         title: getDefaultTitle(type),
         content: '',
-        color: 'indigo',
-        metadata: getDefaultMetadata(type)
+        metadata: Object.assign({
+            color: 'indigo',
+            icon: DEFAULT_ICONS[type]
+        }, getDefaultMetadata(type))
     };
 
     apiCreateBlock(blockData)
@@ -402,7 +452,15 @@ function startPersonalSpace() {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCsrfToken()
             },
-            body: JSON.stringify({ type })
+            body: JSON.stringify({
+                type,
+                title: getDefaultTitle(type),
+                content: '',
+                metadata: Object.assign({
+                    color: 'indigo',
+                    icon: DEFAULT_ICONS[type]
+                }, getDefaultMetadata(type))
+            })
         });
     });
     showNotification('Espacio inicial creado', 'success');
@@ -488,7 +546,7 @@ function generateEditForm(block) {
 
     let specificForm = '';
 
-    switch (block.block_type) {
+    switch (block.type) {
         case 'nota':
             specificForm = `
                 <div class="mb-3">
@@ -609,7 +667,7 @@ function initializeEditFormInteractions(block) {
     }
 
     // Task management for lists
-    if (block.block_type === 'lista') {
+    if (block.type === 'lista') {
         document.getElementById('addTaskBtn')?.addEventListener('click', addNewTask);
         document.addEventListener('click', function(e) {
             if (e.target.closest('.remove-task')) {
@@ -725,8 +783,20 @@ function saveCurrentBlock() {
 function updateBlockInUI(blockData) {
     const blockCard = document.querySelector(`[data-block-id="${blockData.id}"]`);
     if (blockCard) {
-        blockCard.outerHTML = createBlockElement(blockData).outerHTML;
+        const block = convertBlock(blockData);
+        blockCard.outerHTML = createBlockElement(block).outerHTML;
     }
+}
+
+function addBlockToUI(blockData) {
+    const grid = document.getElementById('blocksGrid');
+    if (!grid) return;
+    const block = convertBlock(blockData);
+    const element = createBlockElement(block);
+    const emptyState = grid.querySelector('.empty-state');
+    if (emptyState) emptyState.remove();
+    grid.appendChild(element);
+    updateDashboardMetrics();
 }
 
 // Block Actions
@@ -960,10 +1030,13 @@ function handleSuggestionClick(e) {
                             'Content-Type': 'application/json',
                             'X-CSRFToken': getCsrfToken()
                         },
-                        body: JSON.stringify({ type: 'objetivo', metadata: { progress: 0 } })
+                        body: JSON.stringify({
+                            type: 'objetivo',
+                            metadata: { progress: 0, color: 'indigo', icon: DEFAULT_ICONS['objetivo'] }
+                        })
                     })
                     .then(res => res.json())
-                    .then(data => { if (data.success) window.location.reload(); });
+                    .then(data => { if (data.success) addBlockToUI(data.block); });
                 }
                 break;
             case 'create_nota_block':
@@ -974,10 +1047,13 @@ function handleSuggestionClick(e) {
                             'Content-Type': 'application/json',
                             'X-CSRFToken': getCsrfToken()
                         },
-                        body: JSON.stringify({ type: 'nota' })
+                        body: JSON.stringify({
+                            type: 'nota',
+                            metadata: { color: 'indigo', icon: DEFAULT_ICONS['nota'] }
+                        })
                     })
                     .then(res => res.json())
-                    .then(data => { if (data.success) window.location.reload(); });
+                    .then(data => { if (data.success) addBlockToUI(data.block); });
                 }
                 break;
             case 'create_kanban_block':
@@ -988,10 +1064,13 @@ function handleSuggestionClick(e) {
                             'Content-Type': 'application/json',
                             'X-CSRFToken': getCsrfToken()
                         },
-                        body: JSON.stringify({ type: 'kanban', metadata: { columns: { "Por hacer": [], "En curso": [], "Hecho": [] } } })
+                        body: JSON.stringify({
+                            type: 'kanban',
+                            metadata: { columns: { "Por hacer": [], "En curso": [], "Hecho": [] }, color: 'indigo', icon: DEFAULT_ICONS['kanban'] }
+                        })
                     })
                     .then(res => res.json())
-                    .then(data => { if (data.success) window.location.reload(); });
+                    .then(data => { if (data.success) addBlockToUI(data.block); });
                 }
                 break;
             case 'create_bloque_block':

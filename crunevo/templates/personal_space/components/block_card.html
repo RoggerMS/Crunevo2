@@ -1,36 +1,16 @@
-<!-- Enhanced Block Card Component -->
-<div class="block-card {{ block.get_priority_color() }}-border" data-block-id="{{ block.id }}" data-order="{{ block.order_position }}" data-type="{{ block.block_type }}">
+<!-- Block Card Component simplified for Block model -->
+<div class="block-card {{ color }}-block" data-block-id="{{ block.id }}" data-order="{{ block.order_index }}" data-type="{{ block.type }}">
     <div class="block-header">
         <div class="block-info">
-            <div class="block-icon {{ block.color }}">
-                <i class="{{ block.icon }}"></i>
+            <div class="block-icon">
+                <i class="{{ icon }}"></i>
             </div>
             <div class="block-meta">
                 <h6 class="block-title">{{ block.title or 'Sin título' }}</h6>
-                <div class="block-badges">
-                    <span class="block-type-badge">{{ block.block_type|title }}</span>
-                    {% set status = block.get_status_badge() %}
-                    <span class="status-badge {{ status.color }}">{{ status.text }}</span>
-                </div>
+                <span class="block-type-badge">{{ block.type|title }}</span>
             </div>
         </div>
         <div class="block-actions">
-            {% if block.is_featured %}
-            <i class="featured-star bi bi-star-fill"></i>
-            {% endif %}
-            {% if block.get_due_days() is not none %}
-            <span class="due-indicator {% if block.get_due_days() < 0 %}overdue{% elif block.get_due_days() <= 1 %}urgent{% endif %}">
-                {% if block.get_due_days() < 0 %}
-                    <i class="bi bi-exclamation-triangle"></i>
-                {% elif block.get_due_days() == 0 %}
-                    Hoy
-                {% elif block.get_due_days() == 1 %}
-                    Mañana
-                {% else %}
-                    {{ block.get_due_days() }}d
-                {% endif %}
-            </span>
-            {% endif %}
             <button class="btn-ghost" onclick="editBlock({{ block.id }})" aria-label="Editar bloque">
                 <i class="bi bi-pencil"></i>
             </button>
@@ -39,28 +19,13 @@
             </button>
         </div>
     </div>
-
     <div class="block-content">
-        {% if block.block_type == 'nota' %}
+        {% if block.type == 'nota' %}
             {% include 'personal_space/blocks/nota_block.html' %}
-        {% elif block.block_type == 'kanban' %}
+        {% elif block.type == 'kanban' %}
             {% include 'personal_space/blocks/kanban_block.html' %}
-        {% elif block.block_type == 'objetivo' %}
+        {% elif block.type == 'objetivo' %}
             {% include 'personal_space/blocks/objetivo_block.html' %}
-        {% elif block.block_type == 'tarea' %}
-            {% include 'personal_space/blocks/tarea_block.html' %}
-        {% elif block.block_type == 'bloque' %}
-            {% include 'personal_space/blocks/bloque_block.html' %}
-        {% elif block.block_type == 'lista' %}
-            {% include 'personal_space/blocks/lista_block.html' %}
-        {% elif block.block_type == 'meta' %}
-            {% include 'personal_space/blocks/meta_block.html' %}
-        {% elif block.block_type == 'recordatorio' %}
-            {% include 'personal_space/blocks/recordatorio_block.html' %}
-        {% elif block.block_type == 'frase' %}
-            {% include 'personal_space/blocks/frase_block.html' %}
-        {% elif block.block_type == 'enlace' %}
-            {% include 'personal_space/blocks/enlace_block.html' %}
         {% endif %}
     </div>
 </div>

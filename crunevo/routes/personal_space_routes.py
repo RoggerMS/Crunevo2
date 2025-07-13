@@ -11,8 +11,8 @@ from flask import (
 # fmt: on
 from flask_login import login_required, current_user
 from crunevo.extensions import db
-from crunevo.models.personal_block import PersonalBlock
 from crunevo.models.block import Block
+from crunevo.models.personal_block import PersonalBlock
 from crunevo.utils.helpers import activated_required
 from datetime import datetime
 import json  # noqa: F401
@@ -28,8 +28,8 @@ personal_space_bp = Blueprint(
 def index():
     """Main personal space dashboard"""
     blocks = (
-        PersonalBlock.query.filter_by(user_id=current_user.id)
-        .order_by(PersonalBlock.order_position.asc(), PersonalBlock.created_at.desc())
+        Block.query.filter_by(user_id=current_user.id)
+        .order_by(Block.order_index.asc(), Block.created_at.asc())
         .all()
     )
 
@@ -37,7 +37,10 @@ def index():
     suggestions = get_smart_suggestions()
 
     return render_template(
-        "personal_space/index.html", blocks=blocks, suggestions=suggestions
+        "personal_space/index.html",
+        blocks=blocks,
+        suggestions=suggestions,
+        get_default_icon=get_default_icon,
     )
 
 
@@ -47,8 +50,8 @@ def index():
 def get_blocks():
     """API endpoint to get all user blocks"""
     blocks = (
-        PersonalBlock.query.filter_by(user_id=current_user.id)
-        .order_by(PersonalBlock.order_position.asc())
+        Block.query.filter_by(user_id=current_user.id)
+        .order_by(Block.order_index.asc())
         .all()
     )
 
@@ -60,42 +63,48 @@ def get_blocks():
 @activated_required
 def create_block():
     """Create a new personal block"""
-    data = request.get_json()
+    data = request.get_json() or {}
 
-    if not data or "block_type" not in data:
+    if not data or "type" not in data:
         return jsonify({"success": False, "message": "Tipo de bloque requerido"}), 400
 
-    # Get the highest order position
     max_order = (
-        db.session.query(db.func.max(PersonalBlock.order_position))
+        db.session.query(db.func.max(Block.order_index))
         .filter_by(user_id=current_user.id)
         .scalar()
         or 0
     )
 
-    block = PersonalBlock(
+    metadata = data.get("metadata", {})
+    metadata.setdefault("color", data.get("color", "indigo"))
+    metadata.setdefault("icon", data.get("icon", get_default_icon(data["type"])))
+
+    block = Block(
         user_id=current_user.id,
-        block_type=data["block_type"],
+        type=data["type"],
         title=data.get("title", ""),
         content=data.get("content", ""),
-        order_position=max_order + 1,
-        color=data.get("color", "indigo"),
-        icon=data.get("icon", get_default_icon(data["block_type"])),
+        order_index=max_order + 1,
     )
+    block.set_metadata(metadata)
 
     # Set default metadata based on block type
-    if data["block_type"] == "lista":
-        block.set_metadata({"tasks": []})
-    elif data["block_type"] == "meta":
-        block.set_metadata({"progress": 0, "target_date": ""})
-    elif data["block_type"] == "recordatorio":
-        block.set_metadata({"due_date": "", "priority": "medium"})
-    elif data["block_type"] == "frase":
-        block.set_metadata({"author": "", "category": "motivacional"})
-    elif data["block_type"] == "enlace":
-        block.set_metadata({"url": "", "description": ""})
-    elif data["block_type"] == "tarea":
-        block.set_metadata(
+    if data["type"] == "lista":
+        metadata.setdefault("tasks", [])
+    elif data["type"] == "meta":
+        metadata.setdefault("progress", 0)
+        metadata.setdefault("target_date", "")
+    elif data["type"] == "recordatorio":
+        metadata.setdefault("due_date", "")
+        metadata.setdefault("priority", "medium")
+    elif data["type"] == "frase":
+        metadata.setdefault("author", "")
+        metadata.setdefault("category", "motivacional")
+    elif data["type"] == "enlace":
+        metadata.setdefault("url", "")
+        metadata.setdefault("description", "")
+    elif data["type"] == "tarea":
+        metadata.update(
             {
                 "completed": False,
                 "priority": "medium",
@@ -104,10 +113,10 @@ def create_block():
                 "attachments": [],
             }
         )
-    elif data["block_type"] == "kanban":
-        block.set_metadata({"columns": {"Por hacer": [], "En curso": [], "Hecho": []}})
-    elif data["block_type"] == "objetivo":
-        block.set_metadata(
+    elif data["type"] == "kanban":
+        metadata.setdefault("columns", {"Por hacer": [], "En curso": [], "Hecho": []})
+    elif data["type"] == "objetivo":
+        metadata.update(
             {
                 "status": "no_iniciada",
                 "progress": 0,
@@ -116,14 +125,10 @@ def create_block():
                 "category": "academica",
             }
         )
-    elif data["block_type"] == "bloque":
-        block.set_metadata({"grouped_blocks": [], "subject": "", "expandable": True})
-
-    # Set metadata if provided
-    if "metadata" in data:
-        metadata = block.get_metadata()
-        metadata.update(data["metadata"])
-        block.set_metadata(metadata)
+    elif data["type"] == "bloque":
+        metadata.setdefault("grouped_blocks", [])
+        metadata.setdefault("subject", "")
+        metadata.setdefault("expandable", True)
 
     db.session.add(block)
     db.session.commit()
@@ -142,7 +147,7 @@ def create_block():
 @activated_required
 def update_block(block_id):
     """Update an existing block"""
-    block = PersonalBlock.query.filter_by(id=block_id, user_id=current_user.id).first()
+    block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
 
     if not block:
         return jsonify({"success": False, "message": "Bloque no encontrado"}), 404
@@ -154,10 +159,6 @@ def update_block(block_id):
         block.title = data["title"]
     if "content" in data:
         block.content = data["content"]
-    if "color" in data:
-        block.color = data["color"]
-    if "icon" in data:
-        block.icon = data["icon"]
     if "is_featured" in data:
         block.is_featured = data["is_featured"]
 
@@ -180,7 +181,7 @@ def update_block(block_id):
 @activated_required
 def delete_block(block_id):
     """Delete a block"""
-    block = PersonalBlock.query.filter_by(id=block_id, user_id=current_user.id).first()
+    block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
 
     if not block:
         return jsonify({"success": False, "message": "Bloque no encontrado"}), 404
@@ -200,12 +201,10 @@ def reorder_blocks():
     block_orders = data.get("blocks", [])
 
     for item in block_orders:
-        block = PersonalBlock.query.filter_by(
-            id=item["id"], user_id=current_user.id
-        ).first()
+        block = Block.query.filter_by(id=item["id"], user_id=current_user.id).first()
 
         if block:
-            block.order_position = item["position"]
+            block.order_index = item["position"]
 
     db.session.commit()
 
@@ -229,7 +228,7 @@ def api_create_block_simple():
     block.set_metadata(data.get("metadata", {}))
     db.session.add(block)
     db.session.commit()
-    return jsonify({"success": True, "block_id": block.id})
+    return jsonify({"success": True, "block": block.to_dict()})
 
 
 @personal_space_bp.route("/api/suggestions")

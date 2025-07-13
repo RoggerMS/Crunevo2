@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% import 'personal_space/components/macros.html' as ps_macros %}
 {% block title %}Mi Espacio Personal{% endblock %}
 
 {% block head %}
@@ -77,7 +78,7 @@
         <div class="container-fluid">
             <div class="blocks-grid" id="blocksGrid">
                 {% for block in blocks %}
-                {% include 'personal_space/components/block_card.html' %}
+                {{ ps_macros.render_block_card(block, get_default_icon) }}
                 {% endfor %}
 
                 {% if blocks %}
