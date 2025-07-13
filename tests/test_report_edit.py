@@ -1,4 +1,5 @@
 from crunevo.models import Note, Post, Report
+from crunevo.constants import NOTE_CATEGORIES
 
 
 def login(client, username, password):
@@ -13,7 +14,12 @@ def test_edit_note(client, db_session, test_user):
     login(client, test_user.username, "secret")
     resp = client.post(
         f"/notes/edit/{note.id}",
-        data={"title": "Nuevo", "description": "d", "category": "c", "tags": "x"},
+        data={
+            "title": "Nuevo",
+            "description": "d",
+            "category": NOTE_CATEGORIES[0],
+            "tags": "x",
+        },
     )
     assert resp.status_code == 302
     db_session.refresh(note)

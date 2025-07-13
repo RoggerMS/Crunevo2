@@ -104,9 +104,18 @@ class Config:
         "álgebra,resumen,física,historia del Perú",
     ).split(",")
 
-    NOTE_CATEGORIES = os.getenv(
-        "NOTE_CATEGORIES",
-        "Matemática,Historia,Biología,Comunicación",
+    from crunevo.constants import NOTE_CATEGORIES, ACADEMIC_LEVELS
+
+    NOTE_CATEGORIES = sorted(
+        os.getenv(
+            "NOTE_CATEGORIES",
+            ",".join(NOTE_CATEGORIES),
+        ).split(",")
+    )
+
+    ACADEMIC_LEVELS = os.getenv(
+        "ACADEMIC_LEVELS",
+        ",".join(ACADEMIC_LEVELS),
     ).split(",")
 
     BACKUP_BUCKET = os.getenv("BACKUP_BUCKET")
