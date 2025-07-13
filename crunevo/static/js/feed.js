@@ -781,6 +781,8 @@ class ModernFeedManager {
     const container = document.getElementById('feedContainer');
     if (!container) return;
 
+    if (filter === this.currentFilter) return;
+
     try {
       this.currentFilter = filter;
       this.currentPage = 1;
@@ -788,8 +790,6 @@ class ModernFeedManager {
       const loader = document.getElementById('feed-loader');
       if (loader) {
         loader.querySelector('.spinner-border')?.classList.remove('d-none');
-        const txt = loader.querySelector('.loader-text');
-        if (txt) txt.textContent = 'Cargando más...';
         loader.style.display = '';
       }
 
@@ -803,6 +803,9 @@ class ModernFeedManager {
       this.removeSkeletonPosts();
 
       // Update content
+      if (!data.html) {
+        console.log('Empty HTML received for filter', filter);
+      }
       container.innerHTML = data.html || '';
 
       // Reinitialize interactions
@@ -845,8 +848,6 @@ class ModernFeedManager {
     if (loader) {
       loader.style.display = '';
       loader.querySelector('.spinner-border')?.classList.remove('d-none');
-      const txt = loader.querySelector('.loader-text');
-      if (txt) txt.textContent = 'Cargando más...';
     }
 
     try {
@@ -855,11 +856,12 @@ class ModernFeedManager {
       const data = await response.text();
 
       if (data.trim() === '') {
-        const txt = loader?.querySelector('.loader-text');
+        console.log('No more posts to load');
         loader?.querySelector('.spinner-border')?.classList.add('d-none');
-        if (txt) txt.textContent = 'No hay más publicaciones.';
+        if (!this.reachedEnd) {
+          this.infiniteObserver?.unobserve(document.getElementById('feedEnd'));
+        }
         this.reachedEnd = true;
-        this.infiniteObserver?.unobserve(document.getElementById('feedEnd'));
         return;
       }
 
@@ -880,11 +882,11 @@ class ModernFeedManager {
     } catch (error) {
       console.error('Error loading more posts:', error);
       this.showToast('Error al cargar más publicaciones', 'error');
-      const txt = loader?.querySelector('.loader-text');
       loader?.querySelector('.spinner-border')?.classList.add('d-none');
-      if (txt) txt.textContent = 'Error al cargar.';
+      if (!this.reachedEnd) {
+        this.infiniteObserver?.unobserve(document.getElementById('feedEnd'));
+      }
       this.reachedEnd = true;
-      this.infiniteObserver?.unobserve(document.getElementById('feedEnd'));
     } finally {
       this.isLoading = false;
     }
