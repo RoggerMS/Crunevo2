@@ -758,3 +758,4 @@
 - Mejoradas funcionalidades del espacio personal: modo oscuro y enfoque persisten, sugerencias inteligentes ocultan tras usarse, y todos los bloques pueden crearse, editarse, eliminarse y reordenarse (PR personal-space-functional).
 
 - Focus mode now persists using localStorage and starting the personal space creates Nota, Kanban and Objetivo blocks. Added aria-labels for accessibility. (PR personal-space-persistence)
+- Theme color meta tag updates with dark mode and various buttons have aria-labels and titles for accessibility. (PR personal-space-ui-fixes)

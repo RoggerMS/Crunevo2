@@ -35,6 +35,7 @@ function initializeDarkMode() {
     }
     html.dataset.bsTheme = isDarkMode ? 'dark' : 'light';
     updateDarkModeButton();
+    updateThemeColor();
 }
 
 function initializeFocusMode() {
@@ -862,6 +863,7 @@ function toggleDarkMode() {
     html.dataset.bsTheme = isDarkMode ? 'dark' : 'light';
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
     updateDarkModeButton();
+    updateThemeColor();
 }
 
 function updateDarkModeButton() {
@@ -881,6 +883,13 @@ function updateDarkModeButton() {
                 text.textContent = ' Modo Oscuro';
             }
         }
+    }
+}
+
+function updateThemeColor() {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) {
+        meta.setAttribute('content', isDarkMode ? '#0f172a' : '#ffffff');
     }
 }
 
