@@ -13,6 +13,7 @@ from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models.block import Block
 from crunevo.utils.helpers import activated_required
+from jinja2 import TemplateNotFound
 from datetime import datetime
 import json  # noqa: F401
 
@@ -434,3 +435,27 @@ def create_kanban():
         return redirect(url_for("personal_space.index"))
 
     return render_template("personal_space/forms/create_kanban.html")
+
+
+@personal_space_bp.route("/kanban/<int:block_id>")
+@login_required
+@activated_required
+def view_kanban(block_id):
+    """Display a kanban board"""
+    block = Block.query.filter_by(id=block_id, user_id=current_user.id).first_or_404()
+    return render_template("personal_space/views/kanban_view.html", block=block)
+
+
+@personal_space_bp.route("/bloque/<int:block_id>")
+@login_required
+@activated_required
+def view_block(block_id):
+    """Generic viewer for personal blocks"""
+    block = Block.query.filter_by(id=block_id, user_id=current_user.id).first_or_404()
+    template_name = f"personal_space/views/{block.type}_view.html"
+    try:
+        return render_template(template_name, block=block)
+    except TemplateNotFound:
+        return render_template(
+            "personal_space/views/under_construction.html", block=block
+        )

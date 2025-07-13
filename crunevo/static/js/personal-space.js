@@ -196,6 +196,8 @@ function createBlockElement(block) {
 
     div.innerHTML = generateBlockHTML(block);
 
+    div.addEventListener('dblclick', () => openBlock(block.id));
+
     return div;
 }
 
@@ -236,11 +238,14 @@ function generateBlockHTML(block) {
         <div class="block-content">
             ${generateBlockContent(block)}
         </div>
-        <div class="block-footer">
+        <div class="block-footer d-flex justify-content-between align-items-center">
             <small class="text-muted">
                 Actualizado ${formatDate(block.updated_at)}
             </small>
-            ${block.progress > 0 ? `<div class="progress-badge">${block.progress}%</div>` : ''}
+            <div class="d-flex align-items-center">
+                ${block.progress > 0 ? `<span class="progress-badge me-2">${block.progress}%</span>` : ''}
+                <button class="btn btn-link btn-sm enter-block" data-id="${block.id}">Entrar</button>
+            </div>
         </div>
     `;
 }
@@ -495,6 +500,9 @@ function handleBlockInteractions(e) {
     } else if (e.target.closest('.toggle-featured')) {
         e.preventDefault();
         toggleBlockFeatured(blockId);
+    } else if (e.target.closest('.enter-block')) {
+        e.preventDefault();
+        openBlock(blockId);
     } else if (e.target.closest('.block-content') && !e.target.closest('.dropdown')) {
         showEditBlockModal(blockId);
     }
@@ -1449,6 +1457,10 @@ function toggleTask(blockId) {
 function openKanban(blockId) {
     // Open kanban management modal
     window.location.href = `/espacio-personal/kanban/${blockId}`;
+}
+
+function openBlock(blockId) {
+    window.location.href = `/espacio-personal/bloque/${blockId}`;
 }
 
 function manageBloque(blockId) {
