@@ -1438,7 +1438,7 @@ function saveKanbanState(kanbanId) {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken()
+            'X-CSRFToken': getCsrfToken()
         },
         body: JSON.stringify({
             metadata: { columns: columns }
@@ -1454,7 +1454,7 @@ function toggleTask(blockId) {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken()
+            'X-CSRFToken': getCsrfToken()
         },
         body: JSON.stringify({
             metadata: { completed: completed }
@@ -1524,7 +1524,7 @@ function autoSaveBlock(blockId, element) {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken()
+            'X-CSRFToken': getCsrfToken()
         },
         body: JSON.stringify(data)
     }).catch(error => console.error('Auto-save error:', error));
