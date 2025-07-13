@@ -779,3 +779,4 @@
 - Posts cargados via scroll ya no desaparecen y se eliminó el texto "Cargando más..." dejando solo el spinner (PR feed-loader-text-remove).
 - Añadidos logs de depuración en loadFilteredFeed y loadMorePosts y condición para no limpiar el feed al recargar con el mismo filtro (PR feed-scroll-disappearing-fix).
 - Ajustado loadFilteredFeed para respetar currentPage>1, proteger innerHTML y registrar actualización; loadMorePosts incluye timeout de seguridad y /feed/load muestra mensaje cuando no hay más publicaciones (PR feed-scroll-empty-fix).
+- Añadidos console logs en loadMorePosts para depurar HTML y elementos, se inserta cuando falta data-post-id y se muestra mensaje cuando no hay más publicaciones (PR feed-scroll-debug-fix).
