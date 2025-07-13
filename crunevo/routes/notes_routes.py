@@ -130,6 +130,10 @@ def upload_note():
 
         description = request.form.get("description", "")
         category = request.form.get("category", "")
+        valid_categories = current_app.config.get("NOTE_CATEGORIES", [])
+        if valid_categories and category not in valid_categories:
+            flash("Categoría inválida", "danger")
+            return redirect(url_for("notes.upload_note"))
         files = request.files.getlist("file")
         if len(files) != 1 or not files[0].filename:
             flash("Selecciona un único archivo", "danger")
@@ -708,6 +712,10 @@ def edit_note(note_id):
         title = request.form.get("title", "").strip()
         description = request.form.get("description", "").strip()
         category = request.form.get("category", "").strip()
+        valid_categories = current_app.config.get("NOTE_CATEGORIES", [])
+        if valid_categories and category not in valid_categories:
+            flash("Categoría inválida", "danger")
+            return redirect(url_for("notes.edit_note", note_id=note.id))
         tags = request.form.get("tags", "").strip()
         if not title:
             flash("El título es obligatorio", "danger")

@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
+{% block head_extra %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.bootstrap5.min.css">
+{% endblock %}
 {% block content %}
 <div class="container py-5">
   <div class="row justify-content-center">
@@ -20,6 +23,7 @@
               <label for="description">Descripción breve</label>
             </div>
 
+            {% if categories %}
             <div class="mb-3">
               <label class="form-label" for="category">Categoría *</label>
               <select class="form-select" id="category" name="category" required>
@@ -30,14 +34,21 @@
               </select>
               <div class="mt-2" id="categorySuggestions"></div>
             </div>
+            {% else %}
+            <div class="alert alert-warning">No hay categorías disponibles.</div>
+            {% endif %}
 
 
             <div class="mb-3">
               <label class="form-label" for="level">Nivel Académico *</label>
               <select class="form-select" id="level" name="level" required>
-                <option value="Escolar">Escolar</option>
-                <option value="Pregrado">Pregrado</option>
-                <option value="Posgrado">Posgrado</option>
+                <option value="Primaria">Primaria</option>
+                <option value="Secundaria">Secundaria</option>
+                <option value="Preuniversitario">Preuniversitario</option>
+                <option value="Universitario (Pregrado)">Universitario (Pregrado)</option>
+                <option value="Universitario (Posgrado)">Universitario (Posgrado)</option>
+                <option value="Técnico">Técnico</option>
+                <option value="Educación Básica Alternativa (EBA)">Educación Básica Alternativa (EBA)</option>
                 <option value="Libre">Libre</option>
               </select>
             </div>
@@ -146,6 +157,7 @@
   <script src="{{ url_for('static', filename='pdfjs/pdf.min.js') }}"></script>
   <script src="{{ url_for('static', filename='vendor/mammoth.browser.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/viewer.js') }}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";
     initUploadPreview();
@@ -260,5 +272,7 @@
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Subiendo...';
     });
+    new TomSelect('#category', {create: false});
+    new TomSelect('#level', {create: false});
   </script>
 {% endblock %}
