@@ -875,6 +875,10 @@ class ModernFeedManager {
       this.currentPage++;
       const response = await fetch(`/feed/load?page=${this.currentPage}&categoria=${this.currentFilter}`);
       const data = await response.text();
+      console.log('[DEBUG] HTML recibido:', data);
+      const container = document.getElementById('feedContainer');
+      const temp = document.createElement('div');
+      temp.innerHTML = data;
 
       if (data.trim() === '') {
         console.log('No more posts to load');
@@ -883,21 +887,17 @@ class ModernFeedManager {
           this.infiniteObserver?.unobserve(document.getElementById('feedEnd'));
         }
         this.reachedEnd = true;
+        container.insertAdjacentHTML('beforeend', '<div class="text-center text-muted">No se encontraron más publicaciones.</div>');
         return;
       }
 
-      const container = document.getElementById('feedContainer');
-      const temp = document.createElement('div');
-      temp.innerHTML = data;
-
       Array.from(temp.children).forEach(el => {
+        console.log('[DEBUG] Elemento analizado:', el.outerHTML);
         const postId = el.getAttribute('data-post-id');
-        if (postId) {
-          const exists = container.querySelector(`[data-post-id="${postId}"]`);
-          if (exists) return;
+        if (!postId || !container.querySelector(`[data-post-id="${postId}"]`)) {
+          el.classList.add('fade-in');
+          container.appendChild(el);
         }
-        el.classList.add('fade-in');
-        container.appendChild(el);
       });
 
     } catch (error) {
