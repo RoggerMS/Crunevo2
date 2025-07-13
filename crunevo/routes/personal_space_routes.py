@@ -28,8 +28,8 @@ personal_space_bp = Blueprint(
 def index():
     """Main personal space dashboard"""
     blocks = (
-        PersonalBlock.query.filter_by(user_id=current_user.id)
-        .order_by(PersonalBlock.order_position.asc(), PersonalBlock.created_at.desc())
+        Block.query.filter_by(user_id=current_user.id)
+        .order_by(Block.order_index.asc(), Block.created_at.asc())
         .all()
     )
 
@@ -47,8 +47,8 @@ def index():
 def get_blocks():
     """API endpoint to get all user blocks"""
     blocks = (
-        PersonalBlock.query.filter_by(user_id=current_user.id)
-        .order_by(PersonalBlock.order_position.asc())
+        Block.query.filter_by(user_id=current_user.id)
+        .order_by(Block.order_index.asc())
         .all()
     )
 
@@ -200,12 +200,15 @@ def reorder_blocks():
     block_orders = data.get("blocks", [])
 
     for item in block_orders:
-        block = PersonalBlock.query.filter_by(
-            id=item["id"], user_id=current_user.id
-        ).first()
-
+        block = Block.query.filter_by(id=item["id"], user_id=current_user.id).first()
         if block:
-            block.order_position = item["position"]
+            block.order_index = item["position"]
+        else:
+            pblock = PersonalBlock.query.filter_by(
+                id=item["id"], user_id=current_user.id
+            ).first()
+            if pblock:
+                pblock.order_position = item["position"]
 
     db.session.commit()
 
@@ -219,9 +222,11 @@ def api_create_block_simple():
     """Create a simple Block record"""
     data = request.get_json() or {}
 
+    block_type = data.get("type") or data.get("block_type")
+
     block = Block(
         user_id=current_user.id,
-        type=data.get("type"),
+        type=block_type,
         title=data.get("title", "Nuevo bloque"),
         content=data.get("content", ""),
         order_index=data.get("order_index", 0),
@@ -229,7 +234,7 @@ def api_create_block_simple():
     block.set_metadata(data.get("metadata", {}))
     db.session.add(block)
     db.session.commit()
-    return jsonify({"success": True, "block_id": block.id})
+    return jsonify({"success": True, "block": block.to_dict()})
 
 
 @personal_space_bp.route("/api/suggestions")
