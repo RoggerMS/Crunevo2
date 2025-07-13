@@ -1830,10 +1830,28 @@ window.startPrivateChat = function (userId) {
 function initChatIA() {
   const chatForm = document.getElementById('chat-form');
   if (!chatForm) return;
+  if (window.chatIAInitialized) return;
+  window.chatIAInitialized = true;
   const messageInput = document.getElementById('message-input');
   const chatMessages = document.getElementById('chat-messages');
   const sendButton = document.getElementById('send-button');
   const typingIndicator = document.getElementById('typing-indicator');
+  const iaEnabled = chatMessages.dataset.iaEnabled === 'true';
+
+  const QUICK_RESPONSES = {
+    '¿Cómo funciona CRUNEVO?':
+      'CRUNEVO es una comunidad educativa donde puedes subir apuntes, ganar Crolars, participar en misiones y mucho más. ¡Explora todas sus secciones desde el menú superior!',
+    '¿Cómo ganar Crolars?':
+      'Puedes ganar Crolars subiendo apuntes útiles, comentando, ayudando en el foro y completando misiones académicas.',
+    'Explícame los clubes académicos':
+      'Los clubes académicos son grupos de estudio y colaboración en los que podrás compartir recursos y participar en eventos.',
+    '¿Cómo subir apuntes?':
+      "Dirígete a la sección 'Apuntes' y haz clic en 'Subir apunte' para compartir tus materiales.",
+    '¿Qué es CRUNEVO+?':
+      'CRUNEVO+ es la suscripción premium que ofrece beneficios adicionales y contenido exclusivo.',
+    '¿Dónde están los cursos?':
+      "Los cursos están disponibles en la sección 'Cursos' del menú superior. Allí encontrarás contenidos en video, PDF o enlaces educativos.",
+  };
 
   chatForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -1843,8 +1861,16 @@ function initChatIA() {
   document.querySelectorAll('.quick-question').forEach((button) => {
     button.addEventListener('click', () => {
       const question = button.dataset.question;
-      messageInput.value = question;
-      sendMessage();
+      if (!iaEnabled) {
+        addMessageToChat(question, 'sent', 'Tú');
+        const answer = QUICK_RESPONSES[question];
+        if (answer) {
+          addMessageToChat(answer, 'received', 'Crunebot');
+        }
+      } else {
+        messageInput.value = question;
+        sendMessage();
+      }
     });
   });
 
@@ -1855,6 +1881,18 @@ function initChatIA() {
     sendButton.disabled = true;
     addMessageToChat(message, 'sent', 'Tú');
     messageInput.value = '';
+
+    if (!iaEnabled) {
+      const response =
+        QUICK_RESPONSES[message] ||
+        'Por ahora Crunebot está desactivado. Solo puedes usar las opciones rápidas del menú lateral mientras completamos la configuración.';
+      addMessageToChat(response, 'received', 'Crunebot');
+      messageInput.disabled = false;
+      sendButton.disabled = false;
+      messageInput.focus();
+      return;
+    }
+
     showTypingIndicator();
     csrfFetch('/ia/ask', {
       method: 'POST',
