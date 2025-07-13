@@ -1571,9 +1571,39 @@ function initPrivateChat() {
   const audioBtn = document.getElementById('audioBtn');
   const fileInput = document.getElementById('fileInput');
   const fileBtn = document.getElementById('fileBtn');
+  const filePreview = document.getElementById('filePreview');
   container.scrollTop = container.scrollHeight;
   audioBtn?.addEventListener('click', () => audioInput?.click());
   fileBtn?.addEventListener('click', () => fileInput?.click());
+
+  fileInput?.addEventListener('change', () => {
+    const f = fileInput.files[0];
+    if (!f) {
+      filePreview?.classList.add('d-none');
+      return;
+    }
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'btn-close';
+    cancel.addEventListener('click', () => {
+      fileInput.value = '';
+      filePreview.classList.add('d-none');
+    });
+    filePreview.innerHTML = '';
+    if (f.type.startsWith('image/')) {
+      const img = document.createElement('img');
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(f);
+      filePreview.appendChild(img);
+    } else {
+      filePreview.textContent = f.name;
+    }
+    filePreview.appendChild(cancel);
+    filePreview.classList.remove('d-none');
+  });
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
     const content = input.value.trim();
@@ -1593,6 +1623,7 @@ function initPrivateChat() {
           input.value = '';
           audioInput.value = '';
           if (fileInput) fileInput.value = '';
+          if (filePreview) filePreview.classList.add('d-none');
           addMessage(data.message, true);
           lastId = data.message.id;
         }
@@ -1724,10 +1755,40 @@ function initGlobalChat() {
   const audioBtn = document.getElementById('audioBtn');
   const fileInput = document.getElementById('fileInput');
   const fileBtn = document.getElementById('fileBtn');
+  const filePreview = document.getElementById('filePreview');
   let lastId = parseInt(container.dataset.lastId || '0', 10);
   container.scrollTop = container.scrollHeight;
   audioBtn?.addEventListener('click', () => audioInput?.click());
   fileBtn?.addEventListener('click', () => fileInput?.click());
+
+  fileInput?.addEventListener('change', () => {
+    const f = fileInput.files[0];
+    if (!f) {
+      filePreview?.classList.add('d-none');
+      return;
+    }
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'btn-close';
+    cancel.addEventListener('click', () => {
+      fileInput.value = '';
+      filePreview.classList.add('d-none');
+    });
+    filePreview.innerHTML = '';
+    if (f.type.startsWith('image/')) {
+      const img = document.createElement('img');
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(f);
+      filePreview.appendChild(img);
+    } else {
+      filePreview.textContent = f.name;
+    }
+    filePreview.appendChild(cancel);
+    filePreview.classList.remove('d-none');
+  });
 
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -1747,6 +1808,7 @@ function initGlobalChat() {
           input.value = '';
           audioInput.value = '';
           if (fileInput) fileInput.value = '';
+          if (filePreview) filePreview.classList.add('d-none');
           addMessage(data.message);
           lastId = data.message.id;
         }
