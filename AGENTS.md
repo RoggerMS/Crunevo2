@@ -760,4 +760,3 @@
 - Focus mode now persists using localStorage and starting the personal space creates Nota, Kanban and Objetivo blocks. Added aria-labels for accessibility. (PR personal-space-persistence)
 - Theme color meta tag updates with dark mode and various buttons have aria-labels and titles for accessibility. (PR personal-space-ui-fixes)
 - Added Block model, migration and /api/create-block endpoint with JS integration for suggestions (PR personal-space-db-blocks).
-- Activated full personal space with Block model, suggestion buttons and reorder support (PR personal-space-full-feature)

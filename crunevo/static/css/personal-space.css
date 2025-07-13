@@ -604,12 +604,12 @@
 /* Focus Mode */
 .focus-mode .ps-header,
 .focus-mode .ps-suggestions,
-.focus-mode .block-card:not([data-type="nota"]) {
+.focus-mode .block-card:not([data-block-type="nota"]) {
     opacity: 0.3;
     pointer-events: none;
 }
 
-.focus-mode .block-card[data-type="nota"] {
+.focus-mode .block-card[data-block-type="nota"] {
     transform: scale(1.02);
     box-shadow: 0 16px 48px rgba(99, 102, 241, 0.2);
 }

@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% block title %}Mi Espacio Personal{% endblock %}
-{% from 'personal_space/components/block_macros.html' import render_block_card %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
@@ -78,7 +77,7 @@
         <div class="container-fluid">
             <div class="blocks-grid" id="blocksGrid">
                 {% for block in blocks %}
-                {{ render_block_card(block) }}
+                {% include 'personal_space/components/block_card.html' %}
                 {% endfor %}
 
                 {% if blocks %}

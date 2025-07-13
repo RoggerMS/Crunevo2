@@ -30,7 +30,6 @@ class Block(db.Model):
         return {
             "id": self.id,
             "type": self.type,
-            "block_type": self.type,
             "title": self.title,
             "content": self.content,
             "metadata": self.get_metadata(),
