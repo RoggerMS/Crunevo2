@@ -30,9 +30,10 @@ from crunevo.models import (
     EmailToken,
     Comment,
     PostComment,
-    PostReaction,
     NoteVote,
+    PostReaction,
     SavedPost,
+    PostImage,
     PageView,
     PrintRequest,
     ProductRequest,
@@ -43,6 +44,7 @@ from crunevo.utils.ranking import calculate_weekly_ranking
 from crunevo.constants.credit_reasons import CreditReasons
 from crunevo.utils.image_optimizer import upload_optimized_image
 from datetime import datetime, timedelta
+from sqlalchemy.exc import IntegrityError
 import csv
 import io
 from flask import make_response
@@ -641,11 +643,20 @@ def delete_post_admin(post_id):
     """Allow admins to delete any post."""
     post = Post.query.get_or_404(post_id)
     FeedItem.query.filter_by(item_type="post", ref_id=post.id).delete()
-    PostComment.query.filter_by(post_id=post.id).delete()
     PostReaction.query.filter_by(post_id=post.id).delete()
+    PostComment.query.filter_by(post_id=post.id).delete()
+    PostImage.query.filter_by(post_id=post.id).delete()
     SavedPost.query.filter_by(post_id=post.id).delete()
     db.session.delete(post)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        flash(
+            "No se pudo eliminar la publicaci\u00f3n por registros relacionados",
+            "danger",
+        )
+        return redirect(url_for("admin.manage_reports"))
     log_admin_action(f"Elimin\u00f3 post {post_id}")
     flash("Post eliminado", "success")
     return redirect(url_for("admin.manage_reports"))
@@ -661,11 +672,16 @@ def delete_note_admin(note_id):
     Credit.query.filter_by(
         user_id=note.user_id, related_id=note.id, reason=CreditReasons.APUNTE_SUBIDO
     ).delete()
-    Comment.query.filter_by(note_id=note.id).delete()
     NoteVote.query.filter_by(note_id=note.id).delete()
+    Comment.query.filter_by(note_id=note.id).delete()
     PrintRequest.query.filter_by(note_id=note.id).delete()
     db.session.delete(note)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        flash("No se pudo eliminar el apunte por registros relacionados", "danger")
+        return redirect(url_for("admin.manage_reports"))
     log_admin_action(f"Elimin\u00f3 apunte {note_id}")
     flash("Apunte eliminado", "success")
     return redirect(url_for("admin.manage_reports"))

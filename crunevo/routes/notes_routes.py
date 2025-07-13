@@ -16,6 +16,7 @@ from flask import (
 )
 from flask_login import current_user
 from crunevo.utils.helpers import activated_required, verified_required
+from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db, talisman, oauth
 from flask import session
@@ -678,6 +679,10 @@ def delete_note(note_id):
     NoteVote.query.filter_by(note_id=note.id).delete()
     PrintRequest.query.filter_by(note_id=note.id).delete()
 
+    NoteVote.query.filter_by(note_id=note.id).delete()
+    Comment.query.filter_by(note_id=note.id).delete()
+    PrintRequest.query.filter_by(note_id=note.id).delete()
+
     if note.filename.startswith("http") and current_app.config.get("CLOUDINARY_URL"):
         public_id = os.path.splitext(note.filename.rsplit("/", 1)[-1])[0]
         try:
@@ -691,7 +696,12 @@ def delete_note(note_id):
             current_app.logger.exception("Error deleting Cloudinary file")
 
     db.session.delete(note)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        flash("No se pudo eliminar el apunte por registros relacionados", "danger")
+        return redirect(url_for("notes.view_note", id=note.id))
 
     for uid in owner_ids:
         try:
