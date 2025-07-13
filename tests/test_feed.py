@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import url_for
 from crunevo.models import (
     FeedItem,
@@ -218,8 +219,8 @@ def test_eliminar_post_with_reactions(client, db_session, test_user, another_use
     assert PostReaction.query.filter_by(post_id=post.id).count() == 0
 
 
-def test_feed_load_empty_returns_blank(client, test_user):
+def test_feed_load_empty_returns_message(client, test_user):
     login(client, test_user.username, "secret")
     resp = client.get("/feed/load?page=99")
     assert resp.status_code == 200
-    assert resp.data == b""
+    assert "No hay más publicaciones." in resp.data.decode("utf-8")
