@@ -18,3 +18,10 @@ def test_notes_populares_redirect(client, test_user):
     login(client, test_user.username)
     resp = client.get("/notes/populares")
     assert resp.status_code == 302
+
+
+def test_ia_ask_disabled(client, test_user):
+    login(client, test_user.username)
+    resp = client.post("/ia/ask", json={"message": "¿Cómo ganar Crolars?"})
+    data = resp.get_json()
+    assert "Crolars" in data["answer"]
