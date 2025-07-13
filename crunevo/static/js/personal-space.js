@@ -136,7 +136,7 @@ function createBlockElement(block) {
     const div = document.createElement('div');
     div.className = `block-card ${block.color}-block ${block.is_featured ? 'featured' : ''}`;
     div.dataset.blockId = block.id;
-    div.dataset.type = block.type;
+    div.dataset.blockType = block.block_type;
 
     div.innerHTML = generateBlockHTML(block);
 
@@ -160,7 +160,7 @@ function generateBlockHTML(block) {
             </div>
             <div class="block-meta">
                 <h6 class="block-title">${block.title || 'Sin título'}</h6>
-                <small class="block-type-label">${typeLabels[block.type] || 'Bloque'}</small>
+                <small class="block-type-label">${typeLabels[block.block_type] || 'Bloque'}</small>
             </div>
             <div class="block-actions">
                 ${block.is_featured ? '<i class="bi bi-star-fill featured-star" title="Destacado"></i>' : ''}
@@ -190,7 +190,7 @@ function generateBlockHTML(block) {
 }
 
 function generateBlockContent(block) {
-    switch (block.type) {
+    switch (block.block_type) {
         case 'nota':
             return `
                 <div class="note-content">
@@ -327,7 +327,7 @@ function apiCreateBlock(blockData) {
 
 function createNewBlock(type) {
     const blockData = {
-        type: type,
+        block_type: type,
         title: getDefaultTitle(type),
         content: '',
         color: 'indigo',
@@ -434,7 +434,7 @@ function showEditBlockModal(blockId) {
     const blockCard = document.querySelector(`[data-block-id="${blockId}"]`);
     if (!blockCard) return;
 
-    const blockType = blockCard.dataset.type;
+    const blockType = blockCard.dataset.blockType;
     currentEditingBlock = blockId;
 
     // Get current block data
@@ -488,7 +488,7 @@ function generateEditForm(block) {
 
     let specificForm = '';
 
-    switch (block.type) {
+    switch (block.block_type) {
         case 'nota':
             specificForm = `
                 <div class="mb-3">
@@ -609,7 +609,7 @@ function initializeEditFormInteractions(block) {
     }
 
     // Task management for lists
-    if (block.type === 'lista') {
+    if (block.block_type === 'lista') {
         document.getElementById('addTaskBtn')?.addEventListener('click', addNewTask);
         document.addEventListener('click', function(e) {
             if (e.target.closest('.remove-task')) {
@@ -644,7 +644,7 @@ function saveCurrentBlock() {
     if (!currentEditingBlock) return;
 
     const blockCard = document.querySelector(`[data-block-id="${currentEditingBlock}"]`);
-    const blockType = blockCard.dataset.type;
+    const blockType = blockCard.dataset.blockType;
 
     const updateData = {
         title: document.getElementById('blockTitle')?.value || '',
@@ -1055,11 +1055,11 @@ function hideDismissedSuggestions() {
 }
 
 function blockTypeExists(type) {
-    return document.querySelector(`.block-card[data-type="${type}"]`) !== null;
+    return document.querySelector(`.block-card[data-block-type="${type}"]`) !== null;
 }
 
 function showOverdueReminders() {
-    const overdueBlocks = document.querySelectorAll('.block-card[data-type="recordatorio"]');
+    const overdueBlocks = document.querySelectorAll('.block-card[data-block-type="recordatorio"]');
     overdueBlocks.forEach(block => {
         if (block.querySelector('.alert-danger')) {
             block.scrollIntoView({ behavior: 'smooth', block: 'center' });
