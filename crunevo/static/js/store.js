@@ -605,15 +605,18 @@ class CrunevoStore {
         const sidebar = document.querySelector('.store-sidebar');
         const layout = document.querySelector('.store-layout');
         const btn = document.getElementById('toggleSidebarBtn');
+        const overlay = document.getElementById('sidebarOverlay');
 
         if (sidebar && layout && btn) {
+            const willOpen = sidebar.classList.contains('collapsed');
             sidebar.classList.toggle('collapsed');
             layout.classList.toggle('sidebar-collapsed');
+            overlay?.classList.toggle('active');
 
-            if (sidebar.classList.contains('collapsed')) {
-                btn.innerHTML = '<i class="bi bi-sliders"></i>';
-            } else {
+            if (willOpen) {
                 btn.innerHTML = '<i class="bi bi-sliders"></i> Filtros';
+            } else {
+                btn.innerHTML = '<i class="bi bi-sliders"></i>';
             }
         }
     }
@@ -705,6 +708,9 @@ function initCrunevoStore() {
     // Publish product form handler
     const publishForm = document.getElementById('publishProductForm');
     if (publishForm) {
+        if (window.TomSelect) {
+            new TomSelect('#publishCategory', {create: false, sortField: 'text'});
+        }
         publishForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
