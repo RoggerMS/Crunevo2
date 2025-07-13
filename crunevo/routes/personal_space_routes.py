@@ -12,6 +12,7 @@ from flask import (
 from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models.personal_block import PersonalBlock
+from crunevo.models.block import Block
 from crunevo.utils.helpers import activated_required
 from datetime import datetime
 import json  # noqa: F401
@@ -209,6 +210,26 @@ def reorder_blocks():
     db.session.commit()
 
     return jsonify({"success": True, "message": "Orden actualizado"})
+
+
+@personal_space_bp.route("/api/create-block", methods=["POST"])
+@login_required
+@activated_required
+def api_create_block_simple():
+    """Create a simple Block record"""
+    data = request.get_json() or {}
+
+    block = Block(
+        user_id=current_user.id,
+        type=data.get("type"),
+        title=data.get("title", "Nuevo bloque"),
+        content=data.get("content", ""),
+        order_index=data.get("order_index", 0),
+    )
+    block.set_metadata(data.get("metadata", {}))
+    db.session.add(block)
+    db.session.commit()
+    return jsonify({"success": True, "block_id": block.id})
 
 
 @personal_space_bp.route("/api/suggestions")
