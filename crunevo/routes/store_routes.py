@@ -50,7 +50,6 @@ def get_cart():
 def store_index():
     categoria = request.args.get("categoria")
     precio_min = request.args.get("precio_min", type=float)
-    precio_min = request.args.get("precio_min", type=float)
     precio_max = request.args.get("precio_max", type=float)
     stock = request.args.get("stock", type=int)
     tags = request.args.getlist("tags")
@@ -63,8 +62,6 @@ def store_index():
         query = query.filter_by(category=categoria)
     if free:
         query = query.filter((Product.price == 0) | (Product.price_credits == 0))
-    if precio_min is not None:
-        query = query.filter(Product.price >= precio_min)
     if precio_min is not None:
         query = query.filter(Product.price >= precio_min)
     if precio_max is not None:
@@ -101,6 +98,7 @@ def store_index():
         .all()
     )
     from crunevo.constants import STORE_CATEGORIES
+
 
     categories = [cat for group in STORE_CATEGORIES.values() for cat in group]
     categories_dict = STORE_CATEGORIES
@@ -485,7 +483,7 @@ def view_favorites():
     purchased_ids = [p.product_id for p in purchased]
     from crunevo.constants import STORE_CATEGORIES
 
-    categories = [cat for group in STORE_CATEGORIES.values() for cat in group]
+    categories = STORE_CATEGORIES
     return render_template(
         "store/favorites.html",
         products=products,
