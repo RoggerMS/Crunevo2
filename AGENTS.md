@@ -767,3 +767,4 @@
 - Renamed getCSRFToken calls to getCsrfToken to avoid JS errors in personal-space.js (PR personal-space-csrf-func-fix).
 - Personal space layout refreshed with compact cards, top metrics and disappearing suggestions. startPersonalSpace waits for API responses (PR personal-space-ui-refresh).
 - Added SortableJS script via extra_js block to ensure drag-and-drop works (PR personal-space-sortablejs-fix).
+- Block model regained progress calculation and overdue check to prevent template errors (PR block-methods-fix).
