@@ -769,3 +769,4 @@
 - Added SortableJS script via extra_js block to ensure drag-and-drop works (PR personal-space-sortablejs-fix).
 - Block model regained progress calculation and overdue check to prevent template errors (PR block-methods-fix).
 - Corregido visor de fotos: las flechas actualizan la imagen usando #modalImage y el panel lateral evita overflow con comentarios scrollables (PR photo-modal-navigation-fix).
+- Added generic block viewer with placeholder page and Kanban view; cards now feature an 'Entrar' button and double-click navigation (PR personal-space-access-improvements).

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-4">{{ block.title or 'Tablero Kanban' }}</h2>
+  {% set columns = block.get_metadata().get('columns', {}) %}
+  <div class="row" id="kanbanBoard">
+    {% for column, tasks in columns.items() %}
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <strong>{{ column }}</strong>
+          <span class="badge bg-secondary">{{ tasks|length }}</span>
+        </div>
+        <ul class="list-group list-group-flush" data-column="{{ column }}">
+          {% for task in tasks %}
+          <li class="list-group-item">{{ task.title }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <a href="{{ url_for('personal_space.index') }}" class="btn btn-secondary mt-3">Volver</a>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+  document.querySelectorAll('#kanbanBoard [data-column]').forEach(col => {
+    Sortable.create(col, { group: 'kanban', animation: 150 });
+  });
+</script>
+{% endblock %}
