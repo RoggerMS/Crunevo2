@@ -100,16 +100,14 @@ def store_index():
         .group_by(Review.product_id)
         .all()
     )
-    categories = [
-        c[0] for c in db.session.query(Product.category).distinct().all() if c[0]
-    ]
+    from crunevo.constants import STORE_CATEGORIES
+
+    categories = [cat for group in STORE_CATEGORIES.values() for cat in group]
     favorites = FavoriteProduct.query.filter_by(user_id=current_user.id).all()
     favorite_ids = [fav.product_id for fav in favorites]
     purchased = Purchase.query.filter_by(user_id=current_user.id).all()
     purchased_ids = [p.product_id for p in purchased]
     featured_products = Product.query.filter_by(is_featured=True).all()
-    from sqlalchemy import func
-
     top_sellers = (
         db.session.query(Product)
         .join(Purchase)
@@ -483,9 +481,9 @@ def view_favorites():
     products = query.all()
     purchased = Purchase.query.filter_by(user_id=current_user.id).all()
     purchased_ids = [p.product_id for p in purchased]
-    categories = [
-        c[0] for c in db.session.query(Product.category).distinct().all() if c[0]
-    ]
+    from crunevo.constants import STORE_CATEGORIES
+
+    categories = [cat for group in STORE_CATEGORIES.values() for cat in group]
     return render_template(
         "store/favorites.html",
         products=products,

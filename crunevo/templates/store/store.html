@@ -6,6 +6,7 @@
 
 {% block head_extra %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.bootstrap5.min.css">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 {% endblock %}
 
@@ -27,9 +28,9 @@
         {% endif %}
       </div>
     </div>
-    <div class="store-layout">
+    <div class="store-layout sidebar-collapsed">
       <!-- Sidebar Filters -->
-      <aside class="store-sidebar">
+      <aside class="store-sidebar collapsed">
         <div class="filters-container">
           <div class="filters-header">
             <h3 class="filters-title">🔍 Filtros</h3>
@@ -404,12 +405,13 @@
       <span class="cart-badge" id="floatingCartCount">0</span>
     </a>
   </div>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()" role="button" tabindex="0"></div>
 </div>
 
 
 <!-- Publish Product Modal -->
 <div class="modal fade" id="publishProductModal" tabindex="-1">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Publicar producto</h5>
@@ -431,10 +433,14 @@
           </div>
           <div class="mb-3">
             <label for="publishCategory" class="form-label">Categoría</label>
-            <select class="form-select" id="publishCategory" name="category">
-              <option value="">Seleccionar categoría</option>
-              {% for cat in categories %}
-              <option value="{{ cat }}">{{ cat }}</option>
+            <select class="form-select" id="publishCategory" name="category" data-placeholder="Seleccionar categoría">
+              <option value=""></option>
+              {% for group, cats in categories.items() %}
+              <optgroup label="{{ group }}">
+                {% for cat in cats %}
+                <option value="{{ cat }}">{{ cat }}</option>
+                {% endfor %}
+              </optgroup>
               {% endfor %}
             </select>
           </div>
@@ -508,5 +514,6 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 <script src="{{ url_for('static', filename='js/store.js') }}"></script>
 {% endblock %}
