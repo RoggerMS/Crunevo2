@@ -1428,3 +1428,15 @@
   white-space: nowrap;
   border: 0;
 }
+
+#toggleSidebarBtn i {
+  transition: transform 0.3s ease;
+}
+
+#toggleSidebarBtn.sidebar-open .label-text {
+  display: none;
+}
+
+#toggleSidebarBtn.sidebar-open i.rotating {
+  transform: rotate(90deg);
+}
