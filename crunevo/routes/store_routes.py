@@ -99,7 +99,6 @@ def store_index():
     )
     from crunevo.constants import STORE_CATEGORIES
 
-
     categories = [cat for group in STORE_CATEGORIES.values() for cat in group]
     categories_dict = STORE_CATEGORIES
     favorites = FavoriteProduct.query.filter_by(user_id=current_user.id).all()
