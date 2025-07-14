@@ -21,22 +21,6 @@
           <span class="nav-label">Apuntes</span>
         </a>
 
-        <!-- Profile -->
-        <a href="{{ url_for('auth.perfil') if 'auth.perfil' in url_for.__globals__.get('current_app', {}).view_functions else '#' }}"
-           class="nav-item {{ 'active' if request.endpoint == 'auth.perfil' }}">
-          <div class="nav-icon">
-            {% if current_user.is_authenticated %}
-            <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}"
-                 class="rounded-circle border"
-                 width="24"
-                 height="24"
-                 alt="Perfil">
-            {% else %}
-            <i class="bi bi-person-circle"></i>
-            {% endif %}
-          </div>
-          <span class="nav-label">Perfil</span>
-        </a>
 
         <!-- Notifications -->
         <a href="{{ url_for('noti.ver_notificaciones') if 'noti.ver_notificaciones' in url_for.__globals__.get('current_app', {}).view_functions else '#' }}"
@@ -58,11 +42,21 @@
         <span>Tienda</span>
       </a>
 
-    <a href="{{ url_for('carrera.index') if 'carrera.index' in url_for.__globals__.get('current_app', {}).view_functions else '/micarrera' }}"
-       class="nav-item {{ 'active' if request.endpoint == 'carrera.index' }}">
-      <i class="bi bi-mortarboard"></i>
-      <span>Carrera</span>
-    </a>
+      <!-- Profile moved to end -->
+      <a href="{{ url_for('auth.perfil') if 'auth.perfil' in url_for.__globals__.get('current_app', {}).view_functions else '#' }}"
+         class="nav-item {{ 'active' if request.endpoint == 'auth.perfil' }}">
+        <div class="nav-icon">
+          {% if current_user.is_authenticated %}
+          <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}"
+               class="rounded-circle border"
+               width="24" height="24" alt="Perfil">
+          {% else %}
+          <i class="bi bi-person-circle"></i>
+          {% endif %}
+        </div>
+        <span class="nav-label">Perfil</span>
+      </a>
+
       </div>
     </div>
   </nav>

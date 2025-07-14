@@ -449,7 +449,7 @@ function initGlobalSearch() {
         return `<div class="col-md-6 col-lg-4 mb-3">
           <div class="card h-100 search-result-item">
             <div class="card-body text-center">
-              <img src="${item.avatar_url || '/static/img/default.png'}" class="rounded-circle mb-2" width="48" height="48">
+              <img src="${item.avatar_url || '/static/img/default.png'}" class="rounded-circle mb-2" width="48" height="48" alt="">
               <h6 class="card-title">${item.username}</h6>
               <p class="card-text small text-muted">${item.about || 'Sin descripción'}</p>
               <div class="d-flex justify-content-between align-items-center">
@@ -1649,7 +1649,7 @@ function initPrivateChat() {
     if (message.attachment_url) {
       const ext = message.attachment_url.split('.').pop().toLowerCase();
       if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
-        body += `<img src="${message.attachment_url}" class="img-fluid mt-1" />`;
+        body += `<img src="${message.attachment_url}" class="img-fluid mt-1" alt="" />`;
       } else {
         body += `<a href="${message.attachment_url}" target="_blank" class="d-block mt-1">Archivo adjunto</a>`;
       }
@@ -1866,7 +1866,7 @@ function initGlobalChat() {
     if (message.attachment_url) {
       const ext = message.attachment_url.split('.').pop().toLowerCase();
       if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
-        body += `<img src="${message.attachment_url}" class="img-fluid mt-1" />`;
+        body += `<img src="${message.attachment_url}" class="img-fluid mt-1" alt="" />`;
       } else {
         body += `<a href="${message.attachment_url}" target="_blank" class="d-block mt-1">Archivo adjunto</a>`;
       }

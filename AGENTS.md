@@ -784,3 +784,4 @@
 - Fixed store routes to pass STORE_CATEGORIES dictionary and removed duplicate precio_min logic to avoid Jinja errors (PR store-categories-dict).
 - Fixed publish product modal using category groups via categories_dict (QA store-category-dict-fix).
 - Fixed Filters button in /store: sidebar toggles correctly with rotating icon and mobile IDs renamed to avoid duplicates (PR store-filters-btn-fix).
+- Mobile navbar: removed 'Carrera', moved 'Perfil' to the rightmost slot and added accessibility/headers fixes (PR mobile-nav-carrera-remove).
