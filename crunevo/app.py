@@ -229,14 +229,19 @@ def create_app():
     @app.after_request
     def apply_security_headers(response):
         response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net"
+            "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; frame-ancestors 'self'"
         )
-        response.headers["X-Frame-Options"] = "SAMEORIGIN"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = (
-            "camera=(), microphone=(), geolocation=()"
+            "camera=(), microphone=(), geolocation()"
         )
         response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Server"] = "CRUNEVO"
+        return response
+
+    @app.after_request
+    def add_cache_control(response):
+        response.headers["Cache-Control"] = "public, max-age=86400"
         return response
 
     # Initialize database if needed (skip during tests)
