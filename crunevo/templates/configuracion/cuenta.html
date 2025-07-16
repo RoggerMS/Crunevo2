@@ -1,3 +1,4 @@
+{% from 'components/csrf.html' import csrf_field %}
 <section id="account" class="mb-4">
   <div class="card shadow-sm border-0">
     <div class="card-header bg-white">
@@ -5,7 +6,7 @@
     </div>
     <div class="card-body">
       <form id="passwordForm" class="settings-form" method="post" action="{{ url_for('settings.update_password') }}">
-        {{ csrf.csrf_field() }}
+        {{ csrf_field() }}
         <div class="mb-3">
           <label for="current_password" class="form-label">Contraseña actual</label>
           <input type="password" class="form-control" id="current_password" name="current_password" autocomplete="current-password">
@@ -38,8 +39,8 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              <form method="post" action="{{ url_for('auth.delete_account') }}">
-                {{ csrf.csrf_field() }}
+              <form method="post" action="{{ url_for('auth.delete_account') }}" onsubmit="return confirm('¿Estás seguro de eliminar tu cuenta?');">
+                {{ csrf_field() }}
                 <button type="submit" class="btn btn-danger">Sí, eliminar mi cuenta</button>
               </form>
             </div>
