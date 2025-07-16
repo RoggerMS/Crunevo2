@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, flash
+from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
 from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models.challenges import (
@@ -21,6 +21,10 @@ challenges_bp = Blueprint("challenges", __name__, url_prefix="/desafios")
 @activated_required
 def ghost_mentor():
     """Ghost Mentor Challenge page"""
+
+    if current_user.role != "admin":
+        flash("Acceso restringido", "warning")
+        return redirect(url_for("feed.feed_home"))
     if not table_exists("ghost_mentor_challenge"):
         flash("Función no disponible", "warning")
         return render_template(

@@ -121,6 +121,7 @@
           </a>
         </li>
 
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
         <li>
           <a href="{{ url_for('carrera.index') if 'carrera.index' in url_for.__globals__.get('current_app', {}).view_functions else '/micarrera' }}" class="nav-link {{ 'active' if request.endpoint == 'carrera.index' }}">
             <i class="bi bi-mortarboard"></i>
@@ -139,6 +140,7 @@
             <span class="fw-semibold">Desafíos</span>
           </a>
         </li>
+        {% endif %}
         {% if current_user.is_authenticated %}
           {% set hall_member = get_hall_membership(current_user) %}
           {% if hall_member or (current_user.credits >= 1000) %}

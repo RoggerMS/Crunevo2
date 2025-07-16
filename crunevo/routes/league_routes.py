@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from crunevo.extensions import db
 from crunevo.models.league import AcademicTeam, TeamMember, LeagueMonth, TeamAction
 from crunevo.utils.helpers import activated_required, table_exists
+
 from datetime import datetime
 from sqlalchemy import desc
 
@@ -14,6 +15,10 @@ league_bp = Blueprint("league", __name__, url_prefix="/liga")
 @activated_required
 def index():
     """Academic League main page"""
+
+    if current_user.role != "admin":
+        flash("Acceso restringido", "warning")
+        return redirect(url_for("feed.feed_home"))
 
     if not table_exists("team_member"):
         flash("Función no disponible", "warning")
