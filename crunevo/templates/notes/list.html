@@ -1,5 +1,12 @@
-<link rel="stylesheet" href="{{ url_for('static', filename='css/notes.css') }}">
+{% extends 'base.html' %}
 
+{% block head_extra %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/notes.css') }}">
+{% endblock %}
+
+{% block title %}Apuntes de la Semana{% endblock %}
+
+{% block content %}
 <div class="container py-4">
   <h2 class="mb-4">📄 Apuntes compartidos</h2>
 
@@ -11,3 +18,4 @@
     {% endfor %}
   </div>
 </div>
+{% endblock %}
