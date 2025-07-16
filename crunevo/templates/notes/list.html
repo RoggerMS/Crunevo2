@@ -31,9 +31,9 @@
         <a href="{{ url_for('notes.upload_note') }}" class="btn btn-success">Subir apunte</a>
       </div>
     </div>
-    <div class="row g-4" id="notesList">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 row-cols-xl-6 row-cols-xxl-7 g-3" id="notesList">
 {% for note in notes %}
-  <div class="col-12 col-md-6 col-lg-4 col-xxl-3">
+  <div class="col">
     {% set show_quick_view = True %}
     {% include 'components/note_card.html' %}
   </div>
@@ -55,10 +55,10 @@ document.getElementById('noteSearch').addEventListener('input', function(e){
 
 function createNoteCard(n) {
   const col = document.createElement('div');
-  col.className = 'col-12 col-md-6 col-lg-4 col-xxl-3';
+  col.className = 'col';
 
   const card = document.createElement('article');
-  card.className = 'note-card card shadow-sm rounded-4 h-100 position-relative d-flex flex-column';
+  card.className = 'note-card card shadow-sm rounded-4 h-100 position-relative';
 
   const header = document.createElement('div');
   header.className = 'p-3 pb-0';
@@ -101,7 +101,7 @@ function createNoteCard(n) {
   }
 
   const actions = document.createElement('div');
-  actions.className = 'px-3 note-actions pb-3 mt-auto';
+  actions.className = 'px-3 note-actions pb-3';
   actions.innerHTML = `
     <div class="note-stats mb-2">
       <span><i class="bi bi-eye me-1"></i>${n.views || 0}</span>
