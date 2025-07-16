@@ -1,55 +1,27 @@
-.note-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  border: 1px solid #eee;
-}
-
-.note-card img {
-  width: 100%;
-  aspect-ratio: 8.5/11;
-  object-fit: cover;
-  border-radius: 6px;
-  margin: 8px 0;
-}
-
 .note-title {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: #333;
-  margin-bottom: 4px;
+  margin-bottom: 0.25rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.note-week {
-  font-size: 0.875rem;
-  color: #888;
+.note-card .note-preview {
+  background-color: var(--bs-light-bg-subtle, #f8f9fa);
 }
 
-.note-stats {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 6px;
-  font-size: 0.85rem;
-  color: #666;
+.note-card .ratio-a4 {
+  --bs-aspect-ratio: 141%;
 }
 
-.note-stats i {
-  margin-right: 4px;
+.note-card .btn-group {
+  gap: 0.25rem;
 }
 
-.note-actions {
-  margin-top: auto;
-  display: flex;
-  justify-content: space-between;
-  gap: 6px;
-}
-
-@media (max-width: 576px) {
-  .note-actions {
-    flex-direction: column;
+@media (max-width: 575.98px) {
+  .note-title {
+    font-size: 0.85rem;
   }
 }
