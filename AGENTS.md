@@ -786,4 +786,5 @@
 - Fixed Filters button in /store: sidebar toggles correctly with rotating icon and mobile IDs renamed to avoid duplicates (PR store-filters-btn-fix).
 - Mobile navbar: removed 'Carrera', moved 'Perfil' to the rightmost slot and added accessibility/headers fixes (PR mobile-nav-carrera-remove).
 - Enlaces a Liga, Desafíos y Mi Carrera ocultos para usuarios normales y rutas redirigen al feed si el rol no es admin (PR restrict-incomplete-pages).
+- Vista /notes redise\u00f1ada como galer\u00eda A4: alias /apuntes, tarjetas verticales con t\u00edtulo arriba, sidebar removido y responsive (PR notes-a4-gallery).
 - Fixed account deletion by removing related records, added confirmation and flash message (PR delete-account-fix).

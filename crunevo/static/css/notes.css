@@ -1,0 +1,27 @@
+.note-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-card .note-preview {
+  background-color: var(--bs-light-bg-subtle, #f8f9fa);
+}
+
+.note-card .ratio-a4 {
+  --bs-aspect-ratio: 141%;
+}
+
+.note-card .btn-group {
+  gap: 0.25rem;
+}
+
+@media (max-width: 575.98px) {
+  .note-title {
+    font-size: 0.85rem;
+  }
+}
