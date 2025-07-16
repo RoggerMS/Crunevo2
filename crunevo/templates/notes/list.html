@@ -1,12 +1,11 @@
 {% extends 'base.html' %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/notes.css') }}">
+{% endblock %}
 {% block content %}
 <div class="row">
-  <!-- Lado izquierdo (menú lateral) -->
-  <div class="col-lg-3 d-none d-lg-block">
-    {% include 'components/sidebar_left_feed.html' %}
-  </div>
-  <!-- Contenido central -->
-  <div class="col-lg-9 col-md-12">
+  <div class="col-12">
     <h2 class="mb-3">Apuntes</h2>
     <div class="d-flex flex-wrap gap-2 mb-3 justify-content-center">
       <a href="{{ url_for('notes.list_notes', filter='recientes', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'recientes' %}active{% endif %}">📅 Recientes</a>
@@ -32,7 +31,7 @@
         <a href="{{ url_for('notes.upload_note') }}" class="btn btn-success">Subir apunte</a>
       </div>
     </div>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3" id="notesList">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 row-cols-xl-6 row-cols-xxl-7 g-3" id="notesList">
 {% for note in notes %}
   <div class="col">
     {% set show_quick_view = True %}
@@ -58,50 +57,50 @@ function createNoteCard(n) {
   const col = document.createElement('div');
   col.className = 'col';
 
+  const wrapper = document.createElement('div');
+  wrapper.className = 'note-item';
+
+  const title = document.createElement('p');
+  title.className = 'note-title';
+  title.textContent = n.title;
+  wrapper.appendChild(title);
+
   const card = document.createElement('article');
   card.className = 'card note-card shadow-sm rounded-4 h-100';
 
   const preview = document.createElement('div');
-  preview.className = 'note-preview text-center p-3 bg-light-subtle';
+  preview.className = 'note-preview ratio ratio-a4 bg-light-subtle text-center';
 
   const ext = n.filename.split('?')[0].split('.').pop().toLowerCase();
   if (ext === 'pdf') {
     const canvas = document.createElement('canvas');
-    canvas.className = 'pdf-thumb w-100';
+    canvas.className = 'pdf-thumb w-100 h-100';
     canvas.dataset.pdf = n.filename;
-    canvas.style.height = '220px';
     preview.appendChild(canvas);
   } else if (['jpg','jpeg','png','webp'].includes(ext)) {
     const img = document.createElement('img');
     img.src = n.filename;
-    img.className = 'img-fluid rounded w-100';
-    img.style.height = '220px';
+    img.className = 'img-fluid rounded w-100 h-100';
     img.style.objectFit = 'cover';
     preview.appendChild(img);
   } else {
     const div = document.createElement('div');
-    div.className = 'text-muted';
-    div.style.height = '220px';
-    div.style.display = 'flex';
+    div.className = 'text-muted d-flex flex-column justify-content-center h-100';
     div.style.flexDirection = 'column';
-    div.style.justifyContent = 'center';
     div.innerHTML = '<i class="bi bi-file-earmark fs-1"></i><small>Vista previa no disponible</small>';
     preview.appendChild(div);
   }
 
   const body = document.createElement('div');
-  body.className = 'card-body d-flex flex-column justify-content-between';
+  body.className = 'card-body d-flex flex-column justify-content-between pt-2';
 
-  const title = document.createElement('h6');
-  title.className = 'fw-bold text-dark mb-2';
-  title.textContent = n.title;
 
   const stats = document.createElement('div');
   stats.className = 'd-flex justify-content-between align-items-center small text-muted';
   stats.innerHTML = `<span><i class="bi bi-eye me-1"></i> ${n.views || 0}</span><span><i class="bi bi-hand-thumbs-up me-1"></i> ${n.likes || 0}</span>`;
 
   const btnGroup = document.createElement('div');
-  btnGroup.className = 'btn-group mt-3';
+  btnGroup.className = 'btn-group mt-auto';
 
   const link = document.createElement('a');
   link.className = 'btn btn-outline-primary btn-sm';
@@ -117,17 +116,17 @@ function createNoteCard(n) {
     btnGroup.appendChild(qbtn);
   }
 
-  body.appendChild(title);
   body.appendChild(stats);
   body.appendChild(btnGroup);
 
   card.appendChild(preview);
   card.appendChild(body);
-  col.appendChild(card);
+  wrapper.appendChild(card);
+  col.appendChild(wrapper);
   return col;
 }
 </script>
-  </div> <!-- Fin contenido central -->
+  </div>
 </div>
 {% endblock %}
 

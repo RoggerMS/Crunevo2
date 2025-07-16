@@ -279,7 +279,13 @@ def create_app():
 
     from .routes.onboarding_routes import bp as onboarding_bp
     from .routes.auth_routes import auth_bp
-    from .routes.notes_routes import notes_bp
+    from .routes.notes_routes import (
+        notes_bp,
+        list_notes,
+        upload_note,
+        detail,
+        edit_note,
+    )
     from .routes.feed_routes import (
         feed_bp,
         api_feed,
@@ -342,6 +348,28 @@ def create_app():
         app.register_blueprint(onboarding_bp)
         app.register_blueprint(auth_bp)
         app.register_blueprint(notes_bp)
+        app.add_url_rule(
+            "/apuntes",
+            endpoint="notes.list_notes_alias",
+            view_func=list_notes,
+        )
+        app.add_url_rule(
+            "/apuntes/upload",
+            endpoint="notes.upload_note_alias",
+            view_func=upload_note,
+            methods=["GET", "POST"],
+        )
+        app.add_url_rule(
+            "/apuntes/<int:note_id>",
+            endpoint="notes.view_note_alias",
+            view_func=detail,
+        )
+        app.add_url_rule(
+            "/apuntes/edit/<int:note_id>",
+            endpoint="notes.edit_note_alias",
+            view_func=edit_note,
+            methods=["GET", "POST"],
+        )
         app.register_blueprint(feed_bp)
         app.register_blueprint(stories_bp)
         app.add_url_rule(
