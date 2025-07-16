@@ -281,7 +281,15 @@ function initPdfPreviews() {
         const viewport = page.getViewport({ scale: 0.5 });
         canvas.height = viewport.height;
         canvas.width = viewport.width;
-        page.render({ canvasContext: canvas.getContext('2d'), viewport });
+        return page
+          .render({ canvasContext: canvas.getContext('2d'), viewport })
+          .promise;
+      })
+      .then(() => {
+        canvas.classList.remove('d-none');
+        canvas.closest('.note-preview')
+          ?.querySelector('.loading-shimmer')
+          ?.remove();
       })
       .catch(() => {
         const div = document.createElement('div');
@@ -289,6 +297,23 @@ function initPdfPreviews() {
         div.textContent = 'Vista previa no disponible';
         canvas.replaceWith(div);
       });
+  });
+
+  document.querySelectorAll('img.note-img').forEach((img) => {
+    if (img.complete) {
+      img.classList.remove('d-none');
+      img.closest('.note-preview')?.querySelector('.loading-shimmer')?.remove();
+    } else {
+      img.addEventListener('load', () => {
+        img.classList.remove('d-none');
+        img.closest('.note-preview')
+          ?.querySelector('.loading-shimmer')
+          ?.remove();
+      });
+      img.addEventListener('error', () => {
+        img.closest('.note-preview')?.querySelector('.loading-shimmer')?.remove();
+      });
+    }
   });
 }
 

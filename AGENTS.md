@@ -788,3 +788,4 @@
 - Enlaces a Liga, Desafíos y Mi Carrera ocultos para usuarios normales y rutas redirigen al feed si el rol no es admin (PR restrict-incomplete-pages).
 - Vista /notes redise\u00f1ada como galer\u00eda A4: alias /apuntes, tarjetas verticales con t\u00edtulo arriba, sidebar removido y responsive (PR notes-a4-gallery).
 - Fixed account deletion by removing related records, added confirmation and flash message (PR delete-account-fix).
+- Tarjetas de apuntes modernizadas con sección de autor, etiquetas y menú de opciones; incluyen skeleton de carga y métricas inferiores (PR note-card-redesign).
