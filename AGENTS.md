@@ -789,4 +789,3 @@
 - Vista /notes redise\u00f1ada como galer\u00eda A4: alias /apuntes, tarjetas verticales con t\u00edtulo arriba, sidebar removido y responsive (PR notes-a4-gallery).
 - Fixed account deletion by removing related records, added confirmation and flash message (PR delete-account-fix).
 - Applied approved visual redesign for /apuntes with A4-style cards, responsive grid and simplified templates (PR notes-css-update).
-- Fixed notes/list.html to extend base.html and load notes.css via head_extra; note cards now reference placeholder.svg (PR notes-template-base-fix).

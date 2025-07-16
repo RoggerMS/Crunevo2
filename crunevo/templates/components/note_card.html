@@ -1,7 +1,7 @@
 <div class="note-card">
   <div class="note-week">{{ note.week }}</div>
   <div class="note-title">{{ note.title }}</div>
-  <img src="{{ note.preview_url or note.image_url or url_for('static', filename='img/placeholder.svg') }}" alt="Vista previa del apunte">
+  <img src="{{ note.preview_url or note.image_url or url_for('static', filename='img/placeholder.png') }}" alt="Vista previa del apunte">
 
   <div class="note-stats">
     <span><i class="ti ti-eye"></i> {{ note.views }}</span>
