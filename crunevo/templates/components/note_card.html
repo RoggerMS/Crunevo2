@@ -3,7 +3,7 @@
 {% set ext = note.filename.split('?')[0].rsplit('.', 1)[-1].lower() %}
 {% set author = note.author %}
 
-<article class="note-card card shadow-sm rounded-4 h-100 position-relative">
+<article class="note-card card shadow-sm rounded-4 h-100 position-relative d-flex flex-column">
   {% if note.views > 100 %}
   <span class="badge text-bg-danger position-absolute top-0 start-0 m-2">Popular 🔥</span>
   {% elif author and author.verification_level >= 2 %}
@@ -72,7 +72,7 @@
   </div>
   {% endif %}
 
-  <div class="px-3 note-actions pb-3">
+  <div class="px-3 note-actions pb-3 mt-auto">
     <div class="note-stats mb-2">
       <span><i class="bi bi-eye me-1"></i>{{ note.views }}</span>
       <span><i class="bi bi-heart me-1"></i>{{ note.likes or 0 }}</span>
