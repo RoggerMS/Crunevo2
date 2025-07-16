@@ -620,22 +620,54 @@ csrf.exempt(resend_confirmation)
 @auth_bp.route("/perfil/eliminar-cuenta", methods=["POST"])
 @activated_required
 def delete_account():
+    """Delete the current user's account and related data."""
     from flask_login import logout_user
+    from sqlalchemy.exc import IntegrityError
     from crunevo.models import (
         LoginStreak,
+        FeedItem,
+        PostReaction,
+        PostComment,
+        PostImage,
+        SavedPost,
+        NoteVote,
+        Comment,
+        PrintRequest,
+        Credit,
     )
+    from crunevo.constants import CreditReasons
 
-    for post in current_user.posts:
+    # Remove posts and related objects
+    for post in list(current_user.posts):
+        FeedItem.query.filter_by(item_type="post", ref_id=post.id).delete()
+        PostReaction.query.filter_by(post_id=post.id).delete()
+        PostComment.query.filter_by(post_id=post.id).delete()
+        PostImage.query.filter_by(post_id=post.id).delete()
+        SavedPost.query.filter_by(post_id=post.id).delete()
         db.session.delete(post)
-    for note in current_user.notes:
+
+    # Remove notes and related objects
+    for note in list(current_user.notes):
+        FeedItem.query.filter_by(item_type="apunte", ref_id=note.id).delete()
+        Credit.query.filter_by(
+            user_id=current_user.id,
+            related_id=note.id,
+            reason=CreditReasons.APUNTE_SUBIDO,
+        ).delete()
+        NoteVote.query.filter_by(note_id=note.id).delete()
+        Comment.query.filter_by(note_id=note.id).delete()
+        PrintRequest.query.filter_by(note_id=note.id).delete()
         db.session.delete(note)
-    for comment in current_user.comments:
+
+    # Remove comments, post comments and notifications
+    for comment in list(current_user.comments):
         db.session.delete(comment)
-    for pcomment in current_user.post_comments:
+    for pcomment in list(current_user.post_comments):
         db.session.delete(pcomment)
     for notif in current_user.notifications.all():
         db.session.delete(notif)
 
+    # Delete login streak if present
     streak = LoginStreak.query.filter_by(user_id=current_user.id).first()
     if streak:
         db.session.delete(streak)
@@ -643,9 +675,17 @@ def delete_account():
     current_user.activated = False
     current_user.password_hash = ""
     current_user.chat_enabled = False
-    db.session.commit()
+
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        flash("No se pudo eliminar la cuenta por registros relacionados", "danger")
+        return redirect(url_for("auth.perfil"))
+
     logout_user()
-    return redirect(url_for("auth.account_deleted"))
+    flash("Tu cuenta ha sido eliminada.")
+    return redirect(url_for("main.index"))
 
 
 @auth_bp.route("/cuenta-eliminada")
