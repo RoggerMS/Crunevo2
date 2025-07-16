@@ -20,6 +20,10 @@ carrera_bp = Blueprint("carrera", __name__, url_prefix="/mi-carrera")
 @activated_required
 def index():
     """Main career center dashboard"""
+
+    if current_user.role != "admin":
+        flash("Acceso restringido", "warning")
+        return redirect(url_for("feed.feed_home"))
     # Check if user has career assigned
     if not current_user.career:
         flash("Debes asignar una carrera para acceder a Mi Carrera", "warning")
