@@ -17,6 +17,11 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
+.note-card--verified {
+  box-shadow: 0 0 12px rgba(108, 99, 255, 0.5), 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-left: 3px solid #6c63ff;
+}
+
 .note-preview {
   position: relative;
   height: 180px;

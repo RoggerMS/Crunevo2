@@ -3,11 +3,9 @@
 {% set ext = note.filename.split('?')[0].rsplit('.', 1)[-1].lower() %}
 {% set author = note.author %}
 
-<article class="note-card card shadow-sm rounded-4 h-100 position-relative">
+<article class="note-card card shadow-sm rounded-4 h-100 position-relative {% if note.verified %}note-card--verified{% endif %}">
   {% if note.views > 100 %}
   <span class="badge text-bg-danger position-absolute top-0 start-0 m-2">Popular 🔥</span>
-  {% elif author and author.verification_level >= 2 %}
-  <span class="badge text-bg-success position-absolute top-0 start-0 m-2">Verificado ✅</span>
   {% endif %}
 
   <div class="dropdown position-absolute top-0 end-0 m-2">
@@ -43,6 +41,11 @@
       <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}" alt="{{ author.username if author else 'Usuario' }}">
       {% if author %}
       <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="text-decoration-none">{{ author.username }}</a>
+      {% if author and author.verification_level >= 2 %}
+      <span class="ms-1" style="color: var(--bs-primary);" data-bs-toggle="tooltip" title="Usuario Verificado">
+        <i class="bi bi-patch-check-fill"></i>
+      </span>
+      {% endif %}
       {% else %}
       <span class="text-muted">Usuario eliminado</span>
       {% endif %}
