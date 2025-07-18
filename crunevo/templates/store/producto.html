@@ -16,8 +16,8 @@
       <div class="col-lg-6">
         <div class="product-gallery">
           <div class="main-image-container">
-            <img id="mainProductImage" 
-                 src="{{ product.image_url or url_for('static', filename='img/default_product.png') }}" 
+            <img id="mainProductImage"
+                 src="{{ (product.image_url|cl_url(800,600,'fill')) if product.image_url else url_for('static', filename='img/default_product.png') }}"
                  alt="{{ product.name }}"
                  class="main-product-image"
                  onclick="openProductImageModal(this.src)">
@@ -32,7 +32,7 @@
           <div class="thumbnail-gallery">
             {% for image_url in product.image_urls %}
             <div class="thumbnail-item {{ 'active' if loop.first }}">
-              <img src="{{ image_url }}" 
+              <img src="{{ image_url|cl_url(200,200,'thumb') }}"
                    alt="{{ product.name }} - Imagen {{ loop.index }}"
                    class="thumbnail-image"
                    onclick="changeMainImage(this.src)">

@@ -10,7 +10,7 @@
   <!-- Post Header -->
   <div class="post-header">
     <div class="post-avatar">
-      <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}"
+      <img src="{{ (author.avatar_url|cl_url(40,40,'thumb')) if author else url_for('static', filename='img/default.png') }}"
            alt="{{ author.username if author else 'Usuario eliminado' }}"
            class="avatar-img">
     </div>

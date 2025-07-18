@@ -1,7 +1,7 @@
 {% for product in products %}
 <div class="product-card" data-category="{{ product.category }}" data-price="{{ product.price }}" data-credits="{{ product.price_credits or 0 }}">
   <div class="product-image-container">
-    <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}"
+    <img src="{{ (product.first_image|cl_url(400,300,'fill')) if product.first_image else url_for('static', filename='img/default_product.png') }}"
          alt="{{ product.name }}"
          class="product-image"
          loading="lazy">

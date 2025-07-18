@@ -204,11 +204,11 @@
                data-popular="{{ 'true' if product.is_popular else 'false' }}"
                data-new="{{ 'true' if product.is_new else 'false' }}">
             
-            <div class="product-image-container">
-              <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}" 
-                   alt="{{ product.name }}" 
-                   class="product-image"
-                   loading="lazy">
+              <div class="product-image-container">
+                <img src="{{ (product.first_image|cl_url(400,300,'fill')) if product.first_image else url_for('static', filename='img/default_product.png') }}"
+                     alt="{{ product.name }}"
+                     class="product-image"
+                     loading="lazy">
 
               <!-- Product Badges -->
               <div class="product-badges">

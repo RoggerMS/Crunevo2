@@ -34,8 +34,8 @@
       <!-- Product Images -->
       <div class="product-images">
         <div class="main-image-container">
-          <img src="{{ product.first_image or url_for('static', filename='img/default_product.png') }}" 
-               alt="{{ product.name }}" 
+          <img src="{{ (product.first_image|cl_url(800,600,'fill')) if product.first_image else url_for('static', filename='img/default_product.png') }}"
+               alt="{{ product.name }}"
                class="main-image"
                id="mainImage">
 
@@ -68,8 +68,8 @@
         {% if product.image_urls and product.image_urls|length > 1 %}
         <div class="thumbnail-gallery">
           {% for image_url in product.image_urls %}
-          <img src="{{ image_url }}" 
-               alt="{{ product.name }}" 
+          <img src="{{ image_url|cl_url(200,200,'thumb') }}"
+               alt="{{ product.name }}"
                class="thumbnail {{ 'active' if loop.first else '' }}"
                onclick="changeMainImage('{{ image_url }}')">
           {% endfor %}
