@@ -2,7 +2,7 @@
 {% import 'components/csrf.html' as csrf %}
 <div class="card h-100 border border-primary p-2 position-relative">
   <a href="{{ url_for('store.view_product', product_id=product.id) }}">
-    <img loading="lazy" src="{{ product.first_image or '/static/img/producto-default.png' }}" class="card-img-top rounded mb-2 img-fluid" style="max-height: 180px; object-fit: cover;" alt="imagen">
+    <img loading="lazy" src="{{ (product.first_image|cl_url(400,300,'fill')) if product.first_image else '/static/img/producto-default.png' }}" class="card-img-top rounded mb-2 img-fluid" style="max-height: 180px; object-fit: cover;" alt="imagen">
   </a>
   <div class="position-absolute top-0 start-0 m-2 tw-space-x-1">
     {% if product.category %}<span class="badge bg-info text-body">{{ product.category }}</span>{% endif %}

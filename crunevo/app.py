@@ -134,9 +134,11 @@ def create_app():
         }
 
     from .utils.helpers import timesince, get_hall_membership, notes_count
+    from .utils.image_optimizer import optimize_url
     from .cache.link_preview import extract_first_url, get_preview
 
     app.jinja_env.filters["timesince"] = timesince
+    app.jinja_env.filters["cl_url"] = optimize_url
 
     def link_preview(text):
         url = extract_first_url(text)

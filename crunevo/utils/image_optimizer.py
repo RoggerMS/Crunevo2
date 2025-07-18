@@ -3,6 +3,31 @@ from PIL import Image
 import io
 import cloudinary.uploader
 
+
+def optimize_url(
+    url: str, width: int | None = None, height: int | None = None, crop: str = "fill"
+) -> str:
+    """Return an optimized Cloudinary URL using f_auto, q_auto and size."""
+    if not url or "res.cloudinary.com" not in url:
+        return url
+
+    try:
+        base, rest = url.split("/upload/", 1)
+    except ValueError:
+        return url
+
+    parts = ["f_auto", "q_auto"]
+    if width:
+        parts.append(f"w_{width}")
+    if height:
+        parts.append(f"h_{height}")
+    if crop:
+        parts.append(f"c_{crop}")
+
+    transform = ",".join(parts)
+    return f"{base}/upload/{transform}/{rest}"
+
+
 logger = logging.getLogger(__name__)
 
 

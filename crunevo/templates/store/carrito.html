@@ -25,7 +25,7 @@
           <tr>
             <td>
               <div class="d-flex align-items-center">
-                <img loading="lazy" src="{{ item.product.first_image or '/static/img/producto-default.png' }}" alt="{{ item.product.name }}" class="me-3 rounded" width="60">
+                <img loading="lazy" src="{{ (item.product.first_image|cl_url(60,60,'thumb')) if item.product.first_image else '/static/img/producto-default.png' }}" alt="{{ item.product.name }}" class="me-3 rounded" width="60">
                 <div>
                   <strong>{{ item.product.name }}</strong><br>
                   <small class="text-muted">{{ item.product.description[:60] }}</small>

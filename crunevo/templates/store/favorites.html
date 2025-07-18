@@ -43,7 +43,7 @@
             {% for product in products %}
               <div class="col">
                 <div class="card product-card position-relative h-100 border border-primary p-2">
-                  <img loading="lazy" src="{{ product.image_url or '/static/img/producto-default.png' }}" class="card-img-top rounded mb-2" alt="{{ product.name }}">
+                  <img loading="lazy" src="{{ (product.image_url|cl_url(400,300,'fill')) if product.image_url else '/static/img/producto-default.png' }}" class="card-img-top rounded mb-2" alt="{{ product.name }}">
                   <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="position-absolute top-0 end-0 m-2">
                     {{ csrf.csrf_field() }}
                     <button class="btn btn-sm btn-light border-0" type="submit">
