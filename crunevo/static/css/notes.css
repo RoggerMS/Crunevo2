@@ -10,6 +10,14 @@
 .note-card {
   border: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.note-card .card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
 }
 
 .note-card:hover {
@@ -72,7 +80,7 @@
 }
 
 .note-actions {
-  margin-top: 0.5rem;
+  margin-top: auto;
 }
 
 @media (max-width: 575.98px) {

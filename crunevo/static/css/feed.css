@@ -513,6 +513,12 @@
   cursor: not-allowed;
 }
 
+.inactive-btn {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: var(--text-secondary);
+}
+
 /* Post creation image preview */
 .preview-item {
   position: relative;
