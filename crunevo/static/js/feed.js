@@ -14,6 +14,7 @@ class ModernFeedManager {
     this.modalImageEl = null;
     this.touchStartX = 0;
     this.touchEndX = 0;
+    this.commentEventsBound = false;
     this.init();
   }
 
@@ -191,7 +192,11 @@ class ModernFeedManager {
 
   // Initialize comment system
   initCommentSystem() {
-    document.addEventListener('click', (e) => {
+    if (this.commentEventsBound) return;
+    const container = document.getElementById('feedContainer');
+    if (!container) return;
+
+    container.addEventListener('click', (e) => {
       if (e.target.matches('.comment-btn') || e.target.closest('.comment-btn')) {
         const btn = e.target.closest('.comment-btn');
         const postId = btn.dataset.postId;
@@ -199,8 +204,7 @@ class ModernFeedManager {
       }
     });
 
-    // Handle comment form submissions
-    document.addEventListener('submit', (e) => {
+    container.addEventListener('submit', (e) => {
       if (e.target.matches('.comment-form')) {
         e.preventDefault();
         const form = e.target;
@@ -209,8 +213,7 @@ class ModernFeedManager {
       }
     });
 
-    // Handle comment input changes
-    document.addEventListener('input', (e) => {
+    container.addEventListener('input', (e) => {
       if (e.target.matches('.comment-input')) {
         const form = e.target.closest('.comment-form');
         const submitBtn = form?.querySelector('.comment-submit-btn');
@@ -219,6 +222,8 @@ class ModernFeedManager {
         }
       }
     });
+
+    this.commentEventsBound = true;
   }
 
   // Toggle comments visibility
