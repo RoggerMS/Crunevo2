@@ -791,3 +791,4 @@
 - Tarjetas de apuntes modernizadas con sección de autor, etiquetas y menú de opciones; incluyen skeleton de carga y métricas inferiores (PR note-card-redesign).
 - Indicadores de verificación rediseñados: se quitan badges verdes, icono junto al nombre y efecto glow en tarjetas (PR notes-verified-ui).
 - Generado filtro `cl_url` y helper optimize_url para insertar `f_auto`, `q_auto` y tamaños al construir URLs de Cloudinary; se actualizaron avatares, galerías y tienda (PR cloudinary-optimizations).
+- Fixed comment null errors and share modal duplicates, styled inactive feed buttons, improved note-card layout with flexbox and added optimistic save (PR feed-bugfixes-ui).
