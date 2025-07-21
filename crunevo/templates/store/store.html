@@ -16,7 +16,7 @@
     <div class="store-header d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between ms-3 mt-3 gap-2">
       <div class="d-flex align-items-center gap-2">
         <h2 class="mb-3 mb-lg-0">Marketplace</h2>
-        <button type="button" id="toggleSidebarBtn" onclick="toggleSidebar()" class="btn btn-light d-none d-lg-inline-flex align-items-center">
+        <button type="button" id="filter-toggle-btn" onclick="toggleSidebar()" class="btn btn-light d-none d-lg-inline-flex align-items-center">
           <i class="bi bi-sliders"></i>
           <span class="label-text ms-1">Filtros</span>
         </button>
@@ -31,7 +31,7 @@
     </div>
     <div class="store-layout sidebar-collapsed">
       <!-- Sidebar Filters -->
-      <aside class="store-sidebar collapsed">
+      <aside id="filter-sidebar" class="store-sidebar collapsed">
         <div class="filters-container">
           <div class="filters-header">
             <h3 class="filters-title">🔍 Filtros</h3>
@@ -406,7 +406,7 @@
       <span class="cart-badge" id="floatingCartCount">0</span>
     </a>
   </div>
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()" role="button" tabindex="0"></div>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()" role="button" tabindex="0"></div>
 </div>
 
 

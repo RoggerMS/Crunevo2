@@ -117,9 +117,16 @@ class CrunevoStore {
             });
         }
 
-        const sidebarToggle = document.getElementById('toggleSidebarBtn');
+        const sidebarToggle = document.getElementById('filter-toggle-btn');
         if (sidebarToggle) {
             sidebarToggle.addEventListener('click', () => {
+                this.toggleSidebar();
+            });
+        }
+
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', () => {
                 this.toggleSidebar();
             });
         }
@@ -624,10 +631,10 @@ class CrunevoStore {
     }
 
     toggleSidebar() {
-        const sidebar = document.querySelector('.store-sidebar');
+        const sidebar = document.getElementById('filter-sidebar') || document.querySelector('.store-sidebar');
         const layout = document.querySelector('.store-layout');
-        const btn = document.getElementById('toggleSidebarBtn');
-        const overlay = document.getElementById('sidebarOverlay');
+        const btn = document.getElementById('filter-toggle-btn');
+        const overlay = document.getElementById('sidebar-overlay');
 
         if (sidebar && layout && btn) {
             const willOpen = sidebar.classList.contains('collapsed');
@@ -638,6 +645,8 @@ class CrunevoStore {
             btn.classList.toggle('sidebar-open', willOpen);
             const icon = btn.querySelector('i');
             icon?.classList.toggle('rotating');
+
+            document.body.classList.toggle('filter-sidebar-is-open', willOpen);
         }
     }
 
