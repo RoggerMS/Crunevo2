@@ -849,8 +849,8 @@ class ModernFeedManager {
       // Reinitialize interactions
       this.initPostInteractions();
       this.initCommentSystem();
-      if (typeof initPdfPreviews !== "undefined") {
-        initPdfPreviews();
+      if (typeof initNotePreviews !== "undefined") {
+        initNotePreviews();
       }
 
       this.showToast(`Filtro "${filter}" aplicado`, 'info');
@@ -928,6 +928,9 @@ class ModernFeedManager {
           container.appendChild(el);
         }
       });
+      if (typeof initNotePreviews !== "undefined") {
+        initNotePreviews();
+      }
 
     } catch (error) {
       console.error('Error loading more posts:', error);
