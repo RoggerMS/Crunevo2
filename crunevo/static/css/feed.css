@@ -1540,3 +1540,10 @@ select:focus {
   opacity: 1;
   pointer-events: auto;
 }
+
+/* Grid layout for notes */
+.feed-as-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
