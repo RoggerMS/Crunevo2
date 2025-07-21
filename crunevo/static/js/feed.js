@@ -809,6 +809,11 @@ class ModernFeedManager {
 
     const container = document.getElementById('feedContainer');
     if (!container) return;
+    if (filter === "apuntes") {
+      container.classList.add("feed-as-grid");
+    } else {
+      container.classList.remove("feed-as-grid");
+    }
 
     if (filter === this.currentFilter && this.currentPage > 1) return;
     const filterChanged = filter !== this.currentFilter;
@@ -844,6 +849,9 @@ class ModernFeedManager {
       // Reinitialize interactions
       this.initPostInteractions();
       this.initCommentSystem();
+      if (typeof initPdfPreviews !== "undefined") {
+        initPdfPreviews();
+      }
 
       this.showToast(`Filtro "${filter}" aplicado`, 'info');
     } catch (error) {

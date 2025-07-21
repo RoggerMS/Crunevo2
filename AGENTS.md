@@ -794,3 +794,5 @@
 - Fixed comment null errors and share modal duplicates, styled inactive feed buttons, improved note-card layout with flexbox and added optimistic save (PR feed-bugfixes-ui).
 - Scoped comment event delegation to #feedContainer to avoid modal conflicts (PR comment-events-scope).
 - Fixed comment rendering in gallery modal: API now returns avatar and JS uses valid selector for modal inputs (PR gallery-modal-comment-fix).
+- Filtro "Apuntes" en /feed muestra tarjetas en cuadrícula añadiendo la clase
+  `feed-as-grid` y estilos grid en CSS (PR feed-notes-grid).
