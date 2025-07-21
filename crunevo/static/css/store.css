@@ -135,10 +135,21 @@
   top: 2rem;
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
+  transform: translateX(0);
+  transition: transform 0.3s ease-in-out;
+}
+
+
+#filter-sidebar {
+  transition: transform 0.3s ease-in-out;
+}
+
+body.filter-sidebar-is-open #filter-sidebar {
+  transform: translateX(0);
 }
 
 .store-sidebar.collapsed {
-  display: none;
+  transform: translateX(-100%);
 }
 
 .filters-container {
@@ -1108,6 +1119,11 @@
   visibility: visible;
 }
 
+body.filter-sidebar-is-open #sidebar-overlay {
+  opacity: 1;
+  visibility: visible;
+}
+
 .offcanvas-filters {
   position: fixed;
   top: 0;
@@ -1429,14 +1445,14 @@
   border: 0;
 }
 
-#toggleSidebarBtn i {
+#filter-toggle-btn i {
   transition: transform 0.3s ease;
 }
 
-#toggleSidebarBtn.sidebar-open .label-text {
+#filter-toggle-btn.sidebar-open .label-text {
   display: none;
 }
 
-#toggleSidebarBtn.sidebar-open i.rotating {
+#filter-toggle-btn.sidebar-open i.rotating {
   transform: rotate(90deg);
 }
