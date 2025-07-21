@@ -793,3 +793,4 @@
 - Generado filtro `cl_url` y helper optimize_url para insertar `f_auto`, `q_auto` y tamaños al construir URLs de Cloudinary; se actualizaron avatares, galerías y tienda (PR cloudinary-optimizations).
 - Fixed comment null errors and share modal duplicates, styled inactive feed buttons, improved note-card layout with flexbox and added optimistic save (PR feed-bugfixes-ui).
 - Scoped comment event delegation to #feedContainer to avoid modal conflicts (PR comment-events-scope).
+- Fixed comment rendering in gallery modal: API now returns avatar and JS uses valid selector for modal inputs (PR gallery-modal-comment-fix).

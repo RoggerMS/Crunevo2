@@ -1225,7 +1225,10 @@ function updateCommentCount(postId, increment) {
 
 // Handle comment input changes in modal
 document.addEventListener('input', (e) => {
-  if (e.target.matches('#commentsModal-* .comment-input')) {
+  if (
+    e.target.classList.contains('comment-input') &&
+    e.target.closest('[id^="commentsModal-"]')
+  ) {
     const form = e.target.closest('.comment-form');
     const submitBtn = form?.querySelector('button[type="submit"]');
     if (submitBtn) {
