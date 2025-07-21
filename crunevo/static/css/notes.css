@@ -1,17 +1,11 @@
-.note-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 
 .note-card {
-  border: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   flex-direction: column;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .note-card .card-body {
@@ -30,61 +24,62 @@
   border-left: 3px solid #6c63ff;
 }
 
-.note-preview {
+.note-card .note-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-card .note-preview {
   position: relative;
   height: 180px;
   overflow: hidden;
   background-color: var(--bs-light-bg-subtle, #f8f9fa);
 }
-
-.note-preview img,
-.note-preview canvas {
+.note-card .note-preview img,
+.note-card .note-preview canvas {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
-
-.note-preview .loading-shimmer {
+.note-card .note-preview .loading-shimmer {
   position: absolute;
   inset: 0;
 }
-
-.note-author {
+.note-card .note-author {
   display: flex;
   align-items: center;
   gap: 0.25rem;
   font-size: 0.8rem;
   margin-bottom: 0.25rem;
 }
-
-.note-author img {
+.note-card .note-author img {
   width: 24px;
   height: 24px;
   border-radius: 50%;
   object-fit: cover;
 }
-
-.note-tags {
+.note-card .note-tags {
   margin-top: 0.25rem;
 }
-
-.note-tags .badge {
+.note-card .note-tags .badge {
   margin-right: 0.25rem;
 }
-
-.note-stats {
+.note-card .note-stats {
   display: flex;
   justify-content: space-between;
   font-size: 0.8rem;
 }
-
-.note-actions {
+.note-card .note-actions {
   margin-top: auto;
 }
 
 @media (max-width: 575.98px) {
-  .note-title {
+  .note-card .note-title {
     font-size: 0.85rem;
   }
 }

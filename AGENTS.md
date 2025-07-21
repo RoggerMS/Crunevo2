@@ -798,3 +798,4 @@
   `feed-as-grid` y estilos grid en CSS (PR feed-notes-grid).
 - notes.css ahora se carga globalmente desde base.html para mantener el diseño
   de note-card consistente en el feed (PR feed-note-card-css).
+- Estilos de note-card unificados en notes.css y eliminados de carrera.css; selectores fortalecidos con prefijo .note-card. (PR note-card-centralize)
