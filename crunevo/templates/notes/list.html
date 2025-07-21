@@ -49,7 +49,7 @@ document.getElementById('noteSearch').addEventListener('input', function(e){
       data.forEach(n => {
         list.appendChild(createNoteCard(n));
       });
-      initPdfPreviews();
+      initNotePreviews();
     });
 });
 
@@ -125,6 +125,6 @@ function createNoteCard(n) {
 <script src="{{ url_for('static', filename='js/viewer.js') }}"></script>
 <script>
   pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";
-  initPdfPreviews();
+  initNotePreviews();
 </script>
 {% endblock %}

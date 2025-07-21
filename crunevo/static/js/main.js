@@ -269,52 +269,58 @@ function initReactions() {
   });
 }
 
-function initPdfPreviews() {
-  if (typeof pdfjsLib === 'undefined') return;
-  document.querySelectorAll('canvas.pdf-thumb').forEach((canvas) => {
-    const url = canvas.dataset.pdf;
-    if (!url) return;
-    pdfjsLib
-      .getDocument(url)
-      .promise.then((pdf) => pdf.getPage(1))
-      .then((page) => {
-        const viewport = page.getViewport({ scale: 0.5 });
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-        return page
-          .render({ canvasContext: canvas.getContext('2d'), viewport })
-          .promise;
-      })
-      .then(() => {
-        canvas.classList.remove('d-none');
-        canvas.closest('.note-preview')
-          ?.querySelector('.loading-shimmer')
-          ?.remove();
-      })
-      .catch(() => {
-        const div = document.createElement('div');
-        div.className = 'text-center text-muted small';
-        div.textContent = 'Vista previa no disponible';
-        canvas.replaceWith(div);
-      });
-  });
+function initNotePreviews() {
+  document
+    .querySelectorAll('.note-card:not([data-preview-initialized])')
+    .forEach((card) => {
+      card.setAttribute('data-preview-initialized', 'true');
+      const loader = card.querySelector('.loading-shimmer');
+      const canvas = card.querySelector('canvas.pdf-thumb');
+      const img = card.querySelector('img.note-img');
 
-  document.querySelectorAll('img.note-img').forEach((img) => {
-    if (img.complete) {
-      img.classList.remove('d-none');
-      img.closest('.note-preview')?.querySelector('.loading-shimmer')?.remove();
-    } else {
-      img.addEventListener('load', () => {
-        img.classList.remove('d-none');
-        img.closest('.note-preview')
-          ?.querySelector('.loading-shimmer')
-          ?.remove();
-      });
-      img.addEventListener('error', () => {
-        img.closest('.note-preview')?.querySelector('.loading-shimmer')?.remove();
-      });
-    }
-  });
+      if (canvas && canvas.dataset.pdf && typeof pdfjsLib !== 'undefined') {
+        pdfjsLib
+          .getDocument(canvas.dataset.pdf)
+          .promise.then((pdf) => pdf.getPage(1))
+          .then((page) => {
+            const viewport = page.getViewport({ scale: 0.5 });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            return page
+              .render({ canvasContext: canvas.getContext('2d'), viewport })
+              .promise;
+          })
+          .then(() => {
+            canvas.classList.remove('d-none');
+            loader?.remove();
+          })
+          .catch(() => {
+            const div = document.createElement('div');
+            div.className = 'text-center text-muted small';
+            div.textContent = 'Vista previa no disponible';
+            canvas.replaceWith(div);
+          });
+      } else if (img) {
+        if (img.complete) {
+          img.classList.remove('d-none');
+          loader?.remove();
+        } else {
+          img.addEventListener('load', () => {
+            img.classList.remove('d-none');
+            loader?.remove();
+          });
+          img.addEventListener('error', () => {
+            loader?.remove();
+          });
+        }
+      } else {
+        loader?.remove();
+      }
+    });
+}
+
+function initPdfPreviews() {
+  initNotePreviews();
 }
 
 function initGlobalSearch() {
@@ -790,7 +796,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-  initPdfPreviews();
+  initNotePreviews();
   if (typeof initNoteViewer === 'function') {
     initNoteViewer();
   }
