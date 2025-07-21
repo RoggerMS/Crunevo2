@@ -631,23 +631,7 @@ class CrunevoStore {
     }
 
     toggleSidebar() {
-        const sidebar = document.getElementById('filter-sidebar') || document.querySelector('.store-sidebar');
-        const layout = document.querySelector('.store-layout');
-        const btn = document.getElementById('filter-toggle-btn');
-        const overlay = document.getElementById('sidebar-overlay');
-
-        if (sidebar && layout && btn) {
-            const willOpen = sidebar.classList.contains('collapsed');
-            sidebar.classList.toggle('collapsed');
-            layout.classList.toggle('sidebar-collapsed');
-            overlay?.classList.toggle('active');
-
-            btn.classList.toggle('sidebar-open', willOpen);
-            const icon = btn.querySelector('i');
-            icon?.classList.toggle('rotating');
-
-            document.body.classList.toggle('filter-sidebar-is-open', willOpen);
-        }
+        document.body.classList.toggle('filter-sidebar-is-open');
     }
 
     closeMobileFilters() {
@@ -717,9 +701,7 @@ function closeMobileFilters() {
 }
 
 function toggleSidebar() {
-    if (window.store) {
-        window.store.toggleSidebar();
-    }
+    document.body.classList.toggle('filter-sidebar-is-open');
 }
 
 function clearAllFilters() {

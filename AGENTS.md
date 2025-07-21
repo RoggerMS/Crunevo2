@@ -801,3 +801,4 @@
 - Estilos de note-card unificados en notes.css y eliminados de carrera.css; selectores fortalecidos con prefijo .note-card. (PR note-card-centralize)
 - Vistas previas de notas ahora se inicializan con `initNotePreviews`, llamado tras cargar contenido dinámico en el feed y otras páginas. (PR note-preview-reinit)
 - Toggle filters sidebar via filter-toggle-btn and CSS transform (PR marketplace-filters-fix).
+- Marketplace sidebar now fixed-position with overlay; button toggles body class for smooth slide (PR marketplace-sidebar-bugfix).

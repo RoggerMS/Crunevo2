@@ -141,16 +141,23 @@
 
 
 #filter-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100vh;
+  z-index: 1050;
+  transform: translateX(-100%);
   transition: transform 0.3s ease-in-out;
+  background-color: white;
+  overflow-y: auto;
+  padding: 1.5rem;
 }
 
 body.filter-sidebar-is-open #filter-sidebar {
   transform: translateX(0);
 }
 
-.store-sidebar.collapsed {
-  transform: translateX(-100%);
-}
 
 .filters-container {
   display: flex;
@@ -1105,18 +1112,13 @@ body.filter-sidebar-is-open #filter-sidebar {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  z-index: 1040;
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
-}
-
-.sidebar-overlay.active {
-  opacity: 1;
-  visibility: visible;
 }
 
 body.filter-sidebar-is-open #sidebar-overlay {
