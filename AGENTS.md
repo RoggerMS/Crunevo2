@@ -796,3 +796,5 @@
 - Fixed comment rendering in gallery modal: API now returns avatar and JS uses valid selector for modal inputs (PR gallery-modal-comment-fix).
 - Filtro "Apuntes" en /feed muestra tarjetas en cuadrícula añadiendo la clase
   `feed-as-grid` y estilos grid en CSS (PR feed-notes-grid).
+- notes.css ahora se carga globalmente desde base.html para mantener el diseño
+  de note-card consistente en el feed (PR feed-note-card-css).
