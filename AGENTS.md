@@ -805,3 +805,4 @@
 - Refactored post modal layout with fixed header and footer so comment input stays visible and comments scroll separately (PR post-modal-layout-fix).
 - Updated fly.toml with http_service health check grace period and performance VM to avoid startup 503 errors (PR fly-health-vm).
 - Reverted Gunicorn to synchronous worker for reliable startup (PR gunicorn-sync-worker).
+- Simplified fly.toml and Dockerfile to use a single gunicorn command with 3 workers and no services block (PR fly-config-cleanup).

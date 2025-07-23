@@ -1,5 +1,4 @@
-# fly.toml app configuration file for crunevo2
-
+# fly.toml
 app = 'crunevo2'
 primary_region = 'bog'
 
@@ -8,7 +7,6 @@ primary_region = 'bog'
 
 [deploy]
   release_command = 'flask db upgrade'
-
 
 [env]
   FLASK_APP = 'crunevo.wsgi:app'
@@ -20,43 +18,19 @@ primary_region = 'bog'
 
 [http_service]
   internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
 
   [[http_service.checks]]
     grace_period = '15s'
-    interval = '10s'
+    interval = '15s'
+    method = 'GET'
     timeout = '5s'
-    method = 'get'
-    path = '/'
-    protocol = 'http'
-
-[[services]]
-  protocol = 'tcp'
-  internal_port = 8080
-
-  [[services.ports]]
-    port = 80
-    handlers = ['http']
-
-  [[services.ports]]
-    port = 443
-    handlers = ['tls', 'http']
-
-  [[services.tcp_checks]]
-    interval = '10s'
-    timeout = '2s'
-
-  [[services.http_checks]]
-    interval     = '10s'
-    timeout      = '2s'
-    grace_period = '5s'
-    method       = 'get'
-    path         = '/health'
-    protocol     = 'http'
+    path = "/"
 
 [[vm]]
-  memory_mb = 2048
-  cpu_kind = 'performance'
+  cpu_kind = "performance"
   cpus = 1
-
-# If using shared IPv4, point the root domain (crunevo.com)
-# to 66.241.125.104 with an A record.
+  memory_mb = 2048
