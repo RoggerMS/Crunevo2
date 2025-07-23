@@ -19,8 +19,5 @@ COPY migrations /app/migrations
 COPY migrations/versions /app/migrations/versions
 
 # Ejecutar aplicación
-# Run gunicorn using the FLASK_APP environment variable. Default to the
-# public instance if FLASK_APP is not set (e.g. during local builds).
-# Ejecuta la app usando el valor de FLASK_APP o usa wsgi:app por defecto
-# Run a single synchronous worker for stability
-CMD ["sh", "-c", "exec gunicorn --timeout 120 --workers 1 -b 0.0.0.0:8080 ${FLASK_APP:-crunevo.wsgi:app}"]
+# Run gunicorn with 3 synchronous workers using crunevo.wsgi:app
+CMD ["gunicorn", "--workers", "3", "--timeout", "120", "-b", "0.0.0.0:8080", "crunevo.wsgi:app"]
