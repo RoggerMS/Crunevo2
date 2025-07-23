@@ -26,7 +26,7 @@ def ensure_database_ready():
     """Ensure database is ready and has all required tables."""
     try:
         if not os.path.exists("instance"):
-            os.makedirs("instance")
+            os.makedirs("instance", exist_ok=True)
         init_database()
         return True
     except Exception as e:
