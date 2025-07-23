@@ -22,5 +22,5 @@ COPY migrations/versions /app/migrations/versions
 # Run gunicorn using the FLASK_APP environment variable. Default to the
 # public instance if FLASK_APP is not set (e.g. during local builds).
 # Ejecuta la app usando el valor de FLASK_APP o usa wsgi:app por defecto
-# Use eventlet worker for WebSocket support
-CMD ["sh", "-c", "exec gunicorn --timeout 120 -k eventlet -b 0.0.0.0:8080 ${FLASK_APP:-crunevo.wsgi:app}"]
+# Run a single synchronous worker for stability
+CMD ["sh", "-c", "exec gunicorn --timeout 120 --workers 1 -b 0.0.0.0:8080 ${FLASK_APP:-crunevo.wsgi:app}"]

@@ -804,3 +804,4 @@
 - Marketplace sidebar now fixed-position with overlay; button toggles body class for smooth slide (PR marketplace-sidebar-bugfix).
 - Refactored post modal layout with fixed header and footer so comment input stays visible and comments scroll separately (PR post-modal-layout-fix).
 - Updated fly.toml with http_service health check grace period and performance VM to avoid startup 503 errors (PR fly-health-vm).
+- Reverted Gunicorn to synchronous worker for reliable startup (PR gunicorn-sync-worker).
