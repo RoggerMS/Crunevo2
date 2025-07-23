@@ -154,7 +154,7 @@
   background: white;
   display: flex;
   flex-direction: column;
-  max-height: 100vh;
+  height: 100%;
   overflow: hidden;
   border-left: 1px solid #E4E6EA;
 }
@@ -227,6 +227,11 @@
   border-bottom: 1px solid #3A3B3C;
 }
 
+.modal-info-footer {
+  display: flex;
+  flex-direction: column;
+}
+
 .modal-action-btn {
   flex: 1;
   display: flex;
@@ -259,7 +264,7 @@
 }
 
 /* Comments Section */
-.modal-comments-section {
+.modal-info-content {
   flex-grow: 1;
   padding: 20px;
   overflow-y: auto;
@@ -394,10 +399,10 @@
   
   .modal-post-header,
   .modal-post-content,
-  .modal-comments-section {
+  .modal-info-content {
     padding: 16px;
   }
-  
+
   .modal-post-actions,
   .modal-comment-form {
     padding: 12px 16px;

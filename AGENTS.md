@@ -802,3 +802,4 @@
 - Vistas previas de notas ahora se inicializan con `initNotePreviews`, llamado tras cargar contenido dinámico en el feed y otras páginas. (PR note-preview-reinit)
 - Toggle filters sidebar via filter-toggle-btn and CSS transform (PR marketplace-filters-fix).
 - Marketplace sidebar now fixed-position with overlay; button toggles body class for smooth slide (PR marketplace-sidebar-bugfix).
+- Refactored post modal layout with fixed header and footer so comment input stays visible and comments scroll separately (PR post-modal-layout-fix).

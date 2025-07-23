@@ -2,16 +2,18 @@
 {% set saved_posts = saved_posts if saved_posts is defined else {} %}
 
 <div class="modal-post-container">
-  <div class="modal-post-header">
-    <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" 
-         alt="Avatar de {{ post.author.username }}" 
-         class="modal-post-avatar">
-    <div class="modal-user-info">
-      <h6 class="modal-username">{{ post.author.username }}</h6>
+  <div class="modal-info-header">
+    <div class="modal-post-header">
+      <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}"
+           alt="Avatar de {{ post.author.username }}"
+           class="modal-post-avatar">
+      <div class="modal-user-info">
+        <h6 class="modal-username">{{ post.author.username }}</h6>
       {% if post.author.career %}
       <span class="modal-career-badge">{{ post.author.career }}</span>
       {% endif %}
       <small class="modal-timestamp">{{ post.created_at.strftime('%d de %B, %Y') }}</small>
+    </div>
     </div>
   </div>
 
@@ -21,39 +23,7 @@
   </div>
   {% endif %}
 
-  <div class="modal-post-actions">
-    <button class="modal-action-btn like-btn {{ 'active' if user_reaction else '' }}" 
-            data-post-id="{{ post.id }}" 
-            data-reaction="{{ user_reaction or '🔥' }}">
-      <i class="bi bi-fire{{ '-fill' if user_reaction else '' }}"></i>
-      <span>Me gusta</span>
-    </button>
-    <button class="modal-action-btn comment-btn" data-post-id="{{ post.id }}">
-      <i class="bi bi-chat"></i>
-      <span>Comentar</span>
-    </button>
-    <button class="modal-action-btn share-btn" data-post-id="{{ post.id }}">
-      <i class="bi bi-share"></i>
-      <span>Compartir</span>
-    </button>
-    <button class="modal-action-btn save-btn {{ 'active' if saved_posts.get(post.id) }}" data-post-id="{{ post.id }}">
-      <i class="bi bi-bookmark{{ '-fill' if saved_posts.get(post.id) else '' }}"></i>
-      <span>Guardar</span>
-    </button>
-  </div>
-
-  <div class="modal-stats">
-    <div class="modal-stat-item">
-      <i class="bi bi-fire-fill text-danger"></i>
-      <span>{{ reaction_counts.get('🔥', 0) + reaction_counts.get('❤️', 0) + reaction_counts.get('😂', 0) + reaction_counts.get('😮', 0) + reaction_counts.get('😢', 0) + reaction_counts.get('😡', 0) }} reacciones</span>
-    </div>
-    <div class="modal-stat-item">
-      <i class="bi bi-chat"></i>
-      <span>{{ post.comments|length }} comentarios</span>
-    </div>
-  </div>
-
-  <div class="modal-comments-section">
+  <div class="modal-info-content">
     <div class="comments-list" id="commentsList-{{ post.id }}">
       {% for comment in post.comments if not comment.pending %}
       <div class="comment-item mb-3">
@@ -74,7 +44,40 @@
       </div>
       {% endfor %}
     </div>
+  </div>
 
+  <div class="modal-info-footer">
+    <div class="modal-post-actions">
+      <button class="modal-action-btn like-btn {{ 'active' if user_reaction else '' }}"
+              data-post-id="{{ post.id }}"
+              data-reaction="{{ user_reaction or '🔥' }}">
+        <i class="bi bi-fire{{ '-fill' if user_reaction else '' }}"></i>
+        <span>Me gusta</span>
+    </button>
+    <button class="modal-action-btn comment-btn" data-post-id="{{ post.id }}">
+      <i class="bi bi-chat"></i>
+      <span>Comentar</span>
+    </button>
+    <button class="modal-action-btn share-btn" data-post-id="{{ post.id }}">
+      <i class="bi bi-share"></i>
+      <span>Compartir</span>
+    </button>
+    <button class="modal-action-btn save-btn {{ 'active' if saved_posts.get(post.id) }}" data-post-id="{{ post.id }}">
+      <i class="bi bi-bookmark{{ '-fill' if saved_posts.get(post.id) else '' }}"></i>
+      <span>Guardar</span>
+    </button>
+    </div>
+
+    <div class="modal-stats">
+      <div class="modal-stat-item">
+        <i class="bi bi-fire-fill text-danger"></i>
+        <span>{{ reaction_counts.get('🔥', 0) + reaction_counts.get('❤️', 0) + reaction_counts.get('😂', 0) + reaction_counts.get('😮', 0) + reaction_counts.get('😢', 0) + reaction_counts.get('😡', 0) }} reacciones</span>
+      </div>
+      <div class="modal-stat-item">
+        <i class="bi bi-chat"></i>
+        <span>{{ post.comments|length }} comentarios</span>
+      </div>
+    </div>
     <div class="add-comment-form mt-3">
       {% if current_user.is_authenticated %}
       <form class="comment-form d-flex align-items-center" data-post-id="{{ post.id }}"
@@ -104,6 +107,15 @@
   height: 100%;
   background: var(--crunevo-white);
   color: var(--crunevo-text-dark);
+}
+
+.modal-info-header,
+.modal-info-footer {
+  flex-shrink: 0;
+}
+
+.modal-info-footer {
+  border-top: 1px solid var(--crunevo-border);
 }
 
 [data-bs-theme="dark"] .modal-post-container {
@@ -223,7 +235,7 @@
   color: #65676B;
 }
 
-.modal-comments-section {
+.modal-info-content {
   flex-grow: 1;
   padding: 20px;
   overflow-y: auto;
@@ -369,7 +381,7 @@
 @media (max-width: 768px) {
   .modal-post-header,
   .modal-post-content,
-  .modal-comments-section {
+  .modal-info-content {
     padding: 16px;
   }
   
