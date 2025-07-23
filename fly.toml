@@ -18,6 +18,17 @@ primary_region = 'bog'
 [experimental]
   auto_rollback = true
 
+[http_service]
+  internal_port = 8080
+
+  [[http_service.checks]]
+    grace_period = '15s'
+    interval = '10s'
+    timeout = '5s'
+    method = 'get'
+    path = '/'
+    protocol = 'http'
+
 [[services]]
   protocol = 'tcp'
   internal_port = 8080
@@ -43,8 +54,8 @@ primary_region = 'bog'
     protocol     = 'http'
 
 [[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
+  memory_mb = 1024
+  cpu_kind = 'performance'
   cpus = 1
 
 # If using shared IPv4, point the root domain (crunevo.com)
