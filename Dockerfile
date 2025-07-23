@@ -23,4 +23,4 @@ COPY migrations/versions /app/migrations/versions
 # public instance if FLASK_APP is not set (e.g. during local builds).
 # Ejecuta la app usando el valor de FLASK_APP o usa wsgi:app por defecto
 # Use eventlet worker for WebSocket support
-CMD ["sh", "-c", "exec gunicorn -k eventlet -b 0.0.0.0:8080 ${FLASK_APP:-crunevo.wsgi:app}"]
+CMD ["sh", "-c", "exec gunicorn --timeout 120 -k eventlet -b 0.0.0.0:8080 ${FLASK_APP:-crunevo.wsgi:app}"]
