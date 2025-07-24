@@ -19,5 +19,5 @@ COPY migrations /app/migrations
 COPY migrations/versions /app/migrations/versions
 
 # Ejecutar aplicación
-# Run gunicorn with eventlet worker for websocket support
-CMD ["gunicorn", "--workers", "3", "--timeout", "120", "-k", "eventlet", "-b", "0.0.0.0:8080", "crunevo.wsgi:app"]
+# Run gunicorn with 3 synchronous workers using crunevo.wsgi:app
+CMD ["gunicorn", "--workers", "3", "--timeout", "120", "-b", "0.0.0.0:8080", "crunevo.wsgi:app"]
