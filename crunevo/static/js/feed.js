@@ -492,7 +492,9 @@ class ModernFeedManager {
         if (data.status === 'added' || data.status === 'changed') {
             likeBtn.classList.add('active');
             if (icon) {
-                icon.className = 'bi bi-fire-fill';
+                icon.classList.remove('bi-fire');
+                icon.classList.add('bi-fire-fill', 'like-pop');
+                setTimeout(() => icon.classList.remove('like-pop'), 300);
             }
             if (textSpan) {
                 textSpan.textContent = `Te dio ${labelMap[reaction] || ''}`;
@@ -501,7 +503,8 @@ class ModernFeedManager {
         } else if (data.status === 'removed') {
             likeBtn.classList.remove('active');
             if (icon) {
-                icon.className = 'bi bi-fire';
+                icon.classList.remove('bi-fire-fill');
+                icon.classList.add('bi-fire');
             }
             if (textSpan) {
                 textSpan.textContent = 'Me gusta';
