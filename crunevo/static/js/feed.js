@@ -474,42 +474,26 @@ class ModernFeedManager {
       const likeBtn = document.querySelector(`.like-btn[data-post-id="${postId}"]`);
       if (likeBtn) {
         const icon = likeBtn.querySelector('i');
-        const textSpan = likeBtn.querySelector('.action-text');
-        const labelMap = {
-          '🔥': 'Crunazo',
-          '🧠': 'Neuro',
-          '💔': 'Roto',
-          '😠': 'Molesto',
-          '🥶': 'Congelao',
-          '😂': 'Vacilón',
-          '🤡': 'Cringe',
-          '😲': 'Asu',
-          '👍': 'Me gusta',
-          '💡': 'Interesante',
-          '🙌': 'Gracias',
-          '📌': 'Lo guardé'
-        };
+        const countSpan = likeBtn.querySelector('.action-count');
+
         if (data.status === 'added' || data.status === 'changed') {
-            likeBtn.classList.add('active');
-            if (icon) {
-                icon.classList.remove('bi-fire');
-                icon.classList.add('bi-fire-fill', 'like-pop');
-                setTimeout(() => icon.classList.remove('like-pop'), 300);
-            }
-            if (textSpan) {
-                textSpan.textContent = `Te dio ${labelMap[reaction] || ''}`;
-            }
-            this.showToast(`¡Reaccionaste con ${reaction}!`, 'success');
+          likeBtn.classList.add('active');
+          if (icon) {
+            icon.classList.remove('bi-fire');
+            icon.classList.add('bi-fire-fill');
+          }
+          this.showToast(`¡Reaccionaste con ${reaction}!`, 'success');
         } else if (data.status === 'removed') {
-            likeBtn.classList.remove('active');
-            if (icon) {
-                icon.classList.remove('bi-fire-fill');
-                icon.classList.add('bi-fire');
-            }
-            if (textSpan) {
-                textSpan.textContent = 'Me gusta';
-            }
-            this.showToast('Reacción removida', 'info');
+          likeBtn.classList.remove('active');
+          if (icon) {
+            icon.classList.remove('bi-fire-fill');
+            icon.classList.add('bi-fire');
+          }
+          this.showToast('Reacción removida', 'info');
+        }
+
+        if (countSpan) {
+          countSpan.textContent = data.total_reactions > 0 ? data.total_reactions : '';
         }
       }
 
