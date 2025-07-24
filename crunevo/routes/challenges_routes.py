@@ -11,7 +11,7 @@ from crunevo.utils.helpers import activated_required, table_exists
 from crunevo.utils.credits import add_credit
 from crunevo.constants import CreditReasons
 from datetime import datetime, timedelta, date
-import random
+import secrets
 
 challenges_bp = Blueprint("challenges", __name__, url_prefix="/desafios")
 
@@ -90,7 +90,9 @@ def submit_ghost_response():
 
     # Evaluate response (simplified - could use AI)
     is_correct = evaluate_ghost_response(response_content, challenge.correct_answer)
-    points_earned = challenge.reward_crolars if is_correct else random.randint(1, 10)
+    points_earned = (
+        challenge.reward_crolars if is_correct else secrets.randbelow(10) + 1
+    )
 
     # Create response
     response = GhostMentorResponse(
@@ -344,14 +346,14 @@ def create_weekly_ghost_challenge():
         },
     ]
 
-    challenge_data = random.choice(challenges_pool)
+    challenge_data = secrets.choice(challenges_pool)
 
     challenge = GhostMentorChallenge(
         title=challenge_data["title"],
         description=challenge_data["description"],
         challenge_content=challenge_data["content"],
         correct_answer=challenge_data["answer"],
-        reward_crolars=random.randint(20, 50),
+        reward_crolars=secrets.randbelow(31) + 20,
         end_time=datetime.utcnow() + timedelta(days=7),
         difficulty_level=challenge_data["difficulty"],
     )
@@ -382,7 +384,7 @@ def create_daily_master_question():
         },
     ]
 
-    question_data = random.choice(questions_pool)
+    question_data = secrets.choice(questions_pool)
     today = date.today()
 
     # Check if question already exists for today

@@ -6,7 +6,7 @@ from crunevo.jobs.backup_db import backup_database
 
 
 def test_backup_database_s3(monkeypatch, app, tmp_path):
-    def fake_run(cmd, check=True):
+    def fake_run(cmd, check=True, shell=False):
         with open(cmd[2], "w") as f:
             f.write("db")
 
@@ -30,7 +30,7 @@ def test_backup_database_s3(monkeypatch, app, tmp_path):
 
 
 def test_backup_database_local(monkeypatch, app, tmp_path):
-    def fake_run(cmd, check=True):
+    def fake_run(cmd, check=True, shell=False):
         with open(cmd[2], "w") as f:
             f.write("db")
 

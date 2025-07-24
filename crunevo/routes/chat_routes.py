@@ -156,7 +156,7 @@ def send_message():
             if info and info.info.length > 30:
                 return jsonify({"error": "Audio demasiado largo"}), 400
         except Exception:
-            pass
+            current_app.logger.exception("Error processing audio file")
 
         cloud_url = current_app.config.get("CLOUDINARY_URL")
         try:

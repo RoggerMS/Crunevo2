@@ -91,7 +91,7 @@ def create_app():
                             pid = int(r.description.split()[1].split(":")[0])
                             counts[pid] = counts.get(pid, 0) + 1
                         except Exception:
-                            pass
+                            app.logger.exception("Error processing urgent report")
                 urgent_count = sum(1 for c in counts.values() if c >= 3)
             except Exception:
                 urgent_count = 0

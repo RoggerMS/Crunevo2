@@ -27,6 +27,23 @@ class FeedItem(db.Model):
     score = db.Column(db.Float, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    from crunevo.models.post import Post
+    from crunevo.models.note import Note
+
+    post = db.relationship(
+        "Post",
+        primaryjoin="and_(FeedItem.item_type=='post', foreign(FeedItem.ref_id)==Post.id)",
+        viewonly=True,
+        uselist=False,
+    )
+
+    note = db.relationship(
+        "Note",
+        primaryjoin="and_(FeedItem.item_type=='apunte', foreign(FeedItem.ref_id)==Note.id)",
+        viewonly=True,
+        uselist=False,
+    )
+
     __table_args__ = (
         db.Index(
             "idx_feed_owner_score",

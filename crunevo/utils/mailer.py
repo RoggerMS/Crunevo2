@@ -50,7 +50,7 @@ def send_email(to, subject, html):
                 data = resp.json()
                 err_msg = data.get("error", {}).get("message", err_msg)
             except Exception:
-                pass
+                current_app.logger.exception("Error parsing Resend error response")
             current_app.logger.warning(
                 "Resend failed with status %s: %s", resp.status_code, err_msg
             )

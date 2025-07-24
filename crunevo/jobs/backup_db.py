@@ -16,7 +16,7 @@ def backup_database() -> None:
     bucket = os.getenv("BACKUP_BUCKET")
     prefix = os.getenv("BACKUP_PREFIX", "backups")
     with tempfile.NamedTemporaryFile(suffix=".sql") as tmp:
-        subprocess.run(["pg_dump", db_url, "-f", tmp.name], check=True)
+        subprocess.run(["pg_dump", db_url, "-f", tmp.name], check=True, shell=False)
         name = f"{datetime.utcnow():%Y-%m-%d_%H-%M-%S}.sql"
         if bucket:
             s3 = boto3.client("s3")
@@ -27,5 +27,5 @@ def backup_database() -> None:
             dest_dir = os.getenv("BACKUP_DIR", "backups")
             os.makedirs(dest_dir, exist_ok=True)
             dest = os.path.join(dest_dir, name)
-            subprocess.run(["cp", tmp.name, dest], check=True)
+            subprocess.run(["cp", tmp.name, dest], check=True, shell=False)
             log.info("Database backup stored at %s", dest)

@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+from flask import current_app
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "data"))
 HASH_FILE = os.path.join(BASE_DIR, "note_hashes.json")
@@ -25,14 +26,14 @@ def compute_hash(fileobj) -> str:
     try:
         fileobj.seek(0)
     except Exception:
-        pass
+        current_app.logger.exception("Error seeking file object")
     hasher = hashlib.sha256()
     for chunk in iter(lambda: fileobj.read(8192), b""):
         hasher.update(chunk)
     try:
         fileobj.seek(0)
     except Exception:
-        pass
+        current_app.logger.exception("Error seeking file object")
     return hasher.hexdigest()
 
 
