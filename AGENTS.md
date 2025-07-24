@@ -812,3 +812,4 @@
 - Modernized notes list with purple filter buttons, Bootstrap icons and DOMContentLoaded wrappers for initNotePreviews (PR notes-ui-refresh).
 - Improved healthz endpoint to validate DB connection and increased timeout to 15s (PR health-check-db-timeout).
 - Ajustados estilos de filtros y barra de búsqueda en /notes para respetar la paleta morada y mejorar el contraste (PR notes-filters-css-refactor).
+- Lightweight wsgi health check via Dispatcher; removed DB access from health blueprint (PR wsgi-light-health).
