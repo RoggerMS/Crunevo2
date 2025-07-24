@@ -97,6 +97,13 @@
   border-color: var(--primary);
 }
 
+/* Ensure outline variant keeps good contrast when active */
+.notes-filters .btn-outline-primary.active {
+  color: #fff !important;
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
 .notes-filters .btn:not(.active):hover {
   color: #fff;
   background-color: var(--primary);
