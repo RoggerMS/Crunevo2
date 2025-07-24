@@ -673,7 +673,7 @@ def delete_account():
         db.session.delete(streak)
 
     current_user.activated = False
-    current_user.password_hash = ""
+    current_user.password_hash = secrets.token_hex(16)
     current_user.chat_enabled = False
 
     try:

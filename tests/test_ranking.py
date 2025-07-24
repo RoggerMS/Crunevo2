@@ -3,14 +3,12 @@ from crunevo.models import RankingCache, Note, Credit
 from crunevo.constants import AchievementCodes
 
 
-def test_calculate_weekly_ranking(client, test_user):
+def test_calculate_weekly_ranking(client, db_session, test_user):
     # crea una nota y un crédito para que el usuario obtenga puntaje
     note = Note(title="test", author=test_user)
     credit = Credit(user_id=test_user.id, amount=1, reason="test")
-    from crunevo.extensions import db
-
-    db.session.add_all([note, credit])
-    db.session.commit()
+    db_session.add_all([note, credit])
+    db_session.commit()
     calculate_weekly_ranking()
     ranking = RankingCache.query.filter_by(user_id=test_user.id).first()
     assert ranking is not None

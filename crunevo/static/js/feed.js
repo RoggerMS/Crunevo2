@@ -339,6 +339,16 @@ class ModernFeedManager {
       }
     });
 
+    // Reaction buttons
+    document.addEventListener('click', (e) => {
+        if (e.target.matches('.dropdown-item[data-reaction]')) {
+            const btn = e.target;
+            const likeBtn = btn.closest('.btn-group').querySelector('.like-btn');
+            likeBtn.dataset.reaction = btn.dataset.reaction;
+            this.handleLike(likeBtn);
+        }
+    });
+
     // Share buttons
     document.addEventListener('click', (e) => {
       if (e.target.matches('.share-btn') || e.target.closest('.share-btn')) {
@@ -378,29 +388,48 @@ class ModernFeedManager {
 
       const data = await response.json();
 
-      // Update like count
-      const countSpan = btn.querySelector('.action-count');
-      if (countSpan) {
-        countSpan.textContent = data.likes || '';
+      // Update reaction counts
+      const postReactions = document.querySelector(`.post-reactions-count[data-post-id="${postId}"]`);
+      if (postReactions) {
+        const reactionsSummary = postReactions.querySelector('.reactions-summary');
+        if (reactionsSummary) {
+          const reactionIcons = reactionsSummary.querySelector('.reaction-icons');
+          const reactionsText = reactionsSummary.querySelector('.reactions-text');
+          if (reactionIcons && reactionsText) {
+            reactionIcons.innerHTML = '';
+            let totalReactions = 0;
+            for (const [reaction_type, count] of Object.entries(data.counts)) {
+              const reactionEmoji = document.createElement('span');
+              reactionEmoji.className = 'reaction-emoji';
+              reactionEmoji.textContent = reaction_type;
+              reactionIcons.appendChild(reactionEmoji);
+              totalReactions += count;
+            }
+            reactionsText.textContent = totalReactions;
+          }
+        }
       }
 
+
       // Update button state
-      const icon = btn.querySelector('i');
-      if (data.status === 'added') {
-        btn.classList.add('active');
-        if (icon) {
-          icon.classList.add('bi-fire-fill');
-          icon.classList.remove('bi-fire');
+      const likeBtn = document.querySelector(`.like-btn[data-post-id="${postId}"]`);
+      if (likeBtn) {
+        const icon = likeBtn.querySelector('i');
+        if (data.status === 'added' || data.status === 'changed') {
+            likeBtn.classList.add('active');
+            if (icon) {
+                icon.className = 'bi bi-fire-fill';
+            }
+            this.showToast(`¡Reaccionaste con ${reaction}!`, 'success');
+        } else if (data.status === 'removed') {
+            likeBtn.classList.remove('active');
+            if (icon) {
+                icon.className = 'bi bi-fire';
+            }
+            this.showToast('Reacción removida', 'info');
         }
-        this.showToast(`¡Reaccionaste con ${reaction}!`, 'success');
-      } else if (data.status === 'removed') {
-        btn.classList.remove('active');
-        if (icon) {
-          icon.classList.remove('bi-fire-fill');
-          icon.classList.add('bi-fire');
-        }
-        this.showToast('Reacción removida', 'info');
       }
+
 
     } catch (error) {
       console.error('Error handling like:', error);

@@ -208,7 +208,8 @@ def test_eliminar_post_with_reactions(client, db_session, test_user, another_use
     reaction = PostReaction(
         user_id=another_user.id, post_id=post.id, reaction_type="like"
     )
-    db_session.add_all([comment, reaction])
+    db_session.add(comment)
+    db_session.add(reaction)
     db_session.commit()
 
     login(client, test_user.username, "secret")

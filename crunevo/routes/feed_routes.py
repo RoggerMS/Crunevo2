@@ -52,7 +52,13 @@ csrf.exempt(feed_bp)
 def get_featured_posts():
     """Return top notes, posts and users with recent achievements."""
     top_notes = Note.query.order_by(Note.views.desc()).limit(3).all()
-    top_posts = Post.query.order_by(Post.likes.desc()).limit(3).all()
+    top_posts = (
+        Post.query.join(PostReaction)
+        .group_by(Post.id)
+        .order_by(func.count(PostReaction.id).desc())
+        .limit(3)
+        .all()
+    )
     top_users = (
         db.session.query(User)
         .join(UserAchievement)
@@ -70,8 +76,10 @@ def get_weekly_top_posts(limit=3):
 
     last_week = datetime.utcnow() - timedelta(days=7)
     return (
-        Post.query.filter(Post.created_at > last_week)
-        .order_by(Post.likes.desc())
+        Post.query.join(PostReaction)
+        .filter(Post.created_at > last_week)
+        .group_by(Post.id)
+        .order_by(func.count(PostReaction.id).desc())
         .limit(limit)
         .all()
     )
@@ -163,7 +171,11 @@ def view_feed():
         return create_post()
 
     categoria = request.args.get("categoria")
-    query = FeedItem.query.filter_by(owner_id=current_user.id)
+    from sqlalchemy.orm import joinedload
+
+    query = FeedItem.query.filter_by(owner_id=current_user.id).options(
+        joinedload(FeedItem.post), joinedload(FeedItem.note)
+    )
     if categoria == "apuntes":
         query = query.filter_by(item_type="apunte")
     else:
@@ -173,19 +185,15 @@ def view_feed():
     feed_items = []
     post_ids = []
     for item in feed_items_raw:
-        if item.item_type == "post":
-            post = Post.query.get(item.ref_id)
+        if item.item_type == "post" and item.post:
             if categoria == "imagen" and (
-                not post or not post.file_url or post.file_url.endswith(".pdf")
+                not item.post.file_url or item.post.file_url.endswith(".pdf")
             ):
                 continue
-            if post:
-                feed_items.append({"type": "post", "data": post})
-                post_ids.append(post.id)
-        elif item.item_type == "apunte" and categoria == "apuntes":
-            note = Note.query.get(item.ref_id)
-            if note:
-                feed_items.append({"type": "note", "data": note})
+            feed_items.append({"type": "post", "data": item.post})
+            post_ids.append(item.post.id)
+        elif item.item_type == "apunte" and item.note and categoria == "apuntes":
+            feed_items.append({"type": "note", "data": item.note})
 
     reaction_map = PostReaction.counts_for_posts(post_ids)
     user_reactions = PostReaction.reactions_for_user_posts(current_user.id, post_ids)
@@ -404,7 +412,6 @@ def like_post(post_id):
         if existing.reaction_type == reaction:
             # remove reaction
             db.session.delete(existing)
-            post.likes = max((post.likes or 0) - 1, 0)
             action = "removed"
         else:
             # change reaction type
@@ -418,7 +425,6 @@ def like_post(post_id):
                 reaction_type=reaction,
             )
         )
-        post.likes = (post.likes or 0) + 1
         action = "added"
         if post.author_id != current_user.id:
             send_notification(
@@ -448,7 +454,7 @@ def like_post(post_id):
         .group_by(PostReaction.reaction_type)
         .all()
     )
-    return jsonify({"likes": post.likes, "counts": counts, "status": action})
+    return jsonify({"counts": counts, "status": action})
 
 
 @feed_bp.route("/comment/<int:post_id>", methods=["POST"])
@@ -619,7 +625,7 @@ def eliminar_post(post_id):
 
         SavedPost.query.filter_by(post_id=post.id).delete()
     except Exception:
-        pass
+        current_app.logger.exception("Error deleting saved post")
     db.session.delete(post)
     try:
         db.session.commit()
@@ -634,7 +640,7 @@ def eliminar_post(post_id):
         try:
             remove_item(uid, "post", post.id)
         except Exception:
-            pass
+            current_app.logger.exception("Error removing item from feed cache")
     flash("Publicación eliminada correctamente", "success")
     return redirect(url_for("feed.view_feed"))
 
@@ -778,10 +784,19 @@ def api_quickfeed():
 
     query = Post.query
     if filter_opt == "populares":
-        query = query.order_by(Post.likes.desc())
+        query = (
+            query.join(PostReaction)
+            .group_by(Post.id)
+            .order_by(func.count(PostReaction.id).desc())
+        )
     elif filter_opt == "relevantes":
         week_start = datetime.utcnow() - timedelta(days=7)
-        query = query.filter(Post.created_at >= week_start).order_by(Post.likes.desc())
+        query = (
+            query.join(PostReaction)
+            .filter(Post.created_at >= week_start)
+            .group_by(Post.id)
+            .order_by(func.count(PostReaction.id).desc())
+        )
     else:  # recientes or publicaciones
         query = query.order_by(Post.created_at.desc())
 
@@ -801,8 +816,10 @@ def api_trending():
 
         last_week = datetime.utcnow() - timedelta(days=7)
         posts = (
-            Post.query.filter(Post.created_at > last_week)
-            .order_by(Post.likes.desc())
+            Post.query.join(PostReaction)
+            .filter(Post.created_at > last_week)
+            .group_by(Post.id)
+            .order_by(func.count(PostReaction.id).desc())
             .limit(10)
             .all()
         )
@@ -811,13 +828,21 @@ def api_trending():
 
         last_month = datetime.utcnow() - timedelta(days=30)
         posts = (
-            Post.query.filter(Post.created_at > last_month)
-            .order_by(Post.likes.desc())
+            Post.query.join(PostReaction)
+            .filter(Post.created_at > last_month)
+            .group_by(Post.id)
+            .order_by(func.count(PostReaction.id).desc())
             .limit(10)
             .all()
         )
     elif filter_opt == "populares":
-        posts = Post.query.order_by(Post.likes.desc()).limit(10).all()
+        posts = (
+            Post.query.join(PostReaction)
+            .group_by(Post.id)
+            .order_by(func.count(PostReaction.id).desc())
+            .limit(10)
+            .all()
+        )
     elif filter_opt == "comentarios":
         posts = (
             Post.query.join(PostComment)

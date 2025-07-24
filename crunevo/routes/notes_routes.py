@@ -237,6 +237,7 @@ def upload_note():
                             tmp_path,
                         ],
                         check=True,
+                        shell=False,
                     )
                     pdf_path = os.path.join(
                         tmpdir, os.path.splitext(filename)[0] + ".pdf"
@@ -281,6 +282,7 @@ def upload_note():
                             filepath,
                         ],
                         check=True,
+                        shell=False,
                     )
                     filepath = os.path.join(
                         upload_folder, os.path.splitext(filename)[0] + ".pdf"
@@ -707,7 +709,7 @@ def delete_note(note_id):
         try:
             remove_item(uid, "apunte", note.id)
         except Exception:
-            pass
+            current_app.logger.exception("Error removing item from feed cache")
 
     flash("Apunte eliminado correctamente", "success")
     return redirect(url_for("notes.list_notes"))

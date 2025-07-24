@@ -3,6 +3,7 @@ import os
 from typing import Iterable, Dict
 
 import requests
+from flask import current_app
 
 
 def _gt(text: str, lang: str) -> str:
@@ -32,7 +33,7 @@ def translate_fields(
                 "description": _gt(description or "", lang),
             }
         except Exception:
-            continue
+            current_app.logger.exception("Error translating note")
 
     if translations:
         os.makedirs(folder, exist_ok=True)
