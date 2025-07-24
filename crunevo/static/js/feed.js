@@ -335,20 +335,79 @@ class ModernFeedManager {
     document.addEventListener('click', (e) => {
       if (e.target.matches('.like-btn') || e.target.closest('.like-btn')) {
         const btn = e.target.closest('.like-btn');
-        this.handleLike(btn);
+        if (!btn._longPress) {
+          this.handleLike(btn);
+        }
       }
     });
 
     // Reaction buttons
     document.addEventListener('click', (e) => {
-        if (e.target.matches('.dropdown-item[data-reaction]')) {
-            const btn = e.target;
-            const likeBtn = btn.closest('.btn-group').querySelector('.like-btn');
-            likeBtn.dataset.reaction = btn.dataset.reaction;
-            this.handleLike(likeBtn);
-        }
+      if (e.target.matches('.reaction-btn')) {
+        const btn = e.target;
+        const container = btn.closest('.reaction-container');
+        const likeBtn = container.querySelector('.like-btn');
+        likeBtn.dataset.reaction = btn.dataset.reaction;
+        this.handleLike(likeBtn);
+        container.querySelector('.reaction-panel')?.classList.add('d-none');
+      }
     });
 
+    // Hover to show reactions
+    document.addEventListener('mouseenter', (e) => {
+      if (e.target.matches('.like-btn')) {
+        const btn = e.target;
+        btn._hoverTimer = setTimeout(() => {
+          this.showReactionPanel(btn);
+        }, 300);
+      }
+    }, true);
+
+    document.addEventListener('mouseleave', (e) => {
+      if (e.target.matches('.like-btn')) {
+        clearTimeout(e.target._hoverTimer);
+      }
+    }, true);
+
+    // Long press for mobile/desktop
+    document.addEventListener('touchstart', (e) => {
+      const btn = e.target.closest('.like-btn');
+      if (!btn) return;
+      btn._longPress = false;
+      btn._pressTimer = setTimeout(() => {
+        btn._longPress = true;
+        this.showReactionPanel(btn);
+      }, 500);
+    });
+
+    document.addEventListener('touchend', (e) => {
+      const btn = e.target.closest('.like-btn');
+      if (!btn) return;
+      clearTimeout(btn._pressTimer);
+      if (!btn._longPress) {
+        this.handleLike(btn);
+      }
+    });
+
+    document.addEventListener('mousedown', (e) => {
+      const btn = e.target.closest('.like-btn');
+      if (!btn) return;
+      btn._longPress = false;
+      btn._pressTimer = setTimeout(() => {
+        btn._longPress = true;
+        this.showReactionPanel(btn);
+      }, 500);
+    });
+
+    document.addEventListener('mouseup', (e) => {
+      const btn = e.target.closest('.like-btn');
+      if (!btn) return;
+      clearTimeout(btn._pressTimer);
+      if (!btn._longPress) {
+        this.handleLike(btn);
+      }
+    });
+  
     // Share buttons
     document.addEventListener('click', (e) => {
       if (e.target.matches('.share-btn') || e.target.closest('.share-btn')) {
@@ -415,16 +474,37 @@ class ModernFeedManager {
       const likeBtn = document.querySelector(`.like-btn[data-post-id="${postId}"]`);
       if (likeBtn) {
         const icon = likeBtn.querySelector('i');
+        const textSpan = likeBtn.querySelector('.action-text');
+        const labelMap = {
+          '🔥': 'Crunazo',
+          '🧠': 'Neuro',
+          '💔': 'Roto',
+          '😠': 'Molesto',
+          '🥶': 'Congelao',
+          '😂': 'Vacilón',
+          '🤡': 'Cringe',
+          '😲': 'Asu',
+          '👍': 'Me gusta',
+          '💡': 'Interesante',
+          '🙌': 'Gracias',
+          '📌': 'Lo guardé'
+        };
         if (data.status === 'added' || data.status === 'changed') {
             likeBtn.classList.add('active');
             if (icon) {
                 icon.className = 'bi bi-fire-fill';
+            }
+            if (textSpan) {
+                textSpan.textContent = `Te dio ${labelMap[reaction] || ''}`;
             }
             this.showToast(`¡Reaccionaste con ${reaction}!`, 'success');
         } else if (data.status === 'removed') {
             likeBtn.classList.remove('active');
             if (icon) {
                 icon.className = 'bi bi-fire';
+            }
+            if (textSpan) {
+                textSpan.textContent = 'Me gusta';
             }
             this.showToast('Reacción removida', 'info');
         }
@@ -440,26 +520,35 @@ class ModernFeedManager {
     }
   }
 
-  // Handle share button
+  showReactionPanel(btn) {
+    const panel = btn.parentElement.querySelector('.reaction-panel');
+    if (!panel) return;
+    panel.classList.remove('d-none');
+    clearTimeout(panel._hideTimer);
+    panel._hideTimer = setTimeout(() => {
+      panel.classList.add('d-none');
+    }, 4000);
+    panel.addEventListener(
+      'mouseleave',
+      () => panel.classList.add('d-none'),
+      { once: true }
+    );
+  }
+
+  // Handle share button with graceful fallback
   handleShare(btn) {
     const postId = btn.dataset.postId;
     const shareUrl = `${window.location.origin}/feed/post/${postId}`;
     const shareTitle = 'Publicación en CRUNEVO';
-    const shareText = '¡Mira esta publicación en CRUNEVO!';
 
-    // Native share API for mobile
-    if (navigator.share && /Mobile|Android|iPhone/i.test(navigator.userAgent)) {
-      navigator.share({
-        title: shareTitle,
-        text: shareText,
-        url: shareUrl
-      }).catch(console.error);
-      return;
+    if (navigator.share) {
+      navigator
+        .share({ title: shareTitle, url: shareUrl })
+        .catch(console.error);
+    } else {
+      this.copyToClipboard(shareUrl);
+      this.showToast('¡Enlace copiado!', 'success');
     }
-
-    // Desktop: Copy to clipboard
-    this.copyToClipboard(shareUrl);
-    this.showToast('¡Enlace copiado al portapapeles!', 'success');
   }
 
   // Handle save button
