@@ -809,3 +809,4 @@
 - os.makedirs("instance") now uses exist_ok=True to avoid startup error (PR db-instance-exist-ok).
 - min_machines_running set to 1 in fly.toml to keep one machine running (PR fly-autostop-fix).
 - Added dedicated /healthz endpoint returning 'ok' and updated fly.toml health check path (PR healthz-endpoint).
+- Modernized notes list with purple filter buttons, Bootstrap icons and DOMContentLoaded wrappers for initNotePreviews (PR notes-ui-refresh).
