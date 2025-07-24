@@ -37,8 +37,10 @@
 {{ super() }}
 <script src="{{ url_for('static', filename='pdfjs/pdf.min.js') }}"></script>
 <script>
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";
-  initNotePreviews();
+  document.addEventListener('DOMContentLoaded', function () {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";
+    initNotePreviews();
+  });
 </script>
 {% endblock %}
 

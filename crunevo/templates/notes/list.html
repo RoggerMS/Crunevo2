@@ -7,10 +7,10 @@
 <div class="row">
   <div class="col-12">
     <h2 class="mb-3">Apuntes</h2>
-    <div class="d-flex flex-wrap gap-2 mb-3 justify-content-center">
-      <a href="{{ url_for('notes.list_notes', filter='recientes', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'recientes' %}active{% endif %}">📅 Recientes</a>
-      <a href="{{ url_for('notes.list_notes', filter='vistos', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'vistos' %}active{% endif %}">🔥 Más vistos</a>
-      <a href="{{ url_for('notes.list_notes', filter='gustados', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'gustados' %}active{% endif %}">👍 Más gustados</a>
+    <div class="d-flex flex-wrap gap-2 mb-3 justify-content-center notes-filters">
+      <a href="{{ url_for('notes.list_notes', filter='recientes', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'recientes' %}active{% endif %}"><i class="bi bi-clock me-1"></i>Recientes</a>
+      <a href="{{ url_for('notes.list_notes', filter='vistos', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'vistos' %}active{% endif %}"><i class="bi bi-eye-fill me-1"></i>Más vistos</a>
+      <a href="{{ url_for('notes.list_notes', filter='gustados', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'gustados' %}active{% endif %}"><i class="bi bi-hand-thumbs-up-fill me-1"></i>Más gustados</a>
       <div class="dropdown">
         <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
           {% if selected_tag %}{{ selected_tag }}{% else %}🏷️ Etiquetas{% endif %}
@@ -28,7 +28,7 @@
         <input type="text" id="noteSearch" class="form-control" placeholder="Buscar...">
       </div>
       <div class="col-auto">
-        <a href="{{ url_for('notes.upload_note') }}" class="btn btn-success">Subir apunte</a>
+        <a href="{{ url_for('notes.upload_note') }}" class="btn btn-primary">Subir apunte</a>
       </div>
     </div>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 row-cols-xl-6 row-cols-xxl-7 g-3" id="notesList">
@@ -40,17 +40,19 @@
 {% endfor %}
 </div>
 <script>
-document.getElementById('noteSearch').addEventListener('input', function(e){
-  fetch("{{ url_for('notes.search_notes') }}?q=" + encodeURIComponent(e.target.value))
-    .then(r => r.json())
-    .then(data => {
-      const list = document.getElementById('notesList');
-      list.innerHTML = '';
-      data.forEach(n => {
-        list.appendChild(createNoteCard(n));
+document.addEventListener('DOMContentLoaded', function () {
+  document.getElementById('noteSearch').addEventListener('input', function(e){
+    fetch("{{ url_for('notes.search_notes') }}?q=" + encodeURIComponent(e.target.value))
+      .then(r => r.json())
+      .then(data => {
+        const list = document.getElementById('notesList');
+        list.innerHTML = '';
+        data.forEach(n => {
+          list.appendChild(createNoteCard(n));
+        });
+        initNotePreviews();
       });
-      initNotePreviews();
-    });
+  });
 });
 
 function createNoteCard(n) {
@@ -123,8 +125,10 @@ function createNoteCard(n) {
 {{ super() }}
 <script src="{{ url_for('static', filename='pdfjs/pdf.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/viewer.js') }}"></script>
-<script>
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";
-  initNotePreviews();
-</script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";
+      initNotePreviews();
+    });
+  </script>
 {% endblock %}
