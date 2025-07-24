@@ -353,22 +353,6 @@ class ModernFeedManager {
       }
     });
 
-    // Hover to show reactions
-    document.addEventListener('mouseenter', (e) => {
-      if (e.target.matches('.like-btn')) {
-        const btn = e.target;
-        btn._hoverTimer = setTimeout(() => {
-          this.showReactionPanel(btn);
-        }, 300);
-      }
-    }, true);
-
-    document.addEventListener('mouseleave', (e) => {
-      if (e.target.matches('.like-btn')) {
-        clearTimeout(e.target._hoverTimer);
-      }
-    }, true);
-
     // Long press for mobile/desktop
     document.addEventListener('touchstart', (e) => {
       const btn = e.target.closest('.like-btn');
@@ -421,6 +405,14 @@ class ModernFeedManager {
       if (e.target.matches('.save-btn') || e.target.closest('.save-btn')) {
         const btn = e.target.closest('.save-btn');
         this.handleSave(btn);
+      }
+    });
+
+    // Click on reactions count
+    document.addEventListener('click', (e) => {
+      const target = e.target.closest('.post-reactions-count');
+      if (target) {
+        console.log('TODO: Abrir modal para ver quién reaccionó');
       }
     });
   }
