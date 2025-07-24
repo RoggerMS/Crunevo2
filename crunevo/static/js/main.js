@@ -330,7 +330,7 @@ function initGlobalSearch() {
   const noResults = document.getElementById('noResults');
   const suggestions = document.getElementById('searchSuggestions');
 
-  if (!searchInput || !searchResults) return;
+  if (!searchInput || !searchResults || !suggestions) return;
 
   let searchTimeout;
   let currentFilter = 'all';

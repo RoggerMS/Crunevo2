@@ -425,7 +425,6 @@ class ModernFeedManager {
     if (btn.disabled) return;
 
     const icon = btn.querySelector('i');
-    const text = btn.querySelector('.action-text');
     const countSpan = btn.querySelector('.action-count');
 
     try {
