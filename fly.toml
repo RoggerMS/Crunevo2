@@ -27,7 +27,7 @@ primary_region = 'gru'
     grace_period = '15s'
     interval = '15s'
     method = 'GET'
-    timeout = '5s'
+    timeout = '15s'
     path = "/healthz"
 
 [[vm]]
