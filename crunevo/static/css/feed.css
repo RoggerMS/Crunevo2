@@ -349,6 +349,14 @@
   min-width: 20px;
 }
 
+/* Reaction panel */
+.reaction-panel {
+  overflow-x: auto;
+  white-space: nowrap;
+  max-width: 300px;
+  flex-wrap: nowrap;
+}
+
 /* Comments section */
 .comments-section {
   border-top: 1px solid var(--border-color);

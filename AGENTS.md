@@ -819,3 +819,4 @@
 - Adopted Option 2: eventlet worker with healthz and min_machines_running improvements (PR eventlet-option2)
 - Removed dynamic share option overlay and related CSS; share buttons now use built-in navigator.share only (PR share-options-remove).
 - Fase 2: reconstruido botón Me Gusta con conteo estable, handleLike actualiza solo el contador y color activo igual a Guardar.
+- Fase 3: panel de reacciones con long press flotante, scroll horizontal y contador clickeable.
