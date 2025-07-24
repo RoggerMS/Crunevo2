@@ -1,3 +1,4 @@
+{% import 'components/csrf.html' as csrf %}
 {% for product in products %}
 <div class="product-card" data-category="{{ product.category }}" data-price="{{ product.price }}" data-credits="{{ product.price_credits or 0 }}">
   <div class="product-image-container">
