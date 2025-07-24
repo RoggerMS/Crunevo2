@@ -817,3 +817,4 @@
 - Función de compartir restaurada con navigator.share y copia como respaldo; botón único sin extras (PR share-native-restore).
 - Reverted to eventlet Gunicorn worker to fix 'Bad file descriptor' socket errors (PR gunicorn-eventlet-fix).
 - Adopted Option 2: eventlet worker with healthz and min_machines_running improvements (PR eventlet-option2)
+- Removed dynamic share option overlay and related CSS; share buttons now use built-in navigator.share only (PR share-options-remove).

@@ -30,8 +30,6 @@ function initializeEnhancedUI() {
     // Initialize quick view modals
     initQuickViewModals();
     
-    // Initialize share functionality
-    initShareFunctionality();
 }
 
 function initFloatingButtons() {
@@ -318,73 +316,6 @@ function openQuickView(target) {
     });
 }
 
-function initShareFunctionality() {
-    const shareBtns = document.querySelectorAll('.share-btn');
-    shareBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const shareUrl = this.dataset.shareUrl;
-            showShareOptions(this, shareUrl);
-        });
-    });
-}
-
-function showShareOptions(button, url) {
-    // Remove existing share options
-    document.querySelectorAll('.share-options').forEach(el => el.remove());
-    
-    const shareOptions = document.createElement('div');
-    shareOptions.className = 'share-options';
-    shareOptions.innerHTML = `
-        <button class="share-option whatsapp" data-action="whatsapp">
-            <i class="bi bi-whatsapp"></i>
-        </button>
-        <button class="share-option twitter" data-action="twitter">
-            <i class="bi bi-twitter"></i>
-        </button>
-        <button class="share-option copy" data-action="copy">
-            <i class="bi bi-clipboard"></i>
-        </button>
-    `;
-    
-    button.parentElement.style.position = 'relative';
-    button.parentElement.appendChild(shareOptions);
-    
-    // Show with animation
-    setTimeout(() => shareOptions.classList.add('show'), 10);
-    
-    // Handle share actions
-    shareOptions.addEventListener('click', function(e) {
-        const action = e.target.closest('.share-option')?.dataset.action;
-        if (!action) return;
-        
-        switch (action) {
-            case 'whatsapp':
-                window.open(`https://wa.me/?text=${encodeURIComponent(url)}`, '_blank');
-                break;
-            case 'twitter':
-                window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}`, '_blank');
-                break;
-            case 'copy':
-                navigator.clipboard.writeText(url).then(() => {
-                    showSuccessToast('Enlace copiado al portapapeles');
-                });
-                break;
-        }
-        
-        shareOptions.remove();
-    });
-    
-    // Hide when clicking outside
-    setTimeout(() => {
-        document.addEventListener('click', function hideShareOptions(e) {
-            if (!shareOptions.contains(e.target) && e.target !== button) {
-                shareOptions.remove();
-                document.removeEventListener('click', hideShareOptions);
-            }
-        });
-    }, 100);
-}
 
 // Utility functions
 function updateCartCount() {
