@@ -813,3 +813,5 @@
 - Improved healthz endpoint to validate DB connection and increased timeout to 15s (PR health-check-db-timeout).
 - Ajustados estilos de filtros y barra de búsqueda en /notes para respetar la paleta morada y mejorar el contraste (PR notes-filters-css-refactor).
 - Lightweight wsgi health check via Dispatcher; removed DB access from health blueprint (PR wsgi-light-health).
+- Reacciones y modales actualizados con panel flotante y long press; feed.js maneja hover y textos personalizados (PR reactions-refactor).
+- Función de compartir restaurada con navigator.share y copia como respaldo; botón único sin extras (PR share-native-restore).

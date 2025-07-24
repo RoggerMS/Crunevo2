@@ -48,12 +48,28 @@
 
   <div class="modal-info-footer">
     <div class="modal-post-actions">
-      <button class="modal-action-btn like-btn {{ 'active' if user_reaction else '' }}"
-              data-post-id="{{ post.id }}"
-              data-reaction="{{ user_reaction or '🔥' }}">
-        <i class="bi bi-fire{{ '-fill' if user_reaction else '' }}"></i>
-        <span>Me gusta</span>
-    </button>
+      <div class="relative reaction-container" data-post-id="{{ post.id }}" data-my-reaction="{{ user_reaction or '' }}">
+        <button class="modal-action-btn like-btn {{ 'active' if user_reaction else '' }}"
+                data-post-id="{{ post.id }}"
+                data-reaction="{{ user_reaction or '🔥' }}">
+          <i class="bi bi-fire{{ '-fill' if user_reaction else '' }}"></i>
+          <span class="action-text">Me gusta</span>
+        </button>
+        <div class="reaction-panel absolute bottom-full left-1/2 -translate-x-1/2 mb-2 flex flex-wrap gap-1 p-1 rounded-full shadow-lg bg-white dark:bg-zinc-800 d-none">
+          <button class="reaction-btn" data-reaction="🔥" title="Crunazo">🔥</button>
+          <button class="reaction-btn" data-reaction="🧠" title="Neuro">🧠</button>
+          <button class="reaction-btn" data-reaction="💔" title="Roto">💔</button>
+          <button class="reaction-btn" data-reaction="😠" title="Molesto">😠</button>
+          <button class="reaction-btn" data-reaction="🥶" title="Congelao">🥶</button>
+          <button class="reaction-btn" data-reaction="😂" title="Vacilón">😂</button>
+          <button class="reaction-btn" data-reaction="🤡" title="Cringe">🤡</button>
+          <button class="reaction-btn" data-reaction="😲" title="Asu">😲</button>
+          <button class="reaction-btn" data-reaction="👍" title="Me gusta">👍</button>
+          <button class="reaction-btn" data-reaction="💡" title="Interesante">💡</button>
+          <button class="reaction-btn" data-reaction="🙌" title="Gracias">🙌</button>
+          <button class="reaction-btn" data-reaction="📌" title="Lo guardé">📌</button>
+        </div>
+      </div>
     <button class="modal-action-btn comment-btn" data-post-id="{{ post.id }}">
       <i class="bi bi-chat"></i>
       <span>Comentar</span>

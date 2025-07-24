@@ -146,24 +146,28 @@
 
   <!-- Post Actions -->
   <div class="post-actions">
-    <div class="btn-group">
+    <div class="relative reaction-container" data-post-id="{{ post.id }}" data-my-reaction="{{ user_reactions.get(post.id, '') }}">
       <button class="fb-action-btn like-btn {{ 'active' if user_reactions.get(post.id) }}"
               data-post-id="{{ post.id }}"
-              data-reaction="🔥">
+              data-reaction="{{ user_reactions.get(post.id, '🔥') }}">
         <i class="bi bi-fire{{ '-fill' if user_reactions.get(post.id) else '' }}"></i>
         <span class="action-text">Me gusta</span>
         <span class="action-count">{{ post_reactions.get('🔥', '') }}</span>
       </button>
-      <button type="button" class="btn btn-sm btn-light dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-        <span class="visually-hidden">Toggle Dropdown</span>
-      </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#" data-reaction="❤️">❤️</a></li>
-        <li><a class="dropdown-item" href="#" data-reaction="😂">😂</a></li>
-        <li><a class="dropdown-item" href="#" data-reaction="😮">😮</a></li>
-        <li><a class="dropdown-item" href="#" data-reaction="😢">😢</a></li>
-        <li><a class="dropdown-item" href="#" data-reaction="😠">😠</a></li>
-      </ul>
+      <div class="reaction-panel absolute bottom-full left-1/2 -translate-x-1/2 mb-2 flex flex-wrap gap-1 p-1 rounded-full shadow-lg bg-white dark:bg-zinc-800 d-none">
+        <button class="reaction-btn" data-reaction="🔥" title="Crunazo">🔥</button>
+        <button class="reaction-btn" data-reaction="🧠" title="Neuro">🧠</button>
+        <button class="reaction-btn" data-reaction="💔" title="Roto">💔</button>
+        <button class="reaction-btn" data-reaction="😠" title="Molesto">😠</button>
+        <button class="reaction-btn" data-reaction="🥶" title="Congelao">🥶</button>
+        <button class="reaction-btn" data-reaction="😂" title="Vacilón">😂</button>
+        <button class="reaction-btn" data-reaction="🤡" title="Cringe">🤡</button>
+        <button class="reaction-btn" data-reaction="😲" title="Asu">😲</button>
+        <button class="reaction-btn" data-reaction="👍" title="Me gusta">👍</button>
+        <button class="reaction-btn" data-reaction="💡" title="Interesante">💡</button>
+        <button class="reaction-btn" data-reaction="🙌" title="Gracias">🙌</button>
+        <button class="reaction-btn" data-reaction="📌" title="Lo guardé">📌</button>
+      </div>
     </div>
 
     <button class="fb-action-btn comment-btn" data-post-id="{{ post.id }}" onclick="openCommentsModal('{{ post.id }}')">

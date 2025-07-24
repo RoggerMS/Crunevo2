@@ -828,9 +828,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initNotificationManager === 'function') {
     initNotificationManager();
   }
-  if (typeof initShareButtons === 'function') {
-    initShareButtons();
-  }
   if (typeof initChatIA === 'function') {
     initChatIA();
   }

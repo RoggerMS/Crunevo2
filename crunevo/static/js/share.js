@@ -53,48 +53,6 @@ function createToastContainer() {
   return container;
 }
 
-// Add share buttons to posts and notes
-function initShareButtons() {
-  addShareButtons();
-}
+// Dynamic share buttons were removed; retain no-op for backward compatibility
+function initShareButtons() {}
 window.initShareButtons = initShareButtons;
-
-function addShareButtons() {
-  // Add to post cards
-  document.querySelectorAll('.post-card').forEach(card => {
-    if (!card.querySelector('.share-btn')) {
-      const actionsDiv = card.querySelector('.card-footer') || card.querySelector('.d-flex.gap-2');
-      if (actionsDiv) {
-        const shareBtn = document.createElement('button');
-        shareBtn.className = 'btn btn-outline-secondary btn-sm share-btn';
-        shareBtn.innerHTML = '<i class="bi bi-share"></i>';
-        shareBtn.title = 'Compartir';
-        
-        const postId = card.dataset.postId;
-        const postTitle = card.querySelector('.card-title, h5, h6')?.textContent || 'Publicación en Crunevo';
-        
-        shareBtn.onclick = () => shareContent(postTitle, `${window.location.origin}/post/${postId}`);
-        actionsDiv.appendChild(shareBtn);
-      }
-    }
-  });
-  
-  // Add to note cards
-  document.querySelectorAll('.note-card').forEach(card => {
-    if (!card.querySelector('.share-btn')) {
-      const actionsDiv = card.querySelector('.card-footer') || card.querySelector('.d-flex.gap-2');
-      if (actionsDiv) {
-        const shareBtn = document.createElement('button');
-        shareBtn.className = 'btn btn-outline-secondary btn-sm share-btn';
-        shareBtn.innerHTML = '<i class="bi bi-share"></i>';
-        shareBtn.title = 'Compartir';
-        
-        const noteId = card.dataset.noteId;
-        const noteTitle = card.querySelector('.card-title, h5, h6')?.textContent || 'Apunte en Crunevo';
-        
-        shareBtn.onclick = () => shareContent(noteTitle, `${window.location.origin}/notes/${noteId}`);
-        actionsDiv.appendChild(shareBtn);
-      }
-    }
-  });
-}
