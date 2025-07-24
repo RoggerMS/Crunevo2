@@ -810,3 +810,4 @@
 - min_machines_running set to 1 in fly.toml to keep one machine running (PR fly-autostop-fix).
 - Added dedicated /healthz endpoint returning 'ok' and updated fly.toml health check path (PR healthz-endpoint).
 - Modernized notes list with purple filter buttons, Bootstrap icons and DOMContentLoaded wrappers for initNotePreviews (PR notes-ui-refresh).
+- Improved healthz endpoint to validate DB connection and increased timeout to 15s (PR health-check-db-timeout).
