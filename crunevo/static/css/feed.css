@@ -325,12 +325,13 @@
   color: var(--text-primary);
 }
 
-.fb-action-btn.active {
+.fb-action-btn.active,
+.fb-action-btn.active i {
   color: var(--crunevo-primary);
 }
 
-.fb-action-btn.like-btn.active {
-  color: var(--error-color);
+.like-btn.active, .like-btn.active i {
+    color: var(--primary);
 }
 
 .fb-action-btn i {
