@@ -815,3 +815,5 @@
 - Lightweight wsgi health check via Dispatcher; removed DB access from health blueprint (PR wsgi-light-health).
 - Reacciones y modales actualizados con panel flotante y long press; feed.js maneja hover y textos personalizados (PR reactions-refactor).
 - Función de compartir restaurada con navigator.share y copia como respaldo; botón único sin extras (PR share-native-restore).
+- Reverted to eventlet Gunicorn worker to fix 'Bad file descriptor' socket errors (PR gunicorn-eventlet-fix).
+- Adopted Option 2: eventlet worker with healthz and min_machines_running improvements (PR eventlet-option2)
