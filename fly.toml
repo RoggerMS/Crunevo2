@@ -28,7 +28,7 @@ primary_region = 'bog'
     interval = '15s'
     method = 'GET'
     timeout = '5s'
-    path = "/"
+    path = "/healthz"
 
 [[vm]]
   cpu_kind = "performance"
