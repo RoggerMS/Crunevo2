@@ -432,6 +432,10 @@ class ModernFeedManager {
 
     if (btn.disabled) return;
 
+    const icon = btn.querySelector('i');
+    const text = btn.querySelector('.action-text');
+    const countSpan = btn.querySelector('.action-count');
+
     try {
       btn.disabled = true;
       btn.classList.add('like-animation');
@@ -471,30 +475,24 @@ class ModernFeedManager {
 
 
       // Update button state
-      const likeBtn = document.querySelector(`.like-btn[data-post-id="${postId}"]`);
-      if (likeBtn) {
-        const icon = likeBtn.querySelector('i');
-        const countSpan = likeBtn.querySelector('.action-count');
-
-        if (data.status === 'added' || data.status === 'changed') {
-          likeBtn.classList.add('active');
-          if (icon) {
-            icon.classList.remove('bi-fire');
-            icon.classList.add('bi-fire-fill');
-          }
-          this.showToast(`¡Reaccionaste con ${reaction}!`, 'success');
-        } else if (data.status === 'removed') {
-          likeBtn.classList.remove('active');
-          if (icon) {
-            icon.classList.remove('bi-fire-fill');
-            icon.classList.add('bi-fire');
-          }
-          this.showToast('Reacción removida', 'info');
+      if (data.status === 'added' || data.status === 'changed') {
+        btn.classList.add('active');
+        if (icon) {
+          icon.classList.remove('bi-fire');
+          icon.classList.add('bi-fire-fill');
         }
-
-        if (countSpan) {
-          countSpan.textContent = data.total_reactions > 0 ? data.total_reactions : '';
+        this.showToast(`¡Reaccionaste con ${reaction}!`, 'success');
+      } else if (data.status === 'removed') {
+        btn.classList.remove('active');
+        if (icon) {
+          icon.classList.remove('bi-fire-fill');
+          icon.classList.add('bi-fire');
         }
+        this.showToast('Reacción removida', 'info');
+      }
+
+      if (countSpan) {
+        countSpan.textContent = data.total_reactions > 0 ? data.total_reactions : '';
       }
 
 
