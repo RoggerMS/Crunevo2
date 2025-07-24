@@ -807,3 +807,4 @@
 - Reverted Gunicorn to synchronous worker for reliable startup (PR gunicorn-sync-worker).
 - Simplified fly.toml and Dockerfile to use a single gunicorn command with 3 workers and no services block (PR fly-config-cleanup).
 - os.makedirs("instance") now uses exist_ok=True to avoid startup error (PR db-instance-exist-ok).
+- min_machines_running set to 1 in fly.toml to keep one machine running (PR fly-autostop-fix).
