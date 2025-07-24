@@ -84,13 +84,20 @@
   }
 }
 
-.notes-filters .btn {
+
+.notes-filters .btn:not(.active) {
   color: var(--primary);
   border-color: var(--primary);
-  background-color: rgba(109, 40, 217, 0.1);
+  background-color: transparent;
 }
 
 .notes-filters .btn.active {
+  color: #fff;
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.notes-filters .btn:not(.active):hover {
   color: #fff;
   background-color: var(--primary);
   border-color: var(--primary);
