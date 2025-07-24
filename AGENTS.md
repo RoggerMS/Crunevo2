@@ -821,3 +821,4 @@
 - Fase 2: reconstruido botón Me Gusta con conteo estable, handleLike actualiza solo el contador y color activo igual a Guardar.
 - Fase 3: panel de reacciones con long press flotante, scroll horizontal y contador clickeable.
 - Added csrf macro import in store/_product_cards.html to fix UndefinedError in search_products (hotfix product-cards-csrf).
+- Fixed note upload failing with invalid integer when "reading_time" empty; route now parses it to int when provided (PR notes-reading-time-int).

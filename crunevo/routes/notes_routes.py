@@ -298,6 +298,9 @@ def upload_note():
             if suggested:
                 category = suggested[0]
 
+        rt_val = request.form.get("reading_time", "").strip()
+        rt = int(rt_val) if rt_val else None
+
         note = Note(
             title=title,
             description=description,
@@ -307,7 +310,7 @@ def upload_note():
             tags=request.form.get("tags"),
             category=category,
             language=request.form.get("language"),
-            reading_time=request.form.get("reading_time"),
+            reading_time=rt,
             content_type=request.form.get("content_type"),
             summary=request.form.get("summary"),
             course=request.form.get("course"),
