@@ -49,9 +49,7 @@
   <div class="modal-info-footer">
     <div class="modal-post-actions">
       <div class="relative reaction-container" data-post-id="{{ post.id }}" data-my-reaction="{{ user_reaction or '' }}">
-        <button class="modal-action-btn like-btn {{ 'active' if user_reaction else '' }}"
-                data-post-id="{{ post.id }}"
-                data-reaction="{{ user_reaction or '🔥' }}">
+        <button class="modal-action-btn like-btn {{ 'active' if user_reaction else '' }}" data-post-id="{{ post.id }}">
           <i class="bi bi-fire{{ '-fill' if user_reaction else '' }}"></i>
           <span class="action-text">Me gusta</span>
           <span class="action-count">{{ reaction_counts.get('🔥', '') }}</span>

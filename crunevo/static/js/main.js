@@ -596,7 +596,8 @@ function initNavbarSearchLegacy() {
     });
 
     document.addEventListener('click', (e) => {
-      if (!globalSearch.contains(e.target) && !searchDropdown.contains(e.target)) {
+      const clickedDropdown = searchDropdown && searchDropdown.contains(e.target);
+      if (!globalSearch.contains(e.target) && !clickedDropdown) {
         hide();
       }
     });

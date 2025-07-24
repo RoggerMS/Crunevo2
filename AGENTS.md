@@ -824,3 +824,4 @@
 - Fixed note upload failing with invalid integer when "reading_time" empty; route now parses it to int when provided (PR notes-reading-time-int).
 - Fixed notes filter buttons active color to white via .notes-filters .btn-outline-primary.active rule (PR notes-filters-contrast-fix).
 - Fixed like button icon disappearing; consistent structure with count in post card and modals, safe JS updates and global search check (PR like-button-fix).
+- Restored fire icon in like buttons and guarded legacy search click handler (PR like-icon-restore)

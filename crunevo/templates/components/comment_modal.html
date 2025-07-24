@@ -39,9 +39,7 @@
         <div class="modal-post-actions px-4 py-2 border-top border-bottom">
           <div class="d-flex justify-content-around">
             <div class="relative reaction-container" data-post-id="{{ post.id }}" data-my-reaction="{{ user_reactions.get(post.id, '') }}">
-              <button class="modal-action-btn like-btn {{ 'active' if user_reactions.get(post.id) }}"
-                      data-post-id="{{ post.id }}"
-                      data-reaction="{{ user_reactions.get(post.id, '🔥') }}">
+              <button class="modal-action-btn like-btn {{ 'active' if user_reactions.get(post.id) }}" data-post-id="{{ post.id }}">
                 <i class="bi bi-fire{{ '-fill' if user_reactions.get(post.id) else '' }}"></i>
                 <span class="action-text">Me gusta</span>
                 <span class="action-count">{{ reaction_counts.get(post.id, {}).get('🔥', '') }}</span>
