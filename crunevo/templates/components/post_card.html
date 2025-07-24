@@ -147,9 +147,7 @@
   <!-- Post Actions -->
   <div class="post-actions">
     <div class="relative reaction-container" data-post-id="{{ post.id }}" data-my-reaction="{{ user_reactions.get(post.id, '') }}">
-      <button class="fb-action-btn like-btn {{ 'active' if user_reactions.get(post.id) }}"
-              data-post-id="{{ post.id }}"
-              data-reaction="{{ user_reactions.get(post.id, '🔥') }}">
+      <button class="fb-action-btn like-btn {{ 'active' if user_reactions.get(post.id) }}" data-post-id="{{ post.id }}">
         <i class="bi bi-fire{{ '-fill' if user_reactions.get(post.id) else '' }}"></i>
         <span class="action-text">Me gusta</span>
         <span class="action-count">{{ reaction_counts.get(post.id, {}).get('🔥', '') }}</span>
