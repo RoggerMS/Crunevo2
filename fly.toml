@@ -1,6 +1,6 @@
 # fly.toml
 app = 'crunevo2'
-primary_region = 'bog'
+primary_region = 'gru'
 
 [build]
   dockerfile = 'Dockerfile'
