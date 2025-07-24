@@ -150,7 +150,7 @@
       <button class="fb-action-btn like-btn {{ 'active' if user_reactions.get(post.id) }}"
               data-post-id="{{ post.id }}"
               data-reaction="{{ user_reactions.get(post.id, '🔥') }}">
-        <i class="bi bi-fire{{ '-fill' if user_reactions.get(post.id) else '' }}"></i>
+        <i class="bi bi-fire"></i>
         <span class="action-text">Me gusta</span>
         <span class="action-count">{{ reaction_counts.get(post.id, {}).get('🔥', '') }}</span>
       </button>

@@ -330,8 +330,9 @@
   color: var(--crunevo-primary);
 }
 
-.like-btn.active, .like-btn.active i {
-    color: var(--primary);
+.like-btn.active,
+.like-btn.active i {
+  color: var(--crunevo-primary);
 }
 
 .fb-action-btn i {
@@ -1257,7 +1258,7 @@ select:focus {
 }
 
 .modal-action-btn.like-btn.active {
-  color: var(--error-color);
+  color: var(--crunevo-primary);
 }
 
 /* Modal Comments Section */
