@@ -826,4 +826,5 @@
 - Fixed like button icon disappearing; consistent structure with count in post card and modals, safe JS updates and global search check (PR like-button-fix).
 - Restored fire icon in like buttons and guarded legacy search click handler (PR like-icon-restore)
 - Consolidated DOMContentLoaded handlers from comment.js, forum_editor.js, enhanced-ui.js, store.js, league.js and feed.js into main.js; modules expose init functions (PR domcontent-modules-consolidation).
+- Guarded streak claim button event listener to prevent errors when element is missing (PR feed-missing-element-guard).
 - Guarded reaction button initialization to prevent TypeError on pages without .btn-reaction (PR feed-reaction-null-check).
