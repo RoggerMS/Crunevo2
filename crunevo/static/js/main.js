@@ -832,6 +832,25 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initChatIA === 'function') {
     initChatIA();
   }
+  if (typeof initModernFeedManager === 'function' && document.getElementById('feedContainer')) {
+    initModernFeedManager();
+  }
+  if (typeof initPhotoComments === 'function' && document.getElementById('comment-section')) {
+    initPhotoComments();
+  }
+  if (typeof initCrunevoStore === 'function' && document.getElementById('publishProductForm')) {
+    initCrunevoStore();
+  }
+  if (typeof initLeaguePage === 'function' && document.getElementById('ranking-list')) {
+    initLeaguePage();
+  }
+  if (typeof initializeEnhancedUI === 'function') {
+    initializeEnhancedUI();
+  }
+  if (typeof initForumEditor === 'function') {
+    initForumEditor('#questionEditor');
+    initForumEditor('#answerEditor');
+  }
 
   document.querySelectorAll('.achievement-card').forEach((el) => {
     if (el.title && !bootstrap.Tooltip.getInstance(el)) {
