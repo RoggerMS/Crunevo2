@@ -1,9 +1,8 @@
 
 // Enhanced UI interactions and animations for CRUNEVO
 
-document.addEventListener('DOMContentLoaded', function() {
-    initializeEnhancedUI();
-});
+// Initialization handled in main.js
+window.initializeEnhancedUI = initializeEnhancedUI;
 
 function initializeEnhancedUI() {
     // Initialize floating action buttons

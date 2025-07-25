@@ -49,7 +49,5 @@ function selectLocalImage(quill) {
   input.click();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  initForumEditor('#questionEditor');
-  initForumEditor('#answerEditor');
-});
+// Initialization handled in main.js
+window.initForumEditor = initForumEditor;

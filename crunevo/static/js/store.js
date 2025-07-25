@@ -784,8 +784,5 @@ function initCrunevoStore() {
     }
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initCrunevoStore);
-} else {
-    initCrunevoStore();
-}
+// Initialization handled in main.js
+window.initCrunevoStore = initCrunevoStore;

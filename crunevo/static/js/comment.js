@@ -143,6 +143,5 @@
   window.openCommentsModal = openCommentsModal;
   window.submitComment = submitComment;
   window.deleteComment = deleteComment;
-
-  document.addEventListener('DOMContentLoaded', initPhotoComments);
+  window.initPhotoComments = initPhotoComments; // Initialization handled in main.js
 })();

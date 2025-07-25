@@ -286,11 +286,12 @@ class TeamCreationForm {
     }
 }
 
-// Initialize league features
-document.addEventListener('DOMContentLoaded', function() {
+// Initialization handled in main.js
+function initLeaguePage() {
     new LeagueManager();
     new TeamCreationForm();
-});
+}
+window.initLeaguePage = initLeaguePage;
 
 // Utility functions
 function showNotification(message, type = 'info') {

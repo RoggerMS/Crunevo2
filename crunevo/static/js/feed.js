@@ -1450,12 +1450,8 @@ function initModernFeedManager() {
   initFabButton();
 }
 
-// Auto-initialize
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initModernFeedManager);
-} else {
-  initModernFeedManager();
-}
+// Initialization handled in main.js
+window.initModernFeedManager = initModernFeedManager;
 
 
 // Export for global access
