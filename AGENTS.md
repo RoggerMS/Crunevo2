@@ -830,3 +830,4 @@
 - Feed routes split into subpackage crunevo/routes/feed with views.py and api.py; feed_routes.py now re-exports for compatibility (PR feed-subpackage).
 - Guarded streak claim button event listener to prevent errors when element is missing (PR feed-missing-element-guard).
 - Guarded reaction button initialization to prevent TypeError on pages without .btn-reaction (PR feed-reaction-null-check).
+- Created api package with JWT-authenticated endpoints and updated README with usage instructions (PR feed-api-blueprint).

@@ -229,3 +229,21 @@ Desde el commit `Load PDF.js locally`, CRUNEVO utiliza una versión local de PDF
 Ubicación:
 - `static/pdfjs/pdf.min.js`
 - `static/pdfjs/pdf.worker.min.js`
+
+
+## API Usage
+
+To access the JSON API you must first obtain a token:
+
+```bash
+curl -X POST -H "Content-Type: application/json" \
+     -d '{"username": "USER", "password": "PASS"}' \
+     http://localhost:5000/api/token
+```
+
+Use the returned token in the `Authorization` header to call endpoints:
+
+```bash
+curl -H "Authorization: Bearer <TOKEN>" \
+     http://localhost:5000/api/feed?page=1
+```
