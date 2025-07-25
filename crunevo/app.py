@@ -288,10 +288,10 @@ def create_app():
         detail,
         edit_note,
     )
-    from .routes.feed_routes import (
-        feed_bp,
+    from .routes.feed import feed_bp
+    from .routes.feed.views import view_post
+    from .routes.feed.api import (
         api_feed,
-        view_post,
         like_post,
         comment_post,
         toggle_save,
