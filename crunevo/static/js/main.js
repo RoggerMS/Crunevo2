@@ -824,6 +824,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const streakBtn = document.getElementById('claimStreakBtn');
+  if (streakBtn) {
+    streakBtn.addEventListener('click', claimStreak);
+  }
+
   if (typeof initFeedManager === 'function') {
     initFeedManager();
   }
