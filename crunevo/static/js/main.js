@@ -141,6 +141,7 @@ document.addEventListener('click', (e) => {
 function initReactions() {
   document.querySelectorAll('.reaction-container').forEach((container) => {
     const mainBtn = container.querySelector('.btn-reaction');
+    if (!mainBtn) return;
     const options = container.querySelector('.reaction-options');
     const span = container.querySelector('.count');
     const countsDiv = container.querySelector('.reaction-counts');
