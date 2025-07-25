@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, current_app, abort
 from flask_login import current_user
-from crunevo.routes.feed_routes import feed_home
+from crunevo.routes.feed.views import feed_home
 
 main_bp = Blueprint("main", __name__)
 
