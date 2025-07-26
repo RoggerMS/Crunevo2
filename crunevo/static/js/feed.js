@@ -1224,6 +1224,17 @@ document.addEventListener('click', (e) => {
   }
 });
 
+document.addEventListener('click', (e) => {
+  if (e.target.matches('.load-more-comments')) {
+    e.preventDefault();
+    const btn = e.target;
+    const postId = btn.dataset.postId;
+    if (postId) {
+      loadMoreComments(btn, postId);
+    }
+  }
+});
+
 // Comments Modal Functions
 function openCommentsModal(postId) {
   const modal = new bootstrap.Modal(document.getElementById(`commentsModal-${postId}`));
@@ -1326,6 +1337,28 @@ function updateCommentCount(postId, increment) {
       countSpan.textContent = newCount > 0 ? newCount : '';
     }
   }
+}
+
+function loadMoreComments(btn, postId) {
+  const page = parseInt(btn.dataset.page || '1');
+  btn.disabled = true;
+  fetch(`/feed/api/comments/${postId}?page=${page}`)
+    .then(r => r.json())
+    .then(comments => {
+      if (comments.length) {
+        comments.forEach(c => addCommentToModalUI(c, postId));
+        btn.dataset.page = page + 1;
+        btn.disabled = false;
+        if (comments.length < 10) {
+          btn.remove();
+        }
+      } else {
+        btn.remove();
+      }
+    })
+    .catch(() => {
+      btn.disabled = false;
+    });
 }
 
 // Handle comment input changes in modal

@@ -842,3 +842,4 @@
 - SECRET_KEY now required from environment; config warns in debug and errors in
   production (PR secret-key-env).
 - Split auth.login and feed.view_feed logic into new services for authentication and feed data retrieval (PR login-feed-services).
+- Added paginated comments API and load-more button in modals; feed.js handles fetching additional pages (PR comments-pagination).

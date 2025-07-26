@@ -114,12 +114,15 @@ def comment_post(post_id):
 @feed_bp.route("/api/comments/<int:post_id>")
 @activated_required
 def api_comments(post_id):
-    """Return recent comments for a post."""
+    """Return paginated comments for a post."""
     post = Post.query.get_or_404(post_id)
+    page = request.args.get("page", default=1, type=int)
+    per_page = 10
     comments = (
         PostComment.query.filter_by(post_id=post.id, pending=False)
         .order_by(PostComment.timestamp.desc())
-        .limit(50)
+        .offset((page - 1) * per_page)
+        .limit(per_page)
         .all()
     )
     return jsonify(
@@ -152,9 +155,16 @@ def api_post_detail(post_id: int):
         SavedPost.query.filter_by(user_id=current_user.id, post_id=post.id).first()
         is not None
     )
+    comments = (
+        PostComment.query.filter_by(post_id=post.id, pending=False)
+        .order_by(PostComment.timestamp.desc())
+        .limit(10)
+        .all()
+    )
     html = render_template(
         "feed/_post_modal.html",
         post=post,
+        comments=comments,
         reaction_counts=counts,
         user_reaction=my_reaction,
         saved_posts={post.id: saved},

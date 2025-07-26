@@ -73,10 +73,11 @@
         <!-- Sección de Comentarios -->
         <div class="modal-comments-section">
           <!-- Lista de Comentarios Existentes -->
+          {% set more_comments = post.comments|length > 10 %}
           <div class="comments-list" id="commentsList-{{ post.id }}">
             {% for comment in post.comments[:10] %}
             <div class="comment-item d-flex mb-3">
-              <img src="{{ comment.author.avatar_url if comment.author else url_for('static', filename='img/default.png') }}" 
+              <img src="{{ comment.author.avatar_url if comment.author else url_for('static', filename='img/default.png') }}"
                    alt="{{ comment.author.username if comment.author else 'Usuario' }}"
                    class="rounded-circle me-2" 
                    style="width: 32px; height: 32px; object-fit: cover;">
@@ -95,6 +96,11 @@
             </div>
             {% endfor %}
           </div>
+          {% if more_comments %}
+          <div class="text-center my-2">
+            <button class="btn btn-link load-more-comments" data-post-id="{{ post.id }}" data-page="2">Cargar más comentarios</button>
+          </div>
+          {% endif %}
 
           <!-- Formulario para Agregar Comentario -->
           <div class="add-comment-form mt-3">

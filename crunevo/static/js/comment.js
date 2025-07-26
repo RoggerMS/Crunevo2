@@ -27,87 +27,6 @@
         section.innerHTML = '<p class="text-muted">Error al cargar comentarios</p>';
       });
   }
-  function openCommentsModal(postId) {
-    const modalEl = document.getElementById(`commentsModal-${postId}`);
-    if (!modalEl) return;
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
-    setTimeout(() => {
-      const input = modalEl.querySelector('.comment-input');
-      if (input) input.focus();
-    }, 300);
-  }
-
-  function submitComment(event, postId) {
-    event.preventDefault();
-    const form = event.target;
-    const input = form.querySelector('.comment-input');
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const body = input.value.trim();
-    if (!body) return;
-
-    submitBtn.disabled = true;
-    input.disabled = true;
-
-    const formData = new FormData();
-    formData.append('body', body);
-    formData.append('csrf_token', window.modernFeedManager?.getCSRFToken?.() || '');
-
-    fetch(`/feed/comment/${postId}`, {
-      method: 'POST',
-      body: formData
-    })
-    .then(r => {
-      if (r.status === 202) {
-        window.modernFeedManager?.showToast?.('Comentario pendiente de aprobación', 'info');
-        input.value = '';
-      } else if (r.ok) {
-        return r.json();
-      } else {
-        throw new Error('Error al agregar comentario');
-      }
-    })
-    .then(data => {
-      if (data) {
-        addCommentToModal(data, postId);
-        input.value = '';
-        updateCommentCount(postId, 1);
-        window.modernFeedManager?.showToast?.('Comentario agregado', 'success');
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      window.modernFeedManager?.showToast?.('Error al agregar comentario', 'error');
-    })
-    .finally(() => {
-      submitBtn.disabled = false;
-      input.disabled = false;
-    });
-  }
-
-  function addCommentToModal(comment, postId) {
-    const list = document.getElementById(`commentsList-${postId}`);
-    if (!list) return;
-    const html = `
-      <div class="comment-item mb-3" data-comment-id="${comment.id}">
-        <div class="d-flex">
-          <img src="${comment.avatar || '/static/img/default.png'}" alt="${comment.author}" class="rounded-circle me-2" style="width:32px;height:32px;object-fit:cover;">
-          <div class="flex-grow-1">
-            <div class="comment-bubble">
-              <strong class="comment-author">${comment.author}</strong>
-              <p class="comment-text mb-1">${comment.body}</p>
-            </div>
-            <div class="comment-meta d-flex align-items-center gap-3">
-              <small class="text-muted">ahora</small>
-              <button class="btn btn-link btn-sm p-0 text-muted">Responder</button>
-              <button class="btn btn-link btn-sm p-0 text-danger" onclick="deleteComment('${comment.id}', '${postId}')">Eliminar</button>
-            </div>
-          </div>
-        </div>
-      </div>`;
-    list.insertAdjacentHTML('beforeend', html);
-  }
-
   function deleteComment(commentId, postId) {
     if (!confirm('¿Estás seguro de que quieres eliminar este comentario?')) return;
     fetch(`/feed/comment/delete/${commentId}`, {
@@ -130,18 +49,6 @@
     });
   }
 
-  function updateCommentCount(postId, inc) {
-    const btn = document.querySelector(`[data-post-id="${postId}"].comment-btn`);
-    if (!btn) return;
-    const countSpan = btn.querySelector('.action-count');
-    if (!countSpan) return;
-    const current = parseInt(countSpan.textContent) || 0;
-    const newVal = Math.max(0, current + inc);
-    countSpan.textContent = newVal > 0 ? newVal : '';
-  }
-
-  window.openCommentsModal = openCommentsModal;
-  window.submitComment = submitComment;
   window.deleteComment = deleteComment;
   window.initPhotoComments = initPhotoComments; // Initialization handled in main.js
 })();
