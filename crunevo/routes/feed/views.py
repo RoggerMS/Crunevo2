@@ -11,8 +11,6 @@ from flask import (
     abort,
 )
 from flask_login import current_user
-from sqlalchemy import func, desc
-from datetime import datetime, timedelta, date
 
 from crunevo.extensions import db
 from crunevo.models import (
@@ -23,8 +21,6 @@ from crunevo.models import (
     FeedItem,
     Note,
     User,
-    UserAchievement,
-    Credit,
     Report,
 )
 from crunevo.utils.helpers import activated_required
@@ -35,71 +31,15 @@ from crunevo.utils import (
 )
 from crunevo.cache.feed_cache import remove_item
 from sqlalchemy.exc import IntegrityError
-from crunevo.utils.login_streak import streak_reward
+from crunevo.services.feed_service import (
+    fetch_feed_data,
+    streak_info,
+    get_weekly_top_posts,
+    get_featured_posts,
+    get_weekly_ranking,
+)
 
 from . import feed_bp
-
-
-def get_featured_posts():
-    """Return top notes, posts and users with recent achievements."""
-    top_notes = Note.query.order_by(Note.views.desc()).limit(3).all()
-    top_posts = (
-        Post.query.join(PostReaction)
-        .group_by(Post.id)
-        .order_by(func.count(PostReaction.id).desc())
-        .limit(3)
-        .all()
-    )
-    top_users = (
-        db.session.query(User)
-        .join(UserAchievement)
-        .group_by(User.id)
-        .order_by(func.max(UserAchievement.timestamp).desc())
-        .limit(3)
-        .all()
-    )
-    return top_notes, top_posts, top_users
-
-
-def get_weekly_top_posts(limit=3):
-    """Return posts with most likes from the last week."""
-    last_week = datetime.utcnow() - timedelta(days=7)
-    return (
-        Post.query.join(PostReaction)
-        .filter(Post.created_at > last_week)
-        .group_by(Post.id)
-        .order_by(func.count(PostReaction.id).desc())
-        .limit(limit)
-        .all()
-    )
-
-
-def get_weekly_ranking(limit=5):
-    now = datetime.utcnow()
-    week_start = now - timedelta(days=7)
-    top_ranked = (
-        db.session.query(
-            User.username,
-            func.coalesce(func.sum(Credit.amount), 0).label("credits"),
-        )
-        .join(Credit, Credit.user_id == User.id)
-        .filter(Credit.timestamp >= week_start)
-        .group_by(User.id)
-        .order_by(desc("credits"))
-        .limit(limit)
-        .all()
-    )
-
-    recent_achievements = (
-        db.session.query(
-            User.username, UserAchievement.badge_code, UserAchievement.timestamp
-        )
-        .join(User, User.id == UserAchievement.user_id)
-        .order_by(UserAchievement.timestamp.desc())
-        .limit(limit)
-        .all()
-    )
-    return top_ranked, recent_achievements
 
 
 @feed_bp.route("/post", methods=["POST"], endpoint="create_post")
@@ -160,67 +100,21 @@ def view_feed():
         return create_post()
 
     categoria = request.args.get("categoria")
-    from sqlalchemy.orm import joinedload
-
-    query = FeedItem.query.filter_by(owner_id=current_user.id).options(
-        joinedload(FeedItem.post), joinedload(FeedItem.note)
-    )
-    if categoria == "apuntes":
-        query = query.filter_by(item_type="apunte")
-    else:
-        query = query.filter(FeedItem.item_type != "apunte")
-    feed_items_raw = query.order_by(FeedItem.created_at.desc()).limit(20).all()
-
-    feed_items = []
-    post_ids = []
-    for item in feed_items_raw:
-        if item.item_type == "post" and item.post:
-            if categoria == "imagen" and (
-                not item.post.file_url or item.post.file_url.endswith(".pdf")
-            ):
-                continue
-            feed_items.append({"type": "post", "data": item.post})
-            post_ids.append(item.post.id)
-        elif item.item_type == "apunte" and item.note and categoria == "apuntes":
-            feed_items.append({"type": "note", "data": item.note})
-
-    reaction_map = PostReaction.counts_for_posts(post_ids)
-    user_reactions = PostReaction.reactions_for_user_posts(current_user.id, post_ids)
-    from crunevo.models import SavedPost
-
-    saved_posts = {
-        sp.post_id: True
-        for sp in SavedPost.query.filter(
-            SavedPost.user_id == current_user.id,
-            SavedPost.post_id.in_(post_ids),
-        ).all()
-    }
-    trending_posts = get_weekly_top_posts(limit=3)
-    trending_counts = PostReaction.counts_for_posts([p.id for p in trending_posts])
-    trending_user_reactions = PostReaction.reactions_for_user_posts(
-        current_user.id, [p.id for p in trending_posts]
-    )
-
-    streak = current_user.login_streak
-    show_streak = (
-        streak
-        and streak.last_login == date.today()
-        and streak.claimed_today != date.today()
-    )
-    reward = streak_reward(streak.current_day) if streak else 0
+    data = fetch_feed_data(current_user, categoria)
+    streak, show_streak, reward = streak_info(current_user)
 
     template = "feed/feed.html"
     return render_template(
         template,
-        feed_items=feed_items,
+        feed_items=data["feed_items"],
         categoria=categoria,
-        reaction_counts=reaction_map,
-        user_reactions=user_reactions,
-        saved_posts=saved_posts,
+        reaction_counts=data["reaction_counts"],
+        user_reactions=data["user_reactions"],
+        saved_posts=data["saved_posts"],
         show_streak_claim=show_streak,
-        trending_posts=trending_posts,
-        trending_counts=trending_counts,
-        trending_user_reactions=trending_user_reactions,
+        trending_posts=data["trending_posts"],
+        trending_counts=data["trending_counts"],
+        trending_user_reactions=data["trending_user_reactions"],
         streak_day=streak.current_day if streak else 1,
         streak_reward=reward,
     )

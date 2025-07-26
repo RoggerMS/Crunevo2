@@ -841,3 +841,4 @@
 - CI workflow runs 'make fmt' and 'make test' on every push (PR workflow-fmt-test).
 - SECRET_KEY now required from environment; config warns in debug and errors in
   production (PR secret-key-env).
+- Split auth.login and feed.view_feed logic into new services for authentication and feed data retrieval (PR login-feed-services).
