@@ -11,6 +11,10 @@ class Config:
 
     DEBUG = os.getenv("FLASK_DEBUG", "0").lower() in ("1", "true", "yes")
 
+    # Secure session cookies in all environments
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SAMESITE = "Lax"
+
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///data.db").replace(
         "postgres://", "postgresql://"
     )
