@@ -37,6 +37,7 @@ from crunevo.models import (
     PageView,
     PrintRequest,
     ProductRequest,
+    SystemErrorLog,
 )
 from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit
@@ -123,6 +124,7 @@ def dashboard():
         db.session.query(db.func.sum(User.credits)).scalar() or 0
     )
     total_purchases = Purchase.query.count()
+    unresolved_errors = SystemErrorLog.query.filter_by(resuelto=False).count()
 
     return render_template(
         "admin/dashboard.html",
@@ -138,6 +140,7 @@ def dashboard():
         most_active_clubs=most_active_clubs,
         total_crolars_circulation=total_crolars_circulation,
         total_purchases=total_purchases,
+        unresolved_errors=unresolved_errors,
         reg_labels=reg_labels,
         reg_counts=reg_counts,
         content_counts=content_counts,
@@ -574,6 +577,41 @@ def admin_logs():
         .all()
     )
     return render_template("admin/admin_logs.html", logs=logs)
+
+
+@admin_bp.route("/errores")
+def ver_errores():
+    """List recent system errors for admins"""
+    ruta = request.args.get("ruta", "")
+    user = request.args.get("user", type=int)
+    estado = request.args.get("estado")
+    query = SystemErrorLog.query
+    if ruta:
+        query = query.filter(SystemErrorLog.ruta.contains(ruta))
+    if user:
+        query = query.filter_by(user_id=user)
+    if estado == "resuelto":
+        query = query.filter_by(resuelto=True)
+    elif estado == "pendiente":
+        query = query.filter_by(resuelto=False)
+    errores = query.order_by(SystemErrorLog.timestamp.desc()).limit(100).all()
+    return render_template(
+        "admin/errores.html",
+        errores=errores,
+        filtro_ruta=ruta,
+        filtro_user=user,
+        filtro_estado=estado,
+    )
+
+
+@admin_bp.route("/errores/<int:error_id>/resolver", methods=["POST"])
+def resolver_error(error_id):
+    """Mark a system error as resolved."""
+    err = SystemErrorLog.query.get_or_404(error_id)
+    err.resuelto = True
+    db.session.commit()
+    flash("Error marcado como resuelto", "success")
+    return redirect(url_for("admin.ver_errores"))
 
 
 @admin_bp.route("/run-ranking")

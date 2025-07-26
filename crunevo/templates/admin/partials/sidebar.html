@@ -57,5 +57,9 @@
   <a class="nav-link disabled"><i class="ti ti-calendar-event me-2"></i> Eventos</a>
 
   <span class="text-muted fw-bold small mt-4 mb-2">⚙️ Sistema</span>
+  <a class="nav-link {% if request.endpoint == 'admin.ver_errores' %}active{% endif %}" href="{{ url_for('admin.ver_errores') }}">
+    <i class="ti ti-bug me-2"></i> Errores
+    {% if UNRESOLVED_ERRORS %}<span class="badge bg-danger ms-1">{{ UNRESOLVED_ERRORS }}</span>{% endif %}
+  </a>
   <a class="nav-link disabled"><i class="ti ti-settings me-2"></i> Configuración</a>
 </div>

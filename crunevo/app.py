@@ -1,4 +1,13 @@
-from flask import Flask, request, redirect, url_for, flash, current_app, g
+from flask import (
+    Flask,
+    request,
+    redirect,
+    url_for,
+    flash,
+    current_app,
+    g,
+    render_template,
+)
 from flask_login import current_user
 import logging
 from logging.handlers import RotatingFileHandler
@@ -19,6 +28,7 @@ from .extensions import (
     oauth,
 )
 from flask_wtf.csrf import CSRFError
+from werkzeug.exceptions import HTTPException
 
 DEFAULT_CSP = {
     "default-src": "'self'",
@@ -77,12 +87,14 @@ def create_app():
 
         urgent_count = 0
         new_achievements = []
+        unresolved_errors = 0
         if current_user.is_authenticated and current_user.role in [
             "admin",
             "moderator",
         ]:
             try:
                 from .models import Report
+                from .models import SystemErrorLog
 
                 counts = {}
                 for r in Report.query.filter_by(status="open").all():
@@ -93,8 +105,12 @@ def create_app():
                         except Exception:
                             app.logger.exception("Error processing urgent report")
                 urgent_count = sum(1 for c in counts.values() if c >= 3)
+                unresolved_errors = SystemErrorLog.query.filter_by(
+                    resuelto=False
+                ).count()
             except Exception:
                 urgent_count = 0
+                unresolved_errors = 0
 
         if current_user.is_authenticated:
             try:
@@ -128,6 +144,7 @@ def create_app():
             "current_app": current_app,
             "CART_COUNT": sum(session.get("cart", {}).values()),
             "URGENT_REPORTS": urgent_count,
+            "UNRESOLVED_ERRORS": unresolved_errors,
             "NEW_ACHIEVEMENTS": new_achievements,
             "get_hall_membership": get_hall_membership,
             "notes_count": notes_count,
@@ -492,6 +509,31 @@ def create_app():
 
     # Initialize socket namespaces
     import crunevo.routes.socket_routes  # noqa: F401
+
+    from .models import SystemErrorLog
+
+    @app.errorhandler(Exception)
+    def log_exception(e):
+        try:
+            err = SystemErrorLog(
+                ruta=request.path,
+                mensaje=str(e),
+                status_code=getattr(e, "code", 500),
+                user_id=current_user.id if current_user.is_authenticated else None,
+            )
+            db.session.add(err)
+            db.session.commit()
+        except Exception:
+            app.logger.exception("Failed to log system error")
+
+        if isinstance(e, HTTPException):
+            code = e.code
+            if code == 404:
+                return render_template("errors/404.html"), 404
+            if code == 429:
+                return render_template("errors/429.html"), 429
+            return render_template("errors/500.html"), code
+        return render_template("errors/500.html"), 500
 
     @app.errorhandler(CSRFError)
     def handle_csrf_error(e):
