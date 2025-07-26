@@ -81,7 +81,7 @@ database hosted on Fly.io:
 ```bash
 fly postgres create ...           # crea cluster
 fly postgres attach ...           # genera DATABASE_URL
-fly secrets set SECRET_KEY=...    # etc.
+fly secrets set SECRET_KEY=...    # requerido, la app falla sin esta variable
 ```
 
 When connecting from another Fly app, use the internal hostname
@@ -210,6 +210,8 @@ pre-commit install
 ## Configuración
 
 La clave CSRF (`FLASK_WTF_SECRET_KEY`) suele ser la misma que `SECRET_KEY`.
+Debes definir `SECRET_KEY` como variable de entorno. No existe valor por
+defecto y el servidor se detendrá si falta en producción.
 La variable `ENABLE_CSRF` está siempre activa en producción y no deberías deshabilitarla.
 En producción la protección CSRF está siempre habilitada.
 

@@ -7,9 +7,19 @@ load_dotenv()
 
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY", "devkey")
-
     DEBUG = os.getenv("FLASK_DEBUG", "0").lower() in ("1", "true", "yes")
+
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    if not SECRET_KEY:
+        if DEBUG:
+            SECRET_KEY = "devkey"
+            logging.getLogger(__name__).warning(
+                "SECRET_KEY not set; using insecure default in debug mode"
+            )
+        else:
+            raise RuntimeError(
+                "SECRET_KEY environment variable is required in production"
+            )
 
     # Secure session cookies in all environments
     SESSION_COOKIE_SECURE = True
