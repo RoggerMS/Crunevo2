@@ -225,3 +225,22 @@ def test_feed_load_empty_returns_message(client, test_user):
     resp = client.get("/feed/load?page=99")
     assert resp.status_code == 200
     assert "No hay más publicaciones." in resp.data.decode("utf-8")
+
+
+def test_comments_api_pagination(client, db_session, test_user):
+    post = Post(content="c", author=test_user)
+    db_session.add(post)
+    db_session.commit()
+    comments = [
+        PostComment(body=f"c{i}", author=test_user, post=post) for i in range(15)
+    ]
+    db_session.add_all(comments)
+    db_session.commit()
+
+    login(client, test_user.username, "secret")
+    resp1 = client.get(f"/feed/api/comments/{post.id}?page=1")
+    resp2 = client.get(f"/feed/api/comments/{post.id}?page=2")
+    assert resp1.status_code == 200
+    assert resp2.status_code == 200
+    assert len(resp1.get_json()) == 10
+    assert len(resp2.get_json()) == 5

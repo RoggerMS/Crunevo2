@@ -24,8 +24,10 @@
   {% endif %}
 
   <div class="modal-info-content">
+    {% set comments = comments if comments is defined else post.comments %}
+    {% set more_comments = post.comments|length > comments|length %}
     <div class="comments-list" id="commentsList-{{ post.id }}">
-      {% for comment in post.comments if not comment.pending %}
+      {% for comment in comments %}
       <div class="comment-item mb-3">
         <img src="{{ comment.author.avatar_url or url_for('static', filename='img/default.png') }}"
              alt="{{ comment.author.username if comment.author else 'Usuario' }}"
@@ -44,6 +46,11 @@
       </div>
       {% endfor %}
     </div>
+    {% if more_comments %}
+    <div class="text-center my-2">
+      <button class="btn btn-link load-more-comments" data-post-id="{{ post.id }}" data-page="2">Cargar más comentarios</button>
+    </div>
+    {% endif %}
   </div>
 
   <div class="modal-info-footer">
