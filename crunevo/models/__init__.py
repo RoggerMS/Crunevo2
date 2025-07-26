@@ -60,5 +60,7 @@ from .hall_1000 import RaffleParticipant  # noqa: F401
 from .print_request import PrintRequest  # noqa: F401
 from .api_key import APIKey  # noqa: F401
 
+from .system_error_log import SystemErrorLog  # noqa: F401
+
 from .internship import Internship, InternshipApplication  # noqa: F401
 from .product_request import ProductRequest  # noqa: F401

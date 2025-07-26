@@ -1,0 +1,59 @@
+{% extends 'admin/base_admin.html' %}
+{% from 'components/csrf.html' import csrf_field %}
+{% block admin_content %}
+<h2 class="page-title mb-4">Errores de sistema</h2>
+<form class="row g-3 mb-3" method="get">
+  <div class="col-md-4">
+    <input type="text" class="form-control" name="ruta" placeholder="Ruta" value="{{ filtro_ruta }}">
+  </div>
+  <div class="col-md-3">
+    <input type="number" class="form-control" name="user" placeholder="ID usuario" value="{{ filtro_user or '' }}">
+  </div>
+  <div class="col-md-3">
+    <select class="form-select" name="estado">
+      <option value="" {% if not filtro_estado %}selected{% endif %}>Todos</option>
+      <option value="pendiente" {% if filtro_estado=='pendiente' %}selected{% endif %}>Pendiente</option>
+      <option value="resuelto" {% if filtro_estado=='resuelto' %}selected{% endif %}>Resuelto</option>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-primary w-100" type="submit">Filtrar</button>
+  </div>
+</form>
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-vcenter card-table" data-datatable>
+        <thead>
+          <tr>
+            <th>ID</th><th>Ruta</th><th>Mensaje</th><th>Código</th><th>Usuario</th><th>Fecha</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for err in errores %}
+        <tr class="{% if not err.resuelto %}table-danger{% endif %}">
+          <td>{{ err.id }}</td>
+          <td class="text-truncate" style="max-width:150px">{{ err.ruta }}</td>
+          <td class="text-truncate" style="max-width:250px">{{ err.mensaje[:120] }}</td>
+          <td>{{ err.status_code }}</td>
+          <td>{{ err.user_id or '-' }}</td>
+          <td>{{ err.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>
+            {% if not err.resuelto %}
+            <form method="post" action="{{ url_for('admin.resolver_error', error_id=err.id) }}" class="d-inline">
+              {{ csrf_field() }}
+              <button class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Marcar resuelto">
+                <i class="ti ti-check"></i>
+              </button>
+            </form>
+            {% else %}<span class="badge bg-success">Resuelto</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', initDataTables);</script>
+{% endblock %}
