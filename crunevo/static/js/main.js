@@ -844,6 +844,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initPhotoComments === 'function' && document.getElementById('comment-section')) {
     initPhotoComments();
   }
+  if (typeof initCommentModals === 'function') {
+    initCommentModals();
+  }
   if (typeof initCrunevoStore === 'function' && document.getElementById('publishProductForm')) {
     initCrunevoStore();
   }
