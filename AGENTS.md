@@ -846,3 +846,4 @@
 - Comment modal logic consolidated into feed.js; comment.js reduced to a stub and main.js initializes the unified code (PR comment-module-unify).
 - Added reactions list modal with /feed/api/reactions/<post_id> endpoint and JS handler (PR reactions-list-modal).
 - Comment and photo modals now include ARIA labelling and keyboard focus for improved accessibility (PR modals-aria-accessibility).
+- Comment submission now inspects fetch errors and shows friendly messages; buttons re-enable on failure (PR comment-error-messages).
