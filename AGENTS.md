@@ -851,3 +851,4 @@
 - Release command sets random SECRET_KEY to avoid missing env error (PR release-secret-fix).
 - Added comment deletion endpoint `/feed/comment/delete/<id>` with author/moderator authorization (PR comment-delete-endpoint).
 - Consolidated openCommentsModal, submitModalComment and addCommentToModalUI into comment.js; feed.js references them and main.js calls initCommentModals once (PR comment-modal-refactor).
+- Defined .bi-fire-fill in fix-bootstrap.css to keep the fire icon visible when liking posts (PR like-fire-icon-fix)
