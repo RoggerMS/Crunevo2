@@ -655,22 +655,27 @@ class ModernFeedManager {
     const modal = document.createElement('div');
     modal.id = 'imageModal';
     modal.className = 'image-modal hidden';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'imageModalLabel');
+    modal.setAttribute('tabindex', '-1');
 
     const hasMultiple = this.imageList.length > 1;
     modal.innerHTML = `
       <div class="modal-container" onclick="modernFeedManager.outsideImageClick(event)">
+        <h2 id="imageModalLabel" class="visually-hidden">Visor de imagen</h2>
         <div class="modal-image-section">
           <img id="modalImage" src="${src}" alt="Imagen ${index + 1}">
           <div class="modal-top-controls">
-            <button class="modal-control-btn" onclick="modernFeedManager.zoomOut()" title="Reducir zoom"><i class="bi bi-dash"></i></button>
-            <button class="modal-control-btn" onclick="modernFeedManager.zoomIn()" title="Aumentar zoom"><i class="bi bi-plus"></i></button>
-            <button class="modal-control-btn" onclick="modernFeedManager.resetZoom()" title="Tamaño original"><i class="bi bi-arrows-fullscreen"></i></button>
-            <a href="${src}" target="_blank" class="modal-control-btn" title="Abrir en nueva pestaña"><i class="bi bi-box-arrow-up-right"></i></a>
-            <button class="modal-control-btn" onclick="modernFeedManager.closeImageModal()" title="Cerrar"><i class="bi bi-x"></i></button>
+            <button type="button" class="modal-control-btn" onclick="modernFeedManager.zoomOut()" title="Reducir zoom" aria-label="Reducir zoom"><i class="bi bi-dash"></i></button>
+            <button type="button" class="modal-control-btn" onclick="modernFeedManager.zoomIn()" title="Aumentar zoom" aria-label="Aumentar zoom"><i class="bi bi-plus"></i></button>
+            <button type="button" class="modal-control-btn" onclick="modernFeedManager.resetZoom()" title="Tamaño original" aria-label="Tamaño original"><i class="bi bi-arrows-fullscreen"></i></button>
+            <a href="${src}" target="_blank" class="modal-control-btn" title="Abrir en nueva pestaña" aria-label="Abrir en nueva pestaña"><i class="bi bi-box-arrow-up-right"></i></a>
+            <button type="button" class="modal-control-btn" onclick="modernFeedManager.closeImageModal()" title="Cerrar" aria-label="Cerrar"><i class="bi bi-x"></i></button>
           </div>
           ${hasMultiple ? `
-            <button class="modal-nav prev" onclick="modernFeedManager.prevImage()" ${index === 0 ? 'style="opacity:0.5"' : ''}><i class="bi bi-chevron-left"></i></button>
-            <button class="modal-nav next" onclick="modernFeedManager.nextImage()" ${index === this.imageList.length - 1 ? 'style="opacity:0.5"' : ''}><i class="bi bi-chevron-right"></i></button>
+            <button type="button" class="modal-nav prev" onclick="modernFeedManager.prevImage()" aria-label="Imagen anterior" ${index === 0 ? 'style="opacity:0.5"' : ''}><i class="bi bi-chevron-left"></i></button>
+            <button type="button" class="modal-nav next" onclick="modernFeedManager.nextImage()" aria-label="Imagen siguiente" ${index === this.imageList.length - 1 ? 'style="opacity:0.5"' : ''}><i class="bi bi-chevron-right"></i></button>
           ` : ''}
           <div class="modal-counter" id="modalCounter">${index + 1} / ${this.imageList.length}</div>
         </div>
@@ -682,6 +687,7 @@ class ModernFeedManager {
       </div>`;
 
     document.body.appendChild(modal);
+    modal.focus();
     document.body.classList.add('photo-modal-open');
 
     this.modalImageEl = modal.querySelector('#modalImage');
