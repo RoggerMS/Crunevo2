@@ -281,7 +281,10 @@ class ModernFeedManager {
         if (input) input.value = '';
         this.showToast('Comentario agregado', 'success');
       } else {
-        this.showToast('Error al agregar comentario', 'error');
+        const data = await response.json().catch(() => ({}));
+        const msg = data.error ||
+          (response.status === 403 ? 'Comentarios deshabilitados' : 'Error al agregar comentario');
+        this.showToast(msg, 'error');
       }
     } catch (error) {
       console.error('Error submitting comment:', error);
@@ -1303,14 +1306,17 @@ function submitModalComment(event, postId) {
     method: 'POST',
     body: formData
   })
-  .then(response => {
+  .then(async response => {
     if (response.status === 202) {
       window.modernFeedManager?.showToast('Comentario pendiente de aprobación', 'info');
       input.value = '';
     } else if (response.ok) {
       return response.json();
     } else {
-      throw new Error('Error al agregar comentario');
+      const data = await response.json().catch(() => ({}));
+      const msg = data.error ||
+        (response.status === 403 ? 'Comentarios deshabilitados' : 'Error al agregar comentario');
+      throw new Error(msg);
     }
   })
   .then(data => {
@@ -1325,7 +1331,7 @@ function submitModalComment(event, postId) {
   })
   .catch(error => {
     console.error('Error submitting comment:', error);
-    window.modernFeedManager?.showToast('Error al agregar comentario', 'error');
+    window.modernFeedManager?.showToast(error.message || 'Error al agregar comentario', 'error');
   })
   .finally(() => {
     submitBtn.disabled = false;
@@ -1377,7 +1383,14 @@ function loadMoreComments(btn, postId) {
   const page = parseInt(btn.dataset.page || '1');
   btn.disabled = true;
   fetch(`/feed/api/comments/${postId}?page=${page}`)
-    .then(r => r.json())
+    .then(async r => {
+      if (!r.ok) {
+        const data = await r.json().catch(() => ({}));
+        const msg = data.error || 'Error al cargar comentarios';
+        throw new Error(msg);
+      }
+      return r.json();
+    })
     .then(comments => {
       if (comments.length) {
         comments.forEach(c => addCommentToModalUI(c, postId));
@@ -1390,7 +1403,8 @@ function loadMoreComments(btn, postId) {
         btn.remove();
       }
     })
-    .catch(() => {
+    .catch(err => {
+      window.modernFeedManager?.showToast(err.message, 'error');
       btn.disabled = false;
     });
 }

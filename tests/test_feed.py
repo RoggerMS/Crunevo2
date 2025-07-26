@@ -244,3 +244,14 @@ def test_comments_api_pagination(client, db_session, test_user):
     assert resp2.status_code == 200
     assert len(resp1.get_json()) == 10
     assert len(resp2.get_json()) == 5
+
+
+def test_comment_disabled_returns_403(client, db_session, test_user, another_user):
+    post = Post(content="x", author=test_user, comment_permission="none")
+    db_session.add(post)
+    db_session.commit()
+
+    login(client, another_user.username, "secret")
+    resp = client.post(f"/feed/comment/{post.id}", data={"body": "hello"})
+    assert resp.status_code == 403
+    assert resp.get_json()["error"] == "Comentarios deshabilitados"
