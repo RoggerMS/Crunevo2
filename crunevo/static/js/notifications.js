@@ -21,6 +21,11 @@ class NotificationManager {
             this.renderNotifications(data.notifications);
         } catch (error) {
             console.error('Error loading notifications:', error);
+            if (window.CRUNEVO_UI && window.CRUNEVO_UI.showErrorToast) {
+                window.CRUNEVO_UI.showErrorToast('Error al cargar notificaciones');
+            } else if (typeof showToast === 'function') {
+                showToast('Error al cargar notificaciones');
+            }
         }
     }
 
@@ -34,8 +39,19 @@ class NotificationManager {
     renderNotifications(notifications) {
         if (!this.container) return;
         
+        // Remove previous "no new" message if present
+        const noNew = this.container.querySelector('.no-new-notifs');
+        if (noNew) noNew.remove();
+
         if (notifications.length === 0) {
-            this.container.innerHTML = '<div class="text-center text-muted p-3">No hay notificaciones</div>';
+            if (this.container.querySelectorAll('.notification-item').length === 0) {
+                this.container.innerHTML = '<div class="text-center text-muted p-3">No hay notificaciones</div>';
+            } else {
+                const msg = document.createElement('div');
+                msg.className = 'text-center text-muted p-3 no-new-notifs';
+                msg.textContent = 'No hay notificaciones nuevas';
+                this.container.appendChild(msg);
+            }
             return;
         }
 
@@ -70,7 +86,11 @@ class NotificationManager {
     }
 
     setupAutoRefresh() {
-        setInterval(() => this.loadNotifications(), 30000); // Cada 30 segundos
+        setInterval(() => {
+            if (!document.hidden) {
+                this.loadNotifications();
+            }
+        }, 30000); // Cada 30 segundos si la pestaña está activa
     }
 }
 
