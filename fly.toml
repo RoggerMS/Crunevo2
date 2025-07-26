@@ -6,7 +6,7 @@ primary_region = 'gru'
   dockerfile = 'Dockerfile'
 
 [deploy]
-  release_command = "SECRET_KEY=$(python -c 'import secrets; print(secrets.token_hex())') flask db upgrade"
+  release_command = "flask db upgrade"
 
 [env]
   FLASK_APP = 'crunevo.wsgi:app'
