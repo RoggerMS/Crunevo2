@@ -863,3 +863,4 @@
 - Removed unused global comment modal in feed.html; each post modal now uniquely references commentsModal-<post.id> (PR comment-modal-id-cleanup).
 - Improved notifications dropdown reload: shows error toast when request fails, keeps previous entries when empty with message 'No hay notificaciones nuevas' and refreshes only if tab visible (PR notifications-error-toast).
 - Updated notifications.js to query #notificationsDropdown and #notifications-list; replaced .notification-container selector (PR notifications-dropdown-selector).
+- Removed legacy initNotifications from main.js; dropdown updates now rely on initNotificationManager (PR remove-initNotifications).

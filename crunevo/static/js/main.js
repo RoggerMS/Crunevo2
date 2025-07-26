@@ -1073,7 +1073,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  initNotifications();
   initNotificationFilters();
   initOnlineCount();
 
@@ -1118,86 +1117,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-let notifCount = 0;
-function initNotifications() {
-  const list = document.getElementById('notifList');
-  const badge = document.getElementById('notifBadge');
-  const icon = document.getElementById('notifIcon');
-  const markAll = document.getElementById('markAllRead');
-  const sound = document.getElementById('notifSound');
-  if (!list || !badge) return;
-
-function getNotiInfo(msg) {
-  const m = msg.toLowerCase();
-  if (m.includes('reaccion'))
-    return { icon: 'bi-hand-thumbs-up-fill text-warning', type: 'reaction' };
-  if (m.includes('coment'))
-    return { icon: 'bi-chat-left-dots-fill text-info', type: 'comment' };
-  if (m.includes('reporte'))
-    return { icon: 'bi-exclamation-circle-fill text-danger', type: 'report' };
-  if (m.includes('logro'))
-    return { icon: 'bi-trophy-fill text-purple', type: 'achievement' };
-  if (m.includes('seguidor'))
-    return { icon: 'bi-person-plus-fill text-success', type: 'follow' };
-  return { icon: 'bi-bell-fill text-secondary', type: 'other' };
-}
-
-  function timeAgo(ts) {
-    const d = new Date(ts);
-    const diff = Math.floor((Date.now() - d.getTime()) / 1000);
-    if (diff < 60) return 'hace unos segundos';
-    const m = Math.floor(diff / 60);
-    if (m < 60) return `hace ${m} min`;
-    const h = Math.floor(m / 60);
-    if (h < 24) return `hace ${h} h`;
-    const dday = Math.floor(h / 24);
-    if (dday === 1) return 'ayer';
-    return `hace ${dday} d`;
-  }
-
-  function refresh() {
-    fetch('/api/notifications', { headers: { 'X-Device-Token': getDeviceToken() } })
-      .then((r) => r.json())
-      .then((items) => {
-        if (items.length > notifCount) {
-          items.slice(0, items.length - notifCount).forEach((n) => {
-            showToast(n.message);
-            if (window.CRUNEVO_CONFIG?.soundEnabled && sound) {
-              try {
-                sound.currentTime = 0;
-                sound.play();
-              } catch {}
-            }
-          });
-        }
-        notifCount = items.length;
-        badge.classList.toggle('tw-hidden', notifCount === 0);
-        if (icon) icon.classList.toggle('text-warning', notifCount > 0);
-        list.innerHTML = '';
-        items.forEach((n) => {
-          const li = document.createElement('li');
-          const info = getNotiInfo(n.message);
-          const time = timeAgo(n.timestamp);
-          li.innerHTML = `<a class="dropdown-item d-flex align-items-start gap-2 noti-item" href="${n.url || '#'}"><i class="${info.icon} me-2"></i><span class="flex-grow-1">${n.message}</span><small class="noti-time text-muted ms-2">${time}</small></a>`;
-          const a = li.querySelector('a');
-          a.addEventListener('click', () => {
-            sessionStorage.setItem('notifHighlight', '1');
-          });
-          list.appendChild(li);
-        });
-      });
-  }
-
-  refresh();
-  setInterval(refresh, 30000);
-
-  if (markAll) {
-    markAll.addEventListener('click', (e) => {
-      e.preventDefault();
-      csrfFetch('/notifications/read_all', { method: 'POST' }).then(refresh);
-    });
-  }
-}
 
 function updateCartBadge(count) {
   document.querySelectorAll('#cartBadge, #cartBadgeDesktop, #mobileCartBadge').forEach((b) => {
