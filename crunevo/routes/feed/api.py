@@ -10,6 +10,7 @@ from crunevo.models import (
     PostReaction,
     FeedItem,
     Note,
+    User,
 )
 from crunevo.utils.helpers import activated_required
 from crunevo.utils import send_notification, record_activity
@@ -170,6 +171,28 @@ def api_post_detail(post_id: int):
         saved_posts={post.id: saved},
     )
     return jsonify({"html": html})
+
+
+@feed_bp.route("/api/reactions/<int:post_id>")
+@activated_required
+def api_reactions(post_id: int):
+    """Return users grouped by reaction type for a post."""
+    Post.query.get_or_404(post_id)
+    rows = (
+        db.session.query(PostReaction.reaction_type, User.username, User.avatar_url)
+        .join(User, PostReaction.user_id == User.id)
+        .filter(PostReaction.post_id == post_id)
+        .all()
+    )
+    result = {}
+    for reaction, username, avatar in rows:
+        result.setdefault(reaction, []).append(
+            {
+                "username": username,
+                "avatar": avatar or url_for("static", filename="img/default.png"),
+            }
+        )
+    return jsonify(result)
 
 
 @feed_bp.route("/save/<int:post_id>", methods=["POST"])

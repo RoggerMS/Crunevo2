@@ -409,11 +409,39 @@ class ModernFeedManager {
     });
 
     // Click on reactions count
-    document.addEventListener('click', (e) => {
+    document.addEventListener('click', async (e) => {
       const target = e.target.closest('.post-reactions-count');
-      if (target) {
-        console.log('TODO: Abrir modal para ver quién reaccionó');
+      if (!target) return;
+      const postId = target.dataset.postId;
+      if (!postId) return;
+
+      const modalEl = document.getElementById(`reactionsModal-${postId}`);
+      if (!modalEl) return;
+      const listEl = modalEl.querySelector(`#reactionsList-${postId}`);
+      if (!listEl) return;
+
+      listEl.innerHTML = '<div class="text-center my-2">Cargando...</div>';
+      try {
+        const response = await fetch(`/feed/api/reactions/${postId}`);
+        const data = await response.json();
+        listEl.innerHTML = '';
+        for (const [reaction, users] of Object.entries(data)) {
+          users.forEach(u => {
+            const item = document.createElement('div');
+            item.className = 'list-group-item d-flex align-items-center';
+            item.innerHTML = `
+              <img src="${u.avatar}" alt="${u.username}" class="rounded-circle me-2" style="width:32px;height:32px;object-fit:cover;">
+              <span class="flex-grow-1">${u.username}</span>
+              <span class="ms-2">${reaction}</span>`;
+            listEl.appendChild(item);
+          });
+        }
+      } catch {
+        listEl.innerHTML = '<div class="text-danger text-center">Error al cargar</div>';
       }
+
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
     });
   }
 

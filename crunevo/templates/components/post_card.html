@@ -129,7 +129,7 @@
   {% set post_reactions = reaction_counts.get(post.id, {}) %}
   {% set total_reactions = post_reactions.values() | sum %}
   {% if total_reactions > 0 %}
-  <div class="post-reactions-count">
+  <div class="post-reactions-count" data-post-id="{{ post.id }}">
     <div class="reactions-summary">
       <span class="reaction-icons">
         {% for reaction_type, count in post_reactions.items() %}
@@ -189,4 +189,7 @@
 <!-- Comments Modal -->
 {% with post=post, user_reactions=user_reactions, saved_posts=saved_posts %}
 {% include 'components/comment_modal.html' %}
+{% endwith %}
+{% with post=post %}
+{% include 'components/reactions_modal.html' %}
 {% endwith %}
