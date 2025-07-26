@@ -1,0 +1,14 @@
+<div class="modal fade" id="reactionsModal-{{ post.id }}" tabindex="-1" aria-labelledby="reactionsModalLabel-{{ post.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reactionsModalLabel-{{ post.id }}">Reacciones</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div id="reactionsList-{{ post.id }}" class="list-group space-y-2">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
