@@ -92,13 +92,6 @@
             {% endif %}
           </div>
 
-          {% if current_user.id == user.id %}
-          <a href="{{ url_for('settings.index') }}#personal"
-             class="btn btn-primary btn-sm shadow-sm position-absolute end-0 bottom-0 m-3">
-            <i class="bi bi-person-lines-fill"></i> Detalles personales
-          </a>
-          {% endif %}
-
           <!-- Mobile profile info -->
           <div class="d-lg-none mt-3">
             <div class="d-flex justify-content-start align-items-center mb-2 px-3">
