@@ -1,4 +1,8 @@
+# ruff: noqa: E402
 import os
+
+os.environ.setdefault("SECRET_KEY", "test-secret")
+
 import sys
 import pytest
 
