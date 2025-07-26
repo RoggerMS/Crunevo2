@@ -860,3 +860,4 @@
 - Detecta 'no-more-posts' en feed.js para detener el infinite scroll y ocultar el loader (PR feed-load-end).
 - loadFilteredFeed muestra mensaje si data.html está vacío sin limpiar el contenedor y reinicia reachedEnd/currentPage (hotfix quickfeed-empty)
 - loadMorePosts y loadFilteredFeed ahora ocultan el loader y muestran un alert si ocurre un error; registran el status HTTP y respuesta para depuración (PR feed-error-handling).
+- Removed unused global comment modal in feed.html; each post modal now uniquely references commentsModal-<post.id> (PR comment-modal-id-cleanup).
