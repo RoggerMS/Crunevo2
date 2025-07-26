@@ -1272,100 +1272,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Comments Modal Functions
-function openCommentsModal(postId) {
-  const modal = new bootstrap.Modal(document.getElementById(`commentsModal-${postId}`));
-  modal.show();
-  
-  // Focus on comment input after modal opens
-  setTimeout(() => {
-    const commentInput = document.querySelector(`#commentsModal-${postId} .comment-input`);
-    if (commentInput) {
-      commentInput.focus();
-    }
-  }, 300);
-}
-
-function submitModalComment(event, postId) {
-  event.preventDefault();
-  const form = event.target;
-  const input = form.querySelector('.comment-input');
-  const submitBtn = form.querySelector('button[type="submit"]');
-  const body = input.value.trim();
-
-  if (!body) return;
-
-  // Disable submit button
-  submitBtn.disabled = true;
-
-  const formData = new FormData();
-  formData.append('body', body);
-  formData.append('csrf_token', form.querySelector('[name="csrf_token"]').value);
-
-  fetch(`/feed/comment/${postId}`, {
-    method: 'POST',
-    body: formData
-  })
-  .then(async response => {
-    if (response.status === 202) {
-      window.modernFeedManager?.showToast('Comentario pendiente de aprobación', 'info');
-      input.value = '';
-    } else if (response.ok) {
-      return response.json();
-    } else {
-      const data = await response.json().catch(() => ({}));
-      const msg = data.error ||
-        (response.status === 403 ? 'Comentarios deshabilitados' : 'Error al agregar comentario');
-      throw new Error(msg);
-    }
-  })
-  .then(data => {
-    if (data) {
-      addCommentToModalUI(data, postId);
-      input.value = '';
-      window.modernFeedManager?.showToast('Comentario agregado', 'success');
-      
-      // Update comment count in main feed
-      updateCommentCount(postId, 1);
-    }
-  })
-  .catch(error => {
-    console.error('Error submitting comment:', error);
-    window.modernFeedManager?.showToast(error.message || 'Error al agregar comentario', 'error');
-  })
-  .finally(() => {
-    submitBtn.disabled = false;
-  });
-}
-
-function addCommentToModalUI(comment, postId) {
-  const commentsList = document.getElementById(`commentsList-${postId}`);
-  if (!commentsList) return;
-
-  const commentHTML = `
-    <div class="comment-item d-flex mb-3">
-      <img src="${comment.avatar || '/static/img/default.png'}" 
-           alt="${comment.author}"
-           class="rounded-circle me-2" 
-           style="width: 32px; height: 32px; object-fit: cover;">
-      <div class="flex-grow-1">
-        <div class="comment-bubble bg-light rounded-3 p-2">
-          <div class="comment-author fw-semibold small">${comment.author}</div>
-          <div class="comment-text">${comment.body}</div>
-        </div>
-        <div class="comment-meta mt-1">
-          <small class="text-muted">ahora</small>
-          <button class="btn btn-link btn-sm p-0 ms-2 text-muted">Responder</button>
-        </div>
-      </div>
-    </div>
-  `;
-
-  commentsList.insertAdjacentHTML('beforeend', commentHTML);
-  
-  // Scroll to bottom of comments
-  commentsList.scrollTop = commentsList.scrollHeight;
-}
+// Comments Modal Functions provided by comment.js
 
 function updateCommentCount(postId, increment) {
   const commentBtn = document.querySelector(`[data-post-id="${postId}"].comment-btn`);
@@ -1460,19 +1367,7 @@ function deleteComment(commentId, postId) {
     });
 }
 
-// Handle comment input changes in modal
-document.addEventListener('input', (e) => {
-  if (
-    e.target.classList.contains('comment-input') &&
-    e.target.closest('[id^="commentsModal-"]')
-  ) {
-    const form = e.target.closest('.comment-form');
-    const submitBtn = form?.querySelector('button[type="submit"]');
-    if (submitBtn) {
-      submitBtn.disabled = !e.target.value.trim();
-    }
-  }
-});
+
 
 // Handle modal gallery interactions
 document.addEventListener('click', (e) => {
