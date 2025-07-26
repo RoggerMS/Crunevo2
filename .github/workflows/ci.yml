@@ -1,11 +1,8 @@
 name: CI
 
 on:
-  pull_request:
   push:
-    branches:
-      - main
-      - master
+  pull_request:
 
 jobs:
   test:
@@ -17,5 +14,7 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: Run formatter
+        run: make fmt
       - name: Run tests
         run: make test

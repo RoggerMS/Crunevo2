@@ -838,3 +838,4 @@
 - Deploy frontend and backend containers independently; the SPA communicates with the Flask API via HTTP.
 - Session cookies default to `SESSION_COOKIE_SECURE=True` and `SESSION_COOKIE_SAMESITE='Lax'` in `config.py`. Production sets `SESSION_COOKIE_HTTPONLY=true` in `fly.toml` and `fly-admin.toml` (PR session-cookie-security).
 - Enabled Dependabot weekly updates for pip packages and added CI workflow running 'make test' on PRs (PR dependabot-ci).
+- CI workflow runs 'make fmt' and 'make test' on every push (PR workflow-fmt-test).
