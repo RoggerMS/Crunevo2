@@ -855,3 +855,4 @@
 - Perfil público ahora reutiliza el banner y el formulario de publicaciones; enlaces de perfil en navbar, sidebar y navegación móvil usan profile_by_username (PR public-profile-banner-modal).
 - Replaced "Editar perfil" button with "Detalles personales" fixed inside the profile header and ensured achievements section spacing and mobile grid (PR profile-details-btn).
 - Reemplazado botón "Editar perfil" por "Detalles personales" solo visible en el perfil propio; ajustada redirección a /perfil en lugar de configuración (PR perfil-detalles-fix).
+- Fixed Jinja if/else in perfil_publico.html to avoid TemplateSyntaxError and show actions for other users (hotfix perfil-conditional-fix).
