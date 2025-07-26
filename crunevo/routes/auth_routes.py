@@ -11,10 +11,14 @@ from flask import (
 )
 from flask_login import login_user, logout_user, current_user, login_required
 from crunevo.utils.helpers import activated_required
-from crunevo.cache import login_attempts
 from crunevo.utils.audit import record_auth_event
 from urllib.parse import urlparse  # ✅ Corrección aquí
-import json
+from crunevo.services.auth_service import (
+    authenticate_user,
+    requires_two_factor,
+    finalize_login,
+    safe_next_page,
+)
 import os
 import cloudinary.uploader
 from werkzeug.utils import secure_filename
@@ -59,53 +63,32 @@ def login():
     wait = 0
     if request.method == "POST":
         username = request.form["username"]
-        if login_attempts.is_blocked(username):
-            wait = login_attempts.get_remaining(username)
+        password = request.form["password"]
+        user, err, wait = authenticate_user(username, password, admin_mode)
+        if err == "blocked":
             error = (
                 "⚠️ Has excedido el número de intentos. Intenta de nuevo en 15 minutos."
             )
             return render_template(template, error=error, wait=wait)
-
-        password = request.form["password"]
-        user = User.query.filter_by(username=username).first()
-        if user and user.check_password(password):
-            login_attempts.reset(username)
-            if admin_mode and user.role not in ("admin", "moderator"):
-                record_auth_event(
-                    user,
-                    "login_fail",
-                    extra=json.dumps({"username": username, "reason": "role"}),
-                )
-                flash(
-                    "Acceso restringido a administradores y moderadores",
-                    "danger",
-                )
-                return render_template(template), 403
-            record_auth_event(user, "login_success")
+        if err == "role":
+            flash(
+                "Acceso restringido a administradores y moderadores",
+                "danger",
+            )
+            return render_template(template), 403
+        if user:
             if not user.activated:
                 login_user(user)
                 return redirect(url_for("onboarding.pending"))
-            record = None
-            if _has_2fa_table():
-                try:
-                    record = user.two_factor
-                except Exception:
-                    db.session.rollback()
-            if record and record.confirmed_at:
+            if requires_two_factor(user):
                 session["2fa_user_id"] = user.id
                 session["next"] = request.args.get("next")
                 return redirect(url_for("auth.verify_token"))
-            login_user(user)
-            record_login(user)
-            record_activity("login")
+            finalize_login(user)
             if admin_mode:
                 return redirect(url_for("admin.dashboard"))
-            next_page = request.args.get("next")
-            if not next_page or urlparse(next_page).netloc != "":
-                next_page = url_for("feed.feed_home")
+            next_page = safe_next_page(request.args.get("next"))
             return redirect(next_page)
-        login_attempts.record_fail(username)
-        record_auth_event(user, "login_fail", extra=json.dumps({"username": username}))
         flash("Credenciales inválidas")
     return render_template(template, error=error, wait=wait)
 
