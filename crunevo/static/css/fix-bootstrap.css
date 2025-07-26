@@ -6,3 +6,5 @@
   --bs-body-bg: #121212;
   --bs-body-color: #f8f9fa;
 }
+
+.bi-fire-fill::before { content: "\f7f6"; }
