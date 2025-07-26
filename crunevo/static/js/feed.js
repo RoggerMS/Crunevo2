@@ -946,7 +946,6 @@ class ModernFeedManager {
       container.classList.remove("feed-as-grid");
     }
 
-    if (filter === this.currentFilter && this.currentPage > 1) return;
     const filterChanged = filter !== this.currentFilter;
 
     try {
@@ -969,19 +968,22 @@ class ModernFeedManager {
       this.removeSkeletonPosts();
 
       // Update content
-      if (!data.html) {
+      if (typeof data.html === 'string' && data.html.trim() === '') {
         console.log('Empty HTML received for filter', filter);
-      }
-      if (this.currentPage === 1 || filterChanged) {
+        container.innerHTML = '<div class="text-center text-muted">No se encontraron publicaciones.</div>';
+        this.reachedEnd = true;
+      } else if (this.currentPage === 1 || filterChanged) {
         console.log('[FEED] Actualizando HTML del contenedor');
-        container.innerHTML = data.html || '';
+        container.innerHTML = data.html;
       }
 
-      // Reinitialize interactions
-      this.initPostInteractions();
-      this.initCommentSystem();
-      if (typeof initNotePreviews !== "undefined") {
-        initNotePreviews();
+      // Reinitialize interactions if posts were loaded
+      if (typeof data.html === 'string' && data.html.trim() !== '') {
+        this.initPostInteractions();
+        this.initCommentSystem();
+        if (typeof initNotePreviews !== 'undefined') {
+          initNotePreviews();
+        }
       }
 
       this.showToast(`Filtro "${filter}" aplicado`, 'info');
