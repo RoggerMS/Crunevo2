@@ -112,6 +112,21 @@ def comment_post(post_id):
     return jsonify({"pending": True}), 202
 
 
+@feed_bp.route("/comment/delete/<int:comment_id>", methods=["POST"])
+@activated_required
+def delete_comment(comment_id: int):
+    """Delete a comment if the requester is the author or a moderator/admin."""
+    comment = PostComment.query.get_or_404(comment_id)
+    if comment.author_id != current_user.id and current_user.role not in (
+        "admin",
+        "moderator",
+    ):
+        return jsonify({"error": "No autorizado"}), 403
+    db.session.delete(comment)
+    db.session.commit()
+    return jsonify({"success": True})
+
+
 @feed_bp.route("/api/comments/<int:post_id>")
 @activated_required
 def api_comments(post_id):

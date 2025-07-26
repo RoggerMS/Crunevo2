@@ -849,3 +849,4 @@
 - Comment submission now inspects fetch errors and shows friendly messages; buttons re-enable on failure (PR comment-error-messages).
 - Replaced manual CSRF inputs with `csrf_field()` and imported csrf macro in comment and post modals (PR csrf-template-fix).
 - Release command sets random SECRET_KEY to avoid missing env error (PR release-secret-fix).
+- Added comment deletion endpoint `/feed/comment/delete/<id>` with author/moderator authorization (PR comment-delete-endpoint).

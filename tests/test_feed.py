@@ -255,3 +255,32 @@ def test_comment_disabled_returns_403(client, db_session, test_user, another_use
     resp = client.post(f"/feed/comment/{post.id}", data={"body": "hello"})
     assert resp.status_code == 403
     assert resp.get_json()["error"] == "Comentarios deshabilitados"
+
+
+def test_delete_own_comment(client, db_session, test_user):
+    post = Post(content="d", author=test_user)
+    db_session.add(post)
+    db_session.commit()
+    comment = PostComment(body="bye", author=test_user, post=post)
+    db_session.add(comment)
+    db_session.commit()
+
+    login(client, test_user.username, "secret")
+    resp = client.post(f"/feed/comment/delete/{comment.id}")
+    assert resp.status_code == 200
+    assert resp.get_json()["success"] is True
+    assert PostComment.query.get(comment.id) is None
+
+
+def test_delete_comment_unauthorized(client, db_session, test_user, another_user):
+    post = Post(content="x", author=test_user)
+    db_session.add(post)
+    db_session.commit()
+    comment = PostComment(body="nope", author=another_user, post=post)
+    db_session.add(comment)
+    db_session.commit()
+
+    login(client, test_user.username, "secret")
+    resp = client.post(f"/feed/comment/delete/{comment.id}")
+    assert resp.status_code == 403
+    assert PostComment.query.get(comment.id) is not None
