@@ -862,3 +862,4 @@
 - loadMorePosts y loadFilteredFeed ahora ocultan el loader y muestran un alert si ocurre un error; registran el status HTTP y respuesta para depuración (PR feed-error-handling).
 - Removed unused global comment modal in feed.html; each post modal now uniquely references commentsModal-<post.id> (PR comment-modal-id-cleanup).
 - Improved notifications dropdown reload: shows error toast when request fails, keeps previous entries when empty with message 'No hay notificaciones nuevas' and refreshes only if tab visible (PR notifications-error-toast).
+- Updated notifications.js to query #notificationsDropdown and #notifications-list; replaced .notification-container selector (PR notifications-dropdown-selector).
