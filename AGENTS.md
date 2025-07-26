@@ -831,3 +831,7 @@
 - Guarded streak claim button event listener to prevent errors when element is missing (PR feed-missing-element-guard).
 - Guarded reaction button initialization to prevent TypeError on pages without .btn-reaction (PR feed-reaction-null-check).
 - Created api package with JWT-authenticated endpoints and updated README with usage instructions (PR feed-api-blueprint).
+- frontend directory contains a decoupled Next.js SPA built with Tailwind.
+- FeedPage under `frontend/app/feed/page.tsx` consumes `/api/feed` using `fetch`.
+- Build the SPA separately with `docker build -t crunevo-frontend -f frontend/Dockerfile frontend`.
+- Deploy frontend and backend containers independently; the SPA communicates with the Flask API via HTTP.
