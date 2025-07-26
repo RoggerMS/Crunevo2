@@ -1,5 +1,5 @@
 <div class="list-group sidebar">
-  <a class="list-group-item list-group-item-action" href="{{ url_for('auth.perfil') }}"><i class="bi bi-person mr-2"></i>Mi perfil</a>
+  <a class="list-group-item list-group-item-action" href="{{ url_for('auth.profile_by_username', username=current_user.username) }}"><i class="bi bi-person mr-2"></i>Mi perfil</a>
   <a class="list-group-item list-group-item-action" href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}"><i class="bi bi-journal-text mr-2"></i>Mis apuntes</a>
   <a class="list-group-item list-group-item-action" href="{{ url_for('notes.upload_note') if 'notes.upload_note' in url_for.__globals__.get('current_app', {}).view_functions else '#' }}"><i class="bi bi-upload mr-2"></i>Subir apunte</a>
   <a class="list-group-item list-group-item-action" href="#"><i class="bi bi-star mr-2"></i>Favoritos</a>

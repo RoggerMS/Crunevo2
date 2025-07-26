@@ -7,35 +7,98 @@
 {% endblock %}
 {% block content %}
 <div class="container my-4">
-  <div class="text-center mb-5">
-    <img loading="lazy" src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle mb-3" width="120" height="120" alt="avatar">
-    <h1 class="fw-bold mb-0">@{{ user.username }}
-      {% if user.verification_level >= 2 %}
-      <i class="bi bi-patch-check-fill ms-1" style="color:#4e7fff" data-bs-toggle="tooltip" title="Cuenta verificada por Crunevo"></i>
-      {% endif %}
-    </h1>
-    {% if user.career %}
-    <p class="text-muted">{{ user.career }}</p>
-    {% endif %}
-    {% if user.about %}
-    <p class="lead">{{ user.about }}</p>
-    {% else %}
-    <p class="text-muted"><i>Este usuario aún no ha escrito su biografía.</i></p>
-    {% endif %}
-    <div class="mb-3">
-      <span class="badge bg-success"><i class="bi bi-coin me-1"></i>{{ user.credits }}</span>
+  <div class="card border-0 shadow-sm mb-4 profile-header">
+    <div class="position-relative">
+      <div class="profile-header-bg position-relative" style="height: 200px;">
+        <img src="{{ user.banner_url or url_for('static', filename='img/default.png') }}" id="bannerPreview" class="w-100 h-100 object-fit-cover" alt="Banner">
+        {% if current_user.id == user.id %}
+        <form id="bannerForm" method="POST" enctype="multipart/form-data" action="{{ url_for('auth.update_banner') }}" class="position-absolute end-0 top-0 p-2">
+          {{ csrf.csrf_field() }}
+          <input type="file" name="banner" id="bannerInput" accept="image/*" hidden>
+          <button type="button" class="profile-banner-edit" onclick="document.getElementById('bannerInput').click()">
+            <i class="bi bi-camera"></i> Cambiar Banner
+          </button>
+          <button type="submit" id="saveBannerBtn" class="btn btn-success d-none mt-2">Guardar Banner</button>
+        </form>
+        {% endif %}
+      </div>
     </div>
-    {% if current_user.is_authenticated and current_user.id != user.id %}
+    <div class="card-body p-4" style="margin-top: -60px;">
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <div class="profile-avatar-container text-center position-relative" style="margin-top: -60px;">
+            <img src="{{ (user.avatar_url|cl_url(120,120,'thumb')) if user.avatar_url else url_for('static', filename='img/default.png') }}" class="rounded-circle border border-white shadow avatar-img" id="avatarPreview" width="120" height="120" alt="Avatar">
+            {% if current_user.id == user.id %}
+            <button class="avatar-edit-btn" id="editAvatarBtn" aria-label="Editar avatar">
+              <i class="bi bi-camera"></i>
+            </button>
+            <form id="avatarForm" method="POST" enctype="multipart/form-data" action="{{ url_for('auth.update_avatar') }}">
+              {{ csrf.csrf_field() }}
+              <input type="file" name="avatar" id="avatarInput" accept="image/*" hidden>
+              <button type="submit" id="saveAvatarBtn" class="btn btn-success mt-2 d-none">Guardar cambios</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+        <div class="col" style="margin-top: 8px;">
+          <div class="mt-3 d-none d-lg-block">
+            <h3 class="fw-bold mb-1">
+              {{ user.username }}
+              {% if user.verification_level >= 2 %}
+              <span class="badge verified-badge" data-bs-toggle="tooltip" title="Cuenta verificada">
+                <i class="bi bi-check-circle-fill"></i>
+              </span>
+              {% endif %}
+            </h3>
+            {% if user.about %}
+            <p class="text-muted mb-2">{{ user.about }}</p>
+            {% else %}
+            <p class="text-muted mb-2"><i>Este usuario aún no ha escrito su biografía.</i></p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile profile info -->
+      <div class="d-lg-none mt-3">
+        <div class="d-flex justify-content-start align-items-center mb-2 px-3">
+          <h3 class="fw-bold mb-0 me-2">
+            {{ user.username }}
+            {% if user.verification_level >= 2 %}
+            <span class="badge verified-badge">
+              <i class="bi bi-check-circle-fill"></i>
+            </span>
+            {% endif %}
+          </h3>
+        </div>
+        <p class="text-muted text-center px-3">
+          {% if user.about %}
+            {{ user.about }}
+          {% else %}
+            <i>Este usuario aún no ha escrito su biografía.</i>
+          {% endif %}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {% if current_user.is_authenticated and current_user.id == user.id %}
+  <div class="text-end mb-4">
+    <a href="{{ url_for('auth.perfil') }}" class="btn btn-outline-primary btn-sm">Editar perfil</a>
+  </div>
+  {% elif current_user.is_authenticated %}
+  <div class="text-center mb-4">
     <form method="post" action="{{ url_for('auth.agradecer', user_id=user.id) }}" class="d-inline">
       {{ csrf.csrf_field() }}
       <button class="btn btn-primary" type="submit">Agradecer</button>
     </form>
     <a href="{{ url_for('chat.private_chat_username', username=user.username) }}" class="btn btn-outline-primary ms-2">Enviar mensaje privado</a>
-    {% endif %}
   </div>
+  {% endif %}
 
   <div class="row g-4">
     <div class="col-lg-8 order-lg-2">
+      {% include 'components/create_post_modal.html' %}
       <h3 class="mb-3">Publicaciones</h3>
       {% if user.posts %}
       <div class="row row-cols-1 g-3">
