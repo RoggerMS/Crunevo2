@@ -12,6 +12,7 @@ primary_region = 'gru'
   FLASK_APP = 'crunevo.wsgi:app'
   FLASK_ENV = 'production'
   PORT = "8080"
+  SESSION_COOKIE_HTTPONLY = "true"
 
 [experimental]
   auto_rollback = true

@@ -835,3 +835,4 @@
 - FeedPage under `frontend/app/feed/page.tsx` consumes `/api/feed` using `fetch`.
 - Build the SPA separately with `docker build -t crunevo-frontend -f frontend/Dockerfile frontend`.
 - Deploy frontend and backend containers independently; the SPA communicates with the Flask API via HTTP.
+- Session cookies default to `SESSION_COOKIE_SECURE=True` and `SESSION_COOKIE_SAMESITE='Lax'` in `config.py`. Production sets `SESSION_COOKIE_HTTPONLY=true` in `fly.toml` and `fly-admin.toml` (PR session-cookie-security).

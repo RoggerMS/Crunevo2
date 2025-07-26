@@ -13,6 +13,7 @@ primary_region = "bog"
   ADMIN_INSTANCE = "1"
   MAINTENANCE_MODE = "0"
   PORT = "8080"
+  SESSION_COOKIE_HTTPONLY = "true"
 
 [experimental]
   auto_rollback = true
