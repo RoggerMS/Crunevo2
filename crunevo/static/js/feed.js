@@ -1040,14 +1040,20 @@ class ModernFeedManager {
       const temp = document.createElement('div');
       temp.innerHTML = data;
 
-      if (data.trim() === '') {
+      if (data.trim() === '' || data.includes('no-more-posts')) {
         console.log('No more posts to load');
-        loader?.querySelector('.spinner-border')?.classList.add('d-none');
+        if (loader) {
+          loader.style.display = 'none';
+        }
         if (!this.reachedEnd) {
           this.infiniteObserver?.unobserve(document.getElementById('feedEnd'));
         }
         this.reachedEnd = true;
-        container.insertAdjacentHTML('beforeend', '<div class="text-center text-muted">No se encontraron más publicaciones.</div>');
+        if (data.trim()) {
+          container.insertAdjacentHTML('beforeend', data);
+        } else {
+          container.insertAdjacentHTML('beforeend', '<div class="text-center text-muted">No se encontraron más publicaciones.</div>');
+        }
         return;
       }
 

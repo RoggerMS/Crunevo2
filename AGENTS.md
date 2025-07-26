@@ -857,3 +857,4 @@
 - Reemplazado botón "Editar perfil" por "Detalles personales" solo visible en el perfil propio; ajustada redirección a /perfil en lugar de configuración (PR perfil-detalles-fix).
 - Fixed Jinja if/else in perfil_publico.html to avoid TemplateSyntaxError and show actions for other users (hotfix perfil-conditional-fix).
 - Se implementó sistema de errores para admins en /admin/errores. Captura automática, vista filtrable y botón de resolución.
+- Detecta 'no-more-posts' en feed.js para detener el infinite scroll y ocultar el loader (PR feed-load-end).
