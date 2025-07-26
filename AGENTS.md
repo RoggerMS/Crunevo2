@@ -852,3 +852,4 @@
 - Added comment deletion endpoint `/feed/comment/delete/<id>` with author/moderator authorization (PR comment-delete-endpoint).
 - Consolidated openCommentsModal, submitModalComment and addCommentToModalUI into comment.js; feed.js references them and main.js calls initCommentModals once (PR comment-modal-refactor).
 - Defined .bi-fire-fill in fix-bootstrap.css to keep the fire icon visible when liking posts (PR like-fire-icon-fix)
+- Perfil público ahora reutiliza el banner y el formulario de publicaciones; enlaces de perfil en navbar, sidebar y navegación móvil usan profile_by_username (PR public-profile-banner-modal).
