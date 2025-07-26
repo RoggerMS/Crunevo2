@@ -30,7 +30,7 @@ Flask-Limiter==3.5.0
 Flask-SocketIO==5.3.6
 zxcvbn==4.5.0
 freezegun==1.5.0
-beautifulsoup4==4.12.2
+beautifulsoup4==4.13.4
 reportlab==4.4.2
 pytest
 qrcode[pil]
