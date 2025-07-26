@@ -17,8 +17,14 @@ class NotificationManager {
         try {
             const response = await fetch('/api/notifications');
             const data = await response.json();
+            const currentFirst = this.container?.querySelector('.notification-item')?.dataset.id;
+            const newFirst = data.notifications[0]?.id?.toString();
+            const updated = currentFirst !== newFirst;
+            console.log('[NOTIF] unread:', data.unread_count, 'total:', data.notifications.length, updated ? '- updating dropdown' : '- preserving dropdown');
             this.updateBadge(data.unread_count);
-            this.renderNotifications(data.notifications);
+            if (updated) {
+                this.renderNotifications(data.notifications);
+            }
         } catch (error) {
             console.error('Error loading notifications:', error);
             if (window.CRUNEVO_UI && window.CRUNEVO_UI.showErrorToast) {
