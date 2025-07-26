@@ -864,3 +864,4 @@
 - Improved notifications dropdown reload: shows error toast when request fails, keeps previous entries when empty with message 'No hay notificaciones nuevas' and refreshes only if tab visible (PR notifications-error-toast).
 - Updated notifications.js to query #notificationsDropdown and #notifications-list; replaced .notification-container selector (PR notifications-dropdown-selector).
 - Removed legacy initNotifications from main.js; dropdown updates now rely on initNotificationManager (PR remove-initNotifications).
+- loadFilteredFeed ahora verifica response.ok, registra errores y conserva el contenido previo en caso de fallo; solo actualiza el contenedor cuando data.html no está vacío (hotfix feed-filter-ok-check).

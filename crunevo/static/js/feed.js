@@ -965,28 +965,33 @@ class ModernFeedManager {
       const text = await response.text();
       console.log('[DEBUG] HTTP status:', response.status);
       console.log('[DEBUG] Response text:', text);
+      if (!response.ok) {
+        console.error('Failed to load filtered feed:', response.status, text);
+        throw new Error('Network response was not ok');
+      }
       const data = JSON.parse(text);
 
       // Hide skeletons
       this.removeSkeletonPosts();
 
-      // Update content
-      if (typeof data.html === 'string' && data.html.trim() === '') {
-        console.log('Empty HTML received for filter', filter);
-        container.innerHTML = '<div class="text-center text-muted">No se encontraron publicaciones.</div>';
-        this.reachedEnd = true;
-      } else if (this.currentPage === 1 || filterChanged) {
-        console.log('[FEED] Actualizando HTML del contenedor');
-        container.innerHTML = data.html;
-      }
-
-      // Reinitialize interactions if posts were loaded
+      // Update content only when HTML is not empty
       if (typeof data.html === 'string' && data.html.trim() !== '') {
+        if (this.currentPage === 1 || filterChanged) {
+          console.log('[FEED] Actualizando HTML del contenedor');
+          container.innerHTML = data.html;
+        }
+
+        // Reinitialize interactions
         this.initPostInteractions();
         this.initCommentSystem();
         if (typeof initNotePreviews !== 'undefined') {
           initNotePreviews();
         }
+
+      } else {
+        console.log('Empty HTML received for filter', filter);
+        this.reachedEnd = true;
+        this.showToast('No se encontraron publicaciones', 'info');
       }
 
       this.showToast(`Filtro "${filter}" aplicado`, 'info');
