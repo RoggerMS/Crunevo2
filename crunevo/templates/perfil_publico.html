@@ -58,10 +58,20 @@
           </div>
         </div>
       </div>
-      {% if current_user.is_authenticated and current_user.id == user.id %}
-      <a href="{{ url_for('auth.perfil') }}" class="btn btn-outline-primary btn-sm shadow-sm position-absolute end-0 bottom-0 m-3">
-        <i class="bi bi-person-lines-fill"></i> Detalles personales
-      </a>
+      {% if current_user.is_authenticated %}
+        {% if current_user.id == user.id %}
+        <a href="{{ url_for('auth.perfil') }}" class="btn btn-outline-primary btn-sm shadow-sm position-absolute end-0 bottom-0 m-3">
+          <i class="bi bi-person-lines-fill"></i> Detalles personales
+        </a>
+        {% else %}
+        <div class="text-center mb-4">
+          <form method="post" action="{{ url_for('auth.agradecer', user_id=user.id) }}" class="d-inline">
+            {{ csrf.csrf_field() }}
+            <button class="btn btn-primary" type="submit">Agradecer</button>
+          </form>
+          <a href="{{ url_for('chat.private_chat_username', username=user.username) }}" class="btn btn-outline-primary ms-2">Enviar mensaje privado</a>
+        </div>
+        {% endif %}
       {% endif %}
 
       <!-- Mobile profile info -->
@@ -86,16 +96,6 @@
       </div>
     </div>
   </div>
-
-  {% elif current_user.is_authenticated %}
-  <div class="text-center mb-4">
-    <form method="post" action="{{ url_for('auth.agradecer', user_id=user.id) }}" class="d-inline">
-      {{ csrf.csrf_field() }}
-      <button class="btn btn-primary" type="submit">Agradecer</button>
-    </form>
-    <a href="{{ url_for('chat.private_chat_username', username=user.username) }}" class="btn btn-outline-primary ms-2">Enviar mensaje privado</a>
-  </div>
-  {% endif %}
 
   <div class="row g-4">
     <div class="col-lg-8 order-lg-2">
