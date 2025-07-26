@@ -2,9 +2,9 @@
 // Sistema mejorado de notificaciones
 class NotificationManager {
     constructor() {
-        this.dropdown = document.getElementById('notificationDropdown');
+        this.dropdown = document.querySelector('#notificationsDropdown');
         this.badge = document.querySelector('.notification-badge');
-        this.container = document.querySelector('.notification-container');
+        this.container = document.querySelector('#notifications-list');
         this.init();
     }
 
