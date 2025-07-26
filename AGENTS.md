@@ -859,3 +859,4 @@
 - Se implementó sistema de errores para admins en /admin/errores. Captura automática, vista filtrable y botón de resolución.
 - Detecta 'no-more-posts' en feed.js para detener el infinite scroll y ocultar el loader (PR feed-load-end).
 - loadFilteredFeed muestra mensaje si data.html está vacío sin limpiar el contenedor y reinicia reachedEnd/currentPage (hotfix quickfeed-empty)
+- loadMorePosts y loadFilteredFeed ahora ocultan el loader y muestran un alert si ocurre un error; registran el status HTTP y respuesta para depuración (PR feed-error-handling).

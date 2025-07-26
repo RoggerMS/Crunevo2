@@ -962,7 +962,10 @@ class ModernFeedManager {
       this.showSkeletonPosts();
 
       const response = await fetch(`/feed/api/quickfeed?filter=${filter}`);
-      const data = await response.json();
+      const text = await response.text();
+      console.log('[DEBUG] HTTP status:', response.status);
+      console.log('[DEBUG] Response text:', text);
+      const data = JSON.parse(text);
 
       // Hide skeletons
       this.removeSkeletonPosts();
@@ -991,6 +994,15 @@ class ModernFeedManager {
       console.error('Error loading filtered feed:', error);
       this.showToast('Error al cargar contenido', 'error');
       this.removeSkeletonPosts();
+      const loader = document.getElementById('feed-loader');
+      if (loader) loader.style.display = 'none';
+      const feedEnd = document.getElementById('feedEnd');
+      if (feedEnd && !document.getElementById('load-error-alert')) {
+        feedEnd.insertAdjacentHTML(
+          'beforebegin',
+          '<div id="load-error-alert" class="alert alert-danger mt-3">Error cargando publicaciones</div>'
+        );
+      }
     }
   }
 
@@ -1037,7 +1049,8 @@ class ModernFeedManager {
       this.currentPage++;
       const response = await fetch(`/feed/load?page=${this.currentPage}&categoria=${this.currentFilter}`);
       const data = await response.text();
-      console.log('[DEBUG] HTML recibido:', data);
+      console.log('[DEBUG] HTTP status:', response.status);
+      console.log('[DEBUG] Response text:', data);
       const container = document.getElementById('feedContainer');
       const temp = document.createElement('div');
       temp.innerHTML = data;
@@ -1075,6 +1088,14 @@ class ModernFeedManager {
       console.error('Error loading more posts:', error);
       this.showToast('Error al cargar más publicaciones', 'error');
       loader?.querySelector('.spinner-border')?.classList.add('d-none');
+      if (loader) loader.style.display = 'none';
+      const feedEnd = document.getElementById('feedEnd');
+      if (feedEnd && !document.getElementById('load-error-alert')) {
+        feedEnd.insertAdjacentHTML(
+          'beforebegin',
+          '<div id="load-error-alert" class="alert alert-danger mt-3">Error cargando publicaciones</div>'
+        );
+      }
       if (!this.reachedEnd) {
         this.infiniteObserver?.unobserve(document.getElementById('feedEnd'));
       }
