@@ -1,9 +1,10 @@
 {% import 'components/image_gallery.html' as gallery %}
 {% set saved_posts = saved_posts if saved_posts is defined else {} %}
 <!-- Modal de Comentarios con Galería Completa -->
-<div class="modal fade" id="commentsModal-{{ post.id }}" tabindex="-1" aria-labelledby="commentsModalLabel-{{ post.id }}" aria-hidden="true">
+<div class="modal fade" id="commentsModal-{{ post.id }}" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="commentsModalLabel-{{ post.id }}" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
     <div class="modal-content">
+      <h5 id="commentsModalLabel-{{ post.id }}" class="visually-hidden">Comentarios</h5>
       <!-- Header del Modal -->
       <div class="modal-header border-0 pb-0">
         <div class="d-flex align-items-center">
