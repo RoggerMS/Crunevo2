@@ -8,6 +8,7 @@
 - All `<form method="post">` must import `components/csrf.html` and call
   `csrf_field()` immediately after the `<form>` tag.
 - Nunca hacer CREATE TYPE sin comprobar si el tipo ya existe; usa IF NOT EXISTS o checkfirst=True.
+- Dependabot PRs should only be merged after CI passes (`make test`) and prefer squash merges.
 - Se corrigió la barra de navegación fija añadiendo padding global y mejorando el menú móvil (PR navbar fixes).
 - Se ajustó el padding global mediante CSS en el body y se agregó z-index al navbar para evitar que tape el contenido.
 - Se mejoró el cierre del menú móvil y se fijó la altura del navbar (PR navbar fixes 2).
@@ -836,3 +837,4 @@
 - Build the SPA separately with `docker build -t crunevo-frontend -f frontend/Dockerfile frontend`.
 - Deploy frontend and backend containers independently; the SPA communicates with the Flask API via HTTP.
 - Session cookies default to `SESSION_COOKIE_SECURE=True` and `SESSION_COOKIE_SAMESITE='Lax'` in `config.py`. Production sets `SESSION_COOKIE_HTTPONLY=true` in `fly.toml` and `fly-admin.toml` (PR session-cookie-security).
+- Enabled Dependabot weekly updates for pip packages and added CI workflow running 'make test' on PRs (PR dependabot-ci).
