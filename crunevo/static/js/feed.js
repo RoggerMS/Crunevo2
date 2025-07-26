@@ -81,6 +81,7 @@ class ModernFeedManager {
 
   removeSkeletonPosts() {
     document.querySelectorAll('.post-skeleton').forEach(skeleton => {
+      console.log('[FEED] Removing skeleton post:', skeleton);
       skeleton.classList.add('fade-out');
       setTimeout(() => skeleton.remove(), 300);
     });
@@ -947,6 +948,10 @@ class ModernFeedManager {
     }
 
     const filterChanged = filter !== this.currentFilter;
+    if (filterChanged) {
+      console.log('[FEED] Clearing container for new filter:', filter);
+      container.innerHTML = '';
+    }
 
     try {
       this.currentFilter = filter;
@@ -970,15 +975,18 @@ class ModernFeedManager {
         throw new Error('Network response was not ok');
       }
       const data = JSON.parse(text);
+      console.log('[FEED] HTML received:', data.html);
 
       // Hide skeletons
       this.removeSkeletonPosts();
 
       // Update content only when HTML is not empty
       if (typeof data.html === 'string' && data.html.trim() !== '') {
-        if (this.currentPage === 1 || filterChanged) {
-          console.log('[FEED] Actualizando HTML del contenedor');
+        if (filterChanged) {
+          console.log('[FEED] Updating container with new filter');
           container.innerHTML = data.html;
+        } else {
+          console.log('[FEED] Filter unchanged - feed preserved');
         }
 
         // Reinitialize interactions
@@ -1056,6 +1064,7 @@ class ModernFeedManager {
       const data = await response.text();
       console.log('[DEBUG] HTTP status:', response.status);
       console.log('[DEBUG] Response text:', data);
+      console.log('[FEED] HTML received in loadMorePosts:', data);
       const container = document.getElementById('feedContainer');
       const temp = document.createElement('div');
       temp.innerHTML = data;
