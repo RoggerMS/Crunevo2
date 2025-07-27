@@ -80,8 +80,9 @@ class ModernFeedManager {
   }
 
   removeSkeletonPosts() {
-    document.querySelectorAll('.post-skeleton').forEach(skeleton => {
-      console.log('[FEED] Removing skeleton post:', skeleton);
+    const selector = '.post-skeleton';
+    document.querySelectorAll(selector).forEach(skeleton => {
+      console.log('[FEED] removeSkeletonPosts selector', selector, 'element', skeleton);
       skeleton.classList.add('fade-out');
       setTimeout(() => skeleton.remove(), 300);
     });
@@ -1455,8 +1456,10 @@ function deletePost(postId) {
   })
   .then(response => {
     if (response.ok) {
-      const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+      const selector = `[data-post-id="${postId}"]`;
+      const postElement = document.querySelector(selector);
       if (postElement) {
+        console.log('[FEED] deletePost selector', selector, 'element', postElement);
         postElement.classList.add('fade-out');
         setTimeout(() => postElement.remove(), 300);
       }
