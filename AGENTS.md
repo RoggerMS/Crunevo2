@@ -872,3 +872,7 @@
 - Added diagnostic CSS borders for `.facebook-post` at end of feed.css to visualize opacity and fade-out behaviors during testing.
 - Inserted diagnostic borders after `.facebook-post` styles in feed.css to debug hidden posts.
 - toggleComments now logs the element being hidden before applying the `fade-out` class and showToast logs the toast element before fade-out for easier debugging.
+
+- Added raw HTML logs in feed.js for debugging rendered posts.
+- Added temporary CSS borders for `.facebook-post` diagnostics.
+- Added console logs when applying `fade-out` to track element removal.
