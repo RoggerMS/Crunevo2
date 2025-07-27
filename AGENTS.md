@@ -871,3 +871,4 @@
 - Searched repo for any rules hiding '.facebook-post' elements; none found beyond normal styles. Confirmed removeSkeletonPosts() only selects '.post-skeleton'. Documented findings for future reference.
 - Added diagnostic CSS borders for `.facebook-post` at end of feed.css to visualize opacity and fade-out behaviors during testing.
 - Added console logs after applying fade-out to elements in feed.js for instrumentation (PR feed-fade-out-log).
+- Inserted diagnostic borders after `.facebook-post` styles in feed.css to debug hidden posts.
