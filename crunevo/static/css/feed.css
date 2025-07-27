@@ -58,9 +58,6 @@
   box-shadow: var(--shadow-medium);
 }
 
-.facebook-post { border: 1px solid green; }
-.facebook-post[style*="opacity"] { border: 2px solid red !important; }
-.facebook-post.fade-out { border: 2px dashed orange !important; }
 
 /* Post header */
 .post-header {
@@ -923,11 +920,11 @@
 }
 
 .fade-in {
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.3s ease forwards;
 }
 
 .fade-out {
-  animation: fadeOut 0.3s ease;
+  animation: fadeOut 0.3s ease forwards;
 }
 
 @keyframes like-pop {
@@ -1457,7 +1454,4 @@ select:focus {
   gap: 1rem;
 }
 
-.facebook-post { border: 1px solid green; }
-.facebook-post[style*="opacity"] { border: 2px solid red !important; }
-.facebook-post.fade-out { border: 2px dashed orange !important; }
 
