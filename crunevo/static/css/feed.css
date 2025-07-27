@@ -1452,3 +1452,8 @@ select:focus {
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem;
 }
+
+.facebook-post { border: 1px solid green; }
+.facebook-post[style*="opacity"] { border: 2px solid red !important; }
+.facebook-post.fade-out { border: 2px dashed orange !important; }
+

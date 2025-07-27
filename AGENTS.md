@@ -869,3 +869,4 @@
 - removeSkeletonPosts and deletePost now log the selectors of elements before applying fade-out or removal. Actual posts use the 'facebook-post' class; '.post-skeleton' is only for loading placeholders.
 - Verified post_card.html renders articles with class 'facebook-post' only; no 'post-skeleton' or 'fade-out' classes found in templates or server logic.
 - Searched repo for any rules hiding '.facebook-post' elements; none found beyond normal styles. Confirmed removeSkeletonPosts() only selects '.post-skeleton'. Documented findings for future reference.
+- Added diagnostic CSS borders for `.facebook-post` at end of feed.css to visualize opacity and fade-out behaviors during testing.
