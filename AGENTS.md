@@ -868,3 +868,4 @@
 - removeSkeletonPosts ahora registra los skeleton eliminados; loadFilteredFeed y loadMorePosts muestran el HTML recibido y solo limpian el contenedor si cambia el filtro. notifications.js registra conteos y si el dropdown se actualiza o se conserva (PR feed-notif-logging).
 - removeSkeletonPosts and deletePost now log the selectors of elements before applying fade-out or removal. Actual posts use the 'facebook-post' class; '.post-skeleton' is only for loading placeholders.
 - Verified post_card.html renders articles with class 'facebook-post' only; no 'post-skeleton' or 'fade-out' classes found in templates or server logic.
+- Searched repo for any rules hiding '.facebook-post' elements; none found beyond normal styles. Confirmed removeSkeletonPosts() only selects '.post-skeleton'. Documented findings for future reference.
