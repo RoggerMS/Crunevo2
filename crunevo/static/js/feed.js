@@ -243,6 +243,7 @@ class ModernFeedManager {
         setTimeout(() => commentInput.focus(), 100);
       }
     } else {
+      console.log('[FEED] toggleComments hide element', commentsSection);
       commentsSection.classList.add('fade-out');
       setTimeout(() => {
         commentsSection.style.display = 'none';
@@ -1203,6 +1204,7 @@ class ModernFeedManager {
 
     // Auto-remove after delay
     setTimeout(() => {
+      console.log('[FEED] showToast auto-remove', toast);
       toast.classList.add('fade-out');
       setTimeout(() => toast.remove(), 300);
     }, type === 'error' ? 5000 : 3000);
