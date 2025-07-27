@@ -876,3 +876,6 @@
 - Added raw HTML logs in feed.js for debugging rendered posts.
 - Added temporary CSS borders for `.facebook-post` diagnostics.
 - Added console logs when applying `fade-out` to track element removal.
+- Removed debugging borders and logs from feed.js; fade-in/out animations now use
+  `forwards` fill mode and loader hides after successful load to fix invisible
+  posts issue.

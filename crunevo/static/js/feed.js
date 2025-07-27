@@ -82,7 +82,6 @@ class ModernFeedManager {
   removeSkeletonPosts() {
     const selector = '.post-skeleton';
     document.querySelectorAll(selector).forEach(skeleton => {
-      console.log('[FEED] removeSkeletonPosts selector', selector, 'element', skeleton);
       skeleton.classList.add('fade-out');
       setTimeout(() => skeleton.remove(), 300);
     });
@@ -243,7 +242,6 @@ class ModernFeedManager {
         setTimeout(() => commentInput.focus(), 100);
       }
     } else {
-      console.log('[FEED] toggleComments hide element', commentsSection);
       commentsSection.classList.add('fade-out');
       setTimeout(() => {
         commentsSection.style.display = 'none';
@@ -933,13 +931,6 @@ class ModernFeedManager {
 
   // Load filtered feed
   async loadFilteredFeed(filter) {
-    console.log('loadFilteredFeed ACTIVADO');
-    console.log('[DEBUG]', {
-      currentPage: this.currentPage,
-      currentFilter: this.currentFilter,
-      isLoading: this.isLoading,
-      reachedEnd: this.reachedEnd
-    });
 
     const container = document.getElementById('feedContainer');
     if (!container) return;
@@ -951,7 +942,6 @@ class ModernFeedManager {
 
     const filterChanged = filter !== this.currentFilter;
     if (filterChanged) {
-      console.log('[FEED] Clearing container for new filter:', filter);
       container.innerHTML = '';
     }
 
@@ -970,14 +960,11 @@ class ModernFeedManager {
 
       const response = await fetch(`/feed/api/quickfeed?filter=${filter}`);
       const text = await response.text();
-      console.log('[DEBUG] HTTP status:', response.status);
-      console.log('[DEBUG] Response text:', text);
       if (!response.ok) {
         console.error('Failed to load filtered feed:', response.status, text);
         throw new Error('Network response was not ok');
       }
       const data = JSON.parse(text);
-      console.log('[FEED] HTML received:', data.html);
 
       // Hide skeletons
       this.removeSkeletonPosts();
@@ -985,10 +972,8 @@ class ModernFeedManager {
       // Update content only when HTML is not empty
       if (typeof data.html === 'string' && data.html.trim() !== '') {
         if (filterChanged) {
-          console.log('[FEED] Updating container with new filter');
           container.innerHTML = data.html;
         } else {
-          console.log('[FEED] Filter unchanged - feed preserved');
         }
 
         // Reinitialize interactions
@@ -999,7 +984,6 @@ class ModernFeedManager {
         }
 
       } else {
-        console.log('Empty HTML received for filter', filter);
         this.reachedEnd = true;
         this.showToast('No se encontraron publicaciones', 'info');
       }
@@ -1010,7 +994,10 @@ class ModernFeedManager {
       this.showToast('Error al cargar contenido', 'error');
       this.removeSkeletonPosts();
       const loader = document.getElementById('feed-loader');
-      if (loader) loader.style.display = 'none';
+      if (loader) {
+        loader.querySelector('.spinner-border')?.classList.add('d-none');
+        loader.style.display = 'none';
+      }
       const feedEnd = document.getElementById('feedEnd');
       if (feedEnd && !document.getElementById('load-error-alert')) {
         feedEnd.insertAdjacentHTML(
@@ -1043,12 +1030,6 @@ class ModernFeedManager {
 
   // Load more posts
   async loadMorePosts() {
-    console.log('[DEBUG]', {
-      currentPage: this.currentPage,
-      currentFilter: this.currentFilter,
-      isLoading: this.isLoading,
-      reachedEnd: this.reachedEnd
-    });
     if (this.isLoading || this.reachedEnd) return;
     this.isLoading = true;
     setTimeout(() => {
@@ -1064,15 +1045,11 @@ class ModernFeedManager {
       this.currentPage++;
       const response = await fetch(`/feed/load?page=${this.currentPage}&categoria=${this.currentFilter}`);
       const data = await response.text();
-      console.log('[DEBUG] HTTP status:', response.status);
-      console.log('[DEBUG] Response text:', data);
-      console.log('[FEED] HTML received in loadMorePosts:', data);
       const container = document.getElementById('feedContainer');
       const temp = document.createElement('div');
       temp.innerHTML = data;
 
       if (data.trim() === '' || data.includes('no-more-posts')) {
-        console.log('No more posts to load');
         if (loader) {
           loader.style.display = 'none';
         }
@@ -1089,7 +1066,6 @@ class ModernFeedManager {
       }
 
       Array.from(temp.children).forEach(el => {
-        console.log('[DEBUG] Elemento analizado:', el.outerHTML);
         const postId = el.getAttribute('data-post-id');
         if (!postId || !container.querySelector(`[data-post-id="${postId}"]`)) {
           el.classList.add('fade-in');
@@ -1099,6 +1075,7 @@ class ModernFeedManager {
       if (typeof initNotePreviews !== "undefined") {
         initNotePreviews();
       }
+      if (loader) loader.style.display = 'none';
 
     } catch (error) {
       console.error('Error loading more posts:', error);
@@ -1204,7 +1181,6 @@ class ModernFeedManager {
 
     // Auto-remove after delay
     setTimeout(() => {
-      console.log('[FEED] showToast auto-remove', toast);
       toast.classList.add('fade-out');
       setTimeout(() => toast.remove(), 300);
     }, type === 'error' ? 5000 : 3000);
@@ -1461,7 +1437,6 @@ function deletePost(postId) {
       const selector = `[data-post-id="${postId}"]`;
       const postElement = document.querySelector(selector);
       if (postElement) {
-        console.log('[FEED] deletePost selector', selector, 'element', postElement);
         postElement.classList.add('fade-out');
         setTimeout(() => postElement.remove(), 300);
       }
