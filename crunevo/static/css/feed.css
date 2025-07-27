@@ -58,6 +58,10 @@
   box-shadow: var(--shadow-medium);
 }
 
+.facebook-post { border: 1px solid green; }
+.facebook-post[style*="opacity"] { border: 2px solid red !important; }
+.facebook-post.fade-out { border: 2px dashed orange !important; }
+
 /* Post header */
 .post-header {
   display: flex;
