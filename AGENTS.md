@@ -883,3 +883,4 @@
 - Restored CRUNEVO emojis in floating reaction panel; kept overlay JS improvements (PR modern-floating-reactions-fix).
 - Enhanced floating reaction panel design with fade animations, hover bounce and higher z-index; updated CSS, JS and templates (PR reactions-panel-style-improve).
 - Updated reactions macro to use like-btn markup, added blur backdrop and prevented default on long press to fix overlay bug (PR reaction-panel-bugfix).
+- Ensured floating reaction panel is visible by removing overflow restriction on `.facebook-post` (PR fix-reaction-panel-not-showing-v2).
