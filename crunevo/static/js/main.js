@@ -108,10 +108,21 @@ function showReactions(btn) {
     });
   }
   options.classList.remove('d-none');
+  void options.offsetWidth;
+  options.classList.add('show');
   clearTimeout(options._timeout);
   options._timeout = setTimeout(() => {
-    options.classList.add('d-none');
+    hideReactions(options);
   }, 4000);
+}
+
+function hideReactions(panel) {
+  panel.classList.remove('show');
+  panel.addEventListener(
+    'transitionend',
+    () => panel.classList.add('d-none'),
+    { once: true }
+  );
 }
 
 // Confirmations for important actions
@@ -264,7 +275,7 @@ function initReactions() {
         btn.classList.add('reaction-active');
         setTimeout(() => btn.classList.remove('reaction-active'), 200);
         sendReaction(reaction);
-        if (options) options.classList.add('d-none');
+        if (options) hideReactions(options);
       });
     });
   });

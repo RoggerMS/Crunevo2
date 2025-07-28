@@ -881,3 +881,4 @@
   posts issue.
 - Updated reaction panel with floating overlay and modern emojis; adjusted templates and JS.
 - Restored CRUNEVO emojis in floating reaction panel; kept overlay JS improvements (PR modern-floating-reactions-fix).
+- Enhanced floating reaction panel design with fade animations, hover bounce and higher z-index; updated CSS, JS and templates (PR reactions-panel-style-improve).
