@@ -535,11 +535,12 @@ class ModernFeedManager {
     const panel = btn.parentElement.querySelector('.reaction-panel');
     if (!panel) return;
     const rect = btn.getBoundingClientRect();
-    panel.style.position = 'fixed';
-    panel.style.left = `${rect.left + rect.width / 2 - panel.offsetWidth / 2}px`;
-    panel.style.top = `${rect.top - panel.offsetHeight - 8}px`;
-    panel.style.zIndex = '9999';
     panel.classList.remove('d-none');
+    panel.style.position = 'fixed';
+    const { offsetWidth, offsetHeight } = panel;
+    panel.style.left = `${rect.left + rect.width / 2 - offsetWidth / 2}px`;
+    panel.style.top = `${rect.top - offsetHeight - 8}px`;
+    panel.style.zIndex = '9999';
     // trigger reflow to restart animation
     void panel.offsetWidth;
     panel.classList.add('show');

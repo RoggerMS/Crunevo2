@@ -108,6 +108,12 @@ function showReactions(btn) {
     });
   }
   options.classList.remove('d-none');
+  options.style.position = 'fixed';
+  const rect = btn.getBoundingClientRect();
+  const { offsetWidth, offsetHeight } = options;
+  options.style.left = `${rect.left + rect.width / 2 - offsetWidth / 2}px`;
+  options.style.top = `${rect.top - offsetHeight - 8}px`;
+  options.style.zIndex = '9999';
   void options.offsetWidth;
   options.classList.add('show');
   clearTimeout(options._timeout);
@@ -120,7 +126,13 @@ function hideReactions(panel) {
   panel.classList.remove('show');
   panel.addEventListener(
     'transitionend',
-    () => panel.classList.add('d-none'),
+    () => {
+      panel.classList.add('d-none');
+      panel.style.position = '';
+      panel.style.left = '';
+      panel.style.top = '';
+      panel.style.zIndex = '';
+    },
     { once: true }
   );
 }
