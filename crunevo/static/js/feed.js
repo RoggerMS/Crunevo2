@@ -532,40 +532,11 @@ class ModernFeedManager {
   }
 
   showReactionPanel(btn) {
-    const panel = btn.parentElement.querySelector('.reaction-panel');
-    if (!panel) return;
-    const rect = btn.getBoundingClientRect();
-    panel.classList.remove('d-none');
-    panel.style.position = 'fixed';
-    const { offsetWidth, offsetHeight } = panel;
-    panel.style.left = `${rect.left + rect.width / 2 - offsetWidth / 2}px`;
-    panel.style.top = `${rect.top - offsetHeight - 8}px`;
-    panel.style.zIndex = '9999';
-    // trigger reflow to restart animation
-    void panel.offsetWidth;
-    panel.classList.add('show');
-    clearTimeout(panel._hideTimer);
-    panel._hideTimer = setTimeout(() => {
-      this.hideReactionPanel(panel);
-    }, 4000);
-    panel.addEventListener('mouseleave', () => this.hideReactionPanel(panel), {
-      once: true,
-    });
+    window.showReactionPanel(btn);
   }
 
   hideReactionPanel(panel) {
-    panel.classList.remove('show');
-    panel.addEventListener(
-      'transitionend',
-      () => {
-        panel.classList.add('d-none');
-        panel.style.position = '';
-        panel.style.left = '';
-        panel.style.top = '';
-        panel.style.zIndex = '';
-      },
-      { once: true }
-    );
+    window.hideReactionPanel(panel);
   }
 
   // Handle share button with graceful fallback

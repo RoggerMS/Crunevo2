@@ -353,9 +353,6 @@
 /* Reaction panel */
 .reaction-panel {
   position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translate(-50%, 10px);
   z-index: 9999;
   display: flex;
   flex-wrap: wrap;
@@ -363,26 +360,21 @@
   gap: 4px;
   max-width: 90vw;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-radius: 9999px;
-  padding: 4px 6px;
+  background: var(--post-bg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  padding: 8px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 html[data-bs-theme="dark"] .reaction-panel {
-  background: rgba(39, 39, 42, 0.8);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: var(--post-bg);
 }
 
 .reaction-panel.show {
   opacity: 1;
   pointer-events: auto;
-  transform: translate(-50%, -4px);
 }
 
 .reaction-btn {
