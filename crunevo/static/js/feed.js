@@ -362,12 +362,13 @@ class ModernFeedManager {
     document.addEventListener('touchstart', (e) => {
       const btn = e.target.closest('.like-btn');
       if (!btn) return;
+      e.preventDefault();
       btn._longPress = false;
       btn._pressTimer = setTimeout(() => {
         btn._longPress = true;
         this.showReactionPanel(btn);
       }, 500);
-    });
+    }, { passive: false });
 
     document.addEventListener('touchend', (e) => {
       const btn = e.target.closest('.like-btn');
@@ -381,6 +382,7 @@ class ModernFeedManager {
     document.addEventListener('mousedown', (e) => {
       const btn = e.target.closest('.like-btn');
       if (!btn) return;
+      e.preventDefault();
       btn._longPress = false;
       btn._pressTimer = setTimeout(() => {
         btn._longPress = true;
