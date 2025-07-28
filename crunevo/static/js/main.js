@@ -849,8 +849,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initChatIA === 'function') {
     initChatIA();
   }
-  if (typeof initModernFeedManager === 'function' && document.getElementById('feedContainer')) {
-    initModernFeedManager();
+  if (typeof initModernFeedManager === 'function') {
+    const hasFeed = document.getElementById('feedContainer');
+    const hasReactions = document.querySelector('.like-btn');
+    if (hasFeed || hasReactions) {
+      initModernFeedManager();
+    }
   }
   if (typeof initPhotoComments === 'function' && document.getElementById('comment-section')) {
     initPhotoComments();
