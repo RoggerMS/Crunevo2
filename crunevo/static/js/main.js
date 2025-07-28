@@ -99,7 +99,7 @@ function applyGalleryOrientation() {
 
 function showReactions(btn) {
   const container = btn.closest('.reaction-container');
-  const options = container.querySelector('.reaction-options');
+  const options = container.querySelector('.reaction-panel');
   if (!options) return;
   const current = container.dataset.myReaction;
   if (current) {
@@ -142,7 +142,7 @@ function initReactions() {
   document.querySelectorAll('.reaction-container').forEach((container) => {
     const mainBtn = container.querySelector('.btn-reaction');
     if (!mainBtn) return;
-    const options = container.querySelector('.reaction-options');
+    const options = container.querySelector('.reaction-panel');
     const span = container.querySelector('.count');
     const countsDiv = container.querySelector('.reaction-counts');
     const postId = container.dataset.postId;

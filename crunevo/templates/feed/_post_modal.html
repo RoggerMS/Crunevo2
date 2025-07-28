@@ -94,7 +94,14 @@
     <div class="modal-stats">
       <div class="modal-stat-item">
         <i class="bi bi-fire-fill text-danger"></i>
-        <span>{{ reaction_counts.get('🔥', 0) + reaction_counts.get('❤️', 0) + reaction_counts.get('😂', 0) + reaction_counts.get('😮', 0) + reaction_counts.get('😢', 0) + reaction_counts.get('😡', 0) }} reacciones</span>
+        <span>{{
+          reaction_counts.get('🔥', 0) + reaction_counts.get('🧠', 0) +
+          reaction_counts.get('💔', 0) + reaction_counts.get('😠', 0) +
+          reaction_counts.get('🥶', 0) + reaction_counts.get('😂', 0) +
+          reaction_counts.get('🤡', 0) + reaction_counts.get('😲', 0) +
+          reaction_counts.get('👍', 0) + reaction_counts.get('💡', 0) +
+          reaction_counts.get('🙌', 0) + reaction_counts.get('📌', 0)
+        }} reacciones</span>
       </div>
       <div class="modal-stat-item">
         <i class="bi bi-chat"></i>

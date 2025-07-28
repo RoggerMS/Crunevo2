@@ -5,7 +5,7 @@
   <button class="btn btn-reaction">
     <span class="main-emoji">{{ main }}</span> <span class="count">{{ post.likes or 0 }}</span>
   </button>
-  <div class="reaction-options d-none position-absolute">
+  <div class="reaction-panel absolute bottom-full left-1/2 -translate-x-1/2 mb-2 flex flex-wrap gap-1 p-1 rounded-full shadow-lg bg-white dark:bg-zinc-800 d-none">
     <button class="reaction-btn" data-reaction="🔥" title="Crunazo">🔥</button>
     <button class="reaction-btn" data-reaction="🧠" title="Neuro">🧠</button>
     <button class="reaction-btn" data-reaction="💔" title="Roto">💔</button>
@@ -14,6 +14,10 @@
     <button class="reaction-btn" data-reaction="😂" title="Vacilón">😂</button>
     <button class="reaction-btn" data-reaction="🤡" title="Cringe">🤡</button>
     <button class="reaction-btn" data-reaction="😲" title="Asu">😲</button>
+    <button class="reaction-btn" data-reaction="👍" title="Me gusta">👍</button>
+    <button class="reaction-btn" data-reaction="💡" title="Interesante">💡</button>
+    <button class="reaction-btn" data-reaction="🙌" title="Gracias">🙌</button>
+    <button class="reaction-btn" data-reaction="📌" title="Lo guardé">📌</button>
   </div>
   {% if sorted_counts %}
   <div class="reaction-counts mt-1 small text-muted">

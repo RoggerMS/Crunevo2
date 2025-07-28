@@ -879,3 +879,5 @@
 - Removed debugging borders and logs from feed.js; fade-in/out animations now use
   `forwards` fill mode and loader hides after successful load to fix invisible
   posts issue.
+- Updated reaction panel with floating overlay and modern emojis; adjusted templates and JS.
+- Restored CRUNEVO emojis in floating reaction panel; kept overlay JS improvements (PR modern-floating-reactions-fix).
