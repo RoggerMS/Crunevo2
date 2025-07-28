@@ -885,3 +885,4 @@
 - Updated reactions macro to use like-btn markup, added blur backdrop and prevented default on long press to fix overlay bug (PR reaction-panel-bugfix).
 - Ensured floating reaction panel is visible by removing overflow restriction on `.facebook-post` (PR fix-reaction-panel-not-showing-v2).
 - ModernFeedManager initializes when any .like-btn is present to restore floating reactions on post detail pages (hotfix floating-reactions-init).
+- Fix position and style of floating reaction panel above "Me gusta" button (PR reactions-panel-position-fix).

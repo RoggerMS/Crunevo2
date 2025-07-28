@@ -534,6 +534,11 @@ class ModernFeedManager {
   showReactionPanel(btn) {
     const panel = btn.parentElement.querySelector('.reaction-panel');
     if (!panel) return;
+    const rect = btn.getBoundingClientRect();
+    panel.style.position = 'fixed';
+    panel.style.left = `${rect.left + rect.width / 2 - panel.offsetWidth / 2}px`;
+    panel.style.top = `${rect.top - panel.offsetHeight - 8}px`;
+    panel.style.zIndex = '9999';
     panel.classList.remove('d-none');
     // trigger reflow to restart animation
     void panel.offsetWidth;
@@ -551,7 +556,13 @@ class ModernFeedManager {
     panel.classList.remove('show');
     panel.addEventListener(
       'transitionend',
-      () => panel.classList.add('d-none'),
+      () => {
+        panel.classList.add('d-none');
+        panel.style.position = '';
+        panel.style.left = '';
+        panel.style.top = '';
+        panel.style.zIndex = '';
+      },
       { once: true }
     );
   }

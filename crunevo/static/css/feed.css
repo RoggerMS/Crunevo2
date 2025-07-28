@@ -356,7 +356,7 @@
   bottom: 100%;
   left: 50%;
   transform: translate(-50%, 10px);
-  z-index: 1000;
+  z-index: 9999;
   overflow-x: auto;
   white-space: nowrap;
   max-width: 300px;
@@ -384,10 +384,17 @@ html[data-bs-theme="dark"] .reaction-panel {
 }
 
 .reaction-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 32px;
   height: 32px;
   line-height: 32px;
   font-size: 20px;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  padding: 0;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
