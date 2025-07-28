@@ -353,7 +353,8 @@ class ModernFeedManager {
         const likeBtn = container.querySelector('.like-btn');
         likeBtn.dataset.reaction = btn.dataset.reaction;
         this.handleLike(likeBtn);
-        container.querySelector('.reaction-panel')?.classList.add('d-none');
+        const panel = container.querySelector('.reaction-panel');
+        if (panel) this.hideReactionPanel(panel);
       }
     });
 
@@ -532,12 +533,22 @@ class ModernFeedManager {
     const panel = btn.parentElement.querySelector('.reaction-panel');
     if (!panel) return;
     panel.classList.remove('d-none');
+    // trigger reflow to restart animation
+    void panel.offsetWidth;
+    panel.classList.add('show');
     clearTimeout(panel._hideTimer);
     panel._hideTimer = setTimeout(() => {
-      panel.classList.add('d-none');
+      this.hideReactionPanel(panel);
     }, 4000);
+    panel.addEventListener('mouseleave', () => this.hideReactionPanel(panel), {
+      once: true,
+    });
+  }
+
+  hideReactionPanel(panel) {
+    panel.classList.remove('show');
     panel.addEventListener(
-      'mouseleave',
+      'transitionend',
       () => panel.classList.add('d-none'),
       { once: true }
     );
