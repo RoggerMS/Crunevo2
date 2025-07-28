@@ -97,45 +97,43 @@ function applyGalleryOrientation() {
   });
 }
 
-function showReactions(btn) {
+function showReactionPanel(btn) {
   const container = btn.closest('.reaction-container');
-  const options = container.querySelector('.reaction-panel');
-  if (!options) return;
+  const panel = container.querySelector('.reaction-panel');
+  if (!panel) return;
   const current = container.dataset.myReaction;
   if (current) {
-    options.querySelectorAll('.reaction-btn').forEach((b) => {
+    panel.querySelectorAll('.reaction-btn').forEach((b) => {
       b.classList.toggle('active', b.dataset.reaction === current);
     });
   }
-  options.classList.remove('d-none');
-  options.style.position = 'fixed';
+  panel.classList.remove('d-none');
   const rect = btn.getBoundingClientRect();
-  const { offsetWidth, offsetHeight } = options;
-  options.style.left = `${rect.left + rect.width / 2 - offsetWidth / 2}px`;
-  options.style.top = `${rect.top - offsetHeight - 8}px`;
-  options.style.zIndex = '9999';
-  void options.offsetWidth;
-  options.classList.add('show');
-  clearTimeout(options._timeout);
-  options._timeout = setTimeout(() => {
-    hideReactions(options);
+  panel.style.left = `${rect.left + rect.width / 2 - panel.offsetWidth / 2}px`;
+  panel.style.top = `${rect.top - panel.offsetHeight - 8}px`;
+  panel.style.zIndex = '9999';
+  void panel.offsetWidth;
+  panel.classList.add('show');
+  clearTimeout(panel._timeout);
+  panel._timeout = setTimeout(() => {
+    hideReactionPanel(panel);
   }, 4000);
 }
 
-function hideReactions(panel) {
+function hideReactionPanel(panel) {
   panel.classList.remove('show');
   panel.addEventListener(
     'transitionend',
     () => {
       panel.classList.add('d-none');
-      panel.style.position = '';
-      panel.style.left = '';
-      panel.style.top = '';
-      panel.style.zIndex = '';
+      panel.removeAttribute('style');
     },
     { once: true }
   );
 }
+
+window.showReactionPanel = showReactionPanel;
+window.hideReactionPanel = hideReactionPanel;
 
 // Confirmations for important actions
 function confirmAction(message, callback) {
@@ -245,7 +243,7 @@ function initReactions() {
       startY = t.clientY;
       pressTimer = setTimeout(() => {
         longPress = true;
-        showReactions(mainBtn);
+        showReactionPanel(mainBtn);
       }, 600);
     }
 
@@ -287,7 +285,7 @@ function initReactions() {
         btn.classList.add('reaction-active');
         setTimeout(() => btn.classList.remove('reaction-active'), 200);
         sendReaction(reaction);
-        if (options) hideReactions(options);
+        if (options) hideReactionPanel(options);
       });
     });
   });
@@ -861,11 +859,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initChatIA === 'function') {
     initChatIA();
   }
+  let modernInitialized = false;
   if (typeof initModernFeedManager === 'function') {
     const hasFeed = document.getElementById('feedContainer');
     const hasReactions = document.querySelector('.like-btn');
     if (hasFeed || hasReactions) {
       initModernFeedManager();
+      modernInitialized = true;
     }
   }
   if (typeof initPhotoComments === 'function' && document.getElementById('comment-section')) {
@@ -908,7 +908,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initFeedInteractions === 'function') {
     initFeedInteractions();
   }
-  if (typeof initReactions === 'function') {
+  if (!modernInitialized && typeof initReactions === 'function') {
     initReactions();
   }
   if (typeof initQuickFilters === 'function') {
