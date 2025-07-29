@@ -12,15 +12,9 @@ from flask_login import current_user
 import logging
 from logging.handlers import RotatingFileHandler
 import os
-
-# Sentry SDK es opcional
-try:
-    import sentry_sdk
-    from sentry_sdk.integrations.flask import FlaskIntegration
-    from sentry_sdk.integrations.logging import LoggingIntegration
-    SENTRY_AVAILABLE = True
-except ImportError:
-    SENTRY_AVAILABLE = False
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 from .extensions import (
     db,
@@ -64,19 +58,17 @@ def create_app():
     if env_rlimit:
         app.config["RATELIMIT_STORAGE_URI"] = env_rlimit
 
-    # Inicializar Sentry solo si está disponible
-    if SENTRY_AVAILABLE:
-        sentry_dsn = app.config.get("SENTRY_DSN")
-        if sentry_dsn:
-            sentry_logging = LoggingIntegration(
-                level=logging.INFO, event_level=logging.ERROR
-            )
-            sentry_sdk.init(
-                dsn=sentry_dsn,
-                integrations=[FlaskIntegration(), sentry_logging],
-                environment=app.config.get("SENTRY_ENVIRONMENT"),
-                traces_sample_rate=app.config.get("SENTRY_TRACES_RATE", 0),
-            )
+    sentry_dsn = app.config.get("SENTRY_DSN")
+    if sentry_dsn:
+        sentry_logging = LoggingIntegration(
+            level=logging.INFO, event_level=logging.ERROR
+        )
+        sentry_sdk.init(
+            dsn=sentry_dsn,
+            integrations=[FlaskIntegration(), sentry_logging],
+            environment=app.config.get("SENTRY_ENVIRONMENT"),
+            traces_sample_rate=app.config.get("SENTRY_TRACES_RATE", 0),
+        )
 
     @app.context_processor
     def inject_globals():
@@ -173,23 +165,11 @@ def create_app():
 
     app.jinja_env.filters["link_preview"] = link_preview
 
-    # Initialize extensions
     db.init_app(app)
-    migrate.init_app(app, db)
     login_manager.init_app(app)
     mail.init_app(app)
     csrf.init_app(app)
-    
-    # Initialize optional extensions
-    if limiter:
-        limiter.init_app(app)
-    if talisman:
-        talisman.init_app(app)
-    if socketio:
-        socketio.init_app(app, cors_allowed_origins="*")
-    if oauth:
-        oauth.init_app(app)
-
+    oauth.init_app(app)
     oauth.register(
         name="google",
         client_id=app.config.get("GOOGLE_CLIENT_ID"),
@@ -231,6 +211,7 @@ def create_app():
         )
     login_manager.login_view = "auth.login"
 
+    migrate.init_app(app, db)
     socketio.init_app(app)
 
     @app.before_request
