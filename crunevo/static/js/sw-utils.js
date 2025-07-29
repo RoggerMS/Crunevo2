@@ -1,2 +1,2 @@
 const version = 'crunevo-v2';
-const log = (...args) => console.log('[CRUNEVO-SW]', ...args);
+const log = (...args) => self.DEBUG && console.log('[CRUNEVO-SW]', ...args);
