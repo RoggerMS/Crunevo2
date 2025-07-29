@@ -895,3 +895,4 @@
 - Confirmed Next.js SPA under `frontend/` remains as the official frontend. Documented build and deployment instructions in README (QA spa-integration-doc).
 - Cleaned unnecessary console.log statements in static JS and guarded service worker logs with self.DEBUG (PR remove-console-logs).
 - Added audit logging in require_admin before_request to track admin page visits (PR admin-require-logging).
+- Added /admin/api/analytics endpoint and improved applyFilters to send selected filters and redraw charts (PR analytics-filters-api).

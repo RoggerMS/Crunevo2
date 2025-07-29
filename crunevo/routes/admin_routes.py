@@ -803,6 +803,66 @@ def pageviews():
     )
 
 
+@admin_bp.route("/api/analytics")
+def analytics_api():
+    """Return analytics data with optional filters."""
+    days_param = request.args.get("days", "30d")
+    try:
+        if days_param.endswith("d"):
+            num_days = int(days_param[:-1])
+        elif days_param.endswith("y"):
+            num_days = int(days_param[:-1]) * 365
+        else:
+            num_days = int(days_param)
+    except ValueError:
+        num_days = 30
+
+    since = datetime.utcnow() - timedelta(days=num_days)
+
+    active_users = (
+        db.session.query(UserActivity.user_id)
+        .filter(UserActivity.timestamp >= since)
+        .distinct()
+        .count()
+    )
+
+    new_notes = Note.query.filter(Note.created_at >= since).count()
+    new_posts = Post.query.filter(Post.created_at >= since).count()
+
+    likes = PostReaction.query.filter(PostReaction.timestamp >= since).count()
+    comments = (
+        Comment.query.filter(Comment.created_at >= since).count()
+        + PostComment.query.filter(PostComment.timestamp >= since).count()
+    )
+
+    purchases_q = Purchase.query.filter(Purchase.timestamp >= since)
+    total_purchases = purchases_q.count()
+    total_revenue = (
+        db.session.query(db.func.coalesce(db.func.sum(Purchase.price_soles), 0))
+        .filter(Purchase.timestamp >= since)
+        .scalar()
+    )
+    avg_order_value = float(total_revenue) / total_purchases if total_purchases else 0
+
+    data = {
+        "users": {"active_users": active_users, "growth_rate": 0},
+        "content": {
+            "new_notes": new_notes,
+            "new_posts": new_posts,
+            "total_likes": likes,
+            "total_comments": comments,
+        },
+        "commerce": {
+            "total_revenue": float(total_revenue),
+            "total_purchases": total_purchases,
+            "avg_order_value": avg_order_value,
+            "conversion_rate": 0,
+        },
+    }
+
+    return jsonify(data)
+
+
 def log_admin_action(action):
     """Log admin actions"""
     log = AdminLog(admin_id=current_user.id, action=action, timestamp=datetime.utcnow())
