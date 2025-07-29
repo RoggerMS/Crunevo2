@@ -24,7 +24,7 @@ requests==2.31.0
 ruff==0.4.4
 black==24.4.2
 APScheduler==3.10.4
-argon2-cffi==23.1.0
+argon2-cffi==25.1.0
 Flask-Talisman==1.1.0
 Flask-Limiter==3.5.0
 Flask-SocketIO==5.3.6
