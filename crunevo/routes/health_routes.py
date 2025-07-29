@@ -21,10 +21,15 @@ def health_check():
 
 @health_bp.route('/healthz')
 def healthz():
-    """Alternative health check endpoint"""
+    """Simple health check endpoint"""
     return "ok", 200
 
 @health_bp.route('/ping')
 def ping():
     """Simple ping endpoint"""
     return "pong", 200
+
+@health_bp.route('/')
+def root():
+    """Root endpoint for basic connectivity test"""
+    return "CRUNEVO is running", 200
