@@ -351,13 +351,23 @@ document.addEventListener('DOMContentLoaded', function() {
     setupFilters();
 });
 
-function loadAnalytics() {
+function loadAnalytics(filters = {}) {
     const period = new URLSearchParams(window.location.search).get('period') || '30d';
-    
-    fetch(`/admin/api/analytics?days=${period}`)
+    const params = new URLSearchParams({ days: period, ...filters });
+
+    fetch(`/admin/api/analytics?${params.toString()}`)
         .then(response => response.json())
         .then(data => {
             updateMetrics(data);
+
+            if (activityTrendsChart) activityTrendsChart.destroy();
+            if (userDistributionChart) userDistributionChart.destroy();
+            if (notesAnalyticsChart) notesAnalyticsChart.destroy();
+            if (postsAnalyticsChart) postsAnalyticsChart.destroy();
+            if (commerceChart) commerceChart.destroy();
+            if (demographicsChart) demographicsChart.destroy();
+            if (devicesChart) devicesChart.destroy();
+
             createCharts(data);
         })
         .catch(error => {
@@ -717,12 +727,9 @@ function applyFilters() {
         contentType: document.getElementById('contentTypeFilter').value,
         activity: document.getElementById('activityFilter').value
     };
-    
-    // Aquí se aplicarían los filtros a los datos
-    console.log('Aplicando filtros:', filters);
-    
+
     // Recargar analytics con filtros
-    loadAnalytics();
+    loadAnalytics(filters);
 }
 
 function refreshAnalytics() {
