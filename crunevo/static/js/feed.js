@@ -1,4 +1,4 @@
-// CRUNEVO Modern Feed System - Facebook-style functionality
+// CRUNEVO Modern Feed System - Facebook-style functionality with performance optimizations
 class ModernFeedManager {
   constructor() {
     this.currentPage = 1;
@@ -15,10 +15,14 @@ class ModernFeedManager {
     this.touchStartX = 0;
     this.touchEndX = 0;
     this.commentEventsBound = false;
+    this.performanceMetrics = new Map();
+    this.errorRetryCount = 0;
+    this.maxRetries = 3;
     this.init();
   }
 
   init() {
+    this.startPerformanceTimer('init');
     this.initFeedForm();
     this.initImagePreview();
     this.initFeedFilters();
@@ -29,9 +33,69 @@ class ModernFeedManager {
     this.initPostCreation();
     this.initSkeletonLoading();
     this.initStreakClaim();
+    this.initErrorHandling();
+    this.endPerformanceTimer('init');
   }
 
-  // Initialize post creation form
+  // Performance monitoring
+  startPerformanceTimer(label) {
+    if (window.performance && window.performance.mark) {
+      window.performance.mark(`${label}-start`);
+    }
+  }
+
+  endPerformanceTimer(label) {
+    if (window.performance && window.performance.mark) {
+      window.performance.mark(`${label}-end`);
+      window.performance.measure(label, `${label}-start`, `${label}-end`);
+      const measure = window.performance.getEntriesByName(label)[0];
+      this.performanceMetrics.set(label, measure.duration);
+      console.log(`${label} took ${measure.duration.toFixed(2)}ms`);
+    }
+  }
+
+  // Enhanced error handling
+  initErrorHandling() {
+    window.addEventListener('error', (e) => {
+      console.error('Feed error:', e.error);
+      this.logError('JavaScript error', e.error);
+    });
+
+    window.addEventListener('unhandledrejection', (e) => {
+      console.error('Unhandled promise rejection:', e.reason);
+      this.logError('Promise rejection', e.reason);
+    });
+  }
+
+  logError(type, error) {
+    // Send error to monitoring service if available
+    if (window.Sentry) {
+      window.Sentry.captureException(error);
+    }
+    
+    // Log locally
+    console.error(`[Feed Error] ${type}:`, error);
+  }
+
+  // Optimized retry mechanism
+  async retryOperation(operation, maxRetries = this.maxRetries) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        return await operation();
+      } catch (error) {
+        if (attempt === maxRetries) {
+          throw error;
+        }
+        
+        // Exponential backoff
+        const delay = Math.pow(2, attempt) * 1000;
+        console.warn(`Operation failed, retrying in ${delay}ms (attempt ${attempt}/${maxRetries})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+
+  // Initialize post creation form with enhanced validation
   initPostCreation() {
     const postCreationTrigger = document.querySelector('.post-creation-trigger');
     const postModal = document.getElementById('crearPublicacionModal');
@@ -44,11 +108,11 @@ class ModernFeedManager {
     }
   }
 
-  // Initialize skeleton loading
+  // Initialize skeleton loading with better UX
   initSkeletonLoading() {
     this.showSkeletonPosts();
 
-    // Remove skeletons after content loads
+    // Remove skeletons after content loads with fade animation
     setTimeout(() => {
       this.removeSkeletonPosts();
     }, 1000);
@@ -59,17 +123,17 @@ class ModernFeedManager {
     if (!container) return;
 
     const skeletonHTML = `
-      <div class="post-skeleton">
+      <div class="post-skeleton animate-pulse">
         <div style="display: flex; gap: 12px; margin-bottom: 12px;">
-          <div class="skeleton-avatar"></div>
+          <div class="skeleton-avatar bg-gray-300 rounded-full w-10 h-10"></div>
           <div style="flex: 1;">
-            <div class="skeleton-line short"></div>
-            <div class="skeleton-line" style="width: 40%; height: 8px;"></div>
+            <div class="skeleton-line short bg-gray-300 h-4 rounded"></div>
+            <div class="skeleton-line bg-gray-300 h-2 rounded" style="width: 40%;"></div>
           </div>
         </div>
-        <div class="skeleton-line"></div>
-        <div class="skeleton-line medium"></div>
-        <div class="skeleton-line" style="height: 200px; margin-top: 12px;"></div>
+        <div class="skeleton-line bg-gray-300 h-4 rounded mb-2"></div>
+        <div class="skeleton-line medium bg-gray-300 h-3 rounded mb-2"></div>
+        <div class="skeleton-line bg-gray-300 h-48 rounded" style="margin-top: 12px;"></div>
       </div>
     `;
 
@@ -87,7 +151,7 @@ class ModernFeedManager {
     });
   }
 
-  // Initialize streak claim button
+  // Initialize streak claim button with better error handling
   initStreakClaim() {
     const btn = document.getElementById('claimStreakBtn');
     if (!btn) return;
@@ -96,30 +160,26 @@ class ModernFeedManager {
       const original = btn.innerHTML;
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+      
       try {
-        const resp = await this.fetchWithCSRF('/api/reclamar-racha', {
-          method: 'POST'
+        const resp = await this.retryOperation(async () => {
+          return await this.fetchWithCSRF('/api/reclamar-racha', {
+            method: 'POST'
+          });
         });
-        const data = await resp.json();
-        if (data.success) {
-          this.showToast(`\uD83C\uDF89 \u00A1D\u00EDa ${data.day}! Has ganado ${data.credits} crolars`, 'success');
-          const banner = document.getElementById('streakBanner');
-          if (banner) banner.remove();
-          if (typeof updateCreditsDisplay === 'function') {
-            updateCreditsDisplay(data.balance);
-          } else if (window.CRUNEVO_UI?.updateUserCredits) {
-            window.CRUNEVO_UI.updateUserCredits(data.balance);
-          }
+
+        if (resp.ok) {
+          const data = await resp.json();
+          this.showToast(`¡Racha reclamada! +${data.crolars} Crolars`, 'success');
+          btn.style.display = 'none';
         } else {
-          this.showToast(data.message || 'Error al reclamar', 'error');
-          btn.disabled = false;
-          btn.innerHTML = original;
+          throw new Error('Failed to claim streak');
         }
-      } catch (err) {
-        console.error('Error claiming streak:', err);
-        this.showToast('Error de conexi\u00F3n', 'error');
-        btn.disabled = false;
+      } catch (error) {
+        console.error('Error claiming streak:', error);
+        this.showToast('Error al reclamar racha', 'error');
         btn.innerHTML = original;
+        btn.disabled = false;
       }
     });
   }
