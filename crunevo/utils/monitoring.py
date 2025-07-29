@@ -1,12 +1,18 @@
 import logging
 import time
-import psutil
 import os
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 from flask import current_app, request
 from crunevo.extensions import db
 from crunevo.models import User, Post, Note, FeedItem
+
+# psutil es opcional
+try:
+    import psutil
+    PSUTIL_AVAILABLE = True
+except ImportError:
+    PSUTIL_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +27,17 @@ class CRUNEVOMonitor:
     def collect_system_metrics(self) -> Dict:
         """Recopila métricas del sistema"""
         try:
+            if not PSUTIL_AVAILABLE:
+                # Fallback cuando psutil no está disponible
+                return {
+                    'cpu_percent': 0,
+                    'memory_percent': 0,
+                    'memory_available': 0,
+                    'disk_percent': 0,
+                    'disk_free': 0,
+                    'timestamp': datetime.utcnow().isoformat()
+                }
+            
             # Métricas del sistema
             cpu_percent = psutil.cpu_percent(interval=1)
             memory = psutil.virtual_memory()

@@ -810,12 +810,16 @@ def api_system_metrics():
         health_data = get_system_health()
         
         # Simular métricas del sistema si no están disponibles
-        import psutil
-        import os
-        
-        cpu_percent = psutil.cpu_percent(interval=1)
-        memory = psutil.virtual_memory()
-        disk = psutil.disk_usage('/')
+        try:
+            import psutil
+            cpu_percent = psutil.cpu_percent(interval=1)
+            memory = psutil.virtual_memory()
+            disk = psutil.disk_usage('/')
+        except ImportError:
+            # Fallback cuando psutil no está disponible
+            cpu_percent = 0
+            memory = type('obj', (object,), {'percent': 0})()
+            disk = type('obj', (object,), {'percent': 0})()
         
         # Calcular conexiones activas (simulado)
         connections_percent = min(100, (cpu_percent + memory.percent) / 2)

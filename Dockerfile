@@ -18,6 +18,16 @@ COPY crunevo /app/crunevo
 COPY migrations /app/migrations
 COPY migrations/versions /app/migrations/versions
 
+# Crear directorio para instancia
+RUN mkdir -p /app/instance
+
+# Variables de entorno
+ENV FLASK_APP=crunevo.wsgi:app
+ENV FLASK_ENV=production
+ENV PYTHONPATH=/app
+
+# Exponer puerto
+EXPOSE 8000
+
 # Ejecutar aplicación
-# Run gunicorn with eventlet worker for websocket support
-CMD ["gunicorn", "--workers", "3", "--timeout", "120", "-k", "eventlet", "-b", "0.0.0.0:8080", "crunevo.wsgi:app"]
+CMD ["gunicorn", "--workers", "2", "--timeout", "120", "--keep-alive", "2", "--max-requests", "1000", "--max-requests-jitter", "100", "--bind", "0.0.0.0:8000", "crunevo.wsgi:app"]

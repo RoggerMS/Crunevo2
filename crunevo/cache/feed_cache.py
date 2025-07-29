@@ -87,6 +87,10 @@ def cache_push(user_id: int, items: List[Dict[str, Any]]) -> None:
         _memory_cache.clear()
         logger.info("Cleared memory cache due to size limit")
 
+def push_items(user_id: int, items: List[Dict[str, Any]]) -> None:
+    """Alias for cache_push for backward compatibility."""
+    cache_push(user_id, items)
+
 def cache_invalidate(user_id: int) -> None:
     """Invalidate cache for a specific user."""
     try:
