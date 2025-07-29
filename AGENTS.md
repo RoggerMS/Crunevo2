@@ -888,3 +888,4 @@
 - Fix position and style of floating reaction panel above "Me gusta" button (PR reactions-panel-position-fix).
 - Fixed reaction panel placement by measuring after display; removed horizontal scrollbar and wrapped buttons; panel now positions reliably above the like button (PR reaction-panel-enhancements).
 - Unified reaction panel logic in main.js and feed.js with dynamic positioning, simplified CSS and templates (PR reaction-panel-unify-fix).
+- Corrected floating reaction panel to appear centered above the pressed "Me gusta" button and reset styles on hide (PR reaction-panel-button-align).

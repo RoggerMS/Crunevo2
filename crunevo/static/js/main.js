@@ -97,39 +97,47 @@ function applyGalleryOrientation() {
   });
 }
 
-function showReactionPanel(btn) {
-  const container = btn.closest('.reaction-container');
-  const panel = container.querySelector('.reaction-panel');
+function showReactionPanel(button) {
+  const container = button.closest('.reaction-container');
+  const panel = container?.querySelector('.reaction-panel');
   if (!panel) return;
+
   const current = container.dataset.myReaction;
   if (current) {
     panel.querySelectorAll('.reaction-btn').forEach((b) => {
       b.classList.toggle('active', b.dataset.reaction === current);
     });
   }
+
   panel.classList.remove('d-none');
-  const rect = btn.getBoundingClientRect();
-  panel.style.left = `${rect.left + rect.width / 2 - panel.offsetWidth / 2}px`;
-  panel.style.top = `${rect.top - panel.offsetHeight - 8}px`;
-  panel.style.zIndex = '9999';
-  void panel.offsetWidth;
   panel.classList.add('show');
+
+  const btnRect = button.getBoundingClientRect();
+  const panelRect = panel.getBoundingClientRect();
+  const top = btnRect.top - panelRect.height - 8 + window.scrollY;
+  const left =
+    btnRect.left + btnRect.width / 2 - panelRect.width / 2 + window.scrollX;
+
+  panel.style.position = 'absolute';
+  panel.style.top = `${top}px`;
+  panel.style.left = `${left}px`;
+  panel.style.zIndex = '9999';
+  panel.style.display = 'flex';
+
   clearTimeout(panel._timeout);
   panel._timeout = setTimeout(() => {
-    hideReactionPanel(panel);
+    hideReactionPanel(button);
   }, 4000);
 }
 
-function hideReactionPanel(panel) {
+function hideReactionPanel(button) {
+  const container = button.closest('.reaction-container');
+  const panel = container?.querySelector('.reaction-panel');
+  if (!panel) return;
+
   panel.classList.remove('show');
-  panel.addEventListener(
-    'transitionend',
-    () => {
-      panel.classList.add('d-none');
-      panel.removeAttribute('style');
-    },
-    { once: true }
-  );
+  panel.classList.add('d-none');
+  panel.removeAttribute('style');
 }
 
 window.showReactionPanel = showReactionPanel;
@@ -285,7 +293,7 @@ function initReactions() {
         btn.classList.add('reaction-active');
         setTimeout(() => btn.classList.remove('reaction-active'), 200);
         sendReaction(reaction);
-        if (options) hideReactionPanel(options);
+        hideReactionPanel(mainBtn);
       });
     });
   });
