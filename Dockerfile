@@ -29,17 +29,9 @@ ENV PYTHONPATH=/app
 # Exponer puerto
 EXPOSE 8000
 
-# Crear script de inicio
-RUN echo '#!/bin/bash\n\
-echo "Starting CRUNEVO..."\n\
-sleep 10\n\
-echo "Starting Gunicorn..."\n\
-exec gunicorn --bind 0.0.0.0:8000 --workers 1 --timeout 60 --keep-alive 2 --max-requests 1000 --max-requests-jitter 100 --preload crunevo.wsgi:app\n\
-' > /app/start.sh && chmod +x /app/start.sh
-
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:8000/healthz || exit 1
 
 # Ejecutar aplicación
-CMD ["/app/start.sh"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "1", "--timeout", "60", "--keep-alive", "2", "--max-requests", "1000", "--max-requests-jitter", "100", "--preload", "crunevo.wsgi:app"]
