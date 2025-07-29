@@ -20,7 +20,6 @@ class NotificationManager {
             const currentFirst = this.container?.querySelector('.notification-item')?.dataset.id;
             const newFirst = data.notifications[0]?.id?.toString();
             const updated = currentFirst !== newFirst;
-            console.log('[NOTIF] unread:', data.unread_count, 'total:', data.notifications.length, updated ? '- updating dropdown' : '- preserving dropdown');
             this.updateBadge(data.unread_count);
             if (updated) {
                 this.renderNotifications(data.notifications);

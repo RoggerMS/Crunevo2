@@ -1,6 +1,5 @@
 // Personal Space JavaScript
 function initPersonalSpace() {
-    console.log('personal-space.js cargado');
     initializePersonalSpace();
     updateDashboardMetrics();
     initializeKanbanBoards();
@@ -399,7 +398,6 @@ function createNewBlock(type) {
 
     apiCreateBlock(blockData)
         .then(data => {
-            console.log('create block response', data);
             if (data.success && data.block) {
                 bootstrap.Modal.getInstance(document.getElementById('addBlockModal'))?.hide();
 
@@ -1062,7 +1060,6 @@ function handleSuggestionClick(e) {
                     })
                     .then(res => res.json())
                     .then(data => {
-                        console.log('suggestion create_objetivo_block', data);
                         if (data.success && data.block) {
                             addBlockToUI(data.block);
                         } else {
@@ -1086,7 +1083,6 @@ function handleSuggestionClick(e) {
                     })
                     .then(res => res.json())
                     .then(data => {
-                        console.log('suggestion create_nota_block', data);
                         if (data.success && data.block) {
                             addBlockToUI(data.block);
                         } else {
@@ -1110,7 +1106,6 @@ function handleSuggestionClick(e) {
                     })
                     .then(res => res.json())
                     .then(data => {
-                        console.log('suggestion create_kanban_block', data);
                         if (data.success && data.block) {
                             addBlockToUI(data.block);
                         } else {
@@ -1206,7 +1201,6 @@ function handleContentChange(e) {
 
 function autoSaveBlock(blockId) {
     // Implement auto-save logic here if needed
-    console.log('Auto-saving block:', blockId);
 }
 
 function autoSaveChanges() {

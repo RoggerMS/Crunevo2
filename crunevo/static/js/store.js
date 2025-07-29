@@ -30,8 +30,6 @@ class CrunevoStore {
 
         // Initialize view toggle
         this.initViewToggle();
-
-        console.log('🛍️ CRUNEVO Store initialized successfully!');
     }
 
     setupEventListeners() {
@@ -725,7 +723,6 @@ window.toggleSidebar = toggleSidebar;
 
 // Initialize store when DOM is loaded
 function initCrunevoStore() {
-    console.log('Store iniciado');
     window.store = new CrunevoStore();
 
     // Publish product form handler
