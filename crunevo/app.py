@@ -173,11 +173,23 @@ def create_app():
 
     app.jinja_env.filters["link_preview"] = link_preview
 
+    # Initialize extensions
     db.init_app(app)
+    migrate.init_app(app, db)
     login_manager.init_app(app)
     mail.init_app(app)
     csrf.init_app(app)
-    oauth.init_app(app)
+    
+    # Initialize optional extensions
+    if limiter:
+        limiter.init_app(app)
+    if talisman:
+        talisman.init_app(app)
+    if socketio:
+        socketio.init_app(app, cors_allowed_origins="*")
+    if oauth:
+        oauth.init_app(app)
+
     oauth.register(
         name="google",
         client_id=app.config.get("GOOGLE_CLIENT_ID"),
@@ -219,7 +231,6 @@ def create_app():
         )
     login_manager.login_view = "auth.login"
 
-    migrate.init_app(app, db)
     socketio.init_app(app)
 
     @app.before_request

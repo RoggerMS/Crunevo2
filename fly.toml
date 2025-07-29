@@ -39,6 +39,3 @@ primary_region = "gru"
 
 [processes]
   app = "gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 --keep-alive 2 --max-requests 1000 --max-requests-jitter 100 crunevo.wsgi:app"
-
-[deploy]
-  release_command = "flask db upgrade"

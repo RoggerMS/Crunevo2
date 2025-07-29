@@ -28,6 +28,10 @@ def _is_cache_valid(cached_data: List[Dict[str, Any]]) -> bool:
                 return False
     return True
 
+def fetch(user_id: int, start: int, stop: int) -> List[Dict[str, Any]]:
+    """Alias for cache_fetch for backward compatibility."""
+    return cache_fetch(user_id, start, stop)
+
 def cache_fetch(user_id: int, start: int, stop: int) -> List[Dict[str, Any]]:
     """Fetch feed items from cache with improved error handling."""
     try:
@@ -90,6 +94,27 @@ def cache_push(user_id: int, items: List[Dict[str, Any]]) -> None:
 def push_items(user_id: int, items: List[Dict[str, Any]]) -> None:
     """Alias for cache_push for backward compatibility."""
     cache_push(user_id, items)
+
+def remove_item(user_id: int, item_id: int) -> None:
+    """Remove a specific item from cache."""
+    try:
+        # Try Redis first
+        from crunevo.extensions import redis_client
+        if redis_client:
+            # Delete all cache keys for this user
+            pattern = f"feed:{user_id}:*"
+            keys = redis_client.keys(pattern)
+            if keys:
+                redis_client.delete(*keys)
+                logger.debug(f"Removed item {item_id} from Redis cache for user {user_id}")
+    except Exception as e:
+        logger.warning(f"Redis cache removal error: {e}")
+    
+    # Clear memory cache for this user
+    keys_to_remove = [k for k in _memory_cache.keys() if f"feed:{user_id}:" in k]
+    for key in keys_to_remove:
+        del _memory_cache[key]
+    logger.debug(f"Removed item {item_id} from memory cache for user {user_id}")
 
 def cache_invalidate(user_id: int) -> None:
     """Invalidate cache for a specific user."""
