@@ -22,11 +22,11 @@ primary_region = "gru"
   processes = ["app"]
 
   [[http_service.checks]]
-    grace_period = "10s"
-    interval = "30s"
+    grace_period = "30s"
+    interval = "15s"
     method = "GET"
-    timeout = "5s"
-    path = "/health"
+    timeout = "10s"
+    path = "/healthz"
 
 [[vm]]
   cpu_kind = "shared"
@@ -38,4 +38,4 @@ primary_region = "gru"
   destination = "/app/instance"
 
 [processes]
-  app = "gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 --keep-alive 2 --max-requests 1000 --max-requests-jitter 100 crunevo.wsgi:app"
+  app = "gunicorn --bind 0.0.0.0:8000 --workers 1 --timeout 60 --keep-alive 2 --max-requests 1000 --max-requests-jitter 100 --preload crunevo.wsgi:app"

@@ -22,4 +22,9 @@ def health_check():
 @health_bp.route('/healthz')
 def healthz():
     """Alternative health check endpoint"""
-    return health_check()
+    return "ok", 200
+
+@health_bp.route('/ping')
+def ping():
+    """Simple ping endpoint"""
+    return "pong", 200
