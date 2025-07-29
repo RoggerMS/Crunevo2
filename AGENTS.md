@@ -889,5 +889,6 @@
 - Fixed reaction panel placement by measuring after display; removed horizontal scrollbar and wrapped buttons; panel now positions reliably above the like button (PR reaction-panel-enhancements).
 - Unified reaction panel logic in main.js and feed.js with dynamic positioning, simplified CSS and templates (PR reaction-panel-unify-fix).
 - Corrected floating reaction panel to appear centered above the pressed "Me gusta" button and reset styles on hide (PR reaction-panel-button-align).
+- Improved mobile reaction panel positioning to center over the tapped like button with screen margins and click-outside close handler (PR mobile-reaction-panel).
 - Restored repository to pre-replit state and removed stray metrics migration to fix Alembic heads (hotfix revert-replit)
 - Restored Fly volume mount in fly.toml to match existing machine configuration (PR fix-fly-volume-config)
