@@ -14,7 +14,7 @@ primary_region = "gru"
   PYTHONPATH = "/app"
 
 [http_service]
-  internal_port = 8000
+  internal_port = 8080
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
@@ -38,4 +38,4 @@ primary_region = "gru"
   destination = "/app/instance"
 
 [processes]
-  app = "gunicorn --bind 0.0.0.0:8000 --workers 1 --timeout 60 --keep-alive 2 --max-requests 1000 --max-requests-jitter 100 --preload crunevo.wsgi:app"
+  app = "gunicorn --bind 0.0.0.0:8080 --workers 1 --timeout 60 --keep-alive 2 --max-requests 1000 --max-requests-jitter 100 --preload crunevo.wsgi:app"
