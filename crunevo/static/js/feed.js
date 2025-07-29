@@ -353,8 +353,7 @@ class ModernFeedManager {
         const likeBtn = container.querySelector('.like-btn');
         likeBtn.dataset.reaction = btn.dataset.reaction;
         this.handleLike(likeBtn);
-        const panel = container.querySelector('.reaction-panel');
-        if (panel) this.hideReactionPanel(panel);
+        this.hideReactionPanel(likeBtn);
       }
     });
 
@@ -535,8 +534,8 @@ class ModernFeedManager {
     window.showReactionPanel(btn);
   }
 
-  hideReactionPanel(panel) {
-    window.hideReactionPanel(panel);
+  hideReactionPanel(btn) {
+    window.hideReactionPanel(btn);
   }
 
   // Handle share button with graceful fallback
