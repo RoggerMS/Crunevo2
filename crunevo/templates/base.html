@@ -226,7 +226,7 @@
     <script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('{{ url_for('static', filename='js/service-worker.js') }}')
-    .then(reg => console.log('SW registrado', reg))
+    .then(reg => console.info('Service worker registrado', reg))
     .catch(err => console.error('SW error', err));
 }
     </script>
