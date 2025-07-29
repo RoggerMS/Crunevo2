@@ -892,3 +892,4 @@
 - Improved mobile reaction panel positioning to center over the tapped like button with screen margins and click-outside close handler (PR mobile-reaction-panel).
 - Restored repository to pre-replit state and removed stray metrics migration to fix Alembic heads (hotfix revert-replit)
 - Restored Fly volume mount in fly.toml to match existing machine configuration (PR fix-fly-volume-config)
+- Cleaned unnecessary console.log statements in static JS and guarded service worker logs with self.DEBUG (PR remove-console-logs).
