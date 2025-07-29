@@ -1,41 +1,37 @@
-# fly.toml app configuration file generated for crunevo2 on 2024-12-19T20:14:20Z
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-
-app = "crunevo2"
-primary_region = "gru"
+# fly.toml
+app = 'crunevo2'
+primary_region = 'gru'
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = 'Dockerfile'
+
+[deploy]
+  release_command = "flask db upgrade"
 
 [env]
-  FLASK_APP = "crunevo.wsgi:app"
-  FLASK_ENV = "production"
-  PYTHONPATH = "/app"
+  FLASK_APP = 'crunevo.wsgi:app'
+  FLASK_ENV = 'production'
+  PORT = "8080"
+  SESSION_COOKIE_HTTPONLY = "true"
+
+[experimental]
+  auto_rollback = true
 
 [http_service]
-  internal_port = 8000
+  internal_port = 8080
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
-  min_machines_running = 0
-  processes = ["app"]
+  min_machines_running = 1
 
   [[http_service.checks]]
-    grace_period = "60s"
-    interval = "30s"
-    method = "GET"
-    timeout = "15s"
+    grace_period = '15s'
+    interval = '15s'
+    method = 'GET'
+    timeout = '15s'
     path = "/healthz"
 
 [[vm]]
-  cpu_kind = "shared"
+  cpu_kind = "performance"
   cpus = 1
-  memory_mb = 1024
-
-[mounts]
-  source = "crunevo2_data"
-  destination = "/app/instance"
-
-[processes]
-  app = "gunicorn --bind 0.0.0.0:8000 --workers 1 --timeout 60 --keep-alive 2 --max-requests 1000 --max-requests-jitter 100 --preload crunevo.wsgi:app"
+  memory_mb = 2048

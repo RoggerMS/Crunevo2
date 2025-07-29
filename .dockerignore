@@ -1,77 +1,30 @@
-# Archivos de desarrollo
-.git
-.gitignore
-README.md
-*.md
-.env
-.env.local
-.env.production
+# flyctl launch added from .gitignore
+# Environment
+**\.env
+
+# Local instance data
+**\instance
+**\**\instance
+**\*.db
+
+# Python cache files
+**\**\__pycache__
+**\*.pyc
+
+# Patch artifacts
+**\*.patch
+**\*.zip
 
 # Logs
-logs/
-*.log
-npm-debug.log*
+**\logs
+**\*.log
 
-# Directorios de desarrollo
-node_modules/
-venv/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-env/
-.venv/
-ENV/
+# Tool caches
+**\.pytest_cache
+**\.ruff_cache
+**\htmlcov
+**\.coverage
 
-# Archivos de IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# Archivos de sistema
-.DS_Store
-Thumbs.db
-
-# Archivos de test
-tests/
-test_*
-*_test.py
-
-# Archivos de documentación
-docs/
-*.rst
-
-# Archivos de configuración local
-instance/
-*.db
-*.sqlite
-
-# Archivos temporales
-tmp/
-temp/
-*.tmp
-
-# Archivos de backup
-*.bak
-*.backup
-
-# Archivos de cache
-.cache/
-*.cache
-
-# Archivos de coverage
-.coverage
-htmlcov/
-
-# Archivos de pytest
-.pytest_cache/
-.tox/
-
-# Archivos de mypy
-.mypy_cache/
-
-# Archivos de ruff
-.ruff_cache/
+# Fly.io CLI state
+**\.fly
+fly.toml

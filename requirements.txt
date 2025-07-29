@@ -44,8 +44,3 @@ Authlib==1.2.1
 bleach==6.1.0
 flask
 PyJWT==2.8.0
-# Nuevas dependencias para el admin mejorado
-psutil==5.9.8
-pandas==2.2.2
-openpyxl==3.1.2
-redis==5.0.2

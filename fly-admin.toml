@@ -1,5 +1,5 @@
 app = "crunevo-admin"
-primary_region = "gru"
+primary_region = "bog"
 
 [build]
   dockerfile = "Dockerfile"

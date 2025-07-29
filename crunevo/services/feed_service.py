@@ -81,23 +81,17 @@ def get_weekly_ranking(limit=5):
 
 
 def fetch_feed_data(user, categoria: str | None = None, limit: int = 20):
-    """Fetch feed data with optimized queries to avoid N+1 problem."""
-    # Optimized query with eager loading
     query = FeedItem.query.filter_by(owner_id=user.id).options(
-        joinedload(FeedItem.post).joinedload(Post.author),
-        joinedload(FeedItem.note).joinedload(Note.author)
+        joinedload(FeedItem.post), joinedload(FeedItem.note)
     )
-    
     if categoria == "apuntes":
         query = query.filter_by(item_type="apunte")
     else:
         query = query.filter(FeedItem.item_type != "apunte")
-    
     items_raw = query.order_by(FeedItem.created_at.desc()).limit(limit).all()
 
     feed_items: list[dict] = []
     post_ids: list[int] = []
-    
     for item in items_raw:
         if item.item_type == "post" and item.post:
             if categoria == "imagen" and (
@@ -109,31 +103,24 @@ def fetch_feed_data(user, categoria: str | None = None, limit: int = 20):
         elif item.item_type == "apunte" and item.note and categoria == "apuntes":
             feed_items.append({"type": "note", "data": item.note})
 
-    # Batch load reactions and saved posts
     reaction_map = PostReaction.counts_for_posts(post_ids)
     user_reactions = PostReaction.reactions_for_user_posts(user.id, post_ids)
 
     from crunevo.models import SavedPost
-    saved_posts = {}
-    if post_ids:
-        saved_posts = {
-            sp.post_id: True
-            for sp in SavedPost.query.filter(
-                SavedPost.user_id == user.id,
-                SavedPost.post_id.in_(post_ids),
-            ).all()
-        }
 
-    # Optimize trending posts query
+    saved_posts = {
+        sp.post_id: True
+        for sp in SavedPost.query.filter(
+            SavedPost.user_id == user.id,
+            SavedPost.post_id.in_(post_ids),
+        ).all()
+    }
+
     trending_posts = get_weekly_top_posts(limit=3)
-    trending_counts = {}
-    trending_user_reactions = {}
-    if trending_posts:
-        trending_post_ids = [p.id for p in trending_posts]
-        trending_counts = PostReaction.counts_for_posts(trending_post_ids)
-        trending_user_reactions = PostReaction.reactions_for_user_posts(
-            user.id, trending_post_ids
-        )
+    trending_counts = PostReaction.counts_for_posts([p.id for p in trending_posts])
+    trending_user_reactions = PostReaction.reactions_for_user_posts(
+        user.id, [p.id for p in trending_posts]
+    )
 
     return {
         "feed_items": feed_items,
