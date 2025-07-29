@@ -249,3 +249,13 @@ Use the returned token in the `Authorization` header to call endpoints:
 curl -H "Authorization: Bearer <TOKEN>" \
      http://localhost:5000/api/feed?page=1
 ```
+
+## Frontend SPA
+
+The `frontend/` directory hosts a decoupled Next.js application that consumes the Flask API. Build it separately with:
+
+```bash
+docker build -t crunevo-frontend -f frontend/Dockerfile frontend
+```
+
+Deploy this container independently and configure it to point to your Flask backend URL. The SPA fetches data from endpoints like `/api/feed` using standard HTTP requests.
