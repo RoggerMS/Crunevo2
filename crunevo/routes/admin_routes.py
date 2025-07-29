@@ -57,7 +57,9 @@ admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 @login_required
 @admin_required
 def require_admin():
-    pass
+    """Ensure admin access and log each admin visit."""
+    if request.endpoint != "admin.admin_logs":
+        log_admin_action(f"Accessed {request.path}")
 
 
 @admin_bp.route("/")

@@ -894,3 +894,4 @@
 - Restored Fly volume mount in fly.toml to match existing machine configuration (PR fix-fly-volume-config)
 - Confirmed Next.js SPA under `frontend/` remains as the official frontend. Documented build and deployment instructions in README (QA spa-integration-doc).
 - Cleaned unnecessary console.log statements in static JS and guarded service worker logs with self.DEBUG (PR remove-console-logs).
+- Added audit logging in require_admin before_request to track admin page visits (PR admin-require-logging).
