@@ -35,3 +35,7 @@ primary_region = 'gru'
   cpu_kind = "performance"
   cpus = 1
   memory_mb = 2048
+
+[mounts]
+  source = "crunevo2_data"
+  destination = "/app/instance"
