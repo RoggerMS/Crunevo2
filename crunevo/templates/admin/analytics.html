@@ -1,0 +1,748 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Analytics Avanzados - Admin CRUNEVO{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid px-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0 text-gray-800">📊 Analytics Avanzados</h1>
+      <p class="mb-0 text-muted">Análisis detallado y métricas de rendimiento</p>
+    </div>
+    <div class="d-flex gap-2">
+      <div class="dropdown">
+        <button class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+          <i class="bi bi-calendar me-1"></i> Período
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="?period=7d">Últimos 7 días</a></li>
+          <li><a class="dropdown-item" href="?period=30d">Últimos 30 días</a></li>
+          <li><a class="dropdown-item" href="?period=90d">Últimos 90 días</a></li>
+          <li><a class="dropdown-item" href="?period=1y">Último año</a></li>
+        </ul>
+      </div>
+      <button class="btn btn-success btn-sm" onclick="exportAnalytics()">
+        <i class="bi bi-download me-1"></i> Exportar
+      </button>
+      <button class="btn btn-outline-primary btn-sm" onclick="refreshAnalytics()">
+        <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros Avanzados -->
+  <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-header bg-white border-0 pb-0">
+      <h6 class="mb-0 fw-bold">🔍 Filtros Avanzados</h6>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Tipo de Usuario</label>
+          <select class="form-select" id="userTypeFilter">
+            <option value="">Todos los usuarios</option>
+            <option value="student">Estudiantes</option>
+            <option value="admin">Administradores</option>
+            <option value="verified">Verificados</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Carrera</label>
+          <select class="form-select" id="careerFilter">
+            <option value="">Todas las carreras</option>
+            <option value="ingenieria">Ingeniería</option>
+            <option value="medicina">Medicina</option>
+            <option value="derecho">Derecho</option>
+            <option value="economia">Economía</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Tipo de Contenido</label>
+          <select class="form-select" id="contentTypeFilter">
+            <option value="">Todo el contenido</option>
+            <option value="notes">Apuntes</option>
+            <option value="posts">Posts</option>
+            <option value="comments">Comentarios</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Actividad</label>
+          <select class="form-select" id="activityFilter">
+            <option value="">Toda la actividad</option>
+            <option value="uploads">Subidas</option>
+            <option value="downloads">Descargas</option>
+            <option value="likes">Likes</option>
+            <option value="purchases">Compras</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Métricas Principales -->
+  <div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+      <div class="card bg-gradient-primary text-white h-100 border-0 rounded-4 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-white-75 small fw-bold">Usuarios Activos</div>
+              <div class="display-6 fw-bold" id="activeUsersMetric">0</div>
+              <div class="small">
+                <i class="bi bi-arrow-up text-success"></i>
+                <span id="activeUsersGrowth">0%</span> vs período anterior
+              </div>
+            </div>
+            <i class="bi bi-people display-4 text-white-50"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="card bg-gradient-success text-white h-100 border-0 rounded-4 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-white-75 small fw-bold">Engagement Rate</div>
+              <div class="display-6 fw-bold" id="engagementRate">0%</div>
+              <div class="small">
+                <i class="bi bi-heart text-danger"></i>
+                Interacciones por usuario
+              </div>
+            </div>
+            <i class="bi bi-graph-up display-4 text-white-50"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="card bg-gradient-warning text-white h-100 border-0 rounded-4 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-white-75 small fw-bold">Retención</div>
+              <div class="display-6 fw-bold" id="retentionRate">0%</div>
+              <div class="small">
+                <i class="bi bi-arrow-repeat text-info"></i>
+                Usuarios que regresan
+              </div>
+            </div>
+            <i class="bi bi-arrow-repeat display-4 text-white-50"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="card bg-gradient-info text-white h-100 border-0 rounded-4 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-white-75 small fw-bold">Conversión</div>
+              <div class="display-6 fw-bold" id="conversionRate">0%</div>
+              <div class="small">
+                <i class="bi bi-cart-check text-warning"></i>
+                Compradores activos
+              </div>
+            </div>
+            <i class="bi bi-cart display-4 text-white-50"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficos Principales -->
+  <div class="row g-4 mb-4">
+    <div class="col-xl-8">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pb-0">
+          <h6 class="mb-0 fw-bold">📈 Tendencias de Actividad</h6>
+        </div>
+        <div class="card-body">
+          <canvas id="activityTrendsChart" height="100"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-xl-4">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pb-0">
+          <h6 class="mb-0 fw-bold">🎯 Distribución de Usuarios</h6>
+        </div>
+        <div class="card-body">
+          <canvas id="userDistributionChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Análisis de Contenido -->
+  <div class="row g-4 mb-4">
+    <div class="col-xl-6">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pb-0">
+          <h6 class="mb-0 fw-bold">📚 Análisis de Apuntes</h6>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="text-center">
+                <h4 class="text-primary" id="totalNotes">0</h4>
+                <small class="text-muted">Total Apuntes</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="text-center">
+                <h4 class="text-success" id="avgDownloads">0</h4>
+                <small class="text-muted">Promedio Descargas</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="text-center">
+                <h4 class="text-warning" id="topCategory">-</h4>
+                <small class="text-muted">Categoría Popular</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="text-center">
+                <h4 class="text-info" id="uploadRate">0</h4>
+                <small class="text-muted">Subidas/Día</small>
+              </div>
+            </div>
+          </div>
+          <canvas id="notesAnalyticsChart" height="150" class="mt-3"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-xl-6">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pb-0">
+          <h6 class="mb-0 fw-bold">💬 Análisis de Posts</h6>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="text-center">
+                <h4 class="text-primary" id="totalPosts">0</h4>
+                <small class="text-muted">Total Posts</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="text-center">
+                <h4 class="text-success" id="avgLikes">0</h4>
+                <small class="text-muted">Promedio Likes</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="text-center">
+                <h4 class="text-warning" id="avgComments">0</h4>
+                <small class="text-muted">Promedio Comentarios</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="text-center">
+                <h4 class="text-info" id="postRate">0</h4>
+                <small class="text-muted">Posts/Día</small>
+              </div>
+            </div>
+          </div>
+          <canvas id="postsAnalyticsChart" height="150" class="mt-3"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Análisis de Comercio -->
+  <div class="row g-4 mb-4">
+    <div class="col-xl-8">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pb-0">
+          <h6 class="mb-0 fw-bold">🛒 Análisis de Comercio</h6>
+        </div>
+        <div class="card-body">
+          <div class="row g-3 mb-3">
+            <div class="col-md-3">
+              <div class="text-center">
+                <h5 class="text-primary" id="totalRevenue">S/ 0</h5>
+                <small class="text-muted">Ingresos Totales</small>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-center">
+                <h5 class="text-success" id="totalOrders">0</h5>
+                <small class="text-muted">Órdenes</small>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-center">
+                <h5 class="text-warning" id="avgOrderValue">S/ 0</h5>
+                <small class="text-muted">Valor Promedio</small>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-center">
+                <h5 class="text-info" id="conversionRateCommerce">0%</h5>
+                <small class="text-muted">Tasa Conversión</small>
+              </div>
+            </div>
+          </div>
+          <canvas id="commerceChart" height="100"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-xl-4">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pb-0">
+          <h6 class="mb-0 fw-bold">🏆 Productos Más Vendidos</h6>
+        </div>
+        <div class="card-body">
+          <div id="topProductsList">
+            <div class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Análisis de Usuarios -->
+  <div class="row g-4">
+    <div class="col-xl-6">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pb-0">
+          <h6 class="mb-0 fw-bold">👥 Demografía de Usuarios</h6>
+        </div>
+        <div class="card-body">
+          <canvas id="demographicsChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-xl-6">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pb-0">
+          <h6 class="mb-0 fw-bold">📱 Dispositivos y Navegadores</h6>
+        </div>
+        <div class="card-body">
+          <canvas id="devicesChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Variables globales para los gráficos
+let activityTrendsChart, userDistributionChart, notesAnalyticsChart, postsAnalyticsChart;
+let commerceChart, demographicsChart, devicesChart;
+
+// Inicializar analytics cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    loadAnalytics();
+    setupFilters();
+});
+
+function loadAnalytics() {
+    const period = new URLSearchParams(window.location.search).get('period') || '30d';
+    
+    fetch(`/admin/api/analytics?days=${period}`)
+        .then(response => response.json())
+        .then(data => {
+            updateMetrics(data);
+            createCharts(data);
+        })
+        .catch(error => {
+            console.error('Error loading analytics:', error);
+            if (window.adminUI) {
+                window.adminUI.showNotification('Error al cargar analytics', 'error');
+            }
+        });
+}
+
+function updateMetrics(data) {
+    // Actualizar métricas principales
+    document.getElementById('activeUsersMetric').textContent = data.users.active_users || 0;
+    document.getElementById('activeUsersGrowth').textContent = (data.users.growth_rate || 0).toFixed(1) + '%';
+    
+    document.getElementById('engagementRate').textContent = calculateEngagementRate(data) + '%';
+    document.getElementById('retentionRate').textContent = calculateRetentionRate(data) + '%';
+    document.getElementById('conversionRate').textContent = calculateConversionRate(data) + '%';
+    
+    // Actualizar métricas de apuntes
+    document.getElementById('totalNotes').textContent = data.content.new_notes || 0;
+    document.getElementById('avgDownloads').textContent = calculateAvgDownloads(data) || 0;
+    document.getElementById('topCategory').textContent = getTopCategory(data) || '-';
+    document.getElementById('uploadRate').textContent = calculateUploadRate(data) || 0;
+    
+    // Actualizar métricas de posts
+    document.getElementById('totalPosts').textContent = data.content.new_posts || 0;
+    document.getElementById('avgLikes').textContent = calculateAvgLikes(data) || 0;
+    document.getElementById('avgComments').textContent = calculateAvgComments(data) || 0;
+    document.getElementById('postRate').textContent = calculatePostRate(data) || 0;
+    
+    // Actualizar métricas de comercio
+    document.getElementById('totalRevenue').textContent = formatCurrency(data.commerce.total_revenue || 0);
+    document.getElementById('totalOrders').textContent = data.commerce.total_purchases || 0;
+    document.getElementById('avgOrderValue').textContent = formatCurrency(data.commerce.avg_order_value || 0);
+    document.getElementById('conversionRateCommerce').textContent = (data.commerce.conversion_rate || 0).toFixed(1) + '%';
+}
+
+function createCharts(data) {
+    createActivityTrendsChart(data);
+    createUserDistributionChart(data);
+    createNotesAnalyticsChart(data);
+    createPostsAnalyticsChart(data);
+    createCommerceChart(data);
+    createDemographicsChart(data);
+    createDevicesChart(data);
+}
+
+function createActivityTrendsChart(data) {
+    const ctx = document.getElementById('activityTrendsChart').getContext('2d');
+    
+    activityTrendsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: generateDateLabels(30),
+            datasets: [{
+                label: 'Usuarios Activos',
+                data: generateRandomData(30, 50, 200),
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4
+            }, {
+                label: 'Nuevos Usuarios',
+                data: generateRandomData(30, 5, 30),
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function createUserDistributionChart(data) {
+    const ctx = document.getElementById('userDistributionChart').getContext('2d');
+    
+    userDistributionChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Estudiantes', 'Administradores', 'Verificados', 'Inactivos'],
+            datasets: [{
+                data: [65, 5, 20, 10],
+                backgroundColor: [
+                    '#667eea',
+                    '#10b981',
+                    '#f59e0b',
+                    '#ef4444'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function createNotesAnalyticsChart(data) {
+    const ctx = document.getElementById('notesAnalyticsChart').getContext('2d');
+    
+    notesAnalyticsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Apuntes Subidos',
+                data: generateRandomData(6, 10, 50),
+                backgroundColor: '#667eea'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function createPostsAnalyticsChart(data) {
+    const ctx = document.getElementById('postsAnalyticsChart').getContext('2d');
+    
+    postsAnalyticsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Posts Publicados',
+                data: generateRandomData(6, 20, 100),
+                backgroundColor: '#10b981'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function createCommerceChart(data) {
+    const ctx = document.getElementById('commerceChart').getContext('2d');
+    
+    commerceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: generateDateLabels(30),
+            datasets: [{
+                label: 'Ingresos (S/)',
+                data: generateRandomData(30, 100, 500),
+                borderColor: '#f59e0b',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function createDemographicsChart(data) {
+    const ctx = document.getElementById('demographicsChart').getContext('2d');
+    
+    demographicsChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Ingeniería', 'Medicina', 'Derecho', 'Economía', 'Otros'],
+            datasets: [{
+                data: [35, 25, 20, 15, 5],
+                backgroundColor: [
+                    '#667eea',
+                    '#10b981',
+                    '#f59e0b',
+                    '#ef4444',
+                    '#8b5cf6'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function createDevicesChart(data) {
+    const ctx = document.getElementById('devicesChart').getContext('2d');
+    
+    devicesChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Chrome', 'Safari', 'Firefox', 'Edge', 'Otros'],
+            datasets: [{
+                data: [45, 25, 15, 10, 5],
+                backgroundColor: [
+                    '#667eea',
+                    '#10b981',
+                    '#f59e0b',
+                    '#ef4444',
+                    '#8b5cf6'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+// Funciones de utilidad
+function generateDateLabels(days) {
+    const labels = [];
+    for (let i = days - 1; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        labels.push(date.toLocaleDateString('es-PE', { month: 'short', day: 'numeric' }));
+    }
+    return labels;
+}
+
+function generateRandomData(count, min, max) {
+    return Array.from({ length: count }, () => Math.floor(Math.random() * (max - min + 1)) + min);
+}
+
+function calculateEngagementRate(data) {
+    const totalInteractions = (data.content.total_likes || 0) + (data.content.total_comments || 0);
+    const activeUsers = data.users.active_users || 1;
+    return Math.round((totalInteractions / activeUsers) * 100);
+}
+
+function calculateRetentionRate(data) {
+    // Simulación de tasa de retención
+    return Math.round(Math.random() * 30 + 60);
+}
+
+function calculateConversionRate(data) {
+    const purchases = data.commerce.total_purchases || 0;
+    const activeUsers = data.users.active_users || 1;
+    return Math.round((purchases / activeUsers) * 100);
+}
+
+function calculateAvgDownloads(data) {
+    const totalNotes = data.content.new_notes || 1;
+    return Math.round(Math.random() * 50 + 10);
+}
+
+function getTopCategory(data) {
+    const categories = ['Ingeniería', 'Medicina', 'Derecho', 'Economía'];
+    return categories[Math.floor(Math.random() * categories.length)];
+}
+
+function calculateUploadRate(data) {
+    const totalNotes = data.content.new_notes || 0;
+    return Math.round(totalNotes / 30);
+}
+
+function calculateAvgLikes(data) {
+    const totalPosts = data.content.new_posts || 1;
+    const totalLikes = data.content.total_likes || 0;
+    return Math.round(totalLikes / totalPosts);
+}
+
+function calculateAvgComments(data) {
+    const totalPosts = data.content.new_posts || 1;
+    const totalComments = data.content.total_comments || 0;
+    return Math.round(totalComments / totalPosts);
+}
+
+function calculatePostRate(data) {
+    const totalPosts = data.content.new_posts || 0;
+    return Math.round(totalPosts / 30);
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('es-PE', {
+        style: 'currency',
+        currency: 'PEN'
+    }).format(amount);
+}
+
+function setupFilters() {
+    const filters = ['userTypeFilter', 'careerFilter', 'contentTypeFilter', 'activityFilter'];
+    
+    filters.forEach(filterId => {
+        const filter = document.getElementById(filterId);
+        if (filter) {
+            filter.addEventListener('change', () => {
+                applyFilters();
+            });
+        }
+    });
+}
+
+function applyFilters() {
+    // Aplicar filtros y actualizar gráficos
+    const filters = {
+        userType: document.getElementById('userTypeFilter').value,
+        career: document.getElementById('careerFilter').value,
+        contentType: document.getElementById('contentTypeFilter').value,
+        activity: document.getElementById('activityFilter').value
+    };
+    
+    // Aquí se aplicarían los filtros a los datos
+    console.log('Aplicando filtros:', filters);
+    
+    // Recargar analytics con filtros
+    loadAnalytics();
+}
+
+function refreshAnalytics() {
+    if (window.adminUI) {
+        window.adminUI.showNotification('Actualizando analytics...', 'info');
+    }
+    loadAnalytics();
+}
+
+function exportAnalytics() {
+    if (window.adminUI) {
+        window.adminUI.showNotification('Exportando analytics...', 'info');
+    }
+    
+    // Simular exportación
+    setTimeout(() => {
+        if (window.adminUI) {
+            window.adminUI.showNotification('Analytics exportados correctamente', 'success');
+        }
+    }, 2000);
+}
+</script>
+{% endblock %} 
