@@ -801,6 +801,247 @@ def pageviews():
     )
 
 
+@admin_bp.route("/api/system-metrics")
+def api_system_metrics():
+    """API para obtener métricas del sistema en tiempo real"""
+    try:
+        from crunevo.utils.monitoring import get_system_health
+        
+        health_data = get_system_health()
+        
+        # Simular métricas del sistema si no están disponibles
+        import psutil
+        import os
+        
+        cpu_percent = psutil.cpu_percent(interval=1)
+        memory = psutil.virtual_memory()
+        disk = psutil.disk_usage('/')
+        
+        # Calcular conexiones activas (simulado)
+        connections_percent = min(100, (cpu_percent + memory.percent) / 2)
+        
+        metrics = {
+            'cpu_percent': cpu_percent,
+            'memory_percent': memory.percent,
+            'disk_percent': disk.percent,
+            'connections_percent': connections_percent,
+            'alerts': health_data.get('alerts', [])
+        }
+        
+        return jsonify(metrics)
+        
+    except Exception as e:
+        current_app.logger.error(f"Error getting system metrics: {e}")
+        return jsonify({
+            'cpu_percent': 0,
+            'memory_percent': 0,
+            'disk_percent': 0,
+            'connections_percent': 0,
+            'alerts': []
+        })
+
+@admin_bp.route("/api/user/<int:user_id>")
+def api_user_details(user_id):
+    """API para obtener detalles de un usuario"""
+    try:
+        user = User.query.get_or_404(user_id)
+        
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role,
+            'career': user.career,
+            'points': user.points,
+            'credits': user.credits,
+            'avatar_url': user.avatar_url,
+            'created_at': user.created_at.isoformat() if user.created_at else None,
+            'activated': user.activated,
+            'verification_level': user.verification_level
+        }
+        
+        return jsonify(user_data)
+        
+    except Exception as e:
+        current_app.logger.error(f"Error getting user details: {e}")
+        return jsonify({'error': 'Usuario no encontrado'}), 404
+
+@admin_bp.route("/api/club/<int:club_id>")
+def api_club_details(club_id):
+    """API para obtener detalles de un club"""
+    try:
+        club = Club.query.get_or_404(club_id)
+        
+        club_data = {
+            'id': club.id,
+            'name': club.name,
+            'description': club.description,
+            'category': club.category,
+            'member_count': club.member_count,
+            'created_at': club.created_at.isoformat() if club.created_at else None,
+            'is_active': club.is_active
+        }
+        
+        return jsonify(club_data)
+        
+    except Exception as e:
+        current_app.logger.error(f"Error getting club details: {e}")
+        return jsonify({'error': 'Club no encontrado'}), 404
+
+@admin_bp.route("/api/export-dashboard")
+def api_export_dashboard():
+    """API para exportar datos del dashboard"""
+    try:
+        import pandas as pd
+        from io import BytesIO
+        from datetime import datetime
+        
+        # Recopilar datos
+        users = User.query.all()
+        notes = Note.query.all()
+        posts = Post.query.all()
+        purchases = Purchase.query.all()
+        
+        # Crear DataFrames
+        users_df = pd.DataFrame([{
+            'ID': u.id,
+            'Username': u.username,
+            'Email': u.email,
+            'Role': u.role,
+            'Points': u.points,
+            'Credits': u.credits,
+            'Created': u.created_at
+        } for u in users])
+        
+        notes_df = pd.DataFrame([{
+            'ID': n.id,
+            'Title': n.title,
+            'Author': n.author.username if n.author else 'Unknown',
+            'Downloads': n.downloads,
+            'Created': n.created_at
+        } for n in notes])
+        
+        posts_df = pd.DataFrame([{
+            'ID': p.id,
+            'Content': p.content[:100] + '...' if len(p.content) > 100 else p.content,
+            'Author': p.author.username if p.author else 'Unknown',
+            'Created': p.created_at
+        } for p in posts])
+        
+        purchases_df = pd.DataFrame([{
+            'ID': p.id,
+            'User': p.user.username if p.user else 'Unknown',
+            'Product': p.product.name if p.product else 'Unknown',
+            'Amount': p.total_price,
+            'Date': p.timestamp
+        } for p in purchases])
+        
+        # Crear archivo Excel
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            users_df.to_excel(writer, sheet_name='Users', index=False)
+            notes_df.to_excel(writer, sheet_name='Notes', index=False)
+            posts_df.to_excel(writer, sheet_name='Posts', index=False)
+            purchases_df.to_excel(writer, sheet_name='Purchases', index=False)
+        
+        output.seek(0)
+        
+        # Crear respuesta
+        response = make_response(output.getvalue())
+        response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        response.headers['Content-Disposition'] = f'attachment; filename=crunevo-dashboard-{datetime.now().strftime("%Y%m%d")}.xlsx'
+        
+        return response
+        
+    except Exception as e:
+        current_app.logger.error(f"Error exporting dashboard: {e}")
+        return jsonify({'error': 'Error al exportar datos'}), 500
+
+@admin_bp.route("/api/analytics")
+def api_analytics():
+    """API para obtener analytics avanzados"""
+    try:
+        from datetime import datetime, timedelta
+        
+        # Período de análisis
+        days = int(request.args.get('days', 30))
+        end_date = datetime.utcnow()
+        start_date = end_date - timedelta(days=days)
+        
+        # Métricas de usuarios
+        new_users = User.query.filter(User.created_at >= start_date).count()
+        active_users = User.query.filter(User.last_login >= start_date).count()
+        
+        # Métricas de contenido
+        new_notes = Note.query.filter(Note.created_at >= start_date).count()
+        new_posts = Post.query.filter(Post.created_at >= start_date).count()
+        
+        # Métricas de engagement
+        total_likes = PostReaction.query.filter(PostReaction.timestamp >= start_date).count()
+        total_comments = PostComment.query.filter(PostComment.timestamp >= start_date).count()
+        
+        # Métricas de tienda
+        total_purchases = Purchase.query.filter(Purchase.timestamp >= start_date).count()
+        total_revenue = db.session.query(db.func.sum(Purchase.total_price)).filter(
+            Purchase.timestamp >= start_date
+        ).scalar() or 0
+        
+        analytics = {
+            'period': f'Últimos {days} días',
+            'users': {
+                'new_users': new_users,
+                'active_users': active_users,
+                'growth_rate': (new_users / max(days, 1)) * 100
+            },
+            'content': {
+                'new_notes': new_notes,
+                'new_posts': new_posts,
+                'total_likes': total_likes,
+                'total_comments': total_comments
+            },
+            'commerce': {
+                'total_purchases': total_purchases,
+                'total_revenue': float(total_revenue),
+                'avg_order_value': float(total_revenue / max(total_purchases, 1))
+            }
+        }
+        
+        return jsonify(analytics)
+        
+    except Exception as e:
+        current_app.logger.error(f"Error getting analytics: {e}")
+        return jsonify({'error': 'Error al obtener analytics'}), 500
+
+@admin_bp.route("/api/real-time")
+def api_real_time():
+    """API para datos en tiempo real"""
+    try:
+        from crunevo.cache.active_users import get_active_ids
+        
+        # Usuarios activos
+        active_user_ids = get_active_ids()
+        active_users = User.query.filter(User.id.in_(active_user_ids)).count()
+        
+        # Contenido reciente (última hora)
+        hour_ago = datetime.utcnow() - timedelta(hours=1)
+        recent_notes = Note.query.filter(Note.created_at >= hour_ago).count()
+        recent_posts = Post.query.filter(Post.created_at >= hour_ago).count()
+        
+        # Actividad reciente
+        recent_activity = {
+            'active_users': active_users,
+            'recent_notes': recent_notes,
+            'recent_posts': recent_posts,
+            'timestamp': datetime.utcnow().isoformat()
+        }
+        
+        return jsonify(recent_activity)
+        
+    except Exception as e:
+        current_app.logger.error(f"Error getting real-time data: {e}")
+        return jsonify({'error': 'Error al obtener datos en tiempo real'}), 500
+
+
 def log_admin_action(action):
     """Log admin actions"""
     log = AdminLog(admin_id=current_user.id, action=action, timestamp=datetime.utcnow())
