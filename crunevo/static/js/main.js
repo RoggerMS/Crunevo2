@@ -97,6 +97,17 @@ function applyGalleryOrientation() {
   });
 }
 
+function adjustPanelPosition(panel, container, left) {
+  const containerRect = container.getBoundingClientRect();
+  if (left + panel.offsetWidth > containerRect.width) {
+    left = containerRect.width - panel.offsetWidth - 10;
+  }
+  if (left < 0) {
+    left = 10;
+  }
+  panel.style.left = `${left}px`;
+}
+
 function showReactionPanel(button) {
   const container = button.closest('.reaction-container');
   const panel = container?.querySelector('.reaction-panel');
@@ -113,20 +124,32 @@ function showReactionPanel(button) {
   panel.classList.add('show');
 
   const btnRect = button.getBoundingClientRect();
-  const panelRect = panel.getBoundingClientRect();
-  const top = btnRect.top - panelRect.height - 8 + window.scrollY;
-  const left =
-    btnRect.left + btnRect.width / 2 - panelRect.width / 2 + window.scrollX;
+  const containerRect = container.getBoundingClientRect();
+  const top = btnRect.top - containerRect.top - panel.offsetHeight - 8;
+  let left =
+    btnRect.left -
+    containerRect.left +
+    btnRect.width / 2 -
+    panel.offsetWidth / 2;
 
   panel.style.position = 'absolute';
   panel.style.top = `${top}px`;
-  panel.style.left = `${left}px`;
-  panel.style.zIndex = '9999';
+  adjustPanelPosition(panel, container, left);
+  panel.style.zIndex = '1000';
   panel.style.display = 'flex';
+
+  function outside(e) {
+    if (!panel.contains(e.target) && !button.contains(e.target)) {
+      hideReactionPanel(button);
+      document.removeEventListener('click', outside);
+    }
+  }
+  document.addEventListener('click', outside);
 
   clearTimeout(panel._timeout);
   panel._timeout = setTimeout(() => {
     hideReactionPanel(button);
+    document.removeEventListener('click', outside);
   }, 4000);
 }
 
