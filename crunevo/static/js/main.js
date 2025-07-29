@@ -111,18 +111,33 @@ function showReactionPanel(button) {
 
   panel.classList.remove('d-none');
   panel.classList.add('show');
-
-  const btnRect = button.getBoundingClientRect();
-  const panelRect = panel.getBoundingClientRect();
-  const top = btnRect.top - panelRect.height - 8 + window.scrollY;
-  const left =
-    btnRect.left + btnRect.width / 2 - panelRect.width / 2 + window.scrollX;
-
   panel.style.position = 'absolute';
-  panel.style.top = `${top}px`;
-  panel.style.left = `${left}px`;
-  panel.style.zIndex = '9999';
   panel.style.display = 'flex';
+  panel.style.zIndex = '9999';
+
+  requestAnimationFrame(() => {
+    const btnRect = button.getBoundingClientRect();
+    const panelRect = panel.getBoundingClientRect();
+    let top = btnRect.top - panelRect.height - 8 + window.scrollY;
+    if (top < window.scrollY + 8) {
+      top = btnRect.bottom + 8 + window.scrollY;
+    }
+    let left =
+      btnRect.left + btnRect.width / 2 - panelRect.width / 2 + window.scrollX;
+    const minLeft = window.scrollX + 8;
+    const maxLeft = window.scrollX + window.innerWidth - panelRect.width - 8;
+    left = Math.min(Math.max(left, minLeft), maxLeft);
+    panel.style.top = `${top}px`;
+    panel.style.left = `${left}px`;
+  });
+
+  const onClickOutside = (e) => {
+    if (!panel.contains(e.target) && !button.contains(e.target)) {
+      hideReactionPanel(button);
+    }
+  };
+  document.addEventListener('click', onClickOutside);
+  panel._onClickOutside = onClickOutside;
 
   clearTimeout(panel._timeout);
   panel._timeout = setTimeout(() => {
@@ -138,6 +153,10 @@ function hideReactionPanel(button) {
   panel.classList.remove('show');
   panel.classList.add('d-none');
   panel.removeAttribute('style');
+  if (panel._onClickOutside) {
+    document.removeEventListener('click', panel._onClickOutside);
+    delete panel._onClickOutside;
+  }
 }
 
 window.showReactionPanel = showReactionPanel;

@@ -358,7 +358,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 4px;
-  max-width: 90vw;
+  max-width: calc(100vw - 16px);
   overflow: hidden;
   background: var(--post-bg);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
