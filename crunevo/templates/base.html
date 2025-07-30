@@ -72,7 +72,8 @@
       {% if config.ADMIN_INSTANCE %}
         {% include 'components/navbar_admin.html' %}
       {% else %}
-        {% include 'components/navbar.html' %}
+        <div class="d-none d-lg-block">{% include 'components/navbar.html' %}</div>
+        {% include 'components/notbar.html' %}
       {% endif %}
     {% endif %}
 
@@ -156,10 +157,6 @@
 
 
 
-    <!-- Mobile bottom navigation -->
-    {% if request.endpoint not in ['auth.login', 'onboarding.register'] and not config.ADMIN_INSTANCE %}
-    {% include 'components/mobile_bottom_nav.html' %}
-    {% endif %}
 
     {# Floating quick actions now live inside the FAB on feed pages #}
 
