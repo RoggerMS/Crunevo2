@@ -898,3 +898,4 @@
 - Added /admin/api/analytics endpoint and improved applyFilters to send selected filters and redraw charts (PR analytics-filters-api).
 - Replaced debug `console.log` statements in base.html and ranking/index.html with `console.info` for clearer logging (PR template-console-cleanup).
 - Replaced mobile bottom nav with a translucent top "notbar" on small screens, kept hamburger menu intact and removed obsolete component includes (PR facebook-mobile-notbar).
+- Redesigned mobile notbar with purple translucent background, circular icon buttons and updated order (Inicio, Personas, Chat, Apuntes, Notificaciones, Tienda), removing the perfil link (PR mobile-notbar-facebook-style).
