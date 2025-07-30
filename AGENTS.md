@@ -899,3 +899,4 @@
 - Replaced debug `console.log` statements in base.html and ranking/index.html with `console.info` for clearer logging (PR template-console-cleanup).
 - Replaced mobile bottom nav with a translucent top "notbar" on small screens, kept hamburger menu intact and removed obsolete component includes (PR facebook-mobile-notbar).
 - Redesigned mobile notbar with purple translucent background, circular icon buttons and updated order (Inicio, Personas, Chat, Apuntes, Notificaciones, Tienda), removing the perfil link (PR mobile-notbar-facebook-style).
+- Ajustado notbar móvil para fondo morado sólido, altura mínima 64px y sombra sutil; modal de búsqueda visible en móviles (PR mobile-navbar-fix).
