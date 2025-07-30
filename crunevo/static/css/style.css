@@ -792,7 +792,7 @@ html[data-bs-theme="dark"] footer a {
 
 /* Mobile notbar styles */
 .notbar {
-  background-color: rgba(120, 50, 200, 0.8);
+  background-color: rgba(110, 66, 193, 0.85);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   height: 48px;
@@ -806,7 +806,18 @@ html[data-bs-theme="dark"] footer a {
 
 .notbar .btn-link {
   color: #ffffff !important;
-  padding: 0 4px;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.notbar .btn-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .notbar .notification-badge {
