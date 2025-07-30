@@ -1,0 +1,58 @@
+<nav class="navbar notbar fixed-top d-lg-none text-white">
+  <div class="container-fluid d-flex align-items-center justify-content-between gap-2">
+    <a class="p-0" href="{{ url_for('main.index') }}">
+      <img src="{{ url_for('static', filename='img/icon-512.png') }}" alt="Crunevo" height="28" class="crunevo-logo-small">
+    </a>
+    <div class="flex-grow-1 position-relative">
+      <input id="notbarSearch" type="search" class="form-control form-control-sm rounded-pill ps-4" placeholder="Buscar">
+      <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted"></i>
+    </div>
+    <a href="{{ url_for('feed.view_feed') if 'feed.view_feed' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}" class="btn btn-link text-white p-0">
+      <i class="bi bi-house{{ '-fill' if request.endpoint == 'feed.view_feed' }}"></i>
+    </a>
+    <a href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '#'}}" class="btn btn-link text-white p-0">
+      <i class="bi bi-journal-text"></i>
+    </a>
+    <a href="#" class="btn btn-link text-white p-0">
+      <i class="bi bi-person-fill"></i>
+    </a>
+    <a href="{{ url_for('chat.chat_index') }}" class="btn btn-link text-white p-0">
+      <i class="bi bi-chat-dots-fill"></i>
+    </a>
+    <a class="btn btn-link text-white position-relative p-0" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown">
+      <i class="bi bi-bell-fill"></i>
+      <span id="mobileNotificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge" style="display:none"></span>
+    </a>
+    <a href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}" class="btn btn-link text-white position-relative p-0">
+      <i class="bi bi-shop"></i>
+      <span id="mobileCartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger tw-hidden">0</span>
+    </a>
+  </div>
+</nav>
+<script>
+  const nbSearch = document.getElementById('notbarSearch');
+  if (nbSearch) {
+    nbSearch.addEventListener('focus', () => {
+      const modalEl = document.getElementById('mobileSearchModal');
+      if (modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    });
+  }
+  function updateMobileNotificationBadge() {
+    fetch('/notifications/api/count')
+      .then(r => (r.ok ? r.json() : null))
+      .then(data => {
+        const count = data && typeof data.count === 'number' ? data.count : 0;
+        const badge = document.getElementById('mobileNotificationBadge');
+        if (badge) {
+          badge.textContent = count > 0 ? count : '';
+          badge.style.display = count > 0 ? 'flex' : 'none';
+        }
+      })
+      .catch(() => {});
+  }
+  if (document.getElementById('mobileNotificationBadge')) {
+    updateMobileNotificationBadge();
+    setInterval(updateMobileNotificationBadge, 30000);
+  }
+</script>
+
