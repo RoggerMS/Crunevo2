@@ -870,6 +870,7 @@
 - Verified post_card.html renders articles with class 'facebook-post' only; no 'post-skeleton' or 'fade-out' classes found in templates or server logic.
 - Searched repo for any rules hiding '.facebook-post' elements; none found beyond normal styles. Confirmed removeSkeletonPosts() only selects '.post-skeleton'. Documented findings for future reference.
 - Added diagnostic CSS borders for `.facebook-post` at end of feed.css to visualize opacity and fade-out behaviors during testing.
+- Added console logs after applying fade-out to elements in feed.js for instrumentation (PR feed-fade-out-log).
 - Inserted diagnostic borders after `.facebook-post` styles in feed.css to debug hidden posts.
 - toggleComments now logs the element being hidden before applying the `fade-out` class and showToast logs the toast element before fade-out for easier debugging.
 
