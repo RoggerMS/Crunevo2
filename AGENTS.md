@@ -1039,3 +1039,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
   - Added comprehensive error handling and user feedback
 
   This modernization transforms the forum into a comprehensive learning platform that rivals and exceeds Brainly's functionality while maintaining a clean, minimal design optimized for both desktop and mobile use.
+- Added runtime checks to automatically create missing forum_question and forum_answer columns when migrations are absent. (PR forum-column-fallback)
