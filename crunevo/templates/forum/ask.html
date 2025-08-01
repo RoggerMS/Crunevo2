@@ -4,311 +4,1309 @@
 {% block title %}Hacer una pregunta - Foro Estudiantil{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <!-- Header -->
-  <div class="text-center mb-5">
-    <div class="d-inline-flex align-items-center gap-3 p-4 rounded-4" style="background: var(--forum-gradient); color: white;">
-      <span style="font-size: 3rem;">🤔</span>
-      <div>
-        <h1 class="h2 mb-1 fw-bold">¿Tienes una duda?</h1>
-        <p class="mb-0 opacity-90">La comunidad está aquí para ayudarte a resolverla</p>
+<div class="container-fluid px-3 px-lg-4 py-3">
+  <!-- Modern Header -->
+  <div class="ask-header mb-4">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h1 class="ask-title">💭 Haz tu pregunta</h1>
+        <p class="ask-subtitle">Comparte tu duda con la comunidad y obtén respuestas de calidad</p>
+      </div>
+      <div class="col-md-4 text-end">
+        <div class="ask-stats">
+          <div class="stat-item">
+            <span class="stat-number">95%</span>
+            <span class="stat-label">Preguntas respondidas</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="row justify-content-center">
+  <div class="row">
+    <!-- Main Form -->
     <div class="col-lg-8">
-      <!-- Enhanced Form Card -->
-      <div class="card question-detail-card">
-        <div class="card-header text-center" style="background: var(--forum-gradient); color: white;">
-          <h3 class="mb-0 d-flex align-items-center justify-content-center gap-2">
-            <i class="bi bi-question-circle"></i>
-            Comparte tu pregunta
-            <span>✨</span>
-          </h3>
-        </div>
-        <div class="card-body p-5">
-          <!-- Progress Indicator -->
-          <div class="mb-4">
-            <div class="d-flex justify-content-between small text-muted mb-2">
-              <span>Progreso de tu pregunta</span>
-              <span id="progress-text">0% completado</span>
+      <div class="ask-form-container">
+        <form method="POST" id="questionForm" class="modern-form">
+          {% import 'components/csrf.html' as csrf %}
+          {{ csrf.csrf_field() }}
+          
+          <!-- Progress Bar -->
+          <div class="progress-section mb-4">
+            <div class="progress-header">
+              <span class="progress-label">Progreso de tu pregunta</span>
+              <span class="progress-percentage" id="progress-text">0%</span>
             </div>
-            <div class="progress" style="height: 6px;">
-              <div id="progress-bar" class="progress-bar" style="width: 0%; background: var(--forum-gradient);"></div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="progress-bar"></div>
             </div>
           </div>
 
-          <form method="POST" id="questionForm">
-            {% import 'components/csrf.html' as csrf %}
-            {{ csrf.csrf_field() }}
-            
-            <!-- Step 1: Title -->
-            <div class="mb-4">
-              <label for="title" class="form-label fw-bold d-flex align-items-center gap-2">
-                <span class="badge bg-primary">1</span>
-                Título de tu pregunta
-              </label>
-              <input type="text" class="form-control form-control-lg" id="title" name="title" 
-                     placeholder="Ej: ¿Cómo resolver esta ecuación cuadrática?" required>
-              <div class="form-text">
-                <i class="bi bi-lightbulb me-1 text-warning"></i>
-                Sé específico y descriptivo. Un buen título atrae mejores respuestas.
+          <!-- Step 1: Title -->
+          <div class="form-step active" data-step="1">
+            <div class="step-header">
+              <div class="step-number">1</div>
+              <div class="step-info">
+                <h3 class="step-title">¿Cuál es tu pregunta?</h3>
+                <p class="step-description">Sé específico y claro para obtener mejores respuestas</p>
               </div>
             </div>
-
-            <!-- Step 2: Category -->
-            <div class="mb-4">
-              <label for="category" class="form-label fw-bold d-flex align-items-center gap-2">
-                <span class="badge bg-primary">2</span>
-                Área de conocimiento
-              </label>
-              <select class="form-select form-select-lg" id="category" name="category" required>
-                <option value="">🔍 Selecciona la categoría</option>
-                {% for category in categories %}
-                <option value="{{ category }}">
-                  {% if category == 'Matemáticas' %}🧮 {{ category }}
-                  {% elif category == 'Ciencias' %}🔬 {{ category }}
-                  {% elif category == 'Lenguas' %}📚 {{ category }}
-                  {% elif category == 'Historia' %}🏛️ {{ category }}
-                  {% elif category == 'Tecnología' %}💻 {{ category }}
-                  {% elif category == 'Arte' %}🎨 {{ category }}
-                  {% else %}📝 {{ category }}
-                  {% endif %}
-                </option>
-                {% endfor %}
-              </select>
+            
+            <div class="form-group">
+              <input type="text" 
+                     class="modern-input" 
+                     id="title" 
+                     name="title" 
+                     placeholder="Ej: ¿Cómo resolver esta ecuación cuadrática paso a paso?"
+                     maxlength="200"
+                     required>
+              <div class="input-help">
+                <span class="help-icon">💡</span>
+                <span class="help-text">Un buen título es específico y menciona el concepto principal</span>
+              </div>
+              <div class="char-counter">
+                <span id="title-counter">0</span>/200 caracteres
+              </div>
             </div>
+          </div>
 
-            <!-- Step 3: Content -->
-            <div class="mb-4">
-              <label for="questionEditor" class="form-label fw-bold d-flex align-items-center gap-2">
-                <span class="badge bg-primary">3</span>
-                Explica tu problema detalladamente
-              </label>
-              <div class="mb-3 p-3 rounded-3" style="background: var(--forum-light-gradient);">
-                <div class="d-flex gap-3">
-                  <span style="font-size: 1.5rem;">💡</span>
-                  <div class="small">
-                    <div class="fw-semibold text-primary mb-1">Para una respuesta de calidad, incluye:</div>
-                    <ul class="mb-0 list-unstyled">
-                      <li>• El contexto del problema (nivel, materia)</li>
-                      <li>• Lo que has intentado hasta ahora</li>
-                      <li>• Dónde te has atascado específicamente</li>
-                      <li>• Cualquier fórmula o ecuación relevante</li>
-                    </ul>
-                  </div>
+          <!-- Step 2: Categories and Context -->
+          <div class="form-step" data-step="2">
+            <div class="step-header">
+              <div class="step-number">2</div>
+              <div class="step-info">
+                <h3 class="step-title">Contexto y categorización</h3>
+                <p class="step-description">Ayúdanos a dirigir tu pregunta a los expertos correctos</p>
+              </div>
+            </div>
+            
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Materia principal</label>
+                <select class="modern-select" id="category" name="category" required>
+                  <option value="">Selecciona una materia</option>
+                  {% for category in categories %}
+                  <option value="{{ category }}">
+                    {% if category == 'Matemáticas' %}🧮 {{ category }}
+                    {% elif category == 'Ciencias' %}🔬 {{ category }}
+                    {% elif category == 'Lenguas' %}📚 {{ category }}
+                    {% elif category == 'Historia' %}🏛️ {{ category }}
+                    {% elif category == 'Tecnología' %}💻 {{ category }}
+                    {% elif category == 'Arte' %}🎨 {{ category }}
+                    {% else %}📝 {{ category }}
+                    {% endif %}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">Nivel de dificultad</label>
+                <select class="modern-select" id="difficulty_level" name="difficulty_level">
+                  {% for value, label in difficulty_levels %}
+                  <option value="{{ value }}" {{ 'selected' if value == 'intermedio' }}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">Nivel educativo</label>
+                <select class="modern-select" id="grade_level" name="grade_level">
+                  <option value="">Selecciona tu nivel</option>
+                  {% for value, label in grade_levels %}
+                  <option value="{{ value }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">Tipo de consulta</label>
+                <select class="modern-select" id="context_type" name="context_type">
+                  <option value="general">Consulta general</option>
+                  <option value="homework">Tarea/Ejercicio</option>
+                  <option value="exam">Preparación de examen</option>
+                  <option value="project">Proyecto</option>
+                  <option value="curiosity">Curiosidad personal</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Content -->
+          <div class="form-step" data-step="3">
+            <div class="step-header">
+              <div class="step-number">3</div>
+              <div class="step-info">
+                <h3 class="step-title">Explica tu problema en detalle</h3>
+                <p class="step-description">Mientras más contexto proporciones, mejor será la respuesta</p>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <div class="editor-toolbar">
+                <div class="writing-tips">
+                  <span class="tip-icon">📝</span>
+                  <span>Incluye: el problema específico, lo que has intentado, y dónde te atascaste</span>
                 </div>
               </div>
-              <div id="questionEditor" class="quill-editor"></div>
+              <div id="questionEditor" class="modern-editor"></div>
               <input type="hidden" name="content" required>
-              <div class="form-text">
-                <i class="bi bi-info-circle me-1"></i>
-                Usa el editor para dar formato, incluir imágenes y enriquecer tu pregunta
+            </div>
+          </div>
+
+          <!-- Step 4: Tags and Advanced Options -->
+          <div class="form-step" data-step="4">
+            <div class="step-header">
+              <div class="step-number">4</div>
+              <div class="step-info">
+                <h3 class="step-title">Tags y opciones adicionales</h3>
+                <p class="step-description">Etiqueta tu pregunta para que sea más fácil de encontrar</p>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Tags (etiquetas)</label>
+              <div class="tags-input-container">
+                <input type="text" 
+                       class="tags-input" 
+                       id="tags-input" 
+                       placeholder="Escribe y presiona Enter para agregar tags">
+                <div class="tags-suggestions" id="tags-suggestions"></div>
+              </div>
+              <div class="selected-tags" id="selected-tags"></div>
+              <div class="input-help">
+                <span class="help-icon">🏷️</span>
+                <span class="help-text">Agrega palabras clave como "álgebra", "derivadas", "sintaxis", etc.</span>
               </div>
             </div>
 
-            <!-- Tips Section -->
-            <div class="mb-4 p-4 rounded-4" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05)); border: 2px dashed var(--forum-primary);">
-              <h6 class="fw-bold text-primary mb-3 d-flex align-items-center gap-2">
-                <i class="bi bi-lightbulb-fill"></i> 
-                Consejos para obtener mejores respuestas
-              </h6>
+            <!-- Advanced Options -->
+            <div class="advanced-options">
+              <h4 class="options-title">Opciones adicionales</h4>
+              
               <div class="row g-3">
                 <div class="col-md-6">
-                  <div class="d-flex gap-2">
-                    <span class="text-primary">🎯</span>
-                    <div class="small">
-                      <div class="fw-semibold">Sé específico</div>
-                      <div class="text-muted">En lugar de "no entiendo álgebra", di "no entiendo cómo despejar x en esta ecuación"</div>
-                    </div>
+                  <div class="option-card">
+                    <label class="option-label">
+                      <input type="checkbox" id="is_urgent" name="is_urgent" class="option-checkbox">
+                      <div class="option-content">
+                        <div class="option-icon">🚨</div>
+                        <div class="option-text">
+                          <div class="option-name">Pregunta urgente</div>
+                          <div class="option-desc">Necesitas ayuda rápida</div>
+                        </div>
+                      </div>
+                    </label>
                   </div>
                 </div>
+                
                 <div class="col-md-6">
-                  <div class="d-flex gap-2">
-                    <span class="text-success">📝</span>
-                    <div class="small">
-                      <div class="fw-semibold">Muestra tu trabajo</div>
-                      <div class="text-muted">Comparte los pasos que ya intentaste, así entendemos tu razonamiento</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="d-flex gap-2">
-                    <span class="text-warning">🔍</span>
-                    <div class="small">
-                      <div class="fw-semibold">Incluye contexto</div>
-                      <div class="text-muted">Menciona si es para tarea, examen, o curiosidad personal</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="d-flex gap-2">
-                    <span class="text-info">🤝</span>
-                    <div class="small">
-                      <div class="fw-semibold">Sé respetuoso</div>
-                      <div class="text-muted">Usa un lenguaje claro, educado y agradece las respuestas</div>
-                    </div>
+                  <div class="option-card">
+                    <label class="form-label">Fecha límite (opcional)</label>
+                    <input type="datetime-local" 
+                           class="modern-input" 
+                           id="homework_deadline" 
+                           name="homework_deadline">
                   </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Action Buttons -->
-            <div class="d-flex gap-3 justify-content-between align-items-center">
-              <a href="{{ url_for('forum.list_questions') }}" class="btn btn-outline-secondary btn-lg">
-                <i class="bi bi-arrow-left me-1"></i> Volver al foro
-              </a>
-              <div class="d-flex gap-2">
-                <button type="button" class="btn btn-outline-primary btn-lg" id="previewBtn">
-                  <i class="bi bi-eye me-1"></i> Vista previa
-                </button>
-                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
-                  <i class="bi bi-send me-1"></i> 
-                  <span>Publicar pregunta</span>
-                </button>
+              <!-- Bounty System -->
+              <div class="bounty-section">
+                <h5 class="bounty-title">💰 Sistema de recompensas</h5>
+                <p class="bounty-description">Ofrece puntos para motivar respuestas de alta calidad</p>
+                
+                <div class="bounty-options">
+                  <div class="bounty-option">
+                    <input type="radio" id="bounty-0" name="bounty_points" value="0" checked>
+                    <label for="bounty-0" class="bounty-label">
+                      <span class="bounty-amount">0 pts</span>
+                      <span class="bounty-desc">Sin recompensa</span>
+                    </label>
+                  </div>
+                  <div class="bounty-option">
+                    <input type="radio" id="bounty-10" name="bounty_points" value="10">
+                    <label for="bounty-10" class="bounty-label">
+                      <span class="bounty-amount">10 pts</span>
+                      <span class="bounty-desc">Pregunta importante</span>
+                    </label>
+                  </div>
+                  <div class="bounty-option">
+                    <input type="radio" id="bounty-25" name="bounty_points" value="25">
+                    <label for="bounty-25" class="bounty-label">
+                      <span class="bounty-amount">25 pts</span>
+                      <span class="bounty-desc">Pregunta compleja</span>
+                    </label>
+                  </div>
+                  <div class="bounty-option">
+                    <input type="radio" id="bounty-50" name="bounty_points" value="50">
+                    <label for="bounty-50" class="bounty-label">
+                      <span class="bounty-amount">50 pts</span>
+                      <span class="bounty-desc">Pregunta muy urgente</span>
+                    </label>
+                  </div>
+                </div>
+                
+                <div class="user-points">
+                  Tus puntos disponibles: <span class="points-count">{{ current_user.points or 0 }}</span>
+                </div>
               </div>
             </div>
-          </form>
-        </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="form-navigation">
+            <button type="button" class="btn-nav btn-prev" id="prevBtn" onclick="changeStep(-1)">
+              <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            
+            <div class="step-indicators">
+              <div class="step-dot active" data-step="1"></div>
+              <div class="step-dot" data-step="2"></div>
+              <div class="step-dot" data-step="3"></div>
+              <div class="step-dot" data-step="4"></div>
+            </div>
+            
+            <button type="button" class="btn-nav btn-next" id="nextBtn" onclick="changeStep(1)">
+              Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+            
+            <button type="submit" class="btn-nav btn-submit" id="submitBtn" style="display: none;">
+              <i class="bi bi-send"></i> Publicar pregunta
+            </button>
+          </div>
+        </form>
       </div>
+    </div>
 
-      <!-- Encouragement -->
-      <div class="text-center mt-4 p-4 rounded-3" style="background: var(--forum-light-gradient);">
-        <div class="d-flex justify-content-center gap-4 mb-3">
-          <span style="font-size: 2rem;">📚</span>
-          <span style="font-size: 2rem;">💡</span>
-          <span style="font-size: 2rem;">📝</span>
-          <span style="font-size: 2rem;">🎯</span>
+    <!-- Sidebar with Tips -->
+    <div class="col-lg-4">
+      <div class="sidebar-content">
+        <!-- Writing Tips -->
+        <div class="tip-card">
+          <div class="tip-header">
+            <h4 class="tip-title">💡 Consejos para una buena pregunta</h4>
+          </div>
+          <div class="tip-body">
+            <div class="tip-item">
+              <div class="tip-icon">🎯</div>
+              <div class="tip-content">
+                <div class="tip-name">Sé específico</div>
+                <div class="tip-desc">En lugar de "no entiendo matemáticas", di "no sé resolver ecuaciones cuadráticas"</div>
+              </div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon">📝</div>
+              <div class="tip-content">
+                <div class="tip-name">Muestra tu trabajo</div>
+                <div class="tip-desc">Comparte los pasos que ya intentaste</div>
+              </div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon">🖼️</div>
+              <div class="tip-content">
+                <div class="tip-name">Usa imágenes</div>
+                <div class="tip-desc">Una imagen vale más que mil palabras</div>
+              </div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon">🏷️</div>
+              <div class="tip-content">
+                <div class="tip-name">Etiqueta bien</div>
+                <div class="tip-desc">Usa tags relevantes para tu tema</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <p class="text-muted mb-0">
-          <strong>¿Sabías que?</strong> Cada pregunta es una oportunidad de descubrimiento.
-          ¡Tu curiosidad impulsa el aprendizaje de toda la comunidad!
-        </p>
+
+        <!-- Examples -->
+        <div class="examples-card">
+          <div class="examples-header">
+            <h4 class="examples-title">📚 Ejemplos de buenas preguntas</h4>
+          </div>
+          <div class="examples-body">
+            <div class="example-item">
+              <div class="example-title">❓ "¿Cómo derivar f(x) = x² + 3x?"</div>
+              <div class="example-desc">Específica, directa y con contexto claro</div>
+            </div>
+            <div class="example-item">
+              <div class="example-title">❓ "Diferencia entre ser y estar en español"</div>
+              <div class="example-desc">Pregunta conceptual bien formulada</div>
+            </div>
+            <div class="example-item">
+              <div class="example-title">❓ "¿Por qué ocurrió la Revolución Francesa?"</div>
+              <div class="example-desc">Pregunta abierta pero con foco específico</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="stats-card">
+          <div class="stats-header">
+            <h4 class="stats-title">📊 Estadísticas de la comunidad</h4>
+          </div>
+          <div class="stats-body">
+            <div class="stat-row">
+              <span class="stat-label">Tiempo promedio de respuesta</span>
+              <span class="stat-value">2.3 horas</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Expertos activos</span>
+              <span class="stat-value">150+</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Preguntas resueltas hoy</span>
+              <span class="stat-value">47</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('questionForm');
-  const titleInput = document.getElementById('title');
-  const categorySelect = document.getElementById('category');
-  const submitBtn = document.getElementById('submitBtn');
-  const progressBar = document.getElementById('progress-bar');
-  const progressText = document.getElementById('progress-text');
-  
-  function updateProgress() {
-    let progress = 0;
-    let completedSteps = 0;
-    const totalSteps = 3;
-    
-    // Check title
-    if (titleInput.value.trim().length > 10) {
-      completedSteps++;
-    }
-    
-    // Check category
-    if (categorySelect.value) {
-      completedSteps++;
-    }
-    
-    // Check content (we'll assume Quill editor has content if there's text)
-    const contentInput = document.querySelector('input[name="content"]');
-    if (contentInput && contentInput.value.trim().length > 20) {
-      completedSteps++;
-    }
-    
-    progress = (completedSteps / totalSteps) * 100;
-    progressBar.style.width = progress + '%';
-    progressText.textContent = Math.round(progress) + '% completado';
-    
-    // Enable submit button if all fields are filled
-    submitBtn.disabled = completedSteps < totalSteps;
-    
-    if (completedSteps === totalSteps) {
-      submitBtn.innerHTML = '<i class="bi bi-rocket me-1"></i> ¡Publicar mi pregunta!';
-      submitBtn.classList.remove('btn-primary');
-      submitBtn.classList.add('btn-success');
-    } else {
-      submitBtn.innerHTML = '<i class="bi bi-send me-1"></i> Publicar pregunta';
-      submitBtn.classList.remove('btn-success');
-      submitBtn.classList.add('btn-primary');
-    }
+<!-- Modern Styles -->
+<style>
+/* Container Styles */
+.ask-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 24px;
+  padding: 2rem;
+  border: 1px solid #e5e7eb;
+}
+
+.ask-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.ask-subtitle {
+  color: #6b7280;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.ask-stats {
+  text-align: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.stat-number {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Form Container */
+.ask-form-container {
+  background: white;
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 1px solid #f1f5f9;
+}
+
+/* Progress Bar */
+.progress-section {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.progress-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.progress-percentage {
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #1e40af);
+  border-radius: 4px;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+/* Form Steps */
+.form-step {
+  display: none;
+  margin-bottom: 2rem;
+}
+
+.form-step.active {
+  display: block;
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.step-number {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.step-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.step-description {
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Form Inputs */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.modern-input, .modern-select {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.modern-input:focus, .modern-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input-help {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 12px;
+  background: #f0f9ff;
+  border-radius: 8px;
+  border: 1px solid #bae6fd;
+}
+
+.help-icon {
+  font-size: 1.25rem;
+}
+
+.help-text {
+  font-size: 0.875rem;
+  color: #0369a1;
+}
+
+.char-counter {
+  text-align: right;
+  margin-top: 8px;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Editor */
+.modern-editor {
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  min-height: 200px;
+  background: white;
+}
+
+.editor-toolbar {
+  margin-bottom: 1rem;
+}
+
+.writing-tips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #fef3c7;
+  border-radius: 8px;
+  border: 1px solid #fbbf24;
+}
+
+.tip-icon {
+  font-size: 1.25rem;
+}
+
+/* Tags Input */
+.tags-input-container {
+  position: relative;
+}
+
+.tags-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+
+.tags-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.tags-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  display: none;
+}
+
+.tag-suggestion {
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.tag-suggestion:hover {
+  background: #f8fafc;
+}
+
+.selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.tag-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.tag-remove {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Advanced Options */
+.advanced-options {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.options-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.option-card {
+  background: white;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.option-card:hover {
+  border-color: #3b82f6;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  cursor: pointer;
+  margin: 0;
+}
+
+.option-checkbox {
+  display: none;
+}
+
+.option-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.option-icon {
+  font-size: 1.5rem;
+}
+
+.option-name {
+  font-weight: 600;
+  color: #374151;
+}
+
+.option-desc {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.option-checkbox:checked + .option-content {
+  color: #3b82f6;
+}
+
+/* Bounty System */
+.bounty-section {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #fef3c7, #fed7aa);
+  border-radius: 16px;
+  border: 1px solid #fbbf24;
+}
+
+.bounty-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #92400e;
+  margin-bottom: 0.5rem;
+}
+
+.bounty-description {
+  color: #92400e;
+  margin-bottom: 1rem;
+}
+
+.bounty-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.bounty-option {
+  position: relative;
+}
+
+.bounty-option input[type="radio"] {
+  display: none;
+}
+
+.bounty-label {
+  display: block;
+  padding: 12px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.bounty-option input[type="radio"]:checked + .bounty-label {
+  border-color: #fbbf24;
+  background: #fffbeb;
+}
+
+.bounty-amount {
+  display: block;
+  font-weight: 700;
+  color: #92400e;
+  font-size: 1.125rem;
+}
+
+.bounty-desc {
+  display: block;
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.user-points {
+  text-align: center;
+  color: #92400e;
+  font-weight: 500;
+}
+
+.points-count {
+  font-weight: 700;
+  color: #dc2626;
+}
+
+/* Navigation */
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-nav {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-prev, .btn-next {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn-prev:hover, .btn-next:hover {
+  background: #e5e7eb;
+  transform: translateY(-2px);
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+.step-indicators {
+  display: flex;
+  gap: 12px;
+}
+
+.step-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.step-dot.active {
+  background: #3b82f6;
+  transform: scale(1.2);
+}
+
+.step-dot.completed {
+  background: #10b981;
+}
+
+/* Sidebar */
+.sidebar-content {
+  position: sticky;
+  top: 2rem;
+}
+
+.tip-card, .examples-card, .stats-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 1px solid #f1f5f9;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.tip-header, .examples-header, .stats-header {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tip-title, .examples-title, .stats-title {
+  margin: 0;
+  font-weight: 600;
+  color: #374151;
+}
+
+.tip-body, .examples-body, .stats-body {
+  padding: 1.5rem;
+}
+
+.tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.tip-item:last-child {
+  margin-bottom: 0;
+}
+
+.tip-icon {
+  font-size: 1.25rem;
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.tip-name {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.tip-desc {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.example-item {
+  margin-bottom: 1rem;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.example-item:last-child {
+  margin-bottom: 0;
+}
+
+.example-title {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+  margin-bottom: 4px;
+}
+
+.example-desc {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.stat-row:last-child {
+  margin-bottom: 0;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.stat-value {
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .ask-header {
+    padding: 1.5rem;
   }
   
-  // Add event listeners
-  titleInput.addEventListener('input', updateProgress);
-  categorySelect.addEventListener('change', updateProgress);
+  .ask-title {
+    font-size: 1.75rem;
+  }
   
-  // Update progress when Quill editor content changes
-  const checkQuillContent = setInterval(function() {
-    const quillEditor = document.querySelector('.ql-editor');
-    if (quillEditor) {
-      quillEditor.addEventListener('input', updateProgress);
-      clearInterval(checkQuillContent);
-    }
-  }, 500);
+  .ask-form-container {
+    padding: 1.5rem;
+  }
   
-  // Form submission enhancement
-  form.addEventListener('submit', function(e) {
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Publicando...';
+  .step-header {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+  
+  .bounty-options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .form-navigation {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .sidebar-content {
+    position: static;
+    margin-top: 2rem;
+  }
+}
+</style>
+
+<script>
+// Form State
+let currentStep = 1;
+let selectedTags = [];
+let formData = {
+  title: '',
+  category: '',
+  content: '',
+  tags: []
+};
+
+// Initialize form
+document.addEventListener('DOMContentLoaded', function() {
+  updateProgress();
+  setupEventListeners();
+  initializeEditor();
+});
+
+function setupEventListeners() {
+  // Title input
+  const titleInput = document.getElementById('title');
+  titleInput.addEventListener('input', function() {
+    updateCharCounter('title', 200);
+    updateProgress();
   });
   
-  // Preview functionality (basic)
-  document.getElementById('previewBtn').addEventListener('click', function() {
-    const title = titleInput.value;
-    const category = categorySelect.value;
-    const content = document.querySelector('input[name="content"]').value;
-    
-    if (!title || !category || !content) {
-      alert('Por favor completa todos los campos antes de ver la vista previa.');
+  // Form inputs
+  ['category', 'difficulty_level', 'grade_level', 'context_type'].forEach(id => {
+    document.getElementById(id).addEventListener('change', updateProgress);
+  });
+  
+  // Tags input
+  const tagsInput = document.getElementById('tags-input');
+  tagsInput.addEventListener('keydown', handleTagInput);
+  tagsInput.addEventListener('input', handleTagSearch);
+  
+  // Bounty selection
+  document.querySelectorAll('input[name="bounty_points"]').forEach(input => {
+    input.addEventListener('change', updateBountyDisplay);
+  });
+  
+  // Step dots
+  document.querySelectorAll('.step-dot').forEach(dot => {
+    dot.addEventListener('click', function() {
+      const step = parseInt(this.dataset.step);
+      if (step <= getMaxAccessibleStep()) {
+        goToStep(step);
+      }
+    });
+  });
+}
+
+function updateCharCounter(inputId, maxLength) {
+  const input = document.getElementById(inputId);
+  const counter = document.getElementById(inputId + '-counter');
+  if (counter) {
+    counter.textContent = input.value.length;
+    if (input.value.length > maxLength * 0.9) {
+      counter.style.color = '#dc2626';
+    } else {
+      counter.style.color = '#6b7280';
+    }
+  }
+}
+
+function changeStep(direction) {
+  const newStep = currentStep + direction;
+  if (newStep >= 1 && newStep <= 4) {
+    if (direction > 0 && !validateCurrentStep()) {
       return;
     }
-    
-    // Simple preview modal (you can enhance this)
-    alert('Vista previa:\n\nTítulo: ' + title + '\nCategoría: ' + category + '\n\n¡Tu pregunta se ve genial!');
+    goToStep(newStep);
+  }
+}
+
+function goToStep(step) {
+  // Hide current step
+  document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('active');
+  document.querySelector(`.step-dot[data-step="${currentStep}"]`).classList.remove('active');
+  
+  // Show new step
+  currentStep = step;
+  document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('active');
+  document.querySelector(`.step-dot[data-step="${currentStep}"]`).classList.add('active');
+  
+  // Update navigation buttons
+  updateNavigationButtons();
+  updateProgress();
+  
+  // Mark previous steps as completed
+  for (let i = 1; i < currentStep; i++) {
+    document.querySelector(`.step-dot[data-step="${i}"]`).classList.add('completed');
+  }
+}
+
+function updateNavigationButtons() {
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  prevBtn.style.display = currentStep === 1 ? 'none' : 'flex';
+  
+  if (currentStep === 4) {
+    nextBtn.style.display = 'none';
+    submitBtn.style.display = 'flex';
+  } else {
+    nextBtn.style.display = 'flex';
+    submitBtn.style.display = 'none';
+  }
+}
+
+function validateCurrentStep() {
+  switch (currentStep) {
+    case 1:
+      const title = document.getElementById('title').value.trim();
+      if (title.length < 10) {
+        alert('El título debe tener al menos 10 caracteres');
+        return false;
+      }
+      return true;
+    case 2:
+      const category = document.getElementById('category').value;
+      if (!category) {
+        alert('Selecciona una materia');
+        return false;
+      }
+      return true;
+    case 3:
+      const content = window.quillEditor ? window.quillEditor.getText().trim() : '';
+      if (content.length < 20) {
+        alert('La descripción debe tener al menos 20 caracteres');
+        return false;
+      }
+      return true;
+    case 4:
+      return true;
+    default:
+      return true;
+  }
+}
+
+function getMaxAccessibleStep() {
+  // Users can only access steps they've completed prerequisites for
+  const title = document.getElementById('title').value.trim();
+  if (title.length < 10) return 1;
+  
+  const category = document.getElementById('category').value;
+  if (!category) return 2;
+  
+  const content = window.quillEditor ? window.quillEditor.getText().trim() : '';
+  if (content.length < 20) return 3;
+  
+  return 4;
+}
+
+function updateProgress() {
+  let progress = 0;
+  const totalSteps = 4;
+  
+  // Step 1: Title
+  const title = document.getElementById('title').value.trim();
+  if (title.length >= 10) progress += 25;
+  
+  // Step 2: Category
+  const category = document.getElementById('category').value;
+  if (category) progress += 25;
+  
+  // Step 3: Content
+  const content = window.quillEditor ? window.quillEditor.getText().trim() : '';
+  if (content.length >= 20) progress += 25;
+  
+  // Step 4: Completion
+  if (selectedTags.length > 0 || currentStep === 4) progress += 25;
+  
+  document.getElementById('progress-bar').style.width = progress + '%';
+  document.getElementById('progress-text').textContent = progress + '%';
+}
+
+function handleTagInput(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const tagName = e.target.value.trim();
+    if (tagName && !selectedTags.includes(tagName)) {
+      addTag(tagName);
+      e.target.value = '';
+    }
+  }
+}
+
+function handleTagSearch(e) {
+  const query = e.target.value.trim();
+  if (query.length >= 2) {
+    // Here you would typically fetch suggestions from the server
+    // For now, we'll show some dummy suggestions
+    showTagSuggestions(['álgebra', 'geometría', 'cálculo', 'trigonometría', 'estadística']);
+  } else {
+    hideTagSuggestions();
+  }
+}
+
+function showTagSuggestions(suggestions) {
+  const container = document.getElementById('tags-suggestions');
+  container.innerHTML = '';
+  
+  suggestions.forEach(tag => {
+    if (!selectedTags.includes(tag)) {
+      const div = document.createElement('div');
+      div.className = 'tag-suggestion';
+      div.textContent = tag;
+      div.onclick = () => {
+        addTag(tag);
+        document.getElementById('tags-input').value = '';
+        hideTagSuggestions();
+      };
+      container.appendChild(div);
+    }
   });
+  
+  container.style.display = suggestions.length > 0 ? 'block' : 'none';
+}
+
+function hideTagSuggestions() {
+  document.getElementById('tags-suggestions').style.display = 'none';
+}
+
+function addTag(tagName) {
+  if (!selectedTags.includes(tagName)) {
+    selectedTags.push(tagName);
+    renderTags();
+    updateProgress();
+  }
+}
+
+function removeTag(tagName) {
+  selectedTags = selectedTags.filter(tag => tag !== tagName);
+  renderTags();
+  updateProgress();
+}
+
+function renderTags() {
+  const container = document.getElementById('selected-tags');
+  container.innerHTML = '';
+  
+  selectedTags.forEach(tag => {
+    const tagElement = document.createElement('div');
+    tagElement.className = 'tag-item';
+    tagElement.innerHTML = `
+      <span>${tag}</span>
+      <span class="tag-remove" onclick="removeTag('${tag}')">&times;</span>
+    `;
+    container.appendChild(tagElement);
+  });
+}
+
+function updateBountyDisplay() {
+  const selectedBounty = document.querySelector('input[name="bounty_points"]:checked');
+  if (selectedBounty) {
+    const points = parseInt(selectedBounty.value);
+    const userPoints = {{ current_user.points or 0 }};
+    
+    if (points > userPoints) {
+      alert('No tienes suficientes puntos para esta recompensa');
+      document.getElementById('bounty-0').checked = true;
+    }
+  }
+}
+
+function initializeEditor() {
+  if (typeof Quill !== 'undefined') {
+    window.quillEditor = new Quill('#questionEditor', {
+      theme: 'snow',
+      placeholder: 'Describe tu problema en detalle...',
+      modules: {
+        toolbar: [
+          ['bold', 'italic', 'underline'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          ['link', 'image'],
+          ['code-block'],
+          ['clean']
+        ]
+      }
+    });
+    
+    window.quillEditor.on('text-change', function() {
+      updateProgress();
+    });
+  }
+}
+
+// Form submission
+document.getElementById('questionForm').addEventListener('submit', function(e) {
+  if (window.quillEditor) {
+    document.querySelector('input[name="content"]').value = window.quillEditor.root.innerHTML;
+  }
+  
+  // Add selected tags to form
+  selectedTags.forEach(tag => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'tags';
+    input.value = tag;
+    this.appendChild(input);
+  });
+  
+  // Show loading state
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Publicando...';
 });
 </script>
 
-<style>
-/* Additional hover effects for the form */
-.form-control:focus,
-.form-select:focus {
-  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
-  border-color: var(--forum-primary);
-}
-
-.form-control:hover:not(:focus),
-.form-select:hover:not(:focus) {
-  border-color: var(--forum-primary);
-}
-
-/* Enhanced submit button */
-#submitBtn:not(:disabled):hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-}
-
-#submitBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Progress bar animation */
-#progress-bar {
-  transition: width 0.5s ease;
-  border-radius: 3px;
-}
-
-/* Category icons animation */
-.form-select option {
-  padding: 10px;
-}
-</style>
 {% endblock %}
 
 {% block head_extra %}

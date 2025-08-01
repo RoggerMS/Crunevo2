@@ -1,0 +1,701 @@
+{% extends "base.html" %}
+
+{% block title %}Resultados de búsqueda - Foro Estudiantil{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-lg-4 py-3">
+  <!-- Search Header -->
+  <div class="search-header mb-4">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h1 class="search-title">🔍 Resultados de búsqueda</h1>
+        <p class="search-subtitle">
+          {% if search_params.q %}
+          Mostrando resultados para: <strong>"{{ search_params.q }}"</strong>
+          {% else %}
+          Búsqueda avanzada con filtros aplicados
+          {% endif %}
+        </p>
+      </div>
+      <div class="col-md-4 text-end">
+        <a href="{{ url_for('forum.list_questions') }}" class="btn btn-outline-primary">
+          <i class="bi bi-arrow-left me-2"></i>Volver al foro
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Stats -->
+  <div class="search-stats mb-4">
+    <div class="row g-3">
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-content">
+            <div class="stat-number">{{ questions|length }}</div>
+            <div class="stat-label">Resultados encontrados</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-content">
+            <div class="stat-number">{{ questions|selectattr('is_solved')|list|length }}</div>
+            <div class="stat-label">Preguntas resueltas</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon">🚨</div>
+          <div class="stat-content">
+            <div class="stat-number">{{ questions|selectattr('is_urgent')|list|length }}</div>
+            <div class="stat-label">Preguntas urgentes</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-content">
+            <div class="stat-number">{{ questions|selectattr('bounty_points')|select('>', 0)|list|length }}</div>
+            <div class="stat-label">Con recompensa</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Applied Filters -->
+  {% if search_params %}
+  <div class="applied-filters mb-4">
+    <h5 class="filters-title">Filtros aplicados:</h5>
+    <div class="filters-list">
+      {% if search_params.q %}
+      <span class="filter-tag">
+        <i class="bi bi-search"></i>
+        Texto: "{{ search_params.q }}"
+        <a href="{{ url_for('forum.search', **search_params|reject('equalto', 'q')|list) }}" class="filter-remove">&times;</a>
+      </span>
+      {% endif %}
+      
+      {% if search_params.category %}
+      <span class="filter-tag">
+        <i class="bi bi-folder"></i>
+        Categoría: {{ search_params.category }}
+        <a href="{{ url_for('forum.search', **search_params|reject('equalto', 'category')|list) }}" class="filter-remove">&times;</a>
+      </span>
+      {% endif %}
+      
+      {% if search_params.difficulty %}
+      <span class="filter-tag">
+        <i class="bi bi-signal"></i>
+        Dificultad: {{ search_params.difficulty }}
+        <a href="{{ url_for('forum.search', **search_params|reject('equalto', 'difficulty')|list) }}" class="filter-remove">&times;</a>
+      </span>
+      {% endif %}
+      
+      {% if search_params.has_answers %}
+      <span class="filter-tag">
+        <i class="bi bi-chat"></i>
+        Con respuestas: {{ 'Sí' if search_params.has_answers == 'yes' else 'No' }}
+        <a href="{{ url_for('forum.search', **search_params|reject('equalto', 'has_answers')|list) }}" class="filter-remove">&times;</a>
+      </span>
+      {% endif %}
+      
+      {% if search_params.is_solved %}
+      <span class="filter-tag">
+        <i class="bi bi-check"></i>
+        Resueltas: {{ 'Sí' if search_params.is_solved == 'yes' else 'No' }}
+        <a href="{{ url_for('forum.search', **search_params|reject('equalto', 'is_solved')|list) }}" class="filter-remove">&times;</a>
+      </span>
+      {% endif %}
+      
+      <a href="{{ url_for('forum.list_questions') }}" class="filter-clear">
+        <i class="bi bi-x-circle"></i>
+        Limpiar todos los filtros
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Results -->
+  <div class="search-results">
+    {% if questions %}
+    {% for question in questions %}
+    <article class="result-card" data-question-id="{{ question.id }}">
+      <div class="result-header">
+        <div class="result-meta">
+          <h3 class="result-title">
+            <a href="{{ url_for('forum.view_question', question_id=question.id) }}" 
+               class="result-link">{{ question.title }}</a>
+          </h3>
+          <div class="result-badges">
+            <span class="badge category-badge-{{ question.category.lower().replace('á', 'a').replace('í', 'i').replace('ó', 'o') }}">
+              {% if question.category == 'Matemáticas' %}🧮
+              {% elif question.category == 'Ciencias' %}🔬
+              {% elif question.category == 'Lenguas' %}📚
+              {% elif question.category == 'Historia' %}🏛️
+              {% elif question.category == 'Tecnología' %}💻
+              {% elif question.category == 'Arte' %}🎨
+              {% else %}📝
+              {% endif %}
+              {{ question.category }}
+            </span>
+            
+            {% if question.difficulty_level %}
+            <span class="badge difficulty-{{ question.difficulty_level }}">
+              {% if question.difficulty_level == 'basico' %}🟢 Básico
+              {% elif question.difficulty_level == 'intermedio' %}🟡 Intermedio
+              {% elif question.difficulty_level == 'avanzado' %}🔴 Avanzado
+              {% endif %}
+            </span>
+            {% endif %}
+            
+            {% if question.is_urgent %}
+            <span class="badge urgent-badge">🚨 Urgente</span>
+            {% endif %}
+            
+            {% if question.bounty_points > 0 %}
+            <span class="badge bounty-badge">💰 {{ question.bounty_points }} pts</span>
+            {% endif %}
+            
+            {% if question.is_solved %}
+            <span class="badge solved-badge">✅ Resuelto</span>
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="result-stats">
+          <div class="stat-group">
+            <span class="stat-number">{{ question.answer_count }}</span>
+            <span class="stat-label">respuestas</span>
+          </div>
+          <div class="stat-group">
+            <span class="stat-number">{{ question.views }}</span>
+            <span class="stat-label">vistas</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-content">
+        <p class="result-excerpt">{{ question.content|striptags|truncate(200) }}</p>
+        {% if question.tags %}
+        <div class="result-tags">
+          {% for tag in question.tags %}
+          <a href="{{ url_for('forum.list_questions', tags=tag.name) }}" class="tag-link">
+            #{{ tag.name }}
+          </a>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="result-footer">
+        <div class="author-info">
+          <img src="{{ question.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+               class="author-avatar" alt="Avatar">
+          <div class="author-details">
+            <div class="author-name">{{ question.author.username }}</div>
+            <div class="question-time">{{ question.created_at.strftime('%d/%m/%Y %H:%M') }}</div>
+          </div>
+        </div>
+        
+        <div class="result-actions">
+          {% if current_user.is_authenticated %}
+          <button class="action-btn bookmark-btn" data-question-id="{{ question.id }}">
+            <i class="bi bi-bookmark"></i>
+          </button>
+          {% endif %}
+          <button class="action-btn share-btn">
+            <i class="bi bi-share"></i>
+          </button>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+    {% else %}
+    <div class="no-results">
+      <div class="no-results-icon">🔍</div>
+      <h3 class="no-results-title">No se encontraron resultados</h3>
+      <p class="no-results-text">
+        No hay preguntas que coincidan con tus criterios de búsqueda.
+        Intenta con términos diferentes o ajusta los filtros.
+      </p>
+      <div class="no-results-actions">
+        <a href="{{ url_for('forum.list_questions') }}" class="btn btn-primary">
+          <i class="bi bi-arrow-left me-2"></i>Ver todas las preguntas
+        </a>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('forum.ask_question') }}" class="btn btn-outline-primary">
+          <i class="bi bi-plus-circle me-2"></i>Hacer una pregunta
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+/* Search Header */
+.search-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 24px;
+  padding: 2rem;
+  border: 1px solid #e5e7eb;
+}
+
+.search-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.search-subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Search Stats */
+.search-stats {
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 1px solid #f1f5f9;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+.stat-icon {
+  font-size: 2rem;
+  width: 48px;
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Applied Filters */
+.applied-filters {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 1px solid #f1f5f9;
+}
+
+.filters-title {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.filters-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.filter-remove {
+  margin-left: 4px;
+  color: #dc2626;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.filter-remove:hover {
+  color: #b91c1c;
+}
+
+.filter-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.filter-clear:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Result Cards */
+.result-card {
+  background: white;
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border: 1px solid #f1f5f9;
+  transition: all 0.3s ease;
+}
+
+.result-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+  border-color: #e2e8f0;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.result-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+.result-link {
+  color: #1f2937;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.result-link:hover {
+  color: #3b82f6;
+}
+
+.result-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.result-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.stat-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-group .stat-number {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.stat-group .stat-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.result-content {
+  margin-bottom: 1rem;
+}
+
+.result-excerpt {
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+}
+
+.result-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-link {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.tag-link:hover {
+  background: #3b82f6;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.result-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.author-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #e5e7eb;
+}
+
+.author-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.question-time {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.result-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  color: #6b7280;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.action-btn:hover {
+  background: #f3f4f6;
+  color: #3b82f6;
+}
+
+/* No Results */
+.no-results {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-radius: 24px;
+  border: 2px dashed #cbd5e1;
+}
+
+.no-results-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+.no-results-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.no-results-text {
+  color: #6b7280;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+.no-results-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Badge styles (reused from list.html) */
+.category-badge-matematicas { background: linear-gradient(135deg, #3b82f6, #1e40af); color: white; }
+.category-badge-ciencias { background: linear-gradient(135deg, #10b981, #047857); color: white; }
+.category-badge-lenguas { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+.category-badge-historia { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
+.category-badge-tecnologia { background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; }
+.category-badge-arte { background: linear-gradient(135deg, #ec4899, #db2777); color: white; }
+.category-badge-otros { background: linear-gradient(135deg, #6b7280, #4b5563); color: white; }
+
+.difficulty-basico { background: #dcfce7; color: #166534; }
+.difficulty-intermedio { background: #fef3c7; color: #92400e; }
+.difficulty-avanzado { background: #fee2e2; color: #991b1b; }
+
+.urgent-badge { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; animation: pulse 2s infinite; }
+.bounty-badge { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; }
+.solved-badge { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: none;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .search-header {
+    padding: 1.5rem;
+  }
+  
+  .search-title {
+    font-size: 1.5rem;
+  }
+  
+  .result-card {
+    padding: 1rem;
+  }
+  
+  .result-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .result-stats {
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 1rem;
+  }
+  
+  .no-results-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .filters-list {
+    justify-content: center;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Bookmark functionality
+  document.querySelectorAll('.bookmark-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const questionId = this.dataset.questionId;
+      
+      fetch(`/foro/pregunta/${questionId}/bookmark`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const icon = this.querySelector('i');
+          if (data.bookmarked) {
+            icon.classList.remove('bi-bookmark');
+            icon.classList.add('bi-bookmark-fill');
+            this.style.color = '#3b82f6';
+          } else {
+            icon.classList.remove('bi-bookmark-fill');
+            icon.classList.add('bi-bookmark');
+            this.style.color = '#6b7280';
+          }
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    });
+  });
+  
+  // Share functionality
+  document.querySelectorAll('.share-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const resultCard = this.closest('.result-card');
+      const resultLink = resultCard.querySelector('.result-link');
+      const url = resultLink.href;
+      const title = resultLink.textContent;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: title,
+          url: url
+        });
+      } else {
+        navigator.clipboard.writeText(url).then(() => {
+          // Show a temporary tooltip
+          const tooltip = document.createElement('div');
+          tooltip.textContent = '¡Enlace copiado!';
+          tooltip.style.cssText = `
+            position: absolute;
+            background: #374151;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            z-index: 1000;
+            pointer-events: none;
+          `;
+          document.body.appendChild(tooltip);
+          
+          const rect = this.getBoundingClientRect();
+          tooltip.style.top = (rect.top - 40) + 'px';
+          tooltip.style.left = (rect.left + rect.width/2 - tooltip.offsetWidth/2) + 'px';
+          
+          setTimeout(() => {
+            document.body.removeChild(tooltip);
+          }, 2000);
+        });
+      }
+    });
+  });
+});
+</script>
+{% endblock %}
