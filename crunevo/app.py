@@ -281,6 +281,48 @@ def create_app():
                         text("ALTER TABLE note ADD COLUMN file_type VARCHAR(20)")
                     )
                     db.session.commit()
+
+                # Ensure forum modernization columns exist
+                fq_cols = [c["name"] for c in inspector.get_columns("forum_question")]
+                forum_add_cols = {
+                    "difficulty_level": "ALTER TABLE forum_question ADD COLUMN IF NOT EXISTS difficulty_level VARCHAR(20) DEFAULT 'intermedio'",
+                    "subject_area": "ALTER TABLE forum_question ADD COLUMN IF NOT EXISTS subject_area VARCHAR(100)",
+                    "grade_level": "ALTER TABLE forum_question ADD COLUMN IF NOT EXISTS grade_level VARCHAR(20)",
+                    "bounty_points": "ALTER TABLE forum_question ADD COLUMN IF NOT EXISTS bounty_points INTEGER DEFAULT 0",
+                    "is_urgent": "ALTER TABLE forum_question ADD COLUMN IF NOT EXISTS is_urgent BOOLEAN DEFAULT FALSE",
+                    "is_featured": "ALTER TABLE forum_question ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT FALSE",
+                    "quality_score": "ALTER TABLE forum_question ADD COLUMN IF NOT EXISTS quality_score FLOAT DEFAULT 0.0",
+                    "homework_deadline": "ALTER TABLE forum_question ADD COLUMN IF NOT EXISTS homework_deadline TIMESTAMP",
+                    "exam_date": "ALTER TABLE forum_question ADD COLUMN IF NOT EXISTS exam_date TIMESTAMP",
+                    "context_type": "ALTER TABLE forum_question ADD COLUMN IF NOT EXISTS context_type VARCHAR(50) DEFAULT 'general'",
+                }
+                for col, sql in forum_add_cols.items():
+                    if col not in fq_cols:
+                        app.logger.info(f"Adding missing forum_question.{col} column")
+                        db.session.execute(text(sql))
+
+                fa_cols = [c["name"] for c in inspector.get_columns("forum_answer")]
+                answer_add_cols = {
+                    "explanation_quality": "ALTER TABLE forum_answer ADD COLUMN IF NOT EXISTS explanation_quality VARCHAR(20) DEFAULT 'good'",
+                    "has_step_by_step": "ALTER TABLE forum_answer ADD COLUMN IF NOT EXISTS has_step_by_step BOOLEAN DEFAULT FALSE",
+                    "has_visual_aids": "ALTER TABLE forum_answer ADD COLUMN IF NOT EXISTS has_visual_aids BOOLEAN DEFAULT FALSE",
+                    "is_expert_verified": "ALTER TABLE forum_answer ADD COLUMN IF NOT EXISTS is_expert_verified BOOLEAN DEFAULT FALSE",
+                    "confidence_level": "ALTER TABLE forum_answer ADD COLUMN IF NOT EXISTS confidence_level VARCHAR(20) DEFAULT 'medium'",
+                    "helpful_count": "ALTER TABLE forum_answer ADD COLUMN IF NOT EXISTS helpful_count INTEGER DEFAULT 0",
+                    "word_count": "ALTER TABLE forum_answer ADD COLUMN IF NOT EXISTS word_count INTEGER DEFAULT 0",
+                    "estimated_reading_time": "ALTER TABLE forum_answer ADD COLUMN IF NOT EXISTS estimated_reading_time INTEGER DEFAULT 1",
+                    "contains_formulas": "ALTER TABLE forum_answer ADD COLUMN IF NOT EXISTS contains_formulas BOOLEAN DEFAULT FALSE",
+                    "contains_code": "ALTER TABLE forum_answer ADD COLUMN IF NOT EXISTS contains_code BOOLEAN DEFAULT FALSE",
+                }
+                for col, sql in answer_add_cols.items():
+                    if col not in fa_cols:
+                        app.logger.info(f"Adding missing forum_answer.{col} column")
+                        db.session.execute(text(sql))
+
+                if any(c not in fq_cols for c in forum_add_cols) or any(
+                    c not in fa_cols for c in answer_add_cols
+                ):
+                    db.session.commit()
             except Exception as e:
                 app.logger.error(f"Database initialization error: {e}")
 
