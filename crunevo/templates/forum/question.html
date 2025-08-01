@@ -1,50 +1,136 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
 
+{% block title %}🧮 {{ question.title }} - Centro de Matemáticas{% endblock %}
+
 {% block content %}
 <div class="container my-4">
+    <!-- Mathematical Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{{ url_for('forum.list_questions') }}" class="text-decoration-none">
+                    <i class="bi bi-calculator me-1"></i>Centro de Matemáticas
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{{ url_for('forum.list_questions', category=question.category) }}" class="text-decoration-none">
+                    {{ question.category }}
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">{{ question.title[:50] }}...</li>
+        </ol>
+    </nav>
+
     <div class="row">
         <div class="col-lg-8">
-            <!-- Question Card -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <span class="badge bg-primary me-2">{{ question.category }}</span>
-                        <small class="text-muted">
-                            <i class="bi bi-eye me-1"></i>
-                            {{ question.views }} vistas
-                        </small>
-                        {% if question.is_solved %}
-                        <span class="badge bg-success ms-2">
-                            <i class="bi bi-check-circle me-1"></i>
-                            Resuelto
-                        </span>
-                        {% endif %}
-                    </div>
-                    
-                    <h1 class="mb-3">{{ question.title }}</h1>
-                    
-                    <div class="d-flex align-items-center mb-3">
-                        <img src="{{ question.author.avatar_url or url_for('static', filename='img/default.png') }}" 
-                             class="rounded-circle me-3" width="40" height="40" alt="Avatar">
-                        <div>
-                            <h6 class="mb-0">@{{ question.author.username }}</h6>
-                            <small class="text-muted">{{ question.created_at.strftime('%d de %B, %Y a las %H:%M') }}</small>
+            <!-- Enhanced Question Card -->
+            <div class="card question-detail-card mb-4">
+                <div class="card-body p-4">
+                    <!-- Question Status & Meta -->
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="badge category-{{ question.category.lower().replace('á', 'a').replace('í', 'i').replace('ó', 'o') }} text-white fs-6">
+                                {% if question.category == 'Matemáticas' %}🧮{% endif %}
+                                {{ question.category }}
+                            </span>
+                            {% if question.is_solved %}
+                            <span class="solved-badge">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Resuelto
+                            </span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">
+                                <i class="bi bi-hourglass-split me-1"></i>
+                                Pendiente
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex align-items-center gap-3 text-muted small">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-eye me-1"></i>
+                                <span>{{ question.views }} vistas</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-clock me-1"></i>
+                                <span>{{ question.created_at.strftime('%d/%m/%Y') }}</span>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="question-content">
-                        <div class="lead">{{ question.content|safe }}</div>
+                    <!-- Question Title -->
+                    <h1 class="question-title mb-4">{{ question.title }}</h1>
+                    
+                    <!-- Author Info -->
+                    <div class="d-flex align-items-center mb-4 p-3 rounded-3" style="background: var(--math-light-gradient);">
+                        <img src="{{ question.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+                             class="rounded-circle user-avatar me-3" width="52" height="52" alt="Avatar">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <h6 class="mb-0 fw-bold">@{{ question.author.username }}</h6>
+                                <span class="badge bg-primary bg-opacity-10 text-primary">
+                                    <i class="bi bi-mortarboard me-1"></i>Estudiante
+                                </span>
+                            </div>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar3 me-1"></i>
+                                Preguntó el {{ question.created_at.strftime('%d de %B, %Y a las %H:%M') }}
+                            </small>
+                        </div>
+                        <div class="text-end">
+                            <div class="small text-muted">Contribuciones</div>
+                            <div class="fw-bold text-primary">{{ question.author.points or 0 }} pts</div>
+                        </div>
                     </div>
+                    
+                    <!-- Question Content -->
+                    <div class="question-content">
+                        <div class="lead lh-lg">{{ question.content|safe }}</div>
+                    </div>
+
+                    <!-- Question Actions -->
+                    <div class="d-flex align-items-center justify-content-between mt-4 pt-3 border-top">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-bookmark me-1"></i>Guardar
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-share me-1"></i>Compartir
+                            </button>
+                        </div>
+                        <div class="text-muted small">
+                            <i class="bi bi-hash me-1"></i>ID: {{ question.id }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mathematical Separator -->
+            <div class="text-center my-4">
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <hr class="flex-grow-1">
+                    <span class="text-muted fs-4">∞</span>
+                    <hr class="flex-grow-1">
                 </div>
             </div>
 
             <!-- Answers Section -->
             <div class="answers-section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3>
+                    <h3 class="d-flex align-items-center gap-2">
+                        <i class="bi bi-chat-right-text text-primary"></i>
                         {{ answers|length }} Respuesta{{ 's' if answers|length != 1 else '' }}
                     </h3>
+                    {% if answers|length > 1 %}
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-secondary btn-sm active">
+                            <i class="bi bi-sort-down me-1"></i>Mejor valoradas
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-clock me-1"></i>Más recientes
+                        </button>
+                    </div>
+                    {% endif %}
                 </div>
 
                 {% if answers %}
@@ -56,80 +142,170 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="text-center py-5">
-                    <i class="bi bi-chat-right-dots text-muted" style="font-size: 3rem;"></i>
-                    <h4 class="text-muted mt-3">No hay respuestas aún</h4>
-                    <p class="text-muted">¡Sé el primero en ayudar!</p>
+                <div class="empty-state text-center py-5 mb-4">
+                    <i class="bi bi-chat-right-dots" style="font-size: 4rem; color: var(--math-primary); opacity: 0.7;"></i>
+                    <h4 class="mt-3 fw-bold">¡Sé el primero en resolver este problema!</h4>
+                    <p class="text-muted mb-4">Tu conocimiento puede ayudar a otro estudiante. Comparte tu solución matemática.</p>
+                    {% if current_user.is_authenticated %}
+                    <button class="btn btn-primary btn-lg" onclick="document.getElementById('answerSection').scrollIntoView({behavior: 'smooth'})">
+                        <i class="bi bi-lightbulb me-2"></i>Escribir respuesta
+                    </button>
+                    {% endif %}
                 </div>
                 {% endif %}
 
-                <!-- Answer Form -->
+                <!-- Enhanced Answer Form -->
                 {% if current_user.is_authenticated %}
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Tu respuesta</h5>
+                <div id="answerSection" class="card question-detail-card">
+                    <div class="card-header" style="background: var(--math-gradient); color: white;">
+                        <h5 class="mb-0 d-flex align-items-center">
+                            <i class="bi bi-pencil-square me-2"></i>
+                            Tu respuesta matemática
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center gap-2 mb-3 p-3 rounded-3" style="background: var(--math-light-gradient);">
+                                <span class="fs-4">💡</span>
+                                <div class="small">
+                                    <div class="fw-semibold text-primary">Consejos para una buena respuesta:</div>
+                                    <div class="text-muted">Explica paso a paso, usa ejemplos y verifica tu solución.</div>
+                                </div>
+                            </div>
+                        </div>
                         <form method="post" action="{{ url_for('forum.answer_question', question_id=question.id) }}">
                             {{ csrf.csrf_field() }}
                             <div class="mb-3">
                                 <div id="answerEditor" class="quill-editor"></div>
                                 <input type="hidden" name="content" required>
                             </div>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-reply me-1"></i>
-                                Responder
-                            </button>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="small text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Usa el editor para incluir fórmulas matemáticas y diagramas
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-send me-2"></i>
+                                    Publicar respuesta
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
                 {% else %}
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body text-center">
-                        <h5>¿Quieres responder?</h5>
-                        <p class="text-muted">Inicia sesión para participar en la discusión</p>
-                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Iniciar Sesión</a>
+                <div class="card question-detail-card">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <i class="bi bi-person-plus" style="font-size: 4rem; color: var(--math-primary);"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">¿Conoces la solución?</h5>
+                        <p class="text-muted mb-4">Únete a nuestra comunidad matemática para compartir tu conocimiento y ayudar a otros estudiantes.</p>
+                        <div class="d-flex gap-2 justify-content-center">
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar Sesión
+                            </a>
+                            <a href="{{ url_for('onboarding.register') }}" class="btn btn-outline-primary">
+                                <i class="bi bi-person-plus me-1"></i>Registrarse
+                            </a>
+                        </div>
                     </div>
                 </div>
                 {% endif %}
             </div>
         </div>
 
-        <!-- Sidebar -->
+        <!-- Enhanced Sidebar -->
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm mb-4">
+            <!-- Question Statistics -->
+            <div class="card sidebar-card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Estadísticas</h5>
-                    <div class="row text-center">
+                    <h5 class="card-title">
+                        <i class="bi bi-graph-up me-2"></i>Estadísticas
+                    </h5>
+                    <div class="row text-center g-3">
                         <div class="col-4">
-                            <div class="border-end">
-                                <div class="h4 mb-0">{{ question.views }}</div>
-                                <small class="text-muted">Vistas</small>
+                            <div class="stats-container">
+                                <div class="stat-number">{{ question.views }}</div>
+                                <div class="stat-label">Vistas</div>
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="border-end">
-                                <div class="h4 mb-0">{{ answers|length }}</div>
-                                <small class="text-muted">Respuestas</small>
+                            <div class="stats-container">
+                                <div class="stat-number">{{ answers|length }}</div>
+                                <div class="stat-label">Respuestas</div>
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="h4 mb-0 {% if question.is_solved %}text-success{% else %}text-muted{% endif %}">
-                                {% if question.is_solved %}✓{% else %}?{% endif %}
+                            <div class="stats-container">
+                                <div class="stat-number {% if question.is_solved %}text-success{% else %}text-muted{% endif %}">
+                                    {% if question.is_solved %}✓{% else %}?{% endif %}
+                                </div>
+                                <div class="stat-label">Estado</div>
                             </div>
-                            <small class="text-muted">Estado</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress indicators -->
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between small mb-2">
+                            <span class="text-muted">Actividad</span>
+                            <span class="fw-semibold">{{ ((answers|length + question.views) / 10) | round | int }}%</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar" style="width: {{ ((answers|length + question.views) / 10) | round | int }}%; background: var(--math-gradient);"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm">
+            <!-- Mathematical Categories -->
+            <div class="card sidebar-card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Categorías relacionadas</h5>
+                    <h5 class="card-title">
+                        <i class="bi bi-tags me-2"></i>Categorías relacionadas
+                    </h5>
                     <div class="d-flex flex-wrap gap-2">
                         {% for cat in ['Matemáticas', 'Ciencias', 'Lenguas', 'Historia', 'Tecnología'] %}
                         <a href="{{ url_for('forum.list_questions', category=cat) }}" 
-                           class="badge bg-light text-dark text-decoration-none">{{ cat }}</a>
+                           class="badge category-{{ cat.lower().replace('á', 'a').replace('í', 'i').replace('ó', 'o') }} text-white text-decoration-none">
+                            {% if cat == 'Matemáticas' %}🧮{% elif cat == 'Ciencias' %}🔬{% elif cat == 'Lenguas' %}📚{% elif cat == 'Historia' %}🏛️{% elif cat == 'Tecnología' %}💻{% endif %}
+                            {{ cat }}
+                        </a>
                         {% endfor %}
                     </div>
+                </div>
+            </div>
+
+            <!-- Mathematical Tools -->
+            <div class="card sidebar-card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-tools me-2"></i>Herramientas útiles
+                    </h5>
+                    <div class="d-grid gap-2">
+                        <a href="https://www.desmos.com/calculator" target="_blank" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-graph-up me-1"></i> Calculadora Gráfica
+                        </a>
+                        <a href="https://www.symbolab.com/" target="_blank" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-calculator me-1"></i> Resolver ecuaciones
+                        </a>
+                        <a href="https://www.geogebra.org/" target="_blank" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-triangle me-1"></i> Geometría interactiva
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mathematical Quote -->
+            <div class="card sidebar-card">
+                <div class="card-body text-center">
+                    <div class="mb-3" style="font-size: 2rem;">📐</div>
+                    <blockquote class="blockquote mb-3">
+                        <p class="small">"Las matemáticas son el lenguaje con el que Dios ha escrito el universo."</p>
+                    </blockquote>
+                    <footer class="blockquote-footer small">
+                        <cite title="Galileo Galilei">Galileo Galilei</cite>
+                    </footer>
                 </div>
             </div>
         </div>
@@ -149,7 +325,12 @@ function voteAnswer(answerId, type) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            location.reload();
+            // Add visual feedback
+            const voteElement = document.querySelector(`[onclick="voteAnswer(${answerId}, '${type}')"]`);
+            voteElement.classList.add('loading-math');
+            setTimeout(() => {
+                location.reload();
+            }, 500);
         }
     });
 }
@@ -169,6 +350,22 @@ function acceptAnswer(answerId) {
         }
     });
 }
+
+// Smooth scrolling for answer section
+document.addEventListener('DOMContentLoaded', function() {
+    // Add sparkle animation to solved questions
+    {% if question.is_solved %}
+    const solvedBadge = document.querySelector('.solved-badge');
+    if (solvedBadge) {
+        setInterval(() => {
+            solvedBadge.style.animation = 'pulse-math 1s ease-in-out';
+            setTimeout(() => {
+                solvedBadge.style.animation = '';
+            }, 1000);
+        }, 3000);
+    }
+    {% endif %}
+});
 </script>
 {% endblock %}
 

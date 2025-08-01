@@ -1,6 +1,459 @@
+/* Forum Editor Base Styles */
 .quill-editor {
   height: 200px;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
 }
+
+.quill-editor:hover {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
 .ql-editor {
   font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Mathematical Theme Colors */
+:root {
+  --math-primary: #667eea;
+  --math-secondary: #764ba2;
+  --math-accent: #f093fb;
+  --math-success: #4ade80;
+  --math-warning: #fbbf24;
+  --math-info: #06b6d4;
+  --math-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --math-light-gradient: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+}
+
+/* Forum Container Enhancements */
+.forum-header {
+  background: var(--math-gradient);
+  color: white;
+  padding: 2rem 0;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.forum-header::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M30 0l30 30-30 30L0 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+  animation: float 20s linear infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  100% { transform: translateY(-60px) rotate(360deg); }
+}
+
+.math-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Enhanced Category Filters */
+.category-filters {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.category-badge {
+  background: var(--math-light-gradient) !important;
+  color: var(--math-primary) !important;
+  border: 2px solid transparent;
+  border-radius: 25px !important;
+  padding: 0.75rem 1.5rem !important;
+  margin: 0.25rem !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none !important;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-badge::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--math-gradient);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.category-badge:hover::before,
+.category-badge.active::before {
+  left: 0;
+}
+
+.category-badge:hover,
+.category-badge.active {
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* Question Cards Enhancement */
+.question-card {
+  background: white;
+  border-radius: 20px !important;
+  border: none !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.question-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--math-gradient);
+}
+
+.question-card:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2) !important;
+}
+
+.question-card .card-body {
+  padding: 1.5rem !important;
+}
+
+/* Avatar Enhancements */
+.user-avatar {
+  border: 3px solid var(--math-primary) !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* Stats Enhancement */
+.stats-container {
+  background: var(--math-light-gradient);
+  border-radius: 15px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: var(--math-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Solved Badge */
+.solved-badge {
+  background: linear-gradient(135deg, #4ade80, #22c55e) !important;
+  color: white !important;
+  border-radius: 20px !important;
+  padding: 0.5rem 1rem !important;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+}
+
+/* Category Specific Colors */
+.category-matematicas { background: linear-gradient(135deg, #667eea, #764ba2) !important; }
+.category-ciencias { background: linear-gradient(135deg, #4ade80, #22c55e) !important; }
+.category-lenguas { background: linear-gradient(135deg, #f093fb, #f5576c) !important; }
+.category-historia { background: linear-gradient(135deg, #fbbf24, #f59e0b) !important; }
+.category-tecnologia { background: linear-gradient(135deg, #06b6d4, #0891b2) !important; }
+.category-arte { background: linear-gradient(135deg, #a855f7, #9333ea) !important; }
+.category-otros { background: linear-gradient(135deg, #6b7280, #4b5563) !important; }
+
+/* Empty State Enhancement */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--math-light-gradient);
+  border-radius: 20px;
+  border: 2px dashed var(--math-primary);
+}
+
+.empty-state i {
+  font-size: 4rem;
+  color: var(--math-primary);
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+/* Pagination Enhancement */
+.pagination {
+  gap: 0.5rem;
+}
+
+.page-link {
+  border-radius: 12px !important;
+  border: 2px solid #e5e7eb;
+  color: var(--math-primary);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.page-link:hover {
+  background: var(--math-gradient) !important;
+  border-color: var(--math-primary) !important;
+  color: white !important;
+  transform: translateY(-2px);
+}
+
+.page-item.active .page-link {
+  background: var(--math-gradient) !important;
+  border-color: var(--math-primary) !important;
+}
+
+/* Question Detail Page Enhancements */
+.question-detail-card {
+  border-radius: 20px !important;
+  border: none !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.question-detail-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--math-gradient);
+}
+
+.question-title {
+  background: var(--math-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* Answer Cards */
+.answer-card {
+  border-radius: 16px !important;
+  border: 2px solid #f3f4f6 !important;
+  transition: all 0.3s ease;
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.answer-card:hover {
+  border-color: var(--math-primary) !important;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15) !important;
+  transform: translateY(-2px);
+}
+
+.answer-card.accepted {
+  border-color: var(--math-success) !important;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.05), rgba(34, 197, 94, 0.05));
+}
+
+.answer-card.accepted::before {
+  content: "✓";
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: var(--math-success);
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
+}
+
+/* Vote Buttons */
+.vote-group {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 0.5rem;
+}
+
+.vote-btn {
+  border: none !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.vote-btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  transition: all 0.3s ease;
+  transform: translate(-50%, -50%);
+}
+
+.vote-btn:hover::before {
+  width: 100px;
+  height: 100px;
+}
+
+.vote-up:hover {
+  background: var(--math-success) !important;
+  color: white !important;
+  transform: translateY(-2px);
+}
+
+.vote-down:hover {
+  background: #ef4444 !important;
+  color: white !important;
+  transform: translateY(-2px);
+}
+
+/* Form Enhancements */
+.form-control {
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: var(--math-primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-select {
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+}
+
+/* Button Enhancements */
+.btn-primary {
+  background: var(--math-gradient) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 0.75rem 1.5rem !important;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* Sidebar Enhancements */
+.sidebar-card {
+  border-radius: 20px !important;
+  border: none !important;
+  background: var(--math-light-gradient) !important;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important;
+}
+
+.sidebar-card .card-title {
+  color: var(--math-primary);
+  font-weight: 700;
+}
+
+/* Mathematical Formulas Support */
+.math-formula {
+  background: #f8fafc;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  font-family: 'Computer Modern', 'Times New Roman', serif;
+  text-align: center;
+}
+
+/* Loading Animations */
+@keyframes pulse-math {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.loading-math {
+  animation: pulse-math 1.5s ease-in-out infinite;
+}
+
+/* Dark Mode Support */
+[data-bs-theme="dark"] .question-card,
+[data-bs-theme="dark"] .question-detail-card,
+[data-bs-theme="dark"] .answer-card {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+[data-bs-theme="dark"] .category-filters {
+  background: rgba(31, 41, 55, 0.95) !important;
+}
+
+[data-bs-theme="dark"] .sidebar-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)) !important;
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+  .forum-header {
+    padding: 1.5rem 0;
+    margin-bottom: 1rem;
+  }
+  
+  .math-icon {
+    font-size: 2rem;
+  }
+  
+  .question-card {
+    margin-bottom: 1rem;
+  }
+  
+  .category-badge {
+    padding: 0.5rem 1rem !important;
+    margin: 0.125rem !important;
+  }
 }
