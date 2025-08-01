@@ -13,7 +13,30 @@
 
     <!-- Main Content -->
     <div class="col-lg-6">
-      <!-- Club Header -->
+      <!-- Club Banner Header -->
+      {% if club.banner_url %}
+      <div class="club-banner mb-4 position-relative">
+        <img src="{{ club.banner_url }}" alt="{{ club.name }} Banner" 
+             class="w-100 rounded" style="height: 200px; object-fit: cover;">
+        <div class="banner-overlay position-absolute top-0 start-0 w-100 h-100 rounded d-flex align-items-end">
+          <div class="p-4 text-white w-100">
+            <div class="d-flex align-items-center gap-3">
+              <img src="{{ club.avatar_url or url_for('static', filename='img/default.png') }}" 
+                   alt="{{ club.name }}" 
+                   class="rounded-circle border-3 border-white shadow" 
+                   width="80" height="80" style="object-fit: cover;">
+              <div>
+                <h1 class="h3 fw-bold mb-1 text-white">{{ club.name }}</h1>
+                <p class="badge bg-light text-dark mb-0">{{ club.career }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      
+      <!-- Club Header (fallback if no banner) -->
+      {% if not club.banner_url %}
       <div class="card border-0 shadow-sm mb-4">
         <div class="card-body p-4">
           <div class="row align-items-center">
@@ -21,14 +44,27 @@
               <img src="{{ club.avatar_url or url_for('static', filename='img/default.png') }}" 
                    alt="{{ club.name }}" 
                    class="rounded-circle border-3 border-primary" 
-                   width="80" height="80">
+                   width="80" height="80" style="object-fit: cover;">
             </div>
             <div class="col">
               <h1 class="h3 fw-bold text-dark mb-1">{{ club.name }}</h1>
               <p class="badge bg-primary mb-2">{{ club.career }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Club Info and Actions -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+          <div class="row align-items-center">
+            <div class="col">
+              {% if club.description %}
               <p class="text-muted mb-3">{{ club.description }}</p>
+              {% endif %}
               
-              <div class="d-flex align-items-center gap-3">
+              <div class="d-flex align-items-center gap-4 flex-wrap">
                 <div class="members-info">
                   <i class="bi bi-people text-primary"></i>
                   <span class="fw-semibold">{{ club.member_count }} miembros</span>
@@ -37,26 +73,39 @@
                   <i class="bi bi-calendar text-muted"></i>
                   <span class="small text-muted">Creado {{ club.created_at.strftime('%B %Y') }}</span>
                 </div>
+                <div class="creator-info">
+                  <i class="bi bi-person-fill-gear text-success"></i>
+                  <span class="small text-muted">Creado por {{ club.creator.username }}</span>
+                </div>
               </div>
             </div>
             <div class="col-auto">
-              {% if is_member %}
-              <div class="btn-group-vertical">
-                <button class="btn btn-outline-danger btn-sm leave-club-btn" 
+              <div class="d-flex gap-2 flex-wrap">
+                {% if is_creator or (is_member and user_role == 'admin') %}
+                <a href="{{ url_for('club.edit_club', club_id=club.id) }}" 
+                   class="btn btn-outline-success btn-sm">
+                  <i class="bi bi-pencil-square"></i> Editar Club
+                </a>
+                {% endif %}
+                
+                {% if is_member %}
+                <div class="btn-group-vertical">
+                  <button class="btn btn-outline-danger btn-sm leave-club-btn" 
+                          data-club-id="{{ club.id }}">
+                    <i class="bi bi-box-arrow-right"></i> Salir del Club
+                  </button>
+                  <button class="btn btn-outline-primary btn-sm" 
+                          onclick="togglePostForm()">
+                    <i class="bi bi-plus-circle"></i> Nueva Publicación
+                  </button>
+                </div>
+                {% else %}
+                <button class="btn btn-primary btn-lg join-club-btn" 
                         data-club-id="{{ club.id }}">
-                  <i class="bi bi-box-arrow-right"></i> Salir del Club
+                  <i class="bi bi-plus-circle"></i> Unirse al Club
                 </button>
-                <button class="btn btn-outline-primary btn-sm" 
-                        onclick="togglePostForm()">
-                  <i class="bi bi-plus-circle"></i> Nueva Publicación
-                </button>
+                {% endif %}
               </div>
-              {% else %}
-              <button class="btn btn-primary btn-lg join-club-btn" 
-                      data-club-id="{{ club.id }}">
-                <i class="bi bi-plus-circle"></i> Unirse al Club
-              </button>
-              {% endif %}
             </div>
           </div>
         </div>
@@ -230,6 +279,43 @@
                   <h6 class="fw-semibold">Total de miembros</h6>
                   <p class="text-muted">{{ club.member_count }} miembros activos</p>
                 </div>
+                <div class="col-md-6">
+                  <h6 class="fw-semibold">Creador del club</h6>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{{ club.creator.avatar_url or url_for('static', filename='img/default.png') }}" 
+                         alt="{{ club.creator.username }}" 
+                         class="rounded-circle" 
+                         width="24" height="24" style="object-fit: cover;">
+                    <span class="text-muted">{{ club.creator.username }}</span>
+                    {% if club.creator.verification_level > 0 %}
+                    <i class="bi bi-patch-check-fill text-primary"></i>
+                    {% endif %}
+                  </div>
+                </div>
+                
+                <!-- Social Links Section -->
+                {% if club.facebook_url or club.whatsapp_url %}
+                <div class="col-12">
+                  <h6 class="fw-semibold">Redes sociales</h6>
+                  <div class="d-flex gap-3">
+                    {% if club.facebook_url %}
+                    <a href="{{ club.facebook_url }}" target="_blank" 
+                       class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2">
+                      <i class="bi bi-facebook"></i>
+                      Facebook
+                    </a>
+                    {% endif %}
+                    
+                    {% if club.whatsapp_url %}
+                    <a href="{{ club.whatsapp_url }}" target="_blank" 
+                       class="btn btn-outline-success btn-sm d-flex align-items-center gap-2">
+                      <i class="bi bi-whatsapp"></i>
+                      WhatsApp
+                    </a>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -279,6 +365,42 @@
   </div>
 </div>
 
+
+<style>
+.club-banner {
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-overlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%);
+}
+
+.club-banner img {
+  transition: transform 0.3s ease;
+}
+
+.club-banner:hover img {
+  transform: scale(1.02);
+}
+
+.btn-outline-success:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.btn-outline-primary:hover, .btn-outline-danger:hover {
+  transform: translateY(-1px);
+}
+
+.social-links .btn {
+  transition: all 0.2s ease;
+}
+
+.social-links .btn:hover {
+  transform: translateY(-2px);
+}
+</style>
 
 <script>
 function togglePostForm() {

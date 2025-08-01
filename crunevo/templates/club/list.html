@@ -28,16 +28,54 @@
         {% for club in clubs[:3] %}
         <div class="col-md-4">
           <div class="card club-card h-100 border-0 shadow-sm">
+            <!-- Club Banner -->
+            {% if club.banner_url %}
+            <div class="card-banner position-relative">
+              <img src="{{ club.banner_url }}" alt="{{ club.name }}" 
+                   class="card-img-top" style="height: 120px; object-fit: cover;">
+              <div class="banner-overlay-mini position-absolute top-0 start-0 w-100 h-100 d-flex align-items-end">
+                <div class="p-3">
+                  <img src="{{ club.avatar_url or url_for('static', filename='img/default.png') }}" 
+                       alt="{{ club.name }}" 
+                       class="rounded-circle border-2 border-white shadow" 
+                       width="48" height="48" style="object-fit: cover;">
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            
             <div class="card-body p-4">
-              <div class="club-avatar mb-3">
+              <!-- If no banner, show avatar normally -->
+              {% if not club.banner_url %}
+              <div class="club-avatar mb-3 text-center">
                 <img src="{{ club.avatar_url or url_for('static', filename='img/default.png') }}" 
                      alt="{{ club.name }}" 
                      class="rounded-circle border-3 border-primary" 
-                     width="64" height="64">
+                     width="64" height="64" style="object-fit: cover;">
               </div>
+              {% endif %}
+              
               <h5 class="fw-bold text-dark mb-2">{{ club.name }}</h5>
               <p class="badge bg-light text-dark mb-2">{{ club.career }}</p>
-              <p class="text-muted small mb-3">{{ club.description[:100] }}...</p>
+              
+              {% if club.description %}
+              <p class="text-muted small mb-3">{{ club.description[:100] }}{% if club.description|length > 100 %}...{% endif %}</p>
+              {% endif %}
+              
+              <!-- Social Links Preview -->
+              {% if club.facebook_url or club.whatsapp_url %}
+              <div class="social-preview mb-3">
+                <div class="d-flex gap-1">
+                  {% if club.facebook_url %}
+                  <i class="bi bi-facebook text-primary small"></i>
+                  {% endif %}
+                  {% if club.whatsapp_url %}
+                  <i class="bi bi-whatsapp text-success small"></i>
+                  {% endif %}
+                  <span class="small text-muted ms-1">Redes disponibles</span>
+                </div>
+              </div>
+              {% endif %}
               
               <div class="d-flex align-items-center justify-content-between">
                 <div class="members-count">
@@ -70,18 +108,40 @@
       <div class="clubs-grid">
         {% for club in clubs %}
         <div class="card club-card mb-3 border-0 shadow-sm">
+          <!-- Optional banner for list items -->
+          {% if club.banner_url %}
+          <div class="position-relative" style="height: 60px; overflow: hidden;">
+            <img src="{{ club.banner_url }}" alt="{{ club.name }}" 
+                 class="w-100 h-100" style="object-fit: cover; opacity: 0.3;">
+          </div>
+          {% endif %}
+          
           <div class="card-body p-4">
             <div class="row align-items-center">
               <div class="col-auto">
                 <img src="{{ club.avatar_url or url_for('static', filename='img/default.png') }}" 
                      alt="{{ club.name }}" 
                      class="rounded-circle border-2 border-primary" 
-                     width="56" height="56">
+                     width="56" height="56" style="object-fit: cover;">
               </div>
               <div class="col">
-                <h5 class="fw-bold text-dark mb-1">{{ club.name }}</h5>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <h5 class="fw-bold text-dark mb-0">{{ club.name }}</h5>
+                  {% if club.facebook_url or club.whatsapp_url %}
+                  <div class="social-indicators">
+                    {% if club.facebook_url %}
+                    <i class="bi bi-facebook text-primary small"></i>
+                    {% endif %}
+                    {% if club.whatsapp_url %}
+                    <i class="bi bi-whatsapp text-success small"></i>
+                    {% endif %}
+                  </div>
+                  {% endif %}
+                </div>
                 <p class="text-muted mb-1">{{ club.career }}</p>
-                <p class="small text-muted mb-0">{{ club.description }}</p>
+                {% if club.description %}
+                <p class="small text-muted mb-0">{{ club.description[:80] }}{% if club.description|length > 80 %}...{% endif %}</p>
+                {% endif %}
               </div>
               <div class="col-auto">
                 <div class="text-end">
@@ -179,6 +239,7 @@
 .club-card {
   transition: all 0.3s ease;
   border-radius: 16px !important;
+  overflow: hidden;
 }
 
 .club-card:hover {
@@ -205,6 +266,34 @@
 .section-header {
   border-left: 4px solid var(--bs-primary);
   padding-left: 1rem;
+}
+
+/* Banner overlay for featured cards */
+.banner-overlay-mini {
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 70%, transparent 100%);
+}
+
+.card-banner {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-banner img {
+  transition: transform 0.3s ease;
+}
+
+.club-card:hover .card-banner img {
+  transform: scale(1.05);
+}
+
+.social-indicators i {
+  opacity: 0.7;
+  margin-right: 2px;
+}
+
+.social-preview {
+  border-top: 1px solid #eee;
+  padding-top: 10px;
 }
 </style>
 
