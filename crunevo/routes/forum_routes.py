@@ -14,19 +14,48 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from sqlalchemy import or_, and_, desc, asc
-from datetime import datetime, timedelta
+from datetime import datetime
 from crunevo.extensions import db
 from crunevo.models.forum import (
-    ForumQuestion, ForumAnswer, ForumTag, ForumReport, ForumBadge,
-    question_tags, user_bookmarks, answer_votes
+    ForumQuestion,
+    ForumAnswer,
+    ForumTag,
+    ForumReport,
+    question_tags,
+    answer_votes,
 )
 from crunevo.utils.credits import add_credit
 from crunevo.constants.credit_reasons import CreditReasons
 
 forum_bp = Blueprint("forum", __name__)
 
-ALLOWED_TAGS = ["p", "br", "strong", "em", "u", "ul", "ol", "li", "a", "img", "code", "pre", "blockquote", "h1", "h2", "h3", "h4", "h5", "h6"]
-ALLOWED_ATTRS = {"a": ["href", "target"], "img": ["src", "alt", "style"], "code": ["class"], "pre": ["class"]}
+ALLOWED_TAGS = [
+    "p",
+    "br",
+    "strong",
+    "em",
+    "u",
+    "ul",
+    "ol",
+    "li",
+    "a",
+    "img",
+    "code",
+    "pre",
+    "blockquote",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+]
+ALLOWED_ATTRS = {
+    "a": ["href", "target"],
+    "img": ["src", "alt", "style"],
+    "code": ["class"],
+    "pre": ["class"],
+}
 
 CATEGORIES = [
     "Matemáticas",
@@ -71,52 +100,67 @@ def list_questions():
     # Apply filters
     if category:
         query = query.filter_by(category=category)
-    
+
     if difficulty:
         query = query.filter_by(difficulty_level=difficulty)
-    
+
     if grade_level:
         query = query.filter_by(grade_level=grade_level)
-    
+
     if context_type:
         query = query.filter_by(context_type=context_type)
-    
+
     if search:
         search_filter = or_(
-            ForumQuestion.title.contains(search),
-            ForumQuestion.content.contains(search)
+            ForumQuestion.title.contains(search), ForumQuestion.content.contains(search)
         )
         query = query.filter(search_filter)
-    
+
     if tags:
         tag_names = [tag.strip() for tag in tags.split(",")]
         query = query.join(ForumQuestion.tags).filter(ForumTag.name.in_(tag_names))
 
     # Apply sorting
     if sort_by == "popular":
-        query = query.order_by(desc(ForumQuestion.views), desc(ForumQuestion.answer_count))
+        query = query.order_by(
+            desc(ForumQuestion.views), desc(ForumQuestion.answer_count)
+        )
     elif sort_by == "urgent":
         query = query.filter_by(is_urgent=True).order_by(desc(ForumQuestion.created_at))
     elif sort_by == "solved":
         query = query.filter_by(is_solved=True).order_by(desc(ForumQuestion.updated_at))
     elif sort_by == "unanswered":
-        query = query.filter(~ForumQuestion.answers.any()).order_by(desc(ForumQuestion.created_at))
+        query = query.filter(~ForumQuestion.answers.any()).order_by(
+            desc(ForumQuestion.created_at)
+        )
     elif sort_by == "bounty":
-        query = query.filter(ForumQuestion.bounty_points > 0).order_by(desc(ForumQuestion.bounty_points))
+        query = query.filter(ForumQuestion.bounty_points > 0).order_by(
+            desc(ForumQuestion.bounty_points)
+        )
     else:  # recent
         query = query.order_by(desc(ForumQuestion.created_at))
 
     questions = query.paginate(page=page, per_page=15, error_out=False)
 
     # Get popular tags for sidebar
-    popular_tags = db.session.query(ForumTag).join(question_tags).group_by(ForumTag.id).order_by(db.func.count(question_tags.c.question_id).desc()).limit(10).all()
+    popular_tags = (
+        db.session.query(ForumTag)
+        .join(question_tags)
+        .group_by(ForumTag.id)
+        .order_by(db.func.count(question_tags.c.question_id).desc())
+        .limit(10)
+        .all()
+    )
 
     # Get statistics
     stats = {
-        'total_questions': ForumQuestion.query.count(),
-        'solved_questions': ForumQuestion.query.filter_by(is_solved=True).count(),
-        'urgent_questions': ForumQuestion.query.filter_by(is_urgent=True).count(),
-        'questions_today': ForumQuestion.query.filter(ForumQuestion.created_at >= datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)).count(),
+        "total_questions": ForumQuestion.query.count(),
+        "solved_questions": ForumQuestion.query.filter_by(is_solved=True).count(),
+        "urgent_questions": ForumQuestion.query.filter_by(is_urgent=True).count(),
+        "questions_today": ForumQuestion.query.filter(
+            ForumQuestion.created_at
+            >= datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        ).count(),
     }
 
     return render_template(
@@ -148,7 +192,7 @@ def view_question(question_id):
 
     # Get answers with improved sorting
     answers_query = ForumAnswer.query.filter_by(question_id=question_id)
-    
+
     sort_answers = request.args.get("sort_answers", "best")
     if sort_answers == "newest":
         answers_query = answers_query.order_by(desc(ForumAnswer.created_at))
@@ -159,18 +203,23 @@ def view_question(question_id):
             desc(ForumAnswer.is_accepted),
             desc(ForumAnswer.votes),
             desc(ForumAnswer.helpful_count),
-            asc(ForumAnswer.created_at)
+            asc(ForumAnswer.created_at),
         )
-    
+
     answers = answers_query.all()
 
     # Get related questions
-    related_questions = ForumQuestion.query.filter(
-        and_(
-            ForumQuestion.id != question_id,
-            ForumQuestion.category == question.category
+    related_questions = (
+        ForumQuestion.query.filter(
+            and_(
+                ForumQuestion.id != question_id,
+                ForumQuestion.category == question.category,
+            )
         )
-    ).order_by(desc(ForumQuestion.views)).limit(5).all()
+        .order_by(desc(ForumQuestion.views))
+        .limit(5)
+        .all()
+    )
 
     # Check if user has bookmarked this question
     is_bookmarked = False
@@ -178,12 +227,12 @@ def view_question(question_id):
         is_bookmarked = question in current_user.bookmarked_questions
 
     return render_template(
-        "forum/question.html", 
-        question=question, 
+        "forum/question.html",
+        question=question,
         answers=answers,
         related_questions=related_questions,
         is_bookmarked=is_bookmarked,
-        sort_answers=sort_answers
+        sort_answers=sort_answers,
     )
 
 
@@ -201,7 +250,7 @@ def ask_question():
         context_type = request.form.get("context_type", "general")
         is_urgent = request.form.get("is_urgent") == "on"
         bounty_points = int(request.form.get("bounty_points", 0))
-        
+
         # Parse homework deadline if provided
         homework_deadline = None
         deadline_str = request.form.get("homework_deadline")
@@ -213,14 +262,17 @@ def ask_question():
 
         # Get selected tags
         tag_names = request.form.getlist("tags")
-        
+
         if not title or not content or not category:
             flash("Todos los campos obligatorios son requeridos", "error")
             return redirect(url_for("forum.ask_question"))
 
         # Validate bounty points
         if bounty_points > 0 and current_user.points < bounty_points:
-            flash(f"No tienes suficientes puntos para ofrecer {bounty_points} puntos de recompensa", "error")
+            flash(
+                f"No tienes suficientes puntos para ofrecer {bounty_points} puntos de recompensa",
+                "error",
+            )
             return redirect(url_for("forum.ask_question"))
 
         question = ForumQuestion(
@@ -234,7 +286,7 @@ def ask_question():
             is_urgent=is_urgent,
             bounty_points=bounty_points,
             homework_deadline=homework_deadline,
-            author_id=current_user.id
+            author_id=current_user.id,
         )
 
         db.session.add(question)
@@ -262,15 +314,20 @@ def ask_question():
             credits_awarded += 2
         if bounty_points > 0:
             credits_awarded += 2
-            
-        add_credit(current_user, credits_awarded, CreditReasons.ACTIVIDAD_SOCIAL, related_id=question.id)
+
+        add_credit(
+            current_user,
+            credits_awarded,
+            CreditReasons.ACTIVIDAD_SOCIAL,
+            related_id=question.id,
+        )
 
         flash("¡Pregunta publicada exitosamente!")
         return redirect(url_for("forum.view_question", question_id=question.id))
 
     # GET request - show form
     all_tags = ForumTag.query.order_by(ForumTag.name).all()
-    
+
     return render_template(
         "forum/ask.html",
         categories=CATEGORIES,
@@ -283,7 +340,8 @@ def ask_question():
 @forum_bp.route("/foro/responder/<int:question_id>", methods=["POST"])
 @login_required
 def answer_question(question_id):
-    question = ForumQuestion.query.get_or_404(question_id)
+    # Ensure the question exists
+    ForumQuestion.query.get_or_404(question_id)
     content = request.form.get("content")
     content = bleach.clean(content, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS)
     confidence_level = request.form.get("confidence_level", "medium")
@@ -295,9 +353,18 @@ def answer_question(question_id):
 
     # Auto-detect answer features
     word_count = len(content.split())
-    has_step_by_step = any(keyword in content.lower() for keyword in ["paso", "primero", "segundo", "luego", "después", "finalmente"])
-    has_visual_aids = "<img" in content or "gráfico" in content.lower() or "diagrama" in content.lower()
-    contains_formulas = any(char in content for char in ["∑", "∫", "√", "π", "α", "β", "γ", "∆"])
+    has_step_by_step = any(
+        keyword in content.lower()
+        for keyword in ["paso", "primero", "segundo", "luego", "después", "finalmente"]
+    )
+    has_visual_aids = (
+        "<img" in content
+        or "gráfico" in content.lower()
+        or "diagrama" in content.lower()
+    )
+    contains_formulas = any(
+        char in content for char in ["∑", "∫", "√", "π", "α", "β", "γ", "∆"]
+    )
     contains_code = "<code>" in content or "<pre>" in content or "```" in content
 
     answer = ForumAnswer(
@@ -325,8 +392,13 @@ def answer_question(question_id):
         credits_awarded += 2
     if word_count > 200:
         credits_awarded += 2
-        
-    add_credit(current_user, credits_awarded, CreditReasons.ACTIVIDAD_SOCIAL, related_id=answer.id)
+
+    add_credit(
+        current_user,
+        credits_awarded,
+        CreditReasons.ACTIVIDAD_SOCIAL,
+        related_id=answer.id,
+    )
 
     flash("¡Respuesta publicada exitosamente!")
     return redirect(url_for("forum.view_question", question_id=question_id))
@@ -344,7 +416,7 @@ def vote_answer(answer_id):
     existing_vote = db.session.execute(
         answer_votes.select().where(
             answer_votes.c.user_id == current_user.id,
-            answer_votes.c.answer_id == answer_id
+            answer_votes.c.answer_id == answer_id,
         )
     ).first()
 
@@ -353,10 +425,10 @@ def vote_answer(answer_id):
         db.session.execute(
             answer_votes.delete().where(
                 answer_votes.c.user_id == current_user.id,
-                answer_votes.c.answer_id == answer_id
+                answer_votes.c.answer_id == answer_id,
             )
         )
-        
+
         # Adjust vote counts
         if existing_vote.vote_type == "up":
             answer.votes -= 1
@@ -367,12 +439,10 @@ def vote_answer(answer_id):
     if not existing_vote or existing_vote.vote_type != vote_type:
         db.session.execute(
             answer_votes.insert().values(
-                user_id=current_user.id,
-                answer_id=answer_id,
-                vote_type=vote_type
+                user_id=current_user.id, answer_id=answer_id, vote_type=vote_type
             )
         )
-        
+
         if vote_type == "up":
             answer.votes += 1
         elif vote_type == "down":
@@ -383,12 +453,10 @@ def vote_answer(answer_id):
         answer.helpful_count += 1
 
     db.session.commit()
-    
-    return jsonify({
-        "success": True, 
-        "votes": answer.votes,
-        "helpful_count": answer.helpful_count
-    })
+
+    return jsonify(
+        {"success": True, "votes": answer.votes, "helpful_count": answer.helpful_count}
+    )
 
 
 @forum_bp.route("/foro/respuesta/<int:answer_id>/aceptar", methods=["POST"])
@@ -425,16 +493,16 @@ def accept_answer(answer_id):
 @login_required
 def bookmark_question(question_id):
     question = ForumQuestion.query.get_or_404(question_id)
-    
+
     if question in current_user.bookmarked_questions:
         current_user.bookmarked_questions.remove(question)
         bookmarked = False
     else:
         current_user.bookmarked_questions.append(question)
         bookmarked = True
-    
+
     db.session.commit()
-    
+
     return jsonify({"success": True, "bookmarked": bookmarked})
 
 
@@ -448,52 +516,53 @@ def search():
     is_solved = request.args.get("is_solved", "")
     date_from = request.args.get("date_from", "")
     date_to = request.args.get("date_to", "")
-    
+
     # Build search results
     search_query = ForumQuestion.query
-    
+
     if query:
         search_filter = or_(
-            ForumQuestion.title.contains(query),
-            ForumQuestion.content.contains(query)
+            ForumQuestion.title.contains(query), ForumQuestion.content.contains(query)
         )
         search_query = search_query.filter(search_filter)
-    
+
     if category:
         search_query = search_query.filter_by(category=category)
-    
+
     if difficulty:
         search_query = search_query.filter_by(difficulty_level=difficulty)
-    
+
     if has_answers == "yes":
         search_query = search_query.filter(ForumQuestion.answers.any())
     elif has_answers == "no":
         search_query = search_query.filter(~ForumQuestion.answers.any())
-    
+
     if is_solved == "yes":
         search_query = search_query.filter_by(is_solved=True)
     elif is_solved == "no":
         search_query = search_query.filter_by(is_solved=False)
-    
+
     if date_from:
         try:
             date_from_obj = datetime.strptime(date_from, "%Y-%m-%d")
-            search_query = search_query.filter(ForumQuestion.created_at >= date_from_obj)
+            search_query = search_query.filter(
+                ForumQuestion.created_at >= date_from_obj
+            )
         except ValueError:
             pass
-    
+
     if date_to:
         try:
             date_to_obj = datetime.strptime(date_to, "%Y-%m-%d")
             search_query = search_query.filter(ForumQuestion.created_at <= date_to_obj)
         except ValueError:
             pass
-    
+
     questions = search_query.order_by(desc(ForumQuestion.created_at)).limit(50).all()
-    
-    return render_template("forum/search_results.html", 
-                         questions=questions, 
-                         search_params=request.args)
+
+    return render_template(
+        "forum/search_results.html", questions=questions, search_params=request.args
+    )
 
 
 @forum_bp.route("/foro/reportar", methods=["POST"])
@@ -505,21 +574,21 @@ def report_content():
     answer_id = data.get("answer_id")
     reason = data.get("reason")
     description = data.get("description", "")
-    
+
     if not reason or (not question_id and not answer_id):
         return jsonify({"error": "Datos incompletos"}), 400
-    
+
     report = ForumReport(
         reporter_id=current_user.id,
         reported_question_id=question_id,
         reported_answer_id=answer_id,
         reason=reason,
-        description=description
+        description=description,
     )
-    
+
     db.session.add(report)
     db.session.commit()
-    
+
     return jsonify({"success": True, "message": "Reporte enviado exitosamente"})
 
 
@@ -557,7 +626,9 @@ def tags_autocomplete():
     """Get tag suggestions for autocomplete"""
     query = request.args.get("q", "")
     tags = ForumTag.query.filter(ForumTag.name.contains(query)).limit(10).all()
-    return jsonify([{"id": tag.id, "name": tag.name, "color": tag.color} for tag in tags])
+    return jsonify(
+        [{"id": tag.id, "name": tag.name, "color": tag.color} for tag in tags]
+    )
 
 
 @forum_bp.route("/api/stats")
@@ -567,13 +638,19 @@ def forum_stats():
         "total_questions": ForumQuestion.query.count(),
         "solved_questions": ForumQuestion.query.filter_by(is_solved=True).count(),
         "total_answers": ForumAnswer.query.count(),
-        "active_users_today": db.session.query(ForumQuestion.author_id).filter(
-            ForumQuestion.created_at >= datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-        ).distinct().count(),
-        "categories": {}
+        "active_users_today": db.session.query(ForumQuestion.author_id)
+        .filter(
+            ForumQuestion.created_at
+            >= datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        .distinct()
+        .count(),
+        "categories": {},
     }
-    
+
     for category in CATEGORIES:
-        stats["categories"][category] = ForumQuestion.query.filter_by(category=category).count()
-    
+        stats["categories"][category] = ForumQuestion.query.filter_by(
+            category=category
+        ).count()
+
     return jsonify(stats)
