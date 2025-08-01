@@ -4,204 +4,280 @@
 {% block title %}Foro Estudiantil - Crunevo{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <!-- Foro Header -->
-  <div class="forum-header text-center">
-    <div class="forum-icon">❓</div>
-    <h1 class="display-4 fw-bold mb-3">Foro Estudiantil</h1>
-    <p class="lead mb-4">Descubre, aprende y comparte conocimiento con la comunidad</p>
-    <div class="d-flex justify-content-center gap-3 mb-3">
-      <div class="d-flex align-items-center text-white-50">
-        <i class="bi bi-question-circle me-2"></i>
-        <span>{{ questions.total }} preguntas</span>
-      </div>
-      <div class="d-flex align-items-center text-white-50">
-        <i class="bi bi-people me-2"></i>
-        <span>Comunidad activa</span>
-      </div>
-      <div class="d-flex align-items-center text-white-50">
-        <i class="bi bi-lightbulb me-2"></i>
-        <span>Soluciones expertas</span>
+<div class="container-fluid px-3 px-lg-4 py-3">
+  <!-- Modern Header with Search -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="modern-header">
+        <div class="row align-items-center g-3">
+          <div class="col-md-6">
+            <h1 class="modern-title mb-2">💭 Comunidad de Estudio</h1>
+            <p class="modern-subtitle mb-0">{{ stats.total_questions|number_format }} preguntas • {{ stats.solved_questions|number_format }} resueltas • {{ stats.questions_today }} hoy</p>
+          </div>
+          <div class="col-md-6">
+            <div class="search-container">
+              <form method="GET" action="{{ url_for('forum.list_questions') }}" class="search-form">
+                <div class="input-group">
+                  <span class="input-group-text border-0 bg-white">
+                    <i class="bi bi-search text-muted"></i>
+                  </span>
+                  <input type="text" name="search" class="form-control border-0 shadow-none" 
+                         placeholder="Buscar preguntas, temas, conceptos..." 
+                         value="{{ current_search }}" aria-label="Buscar">
+                  <button class="btn btn-primary modern-btn" type="submit">
+                    Buscar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-lg-9">
-      <!-- Action Header -->
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="d-flex align-items-center gap-3">
-          <div class="forum-icon-small">📚</div>
-          <div>
-            <h2 class="h4 fw-bold mb-1">Explorar Preguntas</h2>
-            <p class="text-muted mb-0 small">Encuentra respuestas o comparte tu conocimiento</p>
-          </div>
+  <div class="row g-4">
+    <!-- Main Content -->
+    <div class="col-lg-8">
+      <!-- Advanced Filters & Sorting -->
+      <div class="filters-panel mb-4">
+        <div class="filter-header d-flex align-items-center justify-content-between mb-3">
+          <h5 class="filter-title mb-0">
+            <i class="bi bi-funnel me-2"></i>Filtros y Ordenamiento
+          </h5>
+          <button class="btn btn-link btn-sm text-decoration-none toggle-filters" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+            <i class="bi bi-chevron-down"></i>
+          </button>
         </div>
-        {% if current_user.is_authenticated %}
-        <a href="{{ url_for('forum.ask_question') if 'forum.ask_question' in url_for.__globals__.get('current_app', {}).view_functions else '/foro/hacer-pregunta' }}" class="btn btn-primary">
-          <i class="bi bi-plus-circle me-1"></i> Hacer pregunta
-        </a>
-        {% else %}
-        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
-          <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar sesión para preguntar
-        </a>
-        {% endif %}
-      </div>
-
-      <!-- Enhanced Category Filters -->
-      <div class="category-filters">
-        <div class="d-flex align-items-center mb-3">
-          <i class="bi bi-funnel me-2 text-primary"></i>
-          <h5 class="mb-0 fw-bold">Filtrar por categoría</h5>
-        </div>
-        <div class="d-flex gap-2 flex-wrap">
-          <a href="{{ url_for('forum.list_questions') }}" 
-             class="category-badge {{ 'active' if not current_category }}">
-            <i class="bi bi-collection me-1"></i> Todas
-          </a>
-          {% for category in categories %}
-          <a href="{{ url_for('forum.list_questions', category=category) }}" 
-             class="category-badge {{ 'active' if current_category == category }} category-{{ category.lower().replace('á', 'a').replace('í', 'i').replace('ó', 'o') }}">
-            {% if category == 'Matemáticas' %}
-              <i class="bi bi-calculator me-1"></i>
-            {% elif category == 'Ciencias' %}
-              <i class="bi bi-microscope me-1"></i>
-            {% elif category == 'Lenguas' %}
-              <i class="bi bi-translate me-1"></i>
-            {% elif category == 'Historia' %}
-              <i class="bi bi-clock-history me-1"></i>
-            {% elif category == 'Tecnología' %}
-              <i class="bi bi-cpu me-1"></i>
-            {% elif category == 'Arte' %}
-              <i class="bi bi-palette me-1"></i>
-            {% else %}
-              <i class="bi bi-three-dots me-1"></i>
-            {% endif %}
-            {{ category }}
-          </a>
-          {% endfor %}
-        </div>
-      </div>
-
-      <!-- Insights Panel -->
-      {% if not current_category %}
-      <div class="row mb-4">
-        <div class="col-12">
-          <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
-            <div class="card-body">
-              <div class="row align-items-center">
-                <div class="col-md-8">
-                  <div class="d-flex align-items-center mb-2">
-                    <span style="font-size: 2rem; margin-right: 1rem;">🧠</span>
-                    <div>
-                      <h5 class="mb-1">¿Sabías que...?</h5>
-                      <p class="mb-0 small opacity-90">El aprendizaje se encuentra en cada rincón: comparte tus dudas para seguir creciendo.</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4 text-center">
-                  <div class="d-flex justify-content-center gap-3">
-                    <span style="font-size: 1.5rem;">📚</span>
-                    <span style="font-size: 1.5rem;">💡</span>
-                    <span style="font-size: 1.5rem;">📝</span>
-                    <span style="font-size: 1.5rem;">🎯</span>
-                  </div>
-                </div>
+        
+        <div class="collapse" id="advancedFilters">
+          <form method="GET" action="{{ url_for('forum.list_questions') }}" class="filter-form">
+            <input type="hidden" name="search" value="{{ current_search }}">
+            
+            <div class="row g-3 mb-3">
+              <!-- Category Filter -->
+              <div class="col-md-3">
+                <label class="form-label small fw-semibold">Materia</label>
+                <select name="category" class="form-select form-select-sm">
+                  <option value="">Todas las materias</option>
+                  {% for category in categories %}
+                  <option value="{{ category }}" {{ 'selected' if current_category == category }}>{{ category }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              
+              <!-- Difficulty Filter -->
+              <div class="col-md-3">
+                <label class="form-label small fw-semibold">Dificultad</label>
+                <select name="difficulty" class="form-select form-select-sm">
+                  <option value="">Cualquier nivel</option>
+                  {% for value, label in difficulty_levels %}
+                  <option value="{{ value }}" {{ 'selected' if current_difficulty == value }}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              
+              <!-- Grade Level Filter -->
+              <div class="col-md-3">
+                <label class="form-label small fw-semibold">Nivel</label>
+                <select name="grade_level" class="form-select form-select-sm">
+                  <option value="">Todos los niveles</option>
+                  {% for value, label in grade_levels %}
+                  <option value="{{ value }}" {{ 'selected' if current_grade_level == value }}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              
+              <!-- Sort By -->
+              <div class="col-md-3">
+                <label class="form-label small fw-semibold">Ordenar por</label>
+                <select name="sort" class="form-select form-select-sm">
+                  <option value="recent" {{ 'selected' if current_sort == 'recent' }}>Más recientes</option>
+                  <option value="popular" {{ 'selected' if current_sort == 'popular' }}>Más populares</option>
+                  <option value="urgent" {{ 'selected' if current_sort == 'urgent' }}>Urgentes</option>
+                  <option value="unanswered" {{ 'selected' if current_sort == 'unanswered' }}>Sin responder</option>
+                  <option value="solved" {{ 'selected' if current_sort == 'solved' }}>Resueltas</option>
+                  <option value="bounty" {{ 'selected' if current_sort == 'bounty' }}>Con recompensa</option>
+                </select>
               </div>
             </div>
-          </div>
+            
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary btn-sm">Aplicar filtros</button>
+              <a href="{{ url_for('forum.list_questions') }}" class="btn btn-outline-secondary btn-sm">Limpiar</a>
+            </div>
+          </form>
         </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions mb-4">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+          <div class="quick-filters d-flex gap-2 flex-wrap">
+            <a href="{{ url_for('forum.list_questions', sort='urgent') }}" 
+               class="badge-filter {{ 'active' if current_sort == 'urgent' }}">
+              🚨 Urgentes ({{ stats.urgent_questions }})
+            </a>
+            <a href="{{ url_for('forum.list_questions', sort='unanswered') }}" 
+               class="badge-filter {{ 'active' if current_sort == 'unanswered' }}">
+              ❓ Sin responder
+            </a>
+            <a href="{{ url_for('forum.list_questions', sort='bounty') }}" 
+               class="badge-filter {{ 'active' if current_sort == 'bounty' }}">
+              💰 Con recompensa
+            </a>
+          </div>
+          
+          {% if current_user.is_authenticated %}
+          <a href="{{ url_for('forum.ask_question') }}" class="btn btn-primary modern-btn">
+            <i class="bi bi-plus-circle me-2"></i>Hacer pregunta
+          </a>
+          {% else %}
+          <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary modern-btn">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar sesión
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Results Info -->
+      {% if questions.items %}
+      <div class="results-info mb-3">
+        <small class="text-muted">
+          Mostrando {{ questions.per_page * (questions.page - 1) + 1 }} - 
+          {{ questions.per_page * (questions.page - 1) + questions.items|length }} 
+          de {{ questions.total }} preguntas
+          {% if current_search %}para "{{ current_search }}"{% endif %}
+        </small>
       </div>
       {% endif %}
 
-      <!-- Questions Grid -->
-      <div class="row g-3">
+      <!-- Questions List -->
+      <div class="questions-container">
         {% for question in questions.items %}
-        <div class="col-12">
-          <div class="card question-card hover-lift">
-            <div class="card-body">
-              <div class="row align-items-center">
-                <div class="col-md-8">
-                  <div class="d-flex align-items-start">
-                    <img src="{{ question.author.avatar_url or url_for('static', filename='img/default.png') }}" 
-                         class="rounded-circle user-avatar me-3" width="48" height="48" alt="avatar">
-                    <div class="flex-grow-1">
-                      <h5 class="mb-2 fw-bold">
-                        <a href="{{ url_for('forum.view_question', question_id=question.id) }}" 
-                           class="text-decoration-none text-dark">{{ question.title }}</a>
-                      </h5>
-                      <div class="d-flex align-items-center gap-3 mb-2">
-                        <div class="d-flex align-items-center text-muted small">
-                          <i class="bi bi-person-circle me-1"></i>
-                          <span class="fw-semibold">{{ question.author.username }}</span>
-                        </div>
-                        <div class="d-flex align-items-center text-muted small">
-                          <i class="bi bi-calendar3 me-1"></i>
-                          <span>{{ question.created_at.strftime('%d/%m/%Y') }}</span>
-                        </div>
-                      </div>
-                      <div class="d-flex align-items-center gap-2">
-                        <span class="badge category-{{ question.category.lower().replace('á', 'a').replace('í', 'i').replace('ó', 'o') }} text-white">
-                          {% if question.category == 'Matemáticas' %}🧮{% endif %}
-                          {{ question.category }}
-                        </span>
-                        {% if question.is_solved %}
-                        <span class="solved-badge">
-                          <i class="bi bi-check-circle me-1"></i> Resuelto
-                        </span>
-                        {% endif %}
-                      </div>
-                    </div>
+        <article class="question-card-modern" data-question-id="{{ question.id }}">
+          <div class="question-card-body">
+            <!-- Question Header -->
+            <div class="question-header mb-3">
+              <div class="d-flex align-items-start justify-content-between gap-3">
+                <div class="question-meta flex-grow-1">
+                  <h3 class="question-title-modern">
+                    <a href="{{ url_for('forum.view_question', question_id=question.id) }}" 
+                       class="question-link">{{ question.title }}</a>
+                  </h3>
+                  <div class="question-badges mt-2">
+                    <span class="badge category-badge-{{ question.category.lower().replace('á', 'a').replace('í', 'i').replace('ó', 'o') }}">
+                      {% if question.category == 'Matemáticas' %}🧮
+                      {% elif question.category == 'Ciencias' %}🔬
+                      {% elif question.category == 'Lenguas' %}📚
+                      {% elif question.category == 'Historia' %}🏛️
+                      {% elif question.category == 'Tecnología' %}💻
+                      {% elif question.category == 'Arte' %}🎨
+                      {% else %}📝
+                      {% endif %}
+                      {{ question.category }}
+                    </span>
+                    
+                    {% if question.difficulty_level %}
+                    <span class="badge difficulty-{{ question.difficulty_level }}">
+                      {% if question.difficulty_level == 'basico' %}🟢 Básico
+                      {% elif question.difficulty_level == 'intermedio' %}🟡 Intermedio
+                      {% elif question.difficulty_level == 'avanzado' %}🔴 Avanzado
+                      {% endif %}
+                    </span>
+                    {% endif %}
+                    
+                    {% if question.is_urgent %}
+                    <span class="badge urgent-badge">🚨 Urgente</span>
+                    {% endif %}
+                    
+                    {% if question.bounty_points > 0 %}
+                    <span class="badge bounty-badge">💰 {{ question.bounty_points }} pts</span>
+                    {% endif %}
+                    
+                    {% if question.is_solved %}
+                    <span class="badge solved-badge">✅ Resuelto</span>
+                    {% endif %}
                   </div>
                 </div>
-                <div class="col-md-4">
-                  <div class="row g-2">
-                    <div class="col-6">
-                      <div class="stats-container">
-                        <div class="stat-number">{{ question.answer_count }}</div>
-                        <div class="stat-label">respuestas</div>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="stats-container">
-                        <div class="stat-number">{{ question.views }}</div>
-                        <div class="stat-label">vistas</div>
-                      </div>
-                    </div>
+                
+                <!-- Question Stats -->
+                <div class="question-stats text-end">
+                  <div class="stat-item">
+                    <span class="stat-number">{{ question.answer_count }}</span>
+                    <span class="stat-label">respuestas</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-number">{{ question.views }}</span>
+                    <span class="stat-label">vistas</span>
                   </div>
                 </div>
               </div>
             </div>
+
+            <!-- Question Preview -->
+            <div class="question-preview mb-3">
+              <p class="question-excerpt">{{ question.content|striptags|truncate(150) }}</p>
+            </div>
+
+            <!-- Question Footer -->
+            <div class="question-footer">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="author-info d-flex align-items-center">
+                  <img src="{{ question.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+                       class="author-avatar me-2" alt="Avatar">
+                  <div class="author-details">
+                    <div class="author-name">{{ question.author.username }}</div>
+                    <div class="question-time">{{ question.created_at.strftime('%d/%m/%Y %H:%M') }}</div>
+                  </div>
+                </div>
+                
+                <div class="question-actions">
+                  {% if current_user.is_authenticated %}
+                  <button class="action-btn bookmark-btn" data-question-id="{{ question.id }}"
+                          title="Guardar pregunta">
+                    <i class="bi bi-bookmark"></i>
+                  </button>
+                  {% endif %}
+                  <button class="action-btn share-btn" title="Compartir pregunta">
+                    <i class="bi bi-share"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </article>
         {% else %}
-        <div class="col-12">
-          <div class="empty-state">
-            <i class="bi bi-question-circle"></i>
-            <h3 class="mt-3 fw-bold">¡Tu pregunta puede ser la primera!</h3>
-            <p class="text-muted mb-4">No hay preguntas en esta categoría aún. Sé el pionero y comparte tu duda.</p>
-            {% if current_user.is_authenticated %}
-            <a href="{{ url_for('forum.ask_question') if 'forum.ask_question' in url_for.__globals__.get('current_app', {}).view_functions else '/foro/hacer-pregunta' }}" class="btn btn-primary btn-lg">
-              <i class="bi bi-lightbulb me-2"></i> Hacer la primera pregunta
-            </a>
+        <div class="empty-state-modern">
+          <div class="empty-state-icon">🔍</div>
+          <h3 class="empty-state-title">No se encontraron preguntas</h3>
+          <p class="empty-state-text">
+            {% if current_search or current_category or current_difficulty %}
+            Intenta ajustar tus filtros de búsqueda o 
+            <a href="{{ url_for('forum.list_questions') }}">ver todas las preguntas</a>.
             {% else %}
-            <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
-              <i class="bi bi-box-arrow-in-right me-2"></i> Iniciar sesión para preguntar
-            </a>
+            ¡Sé el primero en hacer una pregunta y comenzar la conversación!
             {% endif %}
-          </div>
+          </p>
+          {% if current_user.is_authenticated %}
+          <a href="{{ url_for('forum.ask_question') }}" class="btn btn-primary btn-lg mt-3">
+            <i class="bi bi-plus-circle me-2"></i>Hacer la primera pregunta
+          </a>
+          {% endif %}
         </div>
         {% endfor %}
       </div>
 
       <!-- Enhanced Pagination -->
       {% if questions.pages > 1 %}
-      <nav class="mt-5">
+      <nav class="pagination-wrapper mt-5" aria-label="Navegación de preguntas">
         <ul class="pagination justify-content-center">
           {% if questions.has_prev %}
           <li class="page-item">
-            <a class="page-link" href="{{ url_for('forum.list_questions', page=questions.prev_num, category=current_category) }}">
-              <i class="bi bi-chevron-left me-1"></i> Anterior
+            <a class="page-link" href="{{ url_for('forum.list_questions', page=questions.prev_num, 
+                search=current_search, category=current_category, difficulty=current_difficulty,
+                grade_level=current_grade_level, sort=current_sort) }}">
+              <i class="bi bi-chevron-left"></i>
             </a>
           </li>
           {% endif %}
@@ -210,7 +286,9 @@
             {% if page_num %}
               {% if page_num != questions.page %}
               <li class="page-item">
-                <a class="page-link" href="{{ url_for('forum.list_questions', page=page_num, category=current_category) }}">{{ page_num }}</a>
+                <a class="page-link" href="{{ url_for('forum.list_questions', page=page_num,
+                    search=current_search, category=current_category, difficulty=current_difficulty,
+                    grade_level=current_grade_level, sort=current_sort) }}">{{ page_num }}</a>
               </li>
               {% else %}
               <li class="page-item active">
@@ -226,8 +304,10 @@
           
           {% if questions.has_next %}
           <li class="page-item">
-            <a class="page-link" href="{{ url_for('forum.list_questions', page=questions.next_num, category=current_category) }}">
-              Siguiente <i class="bi bi-chevron-right ms-1"></i>
+            <a class="page-link" href="{{ url_for('forum.list_questions', page=questions.next_num,
+                search=current_search, category=current_category, difficulty=current_difficulty,
+                grade_level=current_grade_level, sort=current_sort) }}">
+              <i class="bi bi-chevron-right"></i>
             </a>
           </li>
           {% endif %}
@@ -236,83 +316,113 @@
       {% endif %}
     </div>
 
-    <!-- Enhanced Sidebar -->
-    <div class="col-lg-3">
-      <!-- Mathematical Stats Panel -->
-      <div class="card sidebar-card mb-4">
-        <div class="card-body">
-          <h6 class="card-title mb-3">
-            <i class="bi bi-graph-up me-2"></i>Estadísticas del Centro
-          </h6>
-          <div class="small">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div class="d-flex align-items-center">
-                <span class="me-2">📊</span>
-                <span>Total preguntas:</span>
-              </div>
-              <span class="fw-bold text-primary">{{ questions.total }}</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div class="d-flex align-items-center">
-                <span class="me-2">✅</span>
-                <span>Resueltas:</span>
-              </div>
-              <span class="fw-bold text-success">{{ questions.items | selectattr('is_solved') | list | length }}</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div class="d-flex align-items-center">
-                <span class="me-2">🔥</span>
-                <span>Activas hoy:</span>
-              </div>
-              <span class="fw-bold text-warning">{{ (questions.total * 0.1) | round | int }}</span>
-            </div>
-            <div class="progress mt-3" style="height: 8px;">
-              <div class="progress-bar" style="width: {{ ((questions.items | selectattr('is_solved') | list | length) / questions.total * 100) if questions.total > 0 else 0 }}%; background: var(--forum-gradient);"></div>
-            </div>
-            <small class="text-muted mt-1 d-block">Tasa de resolución</small>
-          </div>
+    <!-- Modern Sidebar -->
+    <div class="col-lg-4">
+      <!-- Quick Stats -->
+      <div class="sidebar-card stats-card mb-4">
+        <div class="sidebar-header">
+          <h6 class="sidebar-title">📊 Estadísticas en vivo</h6>
         </div>
-      </div>
-
-      <!-- Mathematical Tips -->
-      <div class="card sidebar-card mb-4">
-        <div class="card-body">
-          <h6 class="card-title mb-3">
-            <i class="bi bi-lightbulb me-2"></i>Consejos de Estudio
-          </h6>
-          <div class="small text-muted">
-            <div class="mb-3 p-2 rounded" style="background: var(--forum-light-gradient);">
-              <div class="fw-semibold text-primary mb-1">📑 Organiza tus apuntes</div>
-              <div>Un esquema claro te ayudará a repasar con rapidez.</div>
+        <div class="sidebar-body">
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-value">{{ stats.total_questions|number_format }}</div>
+              <div class="stat-description">Total preguntas</div>
             </div>
-            <div class="mb-3 p-2 rounded" style="background: var(--forum-light-gradient);">
-              <div class="fw-semibold text-primary mb-1">💡 Practica a diario</div>
-              <div>Resolver ejercicios frecuentemente mejora la comprensión.</div>
+            <div class="stat-box">
+              <div class="stat-value">{{ ((stats.solved_questions / stats.total_questions) * 100)|round|int if stats.total_questions > 0 else 0 }}%</div>
+              <div class="stat-description">Tasa de resolución</div>
             </div>
-            <div class="p-2 rounded" style="background: var(--forum-light-gradient);">
-              <div class="fw-semibold text-primary mb-1">🤝 Comparte tus dudas</div>
-              <div>Preguntar y ayudar a otros refuerza tu aprendizaje.</div>
+            <div class="stat-box">
+              <div class="stat-value">{{ stats.questions_today }}</div>
+              <div class="stat-description">Preguntas hoy</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">{{ stats.urgent_questions }}</div>
+              <div class="stat-description">Urgentes</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Recursos Útiles -->
-      <div class="card sidebar-card">
-        <div class="card-body">
-          <h6 class="card-title mb-3">
-            <i class="bi bi-tools me-2"></i>Herramientas Rápidas
-          </h6>
-          <div class="d-grid gap-2">
-            <a href="https://www.desmos.com/calculator" target="_blank" class="btn btn-outline-primary btn-sm">
-              <i class="bi bi-graph-up me-1"></i> Calculadora Gráfica
+      <!-- Popular Tags -->
+      {% if popular_tags %}
+      <div class="sidebar-card tags-card mb-4">
+        <div class="sidebar-header">
+          <h6 class="sidebar-title">🏷️ Tags populares</h6>
+        </div>
+        <div class="sidebar-body">
+          <div class="tags-cloud">
+            {% for tag in popular_tags %}
+            <a href="{{ url_for('forum.list_questions', tags=tag.name) }}" 
+               class="tag-link" style="color: {{ tag.color }}">
+              #{{ tag.name }}
             </a>
-            <a href="https://www.wolframalpha.com/" target="_blank" class="btn btn-outline-secondary btn-sm">
-              <i class="bi bi-lightning me-1"></i> Wolfram Alpha
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Study Tools -->
+      <div class="sidebar-card tools-card mb-4">
+        <div class="sidebar-header">
+          <h6 class="sidebar-title">🛠️ Herramientas de estudio</h6>
+        </div>
+        <div class="sidebar-body">
+          <div class="tools-list">
+            <a href="https://www.desmos.com/calculator" target="_blank" class="tool-link">
+              <i class="bi bi-graph-up"></i>
+              <span>Calculadora Gráfica</span>
+              <i class="bi bi-box-arrow-up-right"></i>
             </a>
-            <a href="https://www.geogebra.org/" target="_blank" class="btn btn-outline-info btn-sm">
-              <i class="bi bi-triangle me-1"></i> GeoGebra
+            <a href="https://www.symbolab.com/" target="_blank" class="tool-link">
+              <i class="bi bi-calculator"></i>
+              <span>Resolver Ecuaciones</span>
+              <i class="bi bi-box-arrow-up-right"></i>
             </a>
+            <a href="https://www.geogebra.org/" target="_blank" class="tool-link">
+              <i class="bi bi-triangle"></i>
+              <span>Geometría Interactiva</span>
+              <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+            <a href="https://www.wolframalpha.com/" target="_blank" class="tool-link">
+              <i class="bi bi-lightning"></i>
+              <span>Wolfram Alpha</span>
+              <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Study Tips -->
+      <div class="sidebar-card tips-card">
+        <div class="sidebar-header">
+          <h6 class="sidebar-title">💡 Consejos de estudio</h6>
+        </div>
+        <div class="sidebar-body">
+          <div class="tips-list">
+            <div class="tip-item">
+              <div class="tip-icon">📝</div>
+              <div class="tip-content">
+                <div class="tip-title">Sé específico</div>
+                <div class="tip-description">Incluye detalles y contexto en tus preguntas</div>
+              </div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon">🤝</div>
+              <div class="tip-content">
+                <div class="tip-title">Ayuda a otros</div>
+                <div class="tip-description">Responder preguntas refuerza tu aprendizaje</div>
+              </div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon">🎯</div>
+              <div class="tip-content">
+                <div class="tip-title">Usa tags</div>
+                <div class="tip-description">Etiqueta tus preguntas para mejor organización</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -320,27 +430,593 @@
   </div>
 </div>
 
+<!-- Modern Styles -->
 <style>
-.forum-icon {
-  font-size: 3rem;
+/* Reset and Base Styles */
+.modern-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 24px;
+  padding: 2rem;
   margin-bottom: 1rem;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
 }
-.forum-icon-small {
+
+.modern-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.modern-subtitle {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.search-container .input-group {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.search-container .form-control {
+  padding: 12px 16px;
+  font-size: 1rem;
+}
+
+.modern-btn {
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 600;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.modern-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+/* Filters Panel */
+.filters-panel {
+  background: white;
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 1px solid #f1f5f9;
+}
+
+.filter-title {
+  color: #374151;
+  font-weight: 600;
+}
+
+.form-select-sm, .form-control-sm {
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  padding: 8px 12px;
+}
+
+.form-select-sm:focus, .form-control-sm:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Quick Actions */
+.quick-actions {
+  background: white;
+  border-radius: 16px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  border: 1px solid #f1f5f9;
+}
+
+.badge-filter {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: #f8fafc;
+  color: #64748b;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.badge-filter:hover, .badge-filter.active {
+  background: #3b82f6;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+/* Question Cards */
+.question-card-modern {
+  background: white;
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border: 1px solid #f1f5f9;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.question-card-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+  border-color: #e2e8f0;
+}
+
+.question-title-modern {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.question-link {
+  color: #1f2937;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.question-link:hover {
+  color: #3b82f6;
+}
+
+.question-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: none;
+}
+
+/* Category Badges */
+.category-badge-matematicas { background: linear-gradient(135deg, #3b82f6, #1e40af); color: white; }
+.category-badge-ciencias { background: linear-gradient(135deg, #10b981, #047857); color: white; }
+.category-badge-lenguas { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+.category-badge-historia { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
+.category-badge-tecnologia { background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; }
+.category-badge-arte { background: linear-gradient(135deg, #ec4899, #db2777); color: white; }
+.category-badge-otros { background: linear-gradient(135deg, #6b7280, #4b5563); color: white; }
+
+/* Difficulty Badges */
+.difficulty-basico { background: #dcfce7; color: #166534; }
+.difficulty-intermedio { background: #fef3c7; color: #92400e; }
+.difficulty-avanzado { background: #fee2e2; color: #991b1b; }
+
+/* Special Badges */
+.urgent-badge { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; animation: pulse 2s infinite; }
+.bounty-badge { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; }
+.solved-badge { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Question Stats */
+.question-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 80px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Question Preview */
+.question-excerpt {
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Question Footer */
+.author-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #e5e7eb;
+}
+
+.author-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.question-time {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  color: #6b7280;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.action-btn:hover {
+  background: #f3f4f6;
+  color: #3b82f6;
+}
+
+/* Empty State */
+.empty-state-modern {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-radius: 24px;
+  border: 2px dashed #cbd5e1;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state-title {
   font-size: 1.5rem;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 0.5rem;
 }
 
-.hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.empty-state-text {
+  color: #6b7280;
+  font-size: 1rem;
 }
 
-.hover-lift:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.15);
+/* Sidebar */
+.sidebar-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 1px solid #f1f5f9;
 }
 
-.progress-bar {
-  border-radius: 4px;
+.sidebar-header {
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebar-title {
+  margin: 0;
+  font-weight: 600;
+  color: #374151;
+}
+
+.sidebar-body {
+  padding: 1.5rem;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.stat-box {
+  text-align: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-radius: 16px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.stat-description {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* Tags Cloud */
+.tags-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-link {
+  display: inline-block;
+  padding: 6px 12px;
+  background: #f8fafc;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+}
+
+.tag-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Tools List */
+.tools-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tool-link {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #374151;
+  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+}
+
+.tool-link:hover {
+  background: #3b82f6;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.tool-link i:first-child {
+  margin-right: 12px;
+  width: 20px;
+  text-align: center;
+}
+
+.tool-link span {
+  flex-grow: 1;
+  font-weight: 500;
+}
+
+.tool-link i:last-child {
+  opacity: 0.7;
+}
+
+/* Tips List */
+.tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.tip-icon {
+  font-size: 1.25rem;
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.tip-title {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.tip-description {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* Pagination */
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.pagination .page-link {
+  border: none;
+  border-radius: 12px;
+  margin: 0 4px;
+  color: #6b7280;
+  font-weight: 600;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
+}
+
+.pagination .page-link:hover {
+  background: #3b82f6;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.pagination .page-item.active .page-link {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .modern-header {
+    padding: 1.5rem;
+  }
+  
+  .modern-title {
+    font-size: 1.5rem;
+  }
+  
+  .question-card-modern {
+    padding: 1rem;
+  }
+  
+  .question-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .question-stats {
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 1rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .quick-filters {
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Results info */
+.results-info {
+  padding: 0.5rem 1rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Bookmark functionality
+  document.querySelectorAll('.bookmark-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const questionId = this.dataset.questionId;
+      
+      fetch(`/foro/pregunta/${questionId}/bookmark`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const icon = this.querySelector('i');
+          if (data.bookmarked) {
+            icon.classList.remove('bi-bookmark');
+            icon.classList.add('bi-bookmark-fill');
+            this.style.color = '#3b82f6';
+          } else {
+            icon.classList.remove('bi-bookmark-fill');
+            icon.classList.add('bi-bookmark');
+            this.style.color = '#6b7280';
+          }
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    });
+  });
+  
+  // Share functionality
+  document.querySelectorAll('.share-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const questionCard = this.closest('.question-card-modern');
+      const questionLink = questionCard.querySelector('.question-link');
+      const url = questionLink.href;
+      const title = questionLink.textContent;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: title,
+          url: url
+        });
+      } else {
+        navigator.clipboard.writeText(url).then(() => {
+          // Show a temporary tooltip
+          const tooltip = document.createElement('div');
+          tooltip.textContent = '¡Enlace copiado!';
+          tooltip.style.cssText = `
+            position: absolute;
+            background: #374151;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            z-index: 1000;
+            pointer-events: none;
+          `;
+          document.body.appendChild(tooltip);
+          
+          const rect = this.getBoundingClientRect();
+          tooltip.style.top = (rect.top - 40) + 'px';
+          tooltip.style.left = (rect.left + rect.width/2 - tooltip.offsetWidth/2) + 'px';
+          
+          setTimeout(() => {
+            document.body.removeChild(tooltip);
+          }, 2000);
+        });
+      }
+    });
+  });
+  
+  // Auto-submit form on filter change
+  document.querySelectorAll('.filter-form select').forEach(select => {
+    select.addEventListener('change', function() {
+      this.closest('form').submit();
+    });
+  });
+  
+  // Smooth scroll for internal links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+});
+</script>
 {% endblock %}
