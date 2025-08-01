@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trending - Crunevo</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="https://via.placeholder.com/120x40/4F46E5/ffffff?text=CRUNEVO" alt="Crunevo" class="logo-img">
+                </div>
+                <nav class="nav">
+                    <a href="#" class="nav-link">Inicio</a>
+                    <a href="#" class="nav-link">Explorar</a>
+                    <a href="#" class="nav-link active">Trending</a>
+                    <a href="#" class="nav-link">Comunidad</a>
+                    <a href="#ranking" class="nav-link">Ranking</a>
+                </nav>
+                <div class="header-actions">
+                    <button class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <div class="user-profile">
+                        <img src="https://via.placeholder.com/32x32/6B7280/ffffff?text=U" alt="Usuario" class="user-avatar">
+                    </div>
+                </div>
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        <span class="gradient-text">Trending</span> en Crunevo
+                    </h1>
+                    <p class="hero-description">
+                        Descubre el contenido más popular, desde publicaciones virales hasta apuntes destacados y debates candentes del foro.
+                    </p>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-fire stat-icon"></i>
+                        <span class="stat-number">2.4K</span>
+                        <span class="stat-label">Trending hoy</span>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-users stat-icon"></i>
+                        <span class="stat-number">156K</span>
+                        <span class="stat-label">Usuarios activos</span>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-comments stat-icon"></i>
+                        <span class="stat-number">89K</span>
+                        <span class="stat-label">Interacciones</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Content Filter -->
+            <section class="filter-section">
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">
+                        <i class="fas fa-globe"></i>
+                        Todo
+                    </button>
+                    <button class="filter-tab" data-filter="posts">
+                        <i class="fas fa-newspaper"></i>
+                        Publicaciones
+                    </button>
+                    <button class="filter-tab" data-filter="notes">
+                        <i class="fas fa-file-alt"></i>
+                        Apuntes
+                    </button>
+                    <button class="filter-tab" data-filter="forum">
+                        <i class="fas fa-comments"></i>
+                        Foro
+                    </button>
+                </div>
+                <div class="filter-controls">
+                    <select class="time-filter">
+                        <option value="today">Hoy</option>
+                        <option value="week">Esta semana</option>
+                        <option value="month">Este mes</option>
+                        <option value="all">Todo el tiempo</option>
+                    </select>
+                    <button class="view-toggle" data-view="grid">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="view-toggle active" data-view="list">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Main Grid -->
+            <div class="main-grid">
+                <!-- Content Area -->
+                <div class="content-area">
+                    <!-- Trending Content -->
+                    <section class="trending-content">
+                        <!-- Post Item -->
+                        <article class="content-card post-card" data-type="posts">
+                            <div class="card-header">
+                                <div class="content-type">
+                                    <i class="fas fa-newspaper type-icon"></i>
+                                    <span>Publicación</span>
+                                </div>
+                                <div class="trending-badge">
+                                    <i class="fas fa-fire"></i>
+                                    #1 Trending
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="author-info">
+                                    <img src="https://via.placeholder.com/40x40/F59E0B/ffffff?text=JD" alt="Juan Díaz" class="author-avatar">
+                                    <div class="author-details">
+                                        <h4 class="author-name">Juan Díaz</h4>
+                                        <span class="publish-time">hace 2 horas</span>
+                                    </div>
+                                    <button class="follow-btn">Seguir</button>
+                                </div>
+                                <h3 class="content-title">Los mejores frameworks de JavaScript en 2025: Una guía completa</h3>
+                                <p class="content-excerpt">Una comparación detallada entre React, Vue, Angular y los nuevos frameworks emergentes que están cambiando el desarrollo web...</p>
+                                <div class="content-tags">
+                                    <span class="tag">JavaScript</span>
+                                    <span class="tag">Desarrollo Web</span>
+                                    <span class="tag">Frontend</span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="engagement-stats">
+                                    <button class="stat-btn">
+                                        <i class="fas fa-heart"></i>
+                                        <span>2.1K</span>
+                                    </button>
+                                    <button class="stat-btn">
+                                        <i class="fas fa-comment"></i>
+                                        <span>347</span>
+                                    </button>
+                                    <button class="stat-btn">
+                                        <i class="fas fa-share"></i>
+                                        <span>198</span>
+                                    </button>
+                                    <button class="stat-btn">
+                                        <i class="fas fa-bookmark"></i>
+                                        <span>89</span>
+                                    </button>
+                                </div>
+                                <div class="engagement-score">
+                                    <span class="score">98.5%</span>
+                                    <span class="score-label">Engagement</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- Note Item -->
+                        <article class="content-card note-card" data-type="notes">
+                            <div class="card-header">
+                                <div class="content-type">
+                                    <i class="fas fa-file-alt type-icon"></i>
+                                    <span>Apuntes</span>
+                                </div>
+                                <div class="trending-badge">
+                                    <i class="fas fa-fire"></i>
+                                    #2 Trending
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="author-info">
+                                    <img src="https://via.placeholder.com/40x40/10B981/ffffff?text=AM" alt="Ana Martínez" class="author-avatar">
+                                    <div class="author-details">
+                                        <h4 class="author-name">Ana Martínez</h4>
+                                        <span class="publish-time">hace 4 horas</span>
+                                    </div>
+                                    <button class="follow-btn">Seguir</button>
+                                </div>
+                                <h3 class="content-title">Algoritmos de Machine Learning: Cheat Sheet Completo</h3>
+                                <p class="content-excerpt">Resumen visual de los algoritmos más importantes de ML con casos de uso, ventajas y desventajas. Perfecto para estudiar...</p>
+                                <div class="note-preview">
+                                    <div class="note-thumbnail">
+                                        <img src="https://via.placeholder.com/300x150/8B5CF6/ffffff?text=ML+Algorithms" alt="Preview" class="thumbnail-img">
+                                    </div>
+                                    <div class="note-stats">
+                                        <span class="stat">📄 12 páginas</span>
+                                        <span class="stat">⏱️ 15 min lectura</span>
+                                        <span class="stat">🏷️ PDF disponible</span>
+                                    </div>
+                                </div>
+                                <div class="content-tags">
+                                    <span class="tag">Machine Learning</span>
+                                    <span class="tag">IA</span>
+                                    <span class="tag">Algoritmos</span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="engagement-stats">
+                                    <button class="stat-btn">
+                                        <i class="fas fa-heart"></i>
+                                        <span>1.8K</span>
+                                    </button>
+                                    <button class="stat-btn">
+                                        <i class="fas fa-download"></i>
+                                        <span>892</span>
+                                    </button>
+                                    <button class="stat-btn">
+                                        <i class="fas fa-share"></i>
+                                        <span>234</span>
+                                    </button>
+                                    <button class="stat-btn">
+                                        <i class="fas fa-bookmark"></i>
+                                        <span>156</span>
+                                    </button>
+                                </div>
+                                <div class="engagement-score">
+                                    <span class="score">95.2%</span>
+                                    <span class="score-label">Utilidad</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- Forum Item -->
+                        <article class="content-card forum-card" data-type="forum">
+                            <div class="card-header">
+                                <div class="content-type">
+                                    <i class="fas fa-comments type-icon"></i>
+                                    <span>Foro</span>
+                                </div>
+                                <div class="trending-badge">
+                                    <i class="fas fa-fire"></i>
+                                    #3 Trending
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="author-info">
+                                    <img src="https://via.placeholder.com/40x40/EF4444/ffffff?text=CL" alt="Carlos López" class="author-avatar">
+                                    <div class="author-details">
+                                        <h4 class="author-name">Carlos López</h4>
+                                        <span class="publish-time">hace 1 hora</span>
+                                    </div>
+                                    <button class="follow-btn">Seguir</button>
+                                </div>
+                                <h3 class="content-title">¿Cuál es la mejor estrategia para aprender programación desde cero?</h3>
+                                <p class="content-excerpt">Debate abierto: ¿Es mejor empezar con Python, JavaScript o C++? Comparte tu experiencia y ayuda a los nuevos programadores...</p>
+                                <div class="forum-preview">
+                                    <div class="recent-replies">
+                                        <div class="reply-avatars">
+                                            <img src="https://via.placeholder.com/24x24/6366F1/ffffff?text=A" alt="Usuario 1" class="reply-avatar">
+                                            <img src="https://via.placeholder.com/24x24/EC4899/ffffff?text=B" alt="Usuario 2" class="reply-avatar">
+                                            <img src="https://via.placeholder.com/24x24/F59E0B/ffffff?text=C" alt="Usuario 3" class="reply-avatar">
+                                            <span class="more-replies">+15</span>
+                                        </div>
+                                        <span class="latest-reply">Última respuesta hace 3 min</span>
+                                    </div>
+                                </div>
+                                <div class="content-tags">
+                                    <span class="tag">Programación</span>
+                                    <span class="tag">Principiantes</span>
+                                    <span class="tag">Consejos</span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="engagement-stats">
+                                    <button class="stat-btn">
+                                        <i class="fas fa-thumbs-up"></i>
+                                        <span>567</span>
+                                    </button>
+                                    <button class="stat-btn">
+                                        <i class="fas fa-reply"></i>
+                                        <span>89</span>
+                                    </button>
+                                    <button class="stat-btn">
+                                        <i class="fas fa-eye"></i>
+                                        <span>3.2K</span>
+                                    </button>
+                                    <button class="stat-btn">
+                                        <i class="fas fa-bookmark"></i>
+                                        <span>234</span>
+                                    </button>
+                                </div>
+                                <div class="engagement-score">
+                                    <span class="score">92.7%</span>
+                                    <span class="score-label">Actividad</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- Load More Button -->
+                        <div class="load-more-section">
+                            <button class="load-more-btn">
+                                <i class="fas fa-plus"></i>
+                                Cargar más contenido
+                            </button>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="sidebar" id="ranking">
+                    <!-- Top Users Ranking -->
+                    <div class="sidebar-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-trophy"></i>
+                                Top Usuarios
+                            </h3>
+                            <a href="#" class="view-all-link">Ver ranking completo</a>
+                        </div>
+                        <div class="ranking-list">
+                            <div class="ranking-item">
+                                <div class="rank-position">
+                                    <span class="rank-number gold">1</span>
+                                </div>
+                                <div class="user-info">
+                                    <img src="https://via.placeholder.com/32x32/F59E0B/ffffff?text=MR" alt="María Rodríguez" class="user-avatar">
+                                    <div class="user-details">
+                                        <h4 class="user-name">María Rodríguez</h4>
+                                        <span class="user-score">15,420 pts</span>
+                                    </div>
+                                </div>
+                                <div class="user-badges">
+                                    <span class="badge expert">Expert</span>
+                                </div>
+                            </div>
+                            <div class="ranking-item">
+                                <div class="rank-position">
+                                    <span class="rank-number silver">2</span>
+                                </div>
+                                <div class="user-info">
+                                    <img src="https://via.placeholder.com/32x32/8B5CF6/ffffff?text=DG" alt="David García" class="user-avatar">
+                                    <div class="user-details">
+                                        <h4 class="user-name">David García</h4>
+                                        <span class="user-score">14,892 pts</span>
+                                    </div>
+                                </div>
+                                <div class="user-badges">
+                                    <span class="badge mentor">Mentor</span>
+                                </div>
+                            </div>
+                            <div class="ranking-item">
+                                <div class="rank-position">
+                                    <span class="rank-number bronze">3</span>
+                                </div>
+                                <div class="user-info">
+                                    <img src="https://via.placeholder.com/32x32/10B981/ffffff?text=LS" alt="Laura Sánchez" class="user-avatar">
+                                    <div class="user-details">
+                                        <h4 class="user-name">Laura Sánchez</h4>
+                                        <span class="user-score">13,756 pts</span>
+                                    </div>
+                                </div>
+                                <div class="user-badges">
+                                    <span class="badge contributor">Colaborador</span>
+                                </div>
+                            </div>
+                            <div class="ranking-item">
+                                <div class="rank-position">
+                                    <span class="rank-number">4</span>
+                                </div>
+                                <div class="user-info">
+                                    <img src="https://via.placeholder.com/32x32/EF4444/ffffff?text=JM" alt="Javier Morales" class="user-avatar">
+                                    <div class="user-details">
+                                        <h4 class="user-name">Javier Morales</h4>
+                                        <span class="user-score">12,234 pts</span>
+                                    </div>
+                                </div>
+                                <div class="user-badges">
+                                    <span class="badge active">Activo</span>
+                                </div>
+                            </div>
+                            <div class="ranking-item">
+                                <div class="rank-position">
+                                    <span class="rank-number">5</span>
+                                </div>
+                                <div class="user-info">
+                                    <img src="https://via.placeholder.com/32x32/EC4899/ffffff?text=SP" alt="Sofía Pérez" class="user-avatar">
+                                    <div class="user-details">
+                                        <h4 class="user-name">Sofía Pérez</h4>
+                                        <span class="user-score">11,987 pts</span>
+                                    </div>
+                                </div>
+                                <div class="user-badges">
+                                    <span class="badge rising">En alza</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trending Topics -->
+                    <div class="sidebar-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-hashtag"></i>
+                                Temas Trending
+                            </h3>
+                        </div>
+                        <div class="trending-topics">
+                            <div class="topic-item">
+                                <span class="topic-name">#JavaScript2025</span>
+                                <span class="topic-count">2.1K publicaciones</span>
+                            </div>
+                            <div class="topic-item">
+                                <span class="topic-name">#MachineLearning</span>
+                                <span class="topic-count">1.8K publicaciones</span>
+                            </div>
+                            <div class="topic-item">
+                                <span class="topic-name">#DesarrolloWeb</span>
+                                <span class="topic-count">1.5K publicaciones</span>
+                            </div>
+                            <div class="topic-item">
+                                <span class="topic-name">#ProgramaciónTips</span>
+                                <span class="topic-count">967 publicaciones</span>
+                            </div>
+                            <div class="topic-item">
+                                <span class="topic-name">#TechNews</span>
+                                <span class="topic-count">834 publicaciones</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="sidebar-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-line"></i>
+                                Estadísticas
+                            </h3>
+                        </div>
+                        <div class="quick-stats">
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-number">156,234</span>
+                                    <span class="stat-label">Usuarios activos</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-number">45,891</span>
+                                    <span class="stat-label">Contenidos publicados</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-number">892,346</span>
+                                    <span class="stat-label">Interacciones</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4 class="footer-title">Crunevo</h4>
+                    <p class="footer-description">
+                        La plataforma líder para compartir conocimiento y conectar con la comunidad tecnológica.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Explorar</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" class="footer-link">Trending</a></li>
+                        <li><a href="#" class="footer-link">Publicaciones</a></li>
+                        <li><a href="#" class="footer-link">Apuntes</a></li>
+                        <li><a href="#" class="footer-link">Foro</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Comunidad</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" class="footer-link">Ranking</a></li>
+                        <li><a href="#" class="footer-link">Eventos</a></li>
+                        <li><a href="#" class="footer-link">Mentorías</a></li>
+                        <li><a href="#" class="footer-link">Newsletter</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Soporte</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" class="footer-link">Ayuda</a></li>
+                        <li><a href="#" class="footer-link">Contacto</a></li>
+                        <li><a href="#" class="footer-link">Términos</a></li>
+                        <li><a href="#" class="footer-link">Privacidad</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="copyright">© 2025 Crunevo. Todos los derechos reservados.</p>
+                <p class="footer-note">Diseñado con ❤️ para la comunidad tech</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
