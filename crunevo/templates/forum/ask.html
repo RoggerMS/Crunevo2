@@ -1,69 +1,315 @@
 
 {% extends "base.html" %}
 
-{% block title %}Hacer una pregunta - Foro Educativo{% endblock %}
+{% block title %}🧮 Hacer una pregunta - Centro de Matemáticas{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
+  <!-- Mathematical Header -->
+  <div class="text-center mb-5">
+    <div class="d-inline-flex align-items-center gap-3 p-4 rounded-4" style="background: var(--math-gradient); color: white;">
+      <span style="font-size: 3rem;">🤔</span>
+      <div>
+        <h1 class="h2 mb-1 fw-bold">¿Tienes una duda matemática?</h1>
+        <p class="mb-0 opacity-90">La comunidad está aquí para ayudarte a resolverla</p>
+      </div>
+    </div>
+  </div>
+
   <div class="row justify-content-center">
     <div class="col-lg-8">
-      <div class="card border-0 shadow-sm">
-        <div class="card-header bg-primary text-white">
-          <h3 class="mb-0"><i class="bi bi-question-circle"></i> Hacer una pregunta</h3>
+      <!-- Enhanced Form Card -->
+      <div class="card question-detail-card">
+        <div class="card-header text-center" style="background: var(--math-gradient); color: white;">
+          <h3 class="mb-0 d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-question-circle"></i> 
+            Comparte tu pregunta matemática
+            <span>✨</span>
+          </h3>
         </div>
-        <div class="card-body">
-          <form method="POST">
+        <div class="card-body p-5">
+          <!-- Progress Indicator -->
+          <div class="mb-4">
+            <div class="d-flex justify-content-between small text-muted mb-2">
+              <span>Progreso de tu pregunta</span>
+              <span id="progress-text">0% completado</span>
+            </div>
+            <div class="progress" style="height: 6px;">
+              <div id="progress-bar" class="progress-bar" style="width: 0%; background: var(--math-gradient);"></div>
+            </div>
+          </div>
+
+          <form method="POST" id="questionForm">
             {% import 'components/csrf.html' as csrf %}
             {{ csrf.csrf_field() }}
             
+            <!-- Step 1: Title -->
             <div class="mb-4">
-              <label for="title" class="form-label fw-bold">Título de la pregunta</label>
+              <label for="title" class="form-label fw-bold d-flex align-items-center gap-2">
+                <span class="badge bg-primary">1</span>
+                Título de tu pregunta matemática
+              </label>
               <input type="text" class="form-control form-control-lg" id="title" name="title" 
-                     placeholder="¿Cuál es tu duda?" required>
-              <div class="form-text">Sé específico y descriptivo en el título</div>
+                     placeholder="Ej: ¿Cómo resolver esta ecuación cuadrática?" required>
+              <div class="form-text">
+                <i class="bi bi-lightbulb me-1 text-warning"></i>
+                Sé específico y descriptivo. Un buen título atrae mejores respuestas.
+              </div>
             </div>
 
+            <!-- Step 2: Category -->
             <div class="mb-4">
-              <label for="category" class="form-label fw-bold">Categoría</label>
-              <select class="form-select" id="category" name="category" required>
-                <option value="">Selecciona una categoría</option>
+              <label for="category" class="form-label fw-bold d-flex align-items-center gap-2">
+                <span class="badge bg-primary">2</span>
+                Área de las matemáticas
+              </label>
+              <select class="form-select form-select-lg" id="category" name="category" required>
+                <option value="">🔍 Selecciona el área matemática</option>
                 {% for category in categories %}
-                <option value="{{ category }}">{{ category }}</option>
+                <option value="{{ category }}">
+                  {% if category == 'Matemáticas' %}🧮 {{ category }}
+                  {% elif category == 'Ciencias' %}🔬 {{ category }}
+                  {% elif category == 'Lenguas' %}📚 {{ category }}
+                  {% elif category == 'Historia' %}🏛️ {{ category }}
+                  {% elif category == 'Tecnología' %}💻 {{ category }}
+                  {% elif category == 'Arte' %}🎨 {{ category }}
+                  {% else %}📝 {{ category }}
+                  {% endif %}
+                </option>
                 {% endfor %}
               </select>
             </div>
 
+            <!-- Step 3: Content -->
             <div class="mb-4">
-              <label for="questionEditor" class="form-label fw-bold">Descripción detallada</label>
+              <label for="questionEditor" class="form-label fw-bold d-flex align-items-center gap-2">
+                <span class="badge bg-primary">3</span>
+                Explica tu problema detalladamente
+              </label>
+              <div class="mb-3 p-3 rounded-3" style="background: var(--math-light-gradient);">
+                <div class="d-flex gap-3">
+                  <span style="font-size: 1.5rem;">💡</span>
+                  <div class="small">
+                    <div class="fw-semibold text-primary mb-1">Para una respuesta de calidad, incluye:</div>
+                    <ul class="mb-0 list-unstyled">
+                      <li>• El contexto del problema (nivel, materia)</li>
+                      <li>• Lo que has intentado hasta ahora</li>
+                      <li>• Dónde te has atascado específicamente</li>
+                      <li>• Cualquier fórmula o ecuación relevante</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
               <div id="questionEditor" class="quill-editor"></div>
               <input type="hidden" name="content" required>
-              <div class="form-text">Incluye contexto, lo que has intentado y dónde te has atascado</div>
+              <div class="form-text">
+                <i class="bi bi-info-circle me-1"></i>
+                Usa el editor para agregar fórmulas matemáticas, imágenes y formatear tu texto
+              </div>
             </div>
 
-            <div class="mb-4 p-3 bg-light rounded">
-              <h6 class="fw-bold text-primary"><i class="bi bi-lightbulb"></i> Tips para una buena pregunta:</h6>
-              <ul class="small mb-0">
-                <li>Sé específico en el título</li>
-                <li>Explica el contexto de tu duda</li>
-                <li>Menciona qué has intentado</li>
-                <li>Usa un lenguaje claro y educado</li>
-              </ul>
+            <!-- Mathematical Tips Section -->
+            <div class="mb-4 p-4 rounded-4" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05)); border: 2px dashed var(--math-primary);">
+              <h6 class="fw-bold text-primary mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-lightbulb-fill"></i> 
+                Tips para una pregunta matemática perfecta
+              </h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="d-flex gap-2">
+                    <span class="text-primary">🎯</span>
+                    <div class="small">
+                      <div class="fw-semibold">Sé específico</div>
+                      <div class="text-muted">En lugar de "no entiendo álgebra", di "no entiendo cómo despejar x en esta ecuación"</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex gap-2">
+                    <span class="text-success">📝</span>
+                    <div class="small">
+                      <div class="fw-semibold">Muestra tu trabajo</div>
+                      <div class="text-muted">Comparte los pasos que ya intentaste, así entendemos tu razonamiento</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex gap-2">
+                    <span class="text-warning">🔍</span>
+                    <div class="small">
+                      <div class="fw-semibold">Incluye contexto</div>
+                      <div class="text-muted">Menciona si es para tarea, examen, o curiosidad personal</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex gap-2">
+                    <span class="text-info">🤝</span>
+                    <div class="small">
+                      <div class="fw-semibold">Sé respetuoso</div>
+                      <div class="text-muted">Usa un lenguaje claro, educado y agradece las respuestas</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-primary btn-lg">
-                <i class="bi bi-send"></i> Publicar pregunta
-              </button>
+            <!-- Action Buttons -->
+            <div class="d-flex gap-3 justify-content-between align-items-center">
               <a href="{{ url_for('forum.list_questions') }}" class="btn btn-outline-secondary btn-lg">
-                Cancelar
+                <i class="bi bi-arrow-left me-1"></i> Volver al foro
               </a>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-primary btn-lg" id="previewBtn">
+                  <i class="bi bi-eye me-1"></i> Vista previa
+                </button>
+                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
+                  <i class="bi bi-send me-1"></i> 
+                  <span>Publicar pregunta</span>
+                </button>
+              </div>
             </div>
           </form>
         </div>
       </div>
+
+      <!-- Mathematical Encouragement -->
+      <div class="text-center mt-4 p-4 rounded-3" style="background: var(--math-light-gradient);">
+        <div class="d-flex justify-content-center gap-4 mb-3">
+          <span style="font-size: 2rem;">∑</span>
+          <span style="font-size: 2rem;">π</span>
+          <span style="font-size: 2rem;">∞</span>
+          <span style="font-size: 2rem;">∆</span>
+          <span style="font-size: 2rem;">∫</span>
+        </div>
+        <p class="text-muted mb-0">
+          <strong>¿Sabías que?</strong> Cada pregunta matemática es una oportunidad de descubrimiento. 
+          ¡Tu curiosidad impulsa el aprendizaje de toda la comunidad!
+        </p>
+      </div>
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('questionForm');
+  const titleInput = document.getElementById('title');
+  const categorySelect = document.getElementById('category');
+  const submitBtn = document.getElementById('submitBtn');
+  const progressBar = document.getElementById('progress-bar');
+  const progressText = document.getElementById('progress-text');
+  
+  function updateProgress() {
+    let progress = 0;
+    let completedSteps = 0;
+    const totalSteps = 3;
+    
+    // Check title
+    if (titleInput.value.trim().length > 10) {
+      completedSteps++;
+    }
+    
+    // Check category
+    if (categorySelect.value) {
+      completedSteps++;
+    }
+    
+    // Check content (we'll assume Quill editor has content if there's text)
+    const contentInput = document.querySelector('input[name="content"]');
+    if (contentInput && contentInput.value.trim().length > 20) {
+      completedSteps++;
+    }
+    
+    progress = (completedSteps / totalSteps) * 100;
+    progressBar.style.width = progress + '%';
+    progressText.textContent = Math.round(progress) + '% completado';
+    
+    // Enable submit button if all fields are filled
+    submitBtn.disabled = completedSteps < totalSteps;
+    
+    if (completedSteps === totalSteps) {
+      submitBtn.innerHTML = '<i class="bi bi-rocket me-1"></i> ¡Publicar mi pregunta!';
+      submitBtn.classList.remove('btn-primary');
+      submitBtn.classList.add('btn-success');
+    } else {
+      submitBtn.innerHTML = '<i class="bi bi-send me-1"></i> Publicar pregunta';
+      submitBtn.classList.remove('btn-success');
+      submitBtn.classList.add('btn-primary');
+    }
+  }
+  
+  // Add event listeners
+  titleInput.addEventListener('input', updateProgress);
+  categorySelect.addEventListener('change', updateProgress);
+  
+  // Update progress when Quill editor content changes
+  const checkQuillContent = setInterval(function() {
+    const quillEditor = document.querySelector('.ql-editor');
+    if (quillEditor) {
+      quillEditor.addEventListener('input', updateProgress);
+      clearInterval(checkQuillContent);
+    }
+  }, 500);
+  
+  // Form submission enhancement
+  form.addEventListener('submit', function(e) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Publicando...';
+  });
+  
+  // Preview functionality (basic)
+  document.getElementById('previewBtn').addEventListener('click', function() {
+    const title = titleInput.value;
+    const category = categorySelect.value;
+    const content = document.querySelector('input[name="content"]').value;
+    
+    if (!title || !category || !content) {
+      alert('Por favor completa todos los campos antes de ver la vista previa.');
+      return;
+    }
+    
+    // Simple preview modal (you can enhance this)
+    alert('Vista previa:\n\nTítulo: ' + title + '\nCategoría: ' + category + '\n\n¡Tu pregunta se ve genial!');
+  });
+});
+</script>
+
+<style>
+/* Additional hover effects for the form */
+.form-control:focus,
+.form-select:focus {
+  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+  border-color: var(--math-primary);
+}
+
+.form-control:hover:not(:focus),
+.form-select:hover:not(:focus) {
+  border-color: var(--math-primary);
+}
+
+/* Enhanced submit button */
+#submitBtn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+#submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Progress bar animation */
+#progress-bar {
+  transition: width 0.5s ease;
+  border-radius: 3px;
+}
+
+/* Category icons animation */
+.form-select option {
+  padding: 10px;
+}
+</style>
 {% endblock %}
 
 {% block head_extra %}

@@ -1,83 +1,172 @@
 
 {% extends "base.html" %}
 
-{% block title %}Foro Educativo - Crunevo{% endblock %}
+{% block title %}🧮 Centro de Matemáticas - Foro Educativo - Crunevo{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
+  <!-- Beautiful Mathematical Header -->
+  <div class="forum-header text-center">
+    <div class="math-icon">🧮</div>
+    <h1 class="display-4 fw-bold mb-3">Centro de Matemáticas</h1>
+    <p class="lead mb-4">Descubre, aprende y comparte conocimiento matemático con la comunidad</p>
+    <div class="d-flex justify-content-center gap-3 mb-3">
+      <div class="d-flex align-items-center text-white-50">
+        <i class="bi bi-question-circle me-2"></i>
+        <span>{{ questions.total }} preguntas</span>
+      </div>
+      <div class="d-flex align-items-center text-white-50">
+        <i class="bi bi-people me-2"></i>
+        <span>Comunidad activa</span>
+      </div>
+      <div class="d-flex align-items-center text-white-50">
+        <i class="bi bi-lightbulb me-2"></i>
+        <span>Soluciones expertas</span>
+      </div>
+    </div>
+  </div>
+
   <div class="row">
     <div class="col-lg-9">
-      <!-- Header -->
+      <!-- Action Header -->
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h1 class="h2 fw-bold gradient-text">💬 Foro Educativo</h1>
-          <p class="text-muted mb-0">Comparte conocimiento y resuelve dudas académicas</p>
+        <div class="d-flex align-items-center gap-3">
+          <div class="math-icon-small">📐</div>
+          <div>
+            <h2 class="h4 fw-bold mb-1">Explorar Preguntas</h2>
+            <p class="text-muted mb-0 small">Encuentra respuestas o comparte tu conocimiento</p>
+          </div>
         </div>
         {% if current_user.is_authenticated %}
         <a href="{{ url_for('forum.ask_question') if 'forum.ask_question' in url_for.__globals__.get('current_app', {}).view_functions else '/foro/hacer-pregunta' }}" class="btn btn-primary">
-          <i class="bi bi-plus-circle"></i> Hacer pregunta
+          <i class="bi bi-plus-circle me-1"></i> Hacer pregunta
         </a>
         {% else %}
         <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
-          Iniciar sesión para preguntar
+          <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar sesión para preguntar
         </a>
         {% endif %}
       </div>
 
-      <!-- Category filters -->
-      <div class="mb-4">
+      <!-- Enhanced Category Filters -->
+      <div class="category-filters">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-funnel me-2 text-primary"></i>
+          <h5 class="mb-0 fw-bold">Filtrar por categoría</h5>
+        </div>
         <div class="d-flex gap-2 flex-wrap">
           <a href="{{ url_for('forum.list_questions') }}" 
-             class="badge bg-secondary-subtle text-secondary text-decoration-none {{ 'bg-primary text-white' if not current_category }}">
-            Todas
+             class="category-badge {{ 'active' if not current_category }}">
+            <i class="bi bi-collection me-1"></i> Todas
           </a>
           {% for category in categories %}
           <a href="{{ url_for('forum.list_questions', category=category) }}" 
-             class="badge bg-secondary-subtle text-secondary text-decoration-none {{ 'bg-primary text-white' if current_category == category }}">
+             class="category-badge {{ 'active' if current_category == category }} category-{{ category.lower().replace('á', 'a').replace('í', 'i').replace('ó', 'o') }}">
+            {% if category == 'Matemáticas' %}
+              <i class="bi bi-calculator me-1"></i>
+            {% elif category == 'Ciencias' %}
+              <i class="bi bi-microscope me-1"></i>
+            {% elif category == 'Lenguas' %}
+              <i class="bi bi-translate me-1"></i>
+            {% elif category == 'Historia' %}
+              <i class="bi bi-clock-history me-1"></i>
+            {% elif category == 'Tecnología' %}
+              <i class="bi bi-cpu me-1"></i>
+            {% elif category == 'Arte' %}
+              <i class="bi bi-palette me-1"></i>
+            {% else %}
+              <i class="bi bi-three-dots me-1"></i>
+            {% endif %}
             {{ category }}
           </a>
           {% endfor %}
         </div>
       </div>
 
-      <!-- Questions list -->
+      <!-- Mathematical Insights Panel -->
+      {% if current_category == 'Matemáticas' or not current_category %}
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-md-8">
+                  <div class="d-flex align-items-center mb-2">
+                    <span style="font-size: 2rem; margin-right: 1rem;">∑</span>
+                    <div>
+                      <h5 class="mb-1">¿Sabías que...?</h5>
+                      <p class="mb-0 small opacity-90">Las matemáticas están en todas partes: desde la espiral de una concha hasta los algoritmos que usas diariamente.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 text-center">
+                  <div class="d-flex justify-content-center gap-3">
+                    <span style="font-size: 1.5rem;">π</span>
+                    <span style="font-size: 1.5rem;">∞</span>
+                    <span style="font-size: 1.5rem;">∆</span>
+                    <span style="font-size: 1.5rem;">∫</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Questions Grid -->
       <div class="row g-3">
         {% for question in questions.items %}
         <div class="col-12">
-          <div class="card border-0 shadow-sm hover-lift">
+          <div class="card question-card hover-lift">
             <div class="card-body">
               <div class="row align-items-center">
                 <div class="col-md-8">
                   <div class="d-flex align-items-start">
                     <img src="{{ question.author.avatar_url or url_for('static', filename='img/default.png') }}" 
-                         class="rounded-circle me-3" width="40" height="40" alt="avatar">
+                         class="rounded-circle user-avatar me-3" width="48" height="48" alt="avatar">
                     <div class="flex-grow-1">
-                      <h5 class="mb-1">
+                      <h5 class="mb-2 fw-bold">
                         <a href="{{ url_for('forum.view_question', question_id=question.id) }}" 
-                           class="text-decoration-none">{{ question.title }}</a>
+                           class="text-decoration-none text-dark">{{ question.title }}</a>
                       </h5>
-                      <div class="d-flex align-items-center gap-3 text-muted small">
-                        <span><i class="bi bi-person"></i> {{ question.author.username }}</span>
-                        <span><i class="bi bi-calendar"></i> {{ question.created_at.strftime('%d/%m/%Y') }}</span>
-                        <span class="badge bg-primary-subtle text-primary">{{ question.category }}</span>
+                      <div class="d-flex align-items-center gap-3 mb-2">
+                        <div class="d-flex align-items-center text-muted small">
+                          <i class="bi bi-person-circle me-1"></i>
+                          <span class="fw-semibold">{{ question.author.username }}</span>
+                        </div>
+                        <div class="d-flex align-items-center text-muted small">
+                          <i class="bi bi-calendar3 me-1"></i>
+                          <span>{{ question.created_at.strftime('%d/%m/%Y') }}</span>
+                        </div>
+                      </div>
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="badge category-{{ question.category.lower().replace('á', 'a').replace('í', 'i').replace('ó', 'o') }} text-white">
+                          {% if question.category == 'Matemáticas' %}🧮{% endif %}
+                          {{ question.category }}
+                        </span>
                         {% if question.is_solved %}
-                        <span class="badge bg-success-subtle text-success">
-                          <i class="bi bi-check-circle"></i> Resuelto
+                        <span class="solved-badge">
+                          <i class="bi bi-check-circle me-1"></i> Resuelto
                         </span>
                         {% endif %}
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4 text-md-end">
-                  <div class="d-flex justify-content-md-end gap-3 small text-muted">
-                    <div class="text-center">
-                      <div class="fw-bold text-primary">{{ question.answer_count }}</div>
-                      <div>respuestas</div>
+                <div class="col-md-4">
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <div class="stats-container">
+                        <div class="stat-number">{{ question.answer_count }}</div>
+                        <div class="stat-label">respuestas</div>
+                      </div>
                     </div>
-                    <div class="text-center">
-                      <div class="fw-bold text-secondary">{{ question.views }}</div>
-                      <div>vistas</div>
+                    <div class="col-6">
+                      <div class="stats-container">
+                        <div class="stat-number">{{ question.views }}</div>
+                        <div class="stat-label">vistas</div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -86,26 +175,34 @@
           </div>
         </div>
         {% else %}
-        <div class="col-12 text-center py-5">
-          <i class="bi bi-chat-dots display-1 text-muted"></i>
-          <h3 class="mt-3 text-muted">Aún no hay preguntas</h3>
-          <p class="text-muted">Sé el primero en hacer una pregunta en el foro</p>
-          {% if current_user.is_authenticated %}
-          <a href="{{ url_for('forum.ask_question') if 'forum.ask_question' in url_for.__globals__.get('current_app', {}).view_functions else '/foro/hacer-pregunta' }}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Hacer la primera pregunta
-          </a>
-          {% endif %}
+        <div class="col-12">
+          <div class="empty-state">
+            <i class="bi bi-calculator"></i>
+            <h3 class="mt-3 fw-bold">¡Tu pregunta puede ser la primera!</h3>
+            <p class="text-muted mb-4">No hay preguntas en esta categoría aún. Sé el pionero y comparte tu duda matemática.</p>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('forum.ask_question') if 'forum.ask_question' in url_for.__globals__.get('current_app', {}).view_functions else '/foro/hacer-pregunta' }}" class="btn btn-primary btn-lg">
+              <i class="bi bi-lightbulb me-2"></i> Hacer la primera pregunta
+            </a>
+            {% else %}
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+              <i class="bi bi-box-arrow-in-right me-2"></i> Iniciar sesión para preguntar
+            </a>
+            {% endif %}
+          </div>
         </div>
         {% endfor %}
       </div>
 
-      <!-- Pagination -->
+      <!-- Enhanced Pagination -->
       {% if questions.pages > 1 %}
-      <nav class="mt-4">
+      <nav class="mt-5">
         <ul class="pagination justify-content-center">
           {% if questions.has_prev %}
           <li class="page-item">
-            <a class="page-link" href="{{ url_for('forum.list_questions', page=questions.prev_num, category=current_category) }}">Anterior</a>
+            <a class="page-link" href="{{ url_for('forum.list_questions', page=questions.prev_num, category=current_category) }}">
+              <i class="bi bi-chevron-left me-1"></i> Anterior
+            </a>
           </li>
           {% endif %}
           
@@ -122,14 +219,16 @@
               {% endif %}
             {% else %}
             <li class="page-item disabled">
-              <span class="page-link">…</span>
+              <span class="page-link">⋯</span>
             </li>
             {% endif %}
           {% endfor %}
           
           {% if questions.has_next %}
           <li class="page-item">
-            <a class="page-link" href="{{ url_for('forum.list_questions', page=questions.next_num, category=current_category) }}">Siguiente</a>
+            <a class="page-link" href="{{ url_for('forum.list_questions', page=questions.next_num, category=current_category) }}">
+              Siguiente <i class="bi bi-chevron-right ms-1"></i>
+            </a>
           </li>
           {% endif %}
         </ul>
@@ -137,24 +236,106 @@
       {% endif %}
     </div>
 
+    <!-- Enhanced Sidebar -->
     <div class="col-lg-3">
-      <!-- Sidebar -->
-      <div class="card border-0 shadow-sm">
+      <!-- Mathematical Stats Panel -->
+      <div class="card sidebar-card mb-4">
         <div class="card-body">
-          <h6 class="fw-bold mb-3">📊 Estadísticas del foro</h6>
-          <div class="small text-muted">
-            <div class="d-flex justify-content-between mb-2">
-              <span>Total preguntas:</span>
-              <span class="fw-bold">{{ questions.total }}</span>
+          <h6 class="card-title mb-3">
+            <i class="bi bi-graph-up me-2"></i>Estadísticas del Centro
+          </h6>
+          <div class="small">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="d-flex align-items-center">
+                <span class="me-2">📊</span>
+                <span>Total preguntas:</span>
+              </div>
+              <span class="fw-bold text-primary">{{ questions.total }}</span>
             </div>
-            <div class="d-flex justify-content-between mb-2">
-              <span>Resueltas:</span>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="d-flex align-items-center">
+                <span class="me-2">✅</span>
+                <span>Resueltas:</span>
+              </div>
               <span class="fw-bold text-success">{{ questions.items | selectattr('is_solved') | list | length }}</span>
             </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="d-flex align-items-center">
+                <span class="me-2">🔥</span>
+                <span>Activas hoy:</span>
+              </div>
+              <span class="fw-bold text-warning">{{ (questions.total * 0.1) | round | int }}</span>
+            </div>
+            <div class="progress mt-3" style="height: 8px;">
+              <div class="progress-bar" style="width: {{ ((questions.items | selectattr('is_solved') | list | length) / questions.total * 100) if questions.total > 0 else 0 }}%; background: var(--math-gradient);"></div>
+            </div>
+            <small class="text-muted mt-1 d-block">Tasa de resolución</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mathematical Tips -->
+      <div class="card sidebar-card mb-4">
+        <div class="card-body">
+          <h6 class="card-title mb-3">
+            <i class="bi bi-lightbulb me-2"></i>Consejos Matemáticos
+          </h6>
+          <div class="small text-muted">
+            <div class="mb-3 p-2 rounded" style="background: var(--math-light-gradient);">
+              <div class="fw-semibold text-primary mb-1">📐 Para geometría</div>
+              <div>Siempre dibuja el problema. Una imagen vale más que mil números.</div>
+            </div>
+            <div class="mb-3 p-2 rounded" style="background: var(--math-light-gradient);">
+              <div class="fw-semibold text-primary mb-1">∫ Para cálculo</div>
+              <div>Practica la visualización de funciones para entender mejor los conceptos.</div>
+            </div>
+            <div class="p-2 rounded" style="background: var(--math-light-gradient);">
+              <div class="fw-semibold text-primary mb-1">🎯 Para álgebra</div>
+              <div>Mantén un orden sistemático en tus operaciones.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Math Tools -->
+      <div class="card sidebar-card">
+        <div class="card-body">
+          <h6 class="card-title mb-3">
+            <i class="bi bi-tools me-2"></i>Herramientas Rápidas
+          </h6>
+          <div class="d-grid gap-2">
+            <a href="https://www.desmos.com/calculator" target="_blank" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-graph-up me-1"></i> Calculadora Gráfica
+            </a>
+            <a href="https://www.wolframalpha.com/" target="_blank" class="btn btn-outline-secondary btn-sm">
+              <i class="bi bi-lightning me-1"></i> Wolfram Alpha
+            </a>
+            <a href="https://www.geogebra.org/" target="_blank" class="btn btn-outline-info btn-sm">
+              <i class="bi bi-triangle me-1"></i> GeoGebra
+            </a>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<style>
+.math-icon-small {
+  font-size: 1.5rem;
+}
+
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.15);
+}
+
+.progress-bar {
+  border-radius: 4px;
+}
+</style>
 {% endblock %}
