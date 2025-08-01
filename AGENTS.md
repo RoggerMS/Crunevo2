@@ -900,3 +900,4 @@
 - Replaced mobile bottom nav with a translucent top "notbar" on small screens, kept hamburger menu intact and removed obsolete component includes (PR facebook-mobile-notbar).
 - Redesigned mobile notbar with purple translucent background, circular icon buttons and updated order (Inicio, Personas, Chat, Apuntes, Notificaciones, Tienda), removing the perfil link (PR mobile-notbar-facebook-style).
 - Ajustado notbar móvil para fondo morado sólido, altura mínima 64px y sombra sutil; modal de búsqueda visible en móviles (PR mobile-navbar-fix).
+- Trending page now lists top posts, notes and popular forum questions with a link to ranking. Added Tailwind classes for modern layout (PR trending-forum-ranking).

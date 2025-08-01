@@ -103,15 +103,15 @@
 {% endblock %}
 
 {% block content %}
-<div class="trending-container">
-  <div class="trending-header">
+<div class="trending-container tw-max-w-screen-xl tw-mx-auto tw-px-4 tw-py-6">
+  <div class="trending-header tw-text-center tw-mb-8">
     <h1 class="display-6 mb-2">🔥 Trending en CRUNEVO</h1>
     <p class="text-muted">Lo más popular esta semana</p>
   </div>
 
-  <div class="trending-grid">
+  <div class="trending-grid tw-grid tw-gap-6 md:tw-grid-cols-2">
     <!-- Publicaciones más votadas -->
-    <div class="trending-section">
+    <div class="trending-section tw-bg-white dark:tw-bg-gray-900 tw-rounded-lg tw-shadow tw-p-4">
       <div class="section-header">
         <i class="bi bi-fire section-icon"></i>
         <h2 class="section-title">Publicaciones más votadas</h2>
@@ -152,7 +152,7 @@
     </div>
 
     <!-- Apuntes más relevantes -->
-    <div class="trending-section">
+    <div class="trending-section tw-bg-white dark:tw-bg-gray-900 tw-rounded-lg tw-shadow tw-p-4">
       <div class="section-header">
         <i class="bi bi-journal-bookmark section-icon"></i>
         <h2 class="section-title">Apuntes más relevantes</h2>
@@ -192,11 +192,55 @@
       </div>
       {% endfor %}
     </div>
+
+    <!-- Preguntas populares del foro -->
+    <div class="trending-section tw-bg-white dark:tw-bg-gray-900 tw-rounded-lg tw-shadow tw-p-4">
+      <div class="section-header">
+        <i class="bi bi-question-circle section-icon"></i>
+        <h2 class="section-title">Preguntas populares del foro</h2>
+      </div>
+
+      {% for q in top_questions %}
+      <div class="trending-post">
+        <div class="d-flex align-items-start gap-3">
+          <img src="{{ q.author.avatar_url or url_for('static', filename='img/default.png') }}"
+               alt="{{ q.author.username }}"
+               class="rounded-circle"
+               style="width: 40px; height: 40px; object-fit: cover;">
+          <div class="flex-grow-1">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <strong>{{ q.author.username }}</strong>
+              {% if q.is_solved %}
+              <span class="badge bg-success-subtle text-success">Resuelto</span>
+              {% endif %}
+            </div>
+            <h6 class="mb-1 tw-truncate">{{ q.title }}</h6>
+            <div class="post-meta">
+              <div class="post-stats">
+                <span class="stat-item">
+                  <i class="bi bi-chat-dots"></i>
+                  <span>{{ q.answer_count }}</span>
+                </span>
+                <span class="stat-item">
+                  <i class="bi bi-eye"></i>
+                  <span>{{ q.views }}</span>
+                </span>
+              </div>
+              <small class="text-muted">{{ q.created_at|timesince }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
   </div>
 
-  <div class="text-center mt-4">
+  <div class="text-center mt-4 d-flex justify-content-center gap-3">
     <a href="{{ url_for('feed.feed_home') }}" class="btn btn-primary">
       <i class="bi bi-arrow-left"></i> Volver al Feed
+    </a>
+    <a href="{{ url_for('ranking.index') if 'ranking.index' in url_for.__globals__.get('current_app', {}).view_functions else '/ranking' }}" class="btn btn-outline-primary">
+      Ver ranking
     </a>
   </div>
 </div>
