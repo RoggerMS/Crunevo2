@@ -1,16 +1,16 @@
 
 {% extends "base.html" %}
 
-{% block title %}🧮 Hacer una pregunta - Centro de Matemáticas{% endblock %}
+{% block title %}Hacer una pregunta - Foro Estudiantil{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-  <!-- Mathematical Header -->
+  <!-- Header -->
   <div class="text-center mb-5">
-    <div class="d-inline-flex align-items-center gap-3 p-4 rounded-4" style="background: var(--math-gradient); color: white;">
+    <div class="d-inline-flex align-items-center gap-3 p-4 rounded-4" style="background: var(--forum-gradient); color: white;">
       <span style="font-size: 3rem;">🤔</span>
       <div>
-        <h1 class="h2 mb-1 fw-bold">¿Tienes una duda matemática?</h1>
+        <h1 class="h2 mb-1 fw-bold">¿Tienes una duda?</h1>
         <p class="mb-0 opacity-90">La comunidad está aquí para ayudarte a resolverla</p>
       </div>
     </div>
@@ -20,10 +20,10 @@
     <div class="col-lg-8">
       <!-- Enhanced Form Card -->
       <div class="card question-detail-card">
-        <div class="card-header text-center" style="background: var(--math-gradient); color: white;">
+        <div class="card-header text-center" style="background: var(--forum-gradient); color: white;">
           <h3 class="mb-0 d-flex align-items-center justify-content-center gap-2">
-            <i class="bi bi-question-circle"></i> 
-            Comparte tu pregunta matemática
+            <i class="bi bi-question-circle"></i>
+            Comparte tu pregunta
             <span>✨</span>
           </h3>
         </div>
@@ -35,7 +35,7 @@
               <span id="progress-text">0% completado</span>
             </div>
             <div class="progress" style="height: 6px;">
-              <div id="progress-bar" class="progress-bar" style="width: 0%; background: var(--math-gradient);"></div>
+              <div id="progress-bar" class="progress-bar" style="width: 0%; background: var(--forum-gradient);"></div>
             </div>
           </div>
 
@@ -47,7 +47,7 @@
             <div class="mb-4">
               <label for="title" class="form-label fw-bold d-flex align-items-center gap-2">
                 <span class="badge bg-primary">1</span>
-                Título de tu pregunta matemática
+                Título de tu pregunta
               </label>
               <input type="text" class="form-control form-control-lg" id="title" name="title" 
                      placeholder="Ej: ¿Cómo resolver esta ecuación cuadrática?" required>
@@ -61,10 +61,10 @@
             <div class="mb-4">
               <label for="category" class="form-label fw-bold d-flex align-items-center gap-2">
                 <span class="badge bg-primary">2</span>
-                Área de las matemáticas
+                Área de conocimiento
               </label>
               <select class="form-select form-select-lg" id="category" name="category" required>
-                <option value="">🔍 Selecciona el área matemática</option>
+                <option value="">🔍 Selecciona la categoría</option>
                 {% for category in categories %}
                 <option value="{{ category }}">
                   {% if category == 'Matemáticas' %}🧮 {{ category }}
@@ -86,7 +86,7 @@
                 <span class="badge bg-primary">3</span>
                 Explica tu problema detalladamente
               </label>
-              <div class="mb-3 p-3 rounded-3" style="background: var(--math-light-gradient);">
+              <div class="mb-3 p-3 rounded-3" style="background: var(--forum-light-gradient);">
                 <div class="d-flex gap-3">
                   <span style="font-size: 1.5rem;">💡</span>
                   <div class="small">
@@ -104,15 +104,15 @@
               <input type="hidden" name="content" required>
               <div class="form-text">
                 <i class="bi bi-info-circle me-1"></i>
-                Usa el editor para agregar fórmulas matemáticas, imágenes y formatear tu texto
+                Usa el editor para dar formato, incluir imágenes y enriquecer tu pregunta
               </div>
             </div>
 
-            <!-- Mathematical Tips Section -->
-            <div class="mb-4 p-4 rounded-4" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05)); border: 2px dashed var(--math-primary);">
+            <!-- Tips Section -->
+            <div class="mb-4 p-4 rounded-4" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05)); border: 2px dashed var(--forum-primary);">
               <h6 class="fw-bold text-primary mb-3 d-flex align-items-center gap-2">
                 <i class="bi bi-lightbulb-fill"></i> 
-                Tips para una pregunta matemática perfecta
+                Consejos para obtener mejores respuestas
               </h6>
               <div class="row g-3">
                 <div class="col-md-6">
@@ -173,17 +173,16 @@
         </div>
       </div>
 
-      <!-- Mathematical Encouragement -->
-      <div class="text-center mt-4 p-4 rounded-3" style="background: var(--math-light-gradient);">
+      <!-- Encouragement -->
+      <div class="text-center mt-4 p-4 rounded-3" style="background: var(--forum-light-gradient);">
         <div class="d-flex justify-content-center gap-4 mb-3">
-          <span style="font-size: 2rem;">∑</span>
-          <span style="font-size: 2rem;">π</span>
-          <span style="font-size: 2rem;">∞</span>
-          <span style="font-size: 2rem;">∆</span>
-          <span style="font-size: 2rem;">∫</span>
+          <span style="font-size: 2rem;">📚</span>
+          <span style="font-size: 2rem;">💡</span>
+          <span style="font-size: 2rem;">📝</span>
+          <span style="font-size: 2rem;">🎯</span>
         </div>
         <p class="text-muted mb-0">
-          <strong>¿Sabías que?</strong> Cada pregunta matemática es una oportunidad de descubrimiento. 
+          <strong>¿Sabías que?</strong> Cada pregunta es una oportunidad de descubrimiento.
           ¡Tu curiosidad impulsa el aprendizaje de toda la comunidad!
         </p>
       </div>
@@ -280,12 +279,12 @@ document.addEventListener('DOMContentLoaded', function() {
 .form-control:focus,
 .form-select:focus {
   box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
-  border-color: var(--math-primary);
+  border-color: var(--forum-primary);
 }
 
 .form-control:hover:not(:focus),
 .form-select:hover:not(:focus) {
-  border-color: var(--math-primary);
+  border-color: var(--forum-primary);
 }
 
 /* Enhanced submit button */

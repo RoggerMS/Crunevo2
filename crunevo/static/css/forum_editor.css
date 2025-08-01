@@ -16,21 +16,21 @@
   line-height: 1.6;
 }
 
-/* Mathematical Theme Colors */
+/* Forum Theme Colors */
 :root {
-  --math-primary: #667eea;
-  --math-secondary: #764ba2;
-  --math-accent: #f093fb;
-  --math-success: #4ade80;
-  --math-warning: #fbbf24;
-  --math-info: #06b6d4;
-  --math-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --math-light-gradient: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  --forum-primary: #667eea;
+  --forum-secondary: #764ba2;
+  --forum-accent: #f093fb;
+  --forum-success: #4ade80;
+  --forum-warning: #fbbf24;
+  --forum-info: #06b6d4;
+  --forum-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --forum-light-gradient: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
 }
 
 /* Forum Container Enhancements */
 .forum-header {
-  background: var(--math-gradient);
+  background: var(--forum-gradient);
   color: white;
   padding: 2rem 0;
   border-radius: 20px;
@@ -55,7 +55,7 @@
   100% { transform: translateY(-60px) rotate(360deg); }
 }
 
-.math-icon {
+.forum-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
   text-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -72,8 +72,8 @@
 }
 
 .category-badge {
-  background: var(--math-light-gradient) !important;
-  color: var(--math-primary) !important;
+  background: var(--forum-light-gradient) !important;
+  color: var(--forum-primary) !important;
   border: 2px solid transparent;
   border-radius: 25px !important;
   padding: 0.75rem 1.5rem !important;
@@ -92,7 +92,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: var(--math-gradient);
+  background: var(--forum-gradient);
   transition: left 0.3s ease;
   z-index: -1;
 }
@@ -127,7 +127,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: var(--math-gradient);
+  background: var(--forum-gradient);
 }
 
 .question-card:hover {
@@ -141,13 +141,13 @@
 
 /* Avatar Enhancements */
 .user-avatar {
-  border: 3px solid var(--math-primary) !important;
+  border: 3px solid var(--forum-primary) !important;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 /* Stats Enhancement */
 .stats-container {
-  background: var(--math-light-gradient);
+  background: var(--forum-light-gradient);
   border-radius: 15px;
   padding: 1rem;
   text-align: center;
@@ -156,7 +156,7 @@
 .stat-number {
   font-size: 1.5rem;
   font-weight: 700;
-  background: var(--math-gradient);
+  background: var(--forum-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -192,14 +192,14 @@
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
-  background: var(--math-light-gradient);
+  background: var(--forum-light-gradient);
   border-radius: 20px;
-  border: 2px dashed var(--math-primary);
+  border: 2px dashed var(--forum-primary);
 }
 
 .empty-state i {
   font-size: 4rem;
-  color: var(--math-primary);
+  color: var(--forum-primary);
   margin-bottom: 1rem;
   opacity: 0.7;
 }
@@ -212,21 +212,21 @@
 .page-link {
   border-radius: 12px !important;
   border: 2px solid #e5e7eb;
-  color: var(--math-primary);
+  color: var(--forum-primary);
   font-weight: 600;
   transition: all 0.3s ease;
 }
 
 .page-link:hover {
-  background: var(--math-gradient) !important;
-  border-color: var(--math-primary) !important;
+  background: var(--forum-gradient) !important;
+  border-color: var(--forum-primary) !important;
   color: white !important;
   transform: translateY(-2px);
 }
 
 .page-item.active .page-link {
-  background: var(--math-gradient) !important;
-  border-color: var(--math-primary) !important;
+  background: var(--forum-gradient) !important;
+  border-color: var(--forum-primary) !important;
 }
 
 /* Question Detail Page Enhancements */
@@ -245,11 +245,11 @@
   left: 0;
   right: 0;
   height: 6px;
-  background: var(--math-gradient);
+  background: var(--forum-gradient);
 }
 
 .question-title {
-  background: var(--math-gradient);
+  background: var(--forum-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -267,13 +267,13 @@
 }
 
 .answer-card:hover {
-  border-color: var(--math-primary) !important;
+  border-color: var(--forum-primary) !important;
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15) !important;
   transform: translateY(-2px);
 }
 
 .answer-card.accepted {
-  border-color: var(--math-success) !important;
+  border-color: var(--forum-success) !important;
   background: linear-gradient(135deg, rgba(74, 222, 128, 0.05), rgba(34, 197, 94, 0.05));
 }
 
@@ -282,7 +282,7 @@
   position: absolute;
   top: -10px;
   right: -10px;
-  background: var(--math-success);
+  background: var(--forum-success);
   color: white;
   width: 30px;
   height: 30px;
@@ -327,7 +327,7 @@
 }
 
 .vote-up:hover {
-  background: var(--math-success) !important;
+  background: var(--forum-success) !important;
   color: white !important;
   transform: translateY(-2px);
 }
@@ -346,7 +346,7 @@
 }
 
 .form-control:focus {
-  border-color: var(--math-primary);
+  border-color: var(--forum-primary);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
@@ -357,7 +357,7 @@
 
 /* Button Enhancements */
 .btn-primary {
-  background: var(--math-gradient) !important;
+  background: var(--forum-gradient) !important;
   border: none !important;
   border-radius: 12px !important;
   padding: 0.75rem 1.5rem !important;
@@ -391,17 +391,17 @@
 .sidebar-card {
   border-radius: 20px !important;
   border: none !important;
-  background: var(--math-light-gradient) !important;
+  background: var(--forum-light-gradient) !important;
   box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important;
 }
 
 .sidebar-card .card-title {
-  color: var(--math-primary);
+  color: var(--forum-primary);
   font-weight: 700;
 }
 
-/* Mathematical Formulas Support */
-.math-formula {
+/* Formula Support */
+.forum-formula {
   background: #f8fafc;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
@@ -444,7 +444,7 @@
     margin-bottom: 1rem;
   }
   
-  .math-icon {
+  .forum-icon {
     font-size: 2rem;
   }
   

@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
 
-{% block title %}🧮 {{ question.title }} - Centro de Matemáticas{% endblock %}
+{% block title %}{{ question.title }} - Foro Estudiantil{% endblock %}
 
 {% block content %}
 <div class="container my-4">
-    <!-- Mathematical Breadcrumb -->
+    <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
                 <a href="{{ url_for('forum.list_questions') }}" class="text-decoration-none">
-                    <i class="bi bi-calculator me-1"></i>Centro de Matemáticas
+                    <i class="bi bi-question-circle me-1"></i>Foro Estudiantil
                 </a>
             </li>
             <li class="breadcrumb-item">
@@ -62,7 +62,7 @@
                     <h1 class="question-title mb-4">{{ question.title }}</h1>
                     
                     <!-- Author Info -->
-                    <div class="d-flex align-items-center mb-4 p-3 rounded-3" style="background: var(--math-light-gradient);">
+                    <div class="d-flex align-items-center mb-4 p-3 rounded-3" style="background: var(--forum-light-gradient);">
                         <img src="{{ question.author.avatar_url or url_for('static', filename='img/default.png') }}" 
                              class="rounded-circle user-avatar me-3" width="52" height="52" alt="Avatar">
                         <div class="flex-grow-1">
@@ -143,9 +143,9 @@
                 </div>
                 {% else %}
                 <div class="empty-state text-center py-5 mb-4">
-                    <i class="bi bi-chat-right-dots" style="font-size: 4rem; color: var(--math-primary); opacity: 0.7;"></i>
+                    <i class="bi bi-chat-right-dots" style="font-size: 4rem; color: var(--forum-primary); opacity: 0.7;"></i>
                     <h4 class="mt-3 fw-bold">¡Sé el primero en resolver este problema!</h4>
-                    <p class="text-muted mb-4">Tu conocimiento puede ayudar a otro estudiante. Comparte tu solución matemática.</p>
+                    <p class="text-muted mb-4">Tu conocimiento puede ayudar a otro estudiante. ¡Comparte tu respuesta!</p>
                     {% if current_user.is_authenticated %}
                     <button class="btn btn-primary btn-lg" onclick="document.getElementById('answerSection').scrollIntoView({behavior: 'smooth'})">
                         <i class="bi bi-lightbulb me-2"></i>Escribir respuesta
@@ -157,15 +157,15 @@
                 <!-- Enhanced Answer Form -->
                 {% if current_user.is_authenticated %}
                 <div id="answerSection" class="card question-detail-card">
-                    <div class="card-header" style="background: var(--math-gradient); color: white;">
+                    <div class="card-header" style="background: var(--forum-gradient); color: white;">
                         <h5 class="mb-0 d-flex align-items-center">
                             <i class="bi bi-pencil-square me-2"></i>
-                            Tu respuesta matemática
+                            Tu respuesta
                         </h5>
                     </div>
                     <div class="card-body p-4">
                         <div class="mb-3">
-                            <div class="d-flex align-items-center gap-2 mb-3 p-3 rounded-3" style="background: var(--math-light-gradient);">
+                            <div class="d-flex align-items-center gap-2 mb-3 p-3 rounded-3" style="background: var(--forum-light-gradient);">
                                 <span class="fs-4">💡</span>
                                 <div class="small">
                                     <div class="fw-semibold text-primary">Consejos para una buena respuesta:</div>
@@ -182,7 +182,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="small text-muted">
                                     <i class="bi bi-info-circle me-1"></i>
-                                    Usa el editor para incluir fórmulas matemáticas y diagramas
+                                    Usa el editor para dar formato y añadir diagramas
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="bi bi-send me-2"></i>
@@ -196,10 +196,10 @@
                 <div class="card question-detail-card">
                     <div class="card-body text-center p-5">
                         <div class="mb-4">
-                            <i class="bi bi-person-plus" style="font-size: 4rem; color: var(--math-primary);"></i>
+                            <i class="bi bi-person-plus" style="font-size: 4rem; color: var(--forum-primary);"></i>
                         </div>
                         <h5 class="fw-bold mb-3">¿Conoces la solución?</h5>
-                        <p class="text-muted mb-4">Únete a nuestra comunidad matemática para compartir tu conocimiento y ayudar a otros estudiantes.</p>
+                        <p class="text-muted mb-4">Únete a nuestra comunidad para compartir tu conocimiento y ayudar a otros estudiantes.</p>
                         <div class="d-flex gap-2 justify-content-center">
                             <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
                                 <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar Sesión
@@ -252,7 +252,7 @@
                             <span class="fw-semibold">{{ ((answers|length + question.views) / 10) | round | int }}%</span>
                         </div>
                         <div class="progress" style="height: 6px;">
-                            <div class="progress-bar" style="width: {{ ((answers|length + question.views) / 10) | round | int }}%; background: var(--math-gradient);"></div>
+                            <div class="progress-bar" style="width: {{ ((answers|length + question.views) / 10) | round | int }}%; background: var(--forum-gradient);"></div>
                         </div>
                     </div>
                 </div>
@@ -296,15 +296,15 @@
                 </div>
             </div>
 
-            <!-- Mathematical Quote -->
+            <!-- Inspirational Quote -->
             <div class="card sidebar-card">
                 <div class="card-body text-center">
-                    <div class="mb-3" style="font-size: 2rem;">📐</div>
+                    <div class="mb-3" style="font-size: 2rem;">📖</div>
                     <blockquote class="blockquote mb-3">
-                        <p class="small">"Las matemáticas son el lenguaje con el que Dios ha escrito el universo."</p>
+                        <p class="small">"Aprender es un tesoro que seguirá a su dueño a todas partes."</p>
                     </blockquote>
                     <footer class="blockquote-footer small">
-                        <cite title="Galileo Galilei">Galileo Galilei</cite>
+                        <cite title="Proverbio chino">Proverbio chino</cite>
                     </footer>
                 </div>
             </div>

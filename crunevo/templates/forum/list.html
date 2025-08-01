@@ -1,15 +1,15 @@
 
 {% extends "base.html" %}
 
-{% block title %}🧮 Centro de Matemáticas - Foro Educativo - Crunevo{% endblock %}
+{% block title %}Foro Estudiantil - Crunevo{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-  <!-- Beautiful Mathematical Header -->
+  <!-- Foro Header -->
   <div class="forum-header text-center">
-    <div class="math-icon">🧮</div>
-    <h1 class="display-4 fw-bold mb-3">Centro de Matemáticas</h1>
-    <p class="lead mb-4">Descubre, aprende y comparte conocimiento matemático con la comunidad</p>
+    <div class="forum-icon">❓</div>
+    <h1 class="display-4 fw-bold mb-3">Foro Estudiantil</h1>
+    <p class="lead mb-4">Descubre, aprende y comparte conocimiento con la comunidad</p>
     <div class="d-flex justify-content-center gap-3 mb-3">
       <div class="d-flex align-items-center text-white-50">
         <i class="bi bi-question-circle me-2"></i>
@@ -31,7 +31,7 @@
       <!-- Action Header -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center gap-3">
-          <div class="math-icon-small">📐</div>
+          <div class="forum-icon-small">📚</div>
           <div>
             <h2 class="h4 fw-bold mb-1">Explorar Preguntas</h2>
             <p class="text-muted mb-0 small">Encuentra respuestas o comparte tu conocimiento</p>
@@ -83,8 +83,8 @@
         </div>
       </div>
 
-      <!-- Mathematical Insights Panel -->
-      {% if current_category == 'Matemáticas' or not current_category %}
+      <!-- Insights Panel -->
+      {% if not current_category %}
       <div class="row mb-4">
         <div class="col-12">
           <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
@@ -92,19 +92,19 @@
               <div class="row align-items-center">
                 <div class="col-md-8">
                   <div class="d-flex align-items-center mb-2">
-                    <span style="font-size: 2rem; margin-right: 1rem;">∑</span>
+                    <span style="font-size: 2rem; margin-right: 1rem;">🧠</span>
                     <div>
                       <h5 class="mb-1">¿Sabías que...?</h5>
-                      <p class="mb-0 small opacity-90">Las matemáticas están en todas partes: desde la espiral de una concha hasta los algoritmos que usas diariamente.</p>
+                      <p class="mb-0 small opacity-90">El aprendizaje se encuentra en cada rincón: comparte tus dudas para seguir creciendo.</p>
                     </div>
                   </div>
                 </div>
                 <div class="col-md-4 text-center">
                   <div class="d-flex justify-content-center gap-3">
-                    <span style="font-size: 1.5rem;">π</span>
-                    <span style="font-size: 1.5rem;">∞</span>
-                    <span style="font-size: 1.5rem;">∆</span>
-                    <span style="font-size: 1.5rem;">∫</span>
+                    <span style="font-size: 1.5rem;">📚</span>
+                    <span style="font-size: 1.5rem;">💡</span>
+                    <span style="font-size: 1.5rem;">📝</span>
+                    <span style="font-size: 1.5rem;">🎯</span>
                   </div>
                 </div>
               </div>
@@ -177,9 +177,9 @@
         {% else %}
         <div class="col-12">
           <div class="empty-state">
-            <i class="bi bi-calculator"></i>
+            <i class="bi bi-question-circle"></i>
             <h3 class="mt-3 fw-bold">¡Tu pregunta puede ser la primera!</h3>
-            <p class="text-muted mb-4">No hay preguntas en esta categoría aún. Sé el pionero y comparte tu duda matemática.</p>
+            <p class="text-muted mb-4">No hay preguntas en esta categoría aún. Sé el pionero y comparte tu duda.</p>
             {% if current_user.is_authenticated %}
             <a href="{{ url_for('forum.ask_question') if 'forum.ask_question' in url_for.__globals__.get('current_app', {}).view_functions else '/foro/hacer-pregunta' }}" class="btn btn-primary btn-lg">
               <i class="bi bi-lightbulb me-2"></i> Hacer la primera pregunta
@@ -267,7 +267,7 @@
               <span class="fw-bold text-warning">{{ (questions.total * 0.1) | round | int }}</span>
             </div>
             <div class="progress mt-3" style="height: 8px;">
-              <div class="progress-bar" style="width: {{ ((questions.items | selectattr('is_solved') | list | length) / questions.total * 100) if questions.total > 0 else 0 }}%; background: var(--math-gradient);"></div>
+              <div class="progress-bar" style="width: {{ ((questions.items | selectattr('is_solved') | list | length) / questions.total * 100) if questions.total > 0 else 0 }}%; background: var(--forum-gradient);"></div>
             </div>
             <small class="text-muted mt-1 d-block">Tasa de resolución</small>
           </div>
@@ -278,26 +278,26 @@
       <div class="card sidebar-card mb-4">
         <div class="card-body">
           <h6 class="card-title mb-3">
-            <i class="bi bi-lightbulb me-2"></i>Consejos Matemáticos
+            <i class="bi bi-lightbulb me-2"></i>Consejos de Estudio
           </h6>
           <div class="small text-muted">
-            <div class="mb-3 p-2 rounded" style="background: var(--math-light-gradient);">
-              <div class="fw-semibold text-primary mb-1">📐 Para geometría</div>
-              <div>Siempre dibuja el problema. Una imagen vale más que mil números.</div>
+            <div class="mb-3 p-2 rounded" style="background: var(--forum-light-gradient);">
+              <div class="fw-semibold text-primary mb-1">📑 Organiza tus apuntes</div>
+              <div>Un esquema claro te ayudará a repasar con rapidez.</div>
             </div>
-            <div class="mb-3 p-2 rounded" style="background: var(--math-light-gradient);">
-              <div class="fw-semibold text-primary mb-1">∫ Para cálculo</div>
-              <div>Practica la visualización de funciones para entender mejor los conceptos.</div>
+            <div class="mb-3 p-2 rounded" style="background: var(--forum-light-gradient);">
+              <div class="fw-semibold text-primary mb-1">💡 Practica a diario</div>
+              <div>Resolver ejercicios frecuentemente mejora la comprensión.</div>
             </div>
-            <div class="p-2 rounded" style="background: var(--math-light-gradient);">
-              <div class="fw-semibold text-primary mb-1">🎯 Para álgebra</div>
-              <div>Mantén un orden sistemático en tus operaciones.</div>
+            <div class="p-2 rounded" style="background: var(--forum-light-gradient);">
+              <div class="fw-semibold text-primary mb-1">🤝 Comparte tus dudas</div>
+              <div>Preguntar y ayudar a otros refuerza tu aprendizaje.</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Quick Math Tools -->
+      <!-- Recursos Útiles -->
       <div class="card sidebar-card">
         <div class="card-body">
           <h6 class="card-title mb-3">
@@ -321,7 +321,12 @@
 </div>
 
 <style>
-.math-icon-small {
+.forum-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+.forum-icon-small {
   font-size: 1.5rem;
 }
 
