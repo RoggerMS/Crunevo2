@@ -131,7 +131,6 @@ feed_bp.add_url_rule(
 
 
 @feed_bp.route("/trending")
-@activated_required
 def trending():
     weekly_posts = get_weekly_top_posts(limit=10)
     top_ranked, recent_achievements = get_weekly_ranking()
@@ -143,8 +142,7 @@ def trending():
 
     top_questions_query = (
         db.session.query(
-            ForumQuestion,
-            func.count(ForumAnswer.id).label('answer_count')
+            ForumQuestion, func.count(ForumAnswer.id).label("answer_count")
         )
         .outerjoin(ForumAnswer)
         .group_by(ForumQuestion.id)
@@ -152,7 +150,7 @@ def trending():
         .limit(5)
         .all()
     )
-    
+
     # Add answer_count as attribute to each question
     top_questions = []
     for question, answer_count in top_questions_query:
@@ -160,18 +158,22 @@ def trending():
         top_questions.append(question)
 
     reaction_map = PostReaction.counts_for_posts([p.id for p in weekly_posts])
-    user_reactions = PostReaction.reactions_for_user_posts(
-        current_user.id, [p.id for p in weekly_posts]
-    )
-    from crunevo.models import SavedPost
+    if current_user.is_authenticated:
+        user_reactions = PostReaction.reactions_for_user_posts(
+            current_user.id, [p.id for p in weekly_posts]
+        )
+        from crunevo.models import SavedPost
 
-    saved_posts = {
-        sp.post_id: True
-        for sp in SavedPost.query.filter(
-            SavedPost.user_id == current_user.id,
-            SavedPost.post_id.in_([p.id for p in weekly_posts]),
-        ).all()
-    }
+        saved_posts = {
+            sp.post_id: True
+            for sp in SavedPost.query.filter(
+                SavedPost.user_id == current_user.id,
+                SavedPost.post_id.in_([p.id for p in weekly_posts]),
+            ).all()
+        }
+    else:
+        user_reactions = {}
+        saved_posts = {}
 
     return render_template(
         "feed/trending.html",
