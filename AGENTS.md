@@ -966,3 +966,5 @@ Se realizó una mejora integral del foro transformándolo en un "Centro de Matem
 - Soporte completo para modo oscuro
 
 Todos los cambios mantienen la funcionalidad original mientras mejoran significativamente la experiencia visual y educativa del foro.
+
+- Reverted forum to general "Foro Estudiantil", removing math-only branding. Updated navbar, sidebar, templates and CSS variables. (PR forum-general-qa)

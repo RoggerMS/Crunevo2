@@ -72,8 +72,8 @@
 
         <li>
           <a href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}" class="nav-link {{ 'active' if request.endpoint == 'forum.list_questions' }}">
-            <i class="bi bi-calculator"></i>
-            <span class="fw-semibold">Centro Matemático</span>
+            <i class="bi bi-question-circle"></i>
+            <span class="fw-semibold">Foro Estudiantil</span>
           </a>
         </li>
 
@@ -185,7 +185,7 @@
           <i class="bi bi-plus-circle"></i> Subir Apunte
         </a>
         <a href="{{ url_for('forum.ask_question') if 'forum.ask_question' in url_for.__globals__.get('current_app', {}).view_functions else '/foro/hacer-pregunta' }}" class="btn btn-outline-primary btn-sm rounded-pill">
-          <i class="bi bi-plus-circle"></i> Pregunta Matemática
+          <i class="bi bi-plus-circle"></i> Haz una Pregunta
         </a>
       </div>
     </div>
