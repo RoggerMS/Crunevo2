@@ -141,14 +141,23 @@ def trending():
     from crunevo.models.forum import ForumQuestion, ForumAnswer
     from sqlalchemy import func
 
-    top_questions = (
-        db.session.query(ForumQuestion)
+    top_questions_query = (
+        db.session.query(
+            ForumQuestion,
+            func.count(ForumAnswer.id).label('answer_count')
+        )
         .outerjoin(ForumAnswer)
         .group_by(ForumQuestion.id)
         .order_by(func.count(ForumAnswer.id).desc(), ForumQuestion.views.desc())
         .limit(5)
         .all()
     )
+    
+    # Add answer_count as attribute to each question
+    top_questions = []
+    for question, answer_count in top_questions_query:
+        question.answer_count = answer_count
+        top_questions.append(question)
 
     reaction_map = PostReaction.counts_for_posts([p.id for p in weekly_posts])
     user_reactions = PostReaction.reactions_for_user_posts(
