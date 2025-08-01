@@ -11,7 +11,9 @@ class Club(db.Model):
     banner_url = db.Column(db.String(255))  # New field for club banner
     facebook_url = db.Column(db.String(255))  # New field for Facebook link
     whatsapp_url = db.Column(db.String(255))  # New field for WhatsApp link
-    creator_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)  # New field for creator
+    creator_id = db.Column(
+        db.Integer, db.ForeignKey("user.id"), nullable=False
+    )  # New field for creator
     member_count = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -25,7 +27,9 @@ class Club(db.Model):
 
     def get_creator_membership(self):
         """Get the creator's membership record (should be admin)"""
-        return ClubMember.query.filter_by(user_id=self.creator_id, club_id=self.id).first()
+        return ClubMember.query.filter_by(
+            user_id=self.creator_id, club_id=self.id
+        ).first()
 
 
 class ClubMember(db.Model):

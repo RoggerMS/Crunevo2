@@ -1,4 +1,13 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, current_app
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    flash,
+    redirect,
+    url_for,
+    jsonify,
+    current_app,
+)
 from flask_login import login_required, current_user
 import cloudinary.uploader
 from crunevo.extensions import db
@@ -30,9 +39,11 @@ def view_club(club_id):
     is_member = False
     is_creator = False
     user_role = None
-    
+
     if current_user.is_authenticated:
-        membership = ClubMember.query.filter_by(user_id=current_user.id, club_id=club_id).first()
+        membership = ClubMember.query.filter_by(
+            user_id=current_user.id, club_id=club_id
+        ).first()
         is_member = membership is not None
         is_creator = club.is_creator(current_user)
         user_role = membership.role if membership else None
@@ -49,13 +60,13 @@ def view_club(club_id):
 
     members = ClubMember.query.filter_by(club_id=club_id).limit(10).all()
     return render_template(
-        "club/detail.html", 
-        club=club, 
-        is_member=is_member, 
+        "club/detail.html",
+        club=club,
+        is_member=is_member,
         is_creator=is_creator,
         user_role=user_role,
-        members=members, 
-        posts=posts
+        members=members,
+        posts=posts,
     )
 
 
@@ -130,9 +141,20 @@ def leave_club(club_id):
 
     # Prevent creator from leaving if they're the only admin
     if club.is_creator(current_user):
-        other_admins = ClubMember.query.filter_by(club_id=club_id, role='admin').filter(ClubMember.user_id != current_user.id).count()
+        other_admins = (
+            ClubMember.query.filter_by(club_id=club_id, role="admin")
+            .filter(ClubMember.user_id != current_user.id)
+            .count()
+        )
         if other_admins == 0:
-            return jsonify({"error": "No puedes dejar el club siendo el único administrador. Transfiere el rol primero."}), 400
+            return (
+                jsonify(
+                    {
+                        "error": "No puedes dejar el club siendo el único administrador. Transfiere el rol primero."
+                    }
+                ),
+                400,
+            )
 
     db.session.delete(membership)
     club.member_count -= 1
@@ -148,13 +170,13 @@ def upload_to_cloudinary(file, folder="clubs"):
         cloud_url = current_app.config.get("CLOUDINARY_URL")
         if not cloud_url:
             return None
-            
+
         result = cloudinary.uploader.upload(
-            file, 
+            file,
             resource_type="auto",
             folder=folder,
             quality="auto:good",
-            fetch_format="auto"
+            fetch_format="auto",
         )
         return result.get("secure_url")
     except Exception as e:
@@ -171,10 +193,10 @@ def create_club():
         # Upload files to Cloudinary
         avatar_url = None
         banner_url = None
-        
+
         if form.avatar.data:
             avatar_url = upload_to_cloudinary(form.avatar.data, "clubs/avatars")
-            
+
         if form.banner.data:
             banner_url = upload_to_cloudinary(form.banner.data, "clubs/banners")
 
@@ -186,8 +208,12 @@ def create_club():
             ),
             avatar_url=avatar_url,
             banner_url=banner_url,
-            facebook_url=form.facebook_url.data.strip() if form.facebook_url.data else None,
-            whatsapp_url=form.whatsapp_url.data.strip() if form.whatsapp_url.data else None,
+            facebook_url=(
+                form.facebook_url.data.strip() if form.facebook_url.data else None
+            ),
+            whatsapp_url=(
+                form.whatsapp_url.data.strip() if form.whatsapp_url.data else None
+            ),
             creator_id=current_user.id,
             created_at=datetime.utcnow(),
         )
@@ -214,39 +240,47 @@ def create_club():
 def edit_club(club_id):
     """Edit an existing club - only creator and admins allowed"""
     club = Club.query.get_or_404(club_id)
-    
+
     # Check permissions: only creator or admin role users
     if not club.is_creator(current_user):
-        membership = ClubMember.query.filter_by(user_id=current_user.id, club_id=club_id).first()
-        if not membership or membership.role not in ['admin']:
+        membership = ClubMember.query.filter_by(
+            user_id=current_user.id, club_id=club_id
+        ).first()
+        if not membership or membership.role not in ["admin"]:
             flash("No tienes permisos para editar este club", "error")
             return redirect(url_for("club.view_club", club_id=club_id))
-    
+
     form = ClubForm(edit_mode=True)
-    
+
     if form.validate_on_submit():
         # Upload new files if provided
         if form.avatar.data:
             new_avatar = upload_to_cloudinary(form.avatar.data, "clubs/avatars")
             if new_avatar:
                 club.avatar_url = new_avatar
-                
+
         if form.banner.data:
             new_banner = upload_to_cloudinary(form.banner.data, "clubs/banners")
             if new_banner:
                 club.banner_url = new_banner
-        
+
         # Update club data
         club.name = form.name.data.strip()
         club.career = form.career.data.strip()
-        club.description = form.description.data.strip() if form.description.data else None
-        club.facebook_url = form.facebook_url.data.strip() if form.facebook_url.data else None
-        club.whatsapp_url = form.whatsapp_url.data.strip() if form.whatsapp_url.data else None
-        
+        club.description = (
+            form.description.data.strip() if form.description.data else None
+        )
+        club.facebook_url = (
+            form.facebook_url.data.strip() if form.facebook_url.data else None
+        )
+        club.whatsapp_url = (
+            form.whatsapp_url.data.strip() if form.whatsapp_url.data else None
+        )
+
         db.session.commit()
         flash("Club actualizado exitosamente", "success")
         return redirect(url_for("club.view_club", club_id=club.id))
-    
+
     # Pre-populate form with current data
     elif request.method == "GET":
         form.name.data = club.name
@@ -254,5 +288,5 @@ def edit_club(club_id):
         form.description.data = club.description
         form.facebook_url.data = club.facebook_url
         form.whatsapp_url.data = club.whatsapp_url
-    
+
     return render_template("club/edit_club.html", form=form, club=club)
