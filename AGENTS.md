@@ -1042,3 +1042,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added migration 'add_forum_modernization_fields' to create missing tables and columns for the modern forum.
 - Handled missing forum tables gracefully in list_questions to avoid 500 errors (PR forum-500-fix).
 - Added migration 'forum_modernization_schema' and removed temporary error handling from forum routes.
+- Provided instructions to reset Alembic revision with `flask db stamp` and rerun `flask db upgrade` to fix incomplete forum schema (QA forum-issue).
