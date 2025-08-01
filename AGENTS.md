@@ -1040,3 +1040,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 
   This modernization transforms the forum into a comprehensive learning platform that rivals and exceeds Brainly's functionality while maintaining a clean, minimal design optimized for both desktop and mobile use.
 - Added migration 'add_forum_modernization_fields' to create missing tables and columns for the modern forum.
+- Handled missing forum tables gracefully in list_questions to avoid 500 errors (PR forum-500-fix).

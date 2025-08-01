@@ -14,6 +14,7 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from sqlalchemy import or_, and_, desc, asc
+from sqlalchemy.exc import OperationalError
 from datetime import datetime
 from crunevo.extensions import db
 from crunevo.models.forum import (
@@ -140,28 +141,55 @@ def list_questions():
     else:  # recent
         query = query.order_by(desc(ForumQuestion.created_at))
 
-    questions = query.paginate(page=page, per_page=15, error_out=False)
+    try:
+        questions = query.paginate(page=page, per_page=15, error_out=False)
 
-    # Get popular tags for sidebar
-    popular_tags = (
-        db.session.query(ForumTag)
-        .join(question_tags)
-        .group_by(ForumTag.id)
-        .order_by(db.func.count(question_tags.c.question_id).desc())
-        .limit(10)
-        .all()
-    )
+        # Get popular tags for sidebar
+        popular_tags = (
+            db.session.query(ForumTag)
+            .join(question_tags)
+            .group_by(ForumTag.id)
+            .order_by(db.func.count(question_tags.c.question_id).desc())
+            .limit(10)
+            .all()
+        )
 
-    # Get statistics
-    stats = {
-        "total_questions": ForumQuestion.query.count(),
-        "solved_questions": ForumQuestion.query.filter_by(is_solved=True).count(),
-        "urgent_questions": ForumQuestion.query.filter_by(is_urgent=True).count(),
-        "questions_today": ForumQuestion.query.filter(
-            ForumQuestion.created_at
-            >= datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-        ).count(),
-    }
+        # Get statistics
+        stats = {
+            "total_questions": ForumQuestion.query.count(),
+            "solved_questions": ForumQuestion.query.filter_by(is_solved=True).count(),
+            "urgent_questions": ForumQuestion.query.filter_by(is_urgent=True).count(),
+            "questions_today": ForumQuestion.query.filter(
+                ForumQuestion.created_at
+                >= datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+            ).count(),
+        }
+    except OperationalError:
+        current_app.logger.exception("Error loading forum questions")
+
+        class DummyPagination:
+            def __init__(self, page, per_page):
+                self.page = page
+                self.per_page = per_page
+                self.items = []
+                self.total = 0
+                self.pages = 0
+                self.has_prev = False
+                self.has_next = False
+                self.prev_num = None
+                self.next_num = None
+
+            def iter_pages(self):
+                return []
+
+        questions = DummyPagination(page, 15)
+        popular_tags = []
+        stats = {
+            "total_questions": 0,
+            "solved_questions": 0,
+            "urgent_questions": 0,
+            "questions_today": 0,
+        }
 
     return render_template(
         "forum/list.html",
