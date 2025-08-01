@@ -903,3 +903,4 @@
 - Trending page now lists top posts, notes and popular forum questions with a link to ranking. Added Tailwind classes for modern layout (PR trending-forum-ranking).
 - Rediseño completo de la página Trending con layout moderno y atractivo: hero section con estadísticas, cards mejoradas con rankings, badges de estado, efectos hover, diseño responsive optimizado y mejor UX (PR trending-complete-redesign).
 - Trending page accessible without login; trending route no longer requires activation and handles guests. (hotfix trending-public)
+- Trending route now skips forum query when forum tables missing and logs exception (hotfix trending-forum-missing-table).
