@@ -413,6 +413,48 @@ def manage_store():
     return render_template("admin/manage_store.html", products=products)
 
 
+@admin_bp.route("/notes")
+def manage_notes():
+    """Admin interface for managing uploaded notes."""
+    notes = (
+        db.session.query(Note, User)
+        .join(User, Note.user_id == User.id)
+        .order_by(Note.created_at.desc())
+        .all()
+    )
+    return render_template("admin/manage_notes.html", notes=notes)
+
+
+@admin_bp.route("/export/notes")
+def export_notes():
+    """Export notes to CSV"""
+    notes = db.session.query(Note, User).join(User, Note.user_id == User.id).all()
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["ID", "Título", "Autor", "Vistas", "Descargas", "Likes", "Fecha"])
+    for note, user in notes:
+        writer.writerow(
+            [
+                note.id,
+                note.title,
+                user.username,
+                note.views,
+                note.downloads,
+                note.likes,
+                (
+                    note.created_at.strftime("%Y-%m-%d %H:%M:%S")
+                    if note.created_at
+                    else ""
+                ),
+            ]
+        )
+    output.seek(0)
+    response = make_response(output.getvalue())
+    response.headers["Content-Type"] = "text/csv"
+    response.headers["Content-Disposition"] = "attachment; filename=notes_export.csv"
+    return response
+
+
 @admin_bp.route("/verificaciones")
 def verification_requests():
     """List pending verification requests."""

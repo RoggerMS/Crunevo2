@@ -1,0 +1,70 @@
+{% extends 'admin/base_admin.html' %}
+{% from 'components/csrf.html' import csrf_field %}
+{% block admin_content %}
+<h2 class="page-title mb-4">Gestión de apuntes</h2>
+<a href="{{ url_for('admin.export_notes') }}" class="btn btn-outline-primary btn-sm mb-3">
+  <i class="bi bi-download me-1"></i>Exportar a CSV
+</a>
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table id="tablaNotes" class="table table-vcenter card-table" data-datatable>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>Vistas</th>
+            <th>Likes</th>
+            <th>Fecha</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for note, user in notes %}
+          <tr>
+            <td>{{ note.id }}</td>
+            <td>{{ note.title }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ note.views }}</td>
+            <td>{{ note.likes }}</td>
+            <td>{{ note.created_at.strftime('%d/%m/%Y') if note.created_at else '' }}</td>
+            <td class="text-end">
+              <div class="dropdown position-relative">
+                <button class="btn btn-sm admin-dropdown-btn dropdown-toggle" data-bs-toggle="dropdown" title="Más opciones" aria-label="Más opciones de {{ note.title }}" aria-haspopup="true" aria-expanded="false">⋮</button>
+                <ul class="dropdown-menu shadow-sm">
+                  <li><a class="dropdown-item" href="{{ PUBLIC_BASE_URL }}/notes/{{ note.id }}" target="_blank">Ver</a></li>
+                  <li><button class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteNoteModal{{ note.id }}">Eliminar</button></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% for note, user in notes %}
+<div class="modal fade" id="deleteNoteModal{{ note.id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmar eliminación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <form method="post" action="{{ url_for('admin.delete_note_admin', note_id=note.id) }}">
+        {{ csrf_field() }}
+        <div class="modal-body">
+          ¿Eliminar el apunte "{{ note.title }}"?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger">Eliminar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}
