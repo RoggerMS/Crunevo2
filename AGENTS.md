@@ -901,3 +901,4 @@
 - Redesigned mobile notbar with purple translucent background, circular icon buttons and updated order (Inicio, Personas, Chat, Apuntes, Notificaciones, Tienda), removing the perfil link (PR mobile-notbar-facebook-style).
 - Ajustado notbar móvil para fondo morado sólido, altura mínima 64px y sombra sutil; modal de búsqueda visible en móviles (PR mobile-navbar-fix).
 - Trending page now lists top posts, notes and popular forum questions with a link to ranking. Added Tailwind classes for modern layout (PR trending-forum-ranking).
+- Rediseño completo de la página Trending con layout moderno y atractivo: hero section con estadísticas, cards mejoradas con rankings, badges de estado, efectos hover, diseño responsive optimizado y mejor UX (PR trending-complete-redesign).

@@ -5,242 +5,673 @@
 {% block head_extra %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
 <style>
-.trending-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+/* Modern Trending Page Design */
+.trending-hero {
+  background: linear-gradient(135deg, var(--crunevo-primary) 0%, #805ad5 70%, #9f7aea 100%);
+  border-radius: 24px;
+  padding: 40px 32px;
+  margin-bottom: 40px;
+  color: white;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
-.trending-header {
+.trending-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  opacity: 0.3;
+}
+
+.trending-hero h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.trending-hero p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.trending-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.stat-item {
   text-align: center;
-  margin-bottom: 30px;
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.trending-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
 .trending-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 40px;
 }
 
 .trending-section {
   background: var(--post-bg);
-  border-radius: var(--border-radius);
-  padding: 20px;
-  box-shadow: var(--shadow-light);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.trending-section:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.trending-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
 }
 
 .section-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
   border-bottom: 2px solid var(--border-color);
 }
 
+.section-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .section-icon {
-  font-size: 24px;
+  font-size: 28px;
   color: var(--crunevo-primary);
+  background: rgba(109, 40, 217, 0.1);
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .section-title {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: 700;
   color: var(--text-primary);
   margin: 0;
 }
 
-.trending-post {
-  padding: 15px 0;
-  border-bottom: 1px solid var(--border-color);
+.section-count {
+  background: var(--crunevo-primary);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  min-width: 24px;
+  text-align: center;
 }
 
-.trending-post:last-child {
+.trending-item {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+  border-radius: 12px;
+  margin: 0 -12px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.trending-item:last-child {
   border-bottom: none;
 }
 
-.post-meta {
-  display: flex;
-  justify-content: between;
-  align-items: center;
-  margin-top: 10px;
+.trending-item:hover {
+  background: var(--hover-bg);
 }
 
-.post-stats {
+.item-content {
   display: flex;
-  gap: 15px;
-  font-size: 14px;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.item-avatar {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.avatar-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.trending-item:hover .avatar-img {
+  border-color: var(--crunevo-primary);
+  transform: scale(1.05);
+}
+
+.rank-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--post-bg);
+}
+
+.item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.username {
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.username:hover {
+  color: var(--crunevo-primary);
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 8px;
+  text-transform: uppercase;
+}
+
+.badge-popular {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+}
+
+.badge-top {
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  color: white;
+}
+
+.badge-solved {
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+  color: white;
+}
+
+.item-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.item-description {
+  font-size: 0.9rem;
   color: var(--text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.item-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.stats-group {
+  display: flex;
+  gap: 16px;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
   gap: 4px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }
 
-.trending-badge {
-  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
+.stat-item i {
+  font-size: 0.9rem;
+}
+
+.stat-item.primary {
+  color: var(--crunevo-primary);
   font-weight: 600;
-  text-transform: uppercase;
+}
+
+.item-time {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.trending-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 40px;
+  padding: 32px;
+  background: var(--hover-bg);
+  border-radius: 20px;
+  border: 2px dashed var(--border-color);
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.btn-primary-modern {
+  background: linear-gradient(135deg, var(--crunevo-primary), #805ad5);
+  color: white;
+  box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3);
+}
+
+.btn-primary-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(109, 40, 217, 0.4);
+  color: white;
+}
+
+.btn-secondary-modern {
+  background: var(--post-bg);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+}
+
+.btn-secondary-modern:hover {
+  background: var(--crunevo-primary);
+  color: white;
+  border-color: var(--crunevo-primary);
+  transform: translateY(-2px);
+}
+
+.section-link {
+  color: var(--crunevo-primary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.section-link:hover {
+  color: var(--primary-dark);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .trending-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  
+  .trending-grid .trending-section:last-child {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 768px) {
+  .trending-container {
+    padding: 0 16px;
+  }
+  
+  .trending-hero {
+    padding: 32px 20px;
+    margin-bottom: 32px;
+  }
+  
+  .trending-hero h1 {
+    font-size: 2rem;
+  }
+  
+  .trending-stats {
+    gap: 24px;
+  }
+  
   .trending-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-
-  .trending-container {
-    padding: 15px;
+  
+  .trending-section {
+    padding: 20px;
   }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .trending-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .action-btn {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .trending-stats {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .item-content {
+    gap: 12px;
+  }
+  
+  .avatar-img {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .section-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+}
+
+/* Dark mode adjustments */
+[data-bs-theme="dark"] .trending-section {
+  background: var(--post-bg);
+  border-color: var(--border-color);
+}
+
+[data-bs-theme="dark"] .trending-actions {
+  background: var(--hover-bg);
+}
+
+[data-bs-theme="dark"] .btn-secondary-modern {
+  background: var(--post-bg);
+  border-color: var(--border-color);
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="trending-container tw-max-w-screen-xl tw-mx-auto tw-px-4 tw-py-6">
-  <div class="trending-header tw-text-center tw-mb-8">
-    <h1 class="display-6 mb-2">🔥 Trending en CRUNEVO</h1>
-    <p class="text-muted">Lo más popular esta semana</p>
+<div class="trending-container">
+  <!-- Hero Section -->
+  <div class="trending-hero">
+    <h1>🔥 Trending en CRUNEVO</h1>
+    <p>Descubre el contenido más popular de esta semana</p>
+    <div class="trending-stats">
+      <div class="stat-item">
+        <span class="stat-number">{{ weekly_posts|length or 0 }}</span>
+        <span class="stat-label">Posts populares</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ top_notes|length or 0 }}</span>
+        <span class="stat-label">Apuntes destacados</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ top_questions|length or 0 }}</span>
+        <span class="stat-label">Preguntas activas</span>
+      </div>
+    </div>
   </div>
 
-  <div class="trending-grid tw-grid tw-gap-6 md:tw-grid-cols-2">
+  <!-- Main Content Grid -->
+  <div class="trending-grid">
     <!-- Publicaciones más votadas -->
-    <div class="trending-section tw-bg-white dark:tw-bg-gray-900 tw-rounded-lg tw-shadow tw-p-4">
+    <div class="trending-section">
       <div class="section-header">
-        <i class="bi bi-fire section-icon"></i>
-        <h2 class="section-title">Publicaciones más votadas</h2>
+        <div class="section-title-group">
+          <div class="section-icon">
+            <i class="bi bi-fire"></i>
+          </div>
+          <h2 class="section-title">Posts Populares</h2>
+        </div>
+        <div class="section-count">{{ weekly_posts[:5]|length }}</div>
       </div>
 
       {% for post in weekly_posts[:5] %}
-      <div class="trending-post">
-        <div class="d-flex align-items-start gap-3">
-          <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" 
-               alt="{{ post.author.username }}" 
-               class="rounded-circle" 
-               style="width: 40px; height: 40px; object-fit: cover;">
-          <div class="flex-grow-1">
-            <div class="d-flex align-items-center gap-2 mb-1">
-              <strong>{{ post.author.username }}</strong>
-              <span class="trending-badge">Popular</span>
+      <div class="trending-item">
+        <div class="item-content">
+          <div class="item-avatar">
+            <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+                 alt="{{ post.author.username }}" 
+                 class="avatar-img">
+            <div class="rank-badge">{{ loop.index }}</div>
+          </div>
+          <div class="item-info">
+            <div class="user-info">
+              <a href="#" class="username">{{ post.author.username }}</a>
+              <span class="status-badge badge-popular">Popular</span>
             </div>
-            <p class="mb-2 text-truncate" style="max-width: 300px;">
-              {{ post.content[:100] }}{% if post.content|length > 100 %}...{% endif %}
-            </p>
-            <div class="post-meta">
-              <div class="post-stats">
-                <span class="stat-item">
-                  <i class="bi bi-fire"></i>
+            <div class="item-description">
+              {{ post.content[:120] }}{% if post.content|length > 120 %}...{% endif %}
+            </div>
+            <div class="item-stats">
+              <div class="stats-group">
+                <div class="stat-item primary">
+                  <i class="bi bi-heart-fill"></i>
                   <span>{{ post.reactions_count or 0 }}</span>
-                </span>
-                <span class="stat-item">
-                  <i class="bi bi-chat"></i>
+                </div>
+                <div class="stat-item">
+                  <i class="bi bi-chat-dots"></i>
                   <span>{{ post.comments|length or 0 }}</span>
-                </span>
+                </div>
               </div>
-              <small class="text-muted">{{ post.created_at|timesince }}</small>
+              <div class="item-time">{{ post.created_at|timesince }}</div>
             </div>
           </div>
         </div>
       </div>
       {% endfor %}
+      
+      <div style="text-align: center; margin-top: 20px;">
+        <a href="{{ url_for('feed.feed_home') }}" class="section-link">
+          Ver más posts <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
     </div>
 
     <!-- Apuntes más relevantes -->
-    <div class="trending-section tw-bg-white dark:tw-bg-gray-900 tw-rounded-lg tw-shadow tw-p-4">
+    <div class="trending-section">
       <div class="section-header">
-        <i class="bi bi-journal-bookmark section-icon"></i>
-        <h2 class="section-title">Apuntes más relevantes</h2>
+        <div class="section-title-group">
+          <div class="section-icon">
+            <i class="bi bi-journal-bookmark"></i>
+          </div>
+          <h2 class="section-title">Apuntes Top</h2>
+        </div>
+        <div class="section-count">{{ top_notes[:5]|length }}</div>
       </div>
 
       {% for note in top_notes[:5] %}
-      <div class="trending-post">
-        <div class="d-flex align-items-start gap-3">
-          <img src="{{ note.author.avatar_url or url_for('static', filename='img/default.png') }}" 
-               alt="{{ note.author.username }}" 
-               class="rounded-circle" 
-               style="width: 40px; height: 40px; object-fit: cover;">
-          <div class="flex-grow-1">
-            <div class="d-flex align-items-center gap-2 mb-1">
-              <strong>{{ note.author.username }}</strong>
-              <span class="trending-badge">Top semanal</span>
+      <div class="trending-item">
+        <div class="item-content">
+          <div class="item-avatar">
+            <img src="{{ note.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+                 alt="{{ note.author.username }}" 
+                 class="avatar-img">
+            <div class="rank-badge">{{ loop.index }}</div>
+          </div>
+          <div class="item-info">
+            <div class="user-info">
+              <a href="#" class="username">{{ note.author.username }}</a>
+              <span class="status-badge badge-top">Top semanal</span>
             </div>
-            <h6 class="mb-1">{{ note.title }}</h6>
-            <p class="mb-2 text-muted small">
-              {{ note.description[:80] }}{% if note.description|length > 80 %}...{% endif %}
-            </p>
-            <div class="post-meta">
-              <div class="post-stats">
-                <span class="stat-item">
+            <div class="item-title">{{ note.title }}</div>
+            <div class="item-description">
+              {{ note.description[:100] }}{% if note.description|length > 100 %}...{% endif %}
+            </div>
+            <div class="item-stats">
+              <div class="stats-group">
+                <div class="stat-item primary">
                   <i class="bi bi-download"></i>
                   <span>{{ note.downloads or 0 }}</span>
-                </span>
-                <span class="stat-item">
-                  <i class="bi bi-star"></i>
-                  <span>{{ note.rating or 0 }}</span>
-                </span>
+                </div>
+                <div class="stat-item">
+                  <i class="bi bi-star-fill"></i>
+                  <span>{{ "%.1f"|format(note.rating or 0) }}</span>
+                </div>
               </div>
-              <small class="text-muted">{{ note.created_at|timesince }}</small>
+              <div class="item-time">{{ note.created_at|timesince }}</div>
             </div>
           </div>
         </div>
       </div>
       {% endfor %}
+      
+      <div style="text-align: center; margin-top: 20px;">
+        <a href="{{ url_for('notes.index') if 'notes.index' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}" class="section-link">
+          Explorar apuntes <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
     </div>
 
     <!-- Preguntas populares del foro -->
-    <div class="trending-section tw-bg-white dark:tw-bg-gray-900 tw-rounded-lg tw-shadow tw-p-4">
+    <div class="trending-section">
       <div class="section-header">
-        <i class="bi bi-question-circle section-icon"></i>
-        <h2 class="section-title">Preguntas populares del foro</h2>
+        <div class="section-title-group">
+          <div class="section-icon">
+            <i class="bi bi-question-circle"></i>
+          </div>
+          <h2 class="section-title">Foro Activo</h2>
+        </div>
+        <div class="section-count">{{ top_questions[:5]|length }}</div>
       </div>
 
-      {% for q in top_questions %}
-      <div class="trending-post">
-        <div class="d-flex align-items-start gap-3">
-          <img src="{{ q.author.avatar_url or url_for('static', filename='img/default.png') }}"
-               alt="{{ q.author.username }}"
-               class="rounded-circle"
-               style="width: 40px; height: 40px; object-fit: cover;">
-          <div class="flex-grow-1">
-            <div class="d-flex align-items-center gap-2 mb-1">
-              <strong>{{ q.author.username }}</strong>
+      {% for q in top_questions[:5] %}
+      <div class="trending-item">
+        <div class="item-content">
+          <div class="item-avatar">
+            <img src="{{ q.author.avatar_url or url_for('static', filename='img/default.png') }}"
+                 alt="{{ q.author.username }}"
+                 class="avatar-img">
+            <div class="rank-badge">{{ loop.index }}</div>
+          </div>
+          <div class="item-info">
+            <div class="user-info">
+              <a href="#" class="username">{{ q.author.username }}</a>
               {% if q.is_solved %}
-              <span class="badge bg-success-subtle text-success">Resuelto</span>
+              <span class="status-badge badge-solved">Resuelto</span>
               {% endif %}
             </div>
-            <h6 class="mb-1 tw-truncate">{{ q.title }}</h6>
-            <div class="post-meta">
-              <div class="post-stats">
-                <span class="stat-item">
-                  <i class="bi bi-chat-dots"></i>
-                  <span>{{ q.answer_count }}</span>
-                </span>
-                <span class="stat-item">
-                  <i class="bi bi-eye"></i>
-                  <span>{{ q.views }}</span>
-                </span>
+            <div class="item-title">{{ q.title }}</div>
+            <div class="item-stats">
+              <div class="stats-group">
+                <div class="stat-item primary">
+                  <i class="bi bi-chat-dots-fill"></i>
+                  <span>{{ q.answer_count or 0 }}</span>
+                </div>
+                <div class="stat-item">
+                  <i class="bi bi-eye-fill"></i>
+                  <span>{{ q.views or 0 }}</span>
+                </div>
               </div>
-              <small class="text-muted">{{ q.created_at|timesince }}</small>
+              <div class="item-time">{{ q.created_at|timesince }}</div>
             </div>
           </div>
         </div>
       </div>
       {% endfor %}
+      
+      <div style="text-align: center; margin-top: 20px;">
+        <a href="{{ url_for('forum.index') if 'forum.index' in url_for.__globals__.get('current_app', {}).view_functions else '/forum' }}" class="section-link">
+          Visitar foro <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
     </div>
   </div>
 
-  <div class="text-center mt-4 d-flex justify-content-center gap-3">
-    <a href="{{ url_for('feed.feed_home') }}" class="btn btn-primary">
-      <i class="bi bi-arrow-left"></i> Volver al Feed
+  <!-- Action Buttons -->
+  <div class="trending-actions">
+    <a href="{{ url_for('feed.feed_home') }}" class="action-btn btn-primary-modern">
+      <i class="bi bi-house-fill"></i>
+      Volver al Feed
     </a>
-    <a href="{{ url_for('ranking.index') if 'ranking.index' in url_for.__globals__.get('current_app', {}).view_functions else '/ranking' }}" class="btn btn-outline-primary">
-      Ver ranking
+    <a href="{{ url_for('ranking.index') if 'ranking.index' in url_for.__globals__.get('current_app', {}).view_functions else '/ranking' }}" class="action-btn btn-secondary-modern">
+      <i class="bi bi-trophy-fill"></i>
+      Ver Ranking Completo
     </a>
   </div>
 </div>
