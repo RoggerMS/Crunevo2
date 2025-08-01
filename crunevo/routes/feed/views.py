@@ -137,6 +137,19 @@ def trending():
     top_ranked, recent_achievements = get_weekly_ranking()
     top_notes, top_posts, top_users = get_featured_posts()
 
+    # Popular forum questions ordered by answers and views
+    from crunevo.models.forum import ForumQuestion, ForumAnswer
+    from sqlalchemy import func
+
+    top_questions = (
+        db.session.query(ForumQuestion)
+        .outerjoin(ForumAnswer)
+        .group_by(ForumQuestion.id)
+        .order_by(func.count(ForumAnswer.id).desc(), ForumQuestion.views.desc())
+        .limit(5)
+        .all()
+    )
+
     reaction_map = PostReaction.counts_for_posts([p.id for p in weekly_posts])
     user_reactions = PostReaction.reactions_for_user_posts(
         current_user.id, [p.id for p in weekly_posts]
@@ -159,6 +172,7 @@ def trending():
         top_notes=top_notes,
         top_posts=top_posts,
         top_users=top_users,
+        top_questions=top_questions,
         reaction_counts=reaction_map,
         user_reactions=user_reactions,
         saved_posts=saved_posts,
