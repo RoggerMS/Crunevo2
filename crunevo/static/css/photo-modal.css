@@ -111,40 +111,13 @@
   padding: 16px;
 }
 
-.modal-post-header {
+.modal-post-header,
+.unified-comment-form-container {
   flex-shrink: 0;
 }
 
 .modal-content {
   overflow: hidden;
-}
-
-/* Comment modal layout */
-.comment-modal .modal-dialog {
-  height: 100vh;
-  max-height: 100vh;
-}
-
-.comment-modal .modal-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.comment-modal .modal-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  padding-bottom: 90px;
-}
-
-.comment-modal .comment-input-container {
-  position: sticky;
-  bottom: 0;
-  background: var(--crunevo-white);
-  z-index: 10;
-  border-top: 1px solid var(--crunevo-border);
 }
 
 @media (max-width: 768px) {
