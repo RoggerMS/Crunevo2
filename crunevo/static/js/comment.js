@@ -1,6 +1,15 @@
 // Comment modal utilities
 
 function openCommentsModal(postId) {
+  // Deprecated: Use modernFeedManager.openCommentsModal() instead
+  console.warn('openCommentsModal() is deprecated. Use modernFeedManager.openCommentsModal() instead.');
+  
+  if (window.modernFeedManager && window.modernFeedManager.openCommentsModal) {
+    window.modernFeedManager.openCommentsModal(postId);
+    return;
+  }
+  
+  // Fallback to old Bootstrap modal
   const modal = new bootstrap.Modal(
     document.getElementById(`commentsModal-${postId}`)
   );
@@ -84,29 +93,62 @@ function addCommentToModalUI(comment, postId) {
   const commentsList = document.getElementById(`commentsList-${postId}`);
   if (!commentsList) return;
 
-  const commentHTML = `
-    <div class="comment-item d-flex mb-3">
-      <img src="${comment.avatar || '/static/img/default.png'}"
-           alt="${comment.author}"
-           class="rounded-circle me-2"
-           style="width: 32px; height: 32px; object-fit: cover;">
-      <div class="flex-grow-1">
-        <div class="comment-bubble bg-light rounded-3 p-2">
-          <div class="comment-author fw-semibold small">${comment.author}</div>
-          <div class="comment-text">${comment.body}</div>
-        </div>
-        <div class="comment-meta mt-1">
-          <small class="text-muted">ahora</small>
-          <button class="btn btn-link btn-sm p-0 ms-2 text-muted">Responder</button>
+  // Check if we're in the new Facebook-style modal
+  const isNewModal = document.getElementById('facebookModal') || document.querySelector('.facebook-modal-container');
+  
+  let commentHTML;
+  if (isNewModal) {
+    // New Facebook-style comment structure
+    commentHTML = `
+      <div class="comment-item">
+        <img src="${comment.avatar || '/static/img/default.png'}"
+             alt="${comment.author}"
+             class="comment-avatar">
+        <div class="comment-content">
+          <div class="comment-box">
+            <div class="comment-author">${comment.author}</div>
+            <div class="comment-text">${comment.body}</div>
+          </div>
+          <div class="comment-meta">
+            <small class="text-muted">ahora</small>
+            <button class="btn btn-link btn-sm p-0 ms-2 text-muted">Responder</button>
+          </div>
         </div>
       </div>
-    </div>
-  `;
+    `;
+  } else {
+    // Old Bootstrap modal structure
+    commentHTML = `
+      <div class="comment-item d-flex mb-3">
+        <img src="${comment.avatar || '/static/img/default.png'}"
+             alt="${comment.author}"
+             class="rounded-circle me-2"
+             style="width: 32px; height: 32px; object-fit: cover;">
+        <div class="flex-grow-1">
+          <div class="comment-bubble bg-light rounded-3 p-2">
+            <div class="comment-author fw-semibold small">${comment.author}</div>
+            <div class="comment-text">${comment.body}</div>
+          </div>
+          <div class="comment-meta mt-1">
+            <small class="text-muted">ahora</small>
+            <button class="btn btn-link btn-sm p-0 ms-2 text-muted">Responder</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Remove empty comments message if it exists
+  const emptyComments = commentsList.querySelector('.empty-comments');
+  if (emptyComments) {
+    emptyComments.remove();
+  }
 
   commentsList.insertAdjacentHTML('beforeend', commentHTML);
 
-  // Scroll to bottom of comments
-  commentsList.scrollTop = commentsList.scrollHeight;
+  // Scroll to bottom - handle both modal types
+  const commentsSection = commentsList.closest('.modal-comments-section') || commentsList;
+  commentsSection.scrollTop = commentsSection.scrollHeight;
 }
 
 let commentsInitialized = false;
