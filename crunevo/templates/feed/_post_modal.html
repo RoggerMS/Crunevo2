@@ -1,7 +1,7 @@
 {% import 'components/csrf.html' as csrf %}
 {% set saved_posts = saved_posts if saved_posts is defined else {} %}
 
-<!-- 1. Contenedor con Scroll Único -->
+<!-- Scrollable content -->
 <div class="modal-scrollable-content" style="flex-grow: 1; overflow-y: auto;">
   <div class="modal-post-header">
     <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" alt="Avatar de {{ post.author.username }}" class="modal-post-avatar">
@@ -75,9 +75,6 @@
     </div>
   </div>
 
-  <div class="px-4 pt-3">
-    <!-- Filtro de comentarios -->
-  </div>
   <div class="modal-comments-section">
     {% set comments = comments if comments is defined else post.comments %}
     {% set more_comments = post.comments|length > comments|length %}
@@ -112,7 +109,7 @@
   </div>
 </div>
 
-<!-- 2. Input Fijo (fuera del scroll) -->
+<!-- Fixed comment form -->
 <div class="w-100 compact-comment-form-container" style="flex-shrink: 0;">
   {% if current_user.is_authenticated %}
   <form class="comment-form" data-post-id="{{ post.id }}" onsubmit="submitModalComment(event, '{{ post.id }}')">

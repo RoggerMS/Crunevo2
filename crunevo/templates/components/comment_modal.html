@@ -4,12 +4,13 @@
 
 <!-- Modal de Comentarios -->
 <div class="modal fade" id="commentsModal-{{ post.id }}" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="commentsModalLabel-{{ post.id }}" aria-hidden="true" style="display: none;">
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down" style="max-height: 90vh;">
-    <div class="modal-content d-flex flex-column" style="height: 100%; overflow: hidden;">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
+    <div class="modal-content d-flex flex-column" style="height: 90vh; overflow: hidden;">
       <h5 id="commentsModalLabel-{{ post.id }}" class="visually-hidden">Comentarios</h5>
-
-      <!-- 1. Header Fijo (no se mueve) -->
-      <div class="modal-header border-0 pb-0" style="flex-shrink: 0;">
+      <!-- Scrollable Content -->
+      <div class="modal-scrollable-content" style="flex-grow: 1; overflow-y: auto;">
+        <!-- Header del Modal -->
+        <div class="modal-header border-0 pb-0">
           <div class="d-flex align-items-center">
             <img src="{{ post.author.avatar_url if post.author else url_for('static', filename='img/default.png') }}"
                  alt="{{ post.author.username if post.author else 'Usuario eliminado' }}"
@@ -23,8 +24,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
 
-      <!-- 2. Contenedor de Contenido (EL ÚNICO CON SCROLL) -->
-      <div class="modal-scrollable-content" style="flex-grow: 1; overflow-y: auto;">
+        <!-- Contenido del Post -->
         <div class="modal-body p-0">
           <!-- Texto del Post -->
           {% if post.content %}
@@ -73,11 +73,6 @@
                 <span>Guardar</span>
               </button>
             </div>
-          </div>
-
-          <!-- Filtro de comentarios -->
-          <div class="px-4 pt-3">
-            <!-- Filtro de comentarios -->
           </div>
 
           <!-- Sección de Comentarios -->
