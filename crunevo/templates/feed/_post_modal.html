@@ -104,15 +104,19 @@
   {% endif %}
 </div>
 
-<div class="modal-comment-form">
-  <form action="/feed/post/{{ post.id }}/comment" method="post" class="comment-form" data-post-id="{{ post.id }}">
+<div class="unified-comment-form-container">
+  {% if current_user.is_authenticated %}
+  <form class="comment-form" data-post-id="{{ post.id }}" onsubmit="submitModalComment(event, '{{ post.id }}')">
     {{ csrf.csrf_field() }}
-    <div class="comment-input-group">
-      <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" alt="Tu avatar" class="comment-form-avatar">
-      <div class="comment-input-wrapper">
-        <textarea class="comment-input" name="body" rows="1" placeholder="Escribe un comentario..." required></textarea>
-        <button type="submit" class="comment-submit-btn" disabled><i class="bi bi-send"></i></button>
+    <div class="unified-comment-form-group">
+      <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" alt="{{ current_user.username }}" class="unified-comment-form-avatar">
+      <div class="unified-comment-input-wrapper">
+        <textarea class="unified-comment-input comment-input" name="body" rows="1" placeholder="Escribe un comentario..." oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'"></textarea>
+        <button type="submit" class="unified-comment-submit-btn comment-submit-btn" disabled><i class="bi bi-send-fill"></i></button>
       </div>
     </div>
   </form>
+  {% else %}
+    <!-- Mensaje de inicio de sesión -->
+  {% endif %}
 </div>

@@ -93,13 +93,13 @@
   flex-direction: column;
   height: 100%;
   background: var(--crunevo-white);
-  border-left: 1px solid #E4E6EA;
+  border-left: 1px solid var(--crunevo-border);
   overflow: hidden;
 }
 
 [data-bs-theme="dark"] .facebook-modal-info-panel {
   background: #242526;
-  border-left: 1px solid #3A3B3C;
+  border-left: 1px solid var(--crunevo-border);
 }
 
 /* Post Header */
@@ -355,97 +355,6 @@
   display: block;
 }
 
-/* Comment Form - Fixed at bottom */
-.modal-comment-form {
-  padding: 16px 20px;
-  border-top: 1px solid #E4E6EA;
-  flex-shrink: 0;
-  background: var(--crunevo-white);
-}
-
-[data-bs-theme="dark"] .modal-comment-form {
-  border-top: 1px solid #3A3B3C;
-  background: #242526;
-}
-
-.comment-input-group {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-}
-
-.comment-form-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.comment-input-wrapper {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  background: #F0F2F5;
-  border-radius: 20px;
-  border: 1px solid #E4E6EA;
-  padding: 8px 12px;
-  gap: 8px;
-}
-
-[data-bs-theme="dark"] .comment-input-wrapper {
-  background: #3A3B3C;
-  border-color: #555;
-}
-
-.comment-input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  font-size: 14px;
-  color: var(--crunevo-text-dark);
-  outline: none;
-  padding: 4px 8px;
-}
-
-[data-bs-theme="dark"] .comment-input {
-  color: #E4E6EA;
-}
-
-.comment-input::placeholder {
-  color: #65676B;
-}
-
-.comment-submit-btn {
-  background: var(--crunevo-primary);
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-}
-
-.comment-submit-btn:hover {
-  background: #5B21B6;
-  transform: scale(1.05);
-}
-
-.comment-submit-btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.comment-submit-btn i {
-  font-size: 14px;
-}
-
 /* Modal Controls for Image-only view */
 
 .modal-top-controls {
@@ -551,17 +460,17 @@
     grid-template-columns: 1fr;
     grid-template-rows: 60vh auto;
   }
-  
+
   .facebook-modal-info-panel {
     border-left: none;
-    border-top: 1px solid #E4E6EA;
+    border-top: 1px solid var(--crunevo-border);
     max-height: 40vh;
   }
-  
+
   [data-bs-theme="dark"] .facebook-modal-info-panel {
-    border-top: 1px solid #3A3B3C;
+    border-top: 1px solid var(--crunevo-border);
   }
-  
+
   .modal-comments-section {
     max-height: none;
     flex-grow: 1;
@@ -777,4 +686,66 @@
 @keyframes fadeInOut {
   0%, 100% { opacity: 0; }
   50% { opacity: 1; }
+}
+
+/* ✅ AÑADIDO: Estilo unificado para el formulario de comentarios */
+.unified-comment-form-container {
+  padding: 12px 16px;
+  border-top: 1px solid var(--crunevo-border);
+  background-color: var(--crunevo-white);
+  flex-shrink: 0; /* Asegura que este elemento no se encoja */
+}
+
+.unified-comment-form-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.unified-comment-form-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.unified-comment-input-wrapper {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  background-color: var(--crunevo-bg-light);
+  border-radius: 20px;
+  padding: 8px 12px;
+}
+
+.unified-comment-input {
+  flex-grow: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 15px;
+  color: var(--crunevo-text-dark);
+  resize: none; /* Evita que el usuario pueda redimensionarlo */
+  line-height: 1.4;
+  max-height: 80px; /* Limita el crecimiento del textarea */
+  overflow-y: auto; /* Añade scroll si el texto es muy largo */
+}
+
+.unified-comment-submit-btn {
+  background: transparent;
+  border: none;
+  color: var(--crunevo-primary);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 8px;
+  transition: transform 0.2s ease;
+}
+
+.unified-comment-submit-btn:disabled {
+  color: #aab2c0; /* Un gris para el estado deshabilitado */
+  cursor: not-allowed;
+}
+
+.unified-comment-submit-btn:not(:disabled):hover {
+  transform: scale(1.1);
 }
