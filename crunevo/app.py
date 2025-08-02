@@ -165,6 +165,14 @@ def create_app():
 
     app.jinja_env.filters["link_preview"] = link_preview
 
+    def number_format(value):
+        try:
+            return f"{int(value):,}".replace(",", ".")
+        except (ValueError, TypeError):
+            return value
+
+    app.jinja_env.filters["number_format"] = number_format
+
     db.init_app(app)
     login_manager.init_app(app)
     mail.init_app(app)
