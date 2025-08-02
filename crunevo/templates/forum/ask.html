@@ -1030,13 +1030,18 @@ let formData = {
 document.addEventListener('DOMContentLoaded', function() {
   updateProgress();
   setupEventListeners();
-  if (window.quillEditor) {
-    window.quillEditor.on('text-change', function() {
-      updateProgress();
+
+  setTimeout(function initEditorValidation() {
+    if (window.quillEditor) {
+      window.quillEditor.on('text-change', function() {
+        updateContentValidation();
+        updateProgress();
+      });
       updateContentValidation();
-    });
-    updateContentValidation();
-  }
+    } else {
+      setTimeout(initEditorValidation, 100);
+    }
+  }, 0);
 });
 
 function setupEventListeners() {
@@ -1096,18 +1101,21 @@ function updateContentValidation() {
   const len = countRealChars(rawText);
   const counter = document.getElementById('content-counter');
   if (counter) counter.textContent = len;
+
   const nextBtn = document.getElementById('nextBtn');
   const errorEl = document.getElementById('content-error');
-  if (len >= 20) {
-    errorEl.style.display = 'none';
-    if (currentStep === 3) nextBtn.disabled = false;
+
+  const hasRealContent = len >= 20;
+  const hasSomeText = rawText.replace(/\s/g, '').length > 0;
+
+  if (hasRealContent) {
+    if (errorEl) errorEl.style.display = 'none';
+    if (currentStep === 3 && nextBtn) nextBtn.disabled = false;
   } else {
-    if (rawText.trim().length > 0) {
-      errorEl.style.display = 'block';
-    } else {
-      errorEl.style.display = 'none';
+    if (errorEl) {
+      errorEl.style.display = hasSomeText ? 'block' : 'none';
     }
-    if (currentStep === 3) nextBtn.disabled = true;
+    if (currentStep === 3 && nextBtn) nextBtn.disabled = true;
   }
 }
 
