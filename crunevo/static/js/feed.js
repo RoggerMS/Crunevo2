@@ -677,7 +677,7 @@ class ModernFeedManager {
 
         <div class="modal-top-controls">
           <div class="dropdown">
-            <button class="modal-control-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Más opciones">
+            <button class="modal-control-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Más opciones" aria-label="Más opciones">
               <i class="bi bi-three-dots"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
@@ -687,15 +687,15 @@ class ModernFeedManager {
               <li><a class="dropdown-item" href="#" onclick="copyPostLink('${postId}')"><i class="bi bi-link-45deg me-2"></i> Copiar enlace</a></li>
             </ul>
           </div>
-          <button class="modal-control-btn" onclick="modernFeedManager.zoomIn()" title="Aumentar"><i class="bi bi-plus-lg"></i></button>
-          <button class="modal-control-btn" onclick="modernFeedManager.zoomOut()" title="Reducir"><i class="bi bi-dash-lg"></i></button>
-          <a id="modalDownloadLink" href="#" download class="modal-control-btn" title="Descargar"><i class="bi bi-download"></i></a>
-          <button class="modal-control-btn" onclick="modernFeedManager.closeModal()" title="Cerrar (Esc)"><i class="bi bi-x-lg"></i></button>
+          <button class="modal-control-btn" onclick="modernFeedManager.zoomIn()" title="Aumentar" aria-label="Aumentar Zoom"><i class="bi bi-plus-lg"></i></button>
+          <button class="modal-control-btn" onclick="modernFeedManager.zoomOut()" title="Reducir" aria-label="Reducir Zoom"><i class="bi bi-dash-lg"></i></button>
+          <a id="modalDownloadLink" href="#" download class="modal-control-btn" title="Descargar" aria-label="Descargar Imagen"><i class="bi bi-download"></i></a>
+          <button class="modal-control-btn" onclick="modernFeedManager.closeModal()" title="Cerrar (Esc)" aria-label="Cerrar"><i class="bi bi-x-lg"></i></button>
         </div>
 
         ${hasMultiple ? `
-          <button type="button" class="modal-nav prev" onclick="modernFeedManager.prevImage()" title="Anterior (←)"><i class="bi bi-chevron-left"></i></button>
-          <button type="button" class="modal-nav next" onclick="modernFeedManager.nextImage()" title="Siguiente (→)"><i class="bi bi-chevron-right"></i></button>
+          <button type="button" class="modal-nav prev" onclick="modernFeedManager.prevImage()" title="Anterior (←)" aria-label="Anterior"><i class="bi bi-chevron-left"></i></button>
+          <button type="button" class="modal-nav next" onclick="modernFeedManager.nextImage()" title="Siguiente (→)" aria-label="Siguiente"><i class="bi bi-chevron-right"></i></button>
         ` : ''}
       </div>
       <div class="facebook-modal-info-panel" id="facebookModalInfoPanel">

@@ -1055,3 +1055,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Full-screen Facebook-style modal restored zoom, navigation, download and options controls with scroll-safe info panel (PR facebook-modal-controls).
 - Introduced dual modal system: full-screen photo modal with advanced controls and restored Bootstrap comment modal, removing comments-only styles and logic (PR dual-modal-system).
 - Unified comment input across photo and comment modals with fixed bottom form and reusable CSS for Facebook-like design (PR unified-comment-input).
+- Made photo modal responsive for mobile, added unique IDs per post and ARIA-labelled controls to address accessibility warnings (PR photo-modal-mobile-fix).

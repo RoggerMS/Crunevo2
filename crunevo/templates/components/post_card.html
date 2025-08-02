@@ -6,7 +6,7 @@
 {% set saved_posts = saved_posts if saved_posts is defined else {} %}
 {% import 'components/image_gallery.html' as gallery %}
 
-<article class="facebook-post" data-post-id="{{ post.id }}" data-comment-permission="{{ post.comment_permission }}">
+<article id="post-{{ post.id }}" class="facebook-post" data-post-id="{{ post.id }}" data-comment-permission="{{ post.comment_permission }}">
   <!-- Post Header -->
   <div class="post-header">
     <div class="post-avatar">
