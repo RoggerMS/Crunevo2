@@ -1059,3 +1059,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Fixed comment modal layout with flexbox to keep header and input fixed and added compact comment form styles reused in photo modal for consistency (PR comment-modal-compact-form).
 - Removed Bootstrap's extra scroll class from comment modal to ensure a single scroll area and matched photo modal comment form width using w-100 (PR comment-modal-single-scroll).
 - Refactored comment and photo modals into single-page scrollable layouts, locked body scrolling and anchored comment input at bottom for consistency (PR modal-unified-scroll).
+- Ensured modals remain within viewport using 90vh content height, moved all scroll to internal containers and kept comment input fixed to eliminate outer scrollbars (PR modal-scroll-layout-fix).

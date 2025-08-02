@@ -856,3 +856,18 @@
   background-color: var(--crunevo-accent);
 }
 
+/* Ensure the info panel uses a flex column layout with internal scroll */
+.facebook-modal-info-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--crunevo-white);
+  border-left: 1px solid var(--crunevo-border);
+  overflow: hidden;
+}
+
+[data-bs-theme="dark"] .facebook-modal-info-panel {
+  background: #242526;
+  border-left: 1px solid var(--crunevo-border);
+}
+

@@ -108,7 +108,7 @@
 </div>
 
 <!-- Fixed comment form -->
-<div class="w-100 compact-comment-form-container">
+<div class="w-100 compact-comment-form-container" style="flex-shrink: 0;">
   {% if current_user.is_authenticated %}
   <form class="comment-form" data-post-id="{{ post.id }}" onsubmit="submitModalComment(event, '{{ post.id }}')">
     {{ csrf.csrf_field() }}
