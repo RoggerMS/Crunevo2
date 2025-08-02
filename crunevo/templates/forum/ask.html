@@ -1087,16 +1087,13 @@ function updateCharCounter(inputId, maxLength) {
 }
 
 function countRealChars(text) {
-  return text.replace(/\s+/g, ' ').trim().length;
+  return text.replace(/[\s\p{P}\p{S}]/gu, '').length;
 }
 
 function updateContentValidation() {
   if (!window.quillEditor) return;
-  const textoPlano = window.quillEditor
-    .getText()
-    .replace(/\s+/g, ' ')
-    .trim();
-  const len = textoPlano.length;
+  const rawText = window.quillEditor.getText();
+  const len = countRealChars(rawText);
   const counter = document.getElementById('content-counter');
   if (counter) counter.textContent = len;
   const nextBtn = document.getElementById('nextBtn');
@@ -1105,7 +1102,7 @@ function updateContentValidation() {
     errorEl.style.display = 'none';
     if (currentStep === 3) nextBtn.disabled = false;
   } else {
-    if (text.trim().length > 0) {
+    if (rawText.trim().length > 0) {
       errorEl.style.display = 'block';
     } else {
       errorEl.style.display = 'none';
