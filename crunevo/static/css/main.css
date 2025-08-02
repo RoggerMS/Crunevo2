@@ -962,7 +962,7 @@ textarea.form-control {
   display: none;
 }
 
-/* Block page scroll when a modal is open */
+/* Prevent background scroll when photo modal is open */
 body.photo-modal-open {
   overflow: hidden;
 }
