@@ -122,8 +122,10 @@ def list_questions():
 
     # Apply sorting
     if sort_by == "popular":
-        query = query.order_by(
-            desc(ForumQuestion.views), desc(ForumQuestion.answer_count)
+        query = (
+            query.outerjoin(ForumAnswer)
+            .group_by(ForumQuestion.id)
+            .order_by(desc(db.func.count(ForumAnswer.id)), desc(ForumQuestion.views))
         )
     elif sort_by == "urgent":
         query = query.filter_by(is_urgent=True).order_by(desc(ForumQuestion.created_at))

@@ -1042,3 +1042,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added migration 'add_forum_modernization_fields' to create missing tables and columns for the modern forum.
 - Handled missing forum tables gracefully in list_questions to avoid 500 errors (PR forum-500-fix).
 - Added migration 'forum_modernization_schema' and removed temporary error handling from forum routes.
+- Fixed popular sort in forum by counting answers via join instead of property (hotfix forum-popular-sort).
