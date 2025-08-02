@@ -87,14 +87,14 @@
   transition: transform 0.3s ease;
 }
 
-/* Info Panel */
+/* Panel de información del modal */
 .facebook-modal-info-panel {
   display: flex;
   flex-direction: column;
   height: 100%;
   background: var(--crunevo-white);
   border-left: 1px solid var(--crunevo-border);
-  overflow: hidden;
+  overflow: hidden; /* Evita scrolls accidentales */
 }
 
 [data-bs-theme="dark"] .facebook-modal-info-panel {
@@ -275,9 +275,10 @@
   color: #65676B;
 }
 
-/* Comments Section */
+/* Sección de comentarios sin scroll propio */
 .modal-comments-section {
   padding: 0 20px;
+  /* Eliminamos: flex-grow, overflow-y, max-height */
 }
 
 .comments-list {

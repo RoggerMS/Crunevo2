@@ -962,7 +962,8 @@ textarea.form-control {
   display: none;
 }
 
-/* Block page scroll when a modal is open */
+/* ✅ CORRECCIÓN CLAVE: Bloquea el scroll de la página cuando un modal está abierto.
+   Esto elimina la "barra de scroll grande". */
 body.photo-modal-open {
   overflow: hidden;
 }
