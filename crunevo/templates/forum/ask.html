@@ -1030,8 +1030,13 @@ let formData = {
 document.addEventListener('DOMContentLoaded', function() {
   updateProgress();
   setupEventListeners();
-  initializeEditor();
-  updateContentValidation();
+  if (window.quillEditor) {
+    window.quillEditor.on('text-change', function() {
+      updateProgress();
+      updateContentValidation();
+    });
+    updateContentValidation();
+  }
 });
 
 function setupEventListeners() {
@@ -1311,33 +1316,17 @@ function updateBountyDisplay() {
   }
 }
 
-function initializeEditor() {
-  if (typeof Quill !== 'undefined') {
-    window.quillEditor = new Quill('#questionEditor', {
-      theme: 'snow',
-      placeholder: 'Describe tu problema en detalle...',
-      modules: {
-        toolbar: [
-          ['bold', 'italic', 'underline'],
-          [{ list: 'ordered' }, { list: 'bullet' }],
-          ['link', 'image'],
-          ['code-block'],
-          ['clean']
-        ]
-      }
-    });
-    
-    window.quillEditor.on('text-change', function() {
-      updateProgress();
-      updateContentValidation();
-    });
-    updateContentValidation();
-  }
-}
 
 // Form submission
 document.getElementById('questionForm').addEventListener('submit', function(e) {
   if (window.quillEditor) {
+    const len = countRealChars(window.quillEditor.getText());
+    if (len < 20) {
+      e.preventDefault();
+      const errorEl = document.getElementById('content-error');
+      if (errorEl) errorEl.style.display = 'block';
+      return;
+    }
     document.querySelector('input[name="content"]').value = window.quillEditor.root.innerHTML;
   }
   
