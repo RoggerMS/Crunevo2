@@ -1,6 +1,29 @@
 /* CRUNEVO Modern Modal System - Facebook Style */
 
-/* Base modal styles */
+/* ✅ AÑADIDO: Definición de variables de color para asegurar que siempre estén disponibles */
+:root {
+  --crunevo-white: #FFFFFF;
+  --crunevo-black: #1a1a1a;
+  --crunevo-primary: #6D28D9;
+  --crunevo-accent: #8B5CF6;
+  --crunevo-text-dark: #1C1E21;
+  --crunevo-text-light: #E4E6EA;
+  --crunevo-bg-light: #F0F2F5;
+  --crunevo-border: #CED4DA;
+}
+
+[data-bs-theme="dark"] {
+  --crunevo-white: #242526;
+  --crunevo-black: #FFFFFF;
+  --crunevo-primary: #8B5CF6;
+  --crunevo-accent: #6D28D9;
+  --crunevo-text-dark: #E4E6EA;
+  --crunevo-text-light: #B0B3B8;
+  --crunevo-bg-light: #3A3B3C;
+  --crunevo-border: #3A3B3C;
+}
+/* FIN DE LA CORRECCIÓN */
+
 .photo-modal-open {
   overflow: hidden;
 }
@@ -8,12 +31,14 @@
 .image-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.95);
+  background: rgba(20, 20, 20, 0.95);
   z-index: 9999;
   display: flex;
+  align-items: center;
+  justify-content: center;
   opacity: 1;
   transition: opacity 0.3s ease;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
 }
 
 .image-modal.hidden {
@@ -21,86 +46,19 @@
   pointer-events: none;
 }
 
-/* Facebook-style Modal Container */
-.modal-container {
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  width: 100%;
-  height: 100%;
-  max-height: 100vh;
-}
-
-/* For comments-only modal (no image) */
-.modal-container.comments-only {
-  grid-template-columns: 1fr;
-  max-width: 600px;
-  margin: 0 auto;
-  background: var(--crunevo-white);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-[data-bs-theme="dark"] .modal-container.comments-only {
-  background: #242526;
-}
-
-/* Image section */
-.modal-image-section {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #000;
-  overflow: hidden;
-}
-
-.modal-container.comments-only .modal-image-section {
-  display: none;
-}
-
-#modalImage {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  cursor: grab;
-  transition: transform 0.3s ease;
-  user-select: none;
-}
-
-#modalImage:active {
-  cursor: grabbing;
-}
-
-/* Facebook Modal Containers */
+/* ✅ CORREGIDO: Usaremos una sola clase base y modificadores */
 .facebook-modal-container {
   display: grid;
-  grid-template-columns: 1fr 400px;
   width: 100%;
   height: 100%;
+  border-radius: 0;
+  overflow: hidden;
   background: var(--crunevo-white);
   color: var(--crunevo-text-dark);
 }
 
-.facebook-modal-container.image-only {
-  grid-template-columns: 1fr;
-  background: #000;
-}
-
-.facebook-modal-container.comments-only {
-  grid-template-columns: 1fr;
-  max-width: 600px;
-  margin: 0 auto;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-[data-bs-theme="dark"] .facebook-modal-container {
-  background: #242526;
-  color: #E4E6EA;
-}
-
-[data-bs-theme="dark"] .facebook-modal-container.image-only {
-  background: #000;
+.facebook-modal-container.image-with-comments {
+  grid-template-columns: 1fr 400px;
 }
 
 /* Image Section */
@@ -111,10 +69,6 @@
   justify-content: center;
   background: #000;
   overflow: hidden;
-}
-
-.facebook-modal-container.comments-only .facebook-modal-image-section {
-  display: none;
 }
 
 .modal-image-container {
@@ -143,21 +97,9 @@
   overflow: hidden;
 }
 
-.facebook-modal-container.image-only .facebook-modal-info-panel {
-  display: none;
-}
-
-.facebook-modal-container.comments-only .facebook-modal-info-panel {
-  border-left: none;
-}
-
 [data-bs-theme="dark"] .facebook-modal-info-panel {
   background: #242526;
   border-left: 1px solid #3A3B3C;
-}
-
-[data-bs-theme="dark"] .facebook-modal-container.comments-only .facebook-modal-info-panel {
-  border-left: none;
 }
 
 /* Post Header */
@@ -338,7 +280,6 @@
   flex-grow: 1;
   overflow-y: auto;
   padding: 0 20px;
-  max-height: calc(100vh - 400px);
 }
 
 .comments-list {
@@ -506,33 +447,34 @@
 }
 
 /* Modal Controls for Image-only view */
+
 .modal-top-controls {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 15px;
+  right: 15px;
   display: flex;
-  gap: 8px;
-  z-index: 10;
+  gap: 10px;
+  z-index: 100;
 }
 
 .modal-control-btn {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(30, 30, 30, 0.7);
   border: none;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+  backdrop-filter: blur(5px);
   font-size: 18px;
 }
 
 .modal-control-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(50, 50, 50, 0.9);
   transform: scale(1.1);
 }
 
@@ -605,17 +547,9 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .modal-container,
   .facebook-modal-container {
     grid-template-columns: 1fr;
     grid-template-rows: 60vh auto;
-  }
-  
-  .facebook-modal-container.comments-only {
-    grid-template-rows: 1fr;
-    height: 100vh;
-    max-width: 100%;
-    border-radius: 0;
   }
   
   .facebook-modal-info-panel {
