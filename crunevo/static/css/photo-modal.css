@@ -49,8 +49,10 @@
 /* ✅ CORREGIDO: Usaremos una sola clase base y modificadores */
 .facebook-modal-container {
   display: grid;
-  width: 100%;
-  height: 100%;
+  grid-template-columns: 1fr 400px;
+  width: 90vw;
+  height: 90vh;
+  max-width: 1400px;
   border-radius: 0;
   overflow: hidden;
   background: var(--crunevo-white);
@@ -58,7 +60,7 @@
 }
 
 .facebook-modal-container.image-with-comments {
-  grid-template-columns: 1fr 400px;
+  /* modifier retained for compatibility */
 }
 
 /* Image Section */
@@ -100,6 +102,31 @@
 [data-bs-theme="dark"] .facebook-modal-info-panel {
   background: #242526;
   border-left: 1px solid var(--crunevo-border);
+}
+
+/* Single scroll layout */
+.modal-scrollable-content {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .facebook-modal-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    width: 100%;
+    height: 100%;
+  }
+
+  .facebook-modal-info-panel {
+    border-left: none;
+    border-top: 1px solid var(--crunevo-border);
+    max-height: 50vh;
+  }
+
+  [data-bs-theme="dark"] .facebook-modal-info-panel {
+    border-top: 1px solid var(--crunevo-border);
+  }
 }
 
 /* Post Header */
@@ -452,70 +479,6 @@
   backdrop-filter: blur(10px);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .facebook-modal-container {
-    grid-template-columns: 1fr;
-    grid-template-rows: 60vh auto;
-  }
-
-  .facebook-modal-info-panel {
-    border-left: none;
-    border-top: 1px solid var(--crunevo-border);
-    max-height: 40vh;
-  }
-
-  [data-bs-theme="dark"] .facebook-modal-info-panel {
-    border-top: 1px solid var(--crunevo-border);
-  }
-
-  
-  .modal-top-controls {
-    top: 10px;
-    right: 10px;
-  }
-  
-  .modal-control-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 16px;
-  }
-  
-  .modal-nav {
-    width: 48px;
-    height: 48px;
-    font-size: 20px;
-  }
-  
-  .modal-nav.prev {
-    left: 10px;
-  }
-  
-  .modal-nav.next {
-    right: 10px;
-  }
-  
-  .modal-counter {
-    bottom: 10px;
-    font-size: 12px;
-    padding: 6px 12px;
-  }
-  
-  .modal-post-header,
-  .modal-post-content,
-  .modal-post-actions,
-  .modal-stats,
-  .modal-comment-form {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  
-  .modal-comments-section {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-}
-
 @media (max-width: 480px) {
   .modal-top-controls {
     gap: 4px;
@@ -745,40 +708,6 @@
 }
 
 /* ✅ AÑADIDO: Media Query para Tablets y Móviles */
-@media (max-width: 992px) {
-  /* Hacemos que el grid se convierta en una sola columna y dos filas */
-  .facebook-modal-container.image-with-comments {
-    grid-template-columns: 1fr; /* Una sola columna */
-    grid-template-rows: 55vh auto; /* Imagen 55% de la altura, panel el resto */
-    width: 100%;
-    height: 100%;
-    border-radius: 0;
-  }
-
-  .facebook-modal-info-panel {
-    border-left: none;
-    border-top: 1px solid var(--crunevo-border);
-    max-height: 45vh; /* Limitamos altura del panel de info */
-  }
-
-  .modal-top-controls {
-    top: 10px;
-    right: 10px;
-    gap: 8px;
-  }
-
-  .modal-control-btn {
-    width: 38px;
-    height: 38px;
-    font-size: 16px;
-  }
-
-.modal-nav {
-    width: 48px;
-    height: 48px;
-  }
-}
-
 /* ✅ AÑADIDO: Estilo COMPACTO y UNIFICADO para el formulario de comentarios */
 .compact-comment-form-container {
   width: 100%;
