@@ -168,7 +168,7 @@
       </div>
     </div>
 
-    <button class="fb-action-btn comment-btn" data-post-id="{{ post.id }}" onclick="modernFeedManager.openCommentsModal('{{ post.id }}')">
+    <button class="fb-action-btn comment-btn" data-post-id="{{ post.id }}" onclick="openCommentsModal('{{ post.id }}')">
       <i class="bi bi-chat"></i>
       <span class="action-text">Comentar</span>
       <span class="action-count">{{ post.comments|length if post.comments|length > 0 else '' }}</span>

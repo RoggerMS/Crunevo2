@@ -2,24 +2,10 @@
 {% import 'components/csrf.html' as csrf %}
 {% set saved_posts = saved_posts if saved_posts is defined else {} %}
 
-{# ==========================================
-   ARCHIVO OBSOLETO - NO USAR
-   ==========================================
-   Este modal ha sido reemplazado por el nuevo sistema
-   estilo Facebook en _post_modal.html + feed.js
-   
-   Mantener solo para compatibilidad temporal.
-   TODO: Eliminar completamente después de migración.
-   ========================================== #}
-
-<!-- Modal de Comentarios con Galería Completa - OBSOLETO -->
+<!-- Modal de Comentarios -->
 <div class="modal fade" id="commentsModal-{{ post.id }}" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="commentsModalLabel-{{ post.id }}" aria-hidden="true" style="display: none;">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
     <div class="modal-content">
-      <div class="alert alert-warning m-3 mb-0">
-        <i class="bi bi-exclamation-triangle"></i>
-        <strong>Aviso:</strong> Este modal está obsoleto. Use el nuevo sistema estilo Facebook.
-      </div>
       <h5 id="commentsModalLabel-{{ post.id }}" class="visually-hidden">Comentarios</h5>
       <!-- Header del Modal -->
       <div class="modal-header border-0 pb-0">

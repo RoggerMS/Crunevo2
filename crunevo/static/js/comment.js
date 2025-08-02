@@ -1,15 +1,6 @@
 // Comment modal utilities
 
 function openCommentsModal(postId) {
-  // Deprecated: Use modernFeedManager.openCommentsModal() instead
-  console.warn('openCommentsModal() is deprecated. Use modernFeedManager.openCommentsModal() instead.');
-  
-  if (window.modernFeedManager && window.modernFeedManager.openCommentsModal) {
-    window.modernFeedManager.openCommentsModal(postId);
-    return;
-  }
-  
-  // Fallback to old Bootstrap modal
   const modal = new bootstrap.Modal(
     document.getElementById(`commentsModal-${postId}`)
   );
