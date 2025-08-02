@@ -1,21 +1,29 @@
 function initForumEditor(selector) {
   const container = document.querySelector(selector);
   if (!container) return null;
+  if (container._quill) return container._quill;
   const quill = new Quill(container, {
     theme: 'snow',
     modules: {
       toolbar: [
         ['bold', 'italic', 'underline'],
+        [{ header: [1, 2, 3, false] }],
         [{ list: 'ordered' }, { list: 'bullet' }],
         ['link', 'image'],
         ['clean'],
       ],
     },
   });
+  container._quill = quill;
 
   quill.getModule('toolbar').addHandler('image', () => selectLocalImage(quill));
   quill.root.addEventListener('drop', (e) => handleDrop(e, quill));
   quill.root.addEventListener('paste', (e) => handlePaste(e, quill));
+  quill.root.addEventListener('click', (e) => {
+    if (e.target && e.target.tagName === 'IMG') {
+      e.target.classList.toggle('img-expanded');
+    }
+  });
   const form = container.closest('form');
   if (form) {
     const input = form.querySelector('input[name="content"]');
@@ -57,6 +65,21 @@ function uploadImageFile(file, quill) {
         const range = quill.getSelection(true);
         quill.insertEmbed(range.index, 'image', data.url);
         quill.setSelection(range.index + 1);
+        const img = quill.root.querySelector(`img[src="${data.url}"]`);
+        if (img) {
+          img.classList.add('resizable-image');
+          img.setAttribute('data-bs-toggle', 'tooltip');
+          img.setAttribute('data-bs-placement', 'top');
+          img.setAttribute(
+            'title',
+            'Puedes hacer clic para ajustar el tamaño o mover esta imagen'
+          );
+          if (typeof bootstrap !== 'undefined') {
+            const tip = bootstrap.Tooltip.getOrCreateInstance(img);
+            tip.show();
+            setTimeout(() => tip.hide(), 3000);
+          }
+        }
       }
     });
 }

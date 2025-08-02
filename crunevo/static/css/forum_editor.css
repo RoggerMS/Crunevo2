@@ -16,6 +16,21 @@
   line-height: 1.6;
 }
 
+.ql-editor img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1rem auto;
+  cursor: pointer;
+  resize: both;
+  overflow: auto;
+}
+
+.ql-editor img.img-expanded {
+  max-width: none;
+  width: auto;
+}
+
 /* Forum Theme Colors */
 :root {
   --forum-primary: #667eea;

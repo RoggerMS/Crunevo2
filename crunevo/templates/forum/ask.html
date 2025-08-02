@@ -1087,13 +1087,16 @@ function updateCharCounter(inputId, maxLength) {
 }
 
 function countRealChars(text) {
-  return text.replace(/\s+/g, '').length;
+  return text.replace(/\s+/g, ' ').trim().length;
 }
 
 function updateContentValidation() {
   if (!window.quillEditor) return;
-  const text = window.quillEditor.getText();
-  const len = countRealChars(text);
+  const textoPlano = window.quillEditor
+    .getText()
+    .replace(/\s+/g, ' ')
+    .trim();
+  const len = textoPlano.length;
   const counter = document.getElementById('content-counter');
   if (counter) counter.textContent = len;
   const nextBtn = document.getElementById('nextBtn');
