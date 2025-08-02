@@ -13,6 +13,8 @@ from flask import (
     current_app,
     abort,
 )
+import re
+from bs4 import BeautifulSoup
 from flask_login import login_required, current_user
 from sqlalchemy import or_, and_, desc, asc
 from sqlalchemy.exc import ProgrammingError, OperationalError
@@ -316,6 +318,11 @@ def ask_question():
 
         # Get selected tags
         tag_names = request.form.getlist("tags")
+
+        raw_text = BeautifulSoup(content or "", "html.parser").get_text()
+        if len(re.sub(r"\s+", "", raw_text)) < 20:
+            flash("La descripción debe tener al menos 20 caracteres", "error")
+            return redirect(url_for("forum.ask_question"))
 
         if not title or not content or not category:
             flash("Todos los campos obligatorios son requeridos", "error")
