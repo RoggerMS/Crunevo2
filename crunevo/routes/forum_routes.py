@@ -11,6 +11,7 @@ from flask import (
     url_for,
     jsonify,
     current_app,
+    abort,
 )
 from flask_login import login_required, current_user
 from sqlalchemy import or_, and_, desc, asc
@@ -102,6 +103,19 @@ class EmptyPagination:
         return []
 
 
+def ensure_forum_tables(page=1, per_page=15):
+    """Check forum tables exist, returning EmptyPagination if missing."""
+    try:
+        ForumQuestion.query.first()
+    except ProgrammingError:
+        current_app.logger.error(
+            "Forum tables missing or migrations not applied", exc_info=True
+        )
+        db.session.rollback()
+        return EmptyPagination(page, per_page)
+    return None
+
+
 @forum_bp.route("/foro")
 def list_questions():
     page = request.args.get("page", 1, type=int)
@@ -112,6 +126,13 @@ def list_questions():
     sort_by = request.args.get("sort", "recent")  # recent, popular, urgent, solved
     search = request.args.get("search", "")
     context_type = request.args.get("context", "")
+
+    table_check = ensure_forum_tables(page)
+    if isinstance(table_check, EmptyPagination):
+        abort(
+            500,
+            description="Forum database schema missing or migrations not applied",
+        )
 
     # Build base query
     query = ForumQuestion.query
