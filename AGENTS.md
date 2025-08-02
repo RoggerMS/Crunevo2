@@ -1043,3 +1043,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Handled missing forum tables gracefully in list_questions to avoid 500 errors (PR forum-500-fix).
 - Added migration 'forum_modernization_schema' and removed temporary error handling from forum routes.
 - Fixed popular sort in forum by counting answers via join instead of property (hotfix forum-popular-sort).
+- Improved forum list route with robust DB error handling and orphan author fallbacks (PR forum-list-stability).

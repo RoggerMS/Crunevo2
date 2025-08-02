@@ -63,11 +63,12 @@
                     
                     <!-- Author Info -->
                     <div class="d-flex align-items-center mb-4 p-3 rounded-3" style="background: var(--forum-light-gradient);">
-                        <img src="{{ question.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+                        {% set author = question.author %}
+                        <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}"
                              class="rounded-circle user-avatar me-3" width="52" height="52" alt="Avatar">
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2 mb-1">
-                                <h6 class="mb-0 fw-bold">@{{ question.author.username }}</h6>
+                                <h6 class="mb-0 fw-bold">@{{ author.username if author else 'Usuario eliminado' }}</h6>
                                 <span class="badge bg-primary bg-opacity-10 text-primary">
                                     <i class="bi bi-mortarboard me-1"></i>Estudiante
                                 </span>
@@ -79,7 +80,7 @@
                         </div>
                         <div class="text-end">
                             <div class="small text-muted">Contribuciones</div>
-                            <div class="fw-bold text-primary">{{ question.author.points or 0 }} pts</div>
+                            <div class="fw-bold text-primary">{{ author.points if author else 0 }} pts</div>
                         </div>
                     </div>
                     

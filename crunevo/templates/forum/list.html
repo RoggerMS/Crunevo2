@@ -224,10 +224,11 @@
             <div class="question-footer">
               <div class="d-flex align-items-center justify-content-between">
                 <div class="author-info d-flex align-items-center">
-                  <img src="{{ question.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+                  {% set author = question.author %}
+                  <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}"
                        class="author-avatar me-2" alt="Avatar">
                   <div class="author-details">
-                    <div class="author-name">{{ question.author.username }}</div>
+                    <div class="author-name">{{ author.username if author else 'Usuario eliminado' }}</div>
                     <div class="question-time">{{ question.created_at.strftime('%d/%m/%Y %H:%M') }}</div>
                   </div>
                 </div>
