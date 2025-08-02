@@ -12,16 +12,17 @@
         <div class="d-flex align-items-start">
             <!-- Enhanced Avatar -->
             <div class="me-3 text-center">
-                <img src="{{ answer.author.avatar_url or url_for('static', filename='img/default.png') }}" 
+                {% set author = answer.author %}
+                <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}"
                      class="rounded-circle user-avatar" width="48" height="48" alt="Avatar">
-                <div class="small text-muted mt-1">{{ answer.author.points or 0 }}pts</div>
+                <div class="small text-muted mt-1">{{ author.points if author else 0 }}pts</div>
             </div>
             
             <div class="flex-grow-1">
                 <!-- Author Info with Enhanced Design -->
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="d-flex align-items-center gap-2">
-                        <h6 class="mb-0 fw-bold">@{{ answer.author.username }}</h6>
+                        <h6 class="mb-0 fw-bold">@{{ author.username if author else 'Usuario eliminado' }}</h6>
                         <span class="badge bg-primary bg-opacity-10 text-primary">
                             <i class="bi bi-mortarboard me-1"></i>Colaborador
                         </span>
