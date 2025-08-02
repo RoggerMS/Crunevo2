@@ -1058,3 +1058,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Made photo modal responsive for mobile, added unique IDs per post and ARIA-labelled controls to address accessibility warnings (PR photo-modal-mobile-fix).
 - Fixed comment modal layout with flexbox to keep header and input fixed and added compact comment form styles reused in photo modal for consistency (PR comment-modal-compact-form).
 - Removed Bootstrap's extra scroll class from comment modal to ensure a single scroll area and matched photo modal comment form width using w-100 (PR comment-modal-single-scroll).
+- Refactored comment and photo modals into single-page scrollable layouts, locked body scrolling and anchored comment input at bottom for consistency (PR modal-unified-scroll).

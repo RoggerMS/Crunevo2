@@ -275,10 +275,8 @@
   color: #65676B;
 }
 
-/* Comments Section - Scrollable */
+/* Comments Section */
 .modal-comments-section {
-  flex-grow: 1;
-  overflow-y: auto;
   padding: 0 20px;
 }
 
@@ -473,7 +471,6 @@
 
   .modal-comments-section {
     max-height: none;
-    flex-grow: 1;
   }
   
   .modal-top-controls {
@@ -787,10 +784,12 @@
 
 /* ✅ AÑADIDO: Estilo COMPACTO y UNIFICADO para el formulario de comentarios */
 .compact-comment-form-container {
+  width: 100%;
   padding: 10px 16px;
   border-top: 1px solid var(--crunevo-border);
   background-color: var(--crunevo-white);
   flex-shrink: 0; /* Importantísimo para que no se encoja */
+  box-sizing: border-box;
 }
 
 .compact-comment-form-group {

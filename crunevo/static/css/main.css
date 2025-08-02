@@ -961,3 +961,8 @@ textarea.form-control {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Disable page scroll when photo modal is open */
+body.photo-modal-open {
+  overflow: hidden;
+}

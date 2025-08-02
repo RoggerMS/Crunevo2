@@ -1,109 +1,113 @@
 {% import 'components/csrf.html' as csrf %}
 {% set saved_posts = saved_posts if saved_posts is defined else {} %}
 
-<div class="modal-post-header">
-  <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" alt="Avatar de {{ post.author.username }}" class="modal-post-avatar">
-  <div class="modal-user-info">
-    <h6 class="modal-username">{{ post.author.username }}</h6>
-    {% if post.author.career %}<span class="modal-career-badge">{{ post.author.career }}</span>{% endif %}
-    <small class="modal-timestamp">{{ post.created_at|timesince }}</small>
-  </div>
-  <button type="button" class="modal-close-btn" onclick="modernFeedManager.closeModal()" aria-label="Cerrar">
-    <i class="bi bi-x"></i>
-  </button>
-</div>
-
-{% if post.content %}
-<div class="modal-post-content">
-  <p class="modal-post-text">{{ post.content }}</p>
-</div>
-{% endif %}
-
-<div class="modal-post-actions">
-  <div class="relative reaction-container" data-post-id="{{ post.id }}" data-my-reaction="{{ user_reaction or '' }}">
-    <button class="modal-action-btn like-btn {{ 'active' if user_reaction else '' }}" data-post-id="{{ post.id }}">
-      <i class="bi bi-fire{{ '-fill' if user_reaction else '' }}"></i>
-      <span class="action-text">Me gusta</span>
-      <span class="action-count">{{ reaction_counts.get('🔥', '') if reaction_counts else '' }}</span>
+<!-- Scrollable content -->
+<div class="modal-scrollable-content" style="flex-grow: 1; overflow-y: auto;">
+  <div class="modal-post-header">
+    <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" alt="Avatar de {{ post.author.username }}" class="modal-post-avatar">
+    <div class="modal-user-info">
+      <h6 class="modal-username">{{ post.author.username }}</h6>
+      {% if post.author.career %}<span class="modal-career-badge">{{ post.author.career }}</span>{% endif %}
+      <small class="modal-timestamp">{{ post.created_at|timesince }}</small>
+    </div>
+    <button type="button" class="modal-close-btn" onclick="modernFeedManager.closeModal()" aria-label="Cerrar">
+      <i class="bi bi-x"></i>
     </button>
-    <div class="reaction-panel d-none">
-      <button class="reaction-btn" data-reaction="🔥" title="Crunazo">🔥</button>
-      <button class="reaction-btn" data-reaction="🧠" title="Neuro">🧠</button>
-      <button class="reaction-btn" data-reaction="💔" title="Roto">💔</button>
-      <button class="reaction-btn" data-reaction="😠" title="Molesto">😠</button>
-      <button class="reaction-btn" data-reaction="🥶" title="Congelao">🥶</button>
-      <button class="reaction-btn" data-reaction="😂" title="Vacilón">😂</button>
-      <button class="reaction-btn" data-reaction="🤡" title="Cringe">🤡</button>
-      <button class="reaction-btn" data-reaction="😲" title="Asu">😲</button>
-      <button class="reaction-btn" data-reaction="👍" title="Me gusta">👍</button>
-      <button class="reaction-btn" data-reaction="💡" title="Interesante">💡</button>
-      <button class="reaction-btn" data-reaction="🙌" title="Gracias">🙌</button>
-      <button class="reaction-btn" data-reaction="📌" title="Lo guardé">📌</button>
+  </div>
+
+  {% if post.content %}
+  <div class="modal-post-content">
+    <p class="modal-post-text">{{ post.content }}</p>
+  </div>
+  {% endif %}
+
+  <div class="modal-post-actions">
+    <div class="relative reaction-container" data-post-id="{{ post.id }}" data-my-reaction="{{ user_reaction or '' }}">
+      <button class="modal-action-btn like-btn {{ 'active' if user_reaction else '' }}" data-post-id="{{ post.id }}">
+        <i class="bi bi-fire{{ '-fill' if user_reaction else '' }}"></i>
+        <span class="action-text">Me gusta</span>
+        <span class="action-count">{{ reaction_counts.get('🔥', '') if reaction_counts else '' }}</span>
+      </button>
+      <div class="reaction-panel d-none">
+        <button class="reaction-btn" data-reaction="🔥" title="Crunazo">🔥</button>
+        <button class="reaction-btn" data-reaction="🧠" title="Neuro">🧠</button>
+        <button class="reaction-btn" data-reaction="💔" title="Roto">💔</button>
+        <button class="reaction-btn" data-reaction="😠" title="Molesto">😠</button>
+        <button class="reaction-btn" data-reaction="🥶" title="Congelao">🥶</button>
+        <button class="reaction-btn" data-reaction="😂" title="Vacilón">😂</button>
+        <button class="reaction-btn" data-reaction="🤡" title="Cringe">🤡</button>
+        <button class="reaction-btn" data-reaction="😲" title="Asu">😲</button>
+        <button class="reaction-btn" data-reaction="👍" title="Me gusta">👍</button>
+        <button class="reaction-btn" data-reaction="💡" title="Interesante">💡</button>
+        <button class="reaction-btn" data-reaction="🙌" title="Gracias">🙌</button>
+        <button class="reaction-btn" data-reaction="📌" title="Lo guardé">📌</button>
+      </div>
+    </div>
+    <button class="modal-action-btn comment-btn" data-post-id="{{ post.id }}">
+      <i class="bi bi-chat"></i>
+      <span>Comentar</span>
+    </button>
+    <button class="modal-action-btn share-btn" data-post-id="{{ post.id }}">
+      <i class="bi bi-share"></i>
+      <span>Compartir</span>
+    </button>
+    <button class="modal-action-btn save-btn {{ 'active' if saved_posts.get(post.id) }}" data-post-id="{{ post.id }}">
+      <i class="bi bi-bookmark{{ '-fill' if saved_posts.get(post.id) else '' }}"></i>
+      <span>Guardar</span>
+    </button>
+  </div>
+
+  <div class="modal-stats">
+    <div class="modal-stat-item">
+      <i class="bi bi-fire-fill text-danger"></i>
+      <span>{{
+        (reaction_counts.get('🔥', 0) + reaction_counts.get('🧠', 0) +
+        reaction_counts.get('💔', 0) + reaction_counts.get('😠', 0) +
+        reaction_counts.get('🥶', 0) + reaction_counts.get('😂', 0) +
+        reaction_counts.get('🤡', 0) + reaction_counts.get('😲', 0) +
+        reaction_counts.get('👍', 0) + reaction_counts.get('💡', 0) +
+        reaction_counts.get('🙌', 0) + reaction_counts.get('📌', 0)) if reaction_counts else 0
+      }} reacciones</span>
+    </div>
+    <div class="modal-stat-item">
+      <i class="bi bi-chat"></i>
+      <span>{{ post.comments|length }} comentarios</span>
     </div>
   </div>
-  <button class="modal-action-btn comment-btn" data-post-id="{{ post.id }}">
-    <i class="bi bi-chat"></i>
-    <span>Comentar</span>
-  </button>
-  <button class="modal-action-btn share-btn" data-post-id="{{ post.id }}">
-    <i class="bi bi-share"></i>
-    <span>Compartir</span>
-  </button>
-  <button class="modal-action-btn save-btn {{ 'active' if saved_posts.get(post.id) }}" data-post-id="{{ post.id }}">
-    <i class="bi bi-bookmark{{ '-fill' if saved_posts.get(post.id) else '' }}"></i>
-    <span>Guardar</span>
-  </button>
-</div>
 
-<div class="modal-stats">
-  <div class="modal-stat-item">
-    <i class="bi bi-fire-fill text-danger"></i>
-    <span>{{
-      (reaction_counts.get('🔥', 0) + reaction_counts.get('🧠', 0) +
-      reaction_counts.get('💔', 0) + reaction_counts.get('😠', 0) +
-      reaction_counts.get('🥶', 0) + reaction_counts.get('😂', 0) +
-      reaction_counts.get('🤡', 0) + reaction_counts.get('😲', 0) +
-      reaction_counts.get('👍', 0) + reaction_counts.get('💡', 0) +
-      reaction_counts.get('🙌', 0) + reaction_counts.get('📌', 0)) if reaction_counts else 0
-    }} reacciones</span>
-  </div>
-  <div class="modal-stat-item">
-    <i class="bi bi-chat"></i>
-    <span>{{ post.comments|length }} comentarios</span>
-  </div>
-</div>
-
-<div class="modal-comments-section">
-  {% set comments = comments if comments is defined else post.comments %}
-  {% set more_comments = post.comments|length > comments|length %}
-  <div class="comments-list" id="commentsList-{{ post.id }}">
-    {% if comments %}
-      {% for comment in comments %}
-      <div class="comment-item">
-        <img src="{{ comment.author.avatar_url or url_for('static', filename='img/default.png') }}"
-             alt="{{ comment.author.username if comment.author else 'Usuario' }}"
-             class="comment-avatar">
-        <div class="comment-content">
-          <div class="comment-box">
-            <div class="comment-author">{{ comment.author.username if comment.author else 'Usuario eliminado' }}</div>
-            <div class="comment-text">{{ comment.body }}</div>
-          </div>
-          <div class="comment-meta">
-            <small class="text-muted">{{ comment.timestamp|timesince }}</small>
-            <button class="btn btn-link btn-sm p-0 ms-2 text-muted">Responder</button>
+  <div class="modal-comments-section">
+    {% set comments = comments if comments is defined else post.comments %}
+    {% set more_comments = post.comments|length > comments|length %}
+    <div class="comments-list" id="commentsList-{{ post.id }}">
+      {% if comments %}
+        {% for comment in comments %}
+        <div class="comment-item">
+          <img src="{{ comment.author.avatar_url or url_for('static', filename='img/default.png') }}"
+               alt="{{ comment.author.username if comment.author else 'Usuario' }}"
+               class="comment-avatar">
+          <div class="comment-content">
+            <div class="comment-box">
+              <div class="comment-author">{{ comment.author.username if comment.author else 'Usuario eliminado' }}</div>
+              <div class="comment-text">{{ comment.body }}</div>
+            </div>
+            <div class="comment-meta">
+              <small class="text-muted">{{ comment.timestamp|timesince }}</small>
+              <button class="btn btn-link btn-sm p-0 ms-2 text-muted">Responder</button>
+            </div>
           </div>
         </div>
-      </div>
-      {% endfor %}
-    {% else %}
-      <div class="text-muted text-center py-3">Sé el primero en comentar</div>
+        {% endfor %}
+      {% else %}
+        <div class="text-muted text-center py-3">Sé el primero en comentar</div>
+      {% endif %}
+    </div>
+    {% if more_comments %}
+    <button id="loadMoreCommentsBtn-{{ post.id }}" class="btn btn-link btn-sm w-100 mb-3 load-more-comments" data-post-id="{{ post.id }}">Ver más comentarios</button>
     {% endif %}
   </div>
-  {% if more_comments %}
-  <button id="loadMoreCommentsBtn-{{ post.id }}" class="btn btn-link btn-sm w-100 mb-3 load-more-comments" data-post-id="{{ post.id }}">Ver más comentarios</button>
-  {% endif %}
 </div>
 
+<!-- Fixed comment form -->
 <div class="w-100 compact-comment-form-container">
   {% if current_user.is_authenticated %}
   <form class="comment-form" data-post-id="{{ post.id }}" onsubmit="submitModalComment(event, '{{ post.id }}')">
