@@ -4,11 +4,11 @@
 
 <!-- Modal de Comentarios -->
 <div class="modal fade" id="commentsModal-{{ post.id }}" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="commentsModalLabel-{{ post.id }}" aria-hidden="true" style="display: none;">
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
-    <div class="modal-content d-flex flex-column">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down" style="max-height: 90vh;">
+    <div class="modal-content d-flex flex-column" style="height: 100%;">
       <h5 id="commentsModalLabel-{{ post.id }}" class="visually-hidden">Comentarios</h5>
       <!-- Header del Modal -->
-      <div class="modal-header border-0 pb-0">
+      <div class="modal-header border-0 pb-0" style="flex-shrink: 0;">
         <div class="d-flex align-items-center">
           <img src="{{ post.author.avatar_url if post.author else url_for('static', filename='img/default.png') }}" 
                alt="{{ post.author.username if post.author else 'Usuario eliminado' }}"
@@ -107,16 +107,16 @@
 
         </div>
       </div>
-      <div class="modal-footer p-0">
-        <div class="w-100 unified-comment-form-container">
+      <div class="modal-footer p-0" style="flex-shrink: 0;">
+        <div class="w-100 compact-comment-form-container">
           {% if current_user.is_authenticated %}
           <form class="comment-form" data-post-id="{{ post.id }}" onsubmit="submitModalComment(event, '{{ post.id }}')">
             {{ csrf.csrf_field() }}
-            <div class="unified-comment-form-group">
-              <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" alt="{{ current_user.username }}" class="unified-comment-form-avatar">
-              <div class="unified-comment-input-wrapper">
-                <textarea class="unified-comment-input comment-input" name="body" rows="1" placeholder="Escribe un comentario..." oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'"></textarea>
-                <button type="submit" class="unified-comment-submit-btn comment-submit-btn" disabled><i class="bi bi-send-fill"></i></button>
+            <div class="compact-comment-form-group">
+              <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" alt="{{ current_user.username }}" class="compact-comment-form-avatar">
+              <div class="compact-comment-input-wrapper">
+                <textarea class="compact-comment-input comment-input" name="body" rows="1" placeholder="Escribe un comentario..." oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'"></textarea>
+                <button type="submit" class="compact-comment-submit-btn comment-submit-btn" disabled><i class="bi bi-send-fill"></i></button>
               </div>
             </div>
           </form>

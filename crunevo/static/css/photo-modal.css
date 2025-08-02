@@ -779,8 +779,81 @@
     font-size: 16px;
   }
 
-  .modal-nav {
+.modal-nav {
     width: 48px;
     height: 48px;
   }
 }
+
+/* ✅ AÑADIDO: Estilo COMPACTO y UNIFICADO para el formulario de comentarios */
+.compact-comment-form-container {
+  padding: 10px 16px;
+  border-top: 1px solid var(--crunevo-border);
+  background-color: var(--crunevo-white);
+  flex-shrink: 0; /* Importantísimo para que no se encoja */
+}
+
+.compact-comment-form-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.compact-comment-form-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.compact-comment-input-wrapper {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  background-color: var(--crunevo-bg-light);
+  border-radius: 20px;
+  /* Padding ajustado para que el botón quepa adentro */
+  padding: 6px 6px 6px 12px; 
+}
+
+.compact-comment-input {
+  flex-grow: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 15px;
+  color: var(--crunevo-text-dark);
+  resize: none;
+  line-height: 1.4;
+  max-height: 80px;
+  overflow-y: auto;
+  padding-right: 8px; /* Espacio para el botón */
+}
+
+.compact-comment-submit-btn {
+  background: var(--crunevo-primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.compact-comment-submit-btn:disabled {
+  background-color: #aab2c0;
+  cursor: not-allowed;
+}
+
+.compact-comment-submit-btn:not(:disabled):hover {
+  transform: scale(1.1);
+  background-color: var(--crunevo-accent);
+}
+
