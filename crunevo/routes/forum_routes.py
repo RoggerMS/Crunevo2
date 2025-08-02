@@ -1,5 +1,4 @@
 import os
-import re
 import bleach
 import cloudinary.uploader
 from werkzeug.utils import secure_filename
@@ -298,10 +297,6 @@ def ask_question():
         title = request.form.get("title")
         content = request.form.get("content")
         content = bleach.clean(content, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS)
-        plain_text = bleach.clean(content, tags=[], strip=True)
-        if len(re.sub(r"\s+", "", plain_text)) < 20:
-            flash("La descripci\u00f3n debe tener al menos 20 caracteres", "error")
-            return redirect(url_for("forum.ask_question"))
         category = request.form.get("category")
         difficulty_level = request.form.get("difficulty_level", "intermedio")
         grade_level = request.form.get("grade_level", "")
