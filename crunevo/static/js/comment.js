@@ -139,11 +139,10 @@ function addCommentToModalUI(comment, postId) {
   commentsList.insertAdjacentHTML('beforeend', commentHTML);
 
   // Scroll to bottom within the modal's scrollable area
-  const scrollContainer =
-    commentsList.closest('.modal-scrollable-content') ||
-    commentsList.closest('.modal-comments-section') ||
-    commentsList;
-  scrollContainer.scrollTop = scrollContainer.scrollHeight;
+  const scrollContainer = commentsList.closest('.modal-scrollable-content');
+  if (scrollContainer) {
+    scrollContainer.scrollTop = scrollContainer.scrollHeight;
+  }
 }
 
 let commentsInitialized = false;
