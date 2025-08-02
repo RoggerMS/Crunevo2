@@ -749,3 +749,38 @@
 .unified-comment-submit-btn:not(:disabled):hover {
   transform: scale(1.1);
 }
+
+/* ✅ AÑADIDO: Media Query para Tablets y Móviles */
+@media (max-width: 992px) {
+  /* Hacemos que el grid se convierta en una sola columna y dos filas */
+  .facebook-modal-container.image-with-comments {
+    grid-template-columns: 1fr; /* Una sola columna */
+    grid-template-rows: 55vh auto; /* Imagen 55% de la altura, panel el resto */
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .facebook-modal-info-panel {
+    border-left: none;
+    border-top: 1px solid var(--crunevo-border);
+    max-height: 45vh; /* Limitamos altura del panel de info */
+  }
+
+  .modal-top-controls {
+    top: 10px;
+    right: 10px;
+    gap: 8px;
+  }
+
+  .modal-control-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+
+  .modal-nav {
+    width: 48px;
+    height: 48px;
+  }
+}

@@ -100,13 +100,13 @@
     {% endif %}
   </div>
   {% if more_comments %}
-  <button class="btn btn-link btn-sm w-100 mb-3 load-more-comments" data-post-id="{{ post.id }}">Ver más comentarios</button>
+  <button id="loadMoreCommentsBtn-{{ post.id }}" class="btn btn-link btn-sm w-100 mb-3 load-more-comments" data-post-id="{{ post.id }}">Ver más comentarios</button>
   {% endif %}
 </div>
 
 <div class="unified-comment-form-container">
   {% if current_user.is_authenticated %}
-  <form class="comment-form" data-post-id="{{ post.id }}" onsubmit="submitModalComment(event, '{{ post.id }}')">
+  <form id="commentForm-{{ post.id }}" class="comment-form" data-post-id="{{ post.id }}" onsubmit="submitModalComment(event, '{{ post.id }}')">
     {{ csrf.csrf_field() }}
     <div class="unified-comment-form-group">
       <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" alt="{{ current_user.username }}" class="unified-comment-form-avatar">
