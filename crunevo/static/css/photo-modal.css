@@ -278,6 +278,7 @@
 /* Comments Section */
 .modal-comments-section {
   padding: 0 20px;
+  /* YA NO NECESITA NINGUNA PROPIEDAD DE SCROLL O ALTURA */
 }
 
 .comments-list {
