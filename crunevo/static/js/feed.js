@@ -612,18 +612,7 @@ class ModernFeedManager {
   handleModalKeydown(e) {
     if (!this.currentPostId) return;
     if (e.key === 'Escape') {
-      this.closeImageModal();
-    } else if (e.key === 'ArrowRight') {
-      this.nextImage();
-    } else if (e.key === 'ArrowLeft') {
-      this.prevImage();
-    } else if (e.key === '+') {
-      this.zoomIn();
-    } else if (e.key === '-') {
-      this.zoomOut();
-    } else if (e.key === ' ') {
-      e.preventDefault();
-      this.resetZoom();
+      this.closeModal();
     }
   }
 
@@ -645,10 +634,15 @@ class ModernFeedManager {
 
     this.currentImageIndex = index;
     this.currentPostId = postId;
-    this.currentScale = 1;
 
     this.prevUrlStack.push(window.location.href);
-    this.createImageModal(src, index);
+    this.createModal('image-with-comments', postId);
+    setTimeout(() => {
+      const imgEl = document.getElementById('modalMainImage');
+      if (imgEl) {
+        imgEl.src = src;
+      }
+    }, 50);
     window.history.pushState({ modal: true }, '', `/feed/post/${postId}/photo/${index + 1}`);
     if (this.prevUrlStack.length === 1) {
       window.addEventListener('popstate', this.handlePopState);
@@ -659,134 +653,65 @@ class ModernFeedManager {
   openCommentsModal(postId) {
     this.currentPostId = postId;
     this.prevUrlStack.push(window.location.href);
-    this.createCommentsModal(postId);
+    this.createModal('comments-only', postId);
     window.history.pushState({ modal: true }, '', `/feed/post/${postId}/comments`);
     if (this.prevUrlStack.length === 1) {
       window.addEventListener('popstate', this.handlePopState);
     }
   }
 
-  // Create comments modal (Facebook-style)
-  createCommentsModal(postId) {
-    const modal = document.createElement('div');
-    modal.id = 'facebookModal';
-    modal.className = 'image-modal hidden';
-    modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-modal', 'true');
-    modal.setAttribute('aria-labelledby', 'facebookModalLabel');
-    modal.setAttribute('tabindex', '-1');
+  // ✅ NUEVA FUNCIÓN UNIFICADA para crear el modal
+  createModal(type, postId) {
+    this.closeModal();
 
-    modal.innerHTML = `
-      <div class="modal-container comments-only" onclick="modernFeedManager.outsideModalClick(event)">
-        <h2 id="facebookModalLabel" class="visually-hidden">Comentarios del post</h2>
-        <div class="facebook-modal-info-panel" id="facebookModalInfo">
-          <div class="d-flex justify-content-center align-items-center h-100">
-            <div class="spinner-border text-primary"></div>
-          </div>
+    const modalWrapper = document.createElement('div');
+    modalWrapper.id = 'facebookModal';
+    modalWrapper.className = 'image-modal hidden';
+    modalWrapper.setAttribute('role', 'dialog');
+    modalWrapper.setAttribute('tabindex', '-1');
+
+    modalWrapper.addEventListener('click', (e) => {
+      if (e.target.id === 'facebookModal') {
+        this.closeModal();
+      }
+    });
+
+    const modalContainer = document.createElement('div');
+    modalContainer.className = `facebook-modal-container ${type}`;
+
+    let innerHTML = '';
+
+    if (type === 'image-with-comments') {
+      innerHTML = `
+      <div class="facebook-modal-image-section">
+        <div class="modal-image-container">
+          <img id="modalMainImage" src="" alt="Imagen del post" class="modal-main-image">
         </div>
-      </div>`;
+      </div>
+      <div class="facebook-modal-info-panel" id="facebookModalInfoPanel">
+        <div class="modal-loading"><div class="spinner-border"></div></div>
+      </div>
+    `;
+    } else if (type === 'comments-only') {
+      innerHTML = `
+      <div class="facebook-modal-info-panel" id="facebookModalInfoPanel">
+        <div class="modal-loading"><div class="spinner-border"></div></div>
+      </div>
+    `;
+    }
 
-    document.body.appendChild(modal);
-    modal.focus();
+    modalContainer.innerHTML = innerHTML;
+    modalWrapper.appendChild(modalContainer);
+    document.body.appendChild(modalWrapper);
     document.body.classList.add('photo-modal-open');
 
-    setTimeout(() => modal.classList.remove('hidden'), 10);
-    this.loadPostDataForModal(postId, true);
+    setTimeout(() => modalWrapper.classList.remove('hidden'), 10);
+
+    this.loadPostDataForModal(postId);
   }
 
-  // Create image modal
-  createImageModal(src, index) {
-    const modal = document.createElement('div');
-    modal.id = 'imageModal';
-    modal.className = 'image-modal hidden';
-    modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-modal', 'true');
-    modal.setAttribute('aria-labelledby', 'imageModalLabel');
-    modal.setAttribute('tabindex', '-1');
-
-    const hasMultiple = this.imageList.length > 1;
-    modal.innerHTML = `
-      <div class="modal-container" onclick="modernFeedManager.outsideImageClick(event)">
-        <h2 id="imageModalLabel" class="visually-hidden">Visor de imagen</h2>
-        <div class="modal-image-section">
-          <img id="modalImage" src="${src}" alt="Imagen ${index + 1}">
-          <div class="modal-top-controls">
-            <button type="button" class="modal-control-btn" onclick="modernFeedManager.zoomOut()" title="Reducir zoom" aria-label="Reducir zoom"><i class="bi bi-dash"></i></button>
-            <button type="button" class="modal-control-btn" onclick="modernFeedManager.zoomIn()" title="Aumentar zoom" aria-label="Aumentar zoom"><i class="bi bi-plus"></i></button>
-            <button type="button" class="modal-control-btn" onclick="modernFeedManager.resetZoom()" title="Tamaño original" aria-label="Tamaño original"><i class="bi bi-arrows-fullscreen"></i></button>
-            <a href="${src}" target="_blank" class="modal-control-btn" title="Abrir en nueva pestaña" aria-label="Abrir en nueva pestaña"><i class="bi bi-box-arrow-up-right"></i></a>
-            <button type="button" class="modal-control-btn" onclick="modernFeedManager.closeImageModal()" title="Cerrar" aria-label="Cerrar"><i class="bi bi-x"></i></button>
-          </div>
-          ${hasMultiple ? `
-            <button type="button" class="modal-nav prev" onclick="modernFeedManager.prevImage()" aria-label="Imagen anterior" ${index === 0 ? 'style="opacity:0.5"' : ''}><i class="bi bi-chevron-left"></i></button>
-            <button type="button" class="modal-nav next" onclick="modernFeedManager.nextImage()" aria-label="Imagen siguiente" ${index === this.imageList.length - 1 ? 'style="opacity:0.5"' : ''}><i class="bi bi-chevron-right"></i></button>
-          ` : ''}
-          <div class="modal-counter" id="modalCounter">${index + 1} / ${this.imageList.length}</div>
-        </div>
-        <div class="modal-info-section" id="imageModalInfo">
-          <div class="d-flex justify-content-center align-items-center h-100">
-            <div class="spinner-border text-primary"></div>
-          </div>
-        </div>
-      </div>`;
-
-    document.body.appendChild(modal);
-    modal.focus();
-    document.body.classList.add('photo-modal-open');
-
-    this.modalImageEl = modal.querySelector('#modalImage');
-    this.modalImageEl.addEventListener('wheel', (e) => this.handleWheel(e), { passive: false });
-    this.modalImageEl.addEventListener('touchstart', (e) => this.handleTouchStart(e));
-    this.modalImageEl.addEventListener('touchend', (e) => this.handleTouchEnd(e));
-
-    setTimeout(() => modal.classList.remove('hidden'), 10);
-    this.loadPostDataForModal(this.currentPostId);
-  }
-
-  // Close image modal
-  closeImageModal(fromPopState = false) {
-    const modal = document.getElementById('imageModal');
-    if (modal) {
-      modal.classList.add('hidden');
-      setTimeout(() => {
-        modal.remove();
-        if (!document.getElementById('facebookModal')) {
-          document.body.classList.remove('photo-modal-open');
-        }
-      }, 300);
-    }
-
-    if (this.modalImageEl) {
-      this.modalImageEl.removeEventListener('wheel', this.handleWheel);
-      this.modalImageEl.removeEventListener('touchstart', this.handleTouchStart);
-      this.modalImageEl.removeEventListener('touchend', this.handleTouchEnd);
-    }
-    this.modalImageEl = null;
-    this.currentScale = 1;
-
-    if (!document.getElementById('facebookModal')) {
-      this.currentPostId = null;
-    }
-    this.currentImageIndex = 0;
-    this.imageList = [];
-
-    this.popModalHistory(fromPopState);
-  }
-
-  // Close modal (generic)
+  // ✅ FUNCIÓN UNIFICADA para cerrar cualquier modal
   closeModal(fromPopState = false) {
-    const imageModal = document.getElementById('imageModal');
-    const facebookModal = document.getElementById('facebookModal');
-
-    if (imageModal) {
-      this.closeImageModal(fromPopState);
-    } else if (facebookModal) {
-      this.closeCommentsModal(fromPopState);
-    }
-  }
-
-  // Close comments modal
-  closeCommentsModal(fromPopState = false) {
     const modal = document.getElementById('facebookModal');
     if (modal) {
       modal.classList.add('hidden');
@@ -795,9 +720,7 @@ class ModernFeedManager {
         document.body.classList.remove('photo-modal-open');
       }, 300);
     }
-
     this.currentPostId = null;
-
     this.popModalHistory(fromPopState);
   }
 
@@ -821,135 +744,36 @@ class ModernFeedManager {
     }
   }
 
-  // Handle outside modal click
-  outsideModalClick(e) {
-    if (e.target.classList.contains('modal-container')) {
-      this.closeModal();
-    }
-  }
+  // Placeholder methods for future image navigation/zoom features
+  nextImage() {}
+  prevImage() {}
+  updateModalImage() {}
+  handleWheel() {}
+  handleTouchStart() {}
+  handleTouchEnd() {}
+  handleSwipe() {}
+  applyZoom() {}
+  zoomIn() {}
+  zoomOut() {}
+  resetZoom() {}
 
-  // Navigate to next image
-  nextImage() {
-    if (this.currentImageIndex < this.imageList.length - 1) {
-      this.currentImageIndex++;
-      this.updateModalImage();
-    }
-  }
-
-  // Navigate to previous image
-  prevImage() {
-    if (this.currentImageIndex > 0) {
-      this.currentImageIndex--;
-      this.updateModalImage();
-    }
-  }
-
-  // Update modal image
-  updateModalImage() {
-    const modal = document.getElementById('imageModal');
-    if (!modal) return;
-
-    const img = modal.querySelector('#modalImage');
-    const counter = modal.querySelector('.modal-counter');
-    const prevBtn = modal.querySelector('.modal-nav.prev');
-    const nextBtn = modal.querySelector('.modal-nav.next');
-
-    if (img) {
-      img.src = this.imageList[this.currentImageIndex];
-      img.alt = `Imagen ${this.currentImageIndex + 1}`;
-    }
-
-    if (counter) {
-      counter.textContent = `${this.currentImageIndex + 1} / ${this.imageList.length}`;
-    }
-
-    if (prevBtn) {
-      prevBtn.disabled = this.currentImageIndex === 0;
-    }
-
-    if (nextBtn) {
-      nextBtn.disabled = this.currentImageIndex === this.imageList.length - 1;
-    }
-
-    // Update URL
-    if (this.currentPostId) {
-      window.history.replaceState({ photo: true }, '', `/feed/post/${this.currentPostId}/photo/${this.currentImageIndex + 1}`);
-    }
-  }
-
-  handleWheel(e) {
-    e.preventDefault();
-    if (e.deltaY < 0) {
-      this.zoomIn();
-    } else {
-      this.zoomOut();
-    }
-  }
-
-  handleTouchStart(e) {
-    this.touchStartX = e.changedTouches[0].screenX;
-  }
-
-  handleTouchEnd(e) {
-    this.touchEndX = e.changedTouches[0].screenX;
-    this.handleSwipe();
-  }
-
-  handleSwipe() {
-    const diff = this.touchStartX - this.touchEndX;
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) {
-        this.nextImage();
-      } else {
-        this.prevImage();
-      }
-    }
-  }
-
-  applyZoom() {
-    if (this.modalImageEl) {
-      this.modalImageEl.style.transform = `scale(${this.currentScale})`;
-    }
-  }
-
-  zoomIn() {
-    this.currentScale = Math.min(3, this.currentScale + 0.2);
-    this.applyZoom();
-  }
-
-  zoomOut() {
-    this.currentScale = Math.max(0.2, this.currentScale - 0.2);
-    this.applyZoom();
-  }
-
-  resetZoom() {
-    this.currentScale = 1;
-    this.applyZoom();
-  }
-
-  outsideImageClick(e) {
-    if (e.target.id === 'imageModal') {
-      this.closeImageModal();
-    }
-  }
-
-  loadPostDataForModal(postId, commentsOnly = false) {
+  loadPostDataForModal(postId) {
     fetch(`/feed/api/post/${postId}`)
       .then(r => r.json())
       .then(data => {
-        const targetId = commentsOnly ? 'facebookModalInfo' : 'imageModalInfo';
-        const info = document.getElementById(targetId);
-        if (info && data.html) {
-          info.innerHTML = data.html;
-          this.initPostInteractions();
-          this.initCommentSystem();
+        const infoPanel = document.getElementById('facebookModalInfoPanel');
+        if (infoPanel && data.html) {
+          infoPanel.innerHTML = data.html;
           this.initCommentInput();
+          this.initPostInteractions();
         }
       })
-      .catch(() => {
-        const targetId = commentsOnly ? 'facebookModalInfo' : 'imageModalInfo';
-        const info = document.getElementById(targetId);
-        if (info) info.innerHTML = '<div class="text-center text-muted p-3">Error al cargar información del post</div>';
+      .catch(error => {
+        console.error('Error al cargar datos del modal:', error);
+        const infoPanel = document.getElementById('facebookModalInfoPanel');
+        if (infoPanel) {
+          infoPanel.innerHTML = '<div class="text-center text-danger p-4">No se pudo cargar el contenido del post.</div>';
+        }
       });
   }
 
