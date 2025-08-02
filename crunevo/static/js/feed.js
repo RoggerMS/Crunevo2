@@ -649,6 +649,41 @@ class ModernFeedManager {
     window.history.pushState({ photo: true }, '', `/feed/post/${postId}/photo/${index + 1}`);
   }
 
+  // Open comments modal (new Facebook-style)
+  openCommentsModal(postId) {
+    this.currentPostId = postId;
+    this.createCommentsModal(postId);
+    window.history.pushState({ comments: true }, '', `/feed/post/${postId}/comments`);
+  }
+
+  // Create comments modal (Facebook-style)
+  createCommentsModal(postId) {
+    const modal = document.createElement('div');
+    modal.id = 'facebookModal';
+    modal.className = 'image-modal hidden';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'facebookModalLabel');
+    modal.setAttribute('tabindex', '-1');
+
+    modal.innerHTML = `
+      <div class="modal-container comments-only" onclick="modernFeedManager.outsideModalClick(event)">
+        <h2 id="facebookModalLabel" class="visually-hidden">Comentarios del post</h2>
+        <div class="facebook-modal-info-panel" id="facebookModalInfo">
+          <div class="d-flex justify-content-center align-items-center h-100">
+            <div class="spinner-border text-primary"></div>
+          </div>
+        </div>
+      </div>`;
+
+    document.body.appendChild(modal);
+    modal.focus();
+    document.body.classList.add('photo-modal-open');
+
+    setTimeout(() => modal.classList.remove('hidden'), 10);
+    this.loadPostDataForModal(postId, true);
+  }
+
   // Create image modal
   createImageModal(src, index) {
     const modal = document.createElement('div');
@@ -723,6 +758,42 @@ class ModernFeedManager {
 
     // Restore URL
     window.history.back();
+  }
+
+  // Close modal (generic)
+  closeModal() {
+    const imageModal = document.getElementById('imageModal');
+    const facebookModal = document.getElementById('facebookModal');
+    
+    if (imageModal) {
+      this.closeImageModal();
+    } else if (facebookModal) {
+      this.closeCommentsModal();
+    }
+  }
+
+  // Close comments modal
+  closeCommentsModal() {
+    const modal = document.getElementById('facebookModal');
+    if (modal) {
+      modal.classList.add('hidden');
+      setTimeout(() => {
+        modal.remove();
+        document.body.classList.remove('photo-modal-open');
+      }, 300);
+    }
+
+    this.currentPostId = null;
+
+    // Restore URL
+    window.history.back();
+  }
+
+  // Handle outside modal click
+  outsideModalClick(e) {
+    if (e.target.classList.contains('modal-container')) {
+      this.closeModal();
+    }
   }
 
   // Navigate to next image
@@ -830,21 +901,48 @@ class ModernFeedManager {
     }
   }
 
-  loadPostDataForModal(postId) {
+  loadPostDataForModal(postId, commentsOnly = false) {
     fetch(`/feed/api/post/${postId}`)
       .then(r => r.json())
       .then(data => {
-        const info = document.getElementById('imageModalInfo');
+        const targetId = commentsOnly ? 'facebookModalInfo' : 'imageModalInfo';
+        const info = document.getElementById(targetId);
         if (info && data.html) {
           info.innerHTML = data.html;
           this.initPostInteractions();
           this.initCommentSystem();
+          this.initCommentInput();
         }
       })
       .catch(() => {
-        const info = document.getElementById('imageModalInfo');
+        const targetId = commentsOnly ? 'facebookModalInfo' : 'imageModalInfo';
+        const info = document.getElementById(targetId);
         if (info) info.innerHTML = '<div class="text-center text-muted p-3">Error al cargar información del post</div>';
       });
+  }
+
+  // Initialize comment input functionality
+  initCommentInput() {
+    const commentInputs = document.querySelectorAll('.comment-input');
+    commentInputs.forEach(input => {
+      const submitBtn = input.closest('.comment-form').querySelector('.comment-submit-btn');
+      
+      input.addEventListener('input', () => {
+        if (submitBtn) {
+          submitBtn.disabled = input.value.trim().length === 0;
+        }
+      });
+
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          const form = input.closest('.comment-form');
+          if (form && input.value.trim()) {
+            form.dispatchEvent(new Event('submit'));
+          }
+        }
+      });
+    });
   }
 
   // Initialize image preview for post creation
