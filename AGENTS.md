@@ -1054,3 +1054,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Unified Facebook-style post modal: added color variables, refactored feed.js with createModal/closeModal helpers, and trimmed _post_modal.html to panel-only content (PR facebook-modal-refactor).
 - Full-screen Facebook-style modal restored zoom, navigation, download and options controls with scroll-safe info panel (PR facebook-modal-controls).
 - Introduced dual modal system: full-screen photo modal with advanced controls and restored Bootstrap comment modal, removing comments-only styles and logic (PR dual-modal-system).
+- Unified comment input across photo and comment modals with fixed bottom form and reusable CSS for Facebook-like design (PR unified-comment-input).
