@@ -1046,3 +1046,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Improved forum list route with robust DB error handling and orphan author fallbacks (PR forum-list-stability).
 - Added ensure_forum_tables helper and manual 500 error for missing schema; created test for /foro (PR forum-table-check).
 - Fixed description validation on /foro/hacer-pregunta with char counter, drag-drop images and backend length check (PR forum-editor-enhancements).
+- Removed duplicate Quill initialization on /foro/hacer-pregunta, ensuring single editor with image uploads and accurate character counter (PR forum-editor-single).

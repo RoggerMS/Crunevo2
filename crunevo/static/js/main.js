@@ -911,8 +911,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeEnhancedUI();
   }
   if (typeof initForumEditor === 'function') {
-    initForumEditor('#questionEditor');
-    initForumEditor('#answerEditor');
+    window.quillEditor = initForumEditor('#questionEditor');
+    window.answerEditor = initForumEditor('#answerEditor');
   }
 
   document.querySelectorAll('.achievement-card').forEach((el) => {
