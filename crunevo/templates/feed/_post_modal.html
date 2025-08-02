@@ -1,20 +1,21 @@
 {% import 'components/csrf.html' as csrf %}
 {% set saved_posts = saved_posts if saved_posts is defined else {} %}
 
-<!-- Scrollable content -->
-<div class="modal-scrollable-content" style="flex-grow: 1; overflow-y: auto;">
-  <div class="modal-post-header">
-    <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" alt="Avatar de {{ post.author.username }}" class="modal-post-avatar">
-    <div class="modal-user-info">
-      <h6 class="modal-username">{{ post.author.username }}</h6>
-      {% if post.author.career %}<span class="modal-career-badge">{{ post.author.career }}</span>{% endif %}
-      <small class="modal-timestamp">{{ post.created_at|timesince }}</small>
-    </div>
-    <button type="button" class="modal-close-btn" onclick="modernFeedManager.closeModal()" aria-label="Cerrar">
-      <i class="bi bi-x"></i>
-    </button>
+<!-- Header (non-scrollable) -->
+<div class="modal-post-header">
+  <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" alt="Avatar de {{ post.author.username }}" class="modal-post-avatar">
+  <div class="modal-user-info">
+    <h6 class="modal-username">{{ post.author.username }}</h6>
+    {% if post.author.career %}<span class="modal-career-badge">{{ post.author.career }}</span>{% endif %}
+    <small class="modal-timestamp">{{ post.created_at|timesince }}</small>
   </div>
+  <button type="button" class="modal-close-btn" onclick="modernFeedManager.closeModal()" aria-label="Cerrar">
+    <i class="bi bi-x"></i>
+  </button>
+</div>
 
+<!-- Scrollable content -->
+<div class="modal-scrollable-content">
   {% if post.content %}
   <div class="modal-post-content">
     <p class="modal-post-text">{{ post.content }}</p>
@@ -110,7 +111,7 @@
 </div>
 
 <!-- Fixed comment form -->
-<div class="w-100 compact-comment-form-container" style="flex-shrink: 0;">
+<div class="unified-comment-form-container compact-comment-form-container">
   {% if current_user.is_authenticated %}
   <form class="comment-form" data-post-id="{{ post.id }}" onsubmit="submitModalComment(event, '{{ post.id }}')">
     {{ csrf.csrf_field() }}

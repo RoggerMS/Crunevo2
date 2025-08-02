@@ -60,6 +60,7 @@ function submitModalComment(event, postId) {
       if (data) {
         addCommentToModalUI(data, postId);
         input.value = '';
+        input.style.height = 'auto';
         window.modernFeedManager?.showToast('Comentario agregado', 'success');
 
         // Update comment count in main feed
@@ -137,9 +138,12 @@ function addCommentToModalUI(comment, postId) {
 
   commentsList.insertAdjacentHTML('beforeend', commentHTML);
 
-  // Scroll to bottom - handle both modal types
-  const commentsSection = commentsList.closest('.modal-comments-section') || commentsList;
-  commentsSection.scrollTop = commentsSection.scrollHeight;
+  // Scroll to bottom within the modal's scrollable area
+  const scrollContainer =
+    commentsList.closest('.modal-scrollable-content') ||
+    commentsList.closest('.modal-comments-section') ||
+    commentsList;
+  scrollContainer.scrollTop = scrollContainer.scrollHeight;
 }
 
 let commentsInitialized = false;
