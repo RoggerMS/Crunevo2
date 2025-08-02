@@ -108,6 +108,16 @@
 .modal-scrollable-content {
   flex-grow: 1;
   overflow-y: auto;
+  padding: 16px;
+}
+
+.modal-post-header,
+.unified-comment-form-container {
+  flex-shrink: 0;
+}
+
+.modal-content {
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
@@ -136,7 +146,6 @@
   gap: 12px;
   padding: 20px;
   border-bottom: 1px solid #E4E6EA;
-  flex-shrink: 0;
 }
 
 [data-bs-theme="dark"] .modal-post-header {
@@ -650,7 +659,6 @@
   padding: 12px 16px;
   border-top: 1px solid var(--crunevo-border);
   background-color: var(--crunevo-white);
-  flex-shrink: 0; /* Asegura que este elemento no se encoja */
 }
 
 .unified-comment-form-group {
@@ -714,7 +722,6 @@
   padding: 10px 16px;
   border-top: 1px solid var(--crunevo-border);
   background-color: var(--crunevo-white);
-  flex-shrink: 0; /* Importantísimo para que no se encoja */
   box-sizing: border-box;
 }
 
@@ -780,20 +787,5 @@
 .compact-comment-submit-btn:not(:disabled):hover {
   transform: scale(1.1);
   background-color: var(--crunevo-accent);
-}
-
-/* Ensure the info panel uses a flex column layout with internal scroll */
-.facebook-modal-info-panel {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: var(--crunevo-white);
-  border-left: 1px solid var(--crunevo-border);
-  overflow: hidden;
-}
-
-[data-bs-theme="dark"] .facebook-modal-info-panel {
-  background: #242526;
-  border-left: 1px solid var(--crunevo-border);
 }
 

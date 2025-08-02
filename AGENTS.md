@@ -1063,3 +1063,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Implemented single-scroll comment modal with compact comment CSS, load-more button fetching paginated comments with has_more flag, and updated tests to cover new API (PR comment-modal-infinite-scroll).
 - Removed nested scroll by stripping overflow and height limits from `.modal-comments-section`, consolidating scrolling to the parent container (PR modal-comments-scroll-fix).
 - Rebuilt post and comment modals with two-panel layout, fixed header and bottom comment form, and single scrollable info panel with responsive stacking (PR modal-two-panel-layout).
+- Resolved double scroll in Facebook-style modal by enforcing flexbox layout with a single scrollable content area, updating comment modal markup and scroll handling (PR modal-single-scroll-fix).
