@@ -1064,4 +1064,3 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Removed nested scroll by stripping overflow and height limits from `.modal-comments-section`, consolidating scrolling to the parent container (PR modal-comments-scroll-fix).
 - Rebuilt post and comment modals with two-panel layout, fixed header and bottom comment form, and single scrollable info panel with responsive stacking (PR modal-two-panel-layout).
 - Resolved double scroll in Facebook-style modal by enforcing flexbox layout with a single scrollable content area, updating comment modal markup and scroll handling (PR modal-single-scroll-fix).
-- Eliminated remaining double scroll in comment modal by moving the comment form inside a single scrollable body, making it sticky at the bottom and removing inner comment list overflow (PR comment-modal-sticky-input).

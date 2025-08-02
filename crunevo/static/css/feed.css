@@ -1318,11 +1318,6 @@ select:focus {
   margin-bottom: 20px;
 }
 
-.comment-modal .comments-list {
-  max-height: none;
-  overflow: visible;
-}
-
 .comment-item {
   padding: 8px 0;
 }
