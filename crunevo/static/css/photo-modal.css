@@ -94,7 +94,7 @@
   height: 100%;
   background: var(--crunevo-white);
   border-left: 1px solid var(--crunevo-border);
-  overflow: hidden;
+  overflow: hidden; /* Prevent accidental scroll */
 }
 
 [data-bs-theme="dark"] .facebook-modal-info-panel {
@@ -462,7 +462,6 @@
   .facebook-modal-info-panel {
     border-left: none;
     border-top: 1px solid var(--crunevo-border);
-    max-height: 40vh;
   }
 
   [data-bs-theme="dark"] .facebook-modal-info-panel {
@@ -758,7 +757,6 @@
   .facebook-modal-info-panel {
     border-left: none;
     border-top: 1px solid var(--crunevo-border);
-    max-height: 45vh; /* Limitamos altura del panel de info */
   }
 
   .modal-top-controls {
