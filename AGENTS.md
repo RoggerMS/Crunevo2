@@ -1062,4 +1062,3 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Ensured modals remain within viewport using 90vh content height, moved all scroll to internal containers and kept comment input fixed to eliminate outer scrollbars (PR modal-scroll-layout-fix).
 - Implemented single-scroll comment modal with compact comment CSS, load-more button fetching paginated comments with has_more flag, and updated tests to cover new API (PR comment-modal-infinite-scroll).
 - Removed nested scroll by stripping overflow and height limits from `.modal-comments-section`, consolidating scrolling to the parent container (PR modal-comments-scroll-fix).
-- Ensured comment and post modals have a single internal scroll with fixed input and comments filter, locking body scroll and removing panel height limits (PR modal-facebook-single-scroll).
