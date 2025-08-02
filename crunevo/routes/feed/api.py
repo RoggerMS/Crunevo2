@@ -134,24 +134,26 @@ def api_comments(post_id):
     post = Post.query.get_or_404(post_id)
     page = request.args.get("page", default=1, type=int)
     per_page = 10
-    comments = (
-        PostComment.query.filter_by(post_id=post.id, pending=False)
-        .order_by(PostComment.timestamp.desc())
-        .offset((page - 1) * per_page)
-        .limit(per_page)
-        .all()
+    query = PostComment.query.filter_by(post_id=post.id, pending=False).order_by(
+        PostComment.timestamp.desc()
     )
+    comments = query.offset((page - 1) * per_page).limit(per_page + 1).all()
+    has_more = len(comments) > per_page
+    comments = comments[:per_page]
     return jsonify(
-        [
-            {
-                "body": c.body,
-                "author": c.author.username,
-                "avatar": c.author.avatar_url
-                or url_for("static", filename="img/default.png"),
-                "timestamp": c.timestamp.isoformat(),
-            }
-            for c in comments
-        ]
+        {
+            "comments": [
+                {
+                    "body": c.body,
+                    "author": c.author.username,
+                    "avatar": c.author.avatar_url
+                    or url_for("static", filename="img/default.png"),
+                    "timestamp": c.timestamp.isoformat(),
+                }
+                for c in comments
+            ],
+            "has_more": has_more,
+        }
     )
 
 

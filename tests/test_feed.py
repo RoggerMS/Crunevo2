@@ -242,8 +242,12 @@ def test_comments_api_pagination(client, db_session, test_user):
     resp2 = client.get(f"/feed/api/comments/{post.id}?page=2")
     assert resp1.status_code == 200
     assert resp2.status_code == 200
-    assert len(resp1.get_json()) == 10
-    assert len(resp2.get_json()) == 5
+    data1 = resp1.get_json()
+    data2 = resp2.get_json()
+    assert len(data1["comments"]) == 10
+    assert data1["has_more"] is True
+    assert len(data2["comments"]) == 5
+    assert data2["has_more"] is False
 
 
 def test_comment_disabled_returns_403(client, db_session, test_user, another_user):
