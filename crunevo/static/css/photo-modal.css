@@ -469,9 +469,6 @@
     border-top: 1px solid var(--crunevo-border);
   }
 
-  .modal-comments-section {
-    max-height: none;
-  }
   
   .modal-top-controls {
     top: 10px;
