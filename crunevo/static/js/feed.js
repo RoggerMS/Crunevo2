@@ -1307,17 +1307,6 @@ document.addEventListener('click', (e) => {
   }
 });
 
-document.addEventListener('click', (e) => {
-  if (e.target.matches('.load-more-comments')) {
-    e.preventDefault();
-    const btn = e.target;
-    const postId = btn.dataset.postId;
-    if (postId) {
-      loadMoreComments(btn, postId);
-    }
-  }
-});
-
 // Comments Modal Functions provided by comment.js
 
 function updateCommentCount(postId, increment) {
@@ -1332,34 +1321,44 @@ function updateCommentCount(postId, increment) {
   }
 }
 
-function loadMoreComments(btn, postId) {
-  const page = parseInt(btn.dataset.page || '1');
-  btn.disabled = true;
-  fetch(`/feed/api/comments/${postId}?page=${page}`)
-    .then(async r => {
-      if (!r.ok) {
-        const data = await r.json().catch(() => ({}));
-        const msg = data.error || 'Error al cargar comentarios';
-        throw new Error(msg);
-      }
-      return r.json();
-    })
-    .then(comments => {
-      if (comments.length) {
-        comments.forEach(c => addCommentToModalUI(c, postId));
-        btn.dataset.page = page + 1;
-        btn.disabled = false;
-        if (comments.length < 10) {
-          btn.remove();
-        }
-      } else {
-        btn.remove();
-      }
-    })
-    .catch(err => {
-      window.modernFeedManager?.showToast(err.message, 'error');
-      btn.disabled = false;
-    });
+function setupLoadMoreComments() {
+  document.body.addEventListener('click', function (event) {
+    if (event.target.matches('.load-more-comments')) {
+      event.preventDefault();
+      const btn = event.target;
+      const postId = btn.dataset.postId;
+      const page = parseInt(btn.dataset.page || '1');
+
+      btn.textContent = 'Cargando...';
+      btn.disabled = true;
+
+      fetch(`/feed/api/comments/${postId}?page=${page}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.comments && data.comments.length > 0) {
+            const commentsList = document.querySelector(`#commentsList-${postId}`);
+            data.comments.forEach((comment) => {
+              addCommentToModalUI(comment, postId);
+            });
+
+            btn.dataset.page = page + 1;
+            btn.textContent = 'Ver más comentarios';
+            btn.disabled = false;
+
+            if (!data.has_more) {
+              btn.remove();
+            }
+          } else {
+            btn.remove();
+          }
+        })
+        .catch((error) => {
+          console.error('Error al cargar más comentarios:', error);
+          btn.textContent = 'Error al cargar. Reintentar';
+          btn.disabled = false;
+        });
+    }
+  });
 }
 
 // Load comments for photo view
@@ -1371,7 +1370,8 @@ function initPhotoComments() {
 
   fetch(`/feed/api/comments/${postId}`)
     .then((r) => r.json())
-    .then((comments) => {
+    .then((data) => {
+      const comments = data.comments || [];
       const listId = `commentsList-${postId}`;
       const formHtml = `\n          <div class="comments-list" id="${listId}"></div>\n          <form class="comment-form d-flex align-items-center mt-3" data-post-id="${postId}" onsubmit="submitModalComment(event, '${postId}')">\n            <img src="${window.CURRENT_USER?.avatar || '/static/img/default.png'}" alt="avatar" class="rounded-circle me-2" style="width:32px;height:32px;object-fit:cover;">\n            <div class="flex-grow-1 position-relative">\n              <input type="text" class="form-control comment-input rounded-pill" placeholder="Escribe un comentario..." name="body" style="padding-right:40px;">\n              <button type="submit" class="btn position-absolute end-0 top-50 translate-middle-y me-2" style="border:none;background:none;color:#1877F2;" disabled>\n                <i class="bi bi-send-fill"></i>\n              </button>\n            </div>\n            <input type="hidden" name="csrf_token" value="${window.modernFeedManager?.getCSRFToken?.() || ''}">\n          </form>`;
 
@@ -1384,6 +1384,16 @@ function initPhotoComments() {
         });
       } else {
         listEl.innerHTML = '<p class="text-muted" data-empty-msg>Sé el primero en comentar esta publicación.</p>';
+      }
+
+      if (data.has_more) {
+        const loadBtn = document.createElement('button');
+        loadBtn.className = 'btn btn-link btn-sm w-100 mb-3 load-more-comments';
+        loadBtn.dataset.postId = postId;
+        loadBtn.dataset.page = '2';
+        loadBtn.textContent = 'Ver más comentarios';
+        const form = section.querySelector('form');
+        form.insertAdjacentElement('beforebegin', loadBtn);
       }
     })
     .catch(() => {
@@ -1522,6 +1532,7 @@ function initModernFeedManager() {
   modernFeedManager = new ModernFeedManager();
   window.modernFeedManager = modernFeedManager;
   initFabButton();
+  setupLoadMoreComments();
 }
 
 // Initialization handled in main.js

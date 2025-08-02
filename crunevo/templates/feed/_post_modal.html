@@ -102,7 +102,9 @@
       {% endif %}
     </div>
     {% if more_comments %}
-    <button id="loadMoreCommentsBtn-{{ post.id }}" class="btn btn-link btn-sm w-100 mb-3 load-more-comments" data-post-id="{{ post.id }}">Ver más comentarios</button>
+    <div class="text-center my-2">
+      <button class="btn btn-link load-more-comments" data-post-id="{{ post.id }}" data-page="2">Ver más comentarios</button>
+    </div>
     {% endif %}
   </div>
 </div>

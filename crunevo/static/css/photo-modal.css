@@ -286,8 +286,8 @@
 
 .comment-item {
   display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 .comment-avatar {
@@ -303,10 +303,10 @@
 }
 
 .comment-box {
-  background: #F0F2F5;
+  background: var(--crunevo-bg-light);
   border-radius: 16px;
-  padding: 12px 16px;
-  margin-bottom: 4px;
+  padding: 8px 12px;
+  margin-bottom: 2px;
 }
 
 [data-bs-theme="dark"] .comment-box {
@@ -337,8 +337,8 @@
 .comment-meta {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding-left: 16px;
+  gap: 8px;
+  padding-left: 12px;
 }
 
 .empty-comments {

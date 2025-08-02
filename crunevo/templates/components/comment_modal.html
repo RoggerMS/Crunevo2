@@ -76,24 +76,22 @@
           </div>
 
           <!-- Sección de Comentarios -->
-          <div class="modal-comments-section px-4">
-            <!-- Lista de Comentarios Existentes -->
+          <div class="modal-comments-section">
             {% set more_comments = post.comments|length > 10 %}
             <div class="comments-list" id="commentsList-{{ post.id }}">
               {% for comment in post.comments[:10] %}
-              <div class="comment-item d-flex mb-3">
+              <div class="comment-item">
                 <img src="{{ comment.author.avatar_url if comment.author else url_for('static', filename='img/default.png') }}"
                      alt="{{ comment.author.username if comment.author else 'Usuario' }}"
-                     class="rounded-circle me-2"
-                     style="width: 32px; height: 32px; object-fit: cover;">
-                <div class="flex-grow-1">
-                  <div class="comment-bubble bg-light rounded-3 p-2">
-                    <div class="comment-author fw-semibold small">
+                     class="comment-avatar">
+                <div class="comment-content">
+                  <div class="comment-box">
+                    <div class="comment-author">
                       {{ comment.author.username if comment.author else 'Usuario eliminado' }}
                     </div>
                     <div class="comment-text">{{ comment.body }}</div>
                   </div>
-                  <div class="comment-meta mt-1">
+                  <div class="comment-meta">
                     <small class="text-muted">{{ comment.timestamp|timesince }}</small>
                     <button class="btn btn-link btn-sm p-0 ms-2 text-muted">Responder</button>
                   </div>
