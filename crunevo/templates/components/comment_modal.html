@@ -3,9 +3,9 @@
 {% set saved_posts = saved_posts if saved_posts is defined else {} %}
 
 <!-- Modal de Comentarios -->
-<div class="modal fade comment-modal" id="commentsModal-{{ post.id }}" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="commentsModalLabel-{{ post.id }}" aria-hidden="true" style="display: none;">
+<div class="modal fade" id="commentsModal-{{ post.id }}" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="commentsModalLabel-{{ post.id }}" aria-hidden="true" style="display: none;">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
-    <div class="modal-content facebook-modal-info-panel">
+    <div class="modal-content facebook-modal-info-panel" style="height: 90vh;">
       <h5 id="commentsModalLabel-{{ post.id }}" class="visually-hidden">Comentarios</h5>
 
       <!-- Header (non-scrollable) -->
@@ -23,7 +23,7 @@
       </div>
 
       <!-- Scrollable Content -->
-      <div class="modal-body modal-scrollable-content">
+      <div class="modal-scrollable-content">
         {% if post.content %}
         <div class="modal-post-content">
           <p class="modal-post-text">{{ post.content }}</p>
@@ -73,7 +73,9 @@
           <div class="comments-list" id="commentsList-{{ post.id }}">
             {% for comment in post.comments[:10] %}
             <div class="comment-item">
-              <img src="{{ comment.author.avatar_url if comment.author else url_for('static', filename='img/default.png') }}" alt="{{ comment.author.username if comment.author else 'Usuario' }}" class="comment-avatar">
+              <img src="{{ comment.author.avatar_url if comment.author else url_for('static', filename='img/default.png') }}"
+                   alt="{{ comment.author.username if comment.author else 'Usuario' }}"
+                   class="comment-avatar">
               <div class="comment-content">
                 <div class="comment-box">
                   <div class="comment-author">{{ comment.author.username if comment.author else 'Usuario eliminado' }}</div>
@@ -93,23 +95,24 @@
           </div>
           {% endif %}
         </div>
+      </div>
 
-        <div class="unified-comment-form-container compact-comment-form-container comment-input-container">
-          {% if current_user.is_authenticated %}
-          <form class="comment-form" data-post-id="{{ post.id }}" onsubmit="submitModalComment(event, '{{ post.id }}')">
-            {{ csrf.csrf_field() }}
-            <div class="compact-comment-form-group">
-              <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" alt="{{ current_user.username }}" class="compact-comment-form-avatar">
-              <div class="compact-comment-input-wrapper">
-                <textarea class="compact-comment-input comment-input" name="body" rows="1" placeholder="Escribe un comentario..." oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'"></textarea>
-                <button type="submit" class="compact-comment-submit-btn comment-submit-btn" disabled><i class="bi bi-send-fill"></i></button>
-              </div>
+      <!-- Footer fijo con el input -->
+      <div class="unified-comment-form-container compact-comment-form-container">
+        {% if current_user.is_authenticated %}
+        <form class="comment-form" data-post-id="{{ post.id }}" onsubmit="submitModalComment(event, '{{ post.id }}')">
+          {{ csrf.csrf_field() }}
+          <div class="compact-comment-form-group">
+            <img src="{{ current_user.avatar_url or url_for('static', filename='img/default.png') }}" alt="{{ current_user.username }}" class="compact-comment-form-avatar">
+            <div class="compact-comment-input-wrapper">
+              <textarea class="compact-comment-input comment-input" name="body" rows="1" placeholder="Escribe un comentario..." oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'"></textarea>
+              <button type="submit" class="compact-comment-submit-btn comment-submit-btn" disabled><i class="bi bi-send-fill"></i></button>
             </div>
-          </form>
-          {% else %}
-            <!-- Mensaje de inicio de sesión -->
-          {% endif %}
-        </div>
+          </div>
+        </form>
+        {% else %}
+          <!-- Mensaje de inicio de sesión -->
+        {% endif %}
       </div>
     </div>
   </div>
