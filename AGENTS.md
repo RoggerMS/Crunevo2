@@ -1045,3 +1045,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Fixed popular sort in forum by counting answers via join instead of property (hotfix forum-popular-sort).
 - Improved forum list route with robust DB error handling and orphan author fallbacks (PR forum-list-stability).
 - Added ensure_forum_tables helper and manual 500 error for missing schema; created test for /foro (PR forum-table-check).
+- Fixed description validation on /foro/hacer-pregunta with char counter, drag-drop images and backend length check (PR forum-editor-enhancements).

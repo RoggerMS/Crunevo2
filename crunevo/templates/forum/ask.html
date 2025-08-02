@@ -151,6 +151,12 @@
               </div>
               <div id="questionEditor" class="modern-editor"></div>
               <input type="hidden" name="content" required>
+              <div class="char-counter">
+                <span id="content-counter">0</span> caracteres
+              </div>
+              <div class="invalid-feedback d-block" id="content-error" style="display:none;">
+                La descripción debe tener al menos 20 caracteres.
+              </div>
             </div>
           </div>
 
@@ -561,6 +567,19 @@
   border-radius: 12px;
   min-height: 200px;
   background: white;
+  padding: 0;
+}
+
+.modern-editor .ql-editor {
+  padding: 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+#content-error {
+  font-size: 0.875rem;
+  color: #dc2626;
+  margin-top: 4px;
 }
 
 .editor-toolbar {
@@ -1012,6 +1031,7 @@ document.addEventListener('DOMContentLoaded', function() {
   updateProgress();
   setupEventListeners();
   initializeEditor();
+  updateContentValidation();
 });
 
 function setupEventListeners() {
@@ -1061,6 +1081,31 @@ function updateCharCounter(inputId, maxLength) {
   }
 }
 
+function countRealChars(text) {
+  return text.replace(/\s+/g, '').length;
+}
+
+function updateContentValidation() {
+  if (!window.quillEditor) return;
+  const text = window.quillEditor.getText();
+  const len = countRealChars(text);
+  const counter = document.getElementById('content-counter');
+  if (counter) counter.textContent = len;
+  const nextBtn = document.getElementById('nextBtn');
+  const errorEl = document.getElementById('content-error');
+  if (len >= 20) {
+    errorEl.style.display = 'none';
+    if (currentStep === 3) nextBtn.disabled = false;
+  } else {
+    if (text.trim().length > 0) {
+      errorEl.style.display = 'block';
+    } else {
+      errorEl.style.display = 'none';
+    }
+    if (currentStep === 3) nextBtn.disabled = true;
+  }
+}
+
 function changeStep(direction) {
   const newStep = currentStep + direction;
   if (newStep >= 1 && newStep <= 4) {
@@ -1084,6 +1129,9 @@ function goToStep(step) {
   // Update navigation buttons
   updateNavigationButtons();
   updateProgress();
+  if (currentStep === 3) {
+    updateContentValidation();
+  }
   
   // Mark previous steps as completed
   for (let i = 1; i < currentStep; i++) {
@@ -1124,8 +1172,8 @@ function validateCurrentStep() {
       }
       return true;
     case 3:
-      const content = window.quillEditor ? window.quillEditor.getText().trim() : '';
-      if (content.length < 20) {
+      const content = window.quillEditor ? window.quillEditor.getText() : '';
+      if (countRealChars(content) < 20) {
         alert('La descripción debe tener al menos 20 caracteres');
         return false;
       }
@@ -1145,8 +1193,8 @@ function getMaxAccessibleStep() {
   const category = document.getElementById('category').value;
   if (!category) return 2;
   
-  const content = window.quillEditor ? window.quillEditor.getText().trim() : '';
-  if (content.length < 20) return 3;
+  const content = window.quillEditor ? window.quillEditor.getText() : '';
+  if (countRealChars(content) < 20) return 3;
   
   return 4;
 }
@@ -1164,8 +1212,8 @@ function updateProgress() {
   if (category) progress += 25;
   
   // Step 3: Content
-  const content = window.quillEditor ? window.quillEditor.getText().trim() : '';
-  if (content.length >= 20) progress += 25;
+  const content = window.quillEditor ? window.quillEditor.getText() : '';
+  if (countRealChars(content) >= 20) progress += 25;
   
   // Step 4: Completion
   if (selectedTags.length > 0 || currentStep === 4) progress += 25;
@@ -1281,7 +1329,9 @@ function initializeEditor() {
     
     window.quillEditor.on('text-change', function() {
       updateProgress();
+      updateContentValidation();
     });
+    updateContentValidation();
   }
 }
 

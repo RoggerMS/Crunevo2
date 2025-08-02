@@ -14,6 +14,8 @@ function initForumEditor(selector) {
   });
 
   quill.getModule('toolbar').addHandler('image', () => selectLocalImage(quill));
+  quill.root.addEventListener('drop', (e) => handleDrop(e, quill));
+  quill.root.addEventListener('paste', (e) => handlePaste(e, quill));
   const form = container.closest('form');
   if (form) {
     const input = form.querySelector('input[name="content"]');
@@ -35,18 +37,46 @@ function selectLocalImage(quill) {
       alert('Imagen demasiado grande (máx 3MB)');
       return;
     }
-    const fd = new FormData();
-    fd.append('file', file);
-    csrfFetch('/api/upload', { method: 'POST', body: fd })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.url) {
-          const range = quill.getSelection(true);
-          quill.insertEmbed(range.index, 'image', data.url);
-        }
-      });
+    uploadImageFile(file, quill);
   };
   input.click();
+}
+
+function uploadImageFile(file, quill) {
+  if (!file || !file.type.startsWith('image/')) return;
+  if (file.size > 3 * 1024 * 1024) {
+    alert('Imagen demasiado grande (máx 3MB)');
+    return;
+  }
+  const fd = new FormData();
+  fd.append('file', file);
+  csrfFetch('/api/upload', { method: 'POST', body: fd })
+    .then((r) => r.json())
+    .then((data) => {
+      if (data.url) {
+        const range = quill.getSelection(true);
+        quill.insertEmbed(range.index, 'image', data.url);
+        quill.setSelection(range.index + 1);
+      }
+    });
+}
+
+function handleDrop(e, quill) {
+  e.preventDefault();
+  if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+    uploadImageFile(e.dataTransfer.files[0], quill);
+  }
+}
+
+function handlePaste(e, quill) {
+  const items = e.clipboardData.items;
+  for (const item of items) {
+    if (item.kind === 'file') {
+      e.preventDefault();
+      const file = item.getAsFile();
+      uploadImageFile(file, quill);
+    }
+  }
 }
 
 // Initialization handled in main.js
