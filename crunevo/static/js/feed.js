@@ -15,6 +15,8 @@ class ModernFeedManager {
     this.touchStartX = 0;
     this.touchEndX = 0;
     this.commentEventsBound = false;
+    this.prevUrlStack = [];
+    this.handlePopState = this.handlePopState.bind(this);
     this.init();
   }
 
@@ -645,15 +647,23 @@ class ModernFeedManager {
     this.currentPostId = postId;
     this.currentScale = 1;
 
+    this.prevUrlStack.push(window.location.href);
     this.createImageModal(src, index);
-    window.history.pushState({ photo: true }, '', `/feed/post/${postId}/photo/${index + 1}`);
+    window.history.pushState({ modal: true }, '', `/feed/post/${postId}/photo/${index + 1}`);
+    if (this.prevUrlStack.length === 1) {
+      window.addEventListener('popstate', this.handlePopState);
+    }
   }
 
   // Open comments modal (new Facebook-style)
   openCommentsModal(postId) {
     this.currentPostId = postId;
+    this.prevUrlStack.push(window.location.href);
     this.createCommentsModal(postId);
-    window.history.pushState({ comments: true }, '', `/feed/post/${postId}/comments`);
+    window.history.pushState({ modal: true }, '', `/feed/post/${postId}/comments`);
+    if (this.prevUrlStack.length === 1) {
+      window.addEventListener('popstate', this.handlePopState);
+    }
   }
 
   // Create comments modal (Facebook-style)
@@ -734,13 +744,15 @@ class ModernFeedManager {
   }
 
   // Close image modal
-  closeImageModal() {
+  closeImageModal(fromPopState = false) {
     const modal = document.getElementById('imageModal');
     if (modal) {
       modal.classList.add('hidden');
       setTimeout(() => {
         modal.remove();
-        document.body.classList.remove('photo-modal-open');
+        if (!document.getElementById('facebookModal')) {
+          document.body.classList.remove('photo-modal-open');
+        }
       }, 300);
     }
 
@@ -752,28 +764,29 @@ class ModernFeedManager {
     this.modalImageEl = null;
     this.currentScale = 1;
 
-    this.currentPostId = null;
+    if (!document.getElementById('facebookModal')) {
+      this.currentPostId = null;
+    }
     this.currentImageIndex = 0;
     this.imageList = [];
 
-    // Restore URL
-    window.history.back();
+    this.popModalHistory(fromPopState);
   }
 
   // Close modal (generic)
-  closeModal() {
+  closeModal(fromPopState = false) {
     const imageModal = document.getElementById('imageModal');
     const facebookModal = document.getElementById('facebookModal');
-    
+
     if (imageModal) {
-      this.closeImageModal();
+      this.closeImageModal(fromPopState);
     } else if (facebookModal) {
-      this.closeCommentsModal();
+      this.closeCommentsModal(fromPopState);
     }
   }
 
   // Close comments modal
-  closeCommentsModal() {
+  closeCommentsModal(fromPopState = false) {
     const modal = document.getElementById('facebookModal');
     if (modal) {
       modal.classList.add('hidden');
@@ -785,8 +798,27 @@ class ModernFeedManager {
 
     this.currentPostId = null;
 
-    // Restore URL
-    window.history.back();
+    this.popModalHistory(fromPopState);
+  }
+
+  handlePopState(e) {
+    if (e.state && e.state.modal) {
+      this.closeModal(true);
+    }
+  }
+
+  popModalHistory(fromPopState) {
+    if (!fromPopState) {
+      const prevUrl = this.prevUrlStack.pop();
+      if (prevUrl) {
+        window.history.replaceState(null, '', prevUrl);
+      }
+    } else {
+      this.prevUrlStack.pop();
+    }
+    if (this.prevUrlStack.length === 0) {
+      window.removeEventListener('popstate', this.handlePopState);
+    }
   }
 
   // Handle outside modal click

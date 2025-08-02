@@ -1050,3 +1050,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Improved /foro/hacer-pregunta editor with precise whitespace-trimmed character validation, richer Quill toolbar, resizable images with tooltip and click-to-expand, and enforcement of 20-character minimum before advancing (PR forum-editor-validation-fix).
 - Fixed character counter on /foro/hacer-pregunta using Quill text content and ignoring punctuation, enabling 20-character validation without errors (PR forum-editor-charcount-bugfix).
 - Ensured /foro/hacer-pregunta editor enables "Siguiente" after 20 real characters by waiting for Quill initialization and using robust content validation (PR forum-editor-next-btn-fix).
+- Fixed modal navigation by managing history state with a stack and popstate listener, preventing unintended page back navigation when closing new Facebook-style modals (PR modal-history-fix).
