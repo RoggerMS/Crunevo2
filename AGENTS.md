@@ -1048,3 +1048,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Fixed description validation on /foro/hacer-pregunta with char counter, drag-drop images and backend length check (PR forum-editor-enhancements).
 - Removed duplicate Quill initialization on /foro/hacer-pregunta, ensuring single editor with image uploads and accurate character counter (PR forum-editor-single).
 - Improved /foro/hacer-pregunta editor with precise whitespace-trimmed character validation, richer Quill toolbar, resizable images with tooltip and click-to-expand, and enforcement of 20-character minimum before advancing (PR forum-editor-validation-fix).
+- Fixed character counter on /foro/hacer-pregunta using Quill text content and ignoring punctuation, enabling 20-character validation without errors (PR forum-editor-charcount-bugfix).
