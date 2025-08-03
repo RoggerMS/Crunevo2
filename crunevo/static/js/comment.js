@@ -159,6 +159,8 @@ function initCommentModals() {
       if (submitBtn) {
         submitBtn.disabled = !e.target.value.trim();
       }
+      e.target.style.height = 'auto';
+      e.target.style.height = `${e.target.scrollHeight}px`;
     }
   });
 }
