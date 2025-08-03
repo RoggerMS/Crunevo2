@@ -57,7 +57,7 @@ def store_index():
     free = request.args.get("free", type=int)
     pack = request.args.get("pack", type=int)
 
-    query = Product.query
+    query = Product.query.filter_by(is_official=True)
     if categoria:
         query = query.filter_by(category=categoria)
     if free:
@@ -94,6 +94,8 @@ def store_index():
 
     ratings = dict(
         db.session.query(Review.product_id, func.avg(Review.rating))
+        .join(Product)
+        .filter(Product.is_official.is_(True))
         .group_by(Review.product_id)
         .all()
     )
@@ -101,14 +103,28 @@ def store_index():
 
     categories = [cat for group in STORE_CATEGORIES.values() for cat in group]
     categories_dict = STORE_CATEGORIES
-    favorites = FavoriteProduct.query.filter_by(user_id=current_user.id).all()
+    favorites = (
+        FavoriteProduct.query.join(Product)
+        .filter(
+            FavoriteProduct.user_id == current_user.id,
+            Product.is_official.is_(True),
+        )
+        .all()
+    )
     favorite_ids = [fav.product_id for fav in favorites]
-    purchased = Purchase.query.filter_by(user_id=current_user.id).all()
+    purchased = (
+        Purchase.query.join(Product)
+        .filter(Purchase.user_id == current_user.id, Product.is_official.is_(True))
+        .all()
+    )
     purchased_ids = [p.product_id for p in purchased]
-    featured_products = Product.query.filter_by(is_featured=True).all()
+    featured_products = Product.query.filter_by(
+        is_featured=True, is_official=True
+    ).all()
     top_sellers = (
         db.session.query(Product)
         .join(Purchase)
+        .filter(Product.is_official.is_(True))
         .group_by(Product.id)
         .order_by(func.count(Purchase.id).desc())
         .limit(5)
