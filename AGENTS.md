@@ -1072,3 +1072,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Migrated mobile "NotBar" component to "MobileNavbar", renamed template and CSS class `.notbar` to `.mobile-navbar` and updated includes (PR mobile-navbar-rename).
 - Documented mobile navigation bar usage and noted replacement of bottom nav (PR mobile-navbar-docs).
 - Refined mobile navbar: new purple blur style with circular buttons, forum icon now question mark, and search input opens a full-screen modal with live suggestions (PR mobile-navbar-enhance).
+- Mobile navbar badges and spacing fixed: icons spaced evenly, notification button links to full page with working badge, cart count now visible, and auto-hide/padding logic targets the mobile navbar (PR mobile-navbar-fixes).
