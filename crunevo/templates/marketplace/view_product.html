@@ -1,0 +1,616 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} | Marketplace Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/marketplace.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="marketplace-wrapper">
+    <div class="marketplace-container">
+        <div class="container py-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('marketplace.marketplace_index') }}">Marketplace</a></li>
+                    {% if product.category %}
+                    <li class="breadcrumb-item"><a href="{{ url_for('marketplace.marketplace_index', categoria=product.category) }}">{{ product.category }}</a></li>
+                    {% endif %}
+                    <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+                </ol>
+            </nav>
+
+            <div class="row">
+                <!-- Product Images -->
+                <div class="col-lg-6 mb-4">
+                    <div class="marketplace-product-gallery card shadow-sm">
+                        <div class="marketplace-product-main-image">
+                            {% if product.image_urls and product.image_urls|length > 0 %}
+                            <img src="{{ product.image_urls[0] }}" id="main-product-image" class="img-fluid" alt="{{ product.name }}">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='img/marketplace/product-placeholder.svg') }}" class="img-fluid" alt="{{ product.name }}">
+                            {% endif %}
+                            
+                            <!-- Product badges -->
+                            <div class="marketplace-product-badges">
+                                {% if product.is_new %}
+                                <span class="badge bg-success">Nuevo</span>
+                                {% endif %}
+                                {% if product.condition == 'used' %}
+                                <span class="badge bg-secondary">Usado</span>
+                                {% endif %}
+                                {% if product.condition == 'refurbished' %}
+                                <span class="badge bg-info">Reacondicionado</span>
+                                {% endif %}
+                                {% if product.shipping_cost == 0 %}
+                                <span class="badge bg-primary">Envío gratis</span>
+                                {% endif %}
+                                {% if product.stock == 0 %}
+                                <span class="badge bg-danger">Agotado</span>
+                                {% elif product.stock < 5 %}
+                                <span class="badge bg-warning text-dark">Pocas unidades</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if product.image_urls and product.image_urls|length > 1 %}
+                        <div class="marketplace-product-thumbnails mt-3">
+                            <div class="row g-2">
+                                {% for image_url in product.image_urls %}
+                                <div class="col-3">
+                                    <img src="{{ image_url }}" class="img-thumbnail marketplace-thumbnail {% if loop.index0 == 0 %}active{% endif %}" alt="{{ product.name }} - Imagen {{ loop.index }}" data-src="{{ image_url }}">
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="col-lg-6">
+                    <div class="marketplace-product-info card shadow-sm">
+                        <div class="card-body">
+                            <h1 class="marketplace-product-title">{{ product.name }}</h1>
+                            
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="marketplace-product-rating me-2">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-half text-warning"></i>
+                                    <span class="ms-1">4.5</span>
+                                </div>
+                                <span class="text-muted">|</span>
+                                <span class="ms-2 text-muted">{{ product.views_count }} vistas</span>
+                                {% if product.stock > 0 %}
+                                <span class="text-muted">|</span>
+                                <span class="ms-2 text-muted">{{ product.stock }} disponibles</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="marketplace-product-price-container mb-3">
+                                <span class="marketplace-product-price">S/. {{ product.price }}</span>
+                                {% if product.shipping_cost > 0 %}
+                                <span class="text-muted ms-2">+ S/. {{ product.shipping_cost }} de envío</span>
+                                {% else %}
+                                <span class="text-success ms-2">Envío gratis</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="marketplace-product-description mb-4">
+                                {{ product.description|safe }}
+                            </div>
+                            
+                            <div class="marketplace-product-details mb-4">
+                                <div class="row g-3">
+                                    {% if product.condition %}
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-tag me-2 text-primary"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Condición</small>
+                                                <span>
+                                                    {% if product.condition == 'new' %}Nuevo{% endif %}
+                                                    {% if product.condition == 'used' %}Usado{% endif %}
+                                                    {% if product.condition == 'refurbished' %}Reacondicionado{% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if product.category %}
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-folder me-2 text-primary"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Categoría</small>
+                                                <span>{{ product.category }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if product.shipping_time %}
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-truck me-2 text-primary"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Tiempo de envío</small>
+                                                <span>{{ product.shipping_time }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if product.warranty %}
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-shield-check me-2 text-primary"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Garantía</small>
+                                                <span>{{ product.warranty }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            {% if seller %}
+                            <div class="marketplace-seller-info card mb-4">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        {% if seller.logo %}
+                                        <img src="{{ seller.logo }}" class="marketplace-seller-logo me-3" alt="{{ seller.store_name }}">
+                                        {% else %}
+                                        <div class="marketplace-seller-logo-placeholder me-3">
+                                            <i class="bi bi-shop"></i>
+                                        </div>
+                                        {% endif %}
+                                        <div>
+                                            <h5 class="mb-1">
+                                                {{ seller.store_name }}
+                                                {% if seller.is_verified %}
+                                                <i class="bi bi-patch-check-fill text-primary"></i>
+                                                {% endif %}
+                                            </h5>
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-3">
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                    <span>{{ seller.rating|default('0.0') }}</span>
+                                                </div>
+                                                <span class="text-muted">{{ seller.total_sales|default('0') }} ventas</span>
+                                            </div>
+                                        </div>
+                                        <a href="{{ url_for('marketplace.view_seller', seller_id=seller.id) }}" class="btn btn-outline-primary ms-auto">Ver tienda</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="marketplace-product-actions">
+                                {% if product.stock > 0 %}
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="input-group me-3" style="width: 120px;">
+                                        <button class="btn btn-outline-secondary" type="button" id="decrease-quantity">-</button>
+                                        <input type="number" class="form-control text-center" id="product-quantity" value="1" min="1" max="{{ product.stock }}">
+                                        <button class="btn btn-outline-secondary" type="button" id="increase-quantity">+</button>
+                                    </div>
+                                    <span class="text-muted">{{ product.stock }} disponibles</span>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" id="add-to-cart" data-product-id="{{ product.id }}">
+                                        <i class="bi bi-cart-plus me-2"></i> Añadir al carrito
+                                    </button>
+                                    <button class="btn btn-success" id="buy-now" data-product-id="{{ product.id }}">
+                                        <i class="bi bi-bag me-2"></i> Comprar ahora
+                                    </button>
+                                </div>
+                                {% else %}
+                                <div class="alert alert-danger">
+                                    <i class="bi bi-exclamation-triangle me-2"></i> Producto agotado
+                                </div>
+                                {% endif %}
+                                
+                                <div class="d-flex justify-content-between mt-3">
+                                    <button class="btn btn-outline-primary" id="add-to-favorites" data-product-id="{{ product.id }}">
+                                        <i class="bi bi-heart me-1"></i> Favorito
+                                    </button>
+                                    
+                                    {% if current_user.is_authenticated and seller and current_user.id != seller.user_id %}
+                                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#contactSellerModal">
+                                        <i class="bi bi-chat me-1"></i> Contactar vendedor
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product Tabs -->
+            <div class="marketplace-product-tabs mt-5">
+                <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">Detalles</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">Reseñas</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="questions-tab" data-bs-toggle="tab" data-bs-target="#questions" type="button" role="tab" aria-controls="questions" aria-selected="false">Preguntas</button>
+                    </li>
+                </ul>
+                <div class="tab-content p-4 border border-top-0 rounded-bottom" id="productTabsContent">
+                    <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h4>Descripción del producto</h4>
+                                <div class="marketplace-product-full-description">
+                                    {{ product.description|safe }}
+                                </div>
+                                
+                                {% if product.tags %}
+                                <div class="mt-4">
+                                    <h5>Etiquetas</h5>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for tag in product.tags %}
+                                        <span class="badge bg-light text-dark">{{ tag }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5>Especificaciones</h5>
+                                        <ul class="list-group list-group-flush">
+                                            {% if product.category %}
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Categoría</span>
+                                                <span>{{ product.category }}</span>
+                                            </li>
+                                            {% endif %}
+                                            {% if product.subcategory %}
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Subcategoría</span>
+                                                <span>{{ product.subcategory }}</span>
+                                            </li>
+                                            {% endif %}
+                                            {% if product.condition %}
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Condición</span>
+                                                <span>
+                                                    {% if product.condition == 'new' %}Nuevo{% endif %}
+                                                    {% if product.condition == 'used' %}Usado{% endif %}
+                                                    {% if product.condition == 'refurbished' %}Reacondicionado{% endif %}
+                                                </span>
+                                            </li>
+                                            {% endif %}
+                                            {% if product.warranty %}
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Garantía</span>
+                                                <span>{{ product.warranty }}</span>
+                                            </li>
+                                            {% endif %}
+                                            {% if product.shipping_time %}
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Tiempo de envío</span>
+                                                <span>{{ product.shipping_time }}</span>
+                                            </li>
+                                            {% endif %}
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Fecha de publicación</span>
+                                                <span>{{ product.created_at|timesince }}</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                        <h4>Reseñas de clientes</h4>
+                        <div class="marketplace-reviews">
+                            <!-- Placeholder for reviews -->
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i> No hay reseñas disponibles para este producto.
+                            </div>
+                            
+                            {% if current_user.is_authenticated and has_purchased %}
+                            <div class="card mt-4">
+                                <div class="card-body">
+                                    <h5>Deja tu reseña</h5>
+                                    <form action="#" method="post" id="review-form">
+                                        <div class="mb-3">
+                                            <label class="form-label">Calificación</label>
+                                            <div class="rating-stars">
+                                                <i class="bi bi-star rating-star" data-rating="1"></i>
+                                                <i class="bi bi-star rating-star" data-rating="2"></i>
+                                                <i class="bi bi-star rating-star" data-rating="3"></i>
+                                                <i class="bi bi-star rating-star" data-rating="4"></i>
+                                                <i class="bi bi-star rating-star" data-rating="5"></i>
+                                                <input type="hidden" name="rating" id="rating-value" value="0">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="review-title" class="form-label">Título</label>
+                                            <input type="text" class="form-control" id="review-title" name="title" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="review-content" class="form-label">Comentario</label>
+                                            <textarea class="form-control" id="review-content" name="content" rows="3" required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Enviar reseña</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="questions" role="tabpanel" aria-labelledby="questions-tab">
+                        <h4>Preguntas y respuestas</h4>
+                        <div class="marketplace-questions">
+                            <!-- Placeholder for questions -->
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i> No hay preguntas disponibles para este producto.
+                            </div>
+                            
+                            {% if current_user.is_authenticated %}
+                            <div class="card mt-4">
+                                <div class="card-body">
+                                    <h5>Haz una pregunta</h5>
+                                    <form action="#" method="post" id="question-form">
+                                        <div class="mb-3">
+                                            <label for="question-content" class="form-label">Tu pregunta</label>
+                                            <textarea class="form-control" id="question-content" name="content" rows="2" required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Enviar pregunta</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Related Products -->
+            {% if related_products %}
+            <div class="marketplace-related-products mt-5">
+                <h3 class="mb-4">Productos relacionados</h3>
+                <div class="row g-4">
+                    {% for related in related_products %}
+                    <div class="col-md-6 col-lg-3">
+                        <div class="marketplace-product-card card h-100 shadow-sm">
+                            <div class="position-relative">
+                                {% if related.image_urls and related.image_urls|length > 0 %}
+                                <img src="{{ related.image_urls[0] }}" class="card-img-top marketplace-product-img" alt="{{ related.name }}">
+                                {% else %}
+                                <img src="{{ url_for('static', filename='img/marketplace/product-placeholder.svg') }}" class="card-img-top marketplace-product-img" alt="{{ related.name }}">
+                                {% endif %}
+                                
+                                <!-- Product badges -->
+                                <div class="marketplace-product-badges">
+                                    {% if related.is_new %}
+                                    <span class="badge bg-success">Nuevo</span>
+                                    {% endif %}
+                                    {% if related.shipping_cost == 0 %}
+                                    <span class="badge bg-primary">Envío gratis</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ related.name }}</h5>
+                                <p class="card-text text-truncate">{{ related.description }}</p>
+                                <div class="d-flex justify-content-between align-items-center mt-auto">
+                                    <span class="marketplace-product-price">S/. {{ related.price }}</span>
+                                    <a href="{{ url_for('marketplace.view_product', product_id=related.id) }}" class="btn btn-sm btn-outline-primary">Ver detalles</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Contact Seller Modal -->
+{% if current_user.is_authenticated and seller and current_user.id != seller.user_id %}
+<div class="modal fade" id="contactSellerModal" tabindex="-1" aria-labelledby="contactSellerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="contactSellerModalLabel">Contactar a {{ seller.store_name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('marketplace.send_message') }}" method="post" id="contact-seller-form">
+                    <input type="hidden" name="receiver_id" value="{{ seller.user_id }}">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label for="message-content" class="form-label">Mensaje</label>
+                        <textarea class="form-control" id="message-content" name="content" rows="4" required></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/marketplace.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Image gallery
+        const thumbnails = document.querySelectorAll('.marketplace-thumbnail');
+        const mainImage = document.getElementById('main-product-image');
+        
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function() {
+                // Remove active class from all thumbnails
+                thumbnails.forEach(thumb => thumb.classList.remove('active'));
+                
+                // Add active class to clicked thumbnail
+                this.classList.add('active');
+                
+                // Update main image
+                mainImage.src = this.dataset.src;
+            });
+        });
+        
+        // Quantity controls
+        const quantityInput = document.getElementById('product-quantity');
+        const decreaseBtn = document.getElementById('decrease-quantity');
+        const increaseBtn = document.getElementById('increase-quantity');
+        
+        if (decreaseBtn && increaseBtn && quantityInput) {
+            decreaseBtn.addEventListener('click', function() {
+                const currentValue = parseInt(quantityInput.value);
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                }
+            });
+            
+            increaseBtn.addEventListener('click', function() {
+                const currentValue = parseInt(quantityInput.value);
+                const maxValue = parseInt(quantityInput.getAttribute('max'));
+                if (currentValue < maxValue) {
+                    quantityInput.value = currentValue + 1;
+                }
+            });
+        }
+        
+        // Rating stars
+        const ratingStars = document.querySelectorAll('.rating-star');
+        const ratingValue = document.getElementById('rating-value');
+        
+        if (ratingStars.length > 0 && ratingValue) {
+            ratingStars.forEach(star => {
+                star.addEventListener('mouseover', function() {
+                    const rating = parseInt(this.dataset.rating);
+                    highlightStars(rating);
+                });
+                
+                star.addEventListener('mouseout', function() {
+                    const currentRating = parseInt(ratingValue.value);
+                    highlightStars(currentRating);
+                });
+                
+                star.addEventListener('click', function() {
+                    const rating = parseInt(this.dataset.rating);
+                    ratingValue.value = rating;
+                    highlightStars(rating);
+                });
+            });
+            
+            function highlightStars(rating) {
+                ratingStars.forEach(star => {
+                    const starRating = parseInt(star.dataset.rating);
+                    if (starRating <= rating) {
+                        star.classList.remove('bi-star');
+                        star.classList.add('bi-star-fill', 'text-warning');
+                    } else {
+                        star.classList.remove('bi-star-fill', 'text-warning');
+                        star.classList.add('bi-star');
+                    }
+                });
+            }
+        }
+        
+        // Add to cart button
+        const addToCartBtn = document.getElementById('add-to-cart');
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', function() {
+                const productId = this.dataset.productId;
+                const quantity = parseInt(quantityInput.value);
+                
+                // AJAX request to add to cart
+                fetch('/store/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: quantity
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show success message
+                        alert('Producto añadido al carrito');
+                        
+                        // Update cart count in navbar
+                        const cartCountElement = document.querySelector('.cart-count');
+                        if (cartCountElement) {
+                            cartCountElement.textContent = data.cart_count;
+                        }
+                    } else {
+                        alert(data.message || 'Error al añadir al carrito');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al añadir al carrito');
+                });
+            });
+        }
+        
+        // Buy now button
+        const buyNowBtn = document.getElementById('buy-now');
+        if (buyNowBtn) {
+            buyNowBtn.addEventListener('click', function() {
+                const productId = this.dataset.productId;
+                const quantity = parseInt(quantityInput.value);
+                
+                // AJAX request to add to cart and redirect to checkout
+                fetch('/store/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: quantity,
+                        buy_now: true
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Redirect to checkout
+                        window.location.href = '/store/checkout';
+                    } else {
+                        alert(data.message || 'Error al procesar la compra');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al procesar la compra');
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

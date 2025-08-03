@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Producto | Marketplace Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/marketplace.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="marketplace-wrapper">
+    <div class="marketplace-container">
+        <div class="container py-4">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-3 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Panel de Vendedor</h5>
+                            <div class="list-group list-group-flush">
+                                <a href="{{ url_for('marketplace.seller_dashboard') }}" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                                </a>
+                                <a href="{{ url_for('marketplace.seller_products') }}" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-box-seam me-2"></i> Mis Productos
+                                </a>
+                                <a href="{{ url_for('marketplace.add_product') }}" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-plus-circle me-2"></i> Añadir Producto
+                                </a>
+                                <a href="{{ url_for('marketplace.messages') }}" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-chat-dots me-2"></i> Mensajes
+                                    {% if unread_messages_count > 0 %}
+                                    <span class="badge bg-danger rounded-pill float-end">{{ unread_messages_count }}</span>
+                                    {% endif %}
+                                </a>
+                                <a href="{{ url_for('marketplace.view_seller', seller_id=seller.id) }}" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-shop me-2"></i> Ver Mi Tienda
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main Content -->
+                <div class="col-lg-9">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Editar Producto</h5>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ url_for('marketplace.edit_product', product_id=product.id) }}" method="post" enctype="multipart/form-data" id="edit-product-form">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                
+                                <!-- Basic Information -->
+                                <div class="mb-4">
+                                    <h5>Información Básica</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="product-name" class="form-label">Nombre del Producto *</label>
+                                            <input type="text" class="form-control" id="product-name" name="name" value="{{ product.name }}" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="product-price" class="form-label">Precio (S/.) *</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">S/.</span>
+                                                <input type="number" class="form-control" id="product-price" name="price" step="0.01" min="0" value="{{ product.price }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="product-category" class="form-label">Categoría *</label>
+                                            <select class="form-select" id="product-category" name="category" required>
+                                                <option value="" disabled>Seleccionar categoría</option>
+                                                {% for category in categories %}
+                                                <option value="{{ category }}" {% if product.category == category %}selected{% endif %}>{{ category }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="product-subcategory" class="form-label">Subcategoría</label>
+                                            <select class="form-select" id="product-subcategory" name="subcategory">
+                                                <option value="" disabled>Seleccionar subcategoría</option>
+                                                <!-- Subcategories will be populated via JavaScript -->
+                                                {% if product.subcategory %}
+                                                <option value="{{ product.subcategory }}" selected>{{ product.subcategory }}</option>
+                                                {% endif %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="product-stock" class="form-label">Stock *</label>
+                                            <input type="number" class="form-control" id="product-stock" name="stock" min="0" value="{{ product.stock }}" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="product-condition" class="form-label">Condición *</label>
+                                            <select class="form-select" id="product-condition" name="condition" required>
+                                                <option value="new" {% if product.condition == 'new' %}selected{% endif %}>Nuevo</option>
+                                                <option value="used" {% if product.condition == 'used' %}selected{% endif %}>Usado</option>
+                                                <option value="refurbished" {% if product.condition == 'refurbished' %}selected{% endif %}>Reacondicionado</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Description -->
+                                <div class="mb-4">
+                                    <h5>Descripción</h5>
+                                    <div class="mb-3">
+                                        <label for="product-description" class="form-label">Descripción detallada *</label>
+                                        <textarea class="form-control" id="product-description" name="description" rows="5" required>{{ product.description }}</textarea>
+                                        <div class="form-text">Describe tu producto con detalle, incluyendo características, especificaciones y cualquier información relevante.</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Shipping Information -->
+                                <div class="mb-4">
+                                    <h5>Información de Envío</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="shipping-cost" class="form-label">Costo de Envío (S/.)</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">S/.</span>
+                                                <input type="number" class="form-control" id="shipping-cost" name="shipping_cost" step="0.01" min="0" value="{{ product.shipping_cost }}" {% if product.shipping_cost == 0 %}disabled{% endif %}>
+                                            </div>
+                                            <div class="form-check mt-2">
+                                                <input class="form-check-input" type="checkbox" id="free-shipping" name="free_shipping" {% if product.shipping_cost == 0 %}checked{% endif %}>
+                                                <label class="form-check-label" for="free-shipping">Envío gratis</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="shipping-time" class="form-label">Tiempo de Envío</label>
+                                            <input type="text" class="form-control" id="shipping-time" name="shipping_time" placeholder="Ej: 3-5 días hábiles" value="{{ product.shipping_time }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Additional Information -->
+                                <div class="mb-4">
+                                    <h5>Información Adicional</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="product-warranty" class="form-label">Garantía</label>
+                                            <input type="text" class="form-control" id="product-warranty" name="warranty" placeholder="Ej: 1 año de garantía" value="{{ product.warranty }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="product-tags" class="form-label">Etiquetas</label>
+                                            <input type="text" class="form-control" id="product-tags" name="tags" placeholder="Ej: electrónica, gadget, portátil" value="{{ product.tags|join(', ') if product.tags else '' }}">
+                                            <div class="form-text">Separa las etiquetas con comas.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Product Images -->
+                                <div class="mb-4">
+                                    <h5>Imágenes del Producto</h5>
+                                    
+                                    <!-- Current Images -->
+                                    {% if product.image_urls and product.image_urls|length > 0 %}
+                                    <div class="mb-3">
+                                        <label class="form-label">Imágenes actuales</label>
+                                        <div class="d-flex flex-wrap gap-2" id="current-images-container">
+                                            {% for image_url in product.image_urls %}
+                                            <div class="position-relative current-image-container">
+                                                <img src="{{ image_url }}" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
+                                                <div class="form-check position-absolute bottom-0 end-0 bg-white rounded-circle p-1">
+                                                    <input class="form-check-input" type="checkbox" name="remove_images[]" value="{{ image_url }}" id="remove-image-{{ loop.index }}">
+                                                    <label class="form-check-label visually-hidden" for="remove-image-{{ loop.index }}">Eliminar</label>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="form-text">Marca las casillas para eliminar imágenes.</div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- Upload New Images -->
+                                    <div class="dropzone" id="product-images-dropzone"></div>
+                                    <div class="form-text">Puedes subir hasta {{ 5 - (product.image_urls|length if product.image_urls else 0) }} imágenes adicionales.</div>
+                                    <div id="image-preview-container" class="d-flex flex-wrap gap-2 mt-2"></div>
+                                    <input type="hidden" name="new_image_urls" id="image-urls-input">
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a href="{{ url_for('marketplace.seller_products') }}" class="btn btn-outline-secondary">Cancelar</a>
+                                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/marketplace.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Category and subcategory relationship
+        const categorySelect = document.getElementById('product-category');
+        const subcategorySelect = document.getElementById('product-subcategory');
+        
+        // Sample subcategories mapping (replace with actual data from backend)
+        const subcategories = {
+            'Electrónica': ['Smartphones', 'Laptops', 'Tablets', 'Accesorios', 'Audio'],
+            'Hogar': ['Muebles', 'Decoración', 'Electrodomésticos', 'Jardín'],
+            'Moda': ['Ropa Hombre', 'Ropa Mujer', 'Calzado', 'Accesorios', 'Relojes'],
+            'Deportes': ['Fitness', 'Fútbol', 'Ciclismo', 'Camping', 'Ropa deportiva'],
+            'Juguetes': ['Educativos', 'Muñecas', 'Figuras de acción', 'Juegos de mesa'],
+            'Libros': ['Ficción', 'No ficción', 'Académicos', 'Infantiles'],
+            'Otros': ['Varios']
+        };
+        
+        function populateSubcategories(category, selectedSubcategory = null) {
+            // Clear subcategory options
+            subcategorySelect.innerHTML = '<option value="" disabled>Seleccionar subcategoría</option>';
+            
+            // Populate subcategories based on selected category
+            if (subcategories[category]) {
+                subcategories[category].forEach(subcategory => {
+                    const option = document.createElement('option');
+                    option.value = subcategory;
+                    option.textContent = subcategory;
+                    if (selectedSubcategory && subcategory === selectedSubcategory) {
+                        option.selected = true;
+                    }
+                    subcategorySelect.appendChild(option);
+                });
+                subcategorySelect.disabled = false;
+            } else {
+                subcategorySelect.disabled = true;
+            }
+        }
+        
+        if (categorySelect) {
+            // Initial population
+            const initialCategory = categorySelect.value;
+            const initialSubcategory = '{{ product.subcategory }}';
+            if (initialCategory) {
+                populateSubcategories(initialCategory, initialSubcategory);
+            }
+            
+            // Change event
+            categorySelect.addEventListener('change', function() {
+                populateSubcategories(this.value);
+            });
+        }
+        
+        // Free shipping checkbox
+        const freeShippingCheckbox = document.getElementById('free-shipping');
+        const shippingCostInput = document.getElementById('shipping-cost');
+        
+        if (freeShippingCheckbox && shippingCostInput) {
+            freeShippingCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    shippingCostInput.value = '0';
+                    shippingCostInput.disabled = true;
+                } else {
+                    shippingCostInput.disabled = false;
+                }
+            });
+        }
+        
+        // Initialize Dropzone for image uploads
+        Dropzone.autoDiscover = false;
+        
+        const maxFiles = 5 - {{ product.image_urls|length if product.image_urls else 0 }};
+        
+        const myDropzone = new Dropzone("#product-images-dropzone", {
+            url: "{{ url_for('marketplace.upload_product_image') }}",
+            paramName: "file",
+            maxFilesize: 5, // MB
+            maxFiles: maxFiles > 0 ? maxFiles : 1,
+            acceptedFiles: "image/*",
+            addRemoveLinks: true,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            dictDefaultMessage: maxFiles > 0 ? 
+                "<i class='bi bi-cloud-arrow-up-fill'></i><br>Arrastra imágenes aquí o haz clic para subir" : 
+                "<i class='bi bi-exclamation-circle'></i><br>Has alcanzado el límite de imágenes. Elimina algunas para añadir más.",
+            init: function() {
+                const imageUrlsInput = document.getElementById('image-urls-input');
+                const imageUrls = [];
+                
+                if (maxFiles <= 0) {
+                    this.disable();
+                }
+                
+                this.on("success", function(file, response) {
+                    if (response.success) {
+                        // Store the image URL
+                        file.imageUrl = response.url;
+                        imageUrls.push(response.url);
+                        imageUrlsInput.value = JSON.stringify(imageUrls);
+                        
+                        // Add preview
+                        const previewContainer = document.getElementById('image-preview-container');
+                        const preview = document.createElement('div');
+                        preview.className = 'position-relative';
+                        preview.innerHTML = `
+                            <img src="${response.url}" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
+                            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 remove-image" data-url="${response.url}">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        `;
+                        previewContainer.appendChild(preview);
+                        
+                        // Add remove event
+                        preview.querySelector('.remove-image').addEventListener('click', function() {
+                            const url = this.dataset.url;
+                            const index = imageUrls.indexOf(url);
+                            if (index > -1) {
+                                imageUrls.splice(index, 1);
+                                imageUrlsInput.value = JSON.stringify(imageUrls);
+                            }
+                            preview.remove();
+                            
+                            // Find and remove the file from dropzone
+                            myDropzone.files.forEach(f => {
+                                if (f.imageUrl === url) {
+                                    myDropzone.removeFile(f);
+                                }
+                            });
+                        });
+                    }
+                });
+                
+                this.on("removedfile", function(file) {
+                    if (file.imageUrl) {
+                        const index = imageUrls.indexOf(file.imageUrl);
+                        if (index > -1) {
+                            imageUrls.splice(index, 1);
+                            imageUrlsInput.value = JSON.stringify(imageUrls);
+                            
+                            // Remove from preview
+                            const previewContainer = document.getElementById('image-preview-container');
+                            const previews = previewContainer.querySelectorAll('.remove-image');
+                            previews.forEach(btn => {
+                                if (btn.dataset.url === file.imageUrl) {
+                                    btn.closest('.position-relative').remove();
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        
+        // Current images selection highlight
+        const currentImageContainers = document.querySelectorAll('.current-image-container');
+        currentImageContainers.forEach(container => {
+            const checkbox = container.querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        container.classList.add('opacity-50');
+                    } else {
+                        container.classList.remove('opacity-50');
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de Vendedor | Marketplace Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/marketplace.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="marketplace-wrapper">
+    <div class="marketplace-container">
+        <div class="container py-4">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-3 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Panel de Vendedor</h5>
+                            <div class="list-group list-group-flush">
+                                <a href="{{ url_for('marketplace.seller_dashboard') }}" class="list-group-item list-group-item-action active">
+                                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                                </a>
+                                <a href="{{ url_for('marketplace.seller_products') }}" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-box-seam me-2"></i> Mis Productos
+                                </a>
+                                <a href="{{ url_for('marketplace.add_product') }}" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-plus-circle me-2"></i> Añadir Producto
+                                </a>
+                                <a href="{{ url_for('marketplace.messages') }}" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-chat-dots me-2"></i> Mensajes
+                                    {% if unread_messages_count > 0 %}
+                                    <span class="badge bg-danger rounded-pill float-end">{{ unread_messages_count }}</span>
+                                    {% endif %}
+                                </a>
+                                <a href="{{ url_for('marketplace.view_seller', seller_id=seller.id) }}" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-shop me-2"></i> Ver Mi Tienda
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main Content -->
+                <div class="col-lg-9">
+                    <!-- Welcome Card -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                {% if seller.logo %}
+                                <img src="{{ seller.logo }}" alt="{{ seller.store_name }}" class="marketplace-seller-logo-sm me-3">
+                                {% else %}
+                                <div class="marketplace-seller-logo-placeholder-sm me-3">
+                                    <i class="bi bi-shop"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <h2 class="mb-0">Bienvenido, {{ seller.store_name }}</h2>
+                                    <p class="text-muted mb-0">Aquí puedes gestionar tu tienda y productos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Cards -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-4">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-muted mb-2">Productos</h6>
+                                            <h3 class="mb-0">{{ stats.products_count }}</h3>
+                                        </div>
+                                        <div class="marketplace-stat-icon bg-primary-light text-primary">
+                                            <i class="bi bi-box-seam"></i>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <a href="{{ url_for('marketplace.seller_products') }}" class="text-decoration-none">Ver todos <i class="bi bi-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-muted mb-2">Ventas</h6>
+                                            <h3 class="mb-0">{{ stats.sales_count }}</h3>
+                                        </div>
+                                        <div class="marketplace-stat-icon bg-success-light text-success">
+                                            <i class="bi bi-bag-check"></i>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <span class="text-success"><i class="bi bi-graph-up"></i> {{ stats.sales_growth }}% este mes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-muted mb-2">Ingresos</h6>
+                                            <h3 class="mb-0">S/. {{ stats.revenue }}</h3>
+                                        </div>
+                                        <div class="marketplace-stat-icon bg-warning-light text-warning">
+                                            <i class="bi bi-currency-dollar"></i>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <span class="text-success"><i class="bi bi-graph-up"></i> {{ stats.revenue_growth }}% este mes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0">Ventas Recientes</h5>
+                                </div>
+                                <div class="card-body">
+                                    {% if recent_sales %}
+                                    <div class="marketplace-recent-sales">
+                                        {% for sale in recent_sales %}
+                                        <div class="marketplace-recent-sale d-flex align-items-center py-2 border-bottom">
+                                            <div class="marketplace-recent-sale-img me-3">
+                                                {% if sale.product.image_urls and sale.product.image_urls|length > 0 %}
+                                                <img src="{{ sale.product.image_urls[0] }}" alt="{{ sale.product.name }}" class="img-fluid rounded">
+                                                {% else %}
+                                                <div class="marketplace-product-img-placeholder rounded">
+                                                    <i class="bi bi-image"></i>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0">{{ sale.product.name }}</h6>
+                                                <small class="text-muted">{{ sale.timestamp|timesince }}</small>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="fw-bold">S/. {{ sale.price_paid }}</span>
+                                                <small class="d-block text-muted">x{{ sale.quantity }}</small>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <div class="alert alert-info">
+                                        <i class="bi bi-info-circle me-2"></i> No hay ventas recientes.
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0">Mensajes Recientes</h5>
+                                </div>
+                                <div class="card-body">
+                                    {% if recent_messages %}
+                                    <div class="marketplace-recent-messages">
+                                        {% for message in recent_messages %}
+                                        <div class="marketplace-recent-message d-flex align-items-center py-2 border-bottom">
+                                            <div class="marketplace-recent-message-user me-3">
+                                                {% if message.sender.profile_image %}
+                                                <img src="{{ message.sender.profile_image }}" alt="{{ message.sender.username }}" class="img-fluid rounded-circle">
+                                                {% else %}
+                                                <div class="marketplace-user-img-placeholder rounded-circle">
+                                                    <i class="bi bi-person"></i>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0">{{ message.sender.username }}</h6>
+                                                <p class="mb-0 text-truncate">{{ message.content }}</p>
+                                                <small class="text-muted">{{ message.timestamp|timesince }}</small>
+                                            </div>
+                                            <div>
+                                                <a href="{{ url_for('marketplace.view_conversation', conversation_id=message.conversation_id) }}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-reply"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="text-center mt-3">
+                                        <a href="{{ url_for('marketplace.messages') }}" class="btn btn-outline-primary btn-sm">Ver todos los mensajes</a>
+                                    </div>
+                                    {% else %}
+                                    <div class="alert alert-info">
+                                        <i class="bi bi-info-circle me-2"></i> No hay mensajes recientes.
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/marketplace.js') }}"></script>
+{% endblock %}

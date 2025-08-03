@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}{{ seller.store_name }} | Marketplace Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/marketplace.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="marketplace-wrapper">
+    <div class="marketplace-container">
+        <!-- Seller Banner -->
+        <div class="marketplace-seller-banner">
+            {% if seller.banner %}
+            <img src="{{ seller.banner }}" alt="{{ seller.store_name }}" class="img-fluid w-100">
+            {% else %}
+            <div class="marketplace-seller-banner-placeholder">
+                <div class="container py-5 text-center">
+                    <h1 class="text-white">{{ seller.store_name }}</h1>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="container py-4">
+            <!-- Seller Profile -->
+            <div class="marketplace-seller-profile card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 text-center">
+                            {% if seller.logo %}
+                            <img src="{{ seller.logo }}" alt="{{ seller.store_name }}" class="marketplace-seller-logo img-fluid rounded-circle mb-3">
+                            {% else %}
+                            <div class="marketplace-seller-logo-placeholder mb-3">
+                                <i class="bi bi-shop"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-7">
+                            <h2 class="marketplace-seller-name">
+                                {{ seller.store_name }}
+                                {% if seller.is_verified %}
+                                <i class="bi bi-patch-check-fill text-primary" data-bs-toggle="tooltip" title="Vendedor verificado"></i>
+                                {% endif %}
+                            </h2>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="marketplace-seller-rating me-3">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <span>{{ seller.rating|default('0.0') }}</span>
+                                </div>
+                                <span class="text-muted">{{ seller.total_sales|default('0') }} ventas</span>
+                                <span class="text-muted mx-2">|</span>
+                                <span class="text-muted">Miembro desde {{ seller.created_at|date }}</span>
+                            </div>
+                            <p class="marketplace-seller-description mb-0">
+                                {{ seller.description|default('Sin descripción disponible')|safe }}
+                            </p>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            {% if current_user.is_authenticated and current_user.id != seller.user_id %}
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactSellerModal">
+                                <i class="bi bi-chat me-2"></i> Contactar vendedor
+                            </button>
+                            {% endif %}
+                            
+                            {% if current_user.is_authenticated and current_user.id == seller.user_id %}
+                            <a href="{{ url_for('marketplace.seller_dashboard') }}" class="btn btn-outline-primary">
+                                <i class="bi bi-gear me-2"></i> Administrar tienda
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Seller Info Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-info-circle me-2 text-primary"></i> Información</h5>
+                            <ul class="list-group list-group-flush">
+                                {% if seller.location %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="bi bi-geo-alt me-2"></i> Ubicación</span>
+                                    <span>{{ seller.location }}</span>
+                                </li>
+                                {% endif %}
+                                {% if seller.phone %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="bi bi-telephone me-2"></i> Teléfono</span>
+                                    <span>{{ seller.phone }}</span>
+                                </li>
+                                {% endif %}
+                                {% if seller.email %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="bi bi-envelope me-2"></i> Email</span>
+                                    <span>{{ seller.email }}</span>
+                                </li>
+                                {% endif %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="bi bi-box-seam me-2"></i> Productos</span>
+                                    <span>{{ products|length }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="bi bi-bag-check me-2"></i> Ventas</span>
+                                    <span>{{ seller.total_sales|default('0') }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-8">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-star me-2 text-primary"></i> Valoraciones y reseñas</h5>
+                            
+                            {% if seller.rating and seller.rating > 0 %}
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="marketplace-seller-rating-large me-3">
+                                    <span class="display-4">{{ seller.rating }}</span>
+                                    <div class="d-flex">
+                                        {% for i in range(5) %}
+                                            {% if i < seller.rating|int %}
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                            {% elif i < seller.rating|round(0, 'ceil') %}
+                                            <i class="bi bi-star-half text-warning"></i>
+                                            {% else %}
+                                            <i class="bi bi-star text-warning"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <small class="text-muted">Basado en {{ seller.total_sales }} valoraciones</small>
+                                </div>
+                                
+                                <div class="marketplace-seller-rating-bars flex-grow-1">
+                                    <!-- Placeholder for rating distribution bars -->
+                                    <div class="d-flex align-items-center mb-1">
+                                        <span class="me-2">5</span>
+                                        <div class="progress flex-grow-1" style="height: 8px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="ms-2 text-muted">75%</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-1">
+                                        <span class="me-2">4</span>
+                                        <div class="progress flex-grow-1" style="height: 8px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 15%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="ms-2 text-muted">15%</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-1">
+                                        <span class="me-2">3</span>
+                                        <div class="progress flex-grow-1" style="height: 8px;">
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: 5%" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="ms-2 text-muted">5%</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-1">
+                                        <span class="me-2">2</span>
+                                        <div class="progress flex-grow-1" style="height: 8px;">
+                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 3%" aria-valuenow="3" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="ms-2 text-muted">3%</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2">1</span>
+                                        <div class="progress flex-grow-1" style="height: 8px;">
+                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 2%" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="ms-2 text-muted">2%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i> Este vendedor aún no tiene valoraciones.
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Seller Products -->
+            <div class="marketplace-seller-products">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>Productos de {{ seller.store_name }}</h3>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Ordenar por
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                            <li><a class="dropdown-item" href="?sort=newest">Más recientes</a></li>
+                            <li><a class="dropdown-item" href="?sort=price_asc">Precio: menor a mayor</a></li>
+                            <li><a class="dropdown-item" href="?sort=price_desc">Precio: mayor a menor</a></li>
+                            <li><a class="dropdown-item" href="?sort=popular">Más populares</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                {% if products %}
+                <div class="row g-4">
+                    {% for product in products %}
+                    <div class="col-md-6 col-lg-3">
+                        <div class="marketplace-product-card card h-100 shadow-sm">
+                            <div class="position-relative">
+                                {% if product.image_urls and product.image_urls|length > 0 %}
+                                <img src="{{ product.image_urls[0] }}" class="card-img-top marketplace-product-img" alt="{{ product.name }}">
+                                {% else %}
+                                <img src="{{ url_for('static', filename='img/marketplace/product-placeholder.svg') }}" class="card-img-top marketplace-product-img" alt="{{ product.name }}">
+                                {% endif %}
+                                
+                                <!-- Product badges -->
+                                <div class="marketplace-product-badges">
+                                    {% if product.is_new %}
+                                    <span class="badge bg-success">Nuevo</span>
+                                    {% endif %}
+                                    {% if product.condition == 'used' %}
+                                    <span class="badge bg-secondary">Usado</span>
+                                    {% endif %}
+                                    {% if product.condition == 'refurbished' %}
+                                    <span class="badge bg-info">Reacondicionado</span>
+                                    {% endif %}
+                                    {% if product.shipping_cost == 0 %}
+                                    <span class="badge bg-primary">Envío gratis</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text text-truncate">{{ product.description }}</p>
+                                <div class="d-flex justify-content-between align-items-center mt-auto">
+                                    <span class="marketplace-product-price">S/. {{ product.price }}</span>
+                                    <a href="{{ url_for('marketplace.view_product', product_id=product.id) }}" class="btn btn-sm btn-outline-primary">Ver detalles</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i> Este vendedor aún no tiene productos publicados.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Seller Modal -->
+{% if current_user.is_authenticated and current_user.id != seller.user_id %}
+<div class="modal fade" id="contactSellerModal" tabindex="-1" aria-labelledby="contactSellerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="contactSellerModalLabel">Contactar a {{ seller.store_name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('marketplace.send_message') }}" method="post" id="contact-seller-form">
+                    <input type="hidden" name="receiver_id" value="{{ seller.user_id }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label for="message-content" class="form-label">Mensaje</label>
+                        <textarea class="form-control" id="message-content" name="content" rows="4" required></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/marketplace.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+</script>
+{% endblock %}

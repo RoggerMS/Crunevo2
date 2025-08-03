@@ -1,3 +1,4 @@
+from datetime import datetime
 from crunevo.extensions import db
 
 
@@ -15,9 +16,21 @@ class Product(db.Model):
     is_popular = db.Column(db.Boolean, default=False)
     is_new = db.Column(db.Boolean, default=False)
     category = db.Column(db.String(50))
+    subcategory = db.Column(db.String(50))
     download_url = db.Column(db.String(255))
     allow_multiple = db.Column(db.Boolean, default=True)
     is_approved = db.Column(db.Boolean, default=True)
+    
+    # Campos para marketplace
+    seller_id = db.Column(db.Integer, db.ForeignKey("seller.id"))
+    condition = db.Column(db.String(20), default="new")  # new, used, refurbished
+    shipping_cost = db.Column(db.Numeric(10, 2), default=0)
+    shipping_time = db.Column(db.String(50))
+    warranty = db.Column(db.String(100))
+    tags = db.Column(db.JSON)  # Lista de etiquetas para búsqueda
+    views_count = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     @property
     def first_image(self) -> str | None:

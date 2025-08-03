@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Conversación con {{ other_user.username }} | Marketplace Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/marketplace.css') }}">
+<style>
+    .message-list {
+        height: 500px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+    }
+    
+    .message-bubble {
+        max-width: 75%;
+        padding: 10px 15px;
+        border-radius: 18px;
+        margin-bottom: 10px;
+        position: relative;
+    }
+    
+    .message-bubble.sent {
+        background-color: var(--bs-primary);
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 5px;
+    }
+    
+    .message-bubble.received {
+        background-color: #f0f2f5;
+        color: var(--bs-dark);
+        align-self: flex-start;
+        border-bottom-left-radius: 5px;
+    }
+    
+    .message-time {
+        font-size: 0.7rem;
+        opacity: 0.7;
+        margin-top: 5px;
+        text-align: right;
+    }
+    
+    .message-input {
+        resize: none;
+    }
+    
+    .product-preview {
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+    
+    .product-preview:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="marketplace-wrapper">
+    <div class="marketplace-container">
+        <div class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <a href="{{ url_for('marketplace.messages') }}" class="btn btn-sm btn-outline-secondary me-3">
+                                        <i class="bi bi-arrow-left"></i>
+                                    </a>
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            {% if other_user.profile_image %}
+                                            <img src="{{ other_user.profile_image }}" class="rounded-circle" width="40" height="40" alt="{{ other_user.username }}">
+                                            {% else %}
+                                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px;">
+                                                {{ other_user.username[0]|upper }}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="mb-0">{{ other_user.username }}</h6>
+                                            {% if other_user.is_seller %}
+                                            <small class="text-muted">
+                                                <i class="bi bi-shop me-1"></i>Vendedor
+                                                {% if other_user.seller.is_verified %}
+                                                <i class="bi bi-patch-check-fill text-primary ms-1"></i>
+                                                {% endif %}
+                                            </small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if conversation.product %}
+                                <div>
+                                    <a href="{{ url_for('marketplace.view_product', product_id=conversation.product.id) }}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-box-seam me-1"></i>Ver Producto
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Product Preview (if conversation is about a product) -->
+                        {% if conversation.product %}
+                        <div class="p-3 border-bottom bg-light">
+                            <a href="{{ url_for('marketplace.view_product', product_id=conversation.product.id) }}" class="text-decoration-none">
+                                <div class="product-preview d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <img src="{{ conversation.product.image_urls[0] if conversation.product.image_urls else url_for('static', filename='img/product-placeholder.jpg') }}" class="rounded" width="60" height="60" style="object-fit: cover;" alt="{{ conversation.product.name }}">
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="mb-1 text-dark">{{ conversation.product.name }}</h6>
+                                        <p class="mb-0 text-primary fw-bold">S/. {{ conversation.product.price }}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="card-body p-0">
+                            <!-- Messages -->
+                            <div class="message-list" id="message-list">
+                                {% for message in messages %}
+                                <div class="message-bubble {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}">
+                                    {{ message.content }}
+                                    <div class="message-time">{{ message.created_at|timeago }}</div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer bg-white">
+                            <!-- Message Input -->
+                            <form action="{{ url_for('marketplace.send_message') }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="conversation_id" value="{{ conversation.id }}">
+                                <div class="input-group">
+                                    <textarea class="form-control message-input" name="message" placeholder="Escribe un mensaje..." rows="2" required></textarea>
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="bi bi-send-fill"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Scroll to bottom of message list
+        const messageList = document.getElementById('message-list');
+        if (messageList) {
+            messageList.scrollTop = messageList.scrollHeight;
+        }
+        
+        // Auto resize textarea
+        const messageInput = document.querySelector('.message-input');
+        if (messageInput) {
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+                
+                // Limit to 5 rows
+                const lineHeight = parseInt(window.getComputedStyle(this).lineHeight);
+                const maxHeight = lineHeight * 5;
+                if (this.scrollHeight > maxHeight) {
+                    this.style.height = maxHeight + 'px';
+                    this.style.overflowY = 'auto';
+                } else {
+                    this.style.overflowY = 'hidden';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

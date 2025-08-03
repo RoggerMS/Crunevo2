@@ -1,0 +1,386 @@
+{% extends "base.html" %}
+
+{% block title %}Conviértete en Vendedor | Marketplace Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/marketplace.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.css">
+<style>
+    .seller-benefits-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .seller-benefits-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .seller-benefits-icon {
+        font-size: 2.5rem;
+        color: var(--bs-primary);
+    }
+    
+    .dropzone {
+        border: 2px dashed rgba(var(--bs-primary-rgb), 0.5);
+        border-radius: 10px;
+        background: rgba(var(--bs-primary-rgb), 0.05);
+    }
+    
+    .dropzone:hover {
+        border-color: var(--bs-primary);
+    }
+    
+    .preview-container {
+        width: 100%;
+        height: 200px;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .preview-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .preview-placeholder {
+        color: #adb5bd;
+        text-align: center;
+    }
+    
+    .preview-placeholder i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="marketplace-wrapper">
+    <div class="marketplace-container">
+        <!-- Hero Section -->
+        <div class="bg-primary text-white py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h1 class="display-4 fw-bold mb-3">Vende en Crunevo Marketplace</h1>
+                        <p class="lead mb-4">Llega a miles de clientes potenciales y haz crecer tu negocio con nuestra plataforma de marketplace.</p>
+                        <a href="#become-seller-form" class="btn btn-light btn-lg px-4 me-md-2">Comenzar ahora</a>
+                    </div>
+                    <div class="col-lg-6 d-none d-lg-block">
+                        <img src="{{ url_for('static', filename='img/seller-hero.svg') }}" alt="Seller Hero" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Benefits Section -->
+        <div class="py-5 bg-light">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold">¿Por qué vender en Crunevo?</h2>
+                    <p class="lead text-muted">Descubre los beneficios de unirte a nuestra comunidad de vendedores</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm seller-benefits-card">
+                            <div class="card-body text-center p-4">
+                                <div class="seller-benefits-icon mb-3">
+                                    <i class="bi bi-people-fill"></i>
+                                </div>
+                                <h4 class="card-title">Amplia Audiencia</h4>
+                                <p class="card-text">Accede a miles de clientes potenciales que visitan Crunevo diariamente buscando productos como los tuyos.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm seller-benefits-card">
+                            <div class="card-body text-center p-4">
+                                <div class="seller-benefits-icon mb-3">
+                                    <i class="bi bi-graph-up"></i>
+                                </div>
+                                <h4 class="card-title">Herramientas de Crecimiento</h4>
+                                <p class="card-text">Utiliza nuestras herramientas de análisis y gestión para hacer crecer tu negocio y aumentar tus ventas.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm seller-benefits-card">
+                            <div class="card-body text-center p-4">
+                                <div class="seller-benefits-icon mb-3">
+                                    <i class="bi bi-shield-check"></i>
+                                </div>
+                                <h4 class="card-title">Seguridad y Confianza</h4>
+                                <p class="card-text">Nuestro sistema de pagos seguro y verificación de vendedores genera confianza en los compradores.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Registration Form -->
+        <div class="py-5" id="become-seller-form">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-white">
+                                <h3 class="mb-0">Regístrate como Vendedor</h3>
+                            </div>
+                            <div class="card-body">
+                                {% if error %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error }}
+                                </div>
+                                {% endif %}
+                                
+                                {% if success %}
+                                <div class="alert alert-success" role="alert">
+                                    {{ success }}
+                                    <a href="{{ url_for('marketplace.seller_dashboard') }}" class="alert-link">Ir a mi panel de vendedor</a>.
+                                </div>
+                                {% else %}
+                                <form action="{{ url_for('marketplace.become_seller') }}" method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    
+                                    <!-- Store Information -->
+                                    <div class="mb-4">
+                                        <h5>Información de la Tienda</h5>
+                                        <div class="mb-3">
+                                            <label for="store-name" class="form-label">Nombre de la Tienda *</label>
+                                            <input type="text" class="form-control" id="store-name" name="store_name" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="store-description" class="form-label">Descripción *</label>
+                                            <textarea class="form-control" id="store-description" name="description" rows="4" required></textarea>
+                                            <div class="form-text">Describe tu tienda, qué productos vendes y por qué los clientes deberían comprar contigo.</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Contact Information -->
+                                    <div class="mb-4">
+                                        <h5>Información de Contacto</h5>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="contact-email" class="form-label">Email de Contacto *</label>
+                                                <input type="email" class="form-control" id="contact-email" name="contact_email" value="{{ current_user.email }}" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="contact-phone" class="form-label">Teléfono de Contacto *</label>
+                                                <input type="tel" class="form-control" id="contact-phone" name="contact_phone" required>
+                                            </div>
+                                            <div class="col-12">
+                                                <label for="contact-location" class="form-label">Ubicación *</label>
+                                                <input type="text" class="form-control" id="contact-location" name="location" placeholder="Ciudad, Región" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Store Images -->
+                                    <div class="mb-4">
+                                        <h5>Imágenes de la Tienda</h5>
+                                        
+                                        <!-- Logo Upload -->
+                                        <div class="mb-3">
+                                            <label class="form-label">Logo de la Tienda *</label>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="preview-container mb-2" id="logo-preview">
+                                                        <div class="preview-placeholder">
+                                                            <i class="bi bi-image"></i>
+                                                            <p>Vista previa del logo</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div id="logo-dropzone" class="dropzone"></div>
+                                                    <input type="hidden" name="logo_url" id="logo-url-input">
+                                                    <div class="form-text">Sube un logo para tu tienda. Recomendamos una imagen cuadrada de al menos 500x500 píxeles.</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Banner Upload -->
+                                        <div class="mb-3">
+                                            <label class="form-label">Banner de la Tienda *</label>
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <div class="preview-container mb-2" id="banner-preview">
+                                                        <div class="preview-placeholder">
+                                                            <i class="bi bi-image"></i>
+                                                            <p>Vista previa del banner</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div id="banner-dropzone" class="dropzone"></div>
+                                                    <input type="hidden" name="banner_url" id="banner-url-input">
+                                                    <div class="form-text">Sube un banner para tu tienda. Recomendamos una imagen de 1200x300 píxeles.</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Terms and Conditions -->
+                                    <div class="mb-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="terms-check" name="terms_accepted" required>
+                                            <label class="form-check-label" for="terms-check">
+                                                He leído y acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Términos y Condiciones para Vendedores</a> de Crunevo Marketplace.
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <button type="submit" class="btn btn-primary btn-lg">Registrarme como Vendedor</button>
+                                    </div>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Términos y Condiciones para Vendedores</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>1. Registro y Cuenta</h5>
+                <p>Para convertirse en vendedor en Crunevo Marketplace, debe registrarse y proporcionar información precisa y completa. Usted es responsable de mantener la confidencialidad de su cuenta y contraseña.</p>
+                
+                <h5>2. Productos y Listados</h5>
+                <p>Los vendedores deben proporcionar descripciones precisas y completas de los productos que venden. Está prohibido vender productos ilegales, falsificados o que infrinjan derechos de propiedad intelectual.</p>
+                
+                <h5>3. Precios y Pagos</h5>
+                <p>Los vendedores son responsables de establecer sus propios precios. Crunevo cobrará una comisión del 5% sobre cada venta realizada a través de la plataforma. Los pagos se procesarán según los términos establecidos en nuestras políticas de pago.</p>
+                
+                <h5>4. Envíos y Devoluciones</h5>
+                <p>Los vendedores son responsables de enviar los productos en el tiempo especificado y gestionar las devoluciones según la política establecida. El incumplimiento repetido puede resultar en la suspensión de la cuenta.</p>
+                
+                <h5>5. Comunicación con Clientes</h5>
+                <p>Los vendedores deben responder a las consultas de los clientes en un plazo razonable y mantener una comunicación profesional en todo momento.</p>
+                
+                <h5>6. Calificaciones y Reseñas</h5>
+                <p>Los clientes pueden calificar y dejar reseñas sobre los vendedores. Estas calificaciones son públicas y no pueden ser eliminadas a menos que violen nuestras políticas.</p>
+                
+                <h5>7. Suspensión y Terminación</h5>
+                <p>Crunevo se reserva el derecho de suspender o terminar la cuenta de un vendedor por violación de estos términos, comportamiento fraudulento o cualquier actividad que consideremos perjudicial para la plataforma.</p>
+                
+                <h5>8. Modificaciones a los Términos</h5>
+                <p>Crunevo puede modificar estos términos en cualquier momento. Los cambios entrarán en vigor inmediatamente después de su publicación en la plataforma.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/marketplace.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Dropzone for logo upload
+        Dropzone.autoDiscover = false;
+        
+        const logoDropzone = new Dropzone("#logo-dropzone", {
+            url: "{{ url_for('marketplace.upload_seller_image') }}",
+            paramName: "file",
+            maxFilesize: 5, // MB
+            maxFiles: 1,
+            acceptedFiles: "image/*",
+            addRemoveLinks: true,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            dictDefaultMessage: "<i class='bi bi-cloud-arrow-up-fill'></i><br>Arrastra tu logo aquí o haz clic para subir",
+            init: function() {
+                this.on("success", function(file, response) {
+                    if (response.success) {
+                        // Store the image URL
+                        document.getElementById('logo-url-input').value = response.url;
+                        
+                        // Update preview
+                        const previewContainer = document.getElementById('logo-preview');
+                        previewContainer.innerHTML = `<img src="${response.url}" alt="Logo Preview">`;
+                    }
+                });
+                
+                this.on("removedfile", function(file) {
+                    document.getElementById('logo-url-input').value = '';
+                    
+                    // Reset preview
+                    const previewContainer = document.getElementById('logo-preview');
+                    previewContainer.innerHTML = `
+                        <div class="preview-placeholder">
+                            <i class="bi bi-image"></i>
+                            <p>Vista previa del logo</p>
+                        </div>
+                    `;
+                });
+            }
+        });
+        
+        // Initialize Dropzone for banner upload
+        const bannerDropzone = new Dropzone("#banner-dropzone", {
+            url: "{{ url_for('marketplace.upload_seller_image') }}",
+            paramName: "file",
+            maxFilesize: 5, // MB
+            maxFiles: 1,
+            acceptedFiles: "image/*",
+            addRemoveLinks: true,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            dictDefaultMessage: "<i class='bi bi-cloud-arrow-up-fill'></i><br>Arrastra tu banner aquí o haz clic para subir",
+            init: function() {
+                this.on("success", function(file, response) {
+                    if (response.success) {
+                        // Store the image URL
+                        document.getElementById('banner-url-input').value = response.url;
+                        
+                        // Update preview
+                        const previewContainer = document.getElementById('banner-preview');
+                        previewContainer.innerHTML = `<img src="${response.url}" alt="Banner Preview">`;
+                    }
+                });
+                
+                this.on("removedfile", function(file) {
+                    document.getElementById('banner-url-input').value = '';
+                    
+                    // Reset preview
+                    const previewContainer = document.getElementById('banner-preview');
+                    previewContainer.innerHTML = `
+                        <div class="preview-placeholder">
+                            <i class="bi bi-image"></i>
+                            <p>Vista previa del banner</p>
+                        </div>
+                    `;
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

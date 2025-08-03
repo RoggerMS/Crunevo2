@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Marketplace | Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/marketplace.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="marketplace-wrapper">
+    <div class="marketplace-container">
+        <!-- Hero Section -->
+        <div class="marketplace-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h1 class="marketplace-title">Marketplace Crunevo</h1>
+                        <p class="marketplace-subtitle">Compra y vende productos académicos, materiales de estudio y más en la comunidad de Crunevo.</p>
+                        {% if current_user.is_authenticated %}
+                        <div class="d-flex gap-3">
+                            <a href="{{ url_for('marketplace.become_seller') }}" class="btn btn-primary">Convertirte en vendedor</a>
+                            <a href="#products" class="btn btn-outline-primary">Explorar productos</a>
+                        </div>
+                        {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Iniciar sesión para comprar</a>
+                        {% endif %}
+                    </div>
+                    <div class="col-lg-6 d-none d-lg-block">
+                        <img src="{{ url_for('static', filename='img/marketplace/hero.svg') }}" alt="Marketplace Crunevo" class="img-fluid marketplace-hero-image">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container py-5">
+            <div class="row">
+                <!-- Filters Sidebar -->
+                <div class="col-lg-3">
+                    <div class="marketplace-filters card shadow-sm">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Filtros</h5>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ url_for('marketplace.marketplace_index') }}" method="get" id="filter-form">
+                                <!-- Search -->
+                                <div class="mb-3">
+                                    <label for="search" class="form-label">Buscar</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="search" name="search" value="{{ filters.search }}" placeholder="Buscar productos...">
+                                        <button class="btn btn-outline-primary" type="submit">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Categories -->
+                                <div class="mb-3">
+                                    <label class="form-label">Categorías</label>
+                                    <div class="list-group">
+                                        <a href="{{ url_for('marketplace.marketplace_index') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {% if not filters.categoria %}active{% endif %}">
+                                            Todas
+                                            <span class="badge bg-primary rounded-pill">{{ products|length }}</span>
+                                        </a>
+                                        {% for category, count in categories %}
+                                        <a href="{{ url_for('marketplace.marketplace_index', categoria=category) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {% if filters.categoria == category %}active{% endif %}">
+                                            {{ category }}
+                                            <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                                        </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <!-- Subcategories (if category is selected) -->
+                                {% if filters.categoria and subcategories %}
+                                <div class="mb-3">
+                                    <label class="form-label">Subcategorías</label>
+                                    <div class="list-group">
+                                        <a href="{{ url_for('marketplace.marketplace_index', categoria=filters.categoria) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {% if not filters.subcategoria %}active{% endif %}">
+                                            Todas
+                                        </a>
+                                        {% for subcategory, count in subcategories %}
+                                        <a href="{{ url_for('marketplace.marketplace_index', categoria=filters.categoria, subcategoria=subcategory) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {% if filters.subcategoria == subcategory %}active{% endif %}">
+                                            {{ subcategory }}
+                                            <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                                        </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <!-- Price Range -->
+                                <div class="mb-3">
+                                    <label class="form-label">Rango de precio</label>
+                                    <div class="row g-2">
+                                        <div class="col">
+                                            <input type="number" class="form-control" name="precio_min" placeholder="Min" value="{{ filters.precio_min }}">
+                                        </div>
+                                        <div class="col">
+                                            <input type="number" class="form-control" name="precio_max" placeholder="Max" value="{{ filters.precio_max }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Condition -->
+                                <div class="mb-3">
+                                    <label class="form-label">Condición</label>
+                                    <select class="form-select" name="condicion">
+                                        <option value="">Todas</option>
+                                        <option value="new" {% if filters.condicion == 'new' %}selected{% endif %}>Nuevo</option>
+                                        <option value="used" {% if filters.condicion == 'used' %}selected{% endif %}>Usado</option>
+                                        <option value="refurbished" {% if filters.condicion == 'refurbished' %}selected{% endif %}>Reacondicionado</option>
+                                    </select>
+                                </div>
+
+                                <!-- Additional Filters -->
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="envio_gratis" name="envio_gratis" value="1" {% if filters.envio_gratis %}checked{% endif %}>
+                                        <label class="form-check-label" for="envio_gratis">Envío gratis</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="vendedor_verificado" name="vendedor_verificado" value="1" {% if filters.vendedor_verificado %}checked{% endif %}>
+                                        <label class="form-check-label" for="vendedor_verificado">Vendedor verificado</label>
+                                    </div>
+                                </div>
+
+                                <!-- Sort By -->
+                                <div class="mb-3">
+                                    <label class="form-label">Ordenar por</label>
+                                    <select class="form-select" name="sort">
+                                        <option value="newest" {% if filters.sort == 'newest' %}selected{% endif %}>Más recientes</option>
+                                        <option value="price_low" {% if filters.sort == 'price_low' %}selected{% endif %}>Precio: menor a mayor</option>
+                                        <option value="price_high" {% if filters.sort == 'price_high' %}selected{% endif %}>Precio: mayor a menor</option>
+                                        <option value="popular" {% if filters.sort == 'popular' %}selected{% endif %}>Popularidad</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100">Aplicar filtros</button>
+                                <a href="{{ url_for('marketplace.marketplace_index') }}" class="btn btn-outline-secondary w-100 mt-2">Limpiar filtros</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="col-lg-9" id="products">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="h4 mb-0">Productos ({{ products|length }})</h2>
+                        <div class="d-flex gap-2">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-primary active" id="grid-view">
+                                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" id="list-view">
+                                    <i class="bi bi-list-ul"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if products %}
+                    <div class="row g-4" id="products-container">
+                        {% for product in products %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="marketplace-product-card card h-100 shadow-sm">
+                                <div class="position-relative">
+                                    {% if product.image_urls and product.image_urls|length > 0 %}
+                                    <img src="{{ product.image_urls[0] }}" class="card-img-top marketplace-product-img" alt="{{ product.name }}">
+                                    {% else %}
+                                    <img src="{{ url_for('static', filename='img/marketplace/product-placeholder.svg') }}" class="card-img-top marketplace-product-img" alt="{{ product.name }}">
+                                    {% endif %}
+                                    
+                                    <!-- Product badges -->
+                                    <div class="marketplace-product-badges">
+                                        {% if product.is_new %}
+                                        <span class="badge bg-success">Nuevo</span>
+                                        {% endif %}
+                                        {% if product.condition == 'used' %}
+                                        <span class="badge bg-secondary">Usado</span>
+                                        {% endif %}
+                                        {% if product.condition == 'refurbished' %}
+                                        <span class="badge bg-info">Reacondicionado</span>
+                                        {% endif %}
+                                        {% if product.shipping_cost == 0 %}
+                                        <span class="badge bg-primary">Envío gratis</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">{{ product.name }}</h5>
+                                    <p class="card-text text-truncate">{{ product.description }}</p>
+                                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                                        <span class="marketplace-product-price">S/. {{ product.price }}</span>
+                                        <a href="{{ url_for('marketplace.view_product', product_id=product.id) }}" class="btn btn-sm btn-outline-primary">Ver detalles</a>
+                                    </div>
+                                </div>
+                                {% if product.seller_id %}
+                                <div class="card-footer bg-white">
+                                    <small class="text-muted">Vendido por: 
+                                        <a href="{{ url_for('marketplace.view_seller', seller_id=product.seller_id) }}" class="text-decoration-none">
+                                            {{ product.seller.store_name }}
+                                            {% if product.seller.is_verified %}
+                                            <i class="bi bi-patch-check-fill text-primary"></i>
+                                            {% endif %}
+                                        </a>
+                                    </small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i> No se encontraron productos con los filtros seleccionados.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/marketplace.js') }}"></script>
+{% endblock %}

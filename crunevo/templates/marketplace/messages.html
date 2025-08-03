@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}Mensajes | Marketplace Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/marketplace.css') }}">
+<style>
+    .conversation-list {
+        max-height: 600px;
+        overflow-y: auto;
+    }
+    
+    .conversation-item {
+        transition: all 0.2s ease;
+    }
+    
+    .conversation-item:hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.05);
+    }
+    
+    .conversation-item.active {
+        background-color: rgba(var(--bs-primary-rgb), 0.1);
+        border-left: 3px solid var(--bs-primary);
+    }
+    
+    .message-list {
+        height: 400px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .message-bubble {
+        max-width: 75%;
+        padding: 10px 15px;
+        border-radius: 18px;
+        margin-bottom: 10px;
+        position: relative;
+    }
+    
+    .message-bubble.sent {
+        background-color: var(--bs-primary);
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 5px;
+    }
+    
+    .message-bubble.received {
+        background-color: #f0f2f5;
+        color: var(--bs-dark);
+        align-self: flex-start;
+        border-bottom-left-radius: 5px;
+    }
+    
+    .message-time {
+        font-size: 0.7rem;
+        opacity: 0.7;
+        margin-top: 5px;
+        text-align: right;
+    }
+    
+    .message-input {
+        resize: none;
+    }
+    
+    .product-preview {
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+    
+    .product-preview:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="marketplace-wrapper">
+    <div class="marketplace-container">
+        <div class="container py-4">
+            <div class="row">
+                <!-- Sidebar for sellers -->
+                {% if is_seller %}
+                <div class="col-lg-3 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Panel de Vendedor</h5>
+                            <div class="list-group list-group-flush">
+                                <a href="{{ url_for('marketplace.seller_dashboard') }}" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                                </a>
+                                <a href="{{ url_for('marketplace.seller_products') }}" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-box-seam me-2"></i> Mis Productos
+                                </a>
+                                <a href="{{ url_for('marketplace.add_product') }}" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-plus-circle me-2"></i> Añadir Producto
+                                </a>
+                                <a href="{{ url_for('marketplace.messages') }}" class="list-group-item list-group-item-action active">
+                                    <i class="bi bi-chat-dots me-2"></i> Mensajes
+                                    {% if unread_messages_count > 0 %}
+                                    <span class="badge bg-danger rounded-pill float-end">{{ unread_messages_count }}</span>
+                                    {% endif %}
+                                </a>
+                                <a href="{{ url_for('marketplace.view_seller', seller_id=seller.id) }}" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-shop me-2"></i> Ver Mi Tienda
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                {% else %}
+                <div class="col-12">
+                {% endif %}
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Mensajes</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            {% if conversations|length > 0 %}
+                            <div class="row g-0">
+                                <!-- Conversations List -->
+                                <div class="col-md-4 border-end">
+                                    <div class="conversation-list">
+                                        {% for conversation in conversations %}
+                                        <a href="{{ url_for('marketplace.view_conversation', conversation_id=conversation.id) }}" class="text-decoration-none text-dark">
+                                            <div class="conversation-item p-3 border-bottom {% if current_conversation and current_conversation.id == conversation.id %}active{% endif %}">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        {% if conversation.other_user.profile_image %}
+                                                        <img src="{{ conversation.other_user.profile_image }}" class="rounded-circle" width="50" height="50" alt="{{ conversation.other_user.username }}">
+                                                        {% else %}
+                                                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white" style="width: 50px; height: 50px;">
+                                                            {{ conversation.other_user.username[0]|upper }}
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <h6 class="mb-0">{{ conversation.other_user.username }}</h6>
+                                                            <small class="text-muted">{{ conversation.last_message.created_at|timeago }}</small>
+                                                        </div>
+                                                        <p class="mb-0 text-truncate" style="max-width: 200px;">
+                                                            {% if conversation.has_unread %}
+                                                            <span class="badge bg-primary rounded-pill me-1">Nuevo</span>
+                                                            {% endif %}
+                                                            {{ conversation.last_message.content }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Conversation Detail -->
+                                <div class="col-md-8">
+                                    {% if current_conversation %}
+                                    <div class="p-3 border-bottom">
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0">
+                                                {% if current_conversation.other_user.profile_image %}
+                                                <img src="{{ current_conversation.other_user.profile_image }}" class="rounded-circle" width="40" height="40" alt="{{ current_conversation.other_user.username }}">
+                                                {% else %}
+                                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px;">
+                                                    {{ current_conversation.other_user.username[0]|upper }}
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="flex-grow-1 ms-3">
+                                                <h6 class="mb-0">{{ current_conversation.other_user.username }}</h6>
+                                                {% if current_conversation.other_user.is_seller %}
+                                                <small class="text-muted">
+                                                    <i class="bi bi-shop me-1"></i>Vendedor
+                                                    {% if current_conversation.other_user.seller.is_verified %}
+                                                    <i class="bi bi-patch-check-fill text-primary ms-1"></i>
+                                                    {% endif %}
+                                                </small>
+                                                {% endif %}
+                                            </div>
+                                            {% if current_conversation.product %}
+                                            <div>
+                                                <a href="{{ url_for('marketplace.view_product', product_id=current_conversation.product.id) }}" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="bi bi-box-seam me-1"></i>Ver Producto
+                                                </a>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Product Preview (if conversation is about a product) -->
+                                    {% if current_conversation.product %}
+                                    <div class="p-3 border-bottom bg-light">
+                                        <a href="{{ url_for('marketplace.view_product', product_id=current_conversation.product.id) }}" class="text-decoration-none">
+                                            <div class="product-preview d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <img src="{{ current_conversation.product.image_urls[0] if current_conversation.product.image_urls else url_for('static', filename='img/product-placeholder.jpg') }}" class="rounded" width="60" height="60" style="object-fit: cover;" alt="{{ current_conversation.product.name }}">
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <h6 class="mb-1 text-dark">{{ current_conversation.product.name }}</h6>
+                                                    <p class="mb-0 text-primary fw-bold">S/. {{ current_conversation.product.price }}</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- Messages -->
+                                    <div class="p-3">
+                                        <div class="message-list" id="message-list">
+                                            {% for message in messages %}
+                                            <div class="message-bubble {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}">
+                                                {{ message.content }}
+                                                <div class="message-time">{{ message.created_at|timeago }}</div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        
+                                        <!-- Message Input -->
+                                        <form action="{{ url_for('marketplace.send_message') }}" method="post" class="mt-3">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <input type="hidden" name="conversation_id" value="{{ current_conversation.id }}">
+                                            <div class="input-group">
+                                                <textarea class="form-control message-input" name="message" placeholder="Escribe un mensaje..." rows="2" required></textarea>
+                                                <button class="btn btn-primary" type="submit">
+                                                    <i class="bi bi-send-fill"></i>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    {% else %}
+                                    <div class="d-flex flex-column align-items-center justify-content-center h-100 p-5">
+                                        <i class="bi bi-chat-dots text-muted" style="font-size: 4rem;"></i>
+                                        <h5 class="mt-3">No hay conversación seleccionada</h5>
+                                        <p class="text-muted text-center">Selecciona una conversación de la lista o inicia una nueva desde la página de un producto.</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="d-flex flex-column align-items-center justify-content-center p-5">
+                                <i class="bi bi-chat-dots text-muted" style="font-size: 4rem;"></i>
+                                <h5 class="mt-3">No tienes mensajes</h5>
+                                <p class="text-muted text-center">Cuando contactes a un vendedor o alguien te contacte, tus conversaciones aparecerán aquí.</p>
+                                <a href="{{ url_for('marketplace.index') }}" class="btn btn-primary mt-3">
+                                    <i class="bi bi-shop me-2"></i>Explorar Marketplace
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Scroll to bottom of message list
+        const messageList = document.getElementById('message-list');
+        if (messageList) {
+            messageList.scrollTop = messageList.scrollHeight;
+        }
+        
+        // Auto resize textarea
+        const messageInput = document.querySelector('.message-input');
+        if (messageInput) {
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+                
+                // Limit to 5 rows
+                const lineHeight = parseInt(window.getComputedStyle(this).lineHeight);
+                const maxHeight = lineHeight * 5;
+                if (this.scrollHeight > maxHeight) {
+                    this.style.height = maxHeight + 'px';
+                    this.style.overflowY = 'auto';
+                } else {
+                    this.style.overflowY = 'hidden';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
