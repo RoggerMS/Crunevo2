@@ -1130,26 +1130,68 @@ document.addEventListener('DOMContentLoaded', () => {
   initNotificationFilters();
   initOnlineCount();
 
-  // Auto hide navbar on scroll for all viewports
+  // Enhanced Auto hide navbar on scroll for all viewports
   let lastScrollTop = 0;
+  let scrollTimeout = null;
   const navbar = document.querySelector('.navbar-crunevo');
   const isMobileUA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
+  const isTablet = window.innerWidth >= 576 && window.innerWidth <= 1024;
+  
   function handleScroll() {
     if (!navbar) return;
+    
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    if (scrollTop > lastScrollTop) {
-      navbar.classList.add('navbar-hidden');
-    } else {
-      navbar.classList.remove('navbar-hidden');
+    const scrollThreshold = isMobileUA ? 30 : 50; // Lower threshold for mobile
+    
+    // Clear any existing timeout
+    if (scrollTimeout) {
+      clearTimeout(scrollTimeout);
     }
-    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    
+    // Only hide/show after scrolling past threshold
+    if (Math.abs(scrollTop - lastScrollTop) > scrollThreshold) {
+      if (scrollTop > lastScrollTop && scrollTop > 100) {
+        // Scrolling down and past 100px - hide navbar
+        navbar.classList.add('navbar-hidden');
+      } else if (scrollTop < lastScrollTop) {
+        // Scrolling up - show navbar
+        navbar.classList.remove('navbar-hidden');
+      }
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    }
+    
+    // Auto-show navbar after scroll stops (especially useful on mobile)
+    scrollTimeout = setTimeout(() => {
+      if (scrollTop === (window.pageYOffset || document.documentElement.scrollTop)) {
+        navbar.classList.remove('navbar-hidden');
+      }
+    }, 1500);
   }
 
-  window.addEventListener('scroll', handleScroll);
-  if (isMobileUA) {
+  // Use passive listeners for better performance
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  
+  if (isMobileUA || isTablet) {
     window.addEventListener('touchmove', handleScroll, { passive: true });
+    window.addEventListener('touchend', () => {
+      // Show navbar briefly on touch end for easier access
+      setTimeout(() => {
+        navbar.classList.remove('navbar-hidden');
+      }, 500);
+    }, { passive: true });
   }
+  
+  // Show navbar on window resize (responsive behavior)
+  window.addEventListener('resize', () => {
+    navbar.classList.remove('navbar-hidden');
+  });
+  
+  // Show navbar when focus is on form elements (accessibility)
+  document.addEventListener('focusin', (e) => {
+    if (e.target.matches('input, textarea, select')) {
+      navbar.classList.remove('navbar-hidden');
+    }
+  });
 
     initMissionClaimButtons();
     initGroupMissionClaimButtons();
