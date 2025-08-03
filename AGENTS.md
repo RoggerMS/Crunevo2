@@ -1070,3 +1070,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Optimized comment modal input with full-width auto-expanding textarea and minimal send button for better mobile usability (PR comment-input-opt).
 - Fixed navbar macros: consolidated user auth conditional and guarded current_user usage to resolve TemplateSyntaxError and test failures (PR navbar-auth-conditional).
 - Migrated mobile "NotBar" component to "MobileNavbar", renamed template and CSS class `.notbar` to `.mobile-navbar` and updated includes (PR mobile-navbar-rename).
+- Documented mobile navigation bar usage and noted replacement of bottom nav (PR mobile-navbar-docs).
