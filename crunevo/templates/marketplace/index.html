@@ -47,7 +47,7 @@
                                 <div class="mb-3">
                                     <label for="search" class="form-label">Buscar</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="search" name="search" value="{{ filters.search }}" placeholder="Buscar productos...">
+                                        <input type="text" class="form-control" id="search" name="search" value="{{ filters.search or '' }}" placeholder="Buscar productos...">
                                         <button class="btn btn-outline-primary" type="submit">
                                             <i class="bi bi-search"></i>
                                         </button>
@@ -94,10 +94,10 @@
                                     <label class="form-label">Rango de precio</label>
                                     <div class="row g-2">
                                         <div class="col">
-                                            <input type="number" class="form-control" name="precio_min" placeholder="Min" value="{{ filters.precio_min }}">
+                                            <input type="number" class="form-control" name="precio_min" placeholder="Min" value="{{ filters.precio_min or '' }}">
                                         </div>
                                         <div class="col">
-                                            <input type="number" class="form-control" name="precio_max" placeholder="Max" value="{{ filters.precio_max }}">
+                                            <input type="number" class="form-control" name="precio_max" placeholder="Max" value="{{ filters.precio_max or '' }}">
                                         </div>
                                     </div>
                                 </div>
