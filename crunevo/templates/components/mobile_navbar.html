@@ -34,23 +34,10 @@
       })
       .catch(() => {});
   }
-  
-  // Enhanced mobile notifications with dropdown sync
-  function syncMobileNotifications() {
-    const mobileList = document.getElementById('mobile-notifications-list');
-    const desktopList = document.getElementById('notifications-list');
-    if (mobileList && desktopList) {
-      mobileList.innerHTML = desktopList.innerHTML;
-    }
-  }
-  
+
   if (document.getElementById('mobileNotificationBadge')) {
     updateMobileNotificationBadge();
-    syncMobileNotifications();
-    setInterval(() => {
-      updateMobileNotificationBadge();
-      syncMobileNotifications();
-    }, 30000);
+    setInterval(updateMobileNotificationBadge, 30000);
   }
   
   // Optimize touch interactions for mobile navbar

@@ -849,7 +849,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
     document.body.classList.add('no-anim');
   }
-  const fixedNav = document.querySelector('.navbar.fixed-top');
+  const mobileNav = document.querySelector('.mobile-navbar.fixed-top');
+  const fixedNav = mobileNav && window.getComputedStyle(mobileNav).display !== 'none'
+    ? mobileNav
+    : document.querySelector('.navbar.fixed-top');
   if (fixedNav) {
     document.body.style.paddingTop = fixedNav.offsetHeight + 'px';
   }
@@ -1183,7 +1186,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Enhanced Auto hide navbar on scroll for all viewports
   let lastScrollTop = 0;
   let scrollTimeout = null;
-  const navbar = document.querySelector('.navbar-crunevo');
+  const mobileNavbar = document.querySelector('.mobile-navbar');
+  const navbar = mobileNavbar && window.getComputedStyle(mobileNavbar).display !== 'none'
+    ? mobileNavbar
+    : document.querySelector('.navbar-crunevo');
   const isMobileUA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   const isTablet = window.innerWidth >= 576 && window.innerWidth <= 1024;
   
@@ -1267,7 +1273,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function updateCartBadge(count) {
   document.querySelectorAll('#cartBadge, #cartBadgeDesktop, #mobileCartBadge').forEach((b) => {
     b.textContent = count;
-    b.classList.toggle('tw-hidden', count === 0);
+    b.style.display = count === 0 ? 'none' : 'flex';
   });
 }
 

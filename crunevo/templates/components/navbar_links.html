@@ -31,7 +31,7 @@
 
 <!-- Mobile Quick Links (used in mobile_navbar.html) -->
 {% macro mobile_quick_links() %}
-<div class="d-flex align-items-center gap-1">
+<div class="d-flex align-items-center justify-content-end gap-2">
   <a href="{{ url_for('feed.feed_home') if 'feed.feed_home' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}" class="btn btn-link text-white p-1" aria-label="Feed principal">
     <i class="bi bi-house{{ '-fill' if request.endpoint == 'feed.feed_home' else '' }}"></i>
   </a>
@@ -44,21 +44,13 @@
   <a href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes'}}" class="btn btn-link text-white p-1" aria-label="Mis apuntes">
     <i class="bi bi-journal-text"></i>
   </a>
-  <div class="dropdown">
-    <a class="btn btn-link text-white position-relative p-1" href="#" id="mobileNotificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notificaciones">
-      <i class="bi bi-bell-fill"></i>
-      <span id="mobileNotificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge" style="display:none"></span>
-    </a>
-    <ul class="dropdown-menu dropdown-menu-end notification-menu" style="width: 280px; max-height: 400px; overflow-y: auto;">
-      <li><h6 class="dropdown-header">Notificaciones</h6></li>
-      <li id="mobile-notifications-list"><span class="dropdown-item-text text-muted">No hay notificaciones</span></li>
-      <li><hr class="dropdown-divider"></li>
-      <li><a class="dropdown-item text-center" href="{{ url_for('noti.ver_notificaciones') }}">Ver todas</a></li>
-    </ul>
-  </div>
+  <a href="{{ url_for('noti.ver_notificaciones') }}" class="btn btn-link text-white position-relative p-1" aria-label="Notificaciones">
+    <i class="bi bi-bell-fill"></i>
+    <span id="mobileNotificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge" style="display:none"></span>
+  </a>
   <a href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}" class="btn btn-link text-white position-relative p-1" aria-label="Tienda">
     <i class="bi bi-shop"></i>
-    <span id="mobileCartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger tw-hidden">0</span>
+    <span id="mobileCartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none">0</span>
   </a>
 </div>
 {% endmacro %}
