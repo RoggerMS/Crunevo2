@@ -331,10 +331,10 @@ def create_app():
         api_search_courses,
     )
     from .routes.store_routes import store_bp
-from .routes.marketplace_routes import marketplace_bp
-from .routes.chat_routes import chat_bp
-from .routes.search_routes import search_bp
-from .routes.ia_routes import ia_bp
+    from .routes.marketplace_routes import marketplace_bp
+    from .routes.chat_routes import chat_bp
+    from .routes.search_routes import search_bp
+    from .routes.ia_routes import ia_bp
     from .routes.admin_routes import admin_bp
     from .routes.admin_blocker import admin_blocker_bp
     from .routes.admin.email_routes import admin_email_bp

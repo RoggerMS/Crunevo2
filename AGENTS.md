@@ -1076,3 +1076,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Calculated navbar height dynamically with CSS variable, updated sidebar offset and scroll padding, and unified auto-hide logic to ensure content isn't covered on any page (PR navbar-overlap-fix).
 - Reapplied navbar height on load and resize, setting body padding and scroll offset to prevent content being hidden by fixed navbars (PR navbar-padding-load).
 - Recalculated navbar height on DOMContentLoaded and window load to prevent fixed navbar from covering content on mobile and desktop (PR navbar-height-recalc).
+- Fixed indentation of marketplace and related blueprint imports in `app.py` to resolve deployment error (hotfix marketplace-import-indent).
