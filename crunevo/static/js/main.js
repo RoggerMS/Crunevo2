@@ -864,11 +864,15 @@ document.addEventListener('DOMContentLoaded', () => {
   function setNavbarHeight() {
     const nav = getVisibleNavbar();
     if (nav) {
-      document.documentElement.style.setProperty('--navbar-height', `${nav.offsetHeight}px`);
+      const height = nav.offsetHeight;
+      document.documentElement.style.setProperty('--navbar-height', `${height}px`);
+      document.body.style.paddingTop = `${height}px`;
+      document.documentElement.style.scrollPaddingTop = `${height}px`;
     }
   }
 
   setNavbarHeight();
+  window.addEventListener('load', setNavbarHeight);
   window.addEventListener('resize', setNavbarHeight);
   if (window.NEW_ACHIEVEMENTS && window.NEW_ACHIEVEMENTS.length > 0) {
     showAchievementPopup(window.NEW_ACHIEVEMENTS[0]);
