@@ -49,7 +49,7 @@
                         </div>
                         <div class="card-body">
                             <form action="{{ url_for('marketplace.edit_product', product_id=product.id) }}" method="post" enctype="multipart/form-data" id="edit-product-form">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                {{ csrf_field() }}
                                 
                                 <!-- Basic Information -->
                                 <div class="mb-4">

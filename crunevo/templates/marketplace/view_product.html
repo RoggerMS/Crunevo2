@@ -329,6 +329,7 @@
                                 <div class="card-body">
                                     <h5>Deja tu reseña</h5>
                                     <form action="#" method="post" id="review-form">
+                                        {{ csrf_field() }}
                                         <div class="mb-3">
                                             <label class="form-label">Calificación</label>
                                             <div class="rating-stars">
@@ -368,6 +369,7 @@
                                 <div class="card-body">
                                     <h5>Haz una pregunta</h5>
                                     <form action="#" method="post" id="question-form">
+                                        {{ csrf_field() }}
                                         <div class="mb-3">
                                             <label for="question-content" class="form-label">Tu pregunta</label>
                                             <textarea class="form-control" id="question-content" name="content" rows="2" required></textarea>
@@ -437,9 +439,9 @@
             </div>
             <div class="modal-body">
                 <form action="{{ url_for('marketplace.send_message') }}" method="post" id="contact-seller-form">
+                    {{ csrf_field() }}
                     <input type="hidden" name="receiver_id" value="{{ seller.user_id }}">
                     <input type="hidden" name="product_id" value="{{ product.id }}">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label for="message-content" class="form-label">Mensaje</label>
                         <textarea class="form-control" id="message-content" name="content" rows="4" required></textarea>
