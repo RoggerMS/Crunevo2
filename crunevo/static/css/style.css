@@ -827,5 +827,5 @@ html[data-bs-theme="dark"] footer a {
 }
 
 #mobileSearchModal .modal-content {
-  background-color: #fff;
+  background-color: var(--bs-body-bg);
 }

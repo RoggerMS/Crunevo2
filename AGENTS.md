@@ -1071,3 +1071,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Fixed navbar macros: consolidated user auth conditional and guarded current_user usage to resolve TemplateSyntaxError and test failures (PR navbar-auth-conditional).
 - Migrated mobile "NotBar" component to "MobileNavbar", renamed template and CSS class `.notbar` to `.mobile-navbar` and updated includes (PR mobile-navbar-rename).
 - Documented mobile navigation bar usage and noted replacement of bottom nav (PR mobile-navbar-docs).
+- Refined mobile navbar: new purple blur style with circular buttons, forum icon now question mark, and search input opens a full-screen modal with live suggestions (PR mobile-navbar-enhance).
