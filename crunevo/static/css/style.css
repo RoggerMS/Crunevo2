@@ -16,17 +16,21 @@ html {
   color: #f8f9fa;
 }
 
+:root {
+  --navbar-height: 64px;
+}
+
 body {
   background: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 100%);
-  padding-top: 64px;
+  padding-top: var(--navbar-height);
   font-family: "Inter", system-ui, sans-serif;
   min-height: 100vh;
 }
 
 /* Enhanced responsive spacing for different screen sizes */
 @media (max-width: 575.98px) {
-  body {
-    padding-top: 56px;
+  :root {
+    --navbar-height: 56px;
   }
   main {
     margin-top: 0;
@@ -40,8 +44,8 @@ body {
 }
 
 @media (min-width: 576px) and (max-width: 767.98px) {
-  body {
-    padding-top: 60px;
+  :root {
+    --navbar-height: 60px;
   }
   main {
     margin-top: 0;
@@ -51,8 +55,8 @@ body {
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
-  body {
-    padding-top: 64px;
+  :root {
+    --navbar-height: 64px;
   }
   main {
     margin-top: 0;
@@ -62,8 +66,8 @@ body {
 }
 
 @media (min-width: 992px) {
-  body {
-    padding-top: 64px;
+  :root {
+    --navbar-height: 64px;
   }
   main {
     margin-top: 0;
@@ -74,7 +78,7 @@ body {
 
 .sidebar {
   position: sticky;
-  top: 80px;
+  top: calc(var(--navbar-height) + 16px);
 }
 
 [data-bs-theme="dark"] .sidebar .username {
@@ -519,7 +523,7 @@ body > .navbar {
 }
 
 html {
-  scroll-padding-top: 0 !important;
+  scroll-padding-top: var(--navbar-height) !important;
 }
 
 [data-bs-theme="dark"] .navbar,
