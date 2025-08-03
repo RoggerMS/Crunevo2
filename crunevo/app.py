@@ -525,6 +525,7 @@ def create_app():
     @app.errorhandler(Exception)
     def log_exception(e):
         try:
+            db.session.rollback()
             err = SystemErrorLog(
                 ruta=request.path,
                 mensaje=str(e),

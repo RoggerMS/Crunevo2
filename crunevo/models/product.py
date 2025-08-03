@@ -20,7 +20,7 @@ class Product(db.Model):
     download_url = db.Column(db.String(255))
     allow_multiple = db.Column(db.Boolean, default=True)
     is_approved = db.Column(db.Boolean, default=True)
-    
+
     # Campos para marketplace
     seller_id = db.Column(db.Integer, db.ForeignKey("seller.id"))
     condition = db.Column(db.String(20), default="new")  # new, used, refurbished
@@ -30,7 +30,9 @@ class Product(db.Model):
     tags = db.Column(db.JSON)  # Lista de etiquetas para búsqueda
     views_count = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
 
     @property
     def first_image(self) -> str | None:
