@@ -1086,3 +1086,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added `is_official` field to `Product` model with default `False` and migration to support official products (PR add-product-is_official).
 - Restricted store index and related product queries to `is_official=True` so only official products appear (PR store-official-filter).
 - Marketplace now displays a badge for official products and includes them alongside seller listings (PR marketplace-official-badge).
+- Unified `Product` model across store and marketplace: removed duplicate favorite/purchase queries and enforced `is_official` filter in views `store.store_index`, `store.view_product`, `store.redeem_product`, `store.buy_product`, `store.add_to_cart`, `store.view_cart`, `store.checkout`, `store.toggle_favorite` and `marketplace.marketplace_index`.
