@@ -49,5 +49,10 @@ class MarketplaceMessage(db.Model):
     sender = db.relationship("User", foreign_keys=[sender_id])
     receiver = db.relationship("User", foreign_keys=[receiver_id])
 
+    # Alias compatibilidad
+    @property
+    def timestamp(self):
+        return self.created_at
+
     def __repr__(self) -> str:
         return f"<MarketplaceMessage {self.id}>"
