@@ -7,7 +7,7 @@
   <a class="nav-link" href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}"><i class="bi bi-question-circle me-1"></i>Foro Estudiantil</a>
   <a class="nav-link" href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}"><i class="bi bi-shop me-1"></i>Tienda</a>
   <a class="nav-link" href="{{ url_for('courses.list_courses') if 'courses.list_courses' in url_for.__globals__.get('current_app', {}).view_functions else '/cursos' }}"><i class="bi bi-play-circle-fill me-1"></i>Cursos</a>
-  {% if current_user.is_authenticated and current_user.role == 'admin' %}
+  {% if current_user is defined and current_user.is_authenticated and current_user.role == 'admin' %}
   <a class="nav-link" href="{{ url_for('carrera.index') if 'carrera.index' in url_for.__globals__.get('current_app', {}).view_functions else '/micarrera' }}">
     <i class="bi bi-mortarboard"></i> Mi Carrera
   </a>
@@ -18,7 +18,7 @@
 <!-- Mobile Collapse Links (used in navbar.html mobile menu) -->
 {% macro mobile_collapse_links() %}
 <ul class="navbar-nav d-lg-none mb-2">
-  {% if current_user.is_authenticated %}
+  {% if current_user is defined and current_user.is_authenticated %}
     <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.feed_home') }}">Feed</a></li>
     <li class="nav-item"><a class="nav-link" href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}">Apuntes</a></li>
     <li class="nav-item"><a class="nav-link" href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}"><i class="bi bi-question-circle me-1"></i>Foro Estudiantil</a></li>
