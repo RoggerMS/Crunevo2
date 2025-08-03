@@ -93,8 +93,8 @@
           </div>
           {% endif %}
         </div>
-
-        <div class="unified-comment-form-container compact-comment-form-container comment-input-container">
+      </div>
+      <div class="unified-comment-form-container compact-comment-form-container comment-input-container">
           {% if current_user.is_authenticated %}
           <form class="comment-form" data-post-id="{{ post.id }}" onsubmit="submitModalComment(event, '{{ post.id }}')">
             {{ csrf.csrf_field() }}
@@ -109,7 +109,6 @@
           {% else %}
             <!-- Mensaje de inicio de sesión -->
           {% endif %}
-        </div>
       </div>
     </div>
   </div>
