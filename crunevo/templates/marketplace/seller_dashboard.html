@@ -130,9 +130,10 @@
                                     {% if recent_sales %}
                                     <div class="marketplace-recent-sales">
                                         {% for sale in recent_sales %}
+                                        {% if sale.product %}
                                         <div class="marketplace-recent-sale d-flex align-items-center py-2 border-bottom">
                                             <div class="marketplace-recent-sale-img me-3">
-                                                {% if sale.product.image_urls and sale.product.image_urls|length > 0 %}
+                                                {% if sale.product.image_urls %}
                                                 <img src="{{ sale.product.image_urls[0] }}" alt="{{ sale.product.name }}" class="img-fluid rounded">
                                                 {% else %}
                                                 <div class="marketplace-product-img-placeholder rounded">
@@ -149,6 +150,18 @@
                                                 <small class="d-block text-muted">x{{ sale.quantity }}</small>
                                             </div>
                                         </div>
+                                        {% else %}
+                                        <div class="marketplace-recent-sale d-flex align-items-center py-2 border-bottom">
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0">Producto no disponible</h6>
+                                                <small class="text-muted">{{ sale.timestamp|timesince }}</small>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="fw-bold">S/. {{ sale.price_paid }}</span>
+                                                <small class="d-block text-muted">x{{ sale.quantity }}</small>
+                                            </div>
+                                        </div>
+                                        {% endif %}
                                         {% endfor %}
                                     </div>
                                     {% else %}
@@ -169,6 +182,7 @@
                                     {% if recent_messages %}
                                     <div class="marketplace-recent-messages">
                                         {% for message in recent_messages %}
+                                        {% if message.sender %}
                                         <div class="marketplace-recent-message d-flex align-items-center py-2 border-bottom">
                                             <div class="marketplace-recent-message-user me-3">
                                                 {% if message.sender.profile_image %}
@@ -179,6 +193,7 @@
                                                 </div>
                                                 {% endif %}
                                             </div>
+        
                                             <div class="flex-grow-1">
                                                 <h6 class="mb-0">{{ message.sender.username }}</h6>
                                                 <p class="mb-0 text-truncate">{{ message.content }}</p>
@@ -190,6 +205,25 @@
                                                 </a>
                                             </div>
                                         </div>
+                                        {% else %}
+                                        <div class="marketplace-recent-message d-flex align-items-center py-2 border-bottom">
+                                            <div class="marketplace-recent-message-user me-3">
+                                                <div class="marketplace-user-img-placeholder rounded-circle">
+                                                    <i class="bi bi-person"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0">Usuario desconocido</h6>
+                                                <p class="mb-0 text-truncate">{{ message.content }}</p>
+                                                <small class="text-muted">{{ message.timestamp|timesince }}</small>
+                                            </div>
+                                            <div>
+                                                <a href="{{ url_for('marketplace.view_conversation', conversation_id=message.conversation_id) }}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-reply"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        {% endif %}
                                         {% endfor %}
                                     </div>
                                     <div class="text-center mt-3">
