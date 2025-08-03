@@ -141,7 +141,6 @@
 .comment-modal .modal-body {
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 90px;
 }
 
 .comment-modal .comment-input-container {
@@ -150,6 +149,7 @@
   background-color: var(--crunevo-white);
   z-index: 10;
   border-top: 1px solid var(--crunevo-border);
+  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
