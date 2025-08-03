@@ -103,20 +103,9 @@ def store_index():
 
     categories = [cat for group in STORE_CATEGORIES.values() for cat in group]
     categories_dict = STORE_CATEGORIES
-    favorites = (
-        FavoriteProduct.query.join(Product)
-        .filter(
-            FavoriteProduct.user_id == current_user.id,
-            Product.is_official.is_(True),
-        )
-        .all()
-    )
+    favorites = FavoriteProduct.query.filter_by(user_id=current_user.id).all()
     favorite_ids = [fav.product_id for fav in favorites]
-    purchased = (
-        Purchase.query.join(Product)
-        .filter(Purchase.user_id == current_user.id, Product.is_official.is_(True))
-        .all()
-    )
+    purchased = Purchase.query.filter_by(user_id=current_user.id).all()
     purchased_ids = [p.product_id for p in purchased]
     featured_products = Product.query.filter_by(
         is_featured=True, is_official=True
@@ -159,7 +148,7 @@ def store_index():
 @activated_required
 def view_product(product_id):
     """Show detailed information for a single product."""
-    product = Product.query.get_or_404(product_id)
+    product = Product.query.filter_by(id=product_id, is_official=True).first_or_404()
     is_favorite = (
         FavoriteProduct.query.filter_by(
             user_id=current_user.id, product_id=product.id
@@ -268,10 +257,11 @@ def add_answer(question_id: int):
 @store_bp.route("/add/<int:product_id>", methods=["GET", "POST"])
 @activated_required
 def add_to_cart(product_id):
+    product = Product.query.filter_by(id=product_id, is_official=True).first_or_404()
     cart = get_cart()
     cart[str(product_id)] = cart.get(str(product_id), 0) + 1
     session["cart"] = cart
-    db.session.add(ProductLog(product_id=product_id, action="cart"))
+    db.session.add(ProductLog(product_id=product.id, action="cart"))
     db.session.commit()
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return jsonify({"count": sum(cart.values())})
@@ -282,7 +272,7 @@ def add_to_cart(product_id):
 @store_bp.route("/redeem/<int:product_id>", methods=["POST"])
 @activated_required
 def redeem_product(product_id):
-    product = Product.query.get_or_404(product_id)
+    product = Product.query.filter_by(id=product_id, is_official=True).first_or_404()
     if product.price_credits is None:
         flash("Este producto no está disponible para canje", "warning")
         return redirect(url_for("store.view_product", product_id=product.id))
@@ -318,7 +308,7 @@ def redeem_product(product_id):
 @store_bp.route("/buy/<int:product_id>", methods=["POST"])
 @activated_required
 def buy_product(product_id):
-    product = Product.query.get_or_404(product_id)
+    product = Product.query.filter_by(id=product_id, is_official=True).first_or_404()
     if product.stock < 1:
         flash(f"Stock insuficiente para {product.name}", "danger")
         return redirect(url_for("store.view_product", product_id=product.id))
@@ -381,7 +371,7 @@ def view_cart():
     cart = get_cart()
     cart_items = []
     for pid, qty in cart.items():
-        product = Product.query.get(int(pid))
+        product = Product.query.filter_by(id=int(pid), is_official=True).first()
         if product:
             cart_items.append({"product": product, "quantity": qty})
     return render_template("store/carrito.html", cart_items=cart_items)
@@ -406,7 +396,7 @@ def checkout():
     total_soles = 0
     for pid_str, qty in cart.items():
         pid = int(pid_str)
-        product = Product.query.get(pid)
+        product = Product.query.filter_by(id=pid, is_official=True).first()
         if product:
             cart_items.append({"product": product, "quantity": qty})
             total_soles += float(product.price) * qty
@@ -459,14 +449,15 @@ def checkout():
 @activated_required
 def toggle_favorite(product_id):
     """Add or remove a product from the user's favorites."""
+    product = Product.query.filter_by(id=product_id, is_official=True).first_or_404()
     fav = FavoriteProduct.query.filter_by(
-        user_id=current_user.id, product_id=product_id
+        user_id=current_user.id, product_id=product.id
     ).first()
     if fav:
         db.session.delete(fav)
         flash("Producto eliminado de favoritos")
     else:
-        db.session.add(FavoriteProduct(user_id=current_user.id, product_id=product_id))
+        db.session.add(FavoriteProduct(user_id=current_user.id, product_id=product.id))
         flash("Producto agregado a favoritos")
     db.session.commit()
     return redirect(request.referrer or url_for("store.store_index"))
