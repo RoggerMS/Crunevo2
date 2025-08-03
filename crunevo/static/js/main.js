@@ -849,13 +849,27 @@ document.addEventListener('DOMContentLoaded', () => {
   if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
     document.body.classList.add('no-anim');
   }
-  const mobileNav = document.querySelector('.mobile-navbar.fixed-top');
-  const fixedNav = mobileNav && window.getComputedStyle(mobileNav).display !== 'none'
-    ? mobileNav
-    : document.querySelector('.navbar.fixed-top');
-  if (fixedNav) {
-    document.body.style.paddingTop = fixedNav.offsetHeight + 'px';
+
+  const getVisibleNavbar = () => {
+    const mobileNav = document.querySelector('.mobile-navbar');
+    if (mobileNav && window.getComputedStyle(mobileNav).display !== 'none') {
+      return mobileNav;
+    }
+    const desktopNav = document.querySelector('.navbar-crunevo');
+    return desktopNav && window.getComputedStyle(desktopNav).display !== 'none'
+      ? desktopNav
+      : null;
+  };
+
+  function setNavbarHeight() {
+    const nav = getVisibleNavbar();
+    if (nav) {
+      document.documentElement.style.setProperty('--navbar-height', `${nav.offsetHeight}px`);
+    }
   }
+
+  setNavbarHeight();
+  window.addEventListener('resize', setNavbarHeight);
   if (window.NEW_ACHIEVEMENTS && window.NEW_ACHIEVEMENTS.length > 0) {
     showAchievementPopup(window.NEW_ACHIEVEMENTS[0]);
   }
@@ -1186,66 +1200,66 @@ document.addEventListener('DOMContentLoaded', () => {
   // Enhanced Auto hide navbar on scroll for all viewports
   let lastScrollTop = 0;
   let scrollTimeout = null;
-  const mobileNavbar = document.querySelector('.mobile-navbar');
-  const navbar = mobileNavbar && window.getComputedStyle(mobileNavbar).display !== 'none'
-    ? mobileNavbar
-    : document.querySelector('.navbar-crunevo');
   const isMobileUA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   const isTablet = window.innerWidth >= 576 && window.innerWidth <= 1024;
-  
+
   function handleScroll() {
+    const navbar = getVisibleNavbar();
     if (!navbar) return;
-    
+
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const scrollThreshold = isMobileUA ? 30 : 50; // Lower threshold for mobile
-    
-    // Clear any existing timeout
+
     if (scrollTimeout) {
       clearTimeout(scrollTimeout);
     }
-    
-    // Only hide/show after scrolling past threshold
+
     if (Math.abs(scrollTop - lastScrollTop) > scrollThreshold) {
       if (scrollTop > lastScrollTop && scrollTop > 100) {
-        // Scrolling down and past 100px - hide navbar
         navbar.classList.add('navbar-hidden');
       } else if (scrollTop < lastScrollTop) {
-        // Scrolling up - show navbar
         navbar.classList.remove('navbar-hidden');
       }
       lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
     }
-    
-    // Auto-show navbar after scroll stops (especially useful on mobile)
+
     scrollTimeout = setTimeout(() => {
       if (scrollTop === (window.pageYOffset || document.documentElement.scrollTop)) {
-        navbar.classList.remove('navbar-hidden');
+        const nav = getVisibleNavbar();
+        if (nav) {
+          nav.classList.remove('navbar-hidden');
+        }
       }
     }, 1500);
   }
 
-  // Use passive listeners for better performance
   window.addEventListener('scroll', handleScroll, { passive: true });
-  
+
   if (isMobileUA || isTablet) {
     window.addEventListener('touchmove', handleScroll, { passive: true });
     window.addEventListener('touchend', () => {
-      // Show navbar briefly on touch end for easier access
-      setTimeout(() => {
-        navbar.classList.remove('navbar-hidden');
-      }, 500);
+      const nav = getVisibleNavbar();
+      if (nav) {
+        setTimeout(() => {
+          nav.classList.remove('navbar-hidden');
+        }, 500);
+      }
     }, { passive: true });
   }
-  
-  // Show navbar on window resize (responsive behavior)
+
   window.addEventListener('resize', () => {
-    navbar.classList.remove('navbar-hidden');
+    const nav = getVisibleNavbar();
+    if (nav) {
+      nav.classList.remove('navbar-hidden');
+    }
   });
-  
-  // Show navbar when focus is on form elements (accessibility)
+
   document.addEventListener('focusin', (e) => {
     if (e.target.matches('input, textarea, select')) {
-      navbar.classList.remove('navbar-hidden');
+      const nav = getVisibleNavbar();
+      if (nav) {
+        nav.classList.remove('navbar-hidden');
+      }
     }
   });
 

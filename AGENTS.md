@@ -1073,3 +1073,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Documented mobile navigation bar usage and noted replacement of bottom nav (PR mobile-navbar-docs).
 - Refined mobile navbar: new purple blur style with circular buttons, forum icon now question mark, and search input opens a full-screen modal with live suggestions (PR mobile-navbar-enhance).
 - Mobile navbar badges and spacing fixed: icons spaced evenly, notification button links to full page with working badge, cart count now visible, and auto-hide/padding logic targets the mobile navbar (PR mobile-navbar-fixes).
+- Calculated navbar height dynamically with CSS variable, updated sidebar offset and scroll padding, and unified auto-hide logic to ensure content isn't covered on any page (PR navbar-overlap-fix).
