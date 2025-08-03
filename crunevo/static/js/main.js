@@ -870,8 +870,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.documentElement.style.scrollPaddingTop = `${height}px`;
     }
   }
-
+  // Recalculate after rendering and when resources load
   setNavbarHeight();
+
+  document.addEventListener('DOMContentLoaded', setNavbarHeight);
   window.addEventListener('load', setNavbarHeight);
   window.addEventListener('resize', setNavbarHeight);
   if (window.NEW_ACHIEVEMENTS && window.NEW_ACHIEVEMENTS.length > 0) {

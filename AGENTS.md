@@ -1075,3 +1075,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Mobile navbar badges and spacing fixed: icons spaced evenly, notification button links to full page with working badge, cart count now visible, and auto-hide/padding logic targets the mobile navbar (PR mobile-navbar-fixes).
 - Calculated navbar height dynamically with CSS variable, updated sidebar offset and scroll padding, and unified auto-hide logic to ensure content isn't covered on any page (PR navbar-overlap-fix).
 - Reapplied navbar height on load and resize, setting body padding and scroll offset to prevent content being hidden by fixed navbars (PR navbar-padding-load).
+- Recalculated navbar height on DOMContentLoaded and window load to prevent fixed navbar from covering content on mobile and desktop (PR navbar-height-recalc).
