@@ -1067,3 +1067,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Eliminated remaining double scroll in comment modal by moving the comment form inside a single scrollable body, making it sticky at the bottom and removing inner comment list overflow (PR comment-modal-sticky-input).
 - Consolidated comment modal layout by placing the comment form outside the scrollable body, cleaning duplicate comment styles and reinforcing single-scroll behavior with sticky input (PR comment-modal-css-cleanup).
 - Centered comment modal horizontally on desktop, added responsive full-width behavior on mobile, and preserved sticky comment form (PR comment-modal-center).
+- Optimized comment modal input with full-width auto-expanding textarea and minimal send button for better mobile usability (PR comment-input-opt).

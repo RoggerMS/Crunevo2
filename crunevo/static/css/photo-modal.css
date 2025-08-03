@@ -725,6 +725,7 @@
 
 .unified-comment-input-wrapper {
   flex-grow: 1;
+  width: 100%;
   display: flex;
   align-items: center;
   background-color: var(--crunevo-bg-light);
@@ -734,6 +735,7 @@
 
 .unified-comment-input {
   flex-grow: 1;
+  width: 100%;
   border: none;
   background: transparent;
   outline: none;
@@ -741,7 +743,7 @@
   color: var(--crunevo-text-dark);
   resize: none; /* Evita que el usuario pueda redimensionarlo */
   line-height: 1.4;
-  max-height: 80px; /* Limita el crecimiento del textarea */
+  max-height: 150px; /* Limita el crecimiento del textarea */
   overflow-y: auto; /* Añade scroll si el texto es muy largo */
 }
 
@@ -778,6 +780,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
 }
 
 .compact-comment-form-avatar {
@@ -790,16 +793,18 @@
 
 .compact-comment-input-wrapper {
   flex-grow: 1;
+  width: 100%;
   display: flex;
   align-items: center;
   background-color: var(--crunevo-bg-light);
   border-radius: 20px;
   /* Padding ajustado para que el botón quepa adentro */
-  padding: 6px 6px 6px 12px; 
+  padding: 6px 6px 6px 12px;
 }
 
 .compact-comment-input {
   flex-grow: 1;
+  width: 100%;
   border: none;
   background: transparent;
   outline: none;
@@ -807,34 +812,32 @@
   color: var(--crunevo-text-dark);
   resize: none;
   line-height: 1.4;
-  max-height: 80px;
+  max-height: 150px;
   overflow-y: auto;
   padding-right: 8px; /* Espacio para el botón */
 }
 
 .compact-comment-submit-btn {
-  background: var(--crunevo-primary);
-  color: white;
+  background: transparent;
   border: none;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  font-size: 14px;
+  color: var(--crunevo-primary);
+  padding: 4px;
+  font-size: 20px;
   cursor: pointer;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .compact-comment-submit-btn:disabled {
-  background-color: #aab2c0;
+  color: #aab2c0;
   cursor: not-allowed;
 }
 
 .compact-comment-submit-btn:not(:disabled):hover {
   transform: scale(1.1);
-  background-color: var(--crunevo-accent);
+  color: var(--crunevo-accent);
 }
 
