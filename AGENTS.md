@@ -897,9 +897,9 @@
 - Added audit logging in require_admin before_request to track admin page visits (PR admin-require-logging).
 - Added /admin/api/analytics endpoint and improved applyFilters to send selected filters and redraw charts (PR analytics-filters-api).
 - Replaced debug `console.log` statements in base.html and ranking/index.html with `console.info` for clearer logging (PR template-console-cleanup).
-- Replaced mobile bottom nav with a translucent top "notbar" on small screens, kept hamburger menu intact and removed obsolete component includes (PR facebook-mobile-notbar).
-- Redesigned mobile notbar with purple translucent background, circular icon buttons and updated order (Inicio, Personas, Chat, Apuntes, Notificaciones, Tienda), removing the perfil link (PR mobile-notbar-facebook-style).
-- Ajustado notbar móvil para fondo morado sólido, altura mínima 64px y sombra sutil; modal de búsqueda visible en móviles (PR mobile-navbar-fix).
+- Replaced mobile bottom nav with a translucent top mobile navbar on small screens, kept hamburger menu intact and removed obsolete component includes (PR facebook-mobile-navbar).
+- Redesigned mobile navbar with purple translucent background, circular icon buttons and updated order (Inicio, Personas, Chat, Apuntes, Notificaciones, Tienda), removing the perfil link (PR mobile-navbar-facebook-style).
+- Ajustado navbar móvil para fondo morado sólido, altura mínima 64px y sombra sutil; modal de búsqueda visible en móviles (PR mobile-navbar-fix).
 - Trending page now lists top posts, notes and popular forum questions with a link to ranking. Added Tailwind classes for modern layout (PR trending-forum-ranking).
 - Rediseño completo de la página Trending con layout moderno y atractivo: hero section con estadísticas, cards mejoradas con rankings, badges de estado, efectos hover, diseño responsive optimizado y mejor UX (PR trending-complete-redesign).
 - Trending page accessible without login; trending route no longer requires activation and handles guests. (hotfix trending-public)
@@ -1069,3 +1069,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Centered comment modal horizontally on desktop, added responsive full-width behavior on mobile, and preserved sticky comment form (PR comment-modal-center).
 - Optimized comment modal input with full-width auto-expanding textarea and minimal send button for better mobile usability (PR comment-input-opt).
 - Fixed navbar macros: consolidated user auth conditional and guarded current_user usage to resolve TemplateSyntaxError and test failures (PR navbar-auth-conditional).
+- Migrated mobile "NotBar" component to "MobileNavbar", renamed template and CSS class `.notbar` to `.mobile-navbar` and updated includes (PR mobile-navbar-rename).

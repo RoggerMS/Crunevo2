@@ -1,10 +1,10 @@
-<nav class="navbar notbar fixed-top d-lg-none text-white navbar-crunevo">
+<nav class="navbar mobile-navbar fixed-top d-lg-none text-white navbar-crunevo">
   <div class="container-fluid d-flex align-items-center justify-content-between gap-1 px-2">
     <a class="p-0" href="{{ url_for('main.index') }}" aria-label="Ir a inicio">
       <img src="{{ url_for('static', filename='img/icon-512.png') }}" alt="Crunevo" height="28" class="crunevo-logo-small">
     </a>
     <div class="flex-grow-1 position-relative mx-2">
-      <input id="notbarSearch" type="search" class="form-control form-control-sm rounded-pill ps-4" placeholder="Buscar" aria-label="Campo de búsqueda">
+      <input id="mobileNavbarSearch" type="search" class="form-control form-control-sm rounded-pill ps-4" placeholder="Buscar" aria-label="Campo de búsqueda">
       <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted"></i>
     </div>
     {% from 'components/navbar_links.html' import mobile_quick_links %}
@@ -12,9 +12,9 @@
   </div>
 </nav>
 <script>
-  const nbSearch = document.getElementById('notbarSearch');
-  if (nbSearch) {
-    nbSearch.addEventListener('focus', () => {
+  const mobileSearch = document.getElementById('mobileNavbarSearch');
+  if (mobileSearch) {
+    mobileSearch.addEventListener('focus', () => {
       const modalEl = document.getElementById('mobileSearchModal');
       if (modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
     });
@@ -53,7 +53,7 @@
   }
   
   // Optimize touch interactions for mobile navbar
-  document.querySelectorAll('.notbar .btn-link').forEach(btn => {
+  document.querySelectorAll('.mobile-navbar .btn-link').forEach(btn => {
     btn.addEventListener('touchstart', function() {
       this.style.transform = 'scale(0.95)';
     }, { passive: true });
