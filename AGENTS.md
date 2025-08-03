@@ -1077,3 +1077,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Reapplied navbar height on load and resize, setting body padding and scroll offset to prevent content being hidden by fixed navbars (PR navbar-padding-load).
 - Recalculated navbar height on DOMContentLoaded and window load to prevent fixed navbar from covering content on mobile and desktop (PR navbar-height-recalc).
 - Fixed indentation of marketplace and related blueprint imports in `app.py` to resolve deployment error (hotfix marketplace-import-indent).
+- Added missing marketplace utilities and models overhaul: created `utils/uploads` helper, simplified marketplace models, fixed conversation/message relations, updated routes and templates, and ensured CSRF tokens in forms (PR marketplace-fixes).

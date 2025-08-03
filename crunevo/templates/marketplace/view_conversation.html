@@ -137,7 +137,7 @@
                         <div class="card-footer bg-white">
                             <!-- Message Input -->
                             <form action="{{ url_for('marketplace.send_message') }}" method="post">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                {{ csrf_field() }}
                                 <input type="hidden" name="conversation_id" value="{{ conversation.id }}">
                                 <div class="input-group">
                                     <textarea class="form-control message-input" name="message" placeholder="Escribe un mensaje..." rows="2" required></textarea>

@@ -262,8 +262,8 @@
             </div>
             <div class="modal-body">
                 <form action="{{ url_for('marketplace.send_message') }}" method="post" id="contact-seller-form">
+                    {{ csrf_field() }}
                     <input type="hidden" name="receiver_id" value="{{ seller.user_id }}">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label for="message-content" class="form-label">Mensaje</label>
                         <textarea class="form-control" id="message-content" name="content" rows="4" required></textarea>

@@ -152,7 +152,7 @@
                                 </div>
                                 {% else %}
                                 <form action="{{ url_for('marketplace.become_seller') }}" method="post" enctype="multipart/form-data">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    {{ csrf_field() }}
                                     
                                     <!-- Store Information -->
                                     <div class="mb-4">

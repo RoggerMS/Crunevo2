@@ -1,26 +1,16 @@
-from flask import (
-    Blueprint,
-    render_template,
-    session,
-    redirect,
-    url_for,
-    flash,
-    request,
-    jsonify,
-    abort,
-    current_app,
-)
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_required
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
 from crunevo.models.product import Product
 from crunevo.models.purchase import Purchase
 from crunevo.models.seller import Seller
-from crunevo.models.marketplace_message import MarketplaceMessage, MarketplaceConversation
+from crunevo.models.marketplace_message import (
+    MarketplaceMessage,
+    MarketplaceConversation,
+)
 from crunevo.utils.uploads import save_image
 from datetime import datetime
-import os
-import uuid
 
 marketplace_bp = Blueprint("marketplace", __name__, url_prefix="/marketplace")
 
@@ -37,9 +27,9 @@ def marketplace_index():
     envio_gratis = request.args.get("envio_gratis", type=int)
     vendedor_verificado = request.args.get("vendedor_verificado", type=int)
     search = request.args.get("search")
-    
+
     query = Product.query.filter(Product.seller_id.isnot(None))
-    
+
     # Aplicar filtros
     if categoria:
         query = query.filter_by(category=categoria)
@@ -62,7 +52,7 @@ def marketplace_index():
                 Product.description.ilike(f"%{search}%"),
             )
         )
-    
+
     # Ordenar productos
     sort = request.args.get("sort", "newest")
     if sort == "newest":
@@ -73,20 +63,26 @@ def marketplace_index():
         query = query.order_by(Product.price.desc())
     elif sort == "popular":
         query = query.order_by(Product.views_count.desc())
-    
+
     products = query.all()
-    
+
     # Obtener categorías y subcategorías para filtros
-    categories = db.session.query(Product.category, db.func.count(Product.id)).\
-        filter(Product.seller_id.isnot(None)).\
-        group_by(Product.category).all()
-    
+    categories = (
+        db.session.query(Product.category, db.func.count(Product.id))
+        .filter(Product.seller_id.isnot(None))
+        .group_by(Product.category)
+        .all()
+    )
+
     subcategories = {}
     if categoria:
-        subcategories = db.session.query(Product.subcategory, db.func.count(Product.id)).\
-            filter(Product.category == categoria, Product.seller_id.isnot(None)).\
-            group_by(Product.subcategory).all()
-    
+        subcategories = (
+            db.session.query(Product.subcategory, db.func.count(Product.id))
+            .filter(Product.category == categoria, Product.seller_id.isnot(None))
+            .group_by(Product.subcategory)
+            .all()
+        )
+
     return render_template(
         "marketplace/index.html",
         products=products,
@@ -111,26 +107,33 @@ def marketplace_index():
 def view_product(product_id):
     """Ver detalle de un producto del marketplace."""
     product = Product.query.get_or_404(product_id)
-    
+
     # Incrementar contador de vistas
     product.views_count += 1
     db.session.commit()
-    
+
     # Obtener información del vendedor
     seller = Seller.query.get(product.seller_id) if product.seller_id else None
-    
+
     # Obtener productos relacionados
-    related_products = Product.query.\
-        filter(Product.category == product.category, Product.id != product.id).\
-        limit(4).all()
-    
+    related_products = (
+        Product.query.filter(
+            Product.category == product.category, Product.id != product.id
+        )
+        .limit(4)
+        .all()
+    )
+
     # Verificar si el usuario ha comprado el producto
     has_purchased = False
     if current_user.is_authenticated:
-        has_purchased = Purchase.query.filter_by(
-            user_id=current_user.id, product_id=product_id
-        ).first() is not None
-    
+        has_purchased = (
+            Purchase.query.filter_by(
+                user_id=current_user.id, product_id=product_id
+            ).first()
+            is not None
+        )
+
     return render_template(
         "marketplace/view_product.html",
         product=product,
@@ -149,29 +152,29 @@ def become_seller():
     existing_seller = Seller.query.filter_by(user_id=current_user.id).first()
     if existing_seller:
         return redirect(url_for("marketplace.seller_dashboard"))
-    
+
     if request.method == "POST":
         store_name = request.form.get("store_name")
         description = request.form.get("description")
         contact_email = request.form.get("contact_email")
         contact_phone = request.form.get("contact_phone")
         address = request.form.get("address")
-        
+
         # Validar datos
         if not store_name or not description or not contact_email:
             flash("Por favor completa todos los campos obligatorios", "danger")
             return redirect(url_for("marketplace.become_seller"))
-        
+
         # Procesar imágenes
         logo = None
         banner = None
-        
+
         if "logo" in request.files and request.files["logo"].filename:
             logo = save_image(request.files["logo"], "marketplace/sellers")
-            
+
         if "banner" in request.files and request.files["banner"].filename:
             banner = save_image(request.files["banner"], "marketplace/sellers")
-        
+
         # Crear vendedor
         new_seller = Seller(
             user_id=current_user.id,
@@ -183,13 +186,16 @@ def become_seller():
             contact_phone=contact_phone,
             address=address,
         )
-        
+
         db.session.add(new_seller)
         db.session.commit()
-        
-        flash("¡Felicidades! Ahora eres un vendedor en el marketplace de Crunevo", "success")
+
+        flash(
+            "¡Felicidades! Ahora eres un vendedor en el marketplace de Crunevo",
+            "success",
+        )
         return redirect(url_for("marketplace.seller_dashboard"))
-    
+
     return render_template("marketplace/become_seller.html")
 
 
@@ -203,18 +209,18 @@ def seller_dashboard():
     if not seller:
         flash("Debes registrarte como vendedor primero", "warning")
         return redirect(url_for("marketplace.become_seller"))
-    
+
     # Obtener productos del vendedor
     products = Product.query.filter_by(seller_id=seller.id).all()
-    
+
     # Obtener estadísticas de ventas
     sales = Purchase.query.join(Product).filter(Product.seller_id == seller.id).all()
-    
+
     # Obtener mensajes no leídos
     unread_messages = MarketplaceMessage.query.filter_by(
         receiver_id=current_user.id, is_read=False
     ).count()
-    
+
     return render_template(
         "marketplace/seller_dashboard.html",
         seller=seller,
@@ -234,10 +240,10 @@ def seller_products():
     if not seller:
         flash("Debes registrarte como vendedor primero", "warning")
         return redirect(url_for("marketplace.become_seller"))
-    
+
     # Obtener productos del vendedor
     products = Product.query.filter_by(seller_id=seller.id).all()
-    
+
     return render_template(
         "marketplace/seller_products.html",
         seller=seller,
@@ -255,7 +261,7 @@ def add_product():
     if not seller:
         flash("Debes registrarte como vendedor primero", "warning")
         return redirect(url_for("marketplace.become_seller"))
-    
+
     if request.method == "POST":
         name = request.form.get("name")
         description = request.form.get("description")
@@ -268,12 +274,12 @@ def add_product():
         shipping_time = request.form.get("shipping_time")
         warranty = request.form.get("warranty")
         tags = request.form.getlist("tags")
-        
+
         # Validar datos
         if not name or not description or not price or not category or not stock:
             flash("Por favor completa todos los campos obligatorios", "danger")
             return redirect(url_for("marketplace.add_product"))
-        
+
         # Procesar imágenes
         image_urls = []
         if "images" in request.files:
@@ -282,7 +288,7 @@ def add_product():
                 if image.filename:
                     image_url = save_image(image, "marketplace/products")
                     image_urls.append(image_url)
-        
+
         # Crear producto
         new_product = Product(
             name=name,
@@ -302,16 +308,19 @@ def add_product():
             is_approved=False,  # Requiere aprobación
             created_at=datetime.utcnow(),
         )
-        
+
         db.session.add(new_product)
         db.session.commit()
-        
-        flash("Producto añadido correctamente. Será revisado antes de publicarse.", "success")
+
+        flash(
+            "Producto añadido correctamente. Será revisado antes de publicarse.",
+            "success",
+        )
         return redirect(url_for("marketplace.seller_products"))
-    
+
     # Obtener categorías para el formulario
     from crunevo.constants import STORE_CATEGORIES
-    
+
     return render_template(
         "marketplace/add_product.html",
         seller=seller,
@@ -329,15 +338,15 @@ def edit_product(product_id):
     if not seller:
         flash("Debes registrarte como vendedor primero", "warning")
         return redirect(url_for("marketplace.become_seller"))
-    
+
     # Obtener producto
     product = Product.query.get_or_404(product_id)
-    
+
     # Verificar que el producto pertenece al vendedor
     if product.seller_id != seller.id:
         flash("No tienes permiso para editar este producto", "danger")
         return redirect(url_for("marketplace.seller_products"))
-    
+
     if request.method == "POST":
         product.name = request.form.get("name")
         product.description = request.form.get("description")
@@ -351,7 +360,7 @@ def edit_product(product_id):
         product.warranty = request.form.get("warranty")
         product.tags = request.form.getlist("tags")
         product.updated_at = datetime.utcnow()
-        
+
         # Procesar imágenes nuevas
         if "images" in request.files:
             images = request.files.getlist("images")
@@ -362,20 +371,22 @@ def edit_product(product_id):
                         product.image_urls.append(image_url)
                     else:
                         product.image_urls = [image_url]
-        
+
         # Eliminar imágenes seleccionadas
         images_to_remove = request.form.getlist("remove_images")
         if images_to_remove and product.image_urls:
-            product.image_urls = [img for img in product.image_urls if img not in images_to_remove]
-        
+            product.image_urls = [
+                img for img in product.image_urls if img not in images_to_remove
+            ]
+
         db.session.commit()
-        
+
         flash("Producto actualizado correctamente", "success")
         return redirect(url_for("marketplace.seller_products"))
-    
+
     # Obtener categorías para el formulario
     from crunevo.constants import STORE_CATEGORIES
-    
+
     return render_template(
         "marketplace/edit_product.html",
         seller=seller,
@@ -394,18 +405,18 @@ def delete_product(product_id):
     if not seller:
         flash("Debes registrarte como vendedor primero", "warning")
         return redirect(url_for("marketplace.become_seller"))
-    
+
     # Obtener producto
     product = Product.query.get_or_404(product_id)
-    
+
     # Verificar que el producto pertenece al vendedor
     if product.seller_id != seller.id:
         flash("No tienes permiso para eliminar este producto", "danger")
         return redirect(url_for("marketplace.seller_products"))
-    
+
     db.session.delete(product)
     db.session.commit()
-    
+
     flash("Producto eliminado correctamente", "success")
     return redirect(url_for("marketplace.seller_products"))
 
@@ -416,13 +427,17 @@ def delete_product(product_id):
 def messages():
     """Ver mensajes del marketplace."""
     # Obtener conversaciones del usuario
-    conversations = MarketplaceConversation.query.filter(
-        db.or_(
-            MarketplaceConversation.user1_id == current_user.id,
-            MarketplaceConversation.user2_id == current_user.id,
+    conversations = (
+        MarketplaceConversation.query.filter(
+            db.or_(
+                MarketplaceConversation.user1_id == current_user.id,
+                MarketplaceConversation.user2_id == current_user.id,
+            )
         )
-    ).order_by(MarketplaceConversation.last_message_at.desc()).all()
-    
+        .order_by(MarketplaceConversation.last_message_at.desc())
+        .all()
+    )
+
     return render_template(
         "marketplace/messages.html",
         conversations=conversations,
@@ -436,40 +451,41 @@ def view_conversation(conversation_id):
     """Ver una conversación específica."""
     # Obtener conversación
     conversation = MarketplaceConversation.query.get_or_404(conversation_id)
-    
+
     # Verificar que el usuario es parte de la conversación
-    if conversation.user1_id != current_user.id and conversation.user2_id != current_user.id:
+    if (
+        conversation.user1_id != current_user.id
+        and conversation.user2_id != current_user.id
+    ):
         flash("No tienes permiso para ver esta conversación", "danger")
         return redirect(url_for("marketplace.messages"))
-    
+
     # Obtener mensajes
-    messages = MarketplaceMessage.query.filter(
-        db.or_(
-            db.and_(
-                MarketplaceMessage.sender_id == conversation.user1_id,
-                MarketplaceMessage.receiver_id == conversation.user2_id,
-            ),
-            db.and_(
-                MarketplaceMessage.sender_id == conversation.user2_id,
-                MarketplaceMessage.receiver_id == conversation.user1_id,
-            ),
-        )
-    ).order_by(MarketplaceMessage.created_at).all()
-    
+    messages = (
+        MarketplaceMessage.query.filter_by(conversation_id=conversation.id)
+        .order_by(MarketplaceMessage.created_at)
+        .all()
+    )
+
     # Marcar mensajes como leídos
     for message in messages:
         if message.receiver_id == current_user.id and not message.is_read:
             message.is_read = True
-    
+
     db.session.commit()
-    
+
     # Determinar el otro usuario
-    other_user_id = conversation.user2_id if conversation.user1_id == current_user.id else conversation.user1_id
+    other_user_id = (
+        conversation.user2_id
+        if conversation.user1_id == current_user.id
+        else conversation.user1_id
+    )
     from crunevo.models.user import User
+
     other_user = User.query.get(other_user_id)
-    
+
     return render_template(
-        "marketplace/conversation.html",
+        "marketplace/view_conversation.html",
         conversation=conversation,
         messages=messages,
         other_user=other_user,
@@ -485,46 +501,62 @@ def send_message():
     product_id = request.form.get("product_id", type=int)
     content = request.form.get("content")
     conversation_id = request.form.get("conversation_id", type=int)
-    
+
     if not content:
         flash("El mensaje no puede estar vacío", "danger")
         if conversation_id:
-            return redirect(url_for("marketplace.view_conversation", conversation_id=conversation_id))
+            return redirect(
+                url_for(
+                    "marketplace.view_conversation", conversation_id=conversation_id
+                )
+            )
         return redirect(url_for("marketplace.messages"))
-    
+
     # Si hay una conversación existente
     if conversation_id:
         conversation = MarketplaceConversation.query.get_or_404(conversation_id)
-        
+
         # Verificar que el usuario es parte de la conversación
-        if conversation.user1_id != current_user.id and conversation.user2_id != current_user.id:
-            flash("No tienes permiso para enviar mensajes en esta conversación", "danger")
+        if (
+            conversation.user1_id != current_user.id
+            and conversation.user2_id != current_user.id
+        ):
+            flash(
+                "No tienes permiso para enviar mensajes en esta conversación", "danger"
+            )
             return redirect(url_for("marketplace.messages"))
-        
+
         # Determinar el receptor
-        receiver_id = conversation.user2_id if conversation.user1_id == current_user.id else conversation.user1_id
-        
+        receiver_id = (
+            conversation.user2_id
+            if conversation.user1_id == current_user.id
+            else conversation.user1_id
+        )
+
         # Crear mensaje
         message = MarketplaceMessage(
+            conversation_id=conversation.id,
             sender_id=current_user.id,
             receiver_id=receiver_id,
             product_id=conversation.product_id,
             content=content,
         )
-        
+
         # Actualizar fecha de último mensaje
         conversation.last_message_at = datetime.utcnow()
-        
+
         db.session.add(message)
         db.session.commit()
-        
-        return redirect(url_for("marketplace.view_conversation", conversation_id=conversation_id))
-    
+
+        return redirect(
+            url_for("marketplace.view_conversation", conversation_id=conversation_id)
+        )
+
     # Si es un nuevo mensaje
     if not receiver_id:
         flash("Destinatario no válido", "danger")
         return redirect(url_for("marketplace.messages"))
-    
+
     # Verificar si ya existe una conversación entre estos usuarios para este producto
     conversation = MarketplaceConversation.query.filter(
         db.or_(
@@ -540,7 +572,7 @@ def send_message():
             ),
         )
     ).first()
-    
+
     # Si no existe, crear una nueva conversación
     if not conversation:
         conversation = MarketplaceConversation(
@@ -551,26 +583,29 @@ def send_message():
         )
         db.session.add(conversation)
         db.session.flush()  # Para obtener el ID
-    
+
     # Crear mensaje
     message = MarketplaceMessage(
+        conversation_id=conversation.id,
         sender_id=current_user.id,
         receiver_id=receiver_id,
         product_id=product_id,
         content=content,
     )
-    
+
     # Actualizar fecha de último mensaje
     conversation.last_message_at = datetime.utcnow()
-    
+
     db.session.add(message)
     db.session.commit()
-    
+
     # Si viene de la página de producto, redirigir a la conversación
     if product_id:
         flash("Mensaje enviado correctamente", "success")
-        return redirect(url_for("marketplace.view_conversation", conversation_id=conversation.id))
-    
+        return redirect(
+            url_for("marketplace.view_conversation", conversation_id=conversation.id)
+        )
+
     return redirect(url_for("marketplace.messages"))
 
 
@@ -579,12 +614,12 @@ def send_message():
 def view_seller(seller_id):
     """Ver perfil de un vendedor."""
     seller = Seller.query.get_or_404(seller_id)
-    
+
     # Obtener productos del vendedor
     products = Product.query.filter_by(seller_id=seller_id, is_approved=True).all()
-    
+
     return render_template(
-        "marketplace/seller_profile.html",
+        "marketplace/seller.html",
         seller=seller,
         products=products,
     )
