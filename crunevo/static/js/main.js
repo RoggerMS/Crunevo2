@@ -868,6 +868,12 @@ document.addEventListener('DOMContentLoaded', () => {
       document.documentElement.style.setProperty('--navbar-height', `${height}px`);
       document.body.style.paddingTop = `${height}px`;
       document.documentElement.style.scrollPaddingTop = `${height}px`;
+      
+      // Asegurar que el contenido principal tenga suficiente espacio
+      const main = document.querySelector('main');
+      if (main) {
+        main.style.marginTop = '1rem';
+      }
     }
   }
   // Recalculate after rendering and when resources load
