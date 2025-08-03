@@ -158,7 +158,7 @@ def become_seller():
         description = request.form.get("description")
         contact_email = request.form.get("contact_email")
         contact_phone = request.form.get("contact_phone")
-        address = request.form.get("address")
+        address = request.form.get("location")
 
         # Validar datos
         if not store_name or not description or not contact_email:
