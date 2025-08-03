@@ -1085,3 +1085,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Guarded seller dashboard template against missing product or sender references to prevent runtime errors (hotfix seller-dashboard-template-guards).
 - Added `is_official` field to `Product` model with default `False` and migration to support official products (PR add-product-is_official).
 - Restricted store index and related product queries to `is_official=True` so only official products appear (PR store-official-filter).
+- Marketplace now displays a badge for official products and includes them alongside seller listings (PR marketplace-official-badge).

@@ -28,7 +28,9 @@ def marketplace_index():
     vendedor_verificado = request.args.get("vendedor_verificado", type=int)
     search = request.args.get("search")
 
-    query = Product.query.filter(Product.seller_id.isnot(None))
+    query = Product.query.filter(
+        db.or_(Product.seller_id.isnot(None), Product.is_official)
+    )
 
     # Aplicar filtros
     if categoria:
@@ -69,7 +71,7 @@ def marketplace_index():
     # Obtener categorías y subcategorías para filtros
     categories = (
         db.session.query(Product.category, db.func.count(Product.id))
-        .filter(Product.seller_id.isnot(None))
+        .filter(db.or_(Product.seller_id.isnot(None), Product.is_official))
         .group_by(Product.category)
         .all()
     )
@@ -78,7 +80,10 @@ def marketplace_index():
     if categoria:
         subcategories = (
             db.session.query(Product.subcategory, db.func.count(Product.id))
-            .filter(Product.category == categoria, Product.seller_id.isnot(None))
+            .filter(
+                Product.category == categoria,
+                db.or_(Product.seller_id.isnot(None), Product.is_official),
+            )
             .group_by(Product.subcategory)
             .all()
         )

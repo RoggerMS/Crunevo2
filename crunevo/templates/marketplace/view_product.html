@@ -34,6 +34,9 @@
                             
                             <!-- Product badges -->
                             <div class="marketplace-product-badges">
+                                {% if product.is_official %}
+                                <span class="badge tw-bg-purple-600 tw-text-white">Oficial</span>
+                                {% endif %}
                                 {% if product.is_new %}
                                 <span class="badge bg-success">Nuevo</span>
                                 {% endif %}
@@ -401,6 +404,9 @@
                                 
                                 <!-- Product badges -->
                                 <div class="marketplace-product-badges">
+                                    {% if related.is_official %}
+                                    <span class="badge tw-bg-purple-600 tw-text-white">Oficial</span>
+                                    {% endif %}
                                     {% if related.is_new %}
                                     <span class="badge bg-success">Nuevo</span>
                                     {% endif %}
