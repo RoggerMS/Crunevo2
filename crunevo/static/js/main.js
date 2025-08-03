@@ -654,7 +654,29 @@ function initNavbarSearchLegacy() {
 
   const mobileSearchInput = document.getElementById('mobileSearchInput');
   const mobileSearchModal = document.getElementById('mobileSearchModal');
+  const mobileSearchSuggestions = document.getElementById('mobileSearchSuggestions');
   if (mobileSearchInput) {
+    let mobileTimeout;
+    mobileSearchInput.addEventListener('input', () => {
+      const q = mobileSearchInput.value.trim();
+      clearTimeout(mobileTimeout);
+      if (q.length >= 2) {
+        mobileTimeout = setTimeout(async () => {
+          try {
+            const resp = await fetch(`/search/suggestions?q=${encodeURIComponent(q)}`);
+            const items = await resp.json();
+            if (mobileSearchSuggestions) {
+              mobileSearchSuggestions.innerHTML = renderMobileSuggestions(items, q);
+            }
+          } catch (err) {
+            console.error('Search error:', err);
+          }
+        }, 300);
+      } else if (mobileSearchSuggestions) {
+        mobileSearchSuggestions.innerHTML = '';
+      }
+    });
+
     mobileSearchInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -666,6 +688,34 @@ function initNavbarSearchLegacy() {
         mobileSearchInput.focus();
       });
     }
+  }
+
+  function renderMobileSuggestions(items, query) {
+    if (!items.length) {
+      return (
+        `<div class="list-group-item text-muted"><i class="bi bi-search me-2"></i>No se encontraron resultados</div>` +
+        `<a href="/search?q=${encodeURIComponent(query)}" class="list-group-item list-group-item-action text-center">` +
+        `<i class="bi bi-arrow-right me-2"></i>Buscar "${query}" en toda la plataforma</a>`
+      );
+    }
+    return (
+      items
+        .map(
+          (u) => `
+      <a href="${u.url}" class="list-group-item list-group-item-action d-flex align-items-center">
+        <i class="${u.icon} me-3 text-muted"></i>
+        <div>
+          <div>${u.text}</div>
+          <small class="text-muted">${u.type}</small>
+        </div>
+      </a>`
+        )
+        .join('') +
+      `
+      <a href="/search?q=${encodeURIComponent(query)}" class="list-group-item list-group-item-action text-center">
+        <i class="bi bi-search me-2"></i>Ver todos los resultados
+      </a>`
+    );
   }
 
   async function perform(query) {

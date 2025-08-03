@@ -36,7 +36,7 @@
     <i class="bi bi-house{{ '-fill' if request.endpoint == 'feed.feed_home' else '' }}"></i>
   </a>
   <a href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}" class="btn btn-link text-white p-1" aria-label="Foro estudiantil">
-    <i class="bi bi-people-fill"></i>
+    <i class="bi bi-question-circle-fill"></i>
   </a>
   <a href="{{ url_for('chat.chat_index') }}" class="btn btn-link text-white p-1" aria-label="Chat">
     <i class="bi bi-chat-dots-fill"></i>

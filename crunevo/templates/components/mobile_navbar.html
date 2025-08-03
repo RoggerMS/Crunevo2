@@ -1,11 +1,11 @@
 <!-- Navbar móvil para pantallas pequeñas; reemplaza la antigua navegación inferior -->
-<nav class="navbar mobile-navbar fixed-top d-lg-none text-white navbar-crunevo">
+<nav class="navbar mobile-navbar fixed-top d-lg-none text-white navbar-crunevo shadow-sm">
   <div class="container-fluid d-flex align-items-center justify-content-between gap-1 px-2">
     <a class="p-0" href="{{ url_for('main.index') }}" aria-label="Ir a inicio">
       <img src="{{ url_for('static', filename='img/icon-512.png') }}" alt="Crunevo" height="28" class="crunevo-logo-small">
     </a>
     <div class="flex-grow-1 position-relative mx-2">
-      <input id="mobileNavbarSearch" type="search" class="form-control form-control-sm rounded-pill ps-4" placeholder="Buscar" aria-label="Campo de búsqueda">
+      <input id="mobileNavbarSearch" type="search" class="form-control form-control-sm rounded-pill ps-4" placeholder="Buscar en CRUNEVO..." aria-label="Buscar en CRUNEVO">
       <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted"></i>
     </div>
     {% from 'components/navbar_links.html' import mobile_quick_links %}

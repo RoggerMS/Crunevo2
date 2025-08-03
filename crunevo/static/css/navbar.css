@@ -274,21 +274,23 @@
 }
 
 /* Mobile navbar specific styles */
+
 .mobile-navbar {
-  background: rgba(102, 126, 234, 0.95) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  min-height: 56px;
+  background: rgba(108, 92, 231, 0.9) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  min-height: 64px;
   padding: 0.5rem 0.75rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-navbar .btn-link {
   color: rgba(255, 255, 255, 0.9) !important;
-  padding: 0.3rem;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  min-width: 32px;
-  height: 32px;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background 0.3s ease, transform 0.3s ease;
+  min-width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -296,17 +298,17 @@
 
 .mobile-navbar .btn-link:hover {
   color: #fff !important;
-  background: rgba(255, 255, 255, 0.15);
-  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
 }
 
 .mobile-navbar .form-control {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.2);
+  border: 0;
   color: #fff;
-  font-size: 0.85rem;
-  height: 32px;
-  border-radius: 16px;
+  font-size: 0.9rem;
+  height: 40px;
+  border-radius: 20px;
 }
 
 .mobile-navbar .form-control::placeholder {
@@ -314,10 +316,9 @@
 }
 
 .mobile-navbar .form-control:focus {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.3);
   color: #fff;
-  box-shadow: 0 0 0 0.125rem rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.2);
 }
 
 .mobile-navbar .crunevo-logo-small {
