@@ -147,57 +147,8 @@ def store_index():
 @store_bp.route("/product/<int:product_id>")
 @activated_required
 def view_product(product_id):
-    """Show detailed information for a single product."""
-    product = Product.query.filter_by(id=product_id, is_official=True).first_or_404()
-    is_favorite = (
-        FavoriteProduct.query.filter_by(
-            user_id=current_user.id, product_id=product.id
-        ).first()
-        is not None
-    )
-    purchased = has_purchased(current_user.id, product.id)
-    from sqlalchemy import func
-
-    avg_rating = (
-        db.session.query(func.avg(Review.rating))
-        .filter_by(product_id=product.id)
-        .scalar()
-    )
-    reviews = (
-        Review.query.filter_by(product_id=product.id)
-        .options(db.joinedload(Review.user))
-        .order_by(Review.timestamp.desc())
-        .all()
-    )
-    questions = (
-        Question.query.filter_by(product_id=product.id)
-        .options(db.joinedload(Question.user))
-        .order_by(Question.timestamp.desc())
-        .all()
-    )
-    # Suggest products from the same category to show in the sidebar
-    from sqlalchemy import func
-
-    recommended_products = (
-        Product.query.filter(
-            Product.id != product.id, Product.category == product.category
-        )
-        .order_by(func.random())
-        .limit(4)
-        .all()
-    )
-    db.session.add(ProductLog(product_id=product.id, action="view"))
-    db.session.commit()
-    return render_template(
-        "store/view_product.html",
-        product=product,
-        is_favorite=is_favorite,
-        purchased=purchased,
-        avg_rating=avg_rating or 0,
-        reviews=reviews,
-        questions=questions,
-        recommended_products=recommended_products,
-    )
+    """Redirect legacy store product path to unified product view."""
+    return redirect(url_for("product.view_product", product_id=product_id))
 
 
 @store_bp.route("/product/<int:product_id>/review", methods=["POST"])

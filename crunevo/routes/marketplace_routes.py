@@ -110,42 +110,8 @@ def marketplace_index():
 @marketplace_bp.route("/product/<int:product_id>")
 @activated_required
 def view_product(product_id):
-    """Ver detalle de un producto del marketplace."""
-    product = Product.query.get_or_404(product_id)
-
-    # Incrementar contador de vistas
-    product.views_count += 1
-    db.session.commit()
-
-    # Obtener información del vendedor
-    seller = Seller.query.get(product.seller_id) if product.seller_id else None
-
-    # Obtener productos relacionados
-    related_products = (
-        Product.query.filter(
-            Product.category == product.category, Product.id != product.id
-        )
-        .limit(4)
-        .all()
-    )
-
-    # Verificar si el usuario ha comprado el producto
-    has_purchased = False
-    if current_user.is_authenticated:
-        has_purchased = (
-            Purchase.query.filter_by(
-                user_id=current_user.id, product_id=product_id
-            ).first()
-            is not None
-        )
-
-    return render_template(
-        "marketplace/view_product.html",
-        product=product,
-        seller=seller,
-        related_products=related_products,
-        has_purchased=has_purchased,
-    )
+    """Redirect legacy marketplace product path to unified product view."""
+    return redirect(url_for("product.view_product", product_id=product_id))
 
 
 @marketplace_bp.route("/become-seller", methods=["GET", "POST"])

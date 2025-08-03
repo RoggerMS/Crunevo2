@@ -1,11 +1,18 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
 
-{% block title %}{{ product.name }} - Tienda CRUNEVO{% endblock %}
+{% block title %}
+  {{ product.name }} -
+  {% if product.is_official %}Tienda CRUNEVO{% else %}Marketplace CRUNEVO{% endif %}
+{% endblock %}
 
 {% block head_extra %}
+{% if product.is_official %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/store_detail.css') }}">
+{% else %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/marketplace.css') }}">
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -15,13 +22,13 @@
     <nav class="breadcrumb-nav">
       <ol class="breadcrumb">
         <li class="breadcrumb-item">
-          <a href="{{ url_for('store.store_index') }}">
-            <i class="bi bi-shop"></i> Tienda
+          <a href="{{ url_for('store.store_index') if product.is_official else url_for('marketplace.marketplace_index') }}">
+            <i class="bi bi-shop"></i> {{ 'Tienda' if product.is_official else 'Marketplace' }}
           </a>
         </li>
         {% if product.category %}
         <li class="breadcrumb-item">
-          <a href="{{ url_for('store.store_index', categoria=product.category) }}">
+          <a href="{{ url_for('store.store_index', categoria=product.category) if product.is_official else url_for('marketplace.marketplace_index', categoria=product.category) }}">
             {{ product.category }}
           </a>
         </li>
@@ -41,6 +48,11 @@
 
           <!-- Product Badges -->
           <div class="product-badges">
+            {% if product.is_official %}
+            <span class="badge tw-bg-purple-600 tw-text-white">Oficial</span>
+            {% else %}
+            <span class="badge tw-bg-emerald-600 tw-text-white">Marketplace</span>
+            {% endif %}
             {% if product.is_new %}
             <span class="badge badge-new">NUEVO</span>
             {% endif %}
@@ -56,12 +68,14 @@
           </div>
 
           <!-- Favorite Button -->
+          {% if product.is_official %}
           <form method="post" action="{{ url_for('store.toggle_favorite', product_id=product.id) }}" class="favorite-form">
             {{ csrf.csrf_field() }}
             <button type="submit" class="favorite-btn-large {{ 'active' if is_favorite else '' }}" title="Agregar a favoritos">
               <i class="bi bi-heart{{ '-fill' if is_favorite else '' }}"></i>
             </button>
           </form>
+          {% endif %}
         </div>
 
         <!-- Thumbnail Gallery -->
@@ -142,13 +156,13 @@
         </div>
 
         <!-- Purchase Actions -->
+        {% if product.is_official %}
         <div class="purchase-actions">
           {% if product.stock > 0 and not purchased %}
             {% if product.price_credits and (not product.credits_only or product.price == 0) %}
             <form method="post" action="{{ url_for('store.redeem_product', product_id=product.id) }}" class="action-form-large">
               {{ csrf.csrf_field() }}
-              <button type="submit" class="btn-crolars-large" 
-                      {% if current_user.credits < product.price_credits %}disabled{% endif %}>
+              <button type="submit" class="btn-crolars-large"{% if current_user.credits < product.price_credits %} disabled{% endif %}>
                 <i class="bi bi-coin"></i>
                 {% if current_user.credits >= product.price_credits %}
                 Canjear con {{ product.price_credits }} Crolars
@@ -206,6 +220,11 @@
           </div>
           {% endif %}
         </div>
+        {% else %}
+        <div class="purchase-actions">
+          <p class="tw-text-center">Contacta al vendedor para comprar este producto.</p>
+        </div>
+        {% endif %}
 
         <!-- Product Features -->
         <div class="product-features">
@@ -243,6 +262,7 @@
       </div>
     </div>
 
+    {% if product.is_official %}
     <!-- Product Tabs -->
     <div class="product-tabs-section">
       <ul class="nav nav-tabs product-tabs" role="tablist">
@@ -440,6 +460,11 @@
         </div>
       </div>
     </div>
+    {% else %}
+    <div class="tw-text-center tw-mt-8">
+      <p>Este producto es parte del marketplace y no admite reseñas ni preguntas.</p>
+    </div>
+    {% endif %}
   </div>
 </div>
 

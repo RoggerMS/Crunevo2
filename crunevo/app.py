@@ -332,6 +332,7 @@ def create_app():
     )
     from .routes.store_routes import store_bp
     from .routes.marketplace_routes import marketplace_bp
+    from .routes.product_routes import product_bp
     from .routes.chat_routes import chat_bp
     from .routes.search_routes import search_bp
     from .routes.ia_routes import ia_bp
@@ -471,6 +472,7 @@ def create_app():
             view_func=api_search_courses,
         )
         app.register_blueprint(store_bp)
+        app.register_blueprint(product_bp)
         app.register_blueprint(chat_bp)
         app.register_blueprint(search_bp)
         app.register_blueprint(ia_bp)
