@@ -1081,3 +1081,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added migration to create marketplace tables and product fields and rolled back DB session before logging errors to avoid aborted transactions (PR marketplace-subcategory-fix).
 - Fixed seller registration page 500 error by importing csrf macro and sanitized marketplace price filters to avoid "None" in numeric inputs (hotfix marketplace-become-seller).
 - Handled `None` values in marketplace filter inputs to prevent invalid numeric field values (hotfix marketplace-filter-none).
+- Fixed seller dashboard 500 by providing required context variables and timestamp alias for messages (hotfix seller-dashboard-context).

@@ -213,20 +213,46 @@ def seller_dashboard():
     # Obtener productos del vendedor
     products = Product.query.filter_by(seller_id=seller.id).all()
 
-    # Obtener estadísticas de ventas
-    sales = Purchase.query.join(Product).filter(Product.seller_id == seller.id).all()
+    # Obtener ventas del vendedor
+    sales = (
+        Purchase.query.join(Product)
+        .filter(Product.seller_id == seller.id)
+        .order_by(Purchase.timestamp.desc())
+        .all()
+    )
+
+    # Estadísticas básicas para el panel
+    stats = {
+        "products_count": len(products),
+        "sales_count": len(sales),
+        "sales_growth": 0,
+        "revenue": float(sum(s.price_paid or 0 for s in sales)),
+        "revenue_growth": 0,
+    }
+
+    # Ventas y mensajes recientes
+    recent_sales = sales[:5]
+    recent_messages = (
+        MarketplaceMessage.query.filter(
+            MarketplaceMessage.receiver_id == current_user.id
+        )
+        .order_by(MarketplaceMessage.created_at.desc())
+        .limit(5)
+        .all()
+    )
 
     # Obtener mensajes no leídos
-    unread_messages = MarketplaceMessage.query.filter_by(
+    unread_messages_count = MarketplaceMessage.query.filter_by(
         receiver_id=current_user.id, is_read=False
     ).count()
 
     return render_template(
         "marketplace/seller_dashboard.html",
         seller=seller,
-        products=products,
-        sales=sales,
-        unread_messages=unread_messages,
+        stats=stats,
+        recent_sales=recent_sales,
+        recent_messages=recent_messages,
+        unread_messages_count=unread_messages_count,
     )
 
 
