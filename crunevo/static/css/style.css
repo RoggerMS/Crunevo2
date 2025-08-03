@@ -817,7 +817,7 @@ html[data-bs-theme="dark"] footer a {
 }
 
 /* Mobile search modal styles */
-.notbar .notification-badge {
+.mobile-navbar .notification-badge {
   font-size: 0.6rem;
   min-width: 16px;
   height: 16px;

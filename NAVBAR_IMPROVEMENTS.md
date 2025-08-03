@@ -64,7 +64,7 @@ Se ha realizado una refactorización completa del sistema de navegación para cr
 
 ### Templates
 - ✅ `crunevo/templates/components/navbar.html` - Aplicada clase `navbar-crunevo`
-- ✅ `crunevo/templates/components/notbar.html` - Mejorada accesibilidad y enlaces
+- ✅ `crunevo/templates/components/mobile_navbar.html` - Mejorada accesibilidad y enlaces
 - ✅ `crunevo/templates/components/navbar_links.html` - Nuevo componente compartido
 
 ### Estilos CSS

@@ -29,7 +29,7 @@
 </ul>
 {% endmacro %}
 
-<!-- Mobile Quick Links (used in notbar.html) -->
+<!-- Mobile Quick Links (used in mobile_navbar.html) -->
 {% macro mobile_quick_links() %}
 <div class="d-flex align-items-center gap-1">
   <a href="{{ url_for('feed.feed_home') if 'feed.feed_home' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}" class="btn btn-link text-white p-1" aria-label="Feed principal">

@@ -273,8 +273,8 @@
   transform: scale(1.05);
 }
 
-/* Mobile notbar specific styles */
-.notbar {
+/* Mobile navbar specific styles */
+.mobile-navbar {
   background: rgba(102, 126, 234, 0.95) !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -282,7 +282,7 @@
   padding: 0.5rem 0.75rem;
 }
 
-.notbar .btn-link {
+.mobile-navbar .btn-link {
   color: rgba(255, 255, 255, 0.9) !important;
   padding: 0.3rem;
   border-radius: 6px;
@@ -294,13 +294,13 @@
   justify-content: center;
 }
 
-.notbar .btn-link:hover {
+.mobile-navbar .btn-link:hover {
   color: #fff !important;
   background: rgba(255, 255, 255, 0.15);
   transform: scale(1.1);
 }
 
-.notbar .form-control {
+.mobile-navbar .form-control {
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
@@ -309,22 +309,22 @@
   border-radius: 16px;
 }
 
-.notbar .form-control::placeholder {
+.mobile-navbar .form-control::placeholder {
   color: rgba(255, 255, 255, 0.7);
 }
 
-.notbar .form-control:focus {
+.mobile-navbar .form-control:focus {
   background: rgba(255, 255, 255, 0.25);
   border-color: rgba(255, 255, 255, 0.4);
   color: #fff;
   box-shadow: 0 0 0 0.125rem rgba(255, 255, 255, 0.25);
 }
 
-.notbar .crunevo-logo-small {
+.mobile-navbar .crunevo-logo-small {
   transition: transform 0.3s ease;
 }
 
-.notbar .crunevo-logo-small:hover {
+.mobile-navbar .crunevo-logo-small:hover {
   transform: scale(1.1);
 }
 
@@ -350,7 +350,7 @@
 /* Focus indicators for keyboard navigation */
 .navbar-crunevo .nav-link:focus,
 .navbar-crunevo .btn:focus,
-.notbar .btn-link:focus {
+.mobile-navbar .btn-link:focus {
   outline: 2px solid rgba(255, 255, 255, 0.8);
   outline-offset: 2px;
 }
