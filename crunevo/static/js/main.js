@@ -864,11 +864,15 @@ document.addEventListener('DOMContentLoaded', () => {
   function setNavbarHeight() {
     const nav = getVisibleNavbar();
     if (nav) {
-      document.documentElement.style.setProperty('--navbar-height', `${nav.offsetHeight}px`);
+      const height = nav.offsetHeight;
+      document.documentElement.style.setProperty('--navbar-height', `${height}px`);
+      document.body.style.paddingTop = `${height}px`;
+      document.documentElement.style.scrollPaddingTop = `${height}px`;
     }
   }
   // Recalculate after rendering and when resources load
   setNavbarHeight();
+
   document.addEventListener('DOMContentLoaded', setNavbarHeight);
   window.addEventListener('load', setNavbarHeight);
   window.addEventListener('resize', setNavbarHeight);
