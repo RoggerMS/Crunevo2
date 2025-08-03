@@ -4,6 +4,12 @@
 
 Se ha realizado una refactorización completa del sistema de navegación para crear una experiencia superior y completamente responsiva en todos los dispositivos.
 
+## Barra de navegación móvil
+
+La barra de navegación móvil proporciona una versión compacta del navbar para pantallas pequeñas.
+Se muestra en dispositivos con un ancho menor a 992px y reemplaza a la antigua navegación inferior.
+Cuando está activa, oculta la barra de escritorio y reutiliza sus enlaces principales en un formato optimizado.
+
 ## 🚀 Características Principales
 
 ### 1. Diseño Completamente Responsivo
