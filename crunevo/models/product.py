@@ -15,6 +15,7 @@ class Product(db.Model):
     credits_only = db.Column(db.Boolean, default=False)
     is_popular = db.Column(db.Boolean, default=False)
     is_new = db.Column(db.Boolean, default=False)
+    is_official = db.Column(db.Boolean, default=False)
     category = db.Column(db.String(50))
     subcategory = db.Column(db.String(50))
     download_url = db.Column(db.String(255))

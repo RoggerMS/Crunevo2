@@ -1083,3 +1083,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Handled `None` values in marketplace filter inputs to prevent invalid numeric field values (hotfix marketplace-filter-none).
 - Fixed seller dashboard 500 by providing required context variables and timestamp alias for messages (hotfix seller-dashboard-context).
 - Guarded seller dashboard template against missing product or sender references to prevent runtime errors (hotfix seller-dashboard-template-guards).
+- Added `is_official` field to `Product` model with default `False` and migration to support official products (PR add-product-is_official).
