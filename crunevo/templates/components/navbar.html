@@ -75,7 +75,7 @@
                 <span class="d-none d-lg-inline">{{ current_user.username }}</span>
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="{{ url_for('auth.profile_by_username', username=current_user.username) }}">
+                <li><a class="dropdown-item" href="{{ url_for('auth.view_profile', username=current_user.username) }}">
                   <i class="bi bi-person me-2"></i>Mi Perfil
                 </a></li>
                 <li><a class="dropdown-item" href="{{ url_for('saved.list_saved') }}">

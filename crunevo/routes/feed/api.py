@@ -27,25 +27,33 @@ def get_post_comments(post_id):
     """Get comments for a post"""
     post = Post.query.get_or_404(post_id)
     comments = post.comments
-    
+
     # Formatear los comentarios para la respuesta JSON
     formatted_comments = []
     for comment in comments:
         formatted_comment = {
-            'id': comment.id,
-            'body': comment.body,
-            'timestamp_text': comment.timestamp.strftime('%d/%m/%Y %H:%M') if comment.timestamp else '',
-            'author': {
-                'username': comment.author.username if comment.author else 'Usuario eliminado',
-                'avatar_url': comment.author.avatar_url if comment.author else url_for('static', filename='img/default.png')
-            }
+            "id": comment.id,
+            "body": comment.body,
+            "timestamp_text": (
+                comment.timestamp.strftime("%d/%m/%Y %H:%M")
+                if comment.timestamp
+                else ""
+            ),
+            "author": {
+                "username": (
+                    comment.author.username if comment.author else "Usuario eliminado"
+                ),
+                "avatar_url": (
+                    comment.author.avatar_url
+                    if comment.author
+                    else url_for("static", filename="img/default.png")
+                ),
+            },
         }
         formatted_comments.append(formatted_comment)
-    
-    return jsonify({
-        'post_id': post_id,
-        'comments': formatted_comments
-    })
+
+    return jsonify({"post_id": post_id, "comments": formatted_comments})
+
 
 @feed_bp.route("/like/<int:post_id>", methods=["POST"])
 @activated_required

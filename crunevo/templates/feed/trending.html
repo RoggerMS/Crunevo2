@@ -658,7 +658,7 @@
                     </div>
                     <div class="item-info">
                       <div class="user-info">
-                        <a href="{{ url_for('auth.profile_by_username', username=q.author.username) }}" class="username">{{ q.author.username }}</a>
+                        <a href="{{ url_for('auth.view_profile', username=q.author.username) }}" class="username">{{ q.author.username }}</a>
                         {% if q.is_solved %}
                         <span class="status-badge badge-solved">Resuelto</span>
                         {% endif %}

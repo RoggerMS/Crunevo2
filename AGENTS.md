@@ -1170,3 +1170,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
   - Categorización de eventos (taller, seminario, feria, conferencia, etc.)
   - Acceso a eventos desde el menú de navegación del panel administrativo
 - Created template `tienda/publish_product.html` for publishing or editing products with form fields and image upload.
+- Replaced `auth.profile_by_username` links with `auth.view_profile` across templates to resolve navbar BuildError (hotfix profile-link).

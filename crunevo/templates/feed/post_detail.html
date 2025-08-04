@@ -12,7 +12,7 @@
       {% set author = post.author %}
       {% if author %}
       <img loading="lazy" src="{{ author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="40" height="40" alt="avatar">
-      <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="me-auto text-decoration-none">
+      <a href="{{ url_for('auth.view_profile', username=author.username) }}" class="me-auto text-decoration-none">
         <strong>{{ author.username }}</strong>
       </a>
       {% else %}
@@ -56,7 +56,7 @@
           <i class="bi bi-share"></i> Compartir
         </button>
         {% if author %}
-        <a href="{{ url_for('auth.profile_by_username', username=author.username) }}" class="btn btn-outline-info btn-sm">Ver perfil</a>
+        <a href="{{ url_for('auth.view_profile', username=author.username) }}" class="btn btn-outline-info btn-sm">Ver perfil</a>
         <a href="{{ url_for('feed.user_posts', user_id=author.id) }}" class="btn btn-outline-primary btn-sm">
           Ver más publicaciones de este usuario
         </a>
@@ -76,7 +76,7 @@
             <img loading="lazy" src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
             <div>
               <div class="small text-muted">
-                <a href="{{ url_for('auth.profile_by_username', username=c.author.username) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                <a href="{{ url_for('auth.view_profile', username=c.author.username) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.timestamp.strftime('%Y-%m-%d %H:%M') }}
               </div>
               <div>{{ c.body }}</div>
             </div>
