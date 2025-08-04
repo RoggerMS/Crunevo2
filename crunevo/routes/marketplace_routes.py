@@ -26,7 +26,7 @@ from crunevo.utils.uploads import save_image
 marketplace_bp = Blueprint("marketplace", __name__, url_prefix="/marketplace")
 
 
-@marketplace_bp.route("/")
+@marketplace_bp.route("/", endpoint="marketplace_index")
 @activated_required
 def marketplace_index():
     """Página principal del marketplace."""

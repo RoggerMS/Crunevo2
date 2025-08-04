@@ -265,8 +265,9 @@
         // Initialize Dropzone for image uploads
         Dropzone.autoDiscover = false;
         
+        {% if 'marketplace.upload_product_image' in url_for.__globals__['current_app'].view_functions %}
         const maxFiles = 5 - {{ product.image_urls|length if product.image_urls else 0 }};
-        
+
         const myDropzone = new Dropzone("#product-images-dropzone", {
             url: "{{ url_for('marketplace.upload_product_image') }}",
             paramName: "file",
@@ -347,6 +348,7 @@
                 });
             }
         });
+        {% endif %}
         
         // Current images selection highlight
         const currentImageContainers = document.querySelectorAll('.current-image-container');

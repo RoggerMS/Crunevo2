@@ -1091,3 +1091,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added error handling and missing context for marketplace seller and message views to prevent 500 errors (hotfix marketplace-route-errors).
 - Registered `timeago` and `date` template filters and imported CSRF macro in marketplace templates to prevent undefined filter errors and ensure proper form protection (hotfix marketplace-filters-csrf).
 - Implemented pagination in seller_products view, passing pagination context and guarding template to avoid undefined errors (hotfix seller-products-pagination).
+- Fixed marketplace messages link to use `marketplace.marketplace_index` and guarded optional image upload routes to avoid BuildError (hotfix marketplace-messages-link).
