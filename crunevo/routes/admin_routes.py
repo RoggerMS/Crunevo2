@@ -38,8 +38,6 @@ from crunevo.models import (
     PrintRequest,
     ProductRequest,
     SystemErrorLog,
-    Event,
-    EventParticipation,
 )
 from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit

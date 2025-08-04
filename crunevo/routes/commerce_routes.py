@@ -6,34 +6,25 @@ from flask import (
     url_for,
     flash,
     request,
-    send_file,
     jsonify,
-    current_app,
 )
 from flask_wtf.csrf import generate_csrf
-import os
 from datetime import datetime, timedelta
 from flask_login import current_user, login_required
-from werkzeug.exceptions import HTTPException
 
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
 from crunevo.models import (
     Product,
-    ProductLog,
     Purchase,
     FavoriteProduct,
     Review,
     Question,
-    Answer,
-    ProductRequest,
     Seller,
     MarketplaceMessage,
     MarketplaceConversation,
 )
-from crunevo.utils.credits import spend_credit
-from crunevo.constants import CreditReasons, AchievementCodes, STORE_CATEGORIES
-from crunevo.utils import unlock_achievement
+from crunevo.constants import STORE_CATEGORIES
 from crunevo.utils.uploads import save_image
 
 commerce_bp = Blueprint("commerce", __name__, url_prefix="/tienda")
@@ -72,7 +63,7 @@ def commerce_index():
 
     # Base query
     query = Product.query
-    
+
     # Filter by product source
     if show_marketplace and show_official:
         # Show both marketplace and official products
@@ -146,22 +137,22 @@ def commerce_index():
         .group_by(Review.product_id)
         .all()
     )
-    
+
     # Get categories
     categories = [cat for group in STORE_CATEGORIES.values() for cat in group]
     categories_dict = STORE_CATEGORIES
-    
+
     # Get user favorites and purchases
     favorites = []
     favorite_ids = []
     purchased_ids = []
-    
+
     if current_user.is_authenticated:
         favorites = FavoriteProduct.query.filter_by(user_id=current_user.id).all()
         favorite_ids = [fav.product_id for fav in favorites]
         purchased = Purchase.query.filter_by(user_id=current_user.id).all()
         purchased_ids = [p.product_id for p in purchased]
-    
+
     # Get featured products and top sellers
     featured_products = Product.query.filter_by(is_featured=True).all()
     top_sellers = (
@@ -177,8 +168,12 @@ def commerce_index():
     category_counts = {}
     for product in products:
         if product.category:
-            category_counts[product.category] = category_counts.get(product.category, 0) + 1
-    categories_with_count = [(cat, category_counts.get(cat, 0)) for cat in set(category_counts.keys())]
+            category_counts[product.category] = (
+                category_counts.get(product.category, 0) + 1
+            )
+    categories_with_count = [
+        (cat, category_counts.get(cat, 0)) for cat in set(category_counts.keys())
+    ]
 
     # For AJAX requests, return only product cards
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
@@ -219,7 +214,7 @@ def commerce_index():
             "envio_gratis": envio_gratis,
             "vendedor_verificado": vendedor_verificado,
             "search": search,
-        }
+        },
     )
 
 
@@ -227,43 +222,53 @@ def commerce_index():
 @activated_required
 def view_product(product_id):
     product = Product.query.filter_by(id=product_id).first_or_404()
-    
+
     # Get related products
     related_products = []
     if product.category:
         related_products = (
             Product.query.filter(
-                Product.category == product.category,
-                Product.id != product.id
+                Product.category == product.category, Product.id != product.id
             )
             .order_by(db.func.random())
             .limit(4)
             .all()
         )
-    
+
     # Get reviews
-    reviews = Review.query.filter_by(product_id=product.id).order_by(Review.created_at.desc()).all()
+    reviews = (
+        Review.query.filter_by(product_id=product.id)
+        .order_by(Review.created_at.desc())
+        .all()
+    )
     avg_rating = 0
     if reviews:
         avg_rating = sum(r.rating for r in reviews) / len(reviews)
-    
+
     # Get questions
-    questions = Question.query.filter_by(product_id=product.id).order_by(Question.created_at.desc()).all()
-    
+    questions = (
+        Question.query.filter_by(product_id=product.id)
+        .order_by(Question.created_at.desc())
+        .all()
+    )
+
     # Check if user has purchased this product
     has_bought = False
     is_favorite = False
     if current_user.is_authenticated:
         has_bought = has_purchased(current_user.id, product.id)
-        is_favorite = FavoriteProduct.query.filter_by(
-            user_id=current_user.id, product_id=product.id
-        ).first() is not None
-    
+        is_favorite = (
+            FavoriteProduct.query.filter_by(
+                user_id=current_user.id, product_id=product.id
+            ).first()
+            is not None
+        )
+
     # Get seller info if it's a marketplace product
     seller = None
     if product.seller_id:
         seller = Seller.query.get(product.seller_id)
-    
+
     return render_template(
         "tienda/producto.html",
         product=product,
@@ -326,6 +331,7 @@ def marketplace_seller_dashboard_redirect():
 
 # Import remaining functions from store_routes.py and marketplace_routes.py
 # and adapt them to the new unified blueprint
+
 
 # Cart functionality
 @commerce_bp.route("/cart/add/<int:product_id>", methods=["POST"])
@@ -541,15 +547,15 @@ def become_seller():
 def seller_dashboard():
     """Panel de control del vendedor."""
     seller = Seller.query.filter_by(user_id=current_user.id).first_or_404()
-    
+
     # Obtener productos del vendedor
     products = Product.query.filter_by(seller_id=seller.id).all()
-    
+
     # Obtener estadísticas de ventas
     sales = Purchase.query.join(Product).filter(Product.seller_id == seller.id).all()
     total_sales = len(sales)
     total_revenue = sum(sale.price_soles * sale.quantity for sale in sales)
-    
+
     # Obtener mensajes no leídos
     unread_messages_count = (
         MarketplaceMessage.query.join(MarketplaceConversation)
@@ -560,7 +566,7 @@ def seller_dashboard():
         )
         .count()
     )
-    
+
     return render_template(
         "tienda/seller_dashboard.html",
         seller=seller,

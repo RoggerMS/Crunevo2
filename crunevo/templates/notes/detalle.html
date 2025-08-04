@@ -33,7 +33,7 @@
         {% endfor %}
       </select>
       {% endif %}
-      <p class="mb-1">por <a href="{{ url_for('auth.profile_by_username', username=note.author.username) }}">{{ note.author.username }}</a></p>
+      <p class="mb-1">por <a href="{{ url_for('auth.view_profile', username=note.author.username) }}">{{ note.author.username }}</a></p>
       {% if note.category %}<p class="mb-1"><span class="badge bg-info text-dark">{{ note.category }}</span></p>{% endif %}
       <div class="mb-2">
         {% for tag in (note.tags or '').split(',') %}
@@ -89,7 +89,7 @@
       <img loading="lazy" src="{{ c.author.avatar_url or url_for('static', filename='img/default.png') }}" class="rounded-circle me-2" width="32" height="32" alt="avatar">
       <div>
         <div class="small text-muted">
-          <a href="{{ url_for('auth.profile_by_username', username=c.author.username) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.created_at.strftime('%Y-%m-%d %H:%M') }}
+          <a href="{{ url_for('auth.view_profile', username=c.author.username) }}" class="text-decoration-none">{{ c.author.username }}</a> • {{ c.created_at.strftime('%Y-%m-%d %H:%M') }}
         </div>
         <div>{{ c.body }}</div>
       </div>
