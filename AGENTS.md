@@ -1093,3 +1093,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Implemented pagination in seller_products view, passing pagination context and guarding template to avoid undefined errors (hotfix seller-products-pagination).
 - Fixed marketplace messages link to use `marketplace.marketplace_index` and guarded optional image upload routes to avoid BuildError (hotfix marketplace-messages-link).
 - Marketplace product detail view now renders `marketplace/view_product.html` with seller info, related products and CSRF macro (PR marketplace-product-detail-template).
+- Fixed seller product editing by including unread message count in edit view and replaced delete links with POST forms and CSRF to enable product removal from seller panel (hotfix seller-product-actions).
