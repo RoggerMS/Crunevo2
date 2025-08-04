@@ -160,7 +160,10 @@
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                <a href="{{ url_for('marketplace.delete_product', product_id=product.id) }}" class="btn btn-danger">Eliminar</a>
+                                                                <form method="post" action="{{ url_for('marketplace.delete_product', product_id=product.id) }}" class="d-inline">
+                                                                    {{ csrf_field() }}
+                                                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                                </form>
                                                             </div>
                                                         </div>
                                                     </div>

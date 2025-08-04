@@ -437,11 +437,17 @@ def edit_product(product_id):
     # Obtener categorías para el formulario
     from crunevo.constants import STORE_CATEGORIES
 
+    # Obtener mensajes no leídos para el sidebar
+    unread_messages_count = MarketplaceMessage.query.filter_by(
+        receiver_id=current_user.id, is_read=False
+    ).count()
+
     return render_template(
         "marketplace/edit_product.html",
         seller=seller,
         product=product,
         categories=STORE_CATEGORIES,
+        unread_messages_count=unread_messages_count,
     )
 
 
