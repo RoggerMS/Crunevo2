@@ -12,5 +12,5 @@ class Referral(db.Model):
     completado = db.Column(db.Boolean, default=False)
     fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
 
-    invitador = db.relationship("User", foreign_keys=[invitador_id])
-    invitado = db.relationship("User", foreign_keys=[invitado_id])
+    invitador = db.relationship("User", foreign_keys=[referrer_id])
+    invitado = db.relationship("User", foreign_keys=[referred_id])

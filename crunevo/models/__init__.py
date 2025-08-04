@@ -50,7 +50,8 @@ from .knowledge_backpack import KnowledgeBackpack  # noqa: F401
 from .knowledge_backpack import LearningEntry  # noqa: F401
 from .seller import Seller  # noqa: F401
 from .product_request import ProductRequest  # noqa: F401
-from .marketplace_message import MarketplaceMessage, MarketplaceConversation  # noqa: F401
+from .marketplace_message import MarketplaceMessage  # noqa: F401
+from .marketplace_message import MarketplaceConversation  # noqa: F401
 from .knowledge_backpack import BackpackAchievement  # noqa: F401
 from .challenges import GhostMentorChallenge  # noqa: F401
 from .challenges import GhostMentorResponse  # noqa: F401
@@ -66,4 +67,3 @@ from .api_key import APIKey  # noqa: F401
 from .system_error_log import SystemErrorLog  # noqa: F401
 
 from .internship import Internship, InternshipApplication  # noqa: F401
-from .product_request import ProductRequest  # noqa: F401
