@@ -1088,3 +1088,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Marketplace now displays a badge for official products and includes them alongside seller listings (PR marketplace-official-badge).
 - Unified `Product` model across store and marketplace: removed duplicate favorite/purchase queries and enforced `is_official` filter in views `store.store_index`, `store.view_product`, `store.redeem_product`, `store.buy_product`, `store.add_to_cart`, `store.view_cart`, `store.checkout`, `store.toggle_favorite` and `marketplace.marketplace_index`.
 - Added unified product route `/producto/<id>` with conditional template and redirects from legacy store and marketplace paths (PR product-view-unify).
+- Added error handling and missing context for marketplace seller and message views to prevent 500 errors (hotfix marketplace-route-errors).
