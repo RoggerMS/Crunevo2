@@ -1,5 +1,17 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import (
+    Blueprint,
+    render_template,
+    redirect,
+    url_for,
+    flash,
+    request,
+    current_app,
+)
 from flask_login import current_user, login_required
+from werkzeug.exceptions import HTTPException
+
+from datetime import datetime
+
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
 from crunevo.models.product import Product
@@ -10,7 +22,6 @@ from crunevo.models.marketplace_message import (
     MarketplaceConversation,
 )
 from crunevo.utils.uploads import save_image
-from datetime import datetime
 
 marketplace_bp = Blueprint("marketplace", __name__, url_prefix="/marketplace")
 
@@ -232,20 +243,32 @@ def seller_dashboard():
 @activated_required
 def seller_products():
     """Gestionar productos del vendedor."""
-    # Verificar si es vendedor
-    seller = Seller.query.filter_by(user_id=current_user.id).first()
-    if not seller:
-        flash("Debes registrarte como vendedor primero", "warning")
-        return redirect(url_for("marketplace.become_seller"))
+    try:
+        # Verificar si es vendedor
+        seller = Seller.query.filter_by(user_id=current_user.id).first()
+        if not seller:
+            flash("Debes registrarte como vendedor primero", "warning")
+            return redirect(url_for("marketplace.become_seller"))
 
-    # Obtener productos del vendedor
-    products = Product.query.filter_by(seller_id=seller.id).all()
+        # Obtener productos del vendedor
+        products = Product.query.filter_by(seller_id=seller.id).all()
 
-    return render_template(
-        "marketplace/seller_products.html",
-        seller=seller,
-        products=products,
-    )
+        unread_messages_count = MarketplaceMessage.query.filter_by(
+            receiver_id=current_user.id, is_read=False
+        ).count()
+
+        return render_template(
+            "marketplace/seller_products.html",
+            seller=seller,
+            products=products,
+            unread_messages_count=unread_messages_count,
+        )
+    except HTTPException:
+        raise
+    except Exception as e:  # pragma: no cover - log unexpected errors
+        db.session.rollback()
+        current_app.logger.exception("Error loading seller products")
+        return f"Error loading seller products: {e}", 500
 
 
 @marketplace_bp.route("/seller/product/add", methods=["GET", "POST"])
@@ -253,76 +276,88 @@ def seller_products():
 @activated_required
 def add_product():
     """Añadir un nuevo producto al marketplace."""
-    # Verificar si es vendedor
-    seller = Seller.query.filter_by(user_id=current_user.id).first()
-    if not seller:
-        flash("Debes registrarte como vendedor primero", "warning")
-        return redirect(url_for("marketplace.become_seller"))
+    try:
+        # Verificar si es vendedor
+        seller = Seller.query.filter_by(user_id=current_user.id).first()
+        if not seller:
+            flash("Debes registrarte como vendedor primero", "warning")
+            return redirect(url_for("marketplace.become_seller"))
 
-    if request.method == "POST":
-        name = request.form.get("name")
-        description = request.form.get("description")
-        price = request.form.get("price")
-        category = request.form.get("category")
-        subcategory = request.form.get("subcategory")
-        stock = request.form.get("stock")
-        condition = request.form.get("condition")
-        shipping_cost = request.form.get("shipping_cost")
-        shipping_time = request.form.get("shipping_time")
-        warranty = request.form.get("warranty")
-        tags = request.form.getlist("tags")
+        if request.method == "POST":
+            name = request.form.get("name")
+            description = request.form.get("description")
+            price = request.form.get("price")
+            category = request.form.get("category")
+            subcategory = request.form.get("subcategory")
+            stock = request.form.get("stock")
+            condition = request.form.get("condition")
+            shipping_cost = request.form.get("shipping_cost")
+            shipping_time = request.form.get("shipping_time")
+            warranty = request.form.get("warranty")
+            tags = request.form.getlist("tags")
 
-        # Validar datos
-        if not name or not description or not price or not category or not stock:
-            flash("Por favor completa todos los campos obligatorios", "danger")
-            return redirect(url_for("marketplace.add_product"))
+            # Validar datos
+            if not name or not description or not price or not category or not stock:
+                flash("Por favor completa todos los campos obligatorios", "danger")
+                return redirect(url_for("marketplace.add_product"))
 
-        # Procesar imágenes
-        image_urls = []
-        if "images" in request.files:
-            images = request.files.getlist("images")
-            for image in images:
-                if image.filename:
-                    image_url = save_image(image, "marketplace/products")
-                    image_urls.append(image_url)
+            # Procesar imágenes
+            image_urls = []
+            if "images" in request.files:
+                images = request.files.getlist("images")
+                for image in images:
+                    if image.filename:
+                        image_url = save_image(image, "marketplace/products")
+                        image_urls.append(image_url)
 
-        # Crear producto
-        new_product = Product(
-            name=name,
-            description=description,
-            price=price,
-            category=category,
-            subcategory=subcategory,
-            stock=stock,
-            condition=condition,
-            shipping_cost=shipping_cost,
-            shipping_time=shipping_time,
-            warranty=warranty,
-            tags=tags,
-            seller_id=seller.id,
-            image_urls=image_urls,
-            is_new=True,  # Marcar como nuevo
-            is_approved=False,  # Requiere aprobación
-            created_at=datetime.utcnow(),
+            # Crear producto
+            new_product = Product(
+                name=name,
+                description=description,
+                price=price,
+                category=category,
+                subcategory=subcategory,
+                stock=stock,
+                condition=condition,
+                shipping_cost=shipping_cost,
+                shipping_time=shipping_time,
+                warranty=warranty,
+                tags=tags,
+                seller_id=seller.id,
+                image_urls=image_urls,
+                is_new=True,  # Marcar como nuevo
+                is_approved=False,  # Requiere aprobación
+                created_at=datetime.utcnow(),
+            )
+
+            db.session.add(new_product)
+            db.session.commit()
+
+            flash(
+                "Producto añadido correctamente. Será revisado antes de publicarse.",
+                "success",
+            )
+            return redirect(url_for("marketplace.seller_products"))
+
+        # Obtener categorías para el formulario
+        from crunevo.constants import STORE_CATEGORIES
+
+        unread_messages_count = MarketplaceMessage.query.filter_by(
+            receiver_id=current_user.id, is_read=False
+        ).count()
+
+        return render_template(
+            "marketplace/add_product.html",
+            seller=seller,
+            categories=STORE_CATEGORIES,
+            unread_messages_count=unread_messages_count,
         )
-
-        db.session.add(new_product)
-        db.session.commit()
-
-        flash(
-            "Producto añadido correctamente. Será revisado antes de publicarse.",
-            "success",
-        )
-        return redirect(url_for("marketplace.seller_products"))
-
-    # Obtener categorías para el formulario
-    from crunevo.constants import STORE_CATEGORIES
-
-    return render_template(
-        "marketplace/add_product.html",
-        seller=seller,
-        categories=STORE_CATEGORIES,
-    )
+    except HTTPException:
+        raise
+    except Exception as e:  # pragma: no cover - log unexpected errors
+        db.session.rollback()
+        current_app.logger.exception("Error adding marketplace product")
+        return f"Error adding product: {e}", 500
 
 
 @marketplace_bp.route("/seller/product/edit/<int:product_id>", methods=["GET", "POST"])
@@ -423,22 +458,58 @@ def delete_product(product_id):
 @activated_required
 def messages():
     """Ver mensajes del marketplace."""
-    # Obtener conversaciones del usuario
-    conversations = (
-        MarketplaceConversation.query.filter(
-            db.or_(
-                MarketplaceConversation.user1_id == current_user.id,
-                MarketplaceConversation.user2_id == current_user.id,
+    try:
+        # Obtener conversaciones del usuario
+        conversations = (
+            MarketplaceConversation.query.filter(
+                db.or_(
+                    MarketplaceConversation.user1_id == current_user.id,
+                    MarketplaceConversation.user2_id == current_user.id,
+                )
             )
+            .order_by(MarketplaceConversation.last_message_at.desc())
+            .all()
         )
-        .order_by(MarketplaceConversation.last_message_at.desc())
-        .all()
-    )
 
-    return render_template(
-        "marketplace/messages.html",
-        conversations=conversations,
-    )
+        # Enriquecer cada conversación con datos usados en la plantilla
+        for conversation in conversations:
+            conversation.other_user = (
+                conversation.user1
+                if conversation.user1_id != current_user.id
+                else conversation.user2
+            )
+            conversation.last_message = (
+                conversation.messages[-1] if conversation.messages else None
+            )
+            conversation.has_unread = any(
+                m.receiver_id == current_user.id and not m.is_read
+                for m in conversation.messages
+            )
+            conversation.product = (
+                Product.query.get(conversation.product_id)
+                if conversation.product_id
+                else None
+            )
+
+        seller = Seller.query.filter_by(user_id=current_user.id).first()
+        unread_messages_count = MarketplaceMessage.query.filter_by(
+            receiver_id=current_user.id, is_read=False
+        ).count()
+
+        return render_template(
+            "marketplace/messages.html",
+            conversations=conversations,
+            current_conversation=None,
+            seller=seller,
+            is_seller=bool(seller),
+            unread_messages_count=unread_messages_count,
+        )
+    except HTTPException:
+        raise
+    except Exception as e:  # pragma: no cover - log unexpected errors
+        db.session.rollback()
+        current_app.logger.exception("Error loading marketplace messages")
+        return f"Error loading messages: {e}", 500
 
 
 @marketplace_bp.route("/messages/<int:conversation_id>")
@@ -610,13 +681,20 @@ def send_message():
 @activated_required
 def view_seller(seller_id):
     """Ver perfil de un vendedor."""
-    seller = Seller.query.get_or_404(seller_id)
+    try:
+        seller = Seller.query.get_or_404(seller_id)
 
-    # Obtener productos del vendedor
-    products = Product.query.filter_by(seller_id=seller_id, is_approved=True).all()
+        # Obtener productos del vendedor
+        products = Product.query.filter_by(seller_id=seller_id, is_approved=True).all()
 
-    return render_template(
-        "marketplace/seller.html",
-        seller=seller,
-        products=products,
-    )
+        return render_template(
+            "marketplace/seller.html",
+            seller=seller,
+            products=products,
+        )
+    except HTTPException:
+        raise
+    except Exception as e:  # pragma: no cover - log unexpected errors
+        db.session.rollback()
+        current_app.logger.exception("Error viewing seller %s", seller_id)
+        return f"Error viewing seller: {e}", 500
