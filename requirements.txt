@@ -44,3 +44,4 @@ Authlib==1.2.1
 bleach==6.1.0
 flask
 PyJWT==2.8.0
+humanize==4.12.3
