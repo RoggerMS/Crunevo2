@@ -78,15 +78,28 @@ def view_product(product_id: int):
             recommended_products=recommended_products,
         )
     # marketplace product
+    has_purchased_flag = (
+        has_purchased(current_user.id, product.id)
+        if current_user.is_authenticated
+        else False
+    )
+    related_products = (
+        Product.query.filter(
+            Product.id != product.id,
+            Product.is_official.is_(False),
+            Product.category == product.category,
+        )
+        .order_by(func.random())
+        .limit(4)
+        .all()
+    )
+    seller = product.seller
     product.views_count = (product.views_count or 0) + 1
     db.session.commit()
     return render_template(
-        "store/view_product.html",
+        "marketplace/view_product.html",
         product=product,
-        is_favorite=False,
-        purchased=False,
-        avg_rating=0,
-        reviews=[],
-        questions=[],
-        recommended_products=[],
+        seller=seller,
+        related_products=related_products,
+        has_purchased=has_purchased_flag,
     )
