@@ -12,7 +12,6 @@ from flask import (
 from flask_login import login_user, logout_user, current_user, login_required
 from crunevo.utils.helpers import activated_required
 from crunevo.utils.audit import record_auth_event
-from urllib.parse import urlparse  # ✅ Corrección aquí
 from crunevo.services.auth_service import (
     authenticate_user,
     requires_two_factor,
@@ -22,25 +21,26 @@ from crunevo.services.auth_service import (
 import os
 import cloudinary.uploader
 from werkzeug.utils import secure_filename
-from crunevo.extensions import db, csrf
+from crunevo.extensions import db
 from crunevo.models import User, Note, TwoFactorToken
 from crunevo.utils import (
     spend_credit,
-    record_login,
     send_notification,
-    add_credit,
-    record_activity,
 )
 from crunevo.constants import CreditReasons
-from crunevo.utils.login_streak import streak_reward
-from datetime import date, datetime, timedelta
-from crunevo.models import DeviceClaim
+from datetime import datetime
 import pyotp
 import secrets
+from sqlalchemy import inspect
 
 IS_ADMIN = os.environ.get("ADMIN_INSTANCE") == "1"
 
 auth_bp = Blueprint("auth", __name__)
+
+
+def _has_2fa_table() -> bool:
+    """Return True if the two_factor_token table exists."""
+    return inspect(db.engine).has_table("two_factor_token")
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -135,7 +135,7 @@ def setup_2fa():
 @activated_required
 def perfil():
     # Redirige a la vista unificada de perfil
-    return redirect(url_for('auth.view_profile', username=current_user.username))
+    return redirect(url_for("auth.view_profile", username=current_user.username))
 
 
 @auth_bp.route("/perfil/<username>", methods=["GET", "POST"])
@@ -145,7 +145,7 @@ def view_profile(username):
     user = User.query.filter_by(username=username).first_or_404()
     is_own_profile = current_user.id == user.id
     tab = request.args.get("tab")
-    
+
     # Procesar actualización de perfil si es el propio usuario
     if is_own_profile and request.method == "POST":
         current_user.about = request.form.get("about")
@@ -169,7 +169,6 @@ def view_profile(username):
         Post,
         ClubMember,
         UserMission,
-        Note,
         PostComment,
         Comment,
         Purchase,
@@ -182,14 +181,10 @@ def view_profile(username):
 
     # Quick counts for profile stats
     user_clubs = [cm.club for cm in ClubMember.query.filter_by(user_id=user.id).all()]
-    completed_missions_count = UserMission.query.filter_by(
-        user_id=user.id
-    ).count()
+    completed_missions_count = UserMission.query.filter_by(user_id=user.id).count()
 
     # Academic level and participation metrics
-    user_level = min(
-        10, (user.points or 0) // 100 + user.verification_level
-    )
+    user_level = min(10, (user.points or 0) // 100 + user.verification_level)
     activity_total = (
         len(user.post_comments or [])
         + len(user.posts or [])
@@ -209,21 +204,27 @@ def view_profile(username):
         recent_activities.append(
             {
                 "timestamp": post.created_at,
-                "description": "Publicaste en el feed" if is_own_profile else f"{user.username} publicó en el feed",
+                "description": (
+                    "Publicaste en el feed"
+                    if is_own_profile
+                    else f"{user.username} publicó en el feed"
+                ),
                 "icon": "pencil-square",
                 "type_color": "primary",
             }
         )
 
     for note in (
-        Note.query.filter_by(user_id=user.id)
-        .order_by(Note.created_at.desc())
-        .limit(5)
+        Note.query.filter_by(user_id=user.id).order_by(Note.created_at.desc()).limit(5)
     ):
         recent_activities.append(
             {
                 "timestamp": note.created_at,
-                "description": f"Subiste un apunte llamado {note.title}" if is_own_profile else f"{user.username} subió un apunte llamado {note.title}",
+                "description": (
+                    f"Subiste un apunte llamado {note.title}"
+                    if is_own_profile
+                    else f"{user.username} subió un apunte llamado {note.title}"
+                ),
                 "icon": "journal-text",
                 "type_color": "success",
             }
@@ -237,7 +238,11 @@ def view_profile(username):
         recent_activities.append(
             {
                 "timestamp": comment.created_at,
-                "description": "Comentaste en un apunte" if is_own_profile else f"{user.username} comentó en un apunte",
+                "description": (
+                    "Comentaste en un apunte"
+                    if is_own_profile
+                    else f"{user.username} comentó en un apunte"
+                ),
                 "icon": "chat-left-text",
                 "type_color": "info",
             }
@@ -251,7 +256,11 @@ def view_profile(username):
         recent_activities.append(
             {
                 "timestamp": pcom.timestamp,
-                "description": "Comentaste en una publicación" if is_own_profile else f"{user.username} comentó en una publicación",
+                "description": (
+                    "Comentaste en una publicación"
+                    if is_own_profile
+                    else f"{user.username} comentó en una publicación"
+                ),
                 "icon": "chat-left-text",
                 "type_color": "info",
             }
@@ -263,9 +272,17 @@ def view_profile(username):
         .limit(5)
     ):
         if um.mission:
-            desc = f"Completaste la misión {um.mission.description}" if is_own_profile else f"{user.username} completó la misión {um.mission.description}"
+            desc = (
+                f"Completaste la misión {um.mission.description}"
+                if is_own_profile
+                else f"{user.username} completó la misión {um.mission.description}"
+            )
         else:
-            desc = "Completaste una misión" if is_own_profile else f"{user.username} completó una misión"
+            desc = (
+                "Completaste una misión"
+                if is_own_profile
+                else f"{user.username} completó una misión"
+            )
         recent_activities.append(
             {
                 "timestamp": um.completed_at,
@@ -309,7 +326,7 @@ def view_profile(username):
     enlace_referido = None
     creditos_referidos = 0
     purchases = None
-    
+
     # Solo cargar datos específicos de pestañas si es el propio perfil
     if is_own_profile:
         if tab == "misiones":
@@ -358,7 +375,9 @@ def view_profile(username):
 
     # Determinar qué plantilla usar
     if tab == "apuntes":
-        notes = Note.query.filter_by(user_id=user.id).order_by(Note.created_at.desc()).all()
+        notes = (
+            Note.query.filter_by(user_id=user.id).order_by(Note.created_at.desc()).all()
+        )
         return render_template("perfil_notas.html", user=user, notes=notes)
     elif not is_own_profile:
         return render_template("perfil_publico.html", user=user)
@@ -439,14 +458,14 @@ def update_banner():
 @activated_required
 def public_profile(user_id):
     user = User.query.get_or_404(user_id)
-    return redirect(url_for('auth.view_profile', username=user.username))
+    return redirect(url_for("auth.view_profile", username=user.username))
 
 
 @auth_bp.route("/perfil/<username>/apuntes")
 @activated_required
 def notes_by_username(username: str):
     """Display all notes from a user by username."""
-    return redirect(url_for('auth.view_profile', username=username, tab='apuntes'))
+    return redirect(url_for("auth.view_profile", username=username, tab="apuntes"))
 
 
 @auth_bp.route("/agradecer/<int:user_id>", methods=["POST"])

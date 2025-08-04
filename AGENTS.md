@@ -18,6 +18,7 @@
   `csrf_field()` immediately after the `<form>` tag.
 - Nunca hacer CREATE TYPE sin comprobar si el tipo ya existe; usa IF NOT EXISTS o checkfirst=True.
 - Dependabot PRs should only be merged after CI passes (`make test`) and prefer squash merges.
+- Se corrigió `Referral` para usar `referrer_id` y `referred_id` en las relaciones y evitar errores de nombre.
 - Se corrigió la barra de navegación fija añadiendo padding global y mejorando el menú móvil (PR navbar fixes).
 - Se ajustó el padding global mediante CSS en el body y se agregó z-index al navbar para evitar que tape el contenido.
 - Se mejoró el cierre del menú móvil y se fijó la altura del navbar (PR navbar fixes 2).
