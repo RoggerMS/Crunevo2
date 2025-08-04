@@ -20,7 +20,7 @@
       <div class="d-flex align-items-center mb-4">
         <i class="bi bi-gear-fill fs-2 me-2"></i>
         <h2 class="mb-0 flex-grow-1">Configuración</h2>
-        <a href="{{ url_for('auth.perfil') }}" class="btn btn-outline-secondary">Volver al perfil</a>
+        <a href="{{ url_for('auth.view_profile', username=current_user.username) }}" class="btn btn-outline-secondary">Volver al perfil</a>
       </div>
       {% include 'configuracion/personal.html' %}
       {% include 'configuracion/cuenta.html' %}

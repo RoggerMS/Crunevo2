@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+{% include "csrf.html" %}
+
+{% block title %}Publicar Producto - Tienda Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
+<style>
+    .image-preview {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+    }
+    .image-preview-container {
+        position: relative;
+        display: inline-block;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+    .remove-image {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background-color: #dc3545;
+        color: white;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        text-align: center;
+        line-height: 25px;
+        cursor: pointer;
+    }
+    .add-image-btn {
+        width: 150px;
+        height: 150px;
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background-color: #f8f9fa;
+    }
+    .add-image-btn:hover {
+        background-color: #e9ecef;
+    }
+    .add-image-icon {
+        font-size: 2rem;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h3 mb-4">{{ 'Editar' if product else 'Publicar' }} Producto</h1>
+                    
+                    <form action="{{ url_for('commerce.edit_product', product_id=product.id) if product else url_for('commerce.publish_product') }}" method="post" enctype="multipart/form-data" id="product-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Nombre del producto *</label>
+                                    <input type="text" class="form-control" id="name" name="name" value="{{ product.name if product else '' }}" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">Categoría *</label>
+                                    <select class="form-select" id="category" name="category" required>
+                                        <option value="" selected disabled>Selecciona una categoría</option>
+                                        {% for category in categories %}
+                                        <option value="{{ category.id }}" {% if product and product.category_id == category.id %}selected{% endif %}>{{ category.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="subcategory" class="form-label">Subcategoría</label>
+                                    <select class="form-select" id="subcategory" name="subcategory">
+                                        <option value="" selected disabled>Selecciona primero una categoría</option>
+                                        {% if product and product.subcategory_id %}
+                                        <option value="{{ product.subcategory_id }}" selected>{{ product.subcategory_name }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="condition" class="form-label">Condición *</label>
+                                    <select class="form-select" id="condition" name="condition" required>
+                                        <option value="new" {% if product and product.condition == 'new' %}selected{% endif %}>Nuevo</option>
+                                        <option value="used" {% if product and product.condition == 'used' %}selected{% endif %}>Usado</option>
+                                        <option value="refurbished" {% if product and product.condition == 'refurbished' %}selected{% endif %}>Reacondicionado</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="price" class="form-label">Precio (S/) *</label>
+                                    <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" value="{{ product.price if product else '' }}" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="stock" class="form-label">Cantidad disponible *</label>
+                                    <input type="number" class="form-control" id="stock" name="stock" min="1" value="{{ product.stock if product else '1' }}" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="shipping_price" class="form-label">Costo de envío (S/)</label>
+                                    <input type="number" class="form-control" id="shipping_price" name="shipping_price" min="0" step="0.01" value="{{ product.shipping_price if product else '0' }}">
+                                    <div class="form-text">Deja en 0 para envío gratis</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_featured" name="is_featured" {% if product and product.is_featured %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_featured">
+                                            Destacar producto (mayor visibilidad)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Imágenes del producto</label>
+                            <div class="d-flex flex-wrap align-items-start" id="image-preview-container">
+                                {% if product and product.images %}
+                                {% for image in product.images %}
+                                <div class="image-preview-container">
+                                    <img src="{{ image.url }}" alt="Preview" class="image-preview">
+                                    <div class="remove-image" data-image-id="{{ image.id }}">×</div>
+                                    <input type="hidden" name="existing_images[]" value="{{ image.id }}">
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                                
+                                <div class="add-image-btn" id="add-image-btn">
+                                    <i class="bi bi-plus-lg add-image-icon"></i>
+                                </div>
+                                <input type="file" id="product-images" name="images[]" accept="image/*" multiple style="display: none;">
+                            </div>
+                            <div class="form-text">Puedes subir hasta 5 imágenes. La primera imagen será la principal.</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="description" class="form-label">Descripción *</label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required>{{ product.description if product else '' }}</textarea>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="details" class="form-label">Detalles adicionales</label>
+                            <textarea class="form-control" id="details" name="details" rows="3">{{ product.details if product else '' }}</textarea>
+                            <div class="form-text">Especificaciones técnicas, dimensiones, materiales, etc.</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Opciones de envío disponibles</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="pickup_available" name="pickup_available" {% if not product or product.pickup_available %}checked{% endif %}>
+                                <label class="form-check-label" for="pickup_available">
+                                    Recojo en persona
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="local_delivery" name="local_delivery" {% if product and product.local_delivery %}checked{% endif %}>
+                                <label class="form-check-label" for="local_delivery">
+                                    Entrega local
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="shipping_available" name="shipping_available" {% if product and product.shipping_available %}checked{% endif %}>
+                                <label class="form-check-label" for="shipping_available">
+                                    Envío nacional
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('commerce.seller_dashboard') }}" class="btn btn-outline-secondary me-md-2">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">{{ 'Guardar cambios' if product else 'Publicar producto' }}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Manejo de imágenes
+        const addImageBtn = document.getElementById('add-image-btn');
+        const fileInput = document.getElementById('product-images');
+        const previewContainer = document.getElementById('image-preview-container');
+        
+        // Abrir selector de archivos al hacer clic en el botón de añadir imagen
+        addImageBtn.addEventListener('click', function() {
+            fileInput.click();
+        });
+        
+        // Mostrar vista previa de las imágenes seleccionadas
+        fileInput.addEventListener('change', function() {
+            const files = this.files;
+            
+            // Verificar el número máximo de imágenes (5 en total, incluyendo las existentes)
+            const existingImages = document.querySelectorAll('.image-preview-container:not(:last-child)');
+            if (existingImages.length + files.length > 5) {
+                alert('Solo puedes subir un máximo de 5 imágenes.');
+                return;
+            }
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const previewContainer = document.createElement('div');
+                    previewContainer.className = 'image-preview-container';
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'image-preview';
+                    img.alt = 'Preview';
+                    
+                    const removeBtn = document.createElement('div');
+                    removeBtn.className = 'remove-image';
+                    removeBtn.innerHTML = '×';
+                    removeBtn.addEventListener('click', function() {
+                        previewContainer.remove();
+                    });
+                    
+                    previewContainer.appendChild(img);
+                    previewContainer.appendChild(removeBtn);
+                    
+                    // Insertar antes del botón de añadir
+                    document.getElementById('image-preview-container').insertBefore(previewContainer, addImageBtn);
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Eliminar imágenes existentes
+        document.querySelectorAll('.remove-image').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const container = this.parentElement;
+                container.remove();
+                
+                // Si hay un ID de imagen, añadir a la lista de imágenes a eliminar
+                const imageId = this.getAttribute('data-image-id');
+                if (imageId) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'remove_images[]';
+                    input.value = imageId;
+                    document.getElementById('product-form').appendChild(input);
+                }
+            });
+        });
+        
+        // Cargar subcategorías cuando se selecciona una categoría
+        const categorySelect = document.getElementById('category');
+        const subcategorySelect = document.getElementById('subcategory');
+        
+        categorySelect.addEventListener('change', function() {
+            const categoryId = this.value;
+            
+            // Limpiar opciones actuales
+            subcategorySelect.innerHTML = '<option value="" selected disabled>Cargando subcategorías...</option>';
+            
+            // Obtener subcategorías mediante AJAX
+            fetch(`/api/subcategories/${categoryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    subcategorySelect.innerHTML = '<option value="" selected disabled>Selecciona una subcategoría</option>';
+                    
+                    if (data.subcategories && data.subcategories.length > 0) {
+                        data.subcategories.forEach(subcategory => {
+                            const option = document.createElement('option');
+                            option.value = subcategory.id;
+                            option.textContent = subcategory.name;
+                            subcategorySelect.appendChild(option);
+                        });
+                    } else {
+                        subcategorySelect.innerHTML = '<option value="" selected disabled>No hay subcategorías disponibles</option>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar subcategorías:', error);
+                    subcategorySelect.innerHTML = '<option value="" selected disabled>Error al cargar subcategorías</option>';
+                });
+        });
+    });
+</script>
+{% endblock %}

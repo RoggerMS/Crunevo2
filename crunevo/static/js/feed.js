@@ -346,6 +346,97 @@ class ModernFeedManager {
         }
       }
     });
+    
+    // Copy link button in dropdown menu
+    document.addEventListener('click', (e) => {
+      if (e.target.matches('.copy-link-btn') || e.target.closest('.copy-link-btn')) {
+        e.preventDefault();
+        const btn = e.target.closest('.copy-link-btn');
+        const postId = btn.dataset.postId;
+        if (postId) {
+          const shareUrl = `${window.location.origin}/feed/post/${postId}`;
+          this.copyToClipboard(shareUrl);
+          this.showToast('¡Enlace copiado!', 'success');
+          // Cerrar el dropdown después de copiar
+          const dropdown = btn.closest('.dropdown-menu');
+          if (dropdown) {
+            bootstrap.Dropdown.getInstance(dropdown)?.hide();
+          }
+        }
+      }
+    });
+    
+    // Save post button in dropdown menu
+    document.addEventListener('click', (e) => {
+      if (e.target.matches('.save-post-btn') || e.target.closest('.save-post-btn')) {
+        e.preventDefault();
+        const btn = e.target.closest('.save-post-btn');
+        const postId = btn.dataset.postId;
+        if (postId) {
+          // Actualizar el estado visual inmediatamente (optimista)
+          const isSaved = btn.classList.contains('active');
+          btn.classList.toggle('active');
+          const icon = btn.querySelector('i');
+          if (icon) {
+            icon.classList.toggle('bi-bookmark', isSaved);
+            icon.classList.toggle('bi-bookmark-fill', !isSaved);
+          }
+          btn.textContent = isSaved ? ' Guardar publicación' : ' Guardado';
+          btn.prepend(icon); // Volver a añadir el icono al principio
+          
+          // También actualizar el botón de guardar en la tarjeta de publicación si existe
+          const saveBtn = document.querySelector(`.save-btn[data-post-id="${postId}"]`);
+          if (saveBtn) {
+            saveBtn.classList.toggle('active', !isSaved);
+            const saveBtnIcon = saveBtn.querySelector('i');
+            if (saveBtnIcon) {
+              saveBtnIcon.classList.toggle('bi-bookmark', isSaved);
+              saveBtnIcon.classList.toggle('bi-bookmark-fill', !isSaved);
+            }
+          }
+          
+          // Enviar la solicitud al servidor
+          this.fetchWithCSRF(`/feed/save/${postId}`, {
+            method: 'POST'
+          })
+          .then(response => response.json())
+          .then(data => {
+            this.showToast(
+              data.saved ? 'Publicación guardada' : 'Publicación removida de guardados',
+              data.saved ? 'success' : 'info'
+            );
+          })
+          .catch(error => {
+            console.error('Error al guardar/remover publicación:', error);
+            // Revertir cambios visuales en caso de error
+            btn.classList.toggle('active');
+            if (icon) {
+              icon.classList.toggle('bi-bookmark', !isSaved);
+              icon.classList.toggle('bi-bookmark-fill', isSaved);
+            }
+            btn.textContent = !isSaved ? ' Guardar publicación' : ' Guardado';
+            btn.prepend(icon);
+            
+            if (saveBtn) {
+              saveBtn.classList.toggle('active', isSaved);
+              const saveBtnIcon = saveBtn.querySelector('i');
+              if (saveBtnIcon) {
+                saveBtnIcon.classList.toggle('bi-bookmark', !isSaved);
+                saveBtnIcon.classList.toggle('bi-bookmark-fill', isSaved);
+              }
+            }
+            
+            this.showToast('Error al procesar la solicitud', 'error');
+          });
+          
+          // Cerrar el dropdown después de guardar
+          const dropdown = btn.closest('.dropdown-menu');
+          if (dropdown) {
+            bootstrap.Dropdown.getInstance(dropdown)?.hide();
+          }
+        }
+      }
+    });
 
     // Reaction buttons
     document.addEventListener('click', (e) => {
@@ -420,6 +511,21 @@ class ModernFeedManager {
     document.addEventListener('click', async (e) => {
       const target = e.target.closest('.post-reactions-count');
       if (!target) return;
+      
+      // Check if the click was specifically on the comments count
+      const commentsCount = e.target.closest('.comments-count');
+      if (commentsCount) {
+        const postId = target.dataset.postId;
+        if (postId) {
+          // Open comments modal
+          if (typeof openCommentsModal === 'function') {
+            openCommentsModal(postId);
+          }
+        }
+        return;
+      }
+      
+      // Handle reactions count click (original functionality)
       const postId = target.dataset.postId;
       if (!postId) return;
 
@@ -450,6 +556,24 @@ class ModernFeedManager {
 
       const modal = new bootstrap.Modal(modalEl);
       modal.show();
+    });
+    
+    // Direct click on comments count (outside of post-reactions-count)
+    document.addEventListener('click', (e) => {
+      const commentsCount = e.target.closest('.comments-count');
+      if (!commentsCount) return;
+      
+      // If we're not inside a post-reactions-count, we need to get the postId differently
+      const postCard = commentsCount.closest('.post-card');
+      if (!postCard) return;
+      
+      const postId = postCard.dataset.postId;
+      if (!postId) return;
+      
+      // Open comments modal
+      if (typeof openCommentsModal === 'function') {
+        openCommentsModal(postId);
+      }
     });
   }
 
@@ -554,6 +678,55 @@ class ModernFeedManager {
       this.copyToClipboard(shareUrl);
       this.showToast('¡Enlace copiado!', 'success');
     }
+  }
+  
+  // Utility to copy text to clipboard
+  copyToClipboard(text) {
+    // Usar la API moderna del portapapeles si está disponible
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).catch(err => {
+        console.error('Error al copiar al portapapeles:', err);
+        this.fallbackCopyToClipboard(text);
+      });
+    } else {
+      // Fallback para contextos no seguros o navegadores antiguos
+      this.fallbackCopyToClipboard(text);
+    }
+  }
+  
+  // Método alternativo para copiar al portapapeles
+  fallbackCopyToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    
+    // Hacer que el textarea esté fuera de la pantalla
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    
+    // Preservar la posición de desplazamiento original
+    const scrollPos = {
+      top: window.pageYOffset || document.documentElement.scrollTop,
+      left: window.pageXOffset || document.documentElement.scrollLeft
+    };
+    
+    textArea.focus();
+    textArea.select();
+    
+    let success = false;
+    try {
+      success = document.execCommand('copy');
+    } catch (err) {
+      console.error('Error al ejecutar comando de copia:', err);
+    }
+    
+    document.body.removeChild(textArea);
+    
+    // Restaurar la posición de desplazamiento original
+    window.scrollTo(scrollPos.left, scrollPos.top);
+    
+    return success;
   }
 
   // Handle save button

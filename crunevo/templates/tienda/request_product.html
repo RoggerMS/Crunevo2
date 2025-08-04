@@ -1,0 +1,394 @@
+{% extends "base.html" %}
+{% include "csrf.html" %}
+
+{% block title %}Solicitar producto - Tienda Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h3 mb-4">Solicitar un producto</h1>
+                    <p class="text-muted mb-4">¿No encuentras lo que buscas? Completa este formulario para solicitar un producto específico y nos pondremos en contacto contigo.</p>
+                    
+                    <form action="{{ url_for('commerce.request_product') }}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        
+                        <div class="mb-3">
+                            <label for="product_name" class="form-label">Nombre del producto *</label>
+                            <input type="text" class="form-control" id="product_name" name="product_name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="product_description" class="form-label">Descripción detallada *</label>
+                            <textarea class="form-control" id="product_description" name="product_description" rows="4" required placeholder="Describe el producto que necesitas con el mayor detalle posible"></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="product_category" class="form-label">Categoría *</label>
+                                <select class="form-select" id="product_category" name="product_category" required>
+                                    <option value="" selected disabled>Selecciona una categoría</option>
+                                    {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="product_subcategory" class="form-label">Subcategoría</label>
+                                <select class="form-select" id="product_subcategory" name="product_subcategory" disabled>
+                                    <option value="" selected disabled>Primero selecciona una categoría</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="product_image" class="form-label">Imagen de referencia (opcional)</label>
+                            <input type="file" class="form-control" id="product_image" name="product_image" accept="image/*">
+                            <div class="form-text">Sube una imagen que nos ayude a identificar el producto que buscas.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="product_url" class="form-label">URL de referencia (opcional)</label>
+                            <input type="url" class="form-control" id="product_url" name="product_url" placeholder="https://ejemplo.com/producto">
+                            <div class="form-text">Si has visto el producto en otra tienda, comparte el enlace.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="budget" class="form-label">Presupuesto aproximado (S/)</label>
+                            <input type="number" class="form-control" id="budget" name="budget" min="0" step="0.01">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="urgency" class="form-label">Nivel de urgencia</label>
+                            <select class="form-select" id="urgency" name="urgency">
+                                <option value="low">Baja - No tengo prisa</option>
+                                <option value="medium" selected>Media - Lo necesito en las próximas semanas</option>
+                                <option value="high">Alta - Lo necesito lo antes posible</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="additional_notes" class="form-label">Notas adicionales</label>
+                            <textarea class="form-control" id="additional_notes" name="additional_notes" rows="3" placeholder="Cualquier información adicional que nos ayude a encontrar el producto"></textarea>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="notify_similar" name="notify_similar" checked>
+                            <label class="form-check-label" for="notify_similar">Notificarme si encuentran productos similares</label>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('commerce.commerce_index') }}" class="btn btn-outline-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">Mis solicitudes anteriores</h5>
+                    
+                    {% if user_requests %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in user_requests %}
+                                <tr>
+                                    <td>{{ request.product_name }}</td>
+                                    <td>{{ request.created_at|date }}</td>
+                                    <td>
+                                        <span class="badge {% if request.status == 'pending' %}bg-warning{% elif request.status == 'processing' %}bg-info{% elif request.status == 'completed' %}bg-success{% elif request.status == 'rejected' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                            {% if request.status == 'pending' %}
+                                                Pendiente
+                                            {% elif request.status == 'processing' %}
+                                                En proceso
+                                            {% elif request.status == 'completed' %}
+                                                Completado
+                                            {% elif request.status == 'rejected' %}
+                                                Rechazado
+                                            {% else %}
+                                                {{ request.status }}
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#requestDetailsModal" data-request-id="{{ request.id }}">Ver detalles</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No has realizado solicitudes de productos anteriormente.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver detalles de solicitud -->
+<div class="modal fade" id="requestDetailsModal" tabindex="-1" aria-labelledby="requestDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="requestDetailsModalLabel">Detalles de la solicitud</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center py-4" id="request-loading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2">Cargando detalles...</p>
+                </div>
+                
+                <div id="request-details" style="display: none;">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h5 id="request-product-name"></h5>
+                            <p class="text-muted" id="request-date"></p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <span class="badge" id="request-status-badge"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <h6>Descripción</h6>
+                                <p id="request-description"></p>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <h6>Categoría</h6>
+                                    <p id="request-category"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Subcategoría</h6>
+                                    <p id="request-subcategory"></p>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <h6>Presupuesto</h6>
+                                    <p id="request-budget"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Urgencia</h6>
+                                    <p id="request-urgency"></p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <h6>URL de referencia</h6>
+                                <p id="request-url"></p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <h6>Notas adicionales</h6>
+                                <p id="request-notes"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <h6>Imagen de referencia</h6>
+                                <div id="request-image-container">
+                                    <img id="request-image" class="img-fluid rounded" alt="Imagen de referencia">
+                                    <p id="request-no-image" class="text-muted">No se proporcionó imagen</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3" id="request-response-container">
+                                <h6>Respuesta</h6>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <p id="request-response"></p>
+                                        <p class="text-muted small" id="request-response-date"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Manejar cambio de categoría para cargar subcategorías
+        const categorySelect = document.getElementById('product_category');
+        const subcategorySelect = document.getElementById('product_subcategory');
+        
+        if (categorySelect && subcategorySelect) {
+            categorySelect.addEventListener('change', function() {
+                const categoryId = this.value;
+                
+                if (categoryId) {
+                    // Habilitar el select de subcategoría
+                    subcategorySelect.disabled = false;
+                    subcategorySelect.innerHTML = '<option value="" selected disabled>Cargando subcategorías...</option>';
+                    
+                    // Cargar subcategorías mediante AJAX
+                    fetch(`/commerce/get-subcategories/${categoryId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            subcategorySelect.innerHTML = '<option value="" selected disabled>Selecciona una subcategoría</option>';
+                            
+                            if (data.subcategories && data.subcategories.length > 0) {
+                                data.subcategories.forEach(subcategory => {
+                                    const option = document.createElement('option');
+                                    option.value = subcategory.id;
+                                    option.textContent = subcategory.name;
+                                    subcategorySelect.appendChild(option);
+                                });
+                            } else {
+                                subcategorySelect.innerHTML = '<option value="" selected disabled>No hay subcategorías disponibles</option>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            subcategorySelect.innerHTML = '<option value="" selected disabled>Error al cargar subcategorías</option>';
+                        });
+                } else {
+                    // Deshabilitar el select de subcategoría
+                    subcategorySelect.disabled = true;
+                    subcategorySelect.innerHTML = '<option value="" selected disabled>Primero selecciona una categoría</option>';
+                }
+            });
+        }
+        
+        // Manejar modal de detalles de solicitud
+        const requestDetailsModal = document.getElementById('requestDetailsModal');
+        if (requestDetailsModal) {
+            requestDetailsModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const requestId = button.getAttribute('data-request-id');
+                
+                // Mostrar cargando y ocultar detalles
+                document.getElementById('request-loading').style.display = 'block';
+                document.getElementById('request-details').style.display = 'none';
+                
+                // Cargar detalles de la solicitud mediante AJAX
+                fetch(`/commerce/request-details/${requestId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const request = data.request;
+                            
+                            // Llenar datos en el modal
+                            document.getElementById('request-product-name').textContent = request.product_name;
+                            document.getElementById('request-date').textContent = `Solicitado el ${request.created_at}`;
+                            
+                            // Estado
+                            const statusBadge = document.getElementById('request-status-badge');
+                            statusBadge.textContent = request.status_display;
+                            statusBadge.className = 'badge';
+                            if (request.status === 'pending') {
+                                statusBadge.classList.add('bg-warning');
+                            } else if (request.status === 'processing') {
+                                statusBadge.classList.add('bg-info');
+                            } else if (request.status === 'completed') {
+                                statusBadge.classList.add('bg-success');
+                            } else if (request.status === 'rejected') {
+                                statusBadge.classList.add('bg-danger');
+                            } else {
+                                statusBadge.classList.add('bg-secondary');
+                            }
+                            
+                            // Descripción y detalles
+                            document.getElementById('request-description').textContent = request.product_description;
+                            document.getElementById('request-category').textContent = request.category_name || 'No especificada';
+                            document.getElementById('request-subcategory').textContent = request.subcategory_name || 'No especificada';
+                            document.getElementById('request-budget').textContent = request.budget ? `S/ ${request.budget}` : 'No especificado';
+                            
+                            // Urgencia
+                            let urgencyText = 'No especificada';
+                            if (request.urgency === 'low') {
+                                urgencyText = 'Baja';
+                            } else if (request.urgency === 'medium') {
+                                urgencyText = 'Media';
+                            } else if (request.urgency === 'high') {
+                                urgencyText = 'Alta';
+                            }
+                            document.getElementById('request-urgency').textContent = urgencyText;
+                            
+                            // URL y notas
+                            if (request.product_url) {
+                                document.getElementById('request-url').innerHTML = `<a href="${request.product_url}" target="_blank">${request.product_url}</a>`;
+                            } else {
+                                document.getElementById('request-url').textContent = 'No proporcionada';
+                            }
+                            document.getElementById('request-notes').textContent = request.additional_notes || 'No hay notas adicionales';
+                            
+                            // Imagen
+                            const imageContainer = document.getElementById('request-image-container');
+                            const image = document.getElementById('request-image');
+                            const noImage = document.getElementById('request-no-image');
+                            
+                            if (request.image_url) {
+                                image.src = request.image_url;
+                                image.style.display = 'block';
+                                noImage.style.display = 'none';
+                            } else {
+                                image.style.display = 'none';
+                                noImage.style.display = 'block';
+                            }
+                            
+                            // Respuesta
+                            const responseContainer = document.getElementById('request-response-container');
+                            const response = document.getElementById('request-response');
+                            const responseDate = document.getElementById('request-response-date');
+                            
+                            if (request.admin_response) {
+                                response.textContent = request.admin_response;
+                                responseDate.textContent = `Respondido el ${request.response_date}`;
+                                responseContainer.style.display = 'block';
+                            } else {
+                                responseContainer.style.display = 'none';
+                            }
+                            
+                            // Ocultar cargando y mostrar detalles
+                            document.getElementById('request-loading').style.display = 'none';
+                            document.getElementById('request-details').style.display = 'block';
+                        } else {
+                            alert('No se pudieron cargar los detalles de la solicitud.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error al cargar los detalles de la solicitud.');
+                    });
+            });
+        }
+    });
+</script>
+{% endblock %}

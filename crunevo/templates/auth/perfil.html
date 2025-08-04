@@ -84,9 +84,9 @@
               {% if is_own_profile %}
               <div class="col-auto">
                 <div class="btn-group-vertical">
-                  <button class="btn btn-outline-primary btn-sm">
+                  <a href="{{ url_for('auth.view_profile', username=user.username) }}" class="btn btn-outline-primary btn-sm">
                     <i class="bi bi-eye"></i> Ver como Público
-                  </button>
+                  </a>
                 </div>
             </div>
             {% endif %}
@@ -123,32 +123,32 @@
         <div class="card-body p-0">
           <nav class="nav nav-pills nav-fill">
             <a class="nav-link {% if not tab %}active{% endif %}"
-               href="{{ url_for('auth.perfil') }}">
+               href="{{ url_for('auth.view_profile', username=user.username) }}">
               <i class="bi bi-house"></i> Resumen
             </a>
             <a class="nav-link {% if tab == 'apuntes' %}active{% endif %}"
-               href="{{ url_for('auth.perfil', tab='apuntes') }}">
+               href="{{ url_for('auth.view_profile', username=user.username, tab='apuntes') }}">
               <i class="bi bi-journal-text"></i> Apuntes
             </a>
             <a class="nav-link {% if tab == 'clubes' %}active{% endif %}"
-               href="{{ url_for('auth.perfil', tab='clubes') }}">
+               href="{{ url_for('auth.view_profile', username=user.username, tab='clubes') }}">
               <i class="bi bi-people"></i> Clubes
             </a>
             <a class="nav-link {% if tab == 'misiones' %}active{% endif %}"
-               href="{{ url_for('auth.perfil', tab='misiones') }}">
+               href="{{ url_for('auth.view_profile', username=user.username, tab='misiones') }}">
               <i class="bi bi-trophy"></i> Misiones
             </a>
             <a class="nav-link {% if tab == 'compras' %}active{% endif %}"
-               href="{{ url_for('auth.perfil', tab='compras') }}">
+               href="{{ url_for('auth.view_profile', username=user.username, tab='compras') }}">
               <i class="bi bi-receipt"></i> Compras
             </a>
             <a class="nav-link {% if tab == 'logros' %}active{% endif %}"
-               href="{{ url_for('auth.perfil', tab='logros') }}">
+               href="{{ url_for('auth.view_profile', username=user.username, tab='logros') }}">
               <i class="bi bi-award"></i> Logros
             </a>
             {% if is_own_profile %}
             <a class="nav-link {% if tab == 'referidos' %}active{% endif %}"
-               href="{{ url_for('auth.perfil', tab='referidos') }}">
+               href="{{ url_for('auth.view_profile', username=user.username, tab='referidos') }}">
               <i class="bi bi-person-plus"></i> Referidos
             </a>
             {% endif %}

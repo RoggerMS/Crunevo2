@@ -1,0 +1,434 @@
+{% extends "base.html" %}
+
+{% block title %}Mis solicitudes de productos - Tienda Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Mis solicitudes de productos</h1>
+                <a href="{{ url_for('commerce.request_product') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i> Nueva solicitud
+                </a>
+            </div>
+            
+            {% if requests %}
+            <!-- Filtros y búsqueda -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="search-requests" placeholder="Buscar solicitudes...">
+                                <button class="btn btn-outline-secondary" type="button">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Filtrar por estado
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item active" href="#">Todos</a></li>
+                                    <li><a class="dropdown-item" href="#">Pendientes</a></li>
+                                    <li><a class="dropdown-item" href="#">En proceso</a></li>
+                                    <li><a class="dropdown-item" href="#">Completados</a></li>
+                                    <li><a class="dropdown-item" href="#">Rechazados</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lista de solicitudes -->
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3">Producto</th>
+                                    <th>Categoría</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th class="text-end pe-3">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in requests %}
+                                <tr class="request-row">
+                                    <td class="ps-3">
+                                        <div class="d-flex align-items-center">
+                                            {% if request.image_url %}
+                                            <div class="me-3">
+                                                <img src="{{ request.image_url }}" class="rounded" style="width: 40px; height: 40px; object-fit: cover;" alt="">
+                                            </div>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ request.product_name }}</h6>
+                                                <small class="text-muted">{{ request.product_description|truncate(50) }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ request.category_name or 'No especificada' }}</td>
+                                    <td>{{ request.created_at|date }}</td>
+                                    <td>
+                                        <span class="badge {% if request.status == 'pending' %}bg-warning{% elif request.status == 'processing' %}bg-info{% elif request.status == 'completed' %}bg-success{% elif request.status == 'rejected' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                            {% if request.status == 'pending' %}
+                                                Pendiente
+                                            {% elif request.status == 'processing' %}
+                                                En proceso
+                                            {% elif request.status == 'completed' %}
+                                                Completado
+                                            {% elif request.status == 'rejected' %}
+                                                Rechazado
+                                            {% else %}
+                                                {{ request.status }}
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="text-end pe-3">
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#requestDetailsModal" data-request-id="{{ request.id }}">
+                                            <i class="bi bi-eye"></i> Ver detalles
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="card shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
+                    <h3 class="mt-3">No tienes solicitudes de productos</h3>
+                    <p class="text-muted">¿No encuentras lo que buscas? Solicita productos específicos y te ayudaremos a encontrarlos.</p>
+                    <a href="{{ url_for('commerce.request_product') }}" class="btn btn-primary mt-2">Crear solicitud</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver detalles de solicitud -->
+<div class="modal fade" id="requestDetailsModal" tabindex="-1" aria-labelledby="requestDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="requestDetailsModalLabel">Detalles de la solicitud</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center py-4" id="request-loading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2">Cargando detalles...</p>
+                </div>
+                
+                <div id="request-details" style="display: none;">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h5 id="request-product-name"></h5>
+                            <p class="text-muted" id="request-date"></p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <span class="badge" id="request-status-badge"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <h6>Descripción</h6>
+                                <p id="request-description"></p>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <h6>Categoría</h6>
+                                    <p id="request-category"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Subcategoría</h6>
+                                    <p id="request-subcategory"></p>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <h6>Presupuesto</h6>
+                                    <p id="request-budget"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Urgencia</h6>
+                                    <p id="request-urgency"></p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <h6>URL de referencia</h6>
+                                <p id="request-url"></p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <h6>Notas adicionales</h6>
+                                <p id="request-notes"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <h6>Imagen de referencia</h6>
+                                <div id="request-image-container">
+                                    <img id="request-image" class="img-fluid rounded" alt="Imagen de referencia">
+                                    <p id="request-no-image" class="text-muted">No se proporcionó imagen</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3" id="request-response-container">
+                                <h6>Respuesta</h6>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <p id="request-response"></p>
+                                        <p class="text-muted small" id="request-response-date"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Productos sugeridos (si hay) -->
+                    <div id="suggested-products-container" style="display: none;">
+                        <h6 class="mt-3">Productos sugeridos</h6>
+                        <div class="row row-cols-1 row-cols-md-3 g-3" id="suggested-products">
+                            <!-- Los productos sugeridos se cargarán dinámicamente aquí -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Búsqueda de solicitudes
+        const searchInput = document.getElementById('search-requests');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const requestRows = document.querySelectorAll('.request-row');
+                
+                requestRows.forEach(row => {
+                    const rowText = row.textContent.toLowerCase();
+                    if (rowText.includes(searchTerm)) {
+                        row.style.display = 'table-row';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Filtrado por estado
+        const statusFilters = document.querySelectorAll('.dropdown-menu .dropdown-item');
+        if (statusFilters.length > 0) {
+            statusFilters.forEach(filter => {
+                filter.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Actualizar estado activo
+                    statusFilters.forEach(f => f.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filterText = this.textContent.trim().toLowerCase();
+                    const requestRows = document.querySelectorAll('.request-row');
+                    
+                    requestRows.forEach(row => {
+                        if (filterText === 'todos') {
+                            row.style.display = 'table-row';
+                        } else {
+                            const statusBadge = row.querySelector('.badge').textContent.trim().toLowerCase();
+                            if (statusBadge === filterText || 
+                                (filterText === 'pendientes' && statusBadge === 'pendiente') ||
+                                (filterText === 'en proceso' && statusBadge === 'en proceso') ||
+                                (filterText === 'completados' && statusBadge === 'completado') ||
+                                (filterText === 'rechazados' && statusBadge === 'rechazado')) {
+                                row.style.display = 'table-row';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            });
+        }
+        
+        // Manejar modal de detalles de solicitud
+        const requestDetailsModal = document.getElementById('requestDetailsModal');
+        if (requestDetailsModal) {
+            requestDetailsModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const requestId = button.getAttribute('data-request-id');
+                
+                // Mostrar cargando y ocultar detalles
+                document.getElementById('request-loading').style.display = 'block';
+                document.getElementById('request-details').style.display = 'none';
+                document.getElementById('suggested-products-container').style.display = 'none';
+                
+                // Cargar detalles de la solicitud mediante AJAX
+                fetch(`/commerce/request-details/${requestId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const request = data.request;
+                            
+                            // Llenar datos en el modal
+                            document.getElementById('request-product-name').textContent = request.product_name;
+                            document.getElementById('request-date').textContent = `Solicitado el ${request.created_at}`;
+                            
+                            // Estado
+                            const statusBadge = document.getElementById('request-status-badge');
+                            statusBadge.textContent = request.status_display;
+                            statusBadge.className = 'badge';
+                            if (request.status === 'pending') {
+                                statusBadge.classList.add('bg-warning');
+                            } else if (request.status === 'processing') {
+                                statusBadge.classList.add('bg-info');
+                            } else if (request.status === 'completed') {
+                                statusBadge.classList.add('bg-success');
+                            } else if (request.status === 'rejected') {
+                                statusBadge.classList.add('bg-danger');
+                            } else {
+                                statusBadge.classList.add('bg-secondary');
+                            }
+                            
+                            // Descripción y detalles
+                            document.getElementById('request-description').textContent = request.product_description;
+                            document.getElementById('request-category').textContent = request.category_name || 'No especificada';
+                            document.getElementById('request-subcategory').textContent = request.subcategory_name || 'No especificada';
+                            document.getElementById('request-budget').textContent = request.budget ? `S/ ${request.budget}` : 'No especificado';
+                            
+                            // Urgencia
+                            let urgencyText = 'No especificada';
+                            if (request.urgency === 'low') {
+                                urgencyText = 'Baja';
+                            } else if (request.urgency === 'medium') {
+                                urgencyText = 'Media';
+                            } else if (request.urgency === 'high') {
+                                urgencyText = 'Alta';
+                            }
+                            document.getElementById('request-urgency').textContent = urgencyText;
+                            
+                            // URL y notas
+                            if (request.product_url) {
+                                document.getElementById('request-url').innerHTML = `<a href="${request.product_url}" target="_blank">${request.product_url}</a>`;
+                            } else {
+                                document.getElementById('request-url').textContent = 'No proporcionada';
+                            }
+                            document.getElementById('request-notes').textContent = request.additional_notes || 'No hay notas adicionales';
+                            
+                            // Imagen
+                            const imageContainer = document.getElementById('request-image-container');
+                            const image = document.getElementById('request-image');
+                            const noImage = document.getElementById('request-no-image');
+                            
+                            if (request.image_url) {
+                                image.src = request.image_url;
+                                image.style.display = 'block';
+                                noImage.style.display = 'none';
+                            } else {
+                                image.style.display = 'none';
+                                noImage.style.display = 'block';
+                            }
+                            
+                            // Respuesta
+                            const responseContainer = document.getElementById('request-response-container');
+                            const response = document.getElementById('request-response');
+                            const responseDate = document.getElementById('request-response-date');
+                            
+                            if (request.admin_response) {
+                                response.textContent = request.admin_response;
+                                responseDate.textContent = `Respondido el ${request.response_date}`;
+                                responseContainer.style.display = 'block';
+                            } else {
+                                responseContainer.style.display = 'none';
+                            }
+                            
+                            // Productos sugeridos
+                            const suggestedProductsContainer = document.getElementById('suggested-products-container');
+                            const suggestedProducts = document.getElementById('suggested-products');
+                            
+                            if (request.suggested_products && request.suggested_products.length > 0) {
+                                suggestedProducts.innerHTML = '';
+                                
+                                request.suggested_products.forEach(product => {
+                                    const productCard = document.createElement('div');
+                                    productCard.className = 'col';
+                                    productCard.innerHTML = `
+                                        <div class="card h-100">
+                                            <div class="position-relative">
+                                                ${product.image_url ? 
+                                                    `<img src="${product.image_url}" class="card-img-top" style="height: 150px; object-fit: cover;" alt="${product.name}">` : 
+                                                    `<div class="placeholder-img d-flex align-items-center justify-content-center bg-light" style="height: 150px;">
+                                                        <i class="bi bi-image text-secondary" style="font-size: 2rem;"></i>
+                                                    </div>`
+                                                }
+                                                <div class="position-absolute top-0 start-0 p-2">
+                                                    ${product.is_official ? '<span class="badge bg-primary mb-1 d-block">Oficial</span>' : ''}
+                                                    ${product.condition === 'new' ? '<span class="badge bg-success mb-1 d-block">Nuevo</span>' : 
+                                                      product.condition === 'used' ? '<span class="badge bg-secondary mb-1 d-block">Usado</span>' : 
+                                                      product.condition === 'refurbished' ? '<span class="badge bg-info mb-1 d-block">Reacondicionado</span>' : ''}
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <h6 class="card-title">${product.name}</h6>
+                                                <p class="card-text text-muted small">${product.description ? product.description.substring(0, 60) + (product.description.length > 60 ? '...' : '') : ''}</p>
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <span class="fw-bold text-primary">S/ ${product.price.toFixed(2)}</span>
+                                                    <a href="/commerce/product/${product.id}" class="btn btn-sm btn-outline-primary">Ver producto</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                    suggestedProducts.appendChild(productCard);
+                                });
+                                
+                                suggestedProductsContainer.style.display = 'block';
+                            } else {
+                                suggestedProductsContainer.style.display = 'none';
+                            }
+                            
+                            // Ocultar cargando y mostrar detalles
+                            document.getElementById('request-loading').style.display = 'none';
+                            document.getElementById('request-details').style.display = 'block';
+                        } else {
+                            alert('No se pudieron cargar los detalles de la solicitud.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error al cargar los detalles de la solicitud.');
+                    });
+            });
+        }
+    });
+</script>
+{% endblock %}

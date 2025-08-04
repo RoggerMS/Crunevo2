@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% include "csrf.html" %}
+
+{% block title %}Confirmar compra - Tienda Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="h3 mb-4">Confirmar compra</h1>
+
+    <div class="row">
+        <!-- Resumen de productos -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Productos a comprar</h5>
+                    
+                    {% for item in cart_items %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <!-- Imagen del producto -->
+                                <div class="col-md-2 text-center">
+                                    {% if item.product.image_url %}
+                                    <img src="{{ item.product.image_url }}" class="img-fluid cart-item-img" alt="{{ item.product.name }}">
+                                    {% else %}
+                                    <div class="placeholder-img cart-item-img d-flex align-items-center justify-content-center bg-light">
+                                        <i class="bi bi-image text-secondary" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Información del producto -->
+                                <div class="col-md-6">
+                                    <h5 class="card-title">{{ item.product.name }}</h5>
+                                    <p class="card-text text-muted mb-1">{{ item.product.description|truncate(100) }}</p>
+                                    <div>
+                                        {% if item.product.is_official %}
+                                        <span class="badge bg-primary">Oficial</span>
+                                        {% endif %}
+                                        {% if item.product.condition == 'new' %}
+                                        <span class="badge bg-success">Nuevo</span>
+                                        {% elif item.product.condition == 'used' %}
+                                        <span class="badge bg-secondary">Usado</span>
+                                        {% elif item.product.condition == 'refurbished' %}
+                                        <span class="badge bg-info">Reacondicionado</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Precio y cantidad -->
+                                <div class="col-md-4 text-end">
+                                    <div>
+                                        <span class="fs-5 fw-bold text-primary">S/ {{ "%.2f"|format(item.product.price) }}</span>
+                                        <span class="text-muted">x {{ item.quantity }}</span>
+                                    </div>
+                                    <div class="mt-2">
+                                        <span class="text-muted">Subtotal: S/ {{ "%.2f"|format(item.product.price * item.quantity) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Formulario de compra -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Detalles de la compra</h5>
+                    
+                    <form action="{{ url_for('commerce.checkout') }}" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        
+                        <!-- Opciones de envío -->
+                        <div class="mb-3">
+                            <label class="form-label">Método de envío</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="shipping_option" id="pickup" value="pickup" checked>
+                                <label class="form-check-label" for="pickup">
+                                    Recoger en tienda
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="shipping_option" id="delivery" value="delivery">
+                                <label class="form-check-label" for="delivery">
+                                    Envío a domicilio
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Dirección de envío (se muestra/oculta según la opción) -->
+                        <div class="mb-3" id="shipping-address-container" style="display: none;">
+                            <label for="shipping_address" class="form-label">Dirección de envío</label>
+                            <textarea class="form-control" id="shipping_address" name="shipping_address" rows="3" placeholder="Ingresa tu dirección completa"></textarea>
+                        </div>
+                        
+                        <!-- Mensaje adicional -->
+                        <div class="mb-3">
+                            <label for="shipping_message" class="form-label">Mensaje adicional (opcional)</label>
+                            <textarea class="form-control" id="shipping_message" name="shipping_message" rows="2" placeholder="Instrucciones especiales para la entrega"></textarea>
+                        </div>
+                        
+                        <!-- Resumen de costos -->
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal</span>
+                                    <span>S/ {{ "%.2f"|format(total_soles) }}</span>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Envío</span>
+                                    <span id="shipping-cost">S/ 0.00</span>
+                                </div>
+                                
+                                <hr>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <span class="fw-bold">Total</span>
+                                    <span class="fw-bold" id="total-cost">S/ {{ "%.2f"|format(total_soles) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Confirmar compra</button>
+                        <a href="{{ url_for('commerce.view_cart') }}" class="btn btn-outline-secondary w-100 mt-2">Volver al carrito</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const pickupRadio = document.getElementById('pickup');
+        const deliveryRadio = document.getElementById('delivery');
+        const shippingAddressContainer = document.getElementById('shipping-address-container');
+        const shippingCostElement = document.getElementById('shipping-cost');
+        const totalCostElement = document.getElementById('total-cost');
+        const baseTotal = {{ total_soles }};
+        const shippingCost = 10.00; // Costo fijo de envío
+        
+        // Función para actualizar el costo total
+        function updateTotalCost(includeShipping) {
+            let total = baseTotal;
+            if (includeShipping) {
+                total += shippingCost;
+                shippingCostElement.textContent = `S/ ${shippingCost.toFixed(2)}`;
+            } else {
+                shippingCostElement.textContent = 'S/ 0.00';
+            }
+            totalCostElement.textContent = `S/ ${total.toFixed(2)}`;
+        }
+        
+        // Manejar cambios en las opciones de envío
+        pickupRadio.addEventListener('change', function() {
+            if (this.checked) {
+                shippingAddressContainer.style.display = 'none';
+                updateTotalCost(false);
+            }
+        });
+        
+        deliveryRadio.addEventListener('change', function() {
+            if (this.checked) {
+                shippingAddressContainer.style.display = 'block';
+                updateTotalCost(true);
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -14,6 +14,8 @@ from crunevo.models.event import Event
 from crunevo.models.event_participation import EventParticipation
 from crunevo.utils.credits import add_credit
 from crunevo.constants.credit_reasons import CreditReasons
+from crunevo.utils.helpers import admin_required
+import json
 
 event_bp = Blueprint("event", __name__)
 
@@ -146,28 +148,26 @@ def events_calendar():
 
 @event_bp.route("/admin/eventos")
 @login_required
+@admin_required
 def admin_list_events():
-    if current_user.role not in ["admin", "moderator"]:
-        flash("No tienes permisos para acceder a esta sección", "error")
-        return redirect(url_for("event.list_events"))
-
     events = Event.query.order_by(Event.event_date.desc()).all()
     return render_template("admin/events.html", events=events)
 
 
 @event_bp.route("/admin/evento/crear", methods=["GET", "POST"])
 @login_required
+@admin_required
 def admin_create_event():
-    if current_user.role not in ["admin", "moderator"]:
-        flash("No tienes permisos para acceder a esta sección", "error")
-        return redirect(url_for("event.list_events"))
-
     if request.method == "POST":
         title = request.form.get("title", "").strip()
         description = request.form.get("description", "").strip()
         event_date = request.form.get("event_date")
         category = request.form.get("category", "").strip()
         image_url = request.form.get("image_url", "").strip()
+        jitsi_url = request.form.get("jitsi_url", "").strip()
+        zoom_url = request.form.get("zoom_url", "").strip()
+        is_featured = request.form.get("is_featured") == "on"
+        rewards = request.form.get("rewards", "").strip()
 
         if not all([title, event_date]):
             flash("Título y fecha son obligatorios", "error")
@@ -185,6 +185,10 @@ def admin_create_event():
             event_date=event_datetime,
             category=category,
             image_url=image_url or None,
+            jitsi_url=jitsi_url or None,
+            zoom_url=zoom_url or None,
+            is_featured=is_featured,
+            rewards=rewards or None,
         )
 
         db.session.add(event)
@@ -193,7 +197,7 @@ def admin_create_event():
         flash("Evento creado exitosamente", "success")
         return redirect(url_for("event.admin_list_events"))
 
-    return render_template("admin/create_event.html")
+    return render_template("admin/admin_event_form.html", event=None, action="crear")
 
 
 @event_bp.route("/admin/evento/<int:event_id>/participantes")

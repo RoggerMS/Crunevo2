@@ -4,7 +4,7 @@
   </button>
   <div class="app-launcher-grid">
     <div class="launcher-grid">
-      <a href="{{ url_for('auth.perfil') }}" class="launcher-item">
+      <a href="{{ url_for('auth.view_profile', username=current_user.username) }}" class="launcher-item">
         <i class="bi bi-person-circle fs-3 text-primary"></i>
         <span class="small mt-1">Perfil</span>
       </a>

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}¡Compra exitosa! - Tienda Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
+<style>
+    .success-icon {
+        font-size: 5rem;
+        color: #28a745;
+    }
+    .order-details {
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle-fill success-icon"></i>
+                    </div>
+                    <h1 class="h3 mb-3">¡Compra realizada con éxito!</h1>
+                    <p class="text-muted mb-4">Tu pedido ha sido procesado correctamente.</p>
+                    
+                    <div class="order-details mb-4 text-start">
+                        <h5 class="mb-3">Detalles del pedido</h5>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 fw-bold">Número de orden:</div>
+                            <div class="col-sm-8">{{ order.id }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 fw-bold">Fecha:</div>
+                            <div class="col-sm-8">{{ order.created_at|date }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 fw-bold">Total:</div>
+                            <div class="col-sm-8">S/ {{ "%.2f"|format(order.total_amount) }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 fw-bold">Método de envío:</div>
+                            <div class="col-sm-8">
+                                {% if order.shipping_option == 'pickup' %}
+                                Recoger en tienda
+                                {% else %}
+                                Envío a domicilio
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if order.shipping_address %}
+                        <div class="row mb-2">
+                            <div class="col-sm-4 fw-bold">Dirección de envío:</div>
+                            <div class="col-sm-8">{{ order.shipping_address }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 class="mb-3">Productos adquiridos</h5>
+                        {% for item in order_items %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <!-- Imagen del producto -->
+                                    <div class="col-md-2 text-center">
+                                        {% if item.product.image_url %}
+                                        <img src="{{ item.product.image_url }}" class="img-fluid" style="max-height: 80px;" alt="{{ item.product.name }}">
+                                        {% else %}
+                                        <div class="placeholder-img d-flex align-items-center justify-content-center bg-light" style="height: 80px; width: 80px;">
+                                            <i class="bi bi-image text-secondary" style="font-size: 1.5rem;"></i>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Información del producto -->
+                                    <div class="col-md-7 text-start">
+                                        <h5 class="card-title">{{ item.product.name }}</h5>
+                                        <div>
+                                            {% if item.product.is_official %}
+                                            <span class="badge bg-primary">Oficial</span>
+                                            {% endif %}
+                                            {% if item.product.condition == 'new' %}
+                                            <span class="badge bg-success">Nuevo</span>
+                                            {% elif item.product.condition == 'used' %}
+                                            <span class="badge bg-secondary">Usado</span>
+                                            {% elif item.product.condition == 'refurbished' %}
+                                            <span class="badge bg-info">Reacondicionado</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Precio y cantidad -->
+                                    <div class="col-md-3 text-end">
+                                        <div>
+                                            <span class="fs-5 fw-bold text-primary">S/ {{ "%.2f"|format(item.price) }}</span>
+                                        </div>
+                                        <div class="text-muted">Cantidad: {{ item.quantity }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{{ url_for('commerce.view_purchases') }}" class="btn btn-primary">Ver mis compras</a>
+                        <a href="{{ url_for('commerce.commerce_index') }}" class="btn btn-outline-secondary">Volver a la tienda</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

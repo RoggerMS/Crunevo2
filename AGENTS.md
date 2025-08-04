@@ -1,5 +1,14 @@
 # Guidelines for Codex agents
 
+## Consolidación de rutas de Perfil
+- Se unificaron las rutas `/perfil` (perfil propio) y `/perfil/<username>` (perfil público) en una sola vista inteligente `view_profile`.
+- Se redireccionaron las rutas antiguas a la nueva estructura unificada.
+- Se actualizaron todas las referencias a `url_for('auth.perfil')` en las plantillas para usar `url_for('auth.view_profile', username=current_user.username)`.
+- Se actualizaron los condicionales en las plantillas para detectar si el usuario es el propietario del perfil.
+- Se eliminaron rutas redundantes como `/perfil_notas` y se redirigieron a la vista unificada con parámetros de tab.
+- Se mantuvieron las funcionalidades existentes como actualización de avatar, banner y sección "about".
+
+
 - Always run `make fmt` and `make test` before committing.
 - Use Tailwind CSS utilities when updating templates, but keep Bootstrap components unless instructed otherwise.
 - Do not modify models or database migrations unless explicitly requested.
@@ -1094,3 +1103,48 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Fixed marketplace messages link to use `marketplace.marketplace_index` and guarded optional image upload routes to avoid BuildError (hotfix marketplace-messages-link).
 - Marketplace product detail view now renders `marketplace/view_product.html` with seller info, related products and CSRF macro (PR marketplace-product-detail-template).
 - Fixed seller product editing by including unread message count in edit view and replaced delete links with POST forms and CSRF to enable product removal from seller panel (hotfix seller-product-actions).
+
+## Store and Marketplace Unification
+
+- Unified Store and Marketplace modules into a single Commerce module with shared templates and routes.
+
+## Feed Interactions Improvement
+
+- Mejorado el sistema de interacción con publicaciones en el feed:
+  - Implementada funcionalidad para abrir el modal de comentarios al hacer clic en el contador de comentarios.
+  - Añadida sincronización de datos en tiempo real para el modal de comentarios mediante API.
+  - Creado endpoint `/feed/api/comments/<post_id>` para obtener comentarios actualizados.
+  - Mejorada la accesibilidad de los modales con atributos ARIA adecuados.
+  - Expandido el menú de opciones de publicaciones (tres puntos) con nuevas funcionalidades:
+    - Copiar enlace de la publicación
+    - Guardar publicación
+    - Reportar publicación (existente)
+  - Implementados controladores JavaScript para las nuevas opciones del menú.
+  - Añadida función `copyToClipboard` con soporte para API moderna y fallback para navegadores antiguos.
+  - Mejorada la experiencia de usuario con retroalimentación visual y notificaciones toast.
+
+## Sidebar Optimization
+
+- Optimizado el sidebar derecho del feed para mejorar la experiencia de usuario:
+  - Rediseñada la sección de tendencias para mostrar publicaciones reales con sus estadísticas.
+  - Mejorada la sección de contribuidores destacados para mostrar usuarios reales con sus puntos semanales.
+  - Implementada la sección de logros recientes con datos dinámicos de la base de datos.
+  - Añadido sistema de tips de estudio aleatorios para mayor variedad de contenido.
+  - Reorganizada la sección de enlaces útiles con mejor distribución espacial.
+  - Mejorada la estética general con efectos hover, transiciones suaves y mejor espaciado.
+  - Implementada responsividad para dispositivos móviles.
+  - Añadidos enlaces "Ver más" en cada sección para facilitar la navegación.
+- Created new template `tienda/_product_cards.html` for displaying product cards with dynamic rendering of product information including images, names, descriptions, badges, ratings, prices, and action buttons.
+- Created unified template `tienda/producto.html` for displaying detailed product information with breadcrumb navigation, image carousel, product details, action buttons, description, shipping information, and tabs for reviews and questions.
+- Created template `tienda/carrito.html` for the shopping cart with product details, quantity controls, and order summary.
+- Updated `app.py` to register the new unified commerce blueprint and removed the old store and marketplace blueprints.
+- Added legacy redirects in `commerce_routes.py` for specific routes from the old store and marketplace modules to the new unified commerce module.
+- Created template `tienda/checkout_confirm.html` for the checkout confirmation page with order summary and shipping options.
+- Created template `tienda/checkout_success.html` for the checkout success page with order details and purchased products.
+- Created template `tienda/compras.html` for displaying a user's purchases with search, sorting, and review options.
+- Created template `tienda/favorites.html` for displaying a user's favorite products with search, sorting, and cart actions.
+- Created template `tienda/request_product.html` for product requests with form and previous requests display.
+- Created template `tienda/my_requests.html` for displaying a user's product requests with search, filtering, and detailed information.
+- Created template `tienda/become_seller.html` for the "Become a Seller" page with benefits, guide, and registration form.
+- Created comprehensive template `tienda/seller_dashboard.html` for the seller dashboard with navigation sidebar and sections for dashboard statistics, products, orders, messages, reviews, and settings.
+- Created template `tienda/publish_product.html` for publishing or editing products with form fields and image upload.

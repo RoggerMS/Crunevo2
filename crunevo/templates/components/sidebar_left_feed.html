@@ -48,7 +48,7 @@
         </li>
 
         <li>
-          <a href="{{ url_for('auth.perfil') }}" class="nav-link {{ 'active' if request.endpoint == 'auth.perfil' }}">
+          <a href="{{ url_for('auth.view_profile', username=current_user.username) }}" class="nav-link {{ 'active' if request.endpoint == 'auth.view_profile' and request.view_args.get('username') == current_user.username }}">
             <i class="bi bi-person-circle"></i>
             <span class="fw-semibold">Mi Perfil</span>
           </a>
@@ -108,7 +108,7 @@
         </li>
 
         <li>
-          <a href="{{ url_for('auth.perfil', tab='misiones') }}" class="nav-link {{ 'active' if request.endpoint == 'auth.perfil' and request.args.get('tab') == 'misiones' }}">
+          <a href="{{ url_for('auth.view_profile', username=current_user.username, tab='misiones') }}" class="nav-link {{ 'active' if request.endpoint == 'auth.view_profile' and request.view_args.get('username') == current_user.username and request.args.get('tab') == 'misiones' }}">
             <i class="bi bi-trophy"></i>
             <span class="fw-semibold">Misiones</span>
           </a>

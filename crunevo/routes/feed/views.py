@@ -104,6 +104,13 @@ def view_feed():
     streak, show_streak, reward = streak_info(current_user)
 
     template = "feed/feed.html"
+    # Obtener datos para el sidebar derecho
+    top_ranked, recent_achievements = get_weekly_ranking(limit=3)
+    
+    # Añadir datetime.now() para cálculos de tiempo relativo
+    from datetime import datetime
+    now = datetime.utcnow()
+    
     return render_template(
         template,
         feed_items=data["feed_items"],
@@ -117,6 +124,10 @@ def view_feed():
         trending_user_reactions=data["trending_user_reactions"],
         streak_day=streak.current_day if streak else 1,
         streak_reward=reward,
+        # Variables para el sidebar derecho
+        top_ranked=top_ranked,
+        recent_achievements=recent_achievements,
+        now=now,
     )
 
 

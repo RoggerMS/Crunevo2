@@ -1,16 +1,82 @@
 // Comment modal utilities
 
 function openCommentsModal(postId) {
-  const modal = new bootstrap.Modal(
-    document.getElementById(`commentsModal-${postId}`)
-  );
+  const modalElement = document.getElementById(`commentsModal-${postId}`);
+  if (!modalElement) return;
+  
+  const modal = new bootstrap.Modal(modalElement);
+  
+  // Verificar si necesitamos actualizar los comentarios
+  const commentsList = modalElement.querySelector(`#commentsList-${postId}`);
+  if (commentsList) {
+    // Opcionalmente, podemos cargar los comentarios más recientes desde el servidor
+    // Solo si el modal no está ya abierto
+    if (!modalElement.classList.contains('show')) {
+      // Mostrar indicador de carga
+      const loadingIndicator = document.createElement('div');
+      loadingIndicator.className = 'text-center my-2';
+      loadingIndicator.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">Cargando...</span></div> Actualizando comentarios...';
+      
+      // Si hay un botón de cargar más comentarios, insertamos antes de él
+      const loadMoreBtn = commentsList.nextElementSibling?.querySelector('.load-more-comments');
+      if (loadMoreBtn) {
+        loadMoreBtn.parentNode.insertBefore(loadingIndicator, loadMoreBtn);
+      } else {
+        commentsList.insertAdjacentElement('afterend', loadingIndicator);
+      }
+      
+      // Cargar comentarios actualizados
+      fetch(`/feed/api/comments/${postId}`)
+        .then(response => response.json())
+        .then(data => {
+          // Actualizar contador de comentarios en el modal
+          const commentCountElement = modalElement.querySelector('.modal-stat-item:nth-child(2) span');
+          if (commentCountElement) {
+            commentCountElement.textContent = `${data.comments.length} comentarios`;
+          }
+          
+          // Actualizar lista de comentarios si hay nuevos
+          if (data.comments && data.comments.length > 0) {
+            // Limpiar lista actual y agregar los nuevos comentarios
+            commentsList.innerHTML = '';
+            data.comments.forEach(comment => {
+              const commentHTML = `
+                <div class="comment-item">
+                  <img src="${comment.author.avatar_url || '/static/img/default.png'}"
+                       alt="${comment.author.username || 'Usuario'}"
+                       class="comment-avatar">
+                  <div class="comment-content">
+                    <div class="comment-box">
+                      <div class="comment-author">${comment.author.username || 'Usuario eliminado'}</div>
+                      <div class="comment-text">${comment.body}</div>
+                    </div>
+                    <div class="comment-meta">
+                      <small class="text-muted">${comment.timestamp_text || 'ahora'}</small>
+                      <button class="btn btn-link btn-sm p-0 ms-2 text-muted">Responder</button>
+                    </div>
+                  </div>
+                </div>
+              `;
+              commentsList.insertAdjacentHTML('beforeend', commentHTML);
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error al cargar comentarios:', error);
+        })
+        .finally(() => {
+          // Eliminar indicador de carga
+          loadingIndicator.remove();
+        });
+    }
+  }
+  
+  // Mostrar el modal
   modal.show();
 
-  // Focus on comment input after modal opens
+  // Focus en el campo de comentario después de abrir el modal
   setTimeout(() => {
-    const commentInput = document.querySelector(
-      `#commentsModal-${postId} .comment-input`
-    );
+    const commentInput = modalElement.querySelector('.comment-input');
     if (commentInput) {
       commentInput.focus();
     }

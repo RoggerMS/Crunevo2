@@ -1,0 +1,909 @@
+{% extends "base.html" %}
+{% include "csrf.html" %}
+
+{% block title %}Panel de Vendedor - Tienda Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
+<style>
+    .stat-card {
+        border-left: 4px solid #6610f2;
+    }
+    .stat-icon {
+        font-size: 2rem;
+        color: #6610f2;
+    }
+    .nav-pills .nav-link.active {
+        background-color: #6610f2;
+    }
+    .nav-pills .nav-link {
+        color: #495057;
+    }
+    .nav-pills .nav-link:hover:not(.active) {
+        background-color: #f8f9fa;
+    }
+    .product-img-small {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+    }
+    .status-badge {
+        font-size: 0.8rem;
+    }
+    .order-item {
+        transition: all 0.2s;
+    }
+    .order-item:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar de navegación -->
+        <div class="col-lg-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="me-3">
+                            <img src="{{ seller.profile_image or url_for('static', filename='img/default_profile.png') }}" alt="Perfil" class="rounded-circle" width="60" height="60">
+                        </div>
+                        <div>
+                            <h5 class="mb-1">{{ seller.display_name }}</h5>
+                            <p class="text-muted mb-0">Vendedor desde {{ seller.created_at.strftime('%b %Y') }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <button class="nav-link active mb-2" id="v-pills-dashboard-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dashboard" type="button" role="tab" aria-controls="v-pills-dashboard" aria-selected="true">
+                            <i class="bi bi-speedometer2 me-2"></i> Panel principal
+                        </button>
+                        <button class="nav-link mb-2" id="v-pills-products-tab" data-bs-toggle="pill" data-bs-target="#v-pills-products" type="button" role="tab" aria-controls="v-pills-products" aria-selected="false">
+                            <i class="bi bi-box-seam me-2"></i> Mis productos
+                        </button>
+                        <button class="nav-link mb-2" id="v-pills-orders-tab" data-bs-toggle="pill" data-bs-target="#v-pills-orders" type="button" role="tab" aria-controls="v-pills-orders" aria-selected="false">
+                            <i class="bi bi-bag-check me-2"></i> Pedidos
+                        </button>
+                        <button class="nav-link mb-2" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">
+                            <i class="bi bi-chat-dots me-2"></i> Mensajes
+                            {% if unread_messages > 0 %}
+                            <span class="badge bg-danger rounded-pill ms-2">{{ unread_messages }}</span>
+                            {% endif %}
+                        </button>
+                        <button class="nav-link mb-2" id="v-pills-reviews-tab" data-bs-toggle="pill" data-bs-target="#v-pills-reviews" type="button" role="tab" aria-controls="v-pills-reviews" aria-selected="false">
+                            <i class="bi bi-star me-2"></i> Reseñas
+                        </button>
+                        <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">
+                            <i class="bi bi-gear me-2"></i> Configuración
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contenido principal -->
+        <div class="col-lg-9">
+            <div class="tab-content" id="v-pills-tabContent">
+                <!-- Panel principal -->
+                <div class="tab-pane fade show active" id="v-pills-dashboard" role="tabpanel" aria-labelledby="v-pills-dashboard-tab">
+                    <div class="row mb-4">
+                        <div class="col-md-6 col-xl-3 mb-4 mb-xl-0">
+                            <div class="card stat-card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-muted mb-1">Productos activos</h6>
+                                            <h3 class="mb-0">{{ stats.active_products }}</h3>
+                                        </div>
+                                        <div class="stat-icon">
+                                            <i class="bi bi-box-seam"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3 mb-4 mb-xl-0">
+                            <div class="card stat-card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-muted mb-1">Pedidos pendientes</h6>
+                                            <h3 class="mb-0">{{ stats.pending_orders }}</h3>
+                                        </div>
+                                        <div class="stat-icon">
+                                            <i class="bi bi-hourglass-split"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3 mb-4 mb-md-0">
+                            <div class="card stat-card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-muted mb-1">Ventas totales</h6>
+                                            <h3 class="mb-0">{{ stats.total_sales }}</h3>
+                                        </div>
+                                        <div class="stat-icon">
+                                            <i class="bi bi-bag-check"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card stat-card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-muted mb-1">Calificación</h6>
+                                            <h3 class="mb-0">{{ stats.rating|round(1) }} <small class="text-muted">/ 5</small></h3>
+                                        </div>
+                                        <div class="stat-icon">
+                                            <i class="bi bi-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Pedidos recientes -->
+                        <div class="col-lg-7 mb-4 mb-lg-0">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-header bg-white py-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">Pedidos recientes</h5>
+                                        <a href="#" class="btn btn-sm btn-outline-primary" onclick="document.getElementById('v-pills-orders-tab').click(); return false;">Ver todos</a>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    {% if recent_orders %}
+                                    <div class="list-group list-group-flush">
+                                        {% for order in recent_orders %}
+                                        <div class="list-group-item order-item p-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h6 class="mb-1">#{{ order.id }} - {{ order.buyer_name }}</h6>
+                                                    <p class="text-muted mb-0 small">{{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                                                </div>
+                                                <div class="text-end">
+                                                    <span class="badge bg-{{ order.status_color }} status-badge">{{ order.status_text }}</span>
+                                                    <p class="mb-0 fw-bold">S/ {{ order.total }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <div class="text-center py-5">
+                                        <i class="bi bi-bag-x" style="font-size: 2.5rem; color: #dee2e6;"></i>
+                                        <p class="mt-3 text-muted">No hay pedidos recientes</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Productos más vendidos -->
+                        <div class="col-lg-5">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-header bg-white py-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">Productos más vendidos</h5>
+                                        <a href="#" class="btn btn-sm btn-outline-primary" onclick="document.getElementById('v-pills-products-tab').click(); return false;">Ver todos</a>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    {% if top_products %}
+                                    <div class="list-group list-group-flush">
+                                        {% for product in top_products %}
+                                        <div class="list-group-item p-3">
+                                            <div class="d-flex">
+                                                <div class="me-3">
+                                                    <img src="{{ product.image or url_for('static', filename='img/product_placeholder.png') }}" alt="{{ product.name }}" class="product-img-small rounded">
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1">{{ product.name }}</h6>
+                                                    <div class="d-flex justify-content-between">
+                                                        <p class="text-muted mb-0 small">{{ product.category }}</p>
+                                                        <p class="mb-0 fw-bold">{{ product.sales_count }} vendidos</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <div class="text-center py-5">
+                                        <i class="bi bi-box" style="font-size: 2.5rem; color: #dee2e6;"></i>
+                                        <p class="mt-3 text-muted">No hay productos vendidos aún</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mis productos -->
+                <div class="tab-pane fade" id="v-pills-products" role="tabpanel" aria-labelledby="v-pills-products-tab">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="mb-0">Mis productos</h4>
+                                <a href="{{ url_for('commerce.publish_product') }}" class="btn btn-primary">
+                                    <i class="bi bi-plus-lg me-1"></i> Publicar producto
+                                </a>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="product-search" placeholder="Buscar productos...">
+                                        <button class="btn btn-outline-secondary" type="button">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 d-flex justify-content-md-end">
+                                    <select class="form-select" style="max-width: 200px;">
+                                        <option value="all">Todos los productos</option>
+                                        <option value="active">Activos</option>
+                                        <option value="inactive">Inactivos</option>
+                                        <option value="out_of_stock">Sin stock</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            {% if products %}
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Producto</th>
+                                            <th scope="col">Precio</th>
+                                            <th scope="col">Stock</th>
+                                            <th scope="col">Estado</th>
+                                            <th scope="col">Ventas</th>
+                                            <th scope="col">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for product in products %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="{{ product.image or url_for('static', filename='img/product_placeholder.png') }}" alt="{{ product.name }}" class="product-img-small rounded me-3">
+                                                    <div>
+                                                        <h6 class="mb-0">{{ product.name }}</h6>
+                                                        <small class="text-muted">{{ product.category }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>S/ {{ product.price }}</td>
+                                            <td>{{ product.stock }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ product.status_color }}">{{ product.status_text }}</span>
+                                            </td>
+                                            <td>{{ product.sales_count }}</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="{{ url_for('commerce.edit_product', product_id=product.id) }}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <a href="{{ url_for('commerce.view_product', product_id=product.id) }}" class="btn btn-sm btn-outline-secondary">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteProductModal{{ product.id }}">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                                
+                                                <!-- Modal de confirmación para eliminar -->
+                                                <div class="modal fade" id="deleteProductModal{{ product.id }}" tabindex="-1" aria-labelledby="deleteProductModalLabel{{ product.id }}" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="deleteProductModalLabel{{ product.id }}">Confirmar eliminación</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                ¿Estás seguro de que deseas eliminar el producto "{{ product.name }}"? Esta acción no se puede deshacer.
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                <form action="{{ url_for('commerce.delete_product', product_id=product.id) }}" method="post" class="d-inline">
+                                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-5">
+                                <i class="bi bi-box" style="font-size: 3rem; color: #dee2e6;"></i>
+                                <h5 class="mt-3">No tienes productos publicados</h5>
+                                <p class="text-muted">Comienza a vender publicando tu primer producto</p>
+                                <a href="{{ url_for('commerce.publish_product') }}" class="btn btn-primary mt-2">
+                                    <i class="bi bi-plus-lg me-1"></i> Publicar producto
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pedidos -->
+                <div class="tab-pane fade" id="v-pills-orders" role="tabpanel" aria-labelledby="v-pills-orders-tab">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h4 class="mb-4">Gestión de pedidos</h4>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="order-search" placeholder="Buscar por ID o nombre del comprador...">
+                                        <button class="btn btn-outline-secondary" type="button">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 d-flex justify-content-md-end">
+                                    <select class="form-select" style="max-width: 200px;">
+                                        <option value="all">Todos los pedidos</option>
+                                        <option value="pending">Pendientes</option>
+                                        <option value="processing">En proceso</option>
+                                        <option value="shipped">Enviados</option>
+                                        <option value="delivered">Entregados</option>
+                                        <option value="cancelled">Cancelados</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            {% if orders %}
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">ID Pedido</th>
+                                            <th scope="col">Fecha</th>
+                                            <th scope="col">Cliente</th>
+                                            <th scope="col">Total</th>
+                                            <th scope="col">Estado</th>
+                                            <th scope="col">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in orders %}
+                                        <tr>
+                                            <td>#{{ order.id }}</td>
+                                            <td>{{ order.created_at.strftime('%d/%m/%Y') }}</td>
+                                            <td>{{ order.buyer_name }}</td>
+                                            <td>S/ {{ order.total }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ order.status_color }}">{{ order.status_text }}</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewOrderModal{{ order.id }}">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#updateOrderModal{{ order.id }}">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                </div>
+                                                
+                                                <!-- Modal para ver detalles del pedido -->
+                                                <div class="modal fade" id="viewOrderModal{{ order.id }}" tabindex="-1" aria-labelledby="viewOrderModalLabel{{ order.id }}" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="viewOrderModalLabel{{ order.id }}">Detalles del Pedido #{{ order.id }}</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="row mb-4">
+                                                                    <div class="col-md-6">
+                                                                        <h6>Información del cliente</h6>
+                                                                        <p class="mb-1"><strong>Nombre:</strong> {{ order.buyer_name }}</p>
+                                                                        <p class="mb-1"><strong>Email:</strong> {{ order.buyer_email }}</p>
+                                                                        <p class="mb-1"><strong>Teléfono:</strong> {{ order.buyer_phone or 'No proporcionado' }}</p>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <h6>Información del pedido</h6>
+                                                                        <p class="mb-1"><strong>Fecha:</strong> {{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                                                                        <p class="mb-1"><strong>Estado:</strong> <span class="badge bg-{{ order.status_color }}">{{ order.status_text }}</span></p>
+                                                                        <p class="mb-1"><strong>Método de envío:</strong> {{ order.shipping_method }}</p>
+                                                                        {% if order.shipping_address %}
+                                                                        <p class="mb-1"><strong>Dirección de envío:</strong> {{ order.shipping_address }}</p>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <h6>Productos</h6>
+                                                                <div class="table-responsive">
+                                                                    <table class="table table-sm">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Producto</th>
+                                                                                <th>Precio</th>
+                                                                                <th>Cantidad</th>
+                                                                                <th class="text-end">Subtotal</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            {% for item in order.items %}
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <div class="d-flex align-items-center">
+                                                                                        <img src="{{ item.product_image or url_for('static', filename='img/product_placeholder.png') }}" alt="{{ item.product_name }}" class="product-img-small rounded me-2" style="width: 40px; height: 40px;">
+                                                                                        <div>
+                                                                                            <p class="mb-0">{{ item.product_name }}</p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td>S/ {{ item.price }}</td>
+                                                                                <td>{{ item.quantity }}</td>
+                                                                                <td class="text-end">S/ {{ (item.price * item.quantity)|round(2) }}</td>
+                                                                            </tr>
+                                                                            {% endfor %}
+                                                                        </tbody>
+                                                                        <tfoot>
+                                                                            <tr>
+                                                                                <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                                                                                <td class="text-end">S/ {{ order.subtotal }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td colspan="3" class="text-end"><strong>Envío:</strong></td>
+                                                                                <td class="text-end">S/ {{ order.shipping_cost }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                                                                <td class="text-end"><strong>S/ {{ order.total }}</strong></td>
+                                                                            </tr>
+                                                                        </tfoot>
+                                                                    </table>
+                                                                </div>
+                                                                
+                                                                {% if order.notes %}
+                                                                <div class="mt-3">
+                                                                    <h6>Notas del cliente</h6>
+                                                                    <p class="mb-0">{{ order.notes }}</p>
+                                                                </div>
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateOrderModal{{ order.id }}" data-bs-dismiss="modal">Actualizar estado</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Modal para actualizar estado del pedido -->
+                                                <div class="modal fade" id="updateOrderModal{{ order.id }}" tabindex="-1" aria-labelledby="updateOrderModalLabel{{ order.id }}" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="updateOrderModalLabel{{ order.id }}">Actualizar Pedido #{{ order.id }}</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <form action="{{ url_for('commerce.update_order_status', order_id=order.id) }}" method="post">
+                                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                                <div class="modal-body">
+                                                                    <div class="mb-3">
+                                                                        <label for="order-status" class="form-label">Estado del pedido</label>
+                                                                        <select class="form-select" id="order-status" name="status" required>
+                                                                            <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pendiente</option>
+                                                                            <option value="processing" {% if order.status == 'processing' %}selected{% endif %}>En proceso</option>
+                                                                            <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Enviado</option>
+                                                                            <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Entregado</option>
+                                                                            <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelado</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    
+                                                                    <div class="mb-3">
+                                                                        <label for="tracking-number" class="form-label">Número de seguimiento (opcional)</label>
+                                                                        <input type="text" class="form-control" id="tracking-number" name="tracking_number" value="{{ order.tracking_number or '' }}">
+                                                                    </div>
+                                                                    
+                                                                    <div class="mb-3">
+                                                                        <label for="seller-notes" class="form-label">Notas para el cliente (opcional)</label>
+                                                                        <textarea class="form-control" id="seller-notes" name="seller_notes" rows="3">{{ order.seller_notes or '' }}</textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-5">
+                                <i class="bi bi-bag" style="font-size: 3rem; color: #dee2e6;"></i>
+                                <h5 class="mt-3">No tienes pedidos</h5>
+                                <p class="text-muted">Los pedidos de tus productos aparecerán aquí</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mensajes -->
+                <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h4 class="mb-4">Mensajes</h4>
+                            
+                            {% if messages %}
+                            <div class="list-group">
+                                {% for message in messages %}
+                                <a href="#" class="list-group-item list-group-item-action py-3 {% if not message.read %}fw-bold{% endif %}" data-bs-toggle="modal" data-bs-target="#messageModal{{ message.id }}">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ message.sender_name }}</h6>
+                                        <small>{{ message.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                                    </div>
+                                    <p class="mb-1 text-truncate">{{ message.subject }}</p>
+                                    <small class="text-muted">{{ message.product_name }}</small>
+                                    {% if not message.read %}
+                                    <span class="badge bg-primary rounded-pill float-end">Nuevo</span>
+                                    {% endif %}
+                                </a>
+                                
+                                <!-- Modal para ver mensaje -->
+                                <div class="modal fade" id="messageModal{{ message.id }}" tabindex="-1" aria-labelledby="messageModalLabel{{ message.id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="messageModalLabel{{ message.id }}">{{ message.subject }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <p><strong>De:</strong> {{ message.sender_name }}</p>
+                                                    <p><strong>Producto:</strong> {{ message.product_name }}</p>
+                                                    <p><strong>Fecha:</strong> {{ message.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <p>{{ message.content }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#replyMessageModal{{ message.id }}" data-bs-dismiss="modal">Responder</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Modal para responder mensaje -->
+                                <div class="modal fade" id="replyMessageModal{{ message.id }}" tabindex="-1" aria-labelledby="replyMessageModalLabel{{ message.id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="replyMessageModalLabel{{ message.id }}">Responder a {{ message.sender_name }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <form action="{{ url_for('commerce.reply_message', message_id=message.id) }}" method="post">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label for="reply-subject" class="form-label">Asunto</label>
+                                                        <input type="text" class="form-control" id="reply-subject" name="subject" value="RE: {{ message.subject }}" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="reply-content" class="form-label">Mensaje</label>
+                                                        <textarea class="form-control" id="reply-content" name="content" rows="5" required></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" class="btn btn-primary">Enviar respuesta</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-5">
+                                <i class="bi bi-chat" style="font-size: 3rem; color: #dee2e6;"></i>
+                                <h5 class="mt-3">No tienes mensajes</h5>
+                                <p class="text-muted">Los mensajes de los compradores aparecerán aquí</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reseñas -->
+                <div class="tab-pane fade" id="v-pills-reviews" role="tabpanel" aria-labelledby="v-pills-reviews-tab">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h4 class="mb-4">Reseñas de clientes</h4>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-4 mb-4 mb-md-0">
+                                    <div class="text-center">
+                                        <h1 class="display-4 fw-bold">{{ stats.rating|round(1) }}</h1>
+                                        <div class="mb-2">
+                                            {% for i in range(5) %}
+                                                {% if i < stats.rating|int %}
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                                {% elif stats.rating|round(1) - i > 0 and stats.rating|round(1) - i < 1 %}
+                                                <i class="bi bi-star-half text-warning"></i>
+                                                {% else %}
+                                                <i class="bi bi-star text-warning"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <p class="text-muted">Basado en {{ stats.review_count }} reseñas</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="row align-items-center mb-2">
+                                        <div class="col-2">5 <i class="bi bi-star-fill text-warning"></i></div>
+                                        <div class="col-8">
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ stats.rating_distribution.get('5', 0) }}%" aria-valuenow="{{ stats.rating_distribution.get('5', 0) }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-2">{{ stats.rating_distribution.get('5', 0) }}%</div>
+                                    </div>
+                                    <div class="row align-items-center mb-2">
+                                        <div class="col-2">4 <i class="bi bi-star-fill text-warning"></i></div>
+                                        <div class="col-8">
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ stats.rating_distribution.get('4', 0) }}%" aria-valuenow="{{ stats.rating_distribution.get('4', 0) }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-2">{{ stats.rating_distribution.get('4', 0) }}%</div>
+                                    </div>
+                                    <div class="row align-items-center mb-2">
+                                        <div class="col-2">3 <i class="bi bi-star-fill text-warning"></i></div>
+                                        <div class="col-8">
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ stats.rating_distribution.get('3', 0) }}%" aria-valuenow="{{ stats.rating_distribution.get('3', 0) }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-2">{{ stats.rating_distribution.get('3', 0) }}%</div>
+                                    </div>
+                                    <div class="row align-items-center mb-2">
+                                        <div class="col-2">2 <i class="bi bi-star-fill text-warning"></i></div>
+                                        <div class="col-8">
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ stats.rating_distribution.get('2', 0) }}%" aria-valuenow="{{ stats.rating_distribution.get('2', 0) }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-2">{{ stats.rating_distribution.get('2', 0) }}%</div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <div class="col-2">1 <i class="bi bi-star-fill text-warning"></i></div>
+                                        <div class="col-8">
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ stats.rating_distribution.get('1', 0) }}%" aria-valuenow="{{ stats.rating_distribution.get('1', 0) }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-2">{{ stats.rating_distribution.get('1', 0) }}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if reviews %}
+                            <div class="list-group">
+                                {% for review in reviews %}
+                                <div class="list-group-item py-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <h6 class="mb-0">{{ review.reviewer_name }}</h6>
+                                            <div>
+                                                {% for i in range(5) %}
+                                                    {% if i < review.rating %}
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                    {% else %}
+                                                    <i class="bi bi-star text-warning"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">{{ review.created_at.strftime('%d/%m/%Y') }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ review.comment }}</p>
+                                    <small class="text-muted">Producto: {{ review.product_name }}</small>
+                                    
+                                    {% if review.seller_response %}
+                                    <div class="mt-3 p-3 bg-light rounded">
+                                        <h6 class="mb-2">Tu respuesta:</h6>
+                                        <p class="mb-0">{{ review.seller_response }}</p>
+                                    </div>
+                                    {% else %}
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#replyReviewModal{{ review.id }}">
+                                            Responder
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- Modal para responder reseña -->
+                                    <div class="modal fade" id="replyReviewModal{{ review.id }}" tabindex="-1" aria-labelledby="replyReviewModalLabel{{ review.id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="replyReviewModalLabel{{ review.id }}">Responder a la reseña</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <form action="{{ url_for('commerce.reply_review', review_id=review.id) }}" method="post">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label for="review-response" class="form-label">Tu respuesta</label>
+                                                            <textarea class="form-control" id="review-response" name="response" rows="4" required></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                        <button type="submit" class="btn btn-primary">Enviar respuesta</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-5">
+                                <i class="bi bi-star" style="font-size: 3rem; color: #dee2e6;"></i>
+                                <h5 class="mt-3">No tienes reseñas</h5>
+                                <p class="text-muted">Las reseñas de tus productos aparecerán aquí</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Configuración -->
+                <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h4 class="mb-4">Configuración de la tienda</h4>
+                            
+                            <form action="{{ url_for('commerce.update_seller_settings') }}" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                
+                                <div class="mb-4">
+                                    <h5>Información básica</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="display_name" class="form-label">Nombre de la tienda</label>
+                                            <input type="text" class="form-control" id="display_name" name="display_name" value="{{ seller.display_name }}" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="location" class="form-label">Ubicación</label>
+                                            <input type="text" class="form-control" id="location" name="location" value="{{ seller.location }}" required>
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="description" class="form-label">Descripción de la tienda</label>
+                                            <textarea class="form-control" id="description" name="description" rows="3" required>{{ seller.description }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h5>Imagen de perfil</h5>
+                                    <div class="row g-3 align-items-center">
+                                        <div class="col-auto">
+                                            <img src="{{ seller.profile_image or url_for('static', filename='img/default_profile.png') }}" alt="Perfil" class="rounded-circle" width="100" height="100">
+                                        </div>
+                                        <div class="col">
+                                            <input type="file" class="form-control" id="profile_image" name="profile_image" accept="image/*">
+                                            <div class="form-text">Sube una imagen de perfil para tu tienda (opcional)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h5>Información de contacto</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="contact_email" class="form-label">Email de contacto</label>
+                                            <input type="email" class="form-control" id="contact_email" name="contact_email" value="{{ seller.contact_email }}" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="contact_phone" class="form-label">Teléfono de contacto</label>
+                                            <input type="tel" class="form-control" id="contact_phone" name="contact_phone" value="{{ seller.contact_phone or '' }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h5>Opciones de envío y pago</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Opciones de envío</label>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="pickup" name="shipping_options[]" value="pickup" {% if 'pickup' in seller.shipping_options %}checked{% endif %}>
+                                                <label class="form-check-label" for="pickup">
+                                                    Recojo en persona
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="local_delivery" name="shipping_options[]" value="local_delivery" {% if 'local_delivery' in seller.shipping_options %}checked{% endif %}>
+                                                <label class="form-check-label" for="local_delivery">
+                                                    Entrega local
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="shipping" name="shipping_options[]" value="shipping" {% if 'shipping' in seller.shipping_options %}checked{% endif %}>
+                                                <label class="form-check-label" for="shipping">
+                                                    Envío nacional
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="payment_info" class="form-label">Información de pago</label>
+                                            <textarea class="form-control" id="payment_info" name="payment_info" rows="4">{{ seller.payment_info or '' }}</textarea>
+                                            <div class="form-text">Métodos de pago aceptados (ej. transferencia bancaria, Yape, Plin)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Código para mantener la pestaña activa después de recargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        // Obtener la pestaña activa del almacenamiento local
+        const activeTab = localStorage.getItem('sellerActiveTab');
+        if (activeTab) {
+            // Activar la pestaña guardada
+            const tabElement = document.querySelector(activeTab);
+            if (tabElement) {
+                const tab = new bootstrap.Tab(tabElement);
+                tab.show();
+            }
+        }
+        
+        // Guardar la pestaña activa cuando se cambia
+        const tabElements = document.querySelectorAll('button[data-bs-toggle="pill"]');
+        tabElements.forEach(function(tabElement) {
+            tabElement.addEventListener('shown.bs.tab', function(event) {
+                localStorage.setItem('sellerActiveTab', '#' + event.target.id);
+            });
+        });
+    });
+</script>
+{% endblock %}

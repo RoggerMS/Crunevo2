@@ -346,8 +346,7 @@ def create_app():
         my_saved_courses,
         api_search_courses,
     )
-    from .routes.store_routes import store_bp
-    from .routes.marketplace_routes import marketplace_bp
+    from .routes.commerce_routes import commerce_bp
     from .routes.product_routes import product_bp
     from .routes.chat_routes import chat_bp
     from .routes.search_routes import search_bp
@@ -396,7 +395,7 @@ def create_app():
         app.register_blueprint(onboarding_bp)
         app.register_blueprint(auth_bp)
         app.register_blueprint(notes_bp)
-        app.register_blueprint(marketplace_bp)
+        app.register_blueprint(commerce_bp)
         app.add_url_rule(
             "/apuntes",
             endpoint="notes.list_notes_alias",
@@ -487,7 +486,6 @@ def create_app():
             endpoint="courses.api_search_courses_alias",
             view_func=api_search_courses,
         )
-        app.register_blueprint(store_bp)
         app.register_blueprint(product_bp)
         app.register_blueprint(chat_bp)
         app.register_blueprint(search_bp)

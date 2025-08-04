@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+{% include "csrf.html" %}
+
+{% block title %}{{ product.name }} - Tienda Crunevo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('commerce.commerce_index') }}">Tienda</a></li>
+            {% if product.category %}
+            <li class="breadcrumb-item"><a href="{{ url_for('commerce.commerce_index', categoria=product.category) }}">{{ product.category }}</a></li>
+            {% endif %}
+            {% if product.subcategory %}
+            <li class="breadcrumb-item"><a href="{{ url_for('commerce.commerce_index', categoria=product.category, subcategoria=product.subcategory) }}">{{ product.subcategory }}</a></li>
+            {% endif %}
+            <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Imágenes del producto -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div id="productImages" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            {% if product.image_url %}
+                            <div class="carousel-item active">
+                                <img src="{{ product.image_url }}" class="d-block w-100 product-detail-img" alt="{{ product.name }}">
+                            </div>
+                            {% endif %}
+                            {% if product.additional_images %}
+                                {% for img in product.additional_images.split(',') %}
+                                <div class="carousel-item {% if not product.image_url and loop.first %}active{% endif %}">
+                                    <img src="{{ img }}" class="d-block w-100 product-detail-img" alt="{{ product.name }}">
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                            {% if not product.image_url and not product.additional_images %}
+                            <div class="carousel-item active">
+                                <div class="placeholder-img product-detail-img d-flex align-items-center justify-content-center bg-light">
+                                    <i class="bi bi-image text-secondary" style="font-size: 4rem;"></i>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#productImages" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#productImages" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Siguiente</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del producto -->
+        <div class="col-md-7">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h1 class="h3 mb-0">{{ product.name }}</h1>
+                        <div>
+                            {% if product.is_official %}
+                            <span class="badge bg-primary">Oficial</span>
+                            {% endif %}
+                            {% if product.condition == 'new' %}
+                            <span class="badge bg-success">Nuevo</span>
+                            {% elif product.condition == 'used' %}
+                            <span class="badge bg-secondary">Usado</span>
+                            {% elif product.condition == 'refurbished' %}
+                            <span class="badge bg-info">Reacondicionado</span>
+                            {% endif %}
+                            {% if product.shipping_cost == 0 %}
+                            <span class="badge bg-success">Envío gratis</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Rating -->
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="ratings">
+                                <div class="ratings-val" style="width: {{ (avg_rating / 5) * 100 }}%"></div>
+                            </div>
+                            <span class="ms-2 text-muted">{{ "%.1f"|format(avg_rating) }} ({{ reviews|length }} reseñas)</span>
+                        </div>
+                    </div>
+
+                    <!-- Precio -->
+                    <div class="mb-4">
+                        {% if product.price > 0 %}
+                        <span class="fs-3 fw-bold text-primary">S/ {{ "%.2f"|format(product.price) }}</span>
+                        {% else %}
+                        <span class="fs-3 fw-bold text-success">Gratis</span>
+                        {% endif %}
+                        {% if product.price_credits > 0 %}
+                        <span class="badge bg-warning ms-2">{{ product.price_credits }} créditos</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Stock -->
+                    <div class="mb-3">
+                        {% if product.stock > 0 %}
+                        <span class="text-success"><i class="bi bi-check-circle-fill"></i> En stock ({{ product.stock }} disponibles)</span>
+                        {% else %}
+                        <span class="text-danger"><i class="bi bi-x-circle-fill"></i> Sin stock</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Vendedor (si es del marketplace) -->
+                    {% if seller %}
+                    <div class="mb-4">
+                        <h6>Vendedor:</h6>
+                        <div class="d-flex align-items-center">
+                            {% if seller.logo %}
+                            <img src="{{ seller.logo }}" alt="{{ seller.store_name }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                            {% else %}
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                <i class="bi bi-shop text-secondary"></i>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <a href="{{ url_for('commerce.view_seller', seller_id=seller.id) }}" class="text-decoration-none">{{ seller.store_name }}</a>
+                                {% if seller.is_verified %}
+                                <span class="badge bg-primary ms-1"><i class="bi bi-patch-check-fill"></i> Verificado</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Acciones -->
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        {% if not has_bought and product.stock > 0 %}
+                        <form action="{{ url_for('commerce.add_to_cart', product_id=product.id) }}" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-cart-plus me-1"></i> Añadir al carrito
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        {% if product.id in favorite_ids %}
+                        <form action="{{ url_for('commerce.remove_favorite', product_id=product.id) }}" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="bi bi-heart-fill me-1"></i> Quitar de favoritos
+                            </button>
+                        </form>
+                        {% else %}
+                        <form action="{{ url_for('commerce.add_favorite', product_id=product.id) }}" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="bi bi-heart me-1"></i> Añadir a favoritos
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        {% if seller and current_user.is_authenticated %}
+                        <a href="{{ url_for('commerce.contact_seller', product_id=product.id) }}" class="btn btn-outline-primary">
+                            <i class="bi bi-chat-dots me-1"></i> Contactar al vendedor
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="mb-3">
+                        <h5>Descripción</h5>
+                        <p class="text-muted">{{ product.description }}</p>
+                    </div>
+
+                    <!-- Detalles adicionales -->
+                    {% if product.details %}
+                    <div class="mb-3">
+                        <h5>Detalles</h5>
+                        <div class="text-muted">{{ product.details|safe }}</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Información de envío -->
+                    <div class="mb-3">
+                        <h5>Información de envío</h5>
+                        {% if product.shipping_cost > 0 %}
+                        <p class="text-muted">Costo de envío: S/ {{ "%.2f"|format(product.shipping_cost) }}</p>
+                        {% else %}
+                        <p class="text-muted">Envío gratuito</p>
+                        {% endif %}
+                        {% if product.shipping_info %}
+                        <p class="text-muted">{{ product.shipping_info }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs para reseñas y preguntas -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="true">Reseñas ({{ reviews|length }})</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="questions-tab" data-bs-toggle="tab" data-bs-target="#questions" type="button" role="tab" aria-controls="questions" aria-selected="false">Preguntas ({{ questions|length }})</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content pt-3" id="productTabsContent">
+                        <!-- Reseñas -->
+                        <div class="tab-pane fade show active" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                            {% if has_bought and not has_reviewed %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Deja tu reseña</h5>
+                                    <form action="{{ url_for('commerce.add_review', product_id=product.id) }}" method="post">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <div class="mb-3">
+                                            <label for="rating" class="form-label">Calificación</label>
+                                            <select class="form-select" id="rating" name="rating" required>
+                                                <option value="5">5 estrellas - Excelente</option>
+                                                <option value="4">4 estrellas - Muy bueno</option>
+                                                <option value="3">3 estrellas - Bueno</option>
+                                                <option value="2">2 estrellas - Regular</option>
+                                                <option value="1">1 estrella - Malo</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="comment" class="form-label">Comentario</label>
+                                            <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Enviar reseña</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if reviews %}
+                            <div class="reviews-list">
+                                {% for review in reviews %}
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="ratings small">
+                                                        <div class="ratings-val" style="width: {{ (review.rating / 5) * 100 }}%"></div>
+                                                    </div>
+                                                    <span class="ms-2 text-muted">{{ review.rating }}/5</span>
+                                                </div>
+                                                <h6 class="mt-1 mb-0">{{ review.user.username }}</h6>
+                                            </div>
+                                            <small class="text-muted">{{ review.created_at|timeago }}</small>
+                                        </div>
+                                        <p class="card-text">{{ review.comment }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="bi bi-star text-muted" style="font-size: 2rem;"></i>
+                                <p class="mt-2 text-muted">Aún no hay reseñas para este producto</p>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Preguntas -->
+                        <div class="tab-pane fade" id="questions" role="tabpanel" aria-labelledby="questions-tab">
+                            {% if current_user.is_authenticated %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Haz una pregunta</h5>
+                                    <form action="{{ url_for('commerce.ask_question', product_id=product.id) }}" method="post">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <div class="mb-3">
+                                            <textarea class="form-control" id="question" name="question" rows="2" required placeholder="Escribe tu pregunta aquí..."></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Enviar pregunta</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if questions %}
+                            <div class="questions-list">
+                                {% for question in questions %}
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="mb-0">{{ question.user.username }}</h6>
+                                            <small class="text-muted">{{ question.created_at|timeago }}</small>
+                                        </div>
+                                        <p class="card-text">{{ question.question }}</p>
+
+                                        {% if question.answers %}
+                                        <hr>
+                                        <div class="answers-list ms-4">
+                                            {% for answer in question.answers %}
+                                            <div class="mb-2">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <h6 class="mb-0 text-primary">{{ answer.user.username }}</h6>
+                                                    <small class="text-muted">{{ answer.created_at|timeago }}</small>
+                                                </div>
+                                                <p class="mb-0">{{ answer.answer }}</p>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+
+                                        {% if (current_user.is_authenticated and product.seller_id == current_user.id) or current_user.is_admin %}
+                                        <div class="mt-3">
+                                            <form action="{{ url_for('commerce.answer_question', question_id=question.id) }}" method="post">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" name="answer" placeholder="Responder esta pregunta..." required>
+                                                    <button class="btn btn-outline-primary" type="submit">Responder</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="bi bi-question-circle text-muted" style="font-size: 2rem;"></i>
+                                <p class="mt-2 text-muted">Aún no hay preguntas para este producto</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos relacionados -->
+    {% if related_products %}
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Productos relacionados</h5>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                {% for related in related_products %}
+                <div class="col">
+                    <div class="card h-100 product-card shadow-hover">
+                        <a href="{{ url_for('commerce.view_product', product_id=related.id) }}" class="text-decoration-none">
+                            <div class="text-center p-3">
+                                {% if related.image_url %}
+                                <img src="{{ related.image_url }}" class="card-img-top product-img" alt="{{ related.name }}">
+                                {% else %}
+                                <div class="placeholder-img product-img d-flex align-items-center justify-content-center bg-light">
+                                    <i class="bi bi-image text-secondary" style="font-size: 2rem;"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-truncate">{{ related.name }}</h5>
+                                <p class="card-text text-truncate text-muted">{{ related.description }}</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    {% if related.price > 0 %}
+                                    <span class="fs-5 fw-bold text-primary">S/ {{ "%.2f"|format(related.price) }}</span>
+                                    {% else %}
+                                    <span class="fs-5 fw-bold text-success">Gratis</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

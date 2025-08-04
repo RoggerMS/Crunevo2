@@ -2,67 +2,110 @@
 <div class="sidebar-right" id="sidebar-right">
   <!-- Trending Topics -->
   <div class="card mb-4 border-0 shadow-sm rounded-4">
-    <div class="card-header bg-white border-0 pb-0">
+    <div class="card-header bg-white border-0 pb-0 d-flex justify-content-between align-items-center">
       <h6 class="fw-bold text-dark mb-0">🔥 Tendencias</h6>
+      <a href="{{ url_for('feed.trending') if 'feed.trending' in url_for.__globals__.get('current_app', {}).view_functions else '/feed/trending' }}" class="text-decoration-none small">Ver más</a>
     </div>
     <div class="card-body pt-3">
       <div class="trending-topics">
-        <div class="trending-item mb-3">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <div class="fw-semibold small">#CalculoII</div>
-              <div class="text-muted" style="font-size: 0.75rem;">42 publicaciones</div>
+        {% if trending_posts %}
+          {% for post in trending_posts[:3] %}
+            <div class="trending-item mb-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="fw-semibold small text-truncate" style="max-width: 180px;">
+                    {% if post.content|length > 30 %}
+                      {{ post.content[:30] }}...
+                    {% else %}
+                      {{ post.content }}
+                    {% endif %}
+                  </div>
+                  <div class="text-muted" style="font-size: 0.75rem;">
+                    {% set reaction_count = reaction_counts.get(post.id, {}).get('total', 0) %}
+                    {{ reaction_count }} reacción{% if reaction_count != 1 %}es{% endif %}
+                  </div>
+                </div>
+                <div class="trending-chart">📈</div>
+              </div>
             </div>
-            <div class="trending-chart">📈</div>
-          </div>
-        </div>
-        
-        <div class="trending-item mb-3">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <div class="fw-semibold small">#ExamenFinal</div>
-              <div class="text-muted" style="font-size: 0.75rem;">38 publicaciones</div>
+          {% endfor %}
+        {% else %}
+          <div class="trending-item mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="fw-semibold small">#CalculoII</div>
+                <div class="text-muted" style="font-size: 0.75rem;">42 publicaciones</div>
+              </div>
+              <div class="trending-chart">📈</div>
             </div>
-            <div class="trending-chart">📈</div>
           </div>
-        </div>
-        
-        <div class="trending-item mb-3">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <div class="fw-semibold small">#EstudioGrupal</div>
-              <div class="text-muted" style="font-size: 0.75rem;">25 publicaciones</div>
+          
+          <div class="trending-item mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="fw-semibold small">#ExamenFinal</div>
+                <div class="text-muted" style="font-size: 0.75rem;">38 publicaciones</div>
+              </div>
+              <div class="trending-chart">📈</div>
             </div>
-            <div class="trending-chart">📈</div>
           </div>
-        </div>
+          
+          <div class="trending-item mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="fw-semibold small">#EstudioGrupal</div>
+                <div class="text-muted" style="font-size: 0.75rem;">25 publicaciones</div>
+              </div>
+              <div class="trending-chart">📈</div>
+            </div>
+          </div>
+        {% endif %}
         
-        <a href="{{ url_for('feed.trending') if 'feed.trending' in url_for.__globals__.get('current_app', {}).view_functions else '/feed/trending' }}" class="btn btn-outline-primary w-100">Ver más tendencias</a>
+        <a href="{{ url_for('feed.trending') if 'feed.trending' in url_for.__globals__.get('current_app', {}).view_functions else '/feed/trending' }}" class="btn btn-outline-primary btn-sm rounded-pill w-100">Explorar tendencias</a>
       </div>
     </div>
   </div>
 
   <!-- Top Contributors -->
   <div class="card mb-4 border-0 shadow-sm rounded-4">
-    <div class="card-header bg-white border-0 pb-0">
+    <div class="card-header bg-white border-0 pb-0 d-flex justify-content-between align-items-center">
       <h6 class="fw-bold text-dark mb-0">⭐ Contribuidores destacados</h6>
+      <a href="{{ url_for('ranking.index') if 'ranking.index' in url_for.__globals__.get('current_app', {}).view_functions else '/ranking' }}" class="text-decoration-none small">Ver más</a>
     </div>
     <div class="card-body pt-3">
-      {% for i in range(1, 4) %}
-      <div class="contributor-item d-flex align-items-center gap-3 mb-3">
-        <div class="position-relative">
-          <img src="{{ url_for('static', filename='img/default.png') }}" 
-               class="rounded-circle" 
-               width="40" 
-               height="40">
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">{{ i }}</span>
+      {% if top_ranked %}
+        {% for i, (username, credits) in enumerate(top_ranked[:3], 1) %}
+        <div class="contributor-item d-flex align-items-center gap-3 mb-3">
+          <div class="position-relative">
+            <img src="{{ url_for('static', filename='img/default.png') }}" 
+                class="rounded-circle" 
+                width="40" 
+                height="40">
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">{{ i }}</span>
+          </div>
+          <div class="flex-grow-1">
+            <div class="fw-semibold small text-truncate" style="max-width: 140px;">{{ username }}</div>
+            <div class="text-muted" style="font-size: 0.75rem;">{{ credits }} puntos esta semana</div>
+          </div>
         </div>
-        <div class="flex-grow-1">
-          <div class="fw-semibold small">usuario_{{ i }}</div>
-          <div class="text-muted" style="font-size: 0.75rem;">{{ 150 - (i * 20) }} puntos esta semana</div>
+        {% endfor %}
+      {% else %}
+        {% for i in range(1, 4) %}
+        <div class="contributor-item d-flex align-items-center gap-3 mb-3">
+          <div class="position-relative">
+            <img src="{{ url_for('static', filename='img/default.png') }}" 
+                class="rounded-circle" 
+                width="40" 
+                height="40">
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">{{ i }}</span>
+          </div>
+          <div class="flex-grow-1">
+            <div class="fw-semibold small">usuario_{{ i }}</div>
+            <div class="text-muted" style="font-size: 0.75rem;">{{ 150 - (i * 20) }} puntos esta semana</div>
+          </div>
         </div>
-      </div>
-      {% endfor %}
+        {% endfor %}
+      {% endif %}
       
       <a href="{{ url_for('ranking.index') if 'ranking.index' in url_for.__globals__.get('current_app', {}).view_functions else '/ranking' }}" class="btn btn-outline-primary btn-sm rounded-pill w-100">Ver ranking completo</a>
     </div>
@@ -70,72 +113,122 @@
 
   <!-- Recent Achievements -->
   <div class="card mb-4 border-0 shadow-sm rounded-4">
-    <div class="card-header bg-white border-0 pb-0">
+    <div class="card-header bg-white border-0 pb-0 d-flex justify-content-between align-items-center">
       <h6 class="fw-bold text-dark mb-0">🏆 Logros recientes</h6>
+      <a href="{{ url_for('ranking.achievements') if 'ranking.achievements' in url_for.__globals__.get('current_app', {}).view_functions else '/ranking/achievements' }}" class="text-decoration-none small">Ver más</a>
     </div>
     <div class="card-body pt-3">
-      <div class="achievement-item d-flex align-items-center gap-3 mb-3">
-        <div class="achievement-icon bg-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-          🎓
+      {% if recent_achievements %}
+        {% for username, badge_code, timestamp in recent_achievements[:3] %}
+          <div class="achievement-item d-flex align-items-center gap-3 mb-3">
+            <div class="achievement-icon 
+              {% if badge_code == 'first_note' %}bg-warning{% elif badge_code == 'commenter' %}bg-success{% elif badge_code == 'streak' %}bg-primary{% else %}bg-info{% endif %} 
+              rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+              {% if badge_code == 'first_note' %}🎓
+              {% elif badge_code == 'commenter' %}💬
+              {% elif badge_code == 'streak' %}🔥
+              {% elif badge_code == 'helper' %}🤝
+              {% elif badge_code == 'quiz_master' %}🧠
+              {% else %}🏆{% endif %}
+            </div>
+            <div class="flex-grow-1">
+              <div class="fw-semibold small text-truncate" style="max-width: 140px;">
+                {% if badge_code == 'first_note' %}Primer Apunte
+                {% elif badge_code == 'commenter' %}Comentarista Activo
+                {% elif badge_code == 'streak' %}Racha de Actividad
+                {% elif badge_code == 'helper' %}Ayudante Destacado
+                {% elif badge_code == 'quiz_master' %}Maestro de Cuestionarios
+                {% else %}Logro Desbloqueado{% endif %}
+              </div>
+              <div class="text-muted" style="font-size: 0.75rem;">
+                {{ username }} • 
+                {% set time_diff = (now - timestamp).total_seconds() if now and timestamp else 0 %}
+                {% if time_diff < 3600 %}
+                  hace {{ (time_diff / 60)|int }} min
+                {% elif time_diff < 86400 %}
+                  hace {{ (time_diff / 3600)|int }} h
+                {% else %}
+                  hace {{ (time_diff / 86400)|int }} d
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="achievement-item d-flex align-items-center gap-3 mb-3">
+          <div class="achievement-icon bg-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+            🎓
+          </div>
+          <div class="flex-grow-1">
+            <div class="fw-semibold small">Primer Apunte</div>
+            <div class="text-muted" style="font-size: 0.75rem;">usuario123 • hace 2h</div>
+          </div>
         </div>
-        <div class="flex-grow-1">
-          <div class="fw-semibold small">Primer Apunte</div>
-          <div class="text-muted" style="font-size: 0.75rem;">usuario123 • hace 2h</div>
+        
+        <div class="achievement-item d-flex align-items-center gap-3 mb-3">
+          <div class="achievement-icon bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+            💬
+          </div>
+          <div class="flex-grow-1">
+            <div class="fw-semibold small">Comentarista Activo</div>
+            <div class="text-muted" style="font-size: 0.75rem;">maria_estudios • hace 4h</div>
+          </div>
         </div>
-      </div>
-      
-      <div class="achievement-item d-flex align-items-center gap-3 mb-3">
-        <div class="achievement-icon bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-          💬
+        
+        <div class="achievement-item d-flex align-items-center gap-3 mb-3">
+          <div class="achievement-icon bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+            🔥
+          </div>
+      {% endif %}
+        {% if not recent_achievements %}
+          <div class="flex-grow-1">
+            <div class="fw-semibold small">Racha de 7 días</div>
+            <div class="text-muted" style="font-size: 0.75rem;">carlos_ing • hace 6h</div>
+          </div>
         </div>
-        <div class="flex-grow-1">
-          <div class="fw-semibold small">Comentarista Activo</div>
-          <div class="text-muted" style="font-size: 0.75rem;">maria_estudios • hace 4h</div>
-        </div>
-      </div>
-      
-      <div class="achievement-item d-flex align-items-center gap-3 mb-3">
-        <div class="achievement-icon bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-          🔥
-        </div>
-        <div class="flex-grow-1">
-          <div class="fw-semibold small">Racha de 7 días</div>
-          <div class="text-muted" style="font-size: 0.75rem;">carlos_ing • hace 6h</div>
-        </div>
+        {% endif %}
       </div>
     </div>
   </div>
 
   <!-- Study Tips -->
   <div class="card mb-4 border-0 shadow-sm rounded-4">
-    <div class="card-header bg-white border-0 pb-0">
+    <div class="card-header bg-white border-0 pb-0 d-flex justify-content-between align-items-center">
       <h6 class="fw-bold text-dark mb-0">💡 Tip de estudio</h6>
+      <a href="{{ url_for('notes.tips') if 'notes.tips' in url_for.__globals__.get('current_app', {}).view_functions else '/notes/tips' }}" class="text-decoration-none small">Ver más</a>
     </div>
     <div class="card-body pt-3">
       <div class="tip-content">
-        <div class="tip-icon mb-2">📚</div>
-        <div class="small fw-semibold mb-2">Técnica Pomodoro</div>
-        <div class="small text-muted mb-3">Estudia 25 minutos, descansa 5. Después de 4 ciclos, toma un descanso de 15-30 minutos.</div>
-        <a href="#" class="btn btn-outline-primary btn-sm rounded-pill">Más tips</a>
+        {% set study_tips = [
+          {'icon': '📚', 'title': 'Técnica Pomodoro', 'content': 'Estudia 25 minutos, descansa 5. Después de 4 ciclos, toma un descanso de 15-30 minutos.'},
+          {'icon': '🧠', 'title': 'Mapas Mentales', 'content': 'Organiza la información visualmente conectando conceptos clave para mejorar la retención y comprensión.'},
+          {'icon': '📝', 'title': 'Método Cornell', 'content': 'Divide tus notas en secciones: ideas principales, detalles y resumen para una mejor organización.'}
+        ] %}
+        {% set random_tip = study_tips | random %}
+        <div class="tip-icon mb-2">{{ random_tip.icon }}</div>
+        <div class="small fw-semibold mb-2">{{ random_tip.title }}</div>
+        <div class="small text-muted mb-3">{{ random_tip.content }}</div>
+        <a href="{{ url_for('notes.tips') if 'notes.tips' in url_for.__globals__.get('current_app', {}).view_functions else '/notes/tips' }}" class="btn btn-outline-primary btn-sm rounded-pill">Más tips</a>
       </div>
     </div>
   </div>
 
   <!-- Quick Links -->
   <div class="card border-0 shadow-sm rounded-4">
-    <div class="card-header bg-white border-0 pb-0">
+    <div class="card-header bg-white border-0 pb-0 d-flex justify-content-between align-items-center">
       <h6 class="fw-bold text-dark mb-0">🔗 Enlaces útiles</h6>
+      <a href="{{ url_for('about.about') if 'about.about' in url_for.__globals__.get('current_app', {}).view_functions else '/about' }}" class="text-decoration-none small">Más info</a>
     </div>
     <div class="card-body pt-3">
-      <div class="d-grid gap-2">
-        <a href="{{ url_for('main.terms') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
-          <i class="bi bi-file-text"></i> Términos de uso
+      <div class="d-flex flex-wrap gap-2 justify-content-center">
+        <a href="{{ url_for('main.terms') if 'main.terms' in url_for.__globals__.get('current_app', {}).view_functions else '/terms' }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+          <i class="bi bi-file-text"></i> Términos
         </a>
-        <a href="{{ url_for('main.privacidad') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+        <a href="{{ url_for('main.privacidad') if 'main.privacidad' in url_for.__globals__.get('current_app', {}).view_functions else '/privacidad' }}" class="btn btn-outline-secondary btn-sm rounded-pill">
           <i class="bi bi-shield-check"></i> Privacidad
         </a>
-        <a href="{{ url_for('about.about') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
-          <i class="bi bi-info-circle"></i> Acerca de CRUNEVO
+        <a href="{{ url_for('about.about') if 'about.about' in url_for.__globals__.get('current_app', {}).view_functions else '/about' }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+          <i class="bi bi-info-circle"></i> Acerca de
         </a>
         <a href="mailto:soporte@crunevo.com" class="btn btn-outline-secondary btn-sm rounded-pill">
           <i class="bi bi-envelope"></i> Soporte
@@ -152,17 +245,30 @@
   overflow-y: auto;
   position: sticky;
   top: 80px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
 }
 
 .sidebar-right .card {
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sidebar-right .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 [data-bs-theme="dark"] .sidebar-right .card {
   background: rgba(31, 41, 55, 0.98);
   color: #f3f4f6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-bs-theme="dark"] .sidebar-right .card:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 [data-bs-theme="dark"] .sidebar-right .card-header {
@@ -174,13 +280,15 @@
 .achievement-item {
   padding: 8px 12px;
   border-radius: 8px;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .trending-item:hover,
 .contributor-item:hover,
 .achievement-item:hover {
   background: rgba(102, 126, 234, 0.05);
+  transform: translateX(3px);
 }
 
 [data-bs-theme="dark"] .trending-item:hover,
@@ -191,10 +299,18 @@
 
 .tip-content {
   text-align: center;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.tip-content:hover {
+  background-color: rgba(102, 126, 234, 0.05);
 }
 
 .tip-icon {
-  font-size: 2rem;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .sidebar-right::-webkit-scrollbar {
@@ -212,5 +328,18 @@
 
 .sidebar-right::-webkit-scrollbar-thumb:hover {
   background: rgba(102, 126, 234, 0.5);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .sidebar-right {
+    height: auto;
+    position: static;
+    margin-top: 1rem;
+  }
+  
+  .sidebar-right .card {
+    margin-bottom: 1rem;
+  }
 }
 </style>

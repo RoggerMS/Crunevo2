@@ -43,18 +43,6 @@ IS_ADMIN = os.environ.get("ADMIN_INSTANCE") == "1"
 auth_bp = Blueprint("auth", __name__)
 
 
-def _has_2fa_table() -> bool:
-    """Return True if the TwoFactorToken table exists."""
-    from sqlalchemy import inspect
-
-    return inspect(db.engine).has_table("two_factor_token")
-
-
-@auth_bp.route("/register")
-def redirect_register():
-    return redirect(url_for("onboarding.register"))
-
-
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     admin_mode = current_app.config.get("ADMIN_INSTANCE")
@@ -91,48 +79,6 @@ def login():
             return redirect(next_page)
         flash("Credenciales inválidas")
     return render_template(template, error=error, wait=wait)
-
-
-@auth_bp.route("/login/verify", methods=["GET", "POST"])
-def verify_token():
-    user_id = session.get("2fa_user_id")
-    if not user_id:
-        return redirect(url_for("auth.login"))
-    user = User.query.get(user_id)
-    if not _has_2fa_table():
-        return redirect(url_for("auth.login"))
-    record = None
-    try:
-        record = user.two_factor
-    except Exception:
-        db.session.rollback()
-    if not record or not record.confirmed_at:
-        return redirect(url_for("auth.login"))
-    if request.method == "POST":
-        code = request.form.get("code")
-        totp = pyotp.TOTP(record.secret)
-        valid = totp.verify(code)
-        if not valid and record.backup_codes:
-            codes = record.backup_codes.split(",")
-            if code in codes:
-                codes.remove(code)
-                record.backup_codes = ",".join(codes)
-                valid = True
-        if valid:
-            login_user(user)
-            record_login(user)
-            record_activity("login")
-            session.pop("2fa_user_id", None)
-            next_page = session.pop("next", None)
-            admin_mode = current_app.config.get("ADMIN_INSTANCE")
-            if admin_mode:
-                return redirect(url_for("admin.dashboard"))
-            if not next_page or urlparse(next_page).netloc != "":
-                next_page = url_for("feed.feed_home")
-            db.session.commit()
-            return redirect(next_page)
-        flash("Código inválido", "danger")
-    return render_template("auth/two_factor_verify.html")
 
 
 @auth_bp.route("/logout")
@@ -185,24 +131,23 @@ def setup_2fa():
     )
 
 
-@auth_bp.route("/2fa/backup", methods=["POST"])
-@login_required
-def regen_backup_codes():
-    if not _has_2fa_table():
-        return redirect(url_for("auth.setup_2fa"))
-    record = current_user.two_factor
-    if not record or not record.confirmed_at:
-        return redirect(url_for("auth.setup_2fa"))
-    record.backup_codes = ",".join(_generate_backup_codes())
-    db.session.commit()
-    return jsonify(codes=record.backup_codes.split(","))
-
-
 @auth_bp.route("/perfil", methods=["GET", "POST"])
 @activated_required
 def perfil():
+    # Redirige a la vista unificada de perfil
+    return redirect(url_for('auth.view_profile', username=current_user.username))
+
+
+@auth_bp.route("/perfil/<username>", methods=["GET", "POST"])
+@activated_required
+def view_profile(username):
+    """Vista unificada para perfil propio y perfil público."""
+    user = User.query.filter_by(username=username).first_or_404()
+    is_own_profile = current_user.id == user.id
     tab = request.args.get("tab")
-    if request.method == "POST":
+    
+    # Procesar actualización de perfil si es el propio usuario
+    if is_own_profile and request.method == "POST":
         current_user.about = request.form.get("about")
         file = request.files.get("avatar_file")
         if file and file.filename:
@@ -231,25 +176,24 @@ def perfil():
     )
     from crunevo.constants import ACHIEVEMENT_DETAILS, ACHIEVEMENT_CATEGORIES
 
-    saved = SavedPost.query.filter_by(user_id=current_user.id).all()
+    # Obtener publicaciones guardadas del usuario que se está viendo
+    saved = SavedPost.query.filter_by(user_id=user.id).all()
     posts = [Post.query.get(sp.post_id) for sp in saved if Post.query.get(sp.post_id)]
 
     # Quick counts for profile stats
-    user_clubs = [
-        cm.club for cm in ClubMember.query.filter_by(user_id=current_user.id).all()
-    ]
+    user_clubs = [cm.club for cm in ClubMember.query.filter_by(user_id=user.id).all()]
     completed_missions_count = UserMission.query.filter_by(
-        user_id=current_user.id
+        user_id=user.id
     ).count()
 
     # Academic level and participation metrics
     user_level = min(
-        10, (current_user.points or 0) // 100 + current_user.verification_level
+        10, (user.points or 0) // 100 + user.verification_level
     )
     activity_total = (
-        len(current_user.post_comments or [])
-        + len(current_user.posts or [])
-        + Note.query.filter_by(user_id=current_user.id).count()
+        len(user.post_comments or [])
+        + len(user.posts or [])
+        + Note.query.filter_by(user_id=user.id).count()
     )
     participation_percentage = (
         min(100, int((activity_total / 30) * 100)) if activity_total else 0
@@ -258,70 +202,70 @@ def perfil():
     # Build recent activity feed
     recent_activities = []
     for post in (
-        Post.query.filter_by(author_id=current_user.id)
+        Post.query.filter_by(author_id=user.id)
         .order_by(Post.created_at.desc())
         .limit(5)
     ):
         recent_activities.append(
             {
                 "timestamp": post.created_at,
-                "description": "Publicaste en el feed",
+                "description": "Publicaste en el feed" if is_own_profile else f"{user.username} publicó en el feed",
                 "icon": "pencil-square",
                 "type_color": "primary",
             }
         )
 
     for note in (
-        Note.query.filter_by(user_id=current_user.id)
+        Note.query.filter_by(user_id=user.id)
         .order_by(Note.created_at.desc())
         .limit(5)
     ):
         recent_activities.append(
             {
                 "timestamp": note.created_at,
-                "description": f"Subiste un apunte llamado {note.title}",
+                "description": f"Subiste un apunte llamado {note.title}" if is_own_profile else f"{user.username} subió un apunte llamado {note.title}",
                 "icon": "journal-text",
                 "type_color": "success",
             }
         )
 
     for comment in (
-        Comment.query.filter_by(user_id=current_user.id)
+        Comment.query.filter_by(user_id=user.id)
         .order_by(Comment.created_at.desc())
         .limit(5)
     ):
         recent_activities.append(
             {
                 "timestamp": comment.created_at,
-                "description": "Comentaste en un apunte",
+                "description": "Comentaste en un apunte" if is_own_profile else f"{user.username} comentó en un apunte",
                 "icon": "chat-left-text",
                 "type_color": "info",
             }
         )
 
     for pcom in (
-        PostComment.query.filter_by(author_id=current_user.id)
+        PostComment.query.filter_by(author_id=user.id)
         .order_by(PostComment.timestamp.desc())
         .limit(5)
     ):
         recent_activities.append(
             {
                 "timestamp": pcom.timestamp,
-                "description": "Comentaste en una publicación",
+                "description": "Comentaste en una publicación" if is_own_profile else f"{user.username} comentó en una publicación",
                 "icon": "chat-left-text",
                 "type_color": "info",
             }
         )
 
     for um in (
-        UserMission.query.filter_by(user_id=current_user.id)
+        UserMission.query.filter_by(user_id=user.id)
         .order_by(UserMission.completed_at.desc())
         .limit(5)
     ):
         if um.mission:
-            desc = f"Completaste la misión {um.mission.description}"
+            desc = f"Completaste la misión {um.mission.description}" if is_own_profile else f"{user.username} completó la misión {um.mission.description}"
         else:
-            desc = "Completaste una misión"
+            desc = "Completaste una misión" if is_own_profile else f"{user.username} completó una misión"
         recent_activities.append(
             {
                 "timestamp": um.completed_at,
@@ -335,7 +279,7 @@ def perfil():
     recent_activities = recent_activities[:5]
 
     ach_type = request.args.get("tipo")
-    all_user_achievements = current_user.achievements
+    all_user_achievements = user.achievements
     achievements = all_user_achievements
     if ach_type:
         achievements = [
@@ -365,78 +309,89 @@ def perfil():
     enlace_referido = None
     creditos_referidos = 0
     purchases = None
-    if tab == "misiones":
-        from crunevo.routes.missions_routes import (
-            compute_mission_states,
-            compute_group_mission_states,
-        )
-        from crunevo.models import Mission, GroupMission
-
-        misiones = Mission.query.all()
-        progresos = compute_mission_states(current_user)
-        group_missions = (
-            GroupMission.query.join(GroupMission.participants)
-            .filter_by(user_id=current_user.id)
-            .all()
-        )
-        group_progress = compute_group_mission_states(current_user)
-    elif tab == "compras":
-        purchases = (
-            Purchase.query.filter_by(user_id=current_user.id)
-            .order_by(Purchase.timestamp.desc())
-            .all()
-        )
-    elif tab == "referidos":
-        from crunevo.models import Referral
-        from crunevo.models import Credit
-        from crunevo.constants import CreditReasons
-        from sqlalchemy import func
-        from sqlalchemy.exc import ProgrammingError, OperationalError
-
-        try:
-            referidos = Referral.query.filter_by(invitador_id=current_user.id).all()
-            total_referidos = len(referidos)
-            referidos_completados = sum(1 for r in referidos if r.completado)
-            creditos_referidos = (
-                db.session.query(func.coalesce(func.sum(Credit.amount), 0))
-                .filter_by(user_id=current_user.id, reason=CreditReasons.REFERIDO)
-                .scalar()
-                or 0
+    
+    # Solo cargar datos específicos de pestañas si es el propio perfil
+    if is_own_profile:
+        if tab == "misiones":
+            from crunevo.routes.missions_routes import (
+                compute_mission_states,
+                compute_group_mission_states,
             )
-        except (ProgrammingError, OperationalError):
-            db.session.rollback()
-        enlace_referido = url_for(
-            "onboarding.register", ref=current_user.username, _external=True
-        )
+            from crunevo.models import Mission, GroupMission
 
-    return render_template(
-        "auth/perfil.html",
-        user=current_user,
-        saved_posts=posts,
-        achievements=achievements,
-        ach_type=ach_type,
-        tab=tab,
-        misiones=misiones,
-        progresos=progresos,
-        group_missions=group_missions,
-        group_progress=group_progress,
-        referidos=referidos,
-        total_referidos=total_referidos,
-        referidos_completados=referidos_completados,
-        enlace_referido=enlace_referido,
-        creditos_referidos=creditos_referidos,
-        user_level=user_level,
-        user_clubs=user_clubs,
-        completed_missions_count=completed_missions_count,
-        participation_percentage=participation_percentage,
-        recent_activities=recent_activities,
-        purchases=purchases,
-        total_achievements=total_achievements,
-        user_achievements_map=user_achievements_map,
-        user_achievements=all_user_achievements,
-        unlocked_achievements=unlocked_achievements,
-        locked_achievements=locked_achievements,
-    )
+            misiones = Mission.query.all()
+            progresos = compute_mission_states(user)
+            group_missions = (
+                GroupMission.query.join(GroupMission.participants)
+                .filter_by(user_id=user.id)
+                .all()
+            )
+            group_progress = compute_group_mission_states(user)
+        elif tab == "compras":
+            purchases = (
+                Purchase.query.filter_by(user_id=user.id)
+                .order_by(Purchase.timestamp.desc())
+                .all()
+            )
+        elif tab == "referidos":
+            from crunevo.models import Referral
+            from crunevo.models import Credit
+            from crunevo.constants import CreditReasons
+            from sqlalchemy import func
+            from sqlalchemy.exc import ProgrammingError, OperationalError
+
+            try:
+                referidos = Referral.query.filter_by(invitador_id=user.id).all()
+                total_referidos = len(referidos)
+                referidos_completados = sum(1 for r in referidos if r.completado)
+                creditos_referidos = (
+                    db.session.query(func.coalesce(func.sum(Credit.amount), 0))
+                    .filter_by(user_id=user.id, reason=CreditReasons.REFERIDO)
+                    .scalar()
+                    or 0
+                )
+            except (ProgrammingError, OperationalError):
+                db.session.rollback()
+            enlace_referido = url_for(
+                "onboarding.register", ref=user.username, _external=True
+            )
+
+    # Determinar qué plantilla usar
+    if tab == "apuntes":
+        notes = Note.query.filter_by(user_id=user.id).order_by(Note.created_at.desc()).all()
+        return render_template("perfil_notas.html", user=user, notes=notes)
+    elif not is_own_profile:
+        return render_template("perfil_publico.html", user=user)
+    else:
+        return render_template(
+            "auth/perfil.html",
+            user=user,
+            is_own_profile=is_own_profile,
+            saved_posts=posts,
+            achievements=achievements,
+            ach_type=ach_type,
+            tab=tab,
+            misiones=misiones,
+            progresos=progresos,
+            group_missions=group_missions,
+            group_progress=group_progress,
+            referidos=referidos,
+            total_referidos=total_referidos,
+            referidos_completados=referidos_completados,
+            enlace_referido=enlace_referido,
+            creditos_referidos=creditos_referidos,
+            user_level=user_level,
+            user_clubs=user_clubs,
+            completed_missions_count=completed_missions_count,
+            participation_percentage=participation_percentage,
+            recent_activities=recent_activities,
+            purchases=purchases,
+            total_achievements=total_achievements,
+            user_achievements_map=user_achievements_map,
+            user_achievements=all_user_achievements,
+            unlocked_achievements=unlocked_achievements,
+            locked_achievements=locked_achievements,
+        )
 
 
 @auth_bp.route("/perfil/avatar", methods=["POST"])
@@ -446,7 +401,7 @@ def update_avatar():
     file = request.files.get("avatar")
     if not file or not file.filename:
         flash("No se seleccion\u00f3 ninguna imagen", "danger")
-        return redirect(url_for("auth.perfil"))
+        return redirect(url_for("auth.view_profile", username=current_user.username))
 
     cloud_url = current_app.config.get("CLOUDINARY_URL")
     if cloud_url:
@@ -462,7 +417,7 @@ def update_avatar():
 
     db.session.commit()
     flash("Avatar actualizado")
-    return redirect(url_for("auth.perfil"))
+    return redirect(url_for("auth.view_profile", username=current_user.username))
 
 
 @auth_bp.route("/perfil/banner", methods=["POST"])
@@ -471,36 +426,27 @@ def update_banner():
     file = request.files.get("banner")
     if not file or not file.filename:
         flash("No se seleccionó ninguna imagen", "danger")
-        return redirect(url_for("auth.perfil"))
+        return redirect(url_for("auth.view_profile", username=current_user.username))
 
     res = cloudinary.uploader.upload(file, resource_type="image")
     current_user.banner_url = res["secure_url"]
     db.session.commit()
     flash("Banner actualizado")
-    return redirect(url_for("auth.perfil"))
+    return redirect(url_for("auth.view_profile", username=current_user.username))
 
 
 @auth_bp.route("/user/<int:user_id>")
 @activated_required
 def public_profile(user_id):
     user = User.query.get_or_404(user_id)
-    return render_template("perfil_publico.html", user=user)
-
-
-@auth_bp.route("/perfil/<username>")
-@activated_required
-def profile_by_username(username: str):
-    user = User.query.filter_by(username=username).first_or_404()
-    return render_template("perfil_publico.html", user=user)
+    return redirect(url_for('auth.view_profile', username=user.username))
 
 
 @auth_bp.route("/perfil/<username>/apuntes")
 @activated_required
 def notes_by_username(username: str):
     """Display all notes from a user by username."""
-    user = User.query.filter_by(username=username).first_or_404()
-    notes = Note.query.filter_by(user_id=user.id).order_by(Note.created_at.desc()).all()
-    return render_template("perfil_notas.html", user=user, notes=notes)
+    return redirect(url_for('auth.view_profile', username=username, tab='apuntes'))
 
 
 @auth_bp.route("/agradecer/<int:user_id>", methods=["POST"])
@@ -509,7 +455,7 @@ def agradecer(user_id):
     target = User.query.get_or_404(user_id)
     if target.id == current_user.id:
         flash("No puedes agradecerte a ti mismo", "warning")
-        return redirect(url_for("auth.profile_by_username", username=target.username))
+        return redirect(url_for("auth.view_profile", username=target.username))
     try:
         spend_credit(
             current_user, 1, CreditReasons.AGRADECIMIENTO, related_id=target.id
@@ -520,84 +466,7 @@ def agradecer(user_id):
         flash("¡Gracias enviado!")
     except ValueError:
         flash("No tienes crolars suficientes", "danger")
-    return redirect(url_for("auth.profile_by_username", username=target.username))
-
-
-@auth_bp.route("/api/reclamar-racha", methods=["POST"])
-@activated_required
-def reclamar_racha():
-    today = date.today()
-    streak = current_user.login_streak
-    if not streak or streak.last_login != today:
-        return jsonify({"success": False, "message": "No has iniciado sesión hoy"}), 400
-    if streak.claimed_today == today:
-        return jsonify({"success": False, "message": "Ya reclamaste hoy"}), 400
-
-    token = request.headers.get("X-Device-Token")
-    code = f"racha_dia_{streak.current_day}"
-    if token:
-        limit = datetime.utcnow() - timedelta(hours=24)
-        exists = (
-            DeviceClaim.query.filter_by(device_token=token, mission_code=code)
-            .filter(DeviceClaim.timestamp >= limit)
-            .first()
-        )
-        if exists:
-            return (
-                jsonify(
-                    {
-                        "success": False,
-                        "message": "Este dispositivo ya canjeó esta recompensa recientemente.",
-                    }
-                ),
-                400,
-            )
-
-    reward = streak_reward(streak.current_day)
-    add_credit(current_user, reward, CreditReasons.RACHA_LOGIN)
-    streak.claimed_today = today
-    if token:
-        db.session.add(
-            DeviceClaim(
-                device_token=token,
-                mission_code=code,
-                user_id=current_user.id,
-            )
-        )
-    db.session.commit()
-    return jsonify(
-        {
-            "success": True,
-            "credits": reward,
-            "day": streak.current_day,
-            "balance": current_user.credits,
-        }
-    )
-
-
-@auth_bp.route("/resend-confirmation", methods=["POST"])
-@login_required
-def resend_confirmation():
-    data = request.get_json()
-    new_email = data.get("email") if data else None
-
-    if not new_email or "@" not in new_email:
-        return jsonify(success=False, error="Correo no válido."), 400
-
-    if User.query.filter_by(email=new_email).first():
-        return jsonify(success=False, error="Ese correo ya está en uso."), 400
-
-    current_user.email = new_email
-    current_user.activated = False
-    db.session.commit()
-
-    from crunevo.routes.onboarding_routes import send_confirmation_email
-
-    send_confirmation_email(current_user)
-    return jsonify(success=True)
-
-
-csrf.exempt(resend_confirmation)
+    return redirect(url_for("auth.view_profile", username=target.username))
 
 
 @auth_bp.route("/perfil/eliminar-cuenta", methods=["POST"])
@@ -639,36 +508,31 @@ def delete_account():
         ).delete()
         NoteVote.query.filter_by(note_id=note.id).delete()
         Comment.query.filter_by(note_id=note.id).delete()
-        PrintRequest.query.filter_by(note_id=note.id).delete()
         db.session.delete(note)
 
-    # Remove comments, post comments and notifications
-    for comment in list(current_user.comments):
-        db.session.delete(comment)
-    for pcomment in list(current_user.post_comments):
-        db.session.delete(pcomment)
-    for notif in current_user.notifications.all():
-        db.session.delete(notif)
+    # Remove other user data
+    LoginStreak.query.filter_by(user_id=current_user.id).delete()
+    PrintRequest.query.filter_by(user_id=current_user.id).delete()
+    Credit.query.filter_by(user_id=current_user.id).delete()
 
-    # Delete login streak if present
-    streak = LoginStreak.query.filter_by(user_id=current_user.id).first()
-    if streak:
-        db.session.delete(streak)
-
-    current_user.activated = False
+    # Mark user as deleted
+    current_user.is_deleted = True
+    current_user.email = f"deleted_{current_user.id}@example.com"
+    current_user.username = f"deleted_user_{current_user.id}"
     current_user.password_hash = secrets.token_hex(16)
-    current_user.chat_enabled = False
+    current_user.about = ""
+    current_user.avatar_url = ""
+    current_user.banner_url = ""
 
     try:
         db.session.commit()
+        logout_user()
+        flash("Tu cuenta ha sido eliminada correctamente.")
+        return redirect(url_for("auth.account_deleted"))
     except IntegrityError:
         db.session.rollback()
-        flash("No se pudo eliminar la cuenta por registros relacionados", "danger")
-        return redirect(url_for("auth.perfil"))
-
-    logout_user()
-    flash("Tu cuenta ha sido eliminada.")
-    return redirect(url_for("main.index"))
+        flash("No se pudo eliminar la cuenta. Contacta a soporte.", "danger")
+        return redirect(url_for("auth.view_profile", username=current_user.username))
 
 
 @auth_bp.route("/cuenta-eliminada")
