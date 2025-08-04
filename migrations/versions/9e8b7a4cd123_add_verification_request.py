@@ -28,7 +28,7 @@ def upgrade():
             "verification_request",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column("info", sa.Text(), nullable=False),
             sa.Column(

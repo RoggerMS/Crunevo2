@@ -31,7 +31,7 @@ def upgrade():
         if_not_exists=True,
     )
     op.create_table(
-        "user",
+        "users",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("username", sa.String(length=64), nullable=False),
         sa.Column("email", sa.String(length=120), nullable=False),
@@ -60,7 +60,7 @@ def upgrade():
         sa.Column("timestamp", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
@@ -75,7 +75,7 @@ def upgrade():
         sa.Column("timestamp", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
@@ -90,7 +90,7 @@ def upgrade():
         sa.Column("consumed_at", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("token"),
@@ -120,7 +120,7 @@ def upgrade():
         sa.Column("created_at", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
             ["owner_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
@@ -140,7 +140,7 @@ def upgrade():
         sa.Column("login_date", sa.Date(), nullable=False),
         sa.ForeignKeyConstraint(
             ["user_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
@@ -154,11 +154,11 @@ def upgrade():
         sa.Column("timestamp", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
             ["receiver_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.ForeignKeyConstraint(
             ["sender_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
@@ -179,7 +179,7 @@ def upgrade():
         sa.Column("user_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
@@ -193,7 +193,7 @@ def upgrade():
         sa.Column("user_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
@@ -207,7 +207,7 @@ def upgrade():
         sa.Column("calculated_at", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
@@ -221,7 +221,7 @@ def upgrade():
         sa.Column("created_at", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
@@ -234,7 +234,7 @@ def upgrade():
         sa.Column("earned_at", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
@@ -252,7 +252,7 @@ def upgrade():
         ),
         sa.ForeignKeyConstraint(
             ["user_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
@@ -274,7 +274,7 @@ def upgrade():
         ),
         sa.ForeignKeyConstraint(
             ["user_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("user_id", "note_id", name="unique_vote"),
@@ -301,6 +301,6 @@ def downgrade():
     op.drop_table("email_token")
     op.drop_table("credit")
     op.drop_table("auth_event")
-    op.drop_table("user")
+    op.drop_table("users")
     op.drop_table("product")
     # ### end Alembic commands ###

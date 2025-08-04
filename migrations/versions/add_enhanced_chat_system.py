@@ -51,7 +51,7 @@ def upgrade():
         sa.Column("created_by", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["created_by"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,

@@ -27,7 +27,7 @@ def upgrade():
             "two_factor_token",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column("secret", sa.String(length=32), nullable=False),
             sa.Column("created_at", sa.DateTime(), nullable=True),

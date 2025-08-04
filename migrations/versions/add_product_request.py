@@ -27,7 +27,7 @@ def upgrade():
             "product_request",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column("name", sa.String(length=140), nullable=False),
             sa.Column("category", sa.String(length=50), nullable=True),

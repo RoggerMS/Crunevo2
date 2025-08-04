@@ -36,7 +36,7 @@ def upgrade():
             sa.Column("issued_at", sa.DateTime(), nullable=True),
             sa.ForeignKeyConstraint(
                 ["user_id"],
-                ["user.id"],
+                ["users.id"],
             ),
             sa.PrimaryKeyConstraint("id"),
             if_not_exists=True,
@@ -54,7 +54,7 @@ def upgrade():
             sa.Column("likes", sa.Integer(), nullable=True),
             sa.ForeignKeyConstraint(
                 ["author_id"],
-                ["user.id"],
+                ["users.id"],
             ),
             sa.ForeignKeyConstraint(
                 ["club_id"],
@@ -79,7 +79,7 @@ def upgrade():
             ),
             sa.ForeignKeyConstraint(
                 ["user_id"],
-                ["user.id"],
+                ["users.id"],
             ),
             sa.PrimaryKeyConstraint("id"),
             if_not_exists=True,
@@ -96,7 +96,7 @@ def upgrade():
             sa.Column("saved_at", sa.DateTime(), nullable=True),
             sa.ForeignKeyConstraint(
                 ["user_id"],
-                ["user.id"],
+                ["users.id"],
             ),
             sa.PrimaryKeyConstraint("id"),
             sa.UniqueConstraint("user_id", "content_type", "content_id"),

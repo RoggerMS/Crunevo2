@@ -48,6 +48,9 @@ from .block import Block  # noqa: F401
 from .league import AcademicTeam, TeamMember, LeagueMonth, TeamAction  # noqa: F401
 from .knowledge_backpack import KnowledgeBackpack  # noqa: F401
 from .knowledge_backpack import LearningEntry  # noqa: F401
+from .seller import Seller  # noqa: F401
+from .product_request import ProductRequest  # noqa: F401
+from .marketplace_message import MarketplaceMessage, MarketplaceConversation  # noqa: F401
 from .knowledge_backpack import BackpackAchievement  # noqa: F401
 from .challenges import GhostMentorChallenge  # noqa: F401
 from .challenges import GhostMentorResponse  # noqa: F401

@@ -38,6 +38,8 @@ from crunevo.models import (
     PrintRequest,
     ProductRequest,
     SystemErrorLog,
+    Event,
+    EventParticipation,
 )
 from crunevo.utils.helpers import admin_required
 from crunevo.utils.credits import add_credit
@@ -51,6 +53,14 @@ import io
 from flask import make_response
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
+
+
+@admin_bp.route("/eventos")
+@login_required
+@admin_required
+def admin_events():
+    """Redirect to event management in the admin panel"""
+    return redirect(url_for("event.admin_list_events"))
 
 
 @admin_bp.before_request

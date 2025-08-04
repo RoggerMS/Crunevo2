@@ -24,8 +24,8 @@ def upgrade():
         sa.Column("rating", sa.SmallInteger(), nullable=False),
         sa.Column("comment", sa.Text(), nullable=True),
         sa.Column("timestamp", sa.DateTime(), nullable=True),
-        sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
-        sa.ForeignKeyConstraint(["product_id"], ["product.id"]),
+        sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
+        sa.ForeignKeyConstraint(["product_id"], ["products.id"]),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
     )
@@ -36,8 +36,8 @@ def upgrade():
         sa.Column("product_id", sa.Integer(), nullable=False),
         sa.Column("body", sa.Text(), nullable=False),
         sa.Column("timestamp", sa.DateTime(), nullable=True),
-        sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
-        sa.ForeignKeyConstraint(["product_id"], ["product.id"]),
+        sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
+        sa.ForeignKeyConstraint(["product_id"], ["products.id"]),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
     )
@@ -49,7 +49,7 @@ def upgrade():
         sa.Column("body", sa.Text(), nullable=False),
         sa.Column("timestamp", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(["question_id"], ["question.id"]),
-        sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
+        sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
     )

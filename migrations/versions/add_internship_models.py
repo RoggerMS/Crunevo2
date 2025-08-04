@@ -45,7 +45,7 @@ def upgrade():
                 nullable=False,
             ),
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column("cover_letter", sa.Text(), nullable=True),
             sa.Column("applied_at", sa.DateTime(), nullable=True),

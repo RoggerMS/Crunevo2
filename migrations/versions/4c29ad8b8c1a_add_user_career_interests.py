@@ -23,16 +23,16 @@ depends_on = None
 
 def upgrade():
     conn = op.get_bind()
-    with op.batch_alter_table("user", schema=None) as batch_op:
-        if not has_col("user", "career", conn):
+    with op.batch_alter_table("users", schema=None) as batch_op:
+        if not has_col("users", "career", conn):
             batch_op.add_column(
                 sa.Column("career", sa.String(length=120), nullable=True)
             )
-        if not has_col("user", "interests", conn):
+        if not has_col("users", "interests", conn):
             batch_op.add_column(sa.Column("interests", sa.Text(), nullable=True))
 
 
 def downgrade():
-    with op.batch_alter_table("user", schema=None) as batch_op:
+    with op.batch_alter_table("users", schema=None) as batch_op:
         batch_op.drop_column("interests", if_exists=True)
         batch_op.drop_column("career", if_exists=True)

@@ -202,14 +202,98 @@ def admin_create_event():
 
 @event_bp.route("/admin/evento/<int:event_id>/participantes")
 @login_required
+@admin_required
 def admin_event_participants(event_id):
-    if current_user.role not in ["admin", "moderator"]:
-        flash("No tienes permisos para acceder a esta sección", "error")
-        return redirect(url_for("event.list_events"))
-
     event = Event.query.get_or_404(event_id)
     participants = EventParticipation.query.filter_by(event_id=event_id).all()
 
     return render_template(
-        "admin/event_participants.html", event=event, participants=participants
+        "admin/admin_event_detail.html", event=event, participants=participants
     )
+
+
+@event_bp.route("/admin/evento/<int:event_id>/marcar-asistencia/<int:user_id>", methods=["POST"])
+@login_required
+@admin_required
+def mark_attendance(event_id, user_id):
+    participation = EventParticipation.query.filter_by(
+        event_id=event_id, user_id=user_id
+    ).first_or_404()
+    
+    # Toggle attendance status
+    participation.attended = not participation.attended
+    
+    # If marking as attended and wasn't previously, award credits
+    if participation.attended and request.form.get("award_credits") == "true":
+        from crunevo.models import User
+        user = User.query.get(user_id)
+        if user:
+            # Award credits for attendance
+            add_credit(user, 5, CreditReasons.ASISTENCIA_EVENTO, related_id=event_id)
+            flash(f"Se han otorgado 5 créditos a {user.username} por asistir al evento", "success")
+    
+    db.session.commit()
+    
+    return jsonify({
+        "success": True, 
+        "attended": participation.attended
+    })
+
+
+@event_bp.route("/admin/evento/<int:event_id>/editar", methods=["GET", "POST"])
+@login_required
+@admin_required
+def admin_edit_event(event_id):
+    event = Event.query.get_or_404(event_id)
+    
+    if request.method == "POST":
+        event.title = request.form.get("title", "").strip()
+        event.description = request.form.get("description", "").strip()
+        event_date = request.form.get("event_date")
+        event.category = request.form.get("category", "").strip()
+        event.image_url = request.form.get("image_url", "").strip() or None
+        event.jitsi_url = request.form.get("jitsi_url", "").strip() or None
+        event.zoom_url = request.form.get("zoom_url", "").strip() or None
+        event.is_featured = request.form.get("is_featured") == "on"
+        event.rewards = request.form.get("rewards", "").strip() or None
+
+        if not all([event.title, event_date]):
+            flash("Título y fecha son obligatorios", "error")
+            return redirect(url_for("event.admin_edit_event", event_id=event.id))
+
+        try:
+            event.event_date = datetime.strptime(event_date, "%Y-%m-%dT%H:%M")
+        except ValueError:
+            flash("Formato de fecha inválido", "error")
+            return redirect(url_for("event.admin_edit_event", event_id=event.id))
+
+        db.session.commit()
+        flash("Evento actualizado exitosamente", "success")
+        return redirect(url_for("event.admin_list_events"))
+
+    # Format date for datetime-local input
+    formatted_date = event.event_date.strftime("%Y-%m-%dT%H:%M")
+    
+    return render_template(
+        "admin/admin_event_form.html", 
+        event=event, 
+        action="editar",
+        formatted_date=formatted_date
+    )
+
+
+@event_bp.route("/admin/evento/<int:event_id>/eliminar", methods=["POST"])
+@login_required
+@admin_required
+def admin_delete_event(event_id):
+    event = Event.query.get_or_404(event_id)
+    
+    # Delete all participations first
+    EventParticipation.query.filter_by(event_id=event_id).delete()
+    
+    # Then delete the event
+    db.session.delete(event)
+    db.session.commit()
+    
+    flash("Evento eliminado exitosamente", "success")
+    return redirect(url_for("event.admin_list_events"))

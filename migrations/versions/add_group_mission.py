@@ -37,7 +37,7 @@ def upgrade():
             "group_mission_participant",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column(
                 "group_mission_id",

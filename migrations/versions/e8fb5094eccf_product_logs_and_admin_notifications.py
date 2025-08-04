@@ -29,7 +29,7 @@ def upgrade():
         sa.Column("admin_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["admin_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
@@ -43,11 +43,11 @@ def upgrade():
         sa.Column("admin_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["admin_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.ForeignKeyConstraint(
             ["product_id"],
-            ["product.id"],
+            ["products.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
@@ -61,11 +61,11 @@ def upgrade():
         sa.Column("post_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["author_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.ForeignKeyConstraint(
             ["post_id"],
-            ["post.id"],
+            ["posts.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,

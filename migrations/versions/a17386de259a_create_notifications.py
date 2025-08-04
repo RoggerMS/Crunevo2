@@ -21,7 +21,7 @@ def upgrade():
     op.create_table(
         "notifications",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False),
+        sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False),
         sa.Column("message", sa.String(length=255), nullable=False),
         sa.Column("url", sa.String(length=255), nullable=True),
         sa.Column("is_read", sa.Boolean(), nullable=True),

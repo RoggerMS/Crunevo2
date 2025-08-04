@@ -1147,4 +1147,25 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Created template `tienda/my_requests.html` for displaying a user's product requests with search, filtering, and detailed information.
 - Created template `tienda/become_seller.html` for the "Become a Seller" page with benefits, guide, and registration form.
 - Created comprehensive template `tienda/seller_dashboard.html` for the seller dashboard with navigation sidebar and sections for dashboard statistics, products, orders, messages, reviews, and settings.
+
+## Sistema de Eventos y Panel Administrativo
+
+- Implementado sistema completo de gestión de eventos con las siguientes características:
+  - Extendidas las rutas en `event_routes.py` para incluir todas las funciones necesarias:
+    - `crear_evento()` (existente, mejorado)
+    - `editar_evento(event_id)` (nuevo)
+    - `eliminar_evento(event_id)` (nuevo)
+    - `ver_evento(event_id)` (existente)
+    - `listar_eventos()` (existente)
+    - `mark_attendance()` (nuevo) para marcar asistencia y otorgar créditos
+  - Aplicados decoradores de permisos adecuados (`@admin_required`, `@login_required`) a todas las rutas
+  - Integrado el sistema de eventos con el panel administrativo mediante `admin_routes.py`
+  - Creadas plantillas administrativas:
+    - `admin_event_list.html`: Lista de eventos con filtros, búsqueda y exportación CSV
+    - `admin_event_form.html`: Formulario para crear y editar eventos
+    - `admin_event_detail.html`: Detalles del evento y gestión de participantes
+  - Integración con el sistema de créditos para recompensar la asistencia a eventos
+  - Soporte para eventos destacados, próximos y pasados con filtros
+  - Categorización de eventos (taller, seminario, feria, conferencia, etc.)
+  - Acceso a eventos desde el menú de navegación del panel administrativo
 - Created template `tienda/publish_product.html` for publishing or editing products with form fields and image upload.

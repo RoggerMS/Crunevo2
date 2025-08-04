@@ -1,0 +1,265 @@
+{% extends "admin/base_admin.html" %}
+{% import 'components/csrf.html' as csrf %}
+
+{% block title %}Administración de Eventos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Administración de Eventos</h1>
+        <a href="{{ url_for('event.admin_create_event') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Crear Evento
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <form class="d-flex" id="filterForm">
+                        <div class="input-group me-2">
+                            <input type="text" class="form-control" placeholder="Buscar por título..." id="searchInput">
+                            <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                        <select class="form-select me-2" id="categoryFilter">
+                            <option value="">Todas las categorías</option>
+                            <option value="taller">Taller</option>
+                            <option value="seminario">Seminario</option>
+                            <option value="feria">Feria</option>
+                            <option value="conferencia">Conferencia</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                        <select class="form-select" id="statusFilter">
+                            <option value="">Todos los estados</option>
+                            <option value="upcoming">Próximos</option>
+                            <option value="past">Pasados</option>
+                            <option value="featured">Destacados</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-sm btn-outline-secondary" id="exportCSV">
+                        <i class="bi bi-file-earmark-excel"></i> Exportar CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="eventsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Fecha</th>
+                            <th>Categoría</th>
+                            <th>Participantes</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                        <tr>
+                            <td>{{ event.id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if event.image_url %}
+                                    <img src="{{ event.image_url }}" class="rounded me-2" width="40" height="40" alt="{{ event.title }}">
+                                    {% else %}
+                                    <div class="bg-light rounded me-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="bi bi-calendar-event"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <div>{{ event.title }}</div>
+                                        <small class="text-muted">{{ event.description|truncate(50) }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ event.event_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>
+                                {% if event.category %}
+                                <span class="badge bg-primary">{{ event.category }}</span>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info">
+                                    {{ event.participants|length }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="badge bg-{{ 'success' if event.is_upcoming else 'secondary' }} mb-1">
+                                        {{ 'Próximo' if event.is_upcoming else 'Pasado' }}
+                                    </span>
+                                    {% if event.is_featured %}
+                                    <span class="badge bg-warning">
+                                        <i class="bi bi-star-fill"></i> Destacado
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{{ url_for('event.admin_event_participants', event_id=event.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-people"></i>
+                                    </a>
+                                    <a href="{{ url_for('event.admin_edit_event', event_id=event.id) }}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{{ url_for('event.view_event', event_id=event.id) }}" class="btn btn-sm btn-outline-info" target="_blank">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger delete-event" data-event-id="{{ event.id }}" data-event-title="{{ event.title }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if not events %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                No hay eventos disponibles. <a href="{{ url_for('event.admin_create_event') }}">Crea tu primer evento</a>.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación para eliminar evento -->
+<div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="deleteEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteEventModalLabel">Confirmar eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar el evento <strong id="eventTitle"></strong>?</p>
+                <p class="text-danger">Esta acción no se puede deshacer y eliminará todas las participaciones asociadas.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteEventForm" method="POST">
+                    {{ csrf.csrf_token() }}
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Delete event confirmation
+        const deleteButtons = document.querySelectorAll('.delete-event');
+        const deleteForm = document.getElementById('deleteEventForm');
+        const eventTitleEl = document.getElementById('eventTitle');
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteEventModal'));
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const eventId = this.dataset.eventId;
+                const eventTitle = this.dataset.eventTitle;
+                
+                deleteForm.action = `/admin/evento/${eventId}/eliminar`;
+                eventTitleEl.textContent = eventTitle;
+                deleteModal.show();
+            });
+        });
+        
+        // Filtering
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const statusFilter = document.getElementById('statusFilter');
+        const table = document.getElementById('eventsTable');
+        const rows = table.querySelectorAll('tbody tr');
+        
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const category = categoryFilter.value.toLowerCase();
+            const status = statusFilter.value.toLowerCase();
+            
+            rows.forEach(row => {
+                const title = row.cells[1].textContent.toLowerCase();
+                const rowCategory = row.cells[3].textContent.toLowerCase();
+                const isUpcoming = row.cells[5].textContent.includes('Próximo');
+                const isFeatured = row.cells[5].textContent.includes('Destacado');
+                
+                let showRow = true;
+                
+                if (searchTerm && !title.includes(searchTerm)) {
+                    showRow = false;
+                }
+                
+                if (category && !rowCategory.includes(category)) {
+                    showRow = false;
+                }
+                
+                if (status === 'upcoming' && !isUpcoming) {
+                    showRow = false;
+                } else if (status === 'past' && isUpcoming) {
+                    showRow = false;
+                } else if (status === 'featured' && !isFeatured) {
+                    showRow = false;
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+        
+        searchBtn.addEventListener('click', filterTable);
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                filterTable();
+            }
+        });
+        categoryFilter.addEventListener('change', filterTable);
+        statusFilter.addEventListener('change', filterTable);
+        
+        // Export to CSV
+        document.getElementById('exportCSV').addEventListener('click', function() {
+            let csvContent = 'ID,Título,Descripción,Fecha,Categoría,Participantes,Estado\n';
+            
+            rows.forEach(row => {
+                if (row.style.display !== 'none') {
+                    const id = row.cells[0].textContent;
+                    const titleEl = row.cells[1].querySelector('div > div');
+                    const title = titleEl ? titleEl.textContent.trim() : '';
+                    const descEl = row.cells[1].querySelector('small');
+                    const description = descEl ? descEl.textContent.trim() : '';
+                    const date = row.cells[2].textContent;
+                    const category = row.cells[3].textContent.trim();
+                    const participants = row.cells[4].textContent.trim();
+                    const status = row.cells[5].textContent.trim().replace(/\n/g, ' ');
+                    
+                    csvContent += `${id},"${title}","${description}","${date}","${category}",${participants},"${status}"\n`;
+                }
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `eventos_${new Date().toISOString().slice(0,10)}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    });
+</script>
+{% endblock %}

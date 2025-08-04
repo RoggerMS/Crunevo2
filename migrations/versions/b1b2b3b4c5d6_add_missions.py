@@ -29,7 +29,7 @@ def upgrade():
     op.create_table(
         "user_mission",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False),
+        sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False),
         sa.Column(
             "mission_id", sa.Integer(), sa.ForeignKey("mission.id"), nullable=False
         ),

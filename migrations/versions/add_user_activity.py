@@ -27,7 +27,7 @@ def upgrade():
             "user_activity",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column("action", sa.String(length=30), nullable=False),
             sa.Column("target_id", sa.Integer(), nullable=True),

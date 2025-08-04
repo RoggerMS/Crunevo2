@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% import "components/csrf.html" as csrf %}
 
-{% block title %}Trending - CRUNEVO{% endblock %}
+{% block title %}Tendencias - CRUNEVO{% endblock %}
 
 {% block head_extra %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
@@ -79,7 +80,7 @@
 
 .trending-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
   gap: 32px;
   margin-bottom: 40px;
 }
@@ -97,7 +98,7 @@
 
 .trending-section:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);}
 }
 
 .trending-section::before {
@@ -107,7 +108,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: var(--gradient-primary);
+  background: linear-gradient(90deg, var(--crunevo-primary), #805ad5);
 }
 
 .section-header {
@@ -155,6 +156,33 @@
   text-align: center;
 }
 
+.trending-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.filter-btn {
+  white-space: nowrap;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
+  background: var(--post-bg);
+  color: var(--text-primary);
+}
+
+.filter-btn:hover, .filter-btn.active {
+  background: var(--crunevo-primary);
+  color: white;
+  border-color: var(--crunevo-primary);
+}
+
 .trending-item {
   padding: 20px 0;
   border-bottom: 1px solid var(--border-color);
@@ -196,6 +224,24 @@
 .trending-item:hover .avatar-img {
   border-color: var(--crunevo-primary);
   transform: scale(1.05);
+}
+
+.trending-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--crunevo-primary);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .rank-badge {
@@ -476,203 +522,298 @@
 {% endblock %}
 
 {% block content %}
-<div class="trending-container">
-  <!-- Hero Section -->
-  <div class="trending-hero">
-    <h1>🔥 Trending en CRUNEVO</h1>
-    <p>Descubre el contenido más popular de esta semana</p>
-    <div class="trending-stats">
-      <div class="stat-item">
-        <span class="stat-number">{{ weekly_posts|length or 0 }}</span>
-        <span class="stat-label">Posts populares</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-number">{{ top_notes|length or 0 }}</span>
-        <span class="stat-label">Apuntes destacados</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-number">{{ top_questions|length or 0 }}</span>
-        <span class="stat-label">Preguntas activas</span>
-      </div>
+<div class="container-fluid px-0">
+  <div class="row g-0">
+    <!-- Left Sidebar -->
+    <div class="col-lg-3 d-none d-lg-block">
+      {% include 'components/sidebar_left_feed.html' %}
     </div>
-  </div>
 
-  <!-- Main Content Grid -->
-  <div class="trending-grid">
-    <!-- Publicaciones más votadas -->
-    <div class="trending-section">
-      <div class="section-header">
-        <div class="section-title-group">
-          <div class="section-icon">
-            <i class="bi bi-fire"></i>
+    <!-- Main Content -->
+    <div class="col-lg-6 col-12">
+      <div class="px-3 px-lg-4">
+        <!-- Hero Section -->
+        <div class="trending-hero">
+          <h1>🔥 Tendencias en CRUNEVO</h1>
+          <p>Descubre el contenido más popular de esta semana</p>
+          <div class="trending-stats">
+            <div class="stat-item">
+              <span class="stat-number">{{ weekly_posts|length or 0 }}</span>
+              <span class="stat-label">Posts populares</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ top_notes|length or 0 }}</span>
+              <span class="stat-label">Apuntes destacados</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ top_questions|length or 0 }}</span>
+              <span class="stat-label">Preguntas activas</span>
+            </div>
           </div>
-          <h2 class="section-title">Posts Populares</h2>
         </div>
-        <div class="section-count">{{ weekly_posts[:5]|length }}</div>
-      </div>
 
-      {% for post in weekly_posts[:5] %}
-      <div class="trending-item">
-        <div class="item-content">
-          <div class="item-avatar">
-            <img src="{{ post.author.avatar_url or url_for('static', filename='img/default.png') }}" 
-                 alt="{{ post.author.username }}" 
-                 class="avatar-img">
-            <div class="rank-badge">{{ loop.index }}</div>
-          </div>
-          <div class="item-info">
-            <div class="user-info">
-              <a href="#" class="username">{{ post.author.username }}</a>
-              <span class="status-badge badge-popular">Popular</span>
-            </div>
-            <div class="item-description">
-              {{ post.content[:120] }}{% if post.content|length > 120 %}...{% endif %}
-            </div>
-            <div class="item-stats">
-              <div class="stats-group">
-                <div class="stat-item primary">
-                  <i class="bi bi-heart-fill"></i>
-                  <span>{{ post.reactions_count or 0 }}</span>
+        <!-- Trending Filters -->
+        <div class="trending-filters mb-4">
+          <button class="filter-btn active" data-filter="all">Todos</button>
+          <button class="filter-btn" data-filter="posts">Posts</button>
+          <button class="filter-btn" data-filter="notes">Apuntes</button>
+          <button class="filter-btn" data-filter="questions">Preguntas</button>
+          <button class="filter-btn" data-filter="week">Esta semana</button>
+          <button class="filter-btn" data-filter="month">Este mes</button>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="trending-grid">
+          <!-- Left Column: Publicaciones Virales -->
+          <div class="trending-section">
+            <div class="section-header">
+              <div class="section-title-group">
+                <div class="section-icon">
+                  <i class="bi bi-fire"></i>
                 </div>
-                <div class="stat-item">
-                  <i class="bi bi-chat-dots"></i>
-                  <span>{{ post.comments|length or 0 }}</span>
-                </div>
+                <h2 class="section-title">Publicaciones Virales</h2>
               </div>
-              <div class="item-time">{{ post.created_at|timesince }}</div>
+              <div class="section-count">{{ weekly_posts|length }}</div>
             </div>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-      
-      <div style="text-align: center; margin-top: 20px;">
-        <a href="{{ url_for('feed.feed_home') }}" class="section-link">
-          Ver más posts <i class="bi bi-arrow-right"></i>
-        </a>
-      </div>
-    </div>
 
-    <!-- Apuntes más relevantes -->
-    <div class="trending-section">
-      <div class="section-header">
-        <div class="section-title-group">
-          <div class="section-icon">
-            <i class="bi bi-journal-bookmark"></i>
-          </div>
-          <h2 class="section-title">Apuntes Top</h2>
-        </div>
-        <div class="section-count">{{ top_notes[:5]|length }}</div>
-      </div>
-
-      {% for note in top_notes[:5] %}
-      <div class="trending-item">
-        <div class="item-content">
-          <div class="item-avatar">
-            <img src="{{ note.author.avatar_url or url_for('static', filename='img/default.png') }}" 
-                 alt="{{ note.author.username }}" 
-                 class="avatar-img">
-            <div class="rank-badge">{{ loop.index }}</div>
-          </div>
-          <div class="item-info">
-            <div class="user-info">
-              <a href="#" class="username">{{ note.author.username }}</a>
-              <span class="status-badge badge-top">Top semanal</span>
-            </div>
-            <div class="item-title">{{ note.title }}</div>
-            <div class="item-description">
-              {{ note.description[:100] }}{% if note.description|length > 100 %}...{% endif %}
-            </div>
-            <div class="item-stats">
-              <div class="stats-group">
-                <div class="stat-item primary">
-                  <i class="bi bi-download"></i>
-                  <span>{{ note.downloads or 0 }}</span>
-                </div>
-                <div class="stat-item">
-                  <i class="bi bi-star-fill"></i>
-                  <span>{{ "%.1f"|format(note.rating or 0) }}</span>
-                </div>
+            <!-- Posts Populares -->
+            {% if weekly_posts %}
+              {% for item in weekly_posts %}
+                {% set post = item %}
+                {% include 'components/post_card.html' with context %}
+              {% endfor %}
+            {% else %}
+              <div class="empty-state text-center py-4">
+                <div class="empty-state-icon mb-3">📊</div>
+                <h5 class="text-muted mb-2">No hay publicaciones virales aún</h5>
+                <p class="text-muted">¡Sé el primero en crear contenido popular!</p>
               </div>
-              <div class="item-time">{{ note.created_at|timesince }}</div>
+            {% endif %}
+            
+            <div class="text-center mt-4">
+              <a href="{{ url_for('feed.feed_home') }}" class="btn btn-outline-primary rounded-pill">
+                Ver más publicaciones <i class="bi bi-arrow-right"></i>
+              </a>
             </div>
           </div>
-        </div>
-      </div>
-      {% endfor %}
-      
-      <div style="text-align: center; margin-top: 20px;">
-        <a href="{{ url_for('notes.index') if 'notes.index' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}" class="section-link">
-          Explorar apuntes <i class="bi bi-arrow-right"></i>
-        </a>
-      </div>
-    </div>
 
-    <!-- Preguntas populares del foro -->
-    <div class="trending-section">
-      <div class="section-header">
-        <div class="section-title-group">
-          <div class="section-icon">
-            <i class="bi bi-question-circle"></i>
-          </div>
-          <h2 class="section-title">Foro Activo</h2>
-        </div>
-        <div class="section-count">{{ top_questions[:5]|length }}</div>
-      </div>
+          <!-- Right Column: Apuntes y Preguntas Destacadas -->
+          <div>
+            <!-- Apuntes más relevantes -->
+            <div class="trending-section mb-4">
+              <div class="section-header">
+                <div class="section-title-group">
+                  <div class="section-icon">
+                    <i class="bi bi-journal-bookmark"></i>
+                  </div>
+                  <h2 class="section-title">Apuntes Destacados</h2>
+                </div>
+                <div class="section-count">{{ top_notes|length }}</div>
+              </div>
 
-      {% for q in top_questions[:5] %}
-      <div class="trending-item">
-        <div class="item-content">
-          <div class="item-avatar">
-            <img src="{{ q.author.avatar_url or url_for('static', filename='img/default.png') }}"
-                 alt="{{ q.author.username }}"
-                 class="avatar-img">
-            <div class="rank-badge">{{ loop.index }}</div>
-          </div>
-          <div class="item-info">
-            <div class="user-info">
-              <a href="#" class="username">{{ q.author.username }}</a>
-              {% if q.is_solved %}
-              <span class="status-badge badge-solved">Resuelto</span>
+              {% if top_notes %}
+                <div class="row row-cols-1 g-3">
+                  {% for note in top_notes %}
+                    <div class="col">
+                      {% include 'components/note_card.html' with context %}
+                    </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="empty-state text-center py-4">
+                  <div class="empty-state-icon mb-3">📚</div>
+                  <h5 class="text-muted mb-2">No hay apuntes destacados aún</h5>
+                  <p class="text-muted">¡Sé el primero en compartir tus conocimientos!</p>
+                </div>
               {% endif %}
+              
+              <div class="text-center mt-4">
+                <a href="{{ url_for('notes.index') if 'notes.index' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}" class="btn btn-outline-primary rounded-pill">
+                  Explorar apuntes <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
             </div>
-            <div class="item-title">{{ q.title }}</div>
-            <div class="item-stats">
-              <div class="stats-group">
-                <div class="stat-item primary">
-                  <i class="bi bi-chat-dots-fill"></i>
-                  <span>{{ q.answer_count or 0 }}</span>
+
+            <!-- Preguntas populares del foro -->
+            <div class="trending-section">
+              <div class="section-header">
+                <div class="section-title-group">
+                  <div class="section-icon">
+                    <i class="bi bi-question-circle"></i>
+                  </div>
+                  <h2 class="section-title">Preguntas Populares</h2>
                 </div>
-                <div class="stat-item">
-                  <i class="bi bi-eye-fill"></i>
-                  <span>{{ q.views or 0 }}</span>
+                <div class="section-count">{{ top_questions|length }}</div>
+              </div>
+
+              {% if top_questions %}
+                {% for q in top_questions %}
+                <div class="trending-item">
+                  <div class="item-content">
+                    <div class="item-avatar">
+                      <img src="{{ q.author.avatar_url or url_for('static', filename='img/default.png') }}"
+                          alt="{{ q.author.username }}"
+                          class="avatar-img">
+                      <div class="trending-badge">{{ loop.index }}</div>
+                    </div>
+                    <div class="item-info">
+                      <div class="user-info">
+                        <a href="{{ url_for('auth.profile_by_username', username=q.author.username) }}" class="username">{{ q.author.username }}</a>
+                        {% if q.is_solved %}
+                        <span class="status-badge badge-solved">Resuelto</span>
+                        {% endif %}
+                      </div>
+                      <div class="item-title">{{ q.title }}</div>
+                      <div class="item-stats">
+                        <div class="stats-group">
+                          <div class="stat-item primary">
+                            <i class="bi bi-chat-dots-fill"></i>
+                            <span>{{ q.answer_count or 0 }}</span>
+                          </div>
+                          <div class="stat-item">
+                            <i class="bi bi-eye-fill"></i>
+                            <span>{{ q.views or 0 }}</span>
+                          </div>
+                        </div>
+                        <div class="item-time">{{ q.created_at|timesince }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              {% else %}
+                <div class="empty-state text-center py-4">
+                  <div class="empty-state-icon mb-3">❓</div>
+                  <h5 class="text-muted mb-2">No hay preguntas populares aún</h5>
+                  <p class="text-muted">¡Sé el primero en hacer una pregunta interesante!</p>
+                </div>
+              {% endif %}
+      
+                <div class="text-center mt-4">
+                  <a href="{{ url_for('forum.index') if 'forum.index' in url_for.__globals__.get('current_app', {}).view_functions else '/forum' }}" class="btn btn-outline-primary rounded-pill">
+                    Ver más preguntas <i class="bi bi-arrow-right"></i>
+                  </a>
                 </div>
               </div>
-              <div class="item-time">{{ q.created_at|timesince }}</div>
             </div>
           </div>
         </div>
       </div>
-      {% endfor %}
-      
-      <div style="text-align: center; margin-top: 20px;">
-        <a href="{{ url_for('forum.index') if 'forum.index' in url_for.__globals__.get('current_app', {}).view_functions else '/forum' }}" class="section-link">
-          Visitar foro <i class="bi bi-arrow-right"></i>
-        </a>
-      </div>
     </div>
-  </div>
 
-  <!-- Action Buttons -->
-  <div class="trending-actions">
-    <a href="{{ url_for('feed.feed_home') }}" class="action-btn btn-primary-modern">
-      <i class="bi bi-house-fill"></i>
-      Volver al Feed
-    </a>
-    <a href="{{ url_for('ranking.index') if 'ranking.index' in url_for.__globals__.get('current_app', {}).view_functions else '/ranking' }}" class="action-btn btn-secondary-modern">
-      <i class="bi bi-trophy-fill"></i>
-      Ver Ranking Completo
-    </a>
+    <!-- Right Sidebar -->
+    <div class="col-lg-3 d-none d-lg-block">
+      {% include 'components/sidebar_right.html' %}
+    </div>
   </div>
 </div>
+{% endblock %}
+
+{% block body_end %}
+{{ super() }}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Filtros de tendencias
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const trendingItems = document.querySelectorAll('.facebook-post, .note-card, .trending-item');
+    
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Quitar clase activa de todos los botones
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        // Añadir clase activa al botón clickeado
+        this.classList.add('active');
+        
+        const filter = this.getAttribute('data-filter');
+        
+        // Filtrar elementos según el filtro seleccionado
+        trendingItems.forEach(item => {
+          if (filter === 'all') {
+            item.style.display = '';
+          } else if (filter === 'posts' && item.classList.contains('facebook-post')) {
+            item.style.display = '';
+          } else if (filter === 'notes' && item.classList.contains('note-card')) {
+            item.style.display = '';
+          } else if (filter === 'questions' && item.classList.contains('trending-item')) {
+            item.style.display = '';
+          } else if ((filter === 'week' || filter === 'month') && 
+                    (item.classList.contains('facebook-post') || 
+                     item.classList.contains('note-card') || 
+                     item.classList.contains('trending-item'))) {
+            // Para filtros temporales, mostramos todos los elementos
+            // En una implementación real, se filtrarían por fecha
+            item.style.display = '';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+    
+    // Compartir en redes sociales
+    function shareContent(platform, url, title) {
+      let shareUrl = '';
+      
+      switch(platform) {
+        case 'twitter':
+          shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
+          break;
+        case 'facebook':
+          shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+          break;
+        case 'whatsapp':
+          shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(title + ' ' + url)}`;
+          break;
+      }
+      
+      if (shareUrl) {
+        window.open(shareUrl, '_blank');
+      }
+    }
+    
+    // Añadir botones de compartir a las publicaciones
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const postId = this.getAttribute('data-post-id');
+        const postUrl = `${window.location.origin}/feed/post/${postId}`;
+        const title = 'Mira esta publicación en CRUNEVO';
+        
+        // Mostrar opciones de compartir
+        const shareOptions = document.createElement('div');
+        shareOptions.className = 'share-options';
+        shareOptions.innerHTML = `
+          <button class="share-option" data-platform="twitter"><i class="bi bi-twitter"></i></button>
+          <button class="share-option" data-platform="facebook"><i class="bi bi-facebook"></i></button>
+          <button class="share-option" data-platform="whatsapp"><i class="bi bi-whatsapp"></i></button>
+        `;
+        
+        // Posicionar opciones de compartir
+        const rect = this.getBoundingClientRect();
+        shareOptions.style.position = 'absolute';
+        shareOptions.style.top = `${rect.bottom + window.scrollY}px`;
+        shareOptions.style.left = `${rect.left + window.scrollX}px`;
+        shareOptions.style.zIndex = '1000';
+        document.body.appendChild(shareOptions);
+        
+        // Añadir eventos a las opciones de compartir
+        shareOptions.querySelectorAll('.share-option').forEach(option => {
+          option.addEventListener('click', function() {
+            const platform = this.getAttribute('data-platform');
+            shareContent(platform, postUrl, title);
+            shareOptions.remove();
+          });
+        });
+        
+        // Cerrar opciones al hacer clic fuera
+        document.addEventListener('click', function closeShare(e) {
+          if (!shareOptions.contains(e.target) && e.target !== btn) {
+            shareOptions.remove();
+            document.removeEventListener('click', closeShare);
+          }
+        });
+      });
+    });
+  });
+</script>
 {% endblock %}

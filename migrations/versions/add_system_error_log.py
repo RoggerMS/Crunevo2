@@ -31,7 +31,7 @@ def upgrade():
             sa.Column("ruta", sa.String(length=255), nullable=True),
             sa.Column("mensaje", sa.Text(), nullable=True),
             sa.Column("status_code", sa.Integer(), nullable=True),
-            sa.Column("user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=True),
+            sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=True),
             sa.Column(
                 "resuelto", sa.Boolean(), nullable=True, server_default=sa.text("false")
             ),

@@ -34,7 +34,7 @@ def upgrade():
         sa.Column("created_at", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
             ["creator_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
@@ -52,7 +52,7 @@ def upgrade():
         ),
         sa.ForeignKeyConstraint(
             ["user_id"],
-            ["user.id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("user_id", "course_id", name="_user_course_uc"),

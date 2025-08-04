@@ -43,7 +43,7 @@ def upgrade():
             ),
             sa.Column("created_at", sa.DateTime(), nullable=True),
             sa.Column("updated_at", sa.DateTime(), nullable=True),
-            sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
+            sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
             if_not_exists=True,
         )
         op.create_index(

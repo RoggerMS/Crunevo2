@@ -27,7 +27,7 @@ def upgrade():
             "admin_log",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "admin_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "admin_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column("action", sa.String(length=50), nullable=False),
             sa.Column("target_id", sa.Integer(), nullable=True),

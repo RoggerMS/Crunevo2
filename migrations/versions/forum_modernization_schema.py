@@ -171,7 +171,7 @@ def upgrade():
         op.create_table(
             "user_bookmarks",
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), primary_key=True
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), primary_key=True
             ),
             sa.Column(
                 "question_id",
@@ -186,7 +186,7 @@ def upgrade():
         op.create_table(
             "answer_votes",
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), primary_key=True
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), primary_key=True
             ),
             sa.Column(
                 "answer_id",
@@ -203,7 +203,7 @@ def upgrade():
             "forum_report",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "reporter_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "reporter_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column(
                 "reported_question_id", sa.Integer(), sa.ForeignKey("forum_question.id")
@@ -238,7 +238,7 @@ def upgrade():
         op.create_table(
             "user_badges",
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), primary_key=True
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), primary_key=True
             ),
             sa.Column(
                 "badge_id",

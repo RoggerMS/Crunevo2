@@ -19,8 +19,8 @@ def upgrade():
     op.create_table(
         "saved_post",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False),
-        sa.Column("post_id", sa.Integer(), sa.ForeignKey("post.id"), nullable=False),
+        sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False),
+        sa.Column("post_id", sa.Integer(), sa.ForeignKey("posts.id"), nullable=False),
         sa.Column("timestamp", sa.DateTime(), nullable=True),
         if_not_exists=True,
     )

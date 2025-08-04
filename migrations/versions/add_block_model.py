@@ -22,7 +22,7 @@ def upgrade():
             "blocks",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column("type", sa.String(length=50), nullable=False),
             sa.Column(
@@ -43,7 +43,7 @@ def upgrade():
             ),
             sa.Column("created_at", sa.DateTime(), nullable=True),
             sa.Column("updated_at", sa.DateTime(), nullable=True),
-            sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
+            sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
             if_not_exists=True,
         )
         op.create_index(op.f("ix_blocks_user_id"), "blocks", ["user_id"], unique=False)

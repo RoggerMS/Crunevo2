@@ -85,7 +85,7 @@ def upgrade():
         # Now make it non-nullable and add foreign key
         op.alter_column("club", "creator_id", nullable=False)
         op.create_foreign_key(
-            "fk_club_creator_id", "club", "user", ["creator_id"], ["id"]
+            "fk_club_creator_id", "club", "users", ["creator_id"], ["id"]
         )
 
 

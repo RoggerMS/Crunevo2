@@ -37,8 +37,8 @@ def upgrade():
         sa.Column("price_soles", sa.Numeric(10, 2), nullable=True),
         sa.Column("price_credits", sa.Integer(), nullable=True),
         sa.Column("timestamp", sa.DateTime(), nullable=True),
-        sa.ForeignKeyConstraint(["product_id"], ["product.id"]),
-        sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
+        sa.ForeignKeyConstraint(["product_id"], ["products.id"]),
+        sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
     )

@@ -28,10 +28,10 @@ def upgrade():
             "post_reaction",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column(
-                "post_id", sa.Integer(), sa.ForeignKey("post.id"), nullable=False
+                "post_id", sa.Integer(), sa.ForeignKey("posts.id"), nullable=False
             ),
             sa.Column("reaction_type", sa.String(length=10), nullable=False),
             sa.Column("timestamp", sa.DateTime(), nullable=True),

@@ -1,0 +1,93 @@
+{% extends "admin/base_admin.html" %}
+{% import 'components/csrf.html' as csrf %}
+
+{% block title %}{{ 'Editar' if event else 'Crear' }} Evento{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>{{ 'Editar' if event else 'Crear' }} Evento</h4>
+                    {% if event %}
+                    <form method="POST" action="{{ url_for('event.admin_delete_event', event_id=event.id) }}" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este evento? Esta acción no se puede deshacer.')">
+                        {{ csrf.csrf_field() }}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Eliminar Evento
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ csrf.csrf_field() }}
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Título *</label>
+                            <input type="text" class="form-control" id="title" name="title" required value="{{ event.title if event else '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="description" name="description" rows="4">{{ event.description if event else '' }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="event_date" class="form-label">Fecha y Hora *</label>
+                            <input type="datetime-local" class="form-control" id="event_date" name="event_date" required value="{{ formatted_date if event else '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Categoría</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="" {% if not event or not event.category %}selected{% endif %}>Seleccionar categoría</option>
+                                <option value="general" {% if event and event.category == 'general' %}selected{% endif %}>General</option>
+                                <option value="webinar" {% if event and event.category == 'webinar' %}selected{% endif %}>Webinar</option>
+                                <option value="taller" {% if event and event.category == 'taller' %}selected{% endif %}>Taller</option>
+                                <option value="concurso" {% if event and event.category == 'concurso' %}selected{% endif %}>Concurso</option>
+                                <option value="conferencia" {% if event and event.category == 'conferencia' %}selected{% endif %}>Conferencia</option>
+                                <option value="live" {% if event and event.category == 'live' %}selected{% endif %}>Live</option>
+                                <option value="feria" {% if event and event.category == 'feria' %}selected{% endif %}>Feria</option>
+                                <option value="seminario" {% if event and event.category == 'seminario' %}selected{% endif %}>Seminario</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="image_url" class="form-label">URL de Imagen</label>
+                            <input type="url" class="form-control" id="image_url" name="image_url" value="{{ event.image_url if event and event.image_url else '' }}">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="jitsi_url" class="form-label">URL de Jitsi</label>
+                                <input type="url" class="form-control" id="jitsi_url" name="jitsi_url" value="{{ event.jitsi_url if event and event.jitsi_url else '' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="zoom_url" class="form-label">URL de Zoom</label>
+                                <input type="url" class="form-control" id="zoom_url" name="zoom_url" value="{{ event.zoom_url if event and event.zoom_url else '' }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="rewards" class="form-label">Recompensas (JSON)</label>
+                            <textarea class="form-control" id="rewards" name="rewards" rows="3" placeholder='{"credits": 5, "badge": "evento_especial"}'>{{ event.rewards if event and event.rewards else '' }}</textarea>
+                            <small class="text-muted">Formato JSON para definir recompensas por asistir al evento</small>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="is_featured" name="is_featured" {% if event and event.is_featured %}checked{% endif %}>
+                            <label class="form-check-label" for="is_featured">Evento destacado</label>
+                        </div>
+
+                        <div class="text-end">
+                            <a href="{{ url_for('event.admin_list_events') }}" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">{{ 'Actualizar' if event else 'Crear' }} Evento</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

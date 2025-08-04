@@ -29,7 +29,7 @@ def upgrade():
             "seller",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column("store_name", sa.String(length=100), nullable=False),
             sa.Column("description", sa.Text()),
@@ -52,10 +52,10 @@ def upgrade():
             "marketplace_conversations",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "user1_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "user1_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column(
-                "user2_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "user2_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column("product_id", sa.Integer()),
             sa.Column(
@@ -76,10 +76,10 @@ def upgrade():
                 nullable=False,
             ),
             sa.Column(
-                "sender_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "sender_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column(
-                "receiver_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "receiver_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column("product_id", sa.Integer()),
             sa.Column("content", sa.Text(), nullable=False),

@@ -1,0 +1,218 @@
+{% extends "admin/base_admin.html" %}
+{% import 'components/csrf.html' as csrf %}
+
+{% block title %}Detalles del Evento{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Información del Evento</h4>
+                </div>
+                <div class="card-body">
+                    {% if event.image_url %}
+                    <img src="{{ event.image_url }}" class="img-fluid rounded mb-3" alt="{{ event.title }}">
+                    {% endif %}
+                    
+                    <h3>{{ event.title }}</h3>
+                    
+                    <div class="mb-3">
+                        <span class="badge bg-{{ 'success' if event.is_upcoming else 'secondary' }}">
+                            {{ 'Próximo' if event.is_upcoming else 'Pasado' }}
+                        </span>
+                        {% if event.category %}
+                        <span class="badge bg-primary">{{ event.category }}</span>
+                        {% endif %}
+                        {% if event.is_featured %}
+                        <span class="badge bg-warning">
+                            <i class="bi bi-star-fill"></i> Destacado
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <p><strong>Fecha:</strong> {{ event.event_date.strftime('%d/%m/%Y %H:%M') }}</p>
+                    
+                    {% if event.description %}
+                    <div class="mb-3">
+                        <strong>Descripción:</strong>
+                        <p>{{ event.description }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if event.jitsi_url or event.zoom_url %}
+                    <div class="mb-3">
+                        <strong>Enlaces:</strong>
+                        <ul class="list-unstyled">
+                            {% if event.jitsi_url %}
+                            <li><a href="{{ event.jitsi_url }}" target="_blank">Jitsi Meet</a></li>
+                            {% endif %}
+                            {% if event.zoom_url %}
+                            <li><a href="{{ event.zoom_url }}" target="_blank">Zoom</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    {% if event.rewards %}
+                    <div class="mb-3">
+                        <strong>Recompensas:</strong>
+                        <pre class="bg-light p-2 rounded">{{ event.rewards }}</pre>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('event.admin_edit_event', event_id=event.id) }}" class="btn btn-primary">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <a href="{{ url_for('event.view_event', event_id=event.id) }}" class="btn btn-outline-secondary" target="_blank">
+                            <i class="bi bi-eye"></i> Ver público
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Participantes ({{ participants|length }})</h4>
+                    <div>
+                        <button class="btn btn-sm btn-outline-success" id="exportCSV">
+                            <i class="bi bi-file-earmark-excel"></i> Exportar CSV
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if participants %}
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="participantsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Usuario</th>
+                                    <th>Fecha de registro</th>
+                                    <th>Asistencia</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for participant in participants %}
+                                <tr data-user-id="{{ participant.user_id }}" data-event-id="{{ event.id }}">
+                                    <td>{{ participant.user_id }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ participant.user.avatar_url or url_for('static', filename='img/default.png') }}" 
+                                                class="rounded-circle me-2" width="32" height="32" alt="Avatar">
+                                            <div>
+                                                <div>{{ participant.user.username }}</div>
+                                                <small class="text-muted">{{ participant.user.email }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ participant.joined_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if participant.attended else 'secondary' }}">
+                                            {{ 'Asistió' if participant.attended else 'Pendiente' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-{{ 'outline-success' if not participant.attended else 'outline-secondary' }} toggle-attendance">
+                                            <i class="bi bi-{{ 'check-circle' if not participant.attended else 'x-circle' }}"></i>
+                                            {{ 'Marcar asistencia' if not participant.attended else 'Desmarcar asistencia' }}
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        No hay participantes registrados para este evento.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle attendance status
+        document.querySelectorAll('.toggle-attendance').forEach(button => {
+            button.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const userId = row.dataset.userId;
+                const eventId = row.dataset.eventId;
+                const awardCredits = !row.querySelector('.badge').textContent.includes('Asistió');
+                
+                fetch(`/admin/evento/${eventId}/marcar-asistencia/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
+                    },
+                    body: `award_credits=${awardCredits}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const badge = row.querySelector('.badge');
+                        const icon = this.querySelector('i');
+                        
+                        if (data.attended) {
+                            badge.className = 'badge bg-success';
+                            badge.textContent = 'Asistió';
+                            this.className = 'btn btn-sm btn-outline-secondary toggle-attendance';
+                            icon.className = 'bi bi-x-circle';
+                            this.textContent = ' Desmarcar asistencia';
+                            this.prepend(icon);
+                        } else {
+                            badge.className = 'badge bg-secondary';
+                            badge.textContent = 'Pendiente';
+                            this.className = 'btn btn-sm btn-outline-success toggle-attendance';
+                            icon.className = 'bi bi-check-circle';
+                            this.textContent = ' Marcar asistencia';
+                            this.prepend(icon);
+                        }
+                    }
+                });
+            });
+        });
+        
+        // Export to CSV
+        document.getElementById('exportCSV').addEventListener('click', function() {
+            const table = document.getElementById('participantsTable');
+            const rows = table.querySelectorAll('tbody tr');
+            
+            let csvContent = 'ID,Usuario,Email,Fecha de registro,Asistió\n';
+            
+            rows.forEach(row => {
+                const userId = row.cells[0].textContent;
+                const username = row.cells[1].querySelector('div > div').textContent.trim();
+                const email = row.cells[1].querySelector('small').textContent.trim();
+                const joinDate = row.cells[2].textContent;
+                const attended = row.cells[3].textContent.trim() === 'Asistió' ? 'Sí' : 'No';
+                
+                csvContent += `${userId},"${username}","${email}","${joinDate}",${attended}\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `participantes_evento_${event.id}_${new Date().toISOString().slice(0,10)}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    });
+</script>
+{% endblock %}

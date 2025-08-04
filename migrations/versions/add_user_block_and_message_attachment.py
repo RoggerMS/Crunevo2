@@ -35,10 +35,10 @@ def upgrade():
             "user_block",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "blocker_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "blocker_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column(
-                "blocked_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "blocked_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.UniqueConstraint("blocker_id", "blocked_id", name="uniq_user_block"),
             if_not_exists=True,

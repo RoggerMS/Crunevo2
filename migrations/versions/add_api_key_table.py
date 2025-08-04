@@ -23,7 +23,7 @@ def upgrade():
             "api_key",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column("key", sa.String(length=64), nullable=False),
             sa.Column("created_at", sa.DateTime(), nullable=True),

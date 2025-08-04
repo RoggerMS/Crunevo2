@@ -27,7 +27,7 @@ def upgrade():
         op.create_table(
             "login_streak",
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), primary_key=True
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), primary_key=True
             ),
             sa.Column("current_day", sa.Integer(), nullable=False, server_default="0"),
             sa.Column("last_login", sa.Date(), nullable=True),

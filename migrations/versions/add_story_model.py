@@ -22,7 +22,7 @@ def upgrade():
             "story",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "user_id", sa.Integer(), sa.ForeignKey("user.id"), nullable=False
+                "user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
             ),
             sa.Column("image_url", sa.String(length=255), nullable=False),
             sa.Column("created_at", sa.DateTime(), nullable=True),

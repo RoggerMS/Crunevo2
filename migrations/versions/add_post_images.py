@@ -17,7 +17,7 @@ def upgrade():
             "post_image",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column(
-                "post_id", sa.Integer(), sa.ForeignKey("post.id"), nullable=False
+                "post_id", sa.Integer(), sa.ForeignKey("posts.id"), nullable=False
             ),
             sa.Column("url", sa.String(length=255), nullable=False),
             if_not_exists=True,
