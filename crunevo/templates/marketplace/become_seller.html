@@ -305,7 +305,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize Dropzone for logo upload
         Dropzone.autoDiscover = false;
-        
+        {% if 'marketplace.upload_seller_image' in url_for.__globals__['current_app'].view_functions %}
         const logoDropzone = new Dropzone("#logo-dropzone", {
             url: "{{ url_for('marketplace.upload_seller_image') }}",
             paramName: "file",
@@ -343,7 +343,7 @@
                 });
             }
         });
-        
+
         // Initialize Dropzone for banner upload
         const bannerDropzone = new Dropzone("#banner-dropzone", {
             url: "{{ url_for('marketplace.upload_seller_image') }}",
@@ -382,6 +382,7 @@
                 });
             }
         });
+        {% endif %}
     });
 </script>
 {% endblock %}

@@ -1090,3 +1090,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added unified product route `/producto/<id>` with conditional template and redirects from legacy store and marketplace paths (PR product-view-unify).
 - Added error handling and missing context for marketplace seller and message views to prevent 500 errors (hotfix marketplace-route-errors).
 - Registered `timeago` and `date` template filters and imported CSRF macro in marketplace templates to prevent undefined filter errors and ensure proper form protection (hotfix marketplace-filters-csrf).
+- Fixed marketplace messages link to use `marketplace.marketplace_index` and guarded optional image upload routes to avoid BuildError (hotfix marketplace-messages-link).
