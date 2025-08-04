@@ -250,8 +250,24 @@ def seller_products():
             flash("Debes registrarte como vendedor primero", "warning")
             return redirect(url_for("marketplace.become_seller"))
 
-        # Obtener productos del vendedor
-        products = Product.query.filter_by(seller_id=seller.id).all()
+        # Obtener parámetros de página y orden
+        page = request.args.get("page", 1, type=int)
+        sort = request.args.get("sort", "newest")
+
+        products_query = Product.query.filter_by(seller_id=seller.id)
+
+        sort_options = {
+            "oldest": Product.created_at.asc(),
+            "price_asc": Product.price.asc(),
+            "price_desc": Product.price.desc(),
+            "views": Product.views_count.desc(),
+        }
+        products_query = products_query.order_by(
+            sort_options.get(sort, Product.created_at.desc())
+        )
+
+        pagination = products_query.paginate(page=page, per_page=10, error_out=False)
+        products = pagination.items
 
         unread_messages_count = MarketplaceMessage.query.filter_by(
             receiver_id=current_user.id, is_read=False
@@ -261,6 +277,8 @@ def seller_products():
             "marketplace/seller_products.html",
             seller=seller,
             products=products,
+            pagination=pagination,
+            sort=sort,
             unread_messages_count=unread_messages_count,
         )
     except HTTPException:

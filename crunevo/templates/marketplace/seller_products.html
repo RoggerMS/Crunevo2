@@ -70,11 +70,11 @@
                                 </div>
                                 <div class="col-md-3">
                                     <select class="form-select" id="sort-filter">
-                                        <option value="newest">Más recientes</option>
-                                        <option value="oldest">Más antiguos</option>
-                                        <option value="price_asc">Precio: menor a mayor</option>
-                                        <option value="price_desc">Precio: mayor a menor</option>
-                                        <option value="views">Más vistos</option>
+                                        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Más recientes</option>
+                                        <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>Más antiguos</option>
+                                        <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Precio: menor a mayor</option>
+                                        <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Precio: mayor a menor</option>
+                                        <option value="views" {% if sort == 'views' %}selected{% endif %}>Más vistos</option>
                                     </select>
                                 </div>
                             </div>
@@ -173,21 +173,21 @@
                             </div>
                             
                             <!-- Pagination -->
-                            {% if pagination.pages > 1 %}
+                            {% if pagination and pagination.pages > 1 %}
                             <nav aria-label="Product pagination" class="mt-4">
                                 <ul class="pagination justify-content-center">
-                                    <li class="page-item {% if pagination.page == 1 %}disabled{% endif %}">
-                                        <a class="page-link" href="{{ url_for('marketplace.seller_products', page=pagination.page-1) }}" aria-label="Previous">
+                                    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                                        <a class="page-link" href="{{ url_for('marketplace.seller_products', page=pagination.prev_num, sort=sort) }}" aria-label="Previous">
                                             <span aria-hidden="true">&laquo;</span>
                                         </a>
                                     </li>
                                     {% for p in range(1, pagination.pages + 1) %}
                                     <li class="page-item {% if pagination.page == p %}active{% endif %}">
-                                        <a class="page-link" href="{{ url_for('marketplace.seller_products', page=p) }}">{{ p }}</a>
+                                        <a class="page-link" href="{{ url_for('marketplace.seller_products', page=p, sort=sort) }}">{{ p }}</a>
                                     </li>
                                     {% endfor %}
-                                    <li class="page-item {% if pagination.page == pagination.pages %}disabled{% endif %}">
-                                        <a class="page-link" href="{{ url_for('marketplace.seller_products', page=pagination.page+1) }}" aria-label="Next">
+                                    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                                        <a class="page-link" href="{{ url_for('marketplace.seller_products', page=pagination.next_num, sort=sort) }}" aria-label="Next">
                                             <span aria-hidden="true">&raquo;</span>
                                         </a>
                                     </li>
