@@ -74,14 +74,14 @@
     </div>
     <div class="card-body pt-3">
       {% if top_ranked %}
-        {% for i, (username, credits) in enumerate(top_ranked[:3], 1) %}
+        {% for username, credits in top_ranked[:3] %}
         <div class="contributor-item d-flex align-items-center gap-3 mb-3">
           <div class="position-relative">
             <img src="{{ url_for('static', filename='img/default.png') }}" 
                 class="rounded-circle" 
                 width="40" 
                 height="40">
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">{{ i }}</span>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">{{ loop.index }}</span>
           </div>
           <div class="flex-grow-1">
             <div class="fw-semibold small text-truncate" style="max-width: 140px;">{{ username }}</div>

@@ -164,11 +164,15 @@ def trending():
             .all()
         )
 
-        # Add answer_count as attribute to each question
+        # Create list of questions with answer counts
         top_questions = []
         for question, answer_count in top_questions_query:
-            question.answer_count = answer_count
-            top_questions.append(question)
+            # Create a dictionary with question data and answer count
+            question_data = {
+                'question': question,
+                'answer_count': answer_count
+            }
+            top_questions.append(question_data)
     except Exception:
         current_app.logger.exception("Error loading forum questions for trending")
         top_questions = []

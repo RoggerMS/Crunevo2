@@ -272,11 +272,18 @@ def create_app():
     @app.after_request
     def apply_security_headers(response):
         response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; frame-ancestors 'self'"
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://unpkg.com; "
+            "font-src 'self' https://fonts.gstatic.com; "
+            "img-src 'self' data: https://res.cloudinary.com; "
+            "connect-src 'self' https://res.cloudinary.com https://api.openai.com; "
+            "frame-src 'self' https://res.cloudinary.com; "
+            "frame-ancestors 'self'"
         )
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = (
-            "camera=(), microphone=(), geolocation()"
+            "camera=(), microphone=(), geolocation=()"
         )
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Server"] = "CRUNEVO"

@@ -647,7 +647,8 @@
               </div>
 
               {% if top_questions %}
-                {% for q in top_questions %}
+                {% for q_data in top_questions %}
+                {% set q = q_data.question %}
                 <div class="trending-item">
                   <div class="item-content">
                     <div class="item-avatar">
@@ -668,7 +669,7 @@
                         <div class="stats-group">
                           <div class="stat-item primary">
                             <i class="bi bi-chat-dots-fill"></i>
-                            <span>{{ q.answer_count or 0 }}</span>
+                            <span>{{ q_data.answer_count or 0 }}</span>
                           </div>
                           <div class="stat-item">
                             <i class="bi bi-eye-fill"></i>
