@@ -12,6 +12,9 @@ from flask_login import current_user
 import logging
 from logging.handlers import RotatingFileHandler
 import os
+from datetime import datetime
+from markupsafe import Markup
+from humanize import naturaltime
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
@@ -155,6 +158,19 @@ def create_app():
     from .cache.link_preview import extract_first_url, get_preview
 
     app.jinja_env.filters["timesince"] = timesince
+
+    @app.template_filter("timeago")
+    def timeago_filter(dt):
+        if not dt:
+            return ""
+        return Markup(naturaltime(datetime.utcnow() - dt))
+
+    @app.template_filter("date")
+    def format_date(value, format="%d/%m/%Y"):
+        if not value:
+            return ""
+        return value.strftime(format)
+
     app.jinja_env.filters["cl_url"] = optimize_url
 
     def link_preview(text):
