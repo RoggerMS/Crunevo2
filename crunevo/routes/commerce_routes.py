@@ -186,11 +186,8 @@ def commerce_index():
             purchased_ids=purchased_ids,
         )
 
-    # Determine which template to use based on view preference
-    # Legacy template path pointed to a non-existent `tienda/tienda.html`,
-    # which triggered a 500 when accessing the store with specific query
-    # parameters. The unified store template lives under `store/store.html`.
-    template = "store/store.html"
+    # Use the correct template for the tienda (commerce) section
+    template = "tienda/tienda.html"
 
     return render_template(
         template,
@@ -339,7 +336,7 @@ def marketplace_catch_all(path):
 
 # Cart functionality
 @commerce_bp.route("/cart/add/<int:product_id>", methods=["POST"])
-@activated_required
+@login_required
 def add_to_cart(product_id):
     product = Product.query.filter_by(id=product_id).first_or_404()
     cart = get_cart()
@@ -583,7 +580,7 @@ def seller_dashboard():
 
 # Favorite functionality
 @commerce_bp.route("/favorite/add/<int:product_id>", methods=["POST"])
-@activated_required
+@login_required
 def add_favorite(product_id):
     """Add a product to the user's favorites."""
     product = Product.query.filter_by(id=product_id).first_or_404()
@@ -600,7 +597,7 @@ def add_favorite(product_id):
 
 
 @commerce_bp.route("/favorite/remove/<int:product_id>", methods=["POST"])
-@activated_required
+@login_required
 def remove_favorite(product_id):
     """Remove a product from the user's favorites."""
     product = Product.query.filter_by(id=product_id).first_or_404()
