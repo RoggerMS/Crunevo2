@@ -1190,4 +1190,3 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Replaced `product.price_credits or ''` with `product.price_credits if product.price_credits is defined else ''` in `admin/manage_store.html`.
 - Replaced `product.price_credits if product else ''` with `product.price_credits if product and product.price_credits is defined else ''` in `admin/add_edit_product.html`.
 - Added Jinja macro `render_price_credits` in `components/price_credits.html` to display price credits or 'No disponible'; replaced templates to use it and set `Product.price_credits` default to 0. Use `render_price_credits(obj)` for future displays.
-- Guarded product detail template against missing price, stock and shipping info and replaced favorite_ids with is_favorite to prevent 500 errors when product data is incomplete.
