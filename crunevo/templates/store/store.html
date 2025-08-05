@@ -196,7 +196,7 @@
           <div class="product-card" 
                data-category="{{ product.category or 'other' }}" 
                data-price="{{ product.price or 0 }}" 
-               data-credits="{{ product.price_credits or 0 }}"
+              data-credits="{{ product.price_credits if product.price_credits is defined else 0 }}"
                data-stock="{{ product.stock or 0 }}"
                data-name="{{ product.name.lower() }}"
                data-description="{{ (product.description or '').lower() }}"
@@ -261,16 +261,23 @@
                 </div>
                 {% endif %}
                 
-                {% if product.price_credits %}
+                {% if product.price_credits is defined and product.price_credits %}
                 <div class="price-row">
                   <span class="price-crolars">
                     <i class="bi bi-coin"></i>
                     {{ product.price_credits }} Crolars
                   </span>
                 </div>
+                {% else %}
+                <div class="price-row">
+                  <span class="price-crolars">
+                    <i class="bi bi-coin"></i>
+                    No disponible
+                  </span>
+                </div>
                 {% endif %}
-                
-                {% if product.price == 0 and not product.price_credits %}
+
+                {% if product.price == 0 and not (product.price_credits is defined and product.price_credits) %}
                 <div class="price-row">
                   <span class="price-free">
                     <i class="bi bi-gift"></i>
@@ -301,7 +308,7 @@
               <!-- Action Buttons -->
               <div class="product-actions">
                 {% if product.stock > 0 %}
-                  {% if product.price_credits and (not product.credits_only or product.price == 0) %}
+                  {% if product.price_credits is defined and product.price_credits and (not product.credits_only or product.price == 0) %}
                   <form method="post" action="{{ url_for('store.redeem_product', product_id=product.id) }}" class="action-form">
                     {{ csrf.csrf_field() }}
                     <button type="submit"
@@ -327,7 +334,7 @@
                   </form>
                   {% endif %}
 
-                  {% if product.price == 0 and not product.price_credits %}
+                  {% if product.price == 0 and not (product.price_credits is defined and product.price_credits) %}
                   <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn-free-action">
                     <i class="bi bi-download"></i>
                     Obtener gratis

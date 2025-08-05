@@ -181,8 +181,10 @@
                                                     {% else %}
                                                     <span class="fs-4 fw-bold text-success me-2">Gratis</span>
                                                     {% endif %}
-                                                    {% if product.price_credits > 0 %}
-                                                    <span class="badge bg-warning">{{ product.price_credits }} créditos</span>
+                                                    {% if product.price_credits is defined and product.price_credits > 0 %}
+                                                    <span class="badge bg-warning">{{ product.price_credits }} Crolars</span>
+                                                    {% else %}
+                                                    <span class="badge bg-warning">No disponible</span>
                                                     {% endif %}
                                                 </div>
                                                 <a href="{{ url_for('commerce.view_product', product_id=product.id) }}" class="btn btn-primary">Ver detalles</a>
