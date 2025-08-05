@@ -64,43 +64,47 @@
                 <!-- Price -->
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div>
-                        {% if product.price > 0 %}
+                        {% if product.price is not none and product.price > 0 %}
                         <span class="fs-5 fw-bold text-primary">S/ {{ "%.2f"|format(product.price) }}</span>
-                        {% else %}
+                        {% elif product.price == 0 %}
                         <span class="fs-5 fw-bold text-success">Gratis</span>
+                        {% else %}
+                        <span class="fs-5 fw-bold text-muted">No disponible</span>
                         {% endif %}
                         <span class="badge bg-warning ms-1">{{ render_price_credits(product) }}</span>
                     </div>
-                    
+
                     <!-- Actions -->
                     <div class="d-flex">
                         {% if product.id in favorite_ids %}
                           <form action="{{ url_for('commerce.remove_favorite', product_id=product.id) }}" method="post" class="me-1">
                               {{ csrf.csrf_field() }}
-                              <button type="submit" class="btn btn-sm btn-outline-danger" title="Quitar de favoritos">
-                                  <i class="bi bi-heart-fill"></i>
+                              <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Quitar de favoritos" title="Quitar de favoritos">
+                                  <i class="bi bi-heart-fill"></i><span class="sr-only">Quitar de favoritos</span>
                               </button>
                           </form>
                         {% else %}
                           <form action="{{ url_for('commerce.add_favorite', product_id=product.id) }}" method="post" class="me-1">
                               {{ csrf.csrf_field() }}
-                              <button type="submit" class="btn btn-sm btn-outline-danger" title="Añadir a favoritos">
-                                  <i class="bi bi-heart"></i>
+                              <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Añadir a favoritos" title="Añadir a favoritos">
+                                  <i class="bi bi-heart"></i><span class="sr-only">Añadir a favoritos</span>
                               </button>
                           </form>
                         {% endif %}
-                        
-                        {% if product.id not in purchased_ids and product.stock > 0 %}
+
+                        {% if product.id not in purchased_ids and product.stock > 0 and product.price is not none %}
                           <form action="{{ url_for('commerce.add_to_cart', product_id=product.id) }}" method="post">
                               {{ csrf.csrf_field() }}
-                              <button type="submit" class="btn btn-sm btn-primary" title="Añadir al carrito">
-                                  <i class="bi bi-cart-plus"></i>
+                              <button type="submit" class="btn btn-sm btn-primary" aria-label="Añadir al carrito" title="Añadir al carrito">
+                                  <i class="bi bi-cart-plus"></i><span class="sr-only">Añadir al carrito</span>
                               </button>
                           </form>
                         {% elif product.id in purchased_ids %}
                         <span class="badge bg-success">Comprado</span>
-                        {% else %}
+                        {% elif product.stock <= 0 %}
                         <span class="badge bg-danger">Sin stock</span>
+                        {% else %}
+                        <span class="badge bg-secondary">No disponible</span>
                         {% endif %}
                     </div>
                 </div>

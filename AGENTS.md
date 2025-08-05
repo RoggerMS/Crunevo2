@@ -1190,3 +1190,7 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Replaced `product.price_credits or ''` with `product.price_credits if product.price_credits is defined else ''` in `admin/manage_store.html`.
 - Replaced `product.price_credits if product else ''` with `product.price_credits if product and product.price_credits is defined else ''` in `admin/add_edit_product.html`.
 - Added Jinja macro `render_price_credits` in `components/price_credits.html` to display price credits or 'No disponible'; replaced templates to use it and set `Product.price_credits` default to 0. Use `render_price_credits(obj)` for future displays.
+- Guarded product detail and card templates against undefined `price`, showing "Precio no disponible" when missing and hiding cart actions accordingly.
+- Added accessible labels and hidden text to product card icon buttons to satisfy button accessibility checks.
+- Wrapped `backdrop-filter` usage in `store.css` with `@supports` fallbacks for broader browser compatibility.
+- Restored `X-Frame-Options` security header.

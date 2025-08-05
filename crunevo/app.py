@@ -286,9 +286,8 @@ def create_app():
             "camera=(), microphone=(), geolocation=()"
         )
         response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
         response.headers["Server"] = "CRUNEVO"
-        # Remove legacy headers to align with modern best practices
-        response.headers.pop("X-Frame-Options", None)
         # Ensure correct charset declaration for HTML responses
         if response.mimetype == "text/html" and "charset" not in response.headers.get(
             "Content-Type", ""
