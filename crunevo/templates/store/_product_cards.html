@@ -1,6 +1,6 @@
 {% import 'components/csrf.html' as csrf %}
 {% for product in products %}
-<div class="product-card" data-category="{{ product.category }}" data-price="{{ product.price }}" data-credits="{{ product.price_credits or 0 }}">
+<div class="product-card" data-category="{{ product.category }}" data-price="{{ product.price }}" data-credits="{{ product.price_credits if product.price_credits is defined else 0 }}">
   <div class="product-image-container">
     <img src="{{ (product.first_image|cl_url(400,300,'fill')) if product.first_image else url_for('static', filename='img/default_product.png') }}"
          alt="{{ product.name }}"
@@ -33,10 +33,12 @@
       {% if product.price > 0 %}
       <div class="price-soles"><i class="bi bi-currency-dollar"></i><span>S/ {{ "%.2f"|format(product.price|float) }}</span></div>
       {% endif %}
-      {% if product.price_credits %}
+      {% if product.price_credits is defined and product.price_credits %}
       <div class="price-crolars"><i class="bi bi-coin"></i><span>{{ product.price_credits }} Crolars</span></div>
+      {% else %}
+      <div class="price-crolars"><i class="bi bi-coin"></i><span>No disponible</span></div>
       {% endif %}
-      {% if product.price == 0 and not product.price_credits %}
+      {% if product.price == 0 and not (product.price_credits is defined and product.price_credits) %}
       <div class="price-free"><i class="bi bi-gift"></i><span>GRATIS</span></div>
       {% endif %}
     </div>
@@ -47,7 +49,7 @@
     {% endif %}
     <div class="product-actions">
       {% if product.stock > 0 %}
-        {% if product.price_credits and (not product.credits_only or product.price == 0) %}
+        {% if product.price_credits is defined and product.price_credits and (not product.credits_only or product.price == 0) %}
         <form method="post" action="{{ url_for('store.redeem_product', product_id=product.id) }}" class="action-form">
           {{ csrf.csrf_field() }}
           <button type="submit" class="btn-crolars"{% if current_user.credits < product.price_credits %} disabled{% endif %}>
@@ -55,6 +57,10 @@
             {% if current_user.credits >= product.price_credits %}Canjear{% else %}Crolars insuficientes{% endif %}
           </button>
         </form>
+        {% else %}
+        <button type="button" class="btn-crolars" disabled>
+          <i class="bi bi-coin"></i>No disponible
+        </button>
         {% endif %}
         {% if product.price > 0 and not product.credits_only %}
         <form method="post" action="{{ url_for('store.add_to_cart', product_id=product.id) }}" class="action-form">
@@ -62,7 +68,7 @@
           <button type="submit" class="btn-cart"><i class="bi bi-cart-plus"></i>Agregar</button>
         </form>
         {% endif %}
-        {% if product.price == 0 and not product.price_credits %}
+        {% if product.price == 0 and not (product.price_credits is defined and product.price_credits) %}
         <a href="{{ url_for('store.view_product', product_id=product.id) }}" class="btn-free"><i class="bi bi-download"></i>Obtener Gratis</a>
         {% endif %}
       {% else %}
