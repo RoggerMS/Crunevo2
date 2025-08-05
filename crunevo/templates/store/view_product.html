@@ -125,14 +125,19 @@
           </div>
           {% endif %}
 
-          {% if product.price_credits %}
+          {% if product.price_credits is defined and product.price_credits %}
           <div class="price-crolars-large">
             <i class="bi bi-coin"></i>
             <span>{{ product.price_credits }} Crolars</span>
           </div>
+          {% else %}
+          <div class="price-crolars-large">
+            <i class="bi bi-coin"></i>
+            <span>No disponible</span>
+          </div>
           {% endif %}
 
-          {% if product.price == 0 and not product.price_credits %}
+          {% if product.price == 0 and not (product.price_credits is defined and product.price_credits) %}
           <div class="price-free-large">
             <i class="bi bi-gift"></i>
             <span>GRATIS</span>
@@ -159,7 +164,7 @@
         {% if product.is_official %}
         <div class="purchase-actions">
           {% if product.stock > 0 and not purchased %}
-            {% if product.price_credits and (not product.credits_only or product.price == 0) %}
+            {% if product.price_credits is defined and product.price_credits and (not product.credits_only or product.price == 0) %}
             <form method="post" action="{{ url_for('store.redeem_product', product_id=product.id) }}" class="action-form-large">
               {{ csrf.csrf_field() }}
               <button type="submit" class="btn-crolars-large"{% if current_user.credits < product.price_credits %} disabled{% endif %}>
@@ -171,6 +176,11 @@
                 {% endif %}
               </button>
             </form>
+            {% else %}
+            <button class="btn-crolars-large" disabled>
+              <i class="bi bi-coin"></i>
+              No disponible
+            </button>
             {% endif %}
 
             {% if product.price > 0 and not product.credits_only %}
@@ -191,7 +201,7 @@
             </form>
             {% endif %}
 
-            {% if product.price == 0 and not product.price_credits %}
+            {% if product.price == 0 and not (product.price_credits is defined and product.price_credits) %}
             <a href="{{ product.download_url or '#' }}" class="btn-free-large">
               <i class="bi bi-download"></i>
               Obtener gratis

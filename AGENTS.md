@@ -1183,3 +1183,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Wrapped favorite product price credits section with defined check and "No disponible" fallback to handle missing values.
 - Wrapped product detail crolars price block with defined check and "No disponible" fallback (hotfix product-crolars-fallback).
 - Guarded cart price credits display and total calculation with defined check and fallback placeholder in `carrito.html`.
+- Wrapped product price credits in `store/view_product.html` with defined checks, added "No disponible" fallbacks and disabled actions when missing.
