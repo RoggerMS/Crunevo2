@@ -1185,3 +1185,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Guarded cart price credits display and total calculation with defined check and fallback placeholder in `carrito.html`.
 - Wrapped product price credits in `store/view_product.html` with defined checks, added "No disponible" fallbacks and disabled actions when missing.
 - Guarded product card price credits with defined check, added "No disponible" fallbacks and defaulted data-credits to 0 when undefined.
+- Wrapped purchase price credits section with defined check and "No disponible" fallback in `compras.html`.
