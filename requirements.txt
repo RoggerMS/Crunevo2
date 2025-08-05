@@ -14,7 +14,7 @@ Jinja2==3.1.6
 MarkupSafe==3.0.2
 packaging==25.0
 psycopg2-binary==2.9.10
-python-dotenv==1.1.0
+python-dotenv==1.1.1
 SQLAlchemy==2.0.41
 typing_extensions==4.14.0
 Werkzeug==3.1.3
@@ -24,13 +24,13 @@ requests==2.31.0
 ruff==0.4.4
 black==24.4.2
 APScheduler==3.10.4
-argon2-cffi==23.1.0
+argon2-cffi==25.1.0
 Flask-Talisman==1.1.0
 Flask-Limiter==3.5.0
-Flask-SocketIO==5.3.6
+Flask-SocketIO==5.5.1
 zxcvbn==4.5.0
 freezegun==1.5.0
-beautifulsoup4==4.12.2
+beautifulsoup4==4.13.4
 reportlab==4.4.2
 pytest
 qrcode[pil]
@@ -39,7 +39,7 @@ eventlet==0.35.2
 pyotp==2.9.0
 boto3==1.34.14
 mutagen==1.47.0
-sentry-sdk==2.32.0
+sentry-sdk==2.34.1
 Authlib==1.2.1
 bleach==6.1.0
 flask
