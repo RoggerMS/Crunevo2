@@ -36,7 +36,7 @@ def crolars():
 
 @main_bp.route("/tienda")
 def tienda():
-    return redirect("/store")
+    return redirect(url_for("commerce.commerce_index"))
 
 
 @main_bp.route("/privacidad")

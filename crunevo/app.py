@@ -366,6 +366,7 @@ def create_app():
         store_legacy_bp,
         marketplace_legacy_bp,
     )
+    from .routes.marketplace_routes import marketplace_bp
     from .routes.product_routes import product_bp
     from .routes.chat_routes import chat_bp
     from .routes.search_routes import search_bp
@@ -415,6 +416,7 @@ def create_app():
         app.register_blueprint(auth_bp)
         app.register_blueprint(notes_bp)
         app.register_blueprint(commerce_bp)
+        app.register_blueprint(marketplace_bp)
         app.register_blueprint(store_legacy_bp)
         app.register_blueprint(marketplace_legacy_bp)
         app.add_url_rule(

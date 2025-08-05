@@ -30,7 +30,7 @@ from crunevo.utils.uploads import save_image
 commerce_bp = Blueprint("commerce", __name__, url_prefix="/tienda")
 # Legacy blueprints to preserve old /store and /marketplace paths
 store_legacy_bp = Blueprint("store", __name__, url_prefix="/store")
-marketplace_legacy_bp = Blueprint("marketplace", __name__, url_prefix="/marketplace")
+marketplace_legacy_bp = Blueprint("marketplace_legacy", __name__, url_prefix="/marketplace")
 
 
 def has_purchased(user_id: int, product_id: int) -> bool:
@@ -221,7 +221,6 @@ def commerce_index():
 
 
 @commerce_bp.route("/producto/<int:product_id>")
-@activated_required
 def view_product(product_id):
     product = Product.query.filter_by(id=product_id).first_or_404()
 
@@ -240,7 +239,7 @@ def view_product(product_id):
     # Get reviews
     reviews = (
         Review.query.filter_by(product_id=product.id)
-        .order_by(Review.created_at.desc())
+        .order_by(Review.timestamp.desc())
         .all()
     )
     avg_rating = 0
@@ -250,7 +249,7 @@ def view_product(product_id):
     # Get questions
     questions = (
         Question.query.filter_by(product_id=product.id)
-        .order_by(Question.created_at.desc())
+        .order_by(Question.timestamp.desc())
         .all()
     )
 
@@ -494,7 +493,7 @@ def become_seller():
     # Verificar si ya es vendedor
     existing_seller = Seller.query.filter_by(user_id=current_user.id).first()
     if existing_seller:
-        return redirect(url_for("commerce.seller_dashboard"))
+        return redirect(url_for("marketplace.seller_dashboard"))
 
     if request.method == "POST":
         store_name = request.form.get("store_name")
@@ -537,45 +536,9 @@ def become_seller():
             "¡Felicidades! Ahora eres un vendedor en el marketplace de Crunevo",
             "success",
         )
-        return redirect(url_for("commerce.seller_dashboard"))
+        return redirect(url_for("marketplace.seller_dashboard"))
 
     return render_template("tienda/become_seller.html")
-
-
-@commerce_bp.route("/seller-dashboard")
-@login_required
-@activated_required
-def seller_dashboard():
-    """Panel de control del vendedor."""
-    seller = Seller.query.filter_by(user_id=current_user.id).first_or_404()
-
-    # Obtener productos del vendedor
-    products = Product.query.filter_by(seller_id=seller.id).all()
-
-    # Obtener estadísticas de ventas
-    sales = Purchase.query.join(Product).filter(Product.seller_id == seller.id).all()
-    total_sales = len(sales)
-    total_revenue = sum(sale.price_soles * sale.quantity for sale in sales)
-
-    # Obtener mensajes no leídos
-    unread_messages_count = (
-        MarketplaceMessage.query.join(MarketplaceConversation)
-        .filter(
-            MarketplaceConversation.seller_id == seller.id,
-            MarketplaceMessage.is_read.is_(False),
-            MarketplaceMessage.sender_id != current_user.id,
-        )
-        .count()
-    )
-
-    return render_template(
-        "tienda/seller_dashboard.html",
-        seller=seller,
-        products=products,
-        total_sales=total_sales,
-        total_revenue=total_revenue,
-        unread_messages_count=unread_messages_count,
-    )
 
 
 # Favorite functionality
@@ -613,6 +576,18 @@ def remove_favorite(product_id):
     return redirect(request.referrer or url_for("commerce.commerce_index"))
 
 
+# API routes for dynamic content
+@commerce_bp.route("/api/subcategorias")
+def get_subcategorias():
+    """Get subcategories for a given category."""
+    categoria = request.args.get('categoria')
+    if not categoria:
+        return jsonify({'subcategorias': []})
+    
+    from crunevo.constants import STORE_CATEGORIES
+    subcategorias = STORE_CATEGORIES.get(categoria, [])
+    return jsonify({'subcategorias': subcategorias})
+
 # Additional routes for unified commerce experience
 
 @commerce_bp.route("/request-product", methods=["GET", "POST"])
@@ -631,7 +606,12 @@ def my_requests():
 
 # become_seller already exists above
 
-# seller_dashboard already exists above
+@commerce_bp.route("/seller/dashboard")
+@login_required
+@activated_required
+def seller_dashboard():
+    """Redirect to marketplace seller dashboard."""
+    return redirect(url_for("marketplace.seller_dashboard"))
 
 @commerce_bp.route("/publish-product", methods=["GET", "POST"])
 @login_required

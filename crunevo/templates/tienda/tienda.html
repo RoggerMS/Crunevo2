@@ -264,7 +264,7 @@
                 subcategoriaContainer.style.display = 'block';
                 
                 // Obtener subcategorías para esta categoría
-                fetch(`/api/subcategorias?categoria=${encodeURIComponent(categoria)}`)
+                fetch(`/tienda/api/subcategorias?categoria=${encodeURIComponent(categoria)}`)
                     .then(response => response.json())
                     .then(data => {
                         // Limpiar select actual

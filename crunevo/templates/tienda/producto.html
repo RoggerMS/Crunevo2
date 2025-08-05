@@ -31,19 +31,19 @@
                 <div class="card-body p-0">
                     <div id="productImages" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner">
-                            {% if product.image_url %}
+                            {% if product.image %}
                             <div class="carousel-item active">
-                                <img src="{{ product.image_url }}" class="d-block w-100 product-detail-img" alt="{{ product.name }}">
+                                <img src="{{ product.image }}" class="d-block w-100 product-detail-img" alt="{{ product.name }}">
                             </div>
                             {% endif %}
-                            {% if product.additional_images %}
-                                {% for img in product.additional_images.split(',') %}
-                                <div class="carousel-item {% if not product.image_url and loop.first %}active{% endif %}">
+                            {% if product.image_urls %}
+                                {% for img in product.image_urls %}
+                                <div class="carousel-item {% if not product.image and loop.first %}active{% endif %}">
                                     <img src="{{ img }}" class="d-block w-100 product-detail-img" alt="{{ product.name }}">
                                 </div>
                                 {% endfor %}
                             {% endif %}
-                            {% if not product.image_url and not product.additional_images %}
+                            {% if not product.image and not product.image_urls %}
                             <div class="carousel-item active">
                                 <div class="placeholder-img product-detail-img d-flex align-items-center justify-content-center bg-light">
                                     <i class="bi bi-image text-secondary" style="font-size: 4rem;"></i>
