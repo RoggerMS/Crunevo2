@@ -66,10 +66,15 @@
               <span class="currency">S/</span>
               <span class="amount">{{ "%.2f"|format(product.price) }}</span>
             </div>
-            {% if product.price_crolars %}
+            {% if product.price_crolars is defined and product.price_crolars %}
             <div class="price-crolars">
               <i class="bi bi-coin"></i>
               <span>{{ product.price_crolars }} Crolars</span>
+            </div>
+            {% else %}
+            <div class="price-crolars">
+              <i class="bi bi-coin"></i>
+              <span>No disponible</span>
             </div>
             {% endif %}
           </div>

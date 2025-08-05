@@ -1181,3 +1181,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Guarded post_reaction migration to check for posts table before altering and fixed admin sidebar events link.
 - Guarded crolars price rendering across store and commerce templates to prevent 500 errors when price is missing (PR store-crolars-undefined).
 - Wrapped favorite product price credits section with defined check and "No disponible" fallback to handle missing values.
+- Wrapped product detail crolars price block with defined check and "No disponible" fallback (hotfix product-crolars-fallback).
