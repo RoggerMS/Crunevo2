@@ -28,6 +28,11 @@ from crunevo.constants import STORE_CATEGORIES
 from crunevo.utils.uploads import save_image
 
 commerce_bp = Blueprint("commerce", __name__, url_prefix="/tienda")
+# Legacy blueprints to preserve old /store and /marketplace paths
+store_legacy_bp = Blueprint("store", __name__, url_prefix="/store")
+marketplace_legacy_bp = Blueprint(
+    "marketplace", __name__, url_prefix="/marketplace"
+)
 
 
 def has_purchased(user_id: int, product_id: int) -> bool:
@@ -282,51 +287,50 @@ def view_product(product_id):
     )
 
 
-# Legacy redirects
-@commerce_bp.route("/store")
+# Legacy redirects for /store
+@store_legacy_bp.route("/")
 def store_redirect():
-    return redirect(url_for("commerce.commerce_index", official=1, marketplace=0))
+    params = request.args.to_dict()
+    params.setdefault("official", 1)
+    params.setdefault("marketplace", 0)
+    return redirect(url_for("commerce.commerce_index", **params))
 
 
-@commerce_bp.route("/marketplace")
-def marketplace_redirect():
-    return redirect(url_for("commerce.commerce_index", official=0, marketplace=1))
-
-
-# Additional legacy redirects for specific routes
-@commerce_bp.route("/store/product/<int:product_id>")
+@store_legacy_bp.route("/product/<int:product_id>")
 def store_product_redirect(product_id):
     return redirect(url_for("commerce.view_product", product_id=product_id))
 
 
-@commerce_bp.route("/marketplace/product/<int:product_id>")
+@store_legacy_bp.route("/<path:path>")
+def store_catch_all(path):
+    query = request.query_string.decode()
+    dest = f"/tienda/{path}"
+    if query:
+        dest += f"?{query}"
+    return redirect(dest)
+
+
+# Legacy redirects for /marketplace
+@marketplace_legacy_bp.route("/")
+def marketplace_redirect():
+    params = request.args.to_dict()
+    params.setdefault("official", 0)
+    params.setdefault("marketplace", 1)
+    return redirect(url_for("commerce.commerce_index", **params))
+
+
+@marketplace_legacy_bp.route("/product/<int:product_id>")
 def marketplace_product_redirect(product_id):
     return redirect(url_for("commerce.view_product", product_id=product_id))
 
 
-@commerce_bp.route("/store/cart")
-def store_cart_redirect():
-    return redirect(url_for("commerce.view_cart"))
-
-
-@commerce_bp.route("/store/checkout")
-def store_checkout_redirect():
-    return redirect(url_for("commerce.checkout"))
-
-
-@commerce_bp.route("/store/purchases")
-def store_purchases_redirect():
-    return redirect(url_for("commerce.view_purchases"))
-
-
-@commerce_bp.route("/marketplace/become-seller")
-def marketplace_become_seller_redirect():
-    return redirect(url_for("commerce.become_seller"))
-
-
-@commerce_bp.route("/marketplace/seller-dashboard")
-def marketplace_seller_dashboard_redirect():
-    return redirect(url_for("commerce.seller_dashboard"))
+@marketplace_legacy_bp.route("/<path:path>")
+def marketplace_catch_all(path):
+    query = request.query_string.decode()
+    dest = f"/tienda/{path}"
+    if query:
+        dest += f"?{query}"
+    return redirect(dest)
 
 
 # Import remaining functions from store_routes.py and marketplace_routes.py
