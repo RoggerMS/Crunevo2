@@ -56,8 +56,10 @@
                       {% if product.price > 0 %}
                         <p class="mb-1 text-primary fw-bold">S/ {{ '%.2f' | format(product.price) }}</p>
                       {% endif %}
-                    {% if product.price_credits %}
+                    {% if product.price_credits is defined and product.price_credits %}
                       <p class="mb-1 text-warning fw-bold">{{ product.price_credits }} crolars</p>
+                    {% else %}
+                      <p class="mb-1 text-warning fw-bold">No disponible</p>
                     {% endif %}
                     <div class="mb-2">
                       {% if product.is_new %}<span class="badge bg-success">Nuevo</span>{% endif %}
