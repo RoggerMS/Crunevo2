@@ -11,6 +11,7 @@ from flask import (
 from flask_wtf.csrf import generate_csrf
 from datetime import datetime, timedelta
 from flask_login import current_user, login_required
+from sqlalchemy import func
 
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
@@ -48,7 +49,6 @@ def get_cart():
 
 
 @commerce_bp.route("/")
-@activated_required
 def commerce_index():
     categoria = request.args.get("categoria")
     subcategoria = request.args.get("subcategoria")
@@ -579,6 +579,41 @@ def seller_dashboard():
         total_revenue=total_revenue,
         unread_messages_count=unread_messages_count,
     )
+
+
+# Favorite functionality
+@commerce_bp.route("/favorite/add/<int:product_id>", methods=["POST"])
+@activated_required
+def add_favorite(product_id):
+    """Add a product to the user's favorites."""
+    product = Product.query.filter_by(id=product_id).first_or_404()
+    existing_fav = FavoriteProduct.query.filter_by(
+        user_id=current_user.id, product_id=product.id
+    ).first()
+    
+    if not existing_fav:
+        db.session.add(FavoriteProduct(user_id=current_user.id, product_id=product.id))
+        db.session.commit()
+        flash("Producto agregado a favoritos", "success")
+    
+    return redirect(request.referrer or url_for("commerce.commerce_index"))
+
+
+@commerce_bp.route("/favorite/remove/<int:product_id>", methods=["POST"])
+@activated_required
+def remove_favorite(product_id):
+    """Remove a product from the user's favorites."""
+    product = Product.query.filter_by(id=product_id).first_or_404()
+    fav = FavoriteProduct.query.filter_by(
+        user_id=current_user.id, product_id=product.id
+    ).first()
+    
+    if fav:
+        db.session.delete(fav)
+        db.session.commit()
+        flash("Producto eliminado de favoritos", "success")
+    
+    return redirect(request.referrer or url_for("commerce.commerce_index"))
 
 
 # Add more functions from store_routes.py and marketplace_routes.py as needed
