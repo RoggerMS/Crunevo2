@@ -73,7 +73,7 @@ def login():
             if requires_two_factor(user):
                 session["2fa_user_id"] = user.id
                 session["next"] = request.args.get("next")
-                return redirect(url_for("auth.verify_token"))
+                return redirect(url_for("auth.login_verify"))
             finalize_login(user)
             if admin_mode:
                 return redirect(url_for("admin.dashboard"))
@@ -131,6 +131,34 @@ def setup_2fa():
         confirmed=bool(record.confirmed_at),
         codes=codes,
     )
+
+
+@auth_bp.route("/login/verify", methods=["GET", "POST"])
+def login_verify():
+    """Verify two-factor code during login."""
+    user_id = session.get("2fa_user_id")
+    if not user_id:
+        return redirect(url_for("auth.login"))
+    user = User.query.get(user_id)
+    record = TwoFactorToken.query.filter_by(user_id=user_id).first()
+    if request.method == "POST" and record:
+        code = request.form.get("code", "")
+        totp = pyotp.TOTP(record.secret)
+        valid = totp.verify(code)
+        if not valid and record.backup_codes:
+            codes = record.backup_codes.split(",")
+            if code in codes:
+                valid = True
+                codes.remove(code)
+                record.backup_codes = ",".join(codes)
+                db.session.commit()
+        if valid:
+            session.pop("2fa_user_id", None)
+            next_page = session.pop("next", None)
+            finalize_login(user)
+            return redirect(next_page or url_for("feed.feed_home"))
+        flash("Código inválido", "danger")
+    return render_template("auth/two_factor_verify.html")
 
 
 @auth_bp.route("/perfil", methods=["GET", "POST"])

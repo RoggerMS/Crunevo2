@@ -287,11 +287,20 @@ def create_app():
         )
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Server"] = "CRUNEVO"
+        # Remove legacy headers to align with modern best practices
+        response.headers.pop("X-Frame-Options", None)
+        # Ensure correct charset declaration for HTML responses
+        if response.mimetype == "text/html" and "charset" not in response.headers.get(
+            "Content-Type", ""
+        ):
+            response.headers["Content-Type"] = "text/html; charset=utf-8"
         return response
 
     @app.after_request
     def add_cache_control(response):
         response.headers["Cache-Control"] = "public, max-age=86400"
+        # Prefer Cache-Control over Expires header
+        response.headers.pop("Expires", None)
         return response
 
     # Initialize database if needed (skip during tests)

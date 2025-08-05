@@ -11,7 +11,6 @@ from flask import (
 from flask_wtf.csrf import generate_csrf
 from datetime import datetime, timedelta
 from flask_login import current_user, login_required
-from sqlalchemy import func
 
 from crunevo.utils.helpers import activated_required
 from crunevo.extensions import db
@@ -31,9 +30,7 @@ from crunevo.utils.uploads import save_image
 commerce_bp = Blueprint("commerce", __name__, url_prefix="/tienda")
 # Legacy blueprints to preserve old /store and /marketplace paths
 store_legacy_bp = Blueprint("store", __name__, url_prefix="/store")
-marketplace_legacy_bp = Blueprint(
-    "marketplace", __name__, url_prefix="/marketplace"
-)
+marketplace_legacy_bp = Blueprint("marketplace", __name__, url_prefix="/marketplace")
 
 
 def has_purchased(user_id: int, product_id: int) -> bool:
@@ -164,7 +161,7 @@ def commerce_index():
         db.session.query(Product)
         .join(Purchase)
         .group_by(Product.id)
-        .order_by(func.count(Purchase.id).desc())
+        .order_by(db.func.count(Purchase.id).desc())
         .limit(5)
         .all()
     )
@@ -190,7 +187,10 @@ def commerce_index():
         )
 
     # Determine which template to use based on view preference
-    template = "tienda/tienda.html"
+    # Legacy template path pointed to a non-existent `tienda/tienda.html`,
+    # which triggered a 500 when accessing the store with specific query
+    # parameters. The unified store template lives under `store/store.html`.
+    template = "store/store.html"
 
     return render_template(
         template,
@@ -590,12 +590,12 @@ def add_favorite(product_id):
     existing_fav = FavoriteProduct.query.filter_by(
         user_id=current_user.id, product_id=product.id
     ).first()
-    
+
     if not existing_fav:
         db.session.add(FavoriteProduct(user_id=current_user.id, product_id=product.id))
         db.session.commit()
         flash("Producto agregado a favoritos", "success")
-    
+
     return redirect(request.referrer or url_for("commerce.commerce_index"))
 
 
@@ -607,12 +607,12 @@ def remove_favorite(product_id):
     fav = FavoriteProduct.query.filter_by(
         user_id=current_user.id, product_id=product.id
     ).first()
-    
+
     if fav:
         db.session.delete(fav)
         db.session.commit()
         flash("Producto eliminado de favoritos", "success")
-    
+
     return redirect(request.referrer or url_for("commerce.commerce_index"))
 
 

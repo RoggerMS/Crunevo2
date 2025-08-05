@@ -1175,3 +1175,7 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added legacy blueprints to redirect /store and /marketplace paths to /tienda, restoring /store access and preventing 404 errors.
 
 - Added CSRF macro usage to commerce and admin templates; implemented streak claim API, fixed profile route, paginated feed comments and renamed Referral fields for tests.
+- Resolved /tienda 500 by pointing commerce_index to existing template and ensuring query parameters are handled safely.
+- Hardened HTTP responses: removed legacy X-Frame-Options/Expires headers and enforced UTF-8 content type and nosniff policy.
+- Added /login/verify route with two-factor code validation and corrected login redirect.
+- Guarded post_reaction migration to check for posts table before altering and fixed admin sidebar events link.
