@@ -1,4 +1,5 @@
 {% extends 'admin/base_admin.html' %}
+{% from 'components/price_credits.html' import render_price_credits %}
 {% block admin_content %}
 <h2 class="page-title mb-4">Administrar Tienda</h2>
 {% if current_user.role == 'admin' %}
@@ -48,7 +49,7 @@
           {% endif %}
         </td>
         <td>{{ '%.2f'|format(product.price) }}</td>
-        <td>{{ product.price_credits if product.price_credits is defined else '' }}</td>
+        <td>{{ render_price_credits(product) }}</td>
         <td>{{ product.stock }}</td>
         <td class="text-end">
           <div class="dropdown position-relative">

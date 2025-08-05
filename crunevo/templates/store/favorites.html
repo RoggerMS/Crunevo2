@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% import 'components/button.html' as btn %}
 {% import 'components/csrf.html' as csrf %}
+{% from 'components/price_credits.html' import render_price_credits %}
 {% block head_extra %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
 {% endblock %}
@@ -56,11 +57,7 @@
                       {% if product.price > 0 %}
                         <p class="mb-1 text-primary fw-bold">S/ {{ '%.2f' | format(product.price) }}</p>
                       {% endif %}
-                    {% if product.price_credits is defined and product.price_credits %}
-                      <p class="mb-1 text-warning fw-bold">{{ product.price_credits }} crolars</p>
-                    {% else %}
-                      <p class="mb-1 text-warning fw-bold">No disponible</p>
-                    {% endif %}
+                    <p class="mb-1 text-warning fw-bold">{{ render_price_credits(product) }}</p>
                     <div class="mb-2">
                       {% if product.is_new %}<span class="badge bg-success">Nuevo</span>{% endif %}
                       {% if product.is_popular %}<span class="badge bg-danger">Popular</span>{% endif %}

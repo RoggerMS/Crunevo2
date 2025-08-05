@@ -1,4 +1,5 @@
 {% import 'components/csrf.html' as csrf %}
+{% from 'components/price_credits.html' import render_price_credits %}
 {% for product in products %}
 <div class="col">
     <div class="card h-100 product-card shadow-hover">
@@ -68,11 +69,7 @@
                         {% else %}
                         <span class="fs-5 fw-bold text-success">Gratis</span>
                         {% endif %}
-                        {% if product.price_credits is defined and product.price_credits %}
-                        <span class="badge bg-warning ms-1">{{ product.price_credits }} Crolars</span>
-                        {% else %}
-                        <span class="badge bg-warning ms-1">No disponible</span>
-                        {% endif %}
+                        <span class="badge bg-warning ms-1">{{ render_price_credits(product) }}</span>
                     </div>
                     
                     <!-- Actions -->

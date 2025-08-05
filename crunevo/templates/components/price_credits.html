@@ -1,0 +1,7 @@
+{% macro render_price_credits(item) -%}
+  {%- if item and item.price_credits is defined and item.price_credits -%}
+    {{ item.price_credits }} Crolars
+  {%- else -%}
+    No disponible
+  {%- endif -%}
+{%- endmacro %}
