@@ -33,7 +33,13 @@
               </div>
             </td>
               <td class="text-end">S/ {{ '%.2f'|format(item.product.price or 0) }}</td>
-            <td class="text-end">{{ item.product.price_credits or '—' }}</td>
+            <td class="text-end">
+              {% if item.product.price_credits is defined and item.product.price_credits is not none %}
+                {{ item.product.price_credits }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
             <td class="text-end">
               <a href="{{ url_for('store.remove_item', product_id=item.product.id) }}" class="btn btn-sm btn-outline-danger">
                 <i class="bi bi-trash"></i>
@@ -41,7 +47,11 @@
             </td>
           </tr>
             {% set total_soles = total_soles + (item.product.price or 0) %}
-          {% set total_credits = total_credits + (item.product.price_credits or 0) %}
+          {% if item.product.price_credits is defined and item.product.price_credits is not none %}
+            {% set total_credits = total_credits + item.product.price_credits %}
+          {% else %}
+            {% set total_credits = total_credits + 0 %}
+          {% endif %}
           {% endfor %}
         </tbody>
         <tfoot>
