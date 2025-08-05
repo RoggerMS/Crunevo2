@@ -15,13 +15,15 @@ def clear_session_new_achievements():
         if current_user.is_authenticated:
             current_value = session.get("new_achievements")
             if current_value:
-                current_app.logger.debug("🔥 Revisando sesión de logros… %s", current_value)
+                current_app.logger.debug(
+                    "🔥 Revisando sesión de logros… %s", current_value
+                )
             has_pending = AchievementPopup.query.filter_by(
                 user_id=current_user.id, shown=False
             ).count()
             if not has_pending:
                 session.pop("new_achievements", None)
-    except Exception as e:
+    except Exception:
         # Silently handle any errors during app initialization
         pass
 

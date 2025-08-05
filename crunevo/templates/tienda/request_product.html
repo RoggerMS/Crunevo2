@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% include "csrf.html" %}
+{% import 'components/csrf.html' as csrf %}
 
 {% block title %}Solicitar producto - Tienda Crunevo{% endblock %}
 
@@ -17,7 +17,7 @@
                     <p class="text-muted mb-4">¿No encuentras lo que buscas? Completa este formulario para solicitar un producto específico y nos pondremos en contacto contigo.</p>
                     
                     <form action="{{ url_for('commerce.request_product') }}" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        {{ csrf.csrf_field() }}
                         
                         <div class="mb-3">
                             <label for="product_name" class="form-label">Nombre del producto *</label>

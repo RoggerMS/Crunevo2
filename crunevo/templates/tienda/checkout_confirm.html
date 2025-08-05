@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% include "csrf.html" %}
+{% import 'components/csrf.html' as csrf %}
 
 {% block title %}Confirmar compra - Tienda Crunevo{% endblock %}
 
@@ -76,7 +76,7 @@
                     <h5 class="card-title mb-3">Detalles de la compra</h5>
                     
                     <form action="{{ url_for('commerce.checkout') }}" method="post">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        {{ csrf.csrf_field() }}
                         
                         <!-- Opciones de envío -->
                         <div class="mb-3">

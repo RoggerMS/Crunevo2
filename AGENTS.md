@@ -1173,3 +1173,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Replaced `auth.profile_by_username` links with `auth.view_profile` across templates to resolve navbar BuildError (hotfix profile-link).
 
 - Added legacy blueprints to redirect /store and /marketplace paths to /tienda, restoring /store access and preventing 404 errors.
+
+- Added CSRF macro usage to commerce and admin templates; implemented streak claim API, fixed profile route, paginated feed comments and renamed Referral fields for tests.
