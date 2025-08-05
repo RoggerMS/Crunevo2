@@ -99,10 +99,12 @@
 
                     <!-- Precio -->
                     <div class="mb-4">
-                        {% if product.price > 0 %}
+                        {% if product.price is not none and product.price > 0 %}
                         <span class="fs-3 fw-bold text-primary">S/ {{ "%.2f"|format(product.price) }}</span>
-                        {% else %}
+                        {% elif product.price == 0 %}
                         <span class="fs-3 fw-bold text-success">Gratis</span>
+                        {% else %}
+                        <span class="fs-3 fw-bold text-muted">Precio no disponible</span>
                         {% endif %}
                         <span class="badge bg-warning ms-2">{{ render_price_credits(product) }}</span>
                     </div>
@@ -140,16 +142,18 @@
 
                     <!-- Acciones -->
                     <div class="d-flex flex-wrap gap-2 mb-4">
-                        {% if not has_bought and product.stock > 0 %}
+                        {% if not has_bought and product.stock > 0 and product.price is not none %}
                         <form action="{{ url_for('commerce.add_to_cart', product_id=product.id) }}" method="post">
                             {{ csrf.csrf_field() }}
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-cart-plus me-1"></i> Añadir al carrito
                             </button>
                         </form>
+                        {% elif not has_bought and product.stock > 0 %}
+                        <span class="text-muted">Precio no disponible</span>
                         {% endif %}
 
-                        {% if product.id in favorite_ids %}
+                        {% if is_favorite %}
                         <form action="{{ url_for('commerce.remove_favorite', product_id=product.id) }}" method="post">
                             {{ csrf.csrf_field() }}
                             <button type="submit" class="btn btn-outline-danger">
