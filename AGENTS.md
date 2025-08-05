@@ -1187,3 +1187,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Guarded product card price credits with defined check, added "No disponible" fallbacks and defaulted data-credits to 0 when undefined.
 - Wrapped purchase price credits section with defined check and "No disponible" fallback in `compras.html`.
 - Wrapped profile purchases tab price credits with defined check and "No disponible" fallback.
+- Replaced `product.price_credits or ''` with `product.price_credits if product.price_credits is defined else ''` in `admin/manage_store.html`.

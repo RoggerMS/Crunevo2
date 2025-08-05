@@ -48,7 +48,7 @@
           {% endif %}
         </td>
         <td>{{ '%.2f'|format(product.price) }}</td>
-        <td>{{ product.price_credits or '' }}</td>
+        <td>{{ product.price_credits if product.price_credits is defined else '' }}</td>
         <td>{{ product.stock }}</td>
         <td class="text-end">
           <div class="dropdown position-relative">
