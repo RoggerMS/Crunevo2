@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% include "csrf.html" %}
+{% import 'components/csrf.html' as csrf %}
 
 {% block title %}Publicar Producto - Tienda Crunevo{% endblock %}
 
@@ -62,7 +62,7 @@
                     <h1 class="h3 mb-4">{{ 'Editar' if product else 'Publicar' }} Producto</h1>
                     
                     <form action="{{ url_for('commerce.edit_product', product_id=product.id) if product else url_for('commerce.publish_product') }}" method="post" enctype="multipart/form-data" id="product-form">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        {{ csrf.csrf_field() }}
                         
                         <div class="row mb-4">
                             <div class="col-md-6">

@@ -22,13 +22,15 @@ import os
 import cloudinary.uploader
 from werkzeug.utils import secure_filename
 from crunevo.extensions import db
-from crunevo.models import User, Note, TwoFactorToken
+from crunevo.models import User, Note, TwoFactorToken, LoginStreak, DeviceClaim
 from crunevo.utils import (
     spend_credit,
     send_notification,
+    add_credit,
 )
+from crunevo.utils.login_streak import streak_reward
 from crunevo.constants import CreditReasons
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import pyotp
 import secrets
 from sqlalchemy import inspect
@@ -134,8 +136,8 @@ def setup_2fa():
 @auth_bp.route("/perfil", methods=["GET", "POST"])
 @activated_required
 def perfil():
-    # Redirige a la vista unificada de perfil
-    return redirect(url_for("auth.view_profile", username=current_user.username))
+    """Mostrar el perfil del usuario autenticado sin redirección"""
+    return view_profile(current_user.username)
 
 
 @auth_bp.route("/perfil/<username>", methods=["GET", "POST"])
@@ -536,6 +538,7 @@ def delete_account():
 
     # Mark user as deleted
     current_user.is_deleted = True
+    current_user.activated = False
     current_user.email = f"deleted_{current_user.id}@example.com"
     current_user.username = f"deleted_user_{current_user.id}"
     current_user.password_hash = secrets.token_hex(16)
@@ -570,3 +573,41 @@ def api_user():
             "verification_level": current_user.verification_level,
         }
     )
+
+
+@auth_bp.route("/api/reclamar-racha", methods=["POST"])
+@login_required
+def claim_streak():
+    """Allow a logged-in user to claim daily login streak credits."""
+    streak = LoginStreak.query.filter_by(user_id=current_user.id).first()
+    today = date.today()
+    if not streak or streak.last_login != today:
+        return jsonify({"error": "No hay racha activa"}), 400
+    if streak.claimed_today == today:
+        return jsonify({"error": "Ya reclamado"}), 400
+
+    token = request.headers.get("X-Device-Token")
+    if token:
+        limit = datetime.utcnow() - timedelta(hours=24)
+        exists = (
+            DeviceClaim.query.filter_by(device_token=token, mission_code="login_streak")
+            .filter(DeviceClaim.timestamp >= limit)
+            .first()
+        )
+        if exists:
+            return jsonify({"error": "Este dispositivo ya reclamó"}), 400
+
+    credits = streak_reward(streak.current_day)
+    add_credit(current_user, credits, CreditReasons.RACHA_LOGIN)
+    streak.claimed_today = today
+    if token:
+        db.session.add(
+            DeviceClaim(
+                device_token=token,
+                mission_code="login_streak",
+                user_id=current_user.id,
+            )
+        )
+    db.session.commit()
+
+    return jsonify({"success": True, "credits": credits, "day": streak.current_day})

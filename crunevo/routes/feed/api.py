@@ -23,36 +23,47 @@ from . import feed_bp
 
 
 @feed_bp.route("/api/comments/<int:post_id>", methods=["GET"])
-def get_post_comments(post_id):
-    """Get comments for a post"""
+def api_comments(post_id):
+    """Return paginated comments for a post."""
     post = Post.query.get_or_404(post_id)
-    comments = post.comments
+    page = request.args.get("page", default=1, type=int)
+    per_page = 10
+    query = PostComment.query.filter_by(post_id=post.id, pending=False).order_by(
+        PostComment.timestamp.desc()
+    )
+    comments = query.offset((page - 1) * per_page).limit(per_page + 1).all()
+    has_more = len(comments) > per_page
+    comments = comments[:per_page]
 
-    # Formatear los comentarios para la respuesta JSON
-    formatted_comments = []
+    formatted = []
     for comment in comments:
-        formatted_comment = {
-            "id": comment.id,
-            "body": comment.body,
-            "timestamp_text": (
-                comment.timestamp.strftime("%d/%m/%Y %H:%M")
-                if comment.timestamp
-                else ""
-            ),
-            "author": {
-                "username": (
-                    comment.author.username if comment.author else "Usuario eliminado"
+        formatted.append(
+            {
+                "id": comment.id,
+                "body": comment.body,
+                "timestamp_text": (
+                    (
+                        comment.timestamp.strftime("%d/%m/%Y %H:%M")
+                        if comment.timestamp
+                        else ""
+                    ),
                 ),
-                "avatar_url": (
-                    comment.author.avatar_url
-                    if comment.author
-                    else url_for("static", filename="img/default.png")
-                ),
-            },
-        }
-        formatted_comments.append(formatted_comment)
+                "author": {
+                    "username": (
+                        comment.author.username
+                        if comment.author
+                        else "Usuario eliminado"
+                    ),
+                    "avatar_url": (
+                        comment.author.avatar_url
+                        if comment.author
+                        else url_for("static", filename="img/default.png")
+                    ),
+                },
+            }
+        )
 
-    return jsonify({"post_id": post_id, "comments": formatted_comments})
+    return jsonify({"post_id": post_id, "comments": formatted, "has_more": has_more})
 
 
 @feed_bp.route("/like/<int:post_id>", methods=["POST"])
@@ -158,36 +169,6 @@ def delete_comment(comment_id: int):
     db.session.delete(comment)
     db.session.commit()
     return jsonify({"success": True})
-
-
-@feed_bp.route("/api/comments/<int:post_id>")
-@activated_required
-def api_comments(post_id):
-    """Return paginated comments for a post."""
-    post = Post.query.get_or_404(post_id)
-    page = request.args.get("page", default=1, type=int)
-    per_page = 10
-    query = PostComment.query.filter_by(post_id=post.id, pending=False).order_by(
-        PostComment.timestamp.desc()
-    )
-    comments = query.offset((page - 1) * per_page).limit(per_page + 1).all()
-    has_more = len(comments) > per_page
-    comments = comments[:per_page]
-    return jsonify(
-        {
-            "comments": [
-                {
-                    "body": c.body,
-                    "author": c.author.username,
-                    "avatar": c.author.avatar_url
-                    or url_for("static", filename="img/default.png"),
-                    "timestamp": c.timestamp.isoformat(),
-                }
-                for c in comments
-            ],
-            "has_more": has_more,
-        }
-    )
 
 
 @feed_bp.route("/api/post/<int:post_id>")

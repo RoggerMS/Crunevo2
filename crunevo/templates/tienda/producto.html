@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% include "csrf.html" %}
+{% import 'components/csrf.html' as csrf %}
 
 {% block title %}{{ product.name }} - Tienda Crunevo{% endblock %}
 
@@ -143,7 +143,7 @@
                     <div class="d-flex flex-wrap gap-2 mb-4">
                         {% if not has_bought and product.stock > 0 %}
                         <form action="{{ url_for('commerce.add_to_cart', product_id=product.id) }}" method="post">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            {{ csrf.csrf_field() }}
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-cart-plus me-1"></i> Añadir al carrito
                             </button>
@@ -152,14 +152,14 @@
 
                         {% if product.id in favorite_ids %}
                         <form action="{{ url_for('commerce.remove_favorite', product_id=product.id) }}" method="post">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            {{ csrf.csrf_field() }}
                             <button type="submit" class="btn btn-outline-danger">
                                 <i class="bi bi-heart-fill me-1"></i> Quitar de favoritos
                             </button>
                         </form>
                         {% else %}
                         <form action="{{ url_for('commerce.add_favorite', product_id=product.id) }}" method="post">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            {{ csrf.csrf_field() }}
                             <button type="submit" class="btn btn-outline-danger">
                                 <i class="bi bi-heart me-1"></i> Añadir a favoritos
                             </button>
@@ -221,7 +221,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">Deja tu reseña</h5>
                                     <form action="{{ url_for('commerce.add_review', product_id=product.id) }}" method="post">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        {{ csrf.csrf_field() }}
                                         <div class="mb-3">
                                             <label for="rating" class="form-label">Calificación</label>
                                             <select class="form-select" id="rating" name="rating" required>
@@ -279,7 +279,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">Haz una pregunta</h5>
                                     <form action="{{ url_for('commerce.ask_question', product_id=product.id) }}" method="post">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        {{ csrf.csrf_field() }}
                                         <div class="mb-3">
                                             <textarea class="form-control" id="question" name="question" rows="2" required placeholder="Escribe tu pregunta aquí..."></textarea>
                                         </div>
@@ -318,7 +318,7 @@
                                         {% if (current_user.is_authenticated and product.seller_id == current_user.id) or current_user.is_admin %}
                                         <div class="mt-3">
                                             <form action="{{ url_for('commerce.answer_question', question_id=question.id) }}" method="post">
-                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                {{ csrf.csrf_field() }}
                                                 <div class="input-group">
                                                     <input type="text" class="form-control" name="answer" placeholder="Responder esta pregunta..." required>
                                                     <button class="btn btn-outline-primary" type="submit">Responder</button>

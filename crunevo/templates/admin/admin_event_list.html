@@ -151,7 +151,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <form id="deleteEventForm" method="POST">
-                    {{ csrf.csrf_token() }}
+                    {{ csrf.csrf_field() }}
                     <button type="submit" class="btn btn-danger">Eliminar</button>
                 </form>
             </div>

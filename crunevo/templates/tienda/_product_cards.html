@@ -1,3 +1,4 @@
+{% import 'components/csrf.html' as csrf %}
 {% for product in products %}
 <div class="col">
     <div class="card h-100 product-card shadow-hover">
@@ -75,28 +76,28 @@
                     <!-- Actions -->
                     <div class="d-flex">
                         {% if product.id in favorite_ids %}
-                        <form action="{{ url_for('commerce.remove_favorite', product_id=product.id) }}" method="post" class="me-1">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Quitar de favoritos">
-                                <i class="bi bi-heart-fill"></i>
-                            </button>
-                        </form>
+                          <form action="{{ url_for('commerce.remove_favorite', product_id=product.id) }}" method="post" class="me-1">
+                              {{ csrf.csrf_field() }}
+                              <button type="submit" class="btn btn-sm btn-outline-danger" title="Quitar de favoritos">
+                                  <i class="bi bi-heart-fill"></i>
+                              </button>
+                          </form>
                         {% else %}
-                        <form action="{{ url_for('commerce.add_favorite', product_id=product.id) }}" method="post" class="me-1">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Añadir a favoritos">
-                                <i class="bi bi-heart"></i>
-                            </button>
-                        </form>
+                          <form action="{{ url_for('commerce.add_favorite', product_id=product.id) }}" method="post" class="me-1">
+                              {{ csrf.csrf_field() }}
+                              <button type="submit" class="btn btn-sm btn-outline-danger" title="Añadir a favoritos">
+                                  <i class="bi bi-heart"></i>
+                              </button>
+                          </form>
                         {% endif %}
                         
                         {% if product.id not in purchased_ids and product.stock > 0 %}
-                        <form action="{{ url_for('commerce.add_to_cart', product_id=product.id) }}" method="post">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn btn-sm btn-primary" title="Añadir al carrito">
-                                <i class="bi bi-cart-plus"></i>
-                            </button>
-                        </form>
+                          <form action="{{ url_for('commerce.add_to_cart', product_id=product.id) }}" method="post">
+                              {{ csrf.csrf_field() }}
+                              <button type="submit" class="btn btn-sm btn-primary" title="Añadir al carrito">
+                                  <i class="bi bi-cart-plus"></i>
+                              </button>
+                          </form>
                         {% elif product.id in purchased_ids %}
                         <span class="badge bg-success">Comprado</span>
                         {% else %}

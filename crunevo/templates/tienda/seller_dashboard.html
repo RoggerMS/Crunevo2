@@ -318,7 +318,7 @@
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                                                 <form action="{{ url_for('commerce.delete_product', product_id=product.id) }}" method="post" class="d-inline">
-                                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                                    {{ csrf.csrf_field() }}
                                                                     <button type="submit" class="btn btn-danger">Eliminar</button>
                                                                 </form>
                                                             </div>
@@ -501,7 +501,7 @@
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <form action="{{ url_for('commerce.update_order_status', order_id=order.id) }}" method="post">
-                                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                                {{ csrf.csrf_field() }}
                                                                 <div class="modal-body">
                                                                     <div class="mb-3">
                                                                         <label for="order-status" class="form-label">Estado del pedido</label>
@@ -605,7 +605,7 @@
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <form action="{{ url_for('commerce.reply_message', message_id=message.id) }}" method="post">
-                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                {{ csrf.csrf_field() }}
                                                 <div class="modal-body">
                                                     <div class="mb-3">
                                                         <label for="reply-subject" class="form-label">Asunto</label>
@@ -754,7 +754,7 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <form action="{{ url_for('commerce.reply_review', review_id=review.id) }}" method="post">
-                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                    {{ csrf.csrf_field() }}
                                                     <div class="modal-body">
                                                         <div class="mb-3">
                                                             <label for="review-response" class="form-label">Tu respuesta</label>
@@ -790,7 +790,7 @@
                             <h4 class="mb-4">Configuración de la tienda</h4>
                             
                             <form action="{{ url_for('commerce.update_seller_settings') }}" method="post" enctype="multipart/form-data">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                {{ csrf.csrf_field() }}
                                 
                                 <div class="mb-4">
                                     <h5>Información básica</h5>

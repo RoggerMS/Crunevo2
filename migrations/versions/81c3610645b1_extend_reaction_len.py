@@ -16,10 +16,16 @@ depends_on = None
 
 
 def upgrade():
-    with op.batch_alter_table("post_reaction", recreate="always") as batch:
-        batch.alter_column("reaction_type", type_=sa.String(length=20))
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    if inspector.has_table("post_reaction") and inspector.has_table("post"):
+        with op.batch_alter_table("post_reaction", recreate="always") as batch:
+            batch.alter_column("reaction_type", type_=sa.String(length=20))
 
 
 def downgrade():
-    with op.batch_alter_table("post_reaction", recreate="always") as batch:
-        batch.alter_column("reaction_type", type_=sa.String(length=10))
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    if inspector.has_table("post_reaction") and inspector.has_table("post"):
+        with op.batch_alter_table("post_reaction", recreate="always") as batch:
+            batch.alter_column("reaction_type", type_=sa.String(length=10))
