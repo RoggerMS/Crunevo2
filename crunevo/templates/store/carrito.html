@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from 'components/price_credits.html' import render_price_credits %}
 {% block content %}
 <div class="container mt-5">
   <h2 class="mb-4"><i class="bi bi-cart-fill me-2"></i>Tu carrito</h2>
@@ -33,13 +34,7 @@
               </div>
             </td>
               <td class="text-end">S/ {{ '%.2f'|format(item.product.price or 0) }}</td>
-            <td class="text-end">
-              {% if item.product.price_credits is defined and item.product.price_credits is not none %}
-                {{ item.product.price_credits }}
-              {% else %}
-                —
-              {% endif %}
-            </td>
+            <td class="text-end">{{ render_price_credits(item.product) }}</td>
             <td class="text-end">
               <a href="{{ url_for('store.remove_item', product_id=item.product.id) }}" class="btn btn-sm btn-outline-danger">
                 <i class="bi bi-trash"></i>

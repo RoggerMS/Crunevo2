@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from 'components/price_credits.html' import render_price_credits %}
 {% block content %}
 <div class="container mt-4">
   <h2 class="mb-4">Mis compras</h2>
@@ -20,10 +21,8 @@
             <p class="card-text text-muted">Comprado el {{ compra.timestamp.strftime('%d/%m/%Y') }}</p>
             {% if compra.price_soles %}
               <p class="card-text text-primary">S/ {{ '%.2f'|format(compra.price_soles) }}</p>
-            {% elif compra.price_credits is defined and compra.price_credits %}
-              <p class="card-text text-warning">{{ compra.price_credits }} crolars</p>
             {% else %}
-              <p class="card-text text-warning">No disponible</p>
+              <p class="card-text text-warning">{{ render_price_credits(compra) }}</p>
             {% endif %}
             {% if compra.shipping_address %}
               <p class="card-text tw-mb-1"><strong>Envío a:</strong> {{ compra.shipping_address }}</p>

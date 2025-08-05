@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% import 'components/csrf.html' as csrf %}
+{% from 'components/price_credits.html' import render_price_credits %}
 
 {% block title %}{{ product.name }} - Tienda Crunevo{% endblock %}
 
@@ -103,11 +104,7 @@
                         {% else %}
                         <span class="fs-3 fw-bold text-success">Gratis</span>
                         {% endif %}
-                        {% if product.price_credits is defined and product.price_credits > 0 %}
-                        <span class="badge bg-warning ms-2">{{ product.price_credits }} Crolars</span>
-                        {% else %}
-                        <span class="badge bg-warning ms-2">No disponible</span>
-                        {% endif %}
+                        <span class="badge bg-warning ms-2">{{ render_price_credits(product) }}</span>
                     </div>
 
                     <!-- Stock -->

@@ -1,4 +1,5 @@
 {% import 'components/csrf.html' as csrf %}
+{% from 'components/price_credits.html' import render_price_credits %}
 {% for product in products %}
 <div class="product-card" data-category="{{ product.category }}" data-price="{{ product.price }}" data-credits="{{ product.price_credits if product.price_credits is defined else 0 }}">
   <div class="product-image-container">
@@ -33,11 +34,7 @@
       {% if product.price > 0 %}
       <div class="price-soles"><i class="bi bi-currency-dollar"></i><span>S/ {{ "%.2f"|format(product.price|float) }}</span></div>
       {% endif %}
-      {% if product.price_credits is defined and product.price_credits %}
-      <div class="price-crolars"><i class="bi bi-coin"></i><span>{{ product.price_credits }} Crolars</span></div>
-      {% else %}
-      <div class="price-crolars"><i class="bi bi-coin"></i><span>No disponible</span></div>
-      {% endif %}
+      <div class="price-crolars"><i class="bi bi-coin"></i><span>{{ render_price_credits(product) }}</span></div>
       {% if product.price == 0 and not (product.price_credits is defined and product.price_credits) %}
       <div class="price-free"><i class="bi bi-gift"></i><span>GRATIS</span></div>
       {% endif %}

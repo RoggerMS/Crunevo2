@@ -1,6 +1,7 @@
 
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
+{% from 'components/price_credits.html' import render_price_credits %}
 
 {% block title %}🛍️ Marketplace CRUNEVO - Tienda Educativa{% endblock %}
 
@@ -261,21 +262,12 @@
                 </div>
                 {% endif %}
                 
-                {% if product.price_credits is defined and product.price_credits %}
                 <div class="price-row">
                   <span class="price-crolars">
                     <i class="bi bi-coin"></i>
-                    {{ product.price_credits }} Crolars
+                    {{ render_price_credits(product) }}
                   </span>
                 </div>
-                {% else %}
-                <div class="price-row">
-                  <span class="price-crolars">
-                    <i class="bi bi-coin"></i>
-                    No disponible
-                  </span>
-                </div>
-                {% endif %}
 
                 {% if product.price == 0 and not (product.price_credits is defined and product.price_credits) %}
                 <div class="price-row">
@@ -316,7 +308,7 @@
                             {% if current_user.credits < product.price_credits %}disabled{% endif %}>
                       <i class="bi bi-coin"></i>
                       {% if current_user.credits >= product.price_credits %}
-                      Canjear {{ product.price_credits }} Crolars
+                      Canjear {{ render_price_credits(product) }}
                       {% else %}
                       Crolars insuficientes
                       {% endif %}

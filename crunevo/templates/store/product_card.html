@@ -1,5 +1,6 @@
 {% import 'components/button.html' as btn %}
 {% import 'components/csrf.html' as csrf %}
+{% from 'components/price_credits.html' import render_price_credits %}
 <div class="card h-100 border border-primary p-2 position-relative">
   <a href="{{ url_for('store.view_product', product_id=product.id) }}">
     <img loading="lazy" src="{{ (product.first_image|cl_url(400,300,'fill')) if product.first_image else '/static/img/producto-default.png' }}" class="card-img-top rounded mb-2 img-fluid" style="max-height: 180px; object-fit: cover;" alt="imagen">
@@ -23,11 +24,7 @@
       {% else %}
         S/ {{ '%.2f'|format(product.price) }}
       {% endif %}
-      {% if product.price_credits is defined and product.price_credits %}
-        <br><small class="text-muted">o {{ product.price_credits }} crolars</small>
-      {% else %}
-        <br><small class="text-muted">No disponible</small>
-      {% endif %}
+      <br><small class="text-muted">{{ render_price_credits(product) }}</small>
     </p>
     {% if product.stock > 0 %}
       <span class="badge bg-success mb-2">En stock</span>
