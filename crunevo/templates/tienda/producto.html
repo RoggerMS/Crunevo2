@@ -51,11 +51,11 @@
                             </div>
                             {% endif %}
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#productImages" data-bs-slide="prev">
+                        <button class="carousel-control-prev" type="button" data-bs-target="#productImages" data-bs-slide="prev" aria-label="Imagen anterior">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Anterior</span>
                         </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#productImages" data-bs-slide="next">
+                        <button class="carousel-control-next" type="button" data-bs-target="#productImages" data-bs-slide="next" aria-label="Imagen siguiente">
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Siguiente</span>
                         </button>
@@ -99,20 +99,28 @@
 
                     <!-- Precio -->
                     <div class="mb-4">
-                        {% if product.price > 0 %}
-                        <span class="fs-3 fw-bold text-primary">S/ {{ "%.2f"|format(product.price) }}</span>
+                        {% if product.price is not none %}
+                            {% if product.price > 0 %}
+                                <span class="fs-3 fw-bold text-primary">S/ {{ "%.2f"|format(product.price) }}</span>
+                            {% else %}
+                                <span class="fs-3 fw-bold text-success">Gratis</span>
+                            {% endif %}
                         {% else %}
-                        <span class="fs-3 fw-bold text-success">Gratis</span>
+                            <span class="fs-3 fw-bold text-muted">No disponible</span>
                         {% endif %}
                         <span class="badge bg-warning ms-2">{{ render_price_credits(product) }}</span>
                     </div>
 
                     <!-- Stock -->
                     <div class="mb-3">
-                        {% if product.stock > 0 %}
-                        <span class="text-success"><i class="bi bi-check-circle-fill"></i> En stock ({{ product.stock }} disponibles)</span>
+                        {% if product.stock is not none %}
+                            {% if product.stock > 0 %}
+                                <span class="text-success"><i class="bi bi-check-circle-fill"></i> En stock ({{ product.stock }} disponibles)</span>
+                            {% else %}
+                                <span class="text-danger"><i class="bi bi-x-circle-fill"></i> Sin stock</span>
+                            {% endif %}
                         {% else %}
-                        <span class="text-danger"><i class="bi bi-x-circle-fill"></i> Sin stock</span>
+                            <span class="text-muted"><i class="bi bi-question-circle-fill"></i> Stock no especificado</span>
                         {% endif %}
                     </div>
 
@@ -140,7 +148,7 @@
 
                     <!-- Acciones -->
                     <div class="d-flex flex-wrap gap-2 mb-4">
-                        {% if not has_bought and product.stock > 0 %}
+                        {% if not has_bought and product.stock is not none and product.stock > 0 %}
                         <form action="{{ url_for('commerce.add_to_cart', product_id=product.id) }}" method="post">
                             {{ csrf.csrf_field() }}
                             <button type="submit" class="btn btn-primary">
@@ -149,7 +157,7 @@
                         </form>
                         {% endif %}
 
-                        {% if product.id in favorite_ids %}
+                        {% if is_favorite %}
                         <form action="{{ url_for('commerce.remove_favorite', product_id=product.id) }}" method="post">
                             {{ csrf.csrf_field() }}
                             <button type="submit" class="btn btn-outline-danger">
@@ -189,10 +197,14 @@
                     <!-- Información de envío -->
                     <div class="mb-3">
                         <h5>Información de envío</h5>
-                        {% if product.shipping_cost > 0 %}
-                        <p class="text-muted">Costo de envío: S/ {{ "%.2f"|format(product.shipping_cost) }}</p>
+                        {% if product.shipping_cost is not none %}
+                            {% if product.shipping_cost > 0 %}
+                                <p class="text-muted">Costo de envío: S/ {{ "%.2f"|format(product.shipping_cost) }}</p>
+                            {% else %}
+                                <p class="text-muted">Envío gratuito</p>
+                            {% endif %}
                         {% else %}
-                        <p class="text-muted">Envío gratuito</p>
+                            <p class="text-muted">Costo de envío no especificado</p>
                         {% endif %}
                         {% if product.shipping_info %}
                         <p class="text-muted">{{ product.shipping_info }}</p>
@@ -365,10 +377,14 @@
                                 <h5 class="card-title text-truncate">{{ related.name }}</h5>
                                 <p class="card-text text-truncate text-muted">{{ related.description }}</p>
                                 <div class="d-flex justify-content-between align-items-center mt-3">
-                                    {% if related.price > 0 %}
-                                    <span class="fs-5 fw-bold text-primary">S/ {{ "%.2f"|format(related.price) }}</span>
+                                    {% if related.price is not none %}
+                                        {% if related.price > 0 %}
+                                            <span class="fs-5 fw-bold text-primary">S/ {{ "%.2f"|format(related.price) }}</span>
+                                        {% else %}
+                                            <span class="fs-5 fw-bold text-success">Gratis</span>
+                                        {% endif %}
                                     {% else %}
-                                    <span class="fs-5 fw-bold text-success">Gratis</span>
+                                        <span class="fs-5 fw-bold text-muted">No disponible</span>
                                     {% endif %}
                                 </div>
                             </div>
