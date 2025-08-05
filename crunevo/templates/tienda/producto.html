@@ -103,8 +103,10 @@
                         {% else %}
                         <span class="fs-3 fw-bold text-success">Gratis</span>
                         {% endif %}
-                        {% if product.price_credits > 0 %}
-                        <span class="badge bg-warning ms-2">{{ product.price_credits }} créditos</span>
+                        {% if product.price_credits is defined and product.price_credits > 0 %}
+                        <span class="badge bg-warning ms-2">{{ product.price_credits }} Crolars</span>
+                        {% else %}
+                        <span class="badge bg-warning ms-2">No disponible</span>
                         {% endif %}
                     </div>
 

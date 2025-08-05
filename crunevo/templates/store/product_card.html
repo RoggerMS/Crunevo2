@@ -23,7 +23,11 @@
       {% else %}
         S/ {{ '%.2f'|format(product.price) }}
       {% endif %}
-      {% if product.price_credits %} <br><small class="text-muted">o {{ product.price_credits }} crolars</small>{% endif %}
+      {% if product.price_credits is defined and product.price_credits %}
+        <br><small class="text-muted">o {{ product.price_credits }} crolars</small>
+      {% else %}
+        <br><small class="text-muted">No disponible</small>
+      {% endif %}
     </p>
     {% if product.stock > 0 %}
       <span class="badge bg-success mb-2">En stock</span>
