@@ -17,8 +17,8 @@
         
         <a href="{{ url_for('commerce.view_product', product_id=product.id) }}" class="text-decoration-none">
             <div class="text-center p-3">
-                {% if product.image_url %}
-                <img src="{{ product.image_url }}" class="card-img-top product-img" alt="{{ product.name }}">
+                {% if product.first_image %}
+                <img src="{{ (product.first_image|cl_url(400,300,'fill')) if product.first_image else url_for('static', filename='img/default_product.png') }}" class="card-img-top product-img" alt="{{ product.name }}">
                 {% else %}
                 <div class="placeholder-img product-img d-flex align-items-center justify-content-center bg-light">
                     <i class="bi bi-image text-secondary" style="font-size: 2rem;"></i>
