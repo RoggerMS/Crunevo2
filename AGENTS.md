@@ -1171,3 +1171,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
   - Acceso a eventos desde el menú de navegación del panel administrativo
 - Created template `tienda/publish_product.html` for publishing or editing products with form fields and image upload.
 - Replaced `auth.profile_by_username` links with `auth.view_profile` across templates to resolve navbar BuildError (hotfix profile-link).
+
+- Added legacy blueprints to redirect /store and /marketplace paths to /tienda, restoring /store access and preventing 404 errors.
