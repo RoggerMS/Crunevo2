@@ -14,7 +14,7 @@
     <input type="number" step="0.01" name="price" class="form-control" placeholder="Precio" required value="{{ product.price if product else '' }}">
   </div>
   <div class="mb-3">
-    <input type="number" name="price_credits" class="form-control" placeholder="Precio en crolars" value="{{ product.price_credits if product else '' }}">
+    <input type="number" name="price_credits" class="form-control" placeholder="Precio en crolars" value="{{ product.price_credits if product and product.price_credits is defined else '' }}">
   </div>
   <div class="mb-3">
     <input type="number" name="stock" class="form-control" placeholder="Stock" value="{{ product.stock if product else 0 }}">

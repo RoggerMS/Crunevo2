@@ -1188,3 +1188,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Wrapped purchase price credits section with defined check and "No disponible" fallback in `compras.html`.
 - Wrapped profile purchases tab price credits with defined check and "No disponible" fallback.
 - Replaced `product.price_credits or ''` with `product.price_credits if product.price_credits is defined else ''` in `admin/manage_store.html`.
+- Replaced `product.price_credits if product else ''` with `product.price_credits if product and product.price_credits is defined else ''` in `admin/add_edit_product.html`.
