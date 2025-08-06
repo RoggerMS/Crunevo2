@@ -175,6 +175,7 @@ def view_profile(username):
     user = User.query.filter_by(username=username).first_or_404()
     is_own_profile = current_user.id == user.id
     tab = request.args.get("tab")
+    force_public = request.args.get("public", "false").lower() == "true"
 
     # Procesar actualización de perfil si es el propio usuario
     if is_own_profile and request.method == "POST":
@@ -409,8 +410,12 @@ def view_profile(username):
             Note.query.filter_by(user_id=user.id).order_by(Note.created_at.desc()).all()
         )
         return render_template("perfil_notas.html", user=user, notes=notes)
-    elif not is_own_profile:
-        return render_template("perfil_publico.html", user=user)
+    elif not is_own_profile or force_public:
+        return render_template(
+            "perfil_publico.html", 
+            user=user, 
+            ACHIEVEMENT_DETAILS=ACHIEVEMENT_DETAILS
+        )
     else:
         return render_template(
             "auth/perfil.html",

@@ -85,7 +85,7 @@
               {% if is_own_profile %}
               <div class="col-auto">
                 <div class="btn-group-vertical">
-                  <a href="{{ url_for('auth.view_profile', username=user.username) }}" class="btn btn-outline-primary btn-sm">
+                  <a href="{{ url_for('auth.view_profile', username=user.username, public='true') }}" class="btn btn-outline-primary btn-sm">
                     <i class="bi bi-eye"></i> Ver como Público
                   </a>
                 </div>

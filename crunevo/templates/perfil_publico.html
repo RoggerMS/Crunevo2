@@ -10,34 +10,14 @@
   <div class="card border-0 shadow-sm mb-4 profile-header">
     <div class="position-relative">
       <div class="profile-header-bg position-relative" style="height: 200px;">
-        <img src="{{ user.banner_url or url_for('static', filename='img/default.png') }}" id="bannerPreview" class="w-100 h-100 object-fit-cover" alt="Banner">
-        {% if current_user.id == user.id %}
-        <form id="bannerForm" method="POST" enctype="multipart/form-data" action="{{ url_for('auth.update_banner') }}" class="position-absolute end-0 top-0 p-2">
-          {{ csrf.csrf_field() }}
-          <input type="file" name="banner" id="bannerInput" accept="image/*" hidden>
-          <button type="button" class="profile-banner-edit" onclick="document.getElementById('bannerInput').click()">
-            <i class="bi bi-camera"></i> Cambiar Banner
-          </button>
-          <button type="submit" id="saveBannerBtn" class="btn btn-success d-none mt-2">Guardar Banner</button>
-        </form>
-        {% endif %}
+        <img src="{{ user.banner_url or url_for('static', filename='img/default.png') }}" class="w-100 h-100 object-fit-cover" alt="Banner del perfil de {{ user.username }}">
       </div>
     </div>
     <div class="card-body position-relative p-4" style="margin-top: -60px;">
       <div class="row align-items-center">
         <div class="col-auto">
-          <div class="profile-avatar-container text-center position-relative" style="margin-top: -60px;">
-            <img src="{{ (user.avatar_url|cl_url(120,120,'thumb')) if user.avatar_url else url_for('static', filename='img/default.png') }}" class="rounded-circle border border-white shadow avatar-img" id="avatarPreview" width="120" height="120" alt="Avatar">
-            {% if current_user.id == user.id %}
-            <button class="avatar-edit-btn" id="editAvatarBtn" aria-label="Editar avatar">
-              <i class="bi bi-camera"></i>
-            </button>
-            <form id="avatarForm" method="POST" enctype="multipart/form-data" action="{{ url_for('auth.update_avatar') }}">
-              {{ csrf.csrf_field() }}
-              <input type="file" name="avatar" id="avatarInput" accept="image/*" hidden>
-              <button type="submit" id="saveAvatarBtn" class="btn btn-success mt-2 d-none">Guardar cambios</button>
-            </form>
-            {% endif %}
+          <div class="profile-avatar-container text-center" style="margin-top: -60px;">
+            <img src="{{ (user.avatar_url|cl_url(120,120,'thumb')) if user.avatar_url else url_for('static', filename='img/default.png') }}" class="rounded-circle border border-white shadow" width="120" height="120" alt="Avatar de {{ user.username }}">
           </div>
         </div>
         <div class="col" style="margin-top: 8px;">
@@ -58,21 +38,27 @@
           </div>
         </div>
       </div>
-      {% if current_user.is_authenticated %}
-        {% if current_user.id == user.id %}
-        <a href="{{ url_for('auth.view_profile', username=user.username) }}" class="btn btn-outline-primary btn-sm shadow-sm position-absolute end-0 bottom-0 m-3">
-          <i class="bi bi-person-lines-fill"></i> Detalles personales
-        </a>
-        {% else %}
-        <div class="text-center mb-4">
-          <form method="post" action="{{ url_for('auth.agradecer', user_id=user.id) }}" class="d-inline">
-            {{ csrf.csrf_field() }}
-            <button class="btn btn-primary" type="submit">Agradecer</button>
-          </form>
-          <a href="{{ url_for('chat.private_chat_username', username=user.username) }}" class="btn btn-outline-primary ms-2">Enviar mensaje privado</a>
-        </div>
+      <div class="d-flex justify-content-end mt-3">
+        {% if current_user.is_authenticated %}
+          {% if current_user.id == user.id %}
+          <a href="{{ url_for('auth.view_profile', username=user.username) }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-person-lines-fill"></i> Ver perfil completo
+          </a>
+          {% else %}
+          <div class="btn-group">
+            <form method="post" action="{{ url_for('auth.agradecer', user_id=user.id) }}" class="d-inline">
+              {{ csrf.csrf_field() }}
+              <button class="btn btn-primary btn-sm" type="submit">
+                <i class="bi bi-heart"></i> Agradecer
+              </button>
+            </form>
+            <a href="{{ url_for('chat.private_chat_username', username=user.username) }}" class="btn btn-outline-primary btn-sm ms-2">
+              <i class="bi bi-chat"></i> Mensaje
+            </a>
+          </div>
+          {% endif %}
         {% endif %}
-      {% endif %}
+      </div>
 
       <!-- Mobile profile info -->
       <div class="d-lg-none mt-3">
@@ -99,8 +85,9 @@
 
   <div class="row g-4">
     <div class="col-lg-8 order-lg-2">
-      {% include 'components/create_post_modal.html' %}
-      <h3 class="mb-3">Publicaciones</h3>
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+          <h3 class="mb-3"><i class="bi bi-collection"></i> Publicaciones</h3>
       {% if user.posts %}
       <div class="row row-cols-1 g-3">
         {% for p in user.posts|sort(attribute='created_at', reverse=True) %}
@@ -113,12 +100,17 @@
         {% endfor %}
       </div>
       {% else %}
-      <p class="text-muted">Aún no ha publicado.</p>
-      {% endif %}
+       <p class="text-muted">Aún no ha publicado.</p>
+       {% endif %}
+        </div>
+      </div>
     </div>
     <div class="col-lg-4 order-lg-1">
-      <h3 class="mb-3">🏆 Logros</h3>
-      {% if user.achievements %}
+      <!-- Logros Section -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+          <h5 class="card-title mb-3"><i class="bi bi-trophy text-warning"></i> Logros</h5>
+          {% if user.achievements %}
       <div class="achievements-grid" data-show-more-target>
         {% for a in user.achievements|sort(attribute='timestamp', reverse=True) %}
         {% set info = ACHIEVEMENT_DETAILS.get(a.badge_code, {}) %}
@@ -136,12 +128,17 @@
         <button type="button" class="btn btn-sm btn-outline-primary show-more-btn">Ver todos</button>
       </div>
       {% endif %}
-      {% else %}
-      <p class="text-muted mb-4">Aún no tiene logros.</p>
-      {% endif %}
+          {% else %}
+          <p class="text-muted">Aún no tiene logros.</p>
+          {% endif %}
+        </div>
+      </div>
 
-      <h3 class="mb-3">📚 Apuntes</h3>
-      {% if user.notes %}
+      <!-- Apuntes Section -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-3"><i class="bi bi-journal-text text-primary"></i> Apuntes</h5>
+          {% if user.notes %}
       <div class="row g-3">
         {% for note in user.notes|sort(attribute='created_at', reverse=True) %}
         <div class="col-12">
@@ -150,8 +147,10 @@
         {% endfor %}
       </div>
       {% else %}
-      <p class="text-muted">Aún no ha subido apuntes.</p>
-      {% endif %}
+           <p class="text-muted">Aún no ha subido apuntes.</p>
+           {% endif %}
+        </div>
+      </div>
     </div>
   </div>
 </div>
