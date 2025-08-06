@@ -33,7 +33,7 @@
             </a>
           </div>
           <div class="col-sm-4 mb-3">
-            <a href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}" class="text-decoration-none">
+            <a href="{{ url_for('commerce.commerce_index') if 'commerce.commerce_index' in url_for.__globals__.get('current_app', {}).view_functions else '/tienda' }}" class="text-decoration-none">
               <i class="bi bi-shop fs-2 text-success d-block mb-2"></i>
               <span class="text-muted">Visita la Tienda</span>
             </a>

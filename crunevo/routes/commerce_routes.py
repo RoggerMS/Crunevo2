@@ -21,8 +21,6 @@ from crunevo.models import (
     Review,
     Question,
     Seller,
-    MarketplaceMessage,
-    MarketplaceConversation,
 )
 from crunevo.constants import STORE_CATEGORIES
 from crunevo.utils.uploads import save_image
@@ -30,7 +28,9 @@ from crunevo.utils.uploads import save_image
 commerce_bp = Blueprint("commerce", __name__, url_prefix="/tienda")
 # Legacy blueprints to preserve old /store and /marketplace paths
 store_legacy_bp = Blueprint("store", __name__, url_prefix="/store")
-marketplace_legacy_bp = Blueprint("marketplace_legacy", __name__, url_prefix="/marketplace")
+marketplace_legacy_bp = Blueprint(
+    "marketplace_legacy", __name__, url_prefix="/marketplace"
+)
 
 
 def has_purchased(user_id: int, product_id: int) -> bool:
@@ -342,6 +342,8 @@ def add_to_cart(product_id):
     pid = str(product_id)
     cart[pid] = cart.get(pid, 0) + 1
     session["cart"] = cart
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return jsonify({"count": sum(cart.values())})
     flash(f"{product.name} añadido al carrito", "success")
     return redirect(url_for("commerce.view_product", product_id=product.id))
 
@@ -580,15 +582,18 @@ def remove_favorite(product_id):
 @commerce_bp.route("/api/subcategorias")
 def get_subcategorias():
     """Get subcategories for a given category."""
-    categoria = request.args.get('categoria')
+    categoria = request.args.get("categoria")
     if not categoria:
-        return jsonify({'subcategorias': []})
-    
+        return jsonify({"subcategorias": []})
+
     from crunevo.constants import STORE_CATEGORIES
+
     subcategorias = STORE_CATEGORIES.get(categoria, [])
-    return jsonify({'subcategorias': subcategorias})
+    return jsonify({"subcategorias": subcategorias})
+
 
 # Additional routes for unified commerce experience
+
 
 @commerce_bp.route("/request-product", methods=["GET", "POST"])
 @login_required
@@ -597,6 +602,7 @@ def request_product():
     """Redirect to store request product."""
     return redirect(url_for("store.request_product"))
 
+
 @commerce_bp.route("/my-requests")
 @login_required
 @activated_required
@@ -604,7 +610,9 @@ def my_requests():
     """Redirect to store my requests."""
     return redirect(url_for("store.my_requests"))
 
+
 # become_seller already exists above
+
 
 @commerce_bp.route("/seller/dashboard")
 @login_required
@@ -613,12 +621,14 @@ def seller_dashboard():
     """Redirect to marketplace seller dashboard."""
     return redirect(url_for("marketplace.seller_dashboard"))
 
+
 @commerce_bp.route("/publish-product", methods=["GET", "POST"])
 @login_required
 @activated_required
 def publish_product():
     """Redirect to marketplace add product."""
     return redirect(url_for("marketplace.add_product"))
+
 
 @commerce_bp.route("/edit-product/<int:product_id>", methods=["GET", "POST"])
 @login_required
@@ -627,6 +637,7 @@ def edit_product(product_id):
     """Redirect to marketplace edit product."""
     return redirect(url_for("marketplace.edit_product", product_id=product_id))
 
+
 @commerce_bp.route("/delete-product/<int:product_id>", methods=["POST"])
 @login_required
 @activated_required
@@ -634,7 +645,9 @@ def delete_product(product_id):
     """Redirect to marketplace delete product."""
     return redirect(url_for("marketplace.delete_product", product_id=product_id))
 
+
 # view_purchases already exists above as compras
+
 
 @commerce_bp.route("/favorites")
 @login_required
@@ -643,11 +656,13 @@ def favorites():
     """Redirect to store favorites."""
     return redirect(url_for("store.favorites"))
 
+
 @commerce_bp.route("/seller/<int:seller_id>")
 @activated_required
 def view_seller(seller_id):
     """Redirect to marketplace view seller."""
     return redirect(url_for("marketplace.view_seller", seller_id=seller_id))
+
 
 @commerce_bp.route("/contact-seller/<int:product_id>")
 @login_required
@@ -656,12 +671,14 @@ def contact_seller(product_id):
     """Redirect to marketplace messages."""
     return redirect(url_for("marketplace.messages"))
 
+
 @commerce_bp.route("/add-review/<int:product_id>", methods=["POST"])
 @login_required
 @activated_required
 def add_review(product_id):
     """Redirect to store add review."""
     return redirect(url_for("store.add_review", product_id=product_id))
+
 
 @commerce_bp.route("/ask-question/<int:product_id>", methods=["POST"])
 @login_required
@@ -670,12 +687,14 @@ def ask_question(product_id):
     """Redirect to store add question."""
     return redirect(url_for("store.add_question", product_id=product_id))
 
+
 @commerce_bp.route("/answer-question/<int:question_id>", methods=["POST"])
 @login_required
 @activated_required
 def answer_question(question_id):
     """Redirect to store answer question."""
     return redirect(url_for("store.answer", question_id=question_id))
+
 
 @commerce_bp.route("/submit-review", methods=["POST"])
 @login_required

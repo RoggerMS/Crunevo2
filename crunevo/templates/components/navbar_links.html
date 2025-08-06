@@ -5,7 +5,7 @@
   <a class="nav-link" href="{{ url_for('feed.feed_home') }}"><i class="bi bi-house-door me-1"></i>Feed</a>
   <a class="nav-link" href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}"><i class="bi bi-file-text me-1"></i>Apuntes</a>
   <a class="nav-link" href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}"><i class="bi bi-question-circle me-1"></i>Foro Estudiantil</a>
-  <a class="nav-link" href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}"><i class="bi bi-shop me-1"></i>Tienda</a>
+  <a class="nav-link" href="{{ url_for('commerce.commerce_index') if 'commerce.commerce_index' in url_for.__globals__.get('current_app', {}).view_functions else '/tienda' }}"><i class="bi bi-shop me-1"></i>Tienda</a>
   <a class="nav-link" href="{{ url_for('courses.list_courses') if 'courses.list_courses' in url_for.__globals__.get('current_app', {}).view_functions else '/cursos' }}"><i class="bi bi-play-circle-fill me-1"></i>Cursos</a>
   {% if current_user is defined and current_user.is_authenticated and current_user.role == 'admin' %}
   <a class="nav-link" href="{{ url_for('carrera.index') if 'carrera.index' in url_for.__globals__.get('current_app', {}).view_functions else '/micarrera' }}">
@@ -22,7 +22,7 @@
     <li class="nav-item"><a class="nav-link" href="{{ url_for('feed.feed_home') }}">Feed</a></li>
     <li class="nav-item"><a class="nav-link" href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}">Apuntes</a></li>
     <li class="nav-item"><a class="nav-link" href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}"><i class="bi bi-question-circle me-1"></i>Foro Estudiantil</a></li>
-    <li class="nav-item"><a class="nav-link" href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}">Tienda</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('commerce.commerce_index') if 'commerce.commerce_index' in url_for.__globals__.get('current_app', {}).view_functions else '/tienda' }}">Tienda</a></li>
     <li class="nav-item"><a class="nav-link" href="{{ url_for('courses.list_courses') if 'courses.list_courses' in url_for.__globals__.get('current_app', {}).view_functions else '/cursos' }}">Cursos</a></li>
     <li class="nav-item"><a class="nav-link" href="{{ url_for('chat.chat_index') }}">Chat</a></li>
   {% endif %}
@@ -48,7 +48,7 @@
     <i class="bi bi-bell-fill"></i>
     <span id="mobileNotificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge" style="display:none"></span>
   </a>
-  <a href="{{ url_for('store.store_index') if 'store.store_index' in url_for.__globals__.get('current_app', {}).view_functions else '/store' }}" class="btn btn-link text-white position-relative p-1" aria-label="Tienda">
+  <a href="{{ url_for('commerce.commerce_index') if 'commerce.commerce_index' in url_for.__globals__.get('current_app', {}).view_functions else '/tienda' }}" class="btn btn-link text-white position-relative p-1" aria-label="Tienda">
     <i class="bi bi-shop"></i>
     <span id="mobileCartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none">0</span>
   </a>
