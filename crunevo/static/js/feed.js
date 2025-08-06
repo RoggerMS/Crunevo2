@@ -780,6 +780,7 @@ class ModernFeedManager {
   // Initialize image modal
   initImageModal() {
     document.addEventListener('keydown', (e) => this.handleModalKeydown(e));
+    this.restoreFeedUrlIfPhotoPath();
   }
 
   handleModalKeydown(e) {
@@ -790,6 +791,13 @@ class ModernFeedManager {
       this.nextImage();
     } else if (e.key === 'ArrowLeft') {
       this.prevImage();
+    }
+  }
+
+  restoreFeedUrlIfPhotoPath() {
+    const path = window.location.pathname;
+    if (/^\/feed\/post\/\d+\/photo\/\d+/.test(path)) {
+      window.history.replaceState(null, '', '/feed');
     }
   }
 
@@ -812,9 +820,9 @@ class ModernFeedManager {
     this.currentImageIndex = index;
     this.currentPostId = postId;
     this.currentScale = 1;
-
-    this.prevUrlStack.push(window.location.href);
+    
     this.createImageModal(postId);
+    this.prevUrlStack.push(window.location.href);
     setTimeout(() => this.updateModalImage(), 50);
     window.history.pushState({ modal: true }, '', `/feed/post/${postId}/photo/${index + 1}`);
     if (this.prevUrlStack.length === 1) {
@@ -911,17 +919,15 @@ class ModernFeedManager {
   }
 
   handlePopState(e) {
-    if (e.state && e.state.modal) {
+    if (this.currentPostId) {
       this.closeModal(true);
     }
   }
 
   popModalHistory(fromPopState) {
     if (!fromPopState) {
-      const prevUrl = this.prevUrlStack.pop();
-      if (prevUrl) {
-        window.history.replaceState(null, '', prevUrl);
-      }
+      const prevUrl = this.prevUrlStack.pop() || '/feed';
+      window.history.replaceState(null, '', prevUrl);
     } else {
       this.prevUrlStack.pop();
     }
