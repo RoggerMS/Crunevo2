@@ -1192,7 +1192,8 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       const pid = btn.dataset.productId;
-      fetch(`/store/add/${pid}`, {
+      fetch(`/tienda/cart/add/${pid}`, {
+        method: 'POST',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
           'X-Device-Token': getDeviceToken(),
@@ -1304,7 +1305,7 @@ function updateCartBadge(count) {
 }
 
 function refreshCartCount() {
-  fetch('/store/api/cart_count', { headers: { 'X-Device-Token': getDeviceToken() } })
+  fetch('/tienda/api/cart_count', { headers: { 'X-Device-Token': getDeviceToken() } })
     .then((r) => r.json())
     .then((data) => updateCartBadge(data.count));
 }
@@ -1875,7 +1876,7 @@ function initStorePage() {
   }
 
   window.addToCart = function (productId) {
-    csrfFetch(`/store/add/${productId}`, { method: 'POST' })
+    csrfFetch(`/tienda/cart/add/${productId}`, { method: 'POST' })
       .then((r) => r.json())
       .then((data) => {
         if (data.count !== undefined) {
@@ -1889,7 +1890,7 @@ function initStorePage() {
   };
 
   window.viewProduct = function (productId) {
-    window.location.href = `/store/product/${productId}`;
+    window.location.href = `/tienda/producto/${productId}`;
   };
 
   window.scrollToOffers = function () {

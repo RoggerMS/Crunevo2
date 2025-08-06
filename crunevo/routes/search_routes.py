@@ -268,7 +268,7 @@ def search_products(query, page=1, per_page=20):
                 "stock": product.stock,
                 "image_url": product.image_url,
                 "avg_rating": round(float(avg_rating), 1),
-                "url": f"/store/product/{product.id}",
+                "url": f"/tienda/producto/{product.id}",
                 "type": "product",
             }
         )

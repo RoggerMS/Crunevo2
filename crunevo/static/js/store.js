@@ -596,7 +596,7 @@ class CrunevoStore {
     async updateCartCount(count = null) {
         try {
             if (count === null) {
-                const response = await fetch('/store/api/cart_count');
+                const response = await fetch('/tienda/api/cart_count');
                 const data = await response.json();
                 count = data.count;
             }

@@ -1195,3 +1195,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Wrapped `backdrop-filter` usage in `store.css` with `@supports` fallbacks for broader browser compatibility.
 - Restored `X-Frame-Options` security header.
 - Restored `/feed` URL after closing photo modal, added direct route cleanup and ensured back button closes modal (PR feed-modal-url-fix).
+- Updated all navigation links and cart scripts to use `/tienda` directly, replacing legacy `/store` paths that filtered out marketplace products. Cart badge and search results now call commerce endpoints. (PR navbar-store-direct)
