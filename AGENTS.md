@@ -1197,3 +1197,6 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Restored `/feed` URL after closing photo modal, added direct route cleanup and ensured back button closes modal (PR feed-modal-url-fix).
 - Updated all navigation links and cart scripts to use `/tienda` directly, replacing legacy `/store` paths that filtered out marketplace products. Cart badge and search results now call commerce endpoints. (PR navbar-store-direct)
 - Added placeholder migration cd14a01e631b to resolve missing revision during deployment.
+
+- Guarded `complete_missing_models` migration against absent tables and aligned
+  saved courses table name, preventing `NoSuchTableError` on deployments.
