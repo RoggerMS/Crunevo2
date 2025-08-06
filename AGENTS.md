@@ -1200,3 +1200,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 
 - Guarded `complete_missing_models` migration against absent tables and aligned
   saved courses table name, preventing `NoSuchTableError` on deployments.
+- Guarded `add_user_career_interests` migration against missing `users` table
+  by checking for table existence before altering.
