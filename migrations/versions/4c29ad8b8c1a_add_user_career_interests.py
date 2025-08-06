@@ -1,7 +1,7 @@
 """add career and interests fields to user
 
 Revision ID: 4c29ad8b8c1a
-Revises: 018c30955e14
+Revises: add_api_key
 Create Date: 2025-07-08 00:00:00.000000
 """
 
@@ -11,6 +11,8 @@ import sqlalchemy as sa
 
 def has_col(table: str, column: str, conn) -> bool:
     inspector = sa.inspect(conn)
+    if not inspector.has_table(table):
+        return False
     return any(c["name"] == column for c in inspector.get_columns(table))
 
 
@@ -23,6 +25,9 @@ depends_on = None
 
 def upgrade():
     conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    if not inspector.has_table("users"):
+        return
     with op.batch_alter_table("users", schema=None) as batch_op:
         if not has_col("users", "career", conn):
             batch_op.add_column(
