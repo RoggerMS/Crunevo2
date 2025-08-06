@@ -1194,3 +1194,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added accessible labels and hidden text to product card icon buttons to satisfy button accessibility checks.
 - Wrapped `backdrop-filter` usage in `store.css` with `@supports` fallbacks for broader browser compatibility.
 - Restored `X-Frame-Options` security header.
+- Restored `/feed` URL after closing photo modal, added direct route cleanup and ensured back button closes modal (PR feed-modal-url-fix).
