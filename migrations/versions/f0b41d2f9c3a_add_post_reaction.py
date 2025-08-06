@@ -1,7 +1,7 @@
 """add post reaction table
 
 Revision ID: f0b41d2f9c3a
-Revises: 056ac5a1f108
+Revises: cd14a01e631b
 Create Date: 2025-07-01 00:00:00.000000
 """
 
@@ -16,7 +16,7 @@ def has_table(name: str, conn) -> bool:
 
 # revision identifiers, used by Alembic.
 revision = "f0b41d2f9c3a"
-down_revision = "056ac5a1f108"
+down_revision = "cd14a01e631b"
 branch_labels = None
 depends_on = None
 
