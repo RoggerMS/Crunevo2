@@ -108,35 +108,42 @@ function initStoryRings() {
 function initImageGalleryEnhancements() {
     // Enhanced image gallery interactions
     const galleryImages = document.querySelectorAll('.gallery-img');
+
+    const loadImage = img => {
+        if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.removeAttribute('data-src');
+        }
+    };
+
+    const observer = 'IntersectionObserver' in window ?
+        new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadImage(entry.target);
+                    obs.unobserve(entry.target);
+                }
+            });
+        }) : null;
+
     galleryImages.forEach((img, index) => {
         img.addEventListener('click', function() {
             const postId = this.closest('[data-post-id]')?.dataset.postId;
             openImageModal(this.src, index, postId);
         });
-        
-        // Add loading placeholder
+
         img.addEventListener('load', function() {
             this.classList.add('loaded');
         });
-        
-        // Lazy loading intersection observer
-        if ('IntersectionObserver' in window) {
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        if (img.dataset.src) {
-                            img.src = img.dataset.src;
-                            img.removeAttribute('data-src');
-                            observer.unobserve(img);
-                        }
-                    }
-                });
-            });
-            
-            if (img.dataset.src) {
-                imageObserver.observe(img);
-            }
+
+        img.addEventListener('error', function() {
+            loadImage(this);
+        });
+
+        if (observer && img.dataset.src) {
+            observer.observe(img);
+        } else {
+            loadImage(img);
         }
     });
 }

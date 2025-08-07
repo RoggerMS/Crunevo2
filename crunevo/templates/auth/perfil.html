@@ -23,7 +23,7 @@
       <div class="card border-0 shadow-sm mb-4 profile-header">
         <div class="position-relative">
           <div class="profile-header-bg position-relative" style="height: 200px;">
-  <img src="{{ user.banner_url or url_for('static', filename='img/default.png') }}" class="profile-banner w-100 h-100 object-fit-cover" alt="Banner">
+  <img src="{{ user.banner_url or url_for('static', filename='img/default.png') }}" class="profile-banner w-100 h-100 object-fit-cover" alt="Banner" loading="lazy">
 
   {% if current_user.id == user.id %}
   <button type="button" class="profile-banner-edit">
@@ -39,7 +39,7 @@
               <div class="profile-avatar-container text-center position-relative" style="margin-top: -60px;">
                 <img src="{{ (user.avatar_url|cl_url(120,120,'thumb')) if user.avatar_url else url_for('static', filename='img/default.png') }}"
                      class="rounded-circle border border-white shadow avatar-img"
-                     id="avatarPreview" width="120" height="120" alt="Avatar">
+                     id="avatarPreview" width="120" height="120" alt="Avatar" loading="lazy">
 
                 {% if current_user.id == user.id %}
                 <button class="avatar-edit-btn" id="editAvatarBtn" aria-label="Editar avatar">
@@ -134,24 +134,24 @@
         <div class="card-body p-0">
           <ul class="nav nav-tabs nav-fill border-0 bg-light rounded-top" id="profileTabs" role="tablist" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
             <li class="nav-item" role="presentation">
-              <button class="nav-link text-white {% if not tab or tab == 'publicaciones' %}active bg-white text-primary{% endif %}" 
-                      id="publicaciones-tab" data-bs-toggle="tab" data-bs-target="#publicaciones" 
+              <button class="nav-link text-white dark:text-gray-200 {% if not tab or tab == 'publicaciones' %}active bg-white text-primary dark:bg-gray-800 dark:text-gray-100{% endif %}"
+                      id="publicaciones-tab" data-bs-toggle="tab" data-bs-target="#publicaciones"
                       type="button" role="tab" aria-controls="publicaciones" aria-selected="true"
                       style="border: none; transition: all 0.3s ease;">
                 <i class="fas fa-newspaper me-2"></i>Publicaciones
               </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link text-white {% if tab == 'apuntes' %}active bg-white text-primary{% endif %}" 
-                      id="apuntes-tab" data-bs-toggle="tab" data-bs-target="#apuntes" 
+              <button class="nav-link text-white dark:text-gray-200 {% if tab == 'apuntes' %}active bg-white text-primary dark:bg-gray-800 dark:text-gray-100{% endif %}"
+                      id="apuntes-tab" data-bs-toggle="tab" data-bs-target="#apuntes"
                       type="button" role="tab" aria-controls="apuntes" aria-selected="false"
                       style="border: none; transition: all 0.3s ease;">
                 <i class="fas fa-book me-2"></i>Apuntes
               </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link text-white {% if tab == 'logros' %}active bg-white text-primary{% endif %}" 
-                      id="logros-tab" data-bs-toggle="tab" data-bs-target="#logros" 
+              <button class="nav-link text-white dark:text-gray-200 {% if tab == 'logros' %}active bg-white text-primary dark:bg-gray-800 dark:text-gray-100{% endif %}"
+                      id="logros-tab" data-bs-toggle="tab" data-bs-target="#logros"
                       type="button" role="tab" aria-controls="logros" aria-selected="false"
                       style="border: none; transition: all 0.3s ease;">
                 <i class="fas fa-trophy me-2"></i>Logros
@@ -159,8 +159,8 @@
             </li>
             {% if user.mostrar_tienda_perfil %}
             <li class="nav-item" role="presentation">
-              <button class="nav-link text-white {% if tab == 'tienda' %}active bg-white text-primary{% endif %}" 
-                      id="tienda-tab" data-bs-toggle="tab" data-bs-target="#tienda" 
+              <button class="nav-link text-white dark:text-gray-200 {% if tab == 'tienda' %}active bg-white text-primary dark:bg-gray-800 dark:text-gray-100{% endif %}"
+                      id="tienda-tab" data-bs-toggle="tab" data-bs-target="#tienda"
                       type="button" role="tab" aria-controls="tienda" aria-selected="false"
                       style="border: none; transition: all 0.3s ease;">
                 <i class="fas fa-store me-2"></i>Tienda
@@ -169,24 +169,24 @@
             {% endif %}
             {% if is_own_profile %}
             <li class="nav-item" role="presentation">
-              <button class="nav-link text-white {% if tab == 'misiones' %}active bg-white text-primary{% endif %}" 
-                      id="misiones-tab" data-bs-toggle="tab" data-bs-target="#misiones" 
+              <button class="nav-link text-white dark:text-gray-200 {% if tab == 'misiones' %}active bg-white text-primary dark:bg-gray-800 dark:text-gray-100{% endif %}"
+                      id="misiones-tab" data-bs-toggle="tab" data-bs-target="#misiones"
                       type="button" role="tab" aria-controls="misiones" aria-selected="false"
                       style="border: none; transition: all 0.3s ease;">
                 <i class="fas fa-bullseye me-2"></i>Misiones
               </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link text-white {% if tab == 'compras' %}active bg-white text-primary{% endif %}" 
-                      id="compras-tab" data-bs-toggle="tab" data-bs-target="#compras" 
+              <button class="nav-link text-white dark:text-gray-200 {% if tab == 'compras' %}active bg-white text-primary dark:bg-gray-800 dark:text-gray-100{% endif %}"
+                      id="compras-tab" data-bs-toggle="tab" data-bs-target="#compras"
                       type="button" role="tab" aria-controls="compras" aria-selected="false"
                       style="border: none; transition: all 0.3s ease;">
                 <i class="fas fa-shopping-cart me-2"></i>Compras
               </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link text-white {% if tab == 'referidos' %}active bg-white text-primary{% endif %}" 
-                      id="referidos-tab" data-bs-toggle="tab" data-bs-target="#referidos" 
+              <button class="nav-link text-white dark:text-gray-200 {% if tab == 'referidos' %}active bg-white text-primary dark:bg-gray-800 dark:text-gray-100{% endif %}"
+                      id="referidos-tab" data-bs-toggle="tab" data-bs-target="#referidos"
                       type="button" role="tab" aria-controls="referidos" aria-selected="false"
                       style="border: none; transition: all 0.3s ease;">
                 <i class="fas fa-users me-2"></i>Referidos
@@ -243,27 +243,27 @@
             <!-- Stats Grid -->
             <div class="row g-2 mb-3">
               <div class="col-6">
-                <div class="text-center p-2 bg-white bg-opacity-20 rounded">
+                <div class="text-center p-2 bg-white bg-opacity-20 dark:bg-gray-800 dark:bg-opacity-40 rounded dark:text-gray-100">
                   <div class="h5 fw-bold mb-0">{{ user_level }}</div>
-                  <small class="opacity-75">Nivel</small>
+                  <small class="opacity-75 dark:text-gray-300">Nivel</small>
                 </div>
               </div>
               <div class="col-6">
-                <div class="text-center p-2 bg-white bg-opacity-20 rounded">
+                <div class="text-center p-2 bg-white bg-opacity-20 dark:bg-gray-800 dark:bg-opacity-40 rounded dark:text-gray-100">
                   <div class="h5 fw-bold mb-0">{{ participation_percentage }}%</div>
-                  <small class="opacity-75">Participación</small>
+                  <small class="opacity-75 dark:text-gray-300">Participación</small>
                 </div>
               </div>
               <div class="col-6">
-                <div class="text-center p-2 bg-white bg-opacity-20 rounded">
+                <div class="text-center p-2 bg-white bg-opacity-20 dark:bg-gray-800 dark:bg-opacity-40 rounded dark:text-gray-100">
                   <div class="h5 fw-bold mb-0">{{ notes_count(user) }}</div>
-                  <small class="opacity-75">Apuntes</small>
+                  <small class="opacity-75 dark:text-gray-300">Apuntes</small>
                 </div>
               </div>
               <div class="col-6">
-                <div class="text-center p-2 bg-white bg-opacity-20 rounded">
+                <div class="text-center p-2 bg-white bg-opacity-20 dark:bg-gray-800 dark:bg-opacity-40 rounded dark:text-gray-100">
                   <div class="h5 fw-bold mb-0">{{ user.credits }}</div>
-                  <small class="opacity-75">Crolars</small>
+                  <small class="opacity-75 dark:text-gray-300">Crolars</small>
                 </div>
               </div>
             </div>
@@ -339,15 +339,15 @@
             </h6>
             <div class="row g-3">
               <div class="col-6">
-                <div class="text-center p-3 bg-white bg-opacity-20 rounded">
+                <div class="text-center p-3 bg-white bg-opacity-20 dark:bg-gray-800 dark:bg-opacity-40 rounded dark:text-gray-100">
                   <div class="h4 fw-bold mb-1">{{ achievements|length }}</div>
-                  <small class="opacity-75">Logros obtenidos</small>
+                  <small class="opacity-75 dark:text-gray-300">Logros obtenidos</small>
                 </div>
               </div>
               <div class="col-6">
-                <div class="text-center p-3 bg-white bg-opacity-20 rounded">
+                <div class="text-center p-3 bg-white bg-opacity-20 dark:bg-gray-800 dark:bg-opacity-40 rounded dark:text-gray-100">
                   <div class="h4 fw-bold mb-1">{{ ((achievements|length/10*100)|int) }}%</div>
-                  <small class="opacity-75">Progreso total</small>
+                  <small class="opacity-75 dark:text-gray-300">Progreso total</small>
                 </div>
               </div>
             </div>

@@ -1227,3 +1227,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Registrado `event_bp` también en modo admin para habilitar la gestión de eventos.
 - Optimized settings page navigation by auto-initializing scripts and moving animations CSS to template for faster load (PR settings-init-fix).
 - Provided default user statistics in personal space settings view to prevent 500 errors and added view tests for main personal space pages. (PR personal-space-settings-fix)
+- Improved profile dark mode and lazy image handling; added Tailwind dark variants, backdrop-filter fallback and IntersectionObserver fixes to mitigate console warnings. (PR perfil-darkmode-console-fix)
