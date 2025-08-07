@@ -448,6 +448,221 @@ document.addEventListener('DOMContentLoaded', function() {
     color: #9ca3af;
   }
 }
+
+/* Mobile Responsive Improvements */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  /* Breadcrumb mobile optimization */
+  .breadcrumb {
+    font-size: 0.875rem;
+    padding: 0.5rem 0;
+    margin-bottom: 1rem;
+  }
+
+  .breadcrumb-item {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Question title responsive */
+  .question-title {
+    font-size: 1.5rem !important;
+    line-height: 1.3;
+    margin-bottom: 1rem !important;
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+
+  /* Author info mobile layout */
+  .question-detail-card .card-body {
+    padding: 1rem !important;
+  }
+
+  .user-avatar {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  /* Question meta info stack on mobile */
+  .d-flex.align-items-center.justify-content-between {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem;
+  }
+
+  .d-flex.align-items-center.gap-3 {
+    flex-wrap: wrap;
+    gap: 0.5rem !important;
+  }
+
+  /* Badge responsive sizing */
+  .badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  /* Question content mobile optimization */
+  .question-content {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .question-content img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Action buttons mobile layout */
+  .d-flex.align-items-center.justify-content-between.mt-4 {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 1rem;
+  }
+
+  .d-flex.gap-2 {
+    justify-content: center;
+  }
+
+  /* Answers section mobile */
+  .answers-section h3 {
+    font-size: 1.25rem;
+  }
+
+  .btn-group {
+    width: 100%;
+  }
+
+  .btn-group .btn {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  /* Answer form mobile optimization */
+  #answerSection .card-body {
+    padding: 1rem !important;
+  }
+
+  .quill-editor {
+    height: 150px !important;
+  }
+
+  /* Sidebar mobile - stack below content */
+  .col-lg-4 {
+    margin-top: 2rem;
+  }
+
+  /* Statistics cards mobile layout */
+  .stats-container {
+    padding: 0.5rem;
+  }
+
+  .stat-number {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+  }
+
+  /* Tools section mobile */
+  .d-grid.gap-2 .btn {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+  }
+
+  /* Category badges mobile */
+  .d-flex.flex-wrap.gap-2 {
+    justify-content: center;
+  }
+
+  /* Empty state mobile */
+  .empty-state {
+    padding: 2rem 1rem !important;
+  }
+
+  .empty-state i {
+    font-size: 3rem !important;
+  }
+
+  .empty-state h4 {
+    font-size: 1.25rem;
+  }
+
+  /* Form buttons mobile */
+  .d-flex.justify-content-between.align-items-center {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 1rem;
+  }
+
+  .btn-lg {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Mathematical separator mobile */
+  .text-center.my-4 {
+    margin: 1.5rem 0 !important;
+  }
+
+  /* Progress bar mobile */
+  .progress {
+    height: 4px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Extra small devices optimization */
+  .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .question-title {
+    font-size: 1.25rem !important;
+  }
+
+  .card {
+    border-radius: 10px !important;
+  }
+
+  .btn {
+    font-size: 0.875rem;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  /* Hide less important elements on very small screens */
+  .text-muted.small {
+    font-size: 0.75rem !important;
+  }
+
+  /* Compact author info */
+  .d-flex.align-items-center.gap-2.mb-1 {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 0.25rem !important;
+  }
+
+  /* Compact statistics */
+  .row.text-center.g-3 {
+    margin: 0 !important;
+  }
+
+  .col-4 {
+    padding: 0.25rem !important;
+  }
+}
 </style>
 {% block head_extra %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
