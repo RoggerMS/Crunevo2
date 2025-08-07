@@ -370,6 +370,85 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 {% endblock %}
 
+<style>
+/* Dark Mode Overrides for Question Detail */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #111827;
+    color: #d1d5db;
+  }
+
+  .breadcrumb-item a {
+    color: #9ca3af;
+  }
+
+  .breadcrumb-item.active {
+    color: #6b7280;
+  }
+
+  .question-detail-card, .sidebar-card, .card {
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+
+  .question-title {
+    color: #f9fafb;
+  }
+
+  .text-muted {
+    color: #9ca3af !important;
+  }
+
+  .question-content, .lead {
+    color: #d1d5db;
+  }
+
+  .card-header {
+    background-color: #1f2937 !important;
+    border-bottom-color: #374151 !important;
+  }
+
+  h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    color: #f9fafb;
+  }
+
+  .btn-outline-primary {
+    color: #60a5fa;
+    border-color: #60a5fa;
+  }
+
+  .btn-outline-primary:hover {
+    background-color: #60a5fa;
+    color: #1f2937;
+  }
+
+  .btn-outline-secondary {
+    color: #9ca3af;
+    border-color: #9ca3af;
+  }
+
+  .btn-outline-secondary:hover {
+    background-color: #9ca3af;
+    color: #1f2937;
+  }
+
+  hr {
+    border-top-color: #374151;
+  }
+
+  .empty-state {
+    background-color: transparent;
+  }
+
+  .progress {
+    background-color: #374151;
+  }
+
+  .blockquote-footer {
+    color: #9ca3af;
+  }
+}
+</style>
 {% block head_extra %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/forum_editor.css') }}">

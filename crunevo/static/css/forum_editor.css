@@ -1,3 +1,56 @@
+/* Dark Mode Styles */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --forum-primary: #818cf8;
+    --forum-secondary: #a78bfa;
+    --forum-accent: #f472b6;
+    --forum-gradient: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+    --forum-light-gradient: linear-gradient(135deg, rgba(129, 140, 248, 0.1) 0%, rgba(167, 139, 250, 0.1) 100%);
+  }
+
+  .quill-editor {
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+
+  .ql-toolbar {
+    background-color: #1f2937;
+    border-bottom-color: #374151;
+  }
+
+  .ql-toolbar .ql-stroke {
+    stroke: #d1d5db;
+  }
+
+  .ql-toolbar .ql-fill {
+    fill: #d1d5db;
+  }
+
+  .ql-toolbar .ql-picker-label {
+    color: #d1d5db;
+  }
+
+  .ql-editor {
+    color: #d1d5db;
+  }
+
+  .ql-editor.ql-blank::before {
+    color: #6b7280;
+  }
+
+  .category-filters {
+    background: rgba(31, 41, 55, 0.95);
+  }
+
+  .question-card {
+    background: #1f2937;
+  }
+
+  .stat-label {
+    color: #9ca3af;
+  }
+}
+
 /* Forum Editor Base Styles */
 .quill-editor {
   height: 200px;
