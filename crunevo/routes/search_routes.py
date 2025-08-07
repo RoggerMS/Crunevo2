@@ -150,7 +150,7 @@ def search_notes(query, page=1, per_page=20):
 
 def search_posts(query, page=1, per_page=20):
     """Búsqueda en publicaciones sociales"""
-    base_query = Post.query.filter(Post.is_deleted.is_(False))
+    base_query = Post.query
 
     search_filter = or_(
         Post.content.ilike(f"%{query}%"),
@@ -233,7 +233,9 @@ def search_products(query, page=1, per_page=20):
     )
 
     products = (
-        Product.query.filter(Product.active.is_(True), Product.stock > 0, search_filter)
+        Product.query.filter(
+            Product.is_approved.is_(True), Product.stock > 0, search_filter
+        )
         .order_by(
             case((Product.name.ilike(f"{query}%"), 1), else_=2),
             (

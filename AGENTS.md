@@ -1220,3 +1220,8 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Removed duplicate `head_extra` block in `forum/ask.html` to resolve template rendering error on `/foro/hacer-pregunta`. (PR forum-head-extra-dup)
 - Reemplazado macro de reacciones en `post_detail.html` por acciones estilo Facebook con panel flotante y conteos con íconos; eliminado `components/reactions.html`. (PR facebook-reactions-detail)
 - Corregido cambio de banner duplicado eliminando listeners antiguos, actualizando `uploadBanner` para usar `.profile-banner` y ruta JSON `/auth/upload-banner`, y agregando la clase correspondiente en plantillas de perfil.
+- Inicializadas listas vacías para `upcoming_events` y estadísticas en el espacio personal, corrigiendo errores en `/espacio-personal/calendario` y `/espacio-personal/estadisticas`.
+- Reemplazado `tojsonfilter` por `tojson` en `statistics_view.html`.
+- Evitado comparación con `None` en `profile/tabs/compras.html` verificando precios definidos.
+- Corregidos filtros de búsqueda utilizando `Product.is_approved` y removiendo `Post.is_deleted`.
+- Registrado `event_bp` también en modo admin para habilitar la gestión de eventos.
