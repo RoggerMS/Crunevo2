@@ -227,6 +227,31 @@ def test_feed_load_empty_returns_message(client, test_user):
     assert "No hay más publicaciones." in resp.data.decode("utf-8")
 
 
+def test_feed_second_page_has_new_posts(client, db_session, test_user, another_user):
+    # Create multiple posts to populate more than one page
+    posts = []
+    for i in range(25):
+        p = Post(content=f"post{i}", author=test_user)
+        db_session.add(p)
+        db_session.flush()
+        create_feed_item_for_all("post", p.id)
+        posts.append(p)
+    db_session.commit()
+
+    login(client, another_user.username, "secret")
+    first_page = client.get("/feed/")
+    assert first_page.status_code == 200
+    first_html = first_page.data.decode("utf-8")
+
+    # Ensure a middle post is not in the first page but appears on the second
+    assert posts[14].content not in first_html
+
+    second_page = client.get("/feed/load?page=2")
+    assert second_page.status_code == 200
+    second_html = second_page.data.decode("utf-8")
+    assert posts[14].content in second_html
+
+
 def test_comments_api_pagination(client, db_session, test_user):
     post = Post(content="c", author=test_user)
     db_session.add(post)

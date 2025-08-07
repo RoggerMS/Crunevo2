@@ -1018,8 +1018,6 @@ def delete_permanent():
 @activated_required
 def save_search():
     """Save a search query"""
-    data = request.get_json() or {}
-    
     # Implementation would save search to database
     # For now, just return success
     return jsonify({
@@ -1056,7 +1054,6 @@ def handle_settings():
         return jsonify({'success': True, 'settings': settings})
     
     else:  # POST
-        data = request.get_json() or {}
         # Implementation would save settings to database
         return jsonify({
             'success': True,
