@@ -1,0 +1,149 @@
+<!-- Tab de Logros del Perfil -->
+<div class="tab-pane fade" id="logros" role="tabpanel">
+  <div class="row">
+    <div class="col-12">
+      {% if user_achievements %}
+        <!-- Progreso de logros -->
+        <div class="achievements-progress mb-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="mb-0">Progreso de Logros</h6>
+                <span class="badge bg-primary">{{ unlocked_achievements }}/{{ total_achievements }}</span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar bg-gradient" role="progressbar" 
+                     style="width: {{ (unlocked_achievements / total_achievements * 100) if total_achievements > 0 else 0 }}%"
+                     aria-valuenow="{{ unlocked_achievements }}" 
+                     aria-valuemin="0" 
+                     aria-valuemax="{{ total_achievements }}">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logros obtenidos -->
+        {% if unlocked_achievements > 0 %}
+          <div class="achievements-unlocked mb-4">
+            <h6 class="mb-3"><i class="fas fa-trophy text-warning me-2"></i>Logros Obtenidos</h6>
+            <div class="row g-3">
+              {% for achievement in user_achievements if achievement.unlocked %}
+                <div class="col-md-6 col-lg-4">
+                  <div class="achievement-card card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                      <div class="achievement-icon mb-3">
+                        <i class="{{ achievement.icon }} fa-2x text-warning"></i>
+                      </div>
+                      <h6 class="achievement-title mb-2">{{ achievement.title }}</h6>
+                      <p class="achievement-description text-muted small mb-2">{{ achievement.description }}</p>
+                      <small class="text-muted">
+                        <i class="fas fa-calendar me-1"></i>
+                        Obtenido el {{ achievement.unlocked_at.strftime('%d/%m/%Y') }}
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Logros bloqueados -->
+        {% if locked_achievements > 0 %}
+          <div class="achievements-locked">
+            <h6 class="mb-3"><i class="fas fa-lock text-muted me-2"></i>Logros por Desbloquear</h6>
+            <div class="row g-3">
+              {% for achievement in user_achievements if not achievement.unlocked %}
+                <div class="col-md-6 col-lg-4">
+                  <div class="achievement-card card border-0 shadow-sm h-100 opacity-75">
+                    <div class="card-body text-center">
+                      <div class="achievement-icon mb-3">
+                        <i class="{{ achievement.icon }} fa-2x text-muted"></i>
+                      </div>
+                      <h6 class="achievement-title mb-2 text-muted">{{ achievement.title }}</h6>
+                      <p class="achievement-description text-muted small mb-2">{{ achievement.description }}</p>
+                      <small class="text-muted">
+                        <i class="fas fa-lock me-1"></i>
+                        Bloqueado
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="empty-state text-center py-5">
+          <div class="empty-icon mb-3">
+            <i class="fas fa-trophy fa-3x text-muted"></i>
+          </div>
+          <h5 class="text-muted mb-2">Este usuario aún no ha conseguido logros</h5>
+          <p class="text-muted">¡Pronto lo hará! Los logros aparecerán aquí cuando complete diferentes actividades.</p>
+          {% if user.id == current_user.id %}
+            <div class="mt-4">
+              <a href="{{ url_for('misiones.index') }}" class="btn btn-primary me-2">
+                <i class="fas fa-tasks me-2"></i>Ver Misiones
+              </a>
+              <a href="{{ url_for('feed.view_feed') }}" class="btn btn-outline-primary">
+                <i class="fas fa-home me-2"></i>Ir al Feed
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+.achievement-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.achievement-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+}
+
+.achievement-icon {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.achievement-title {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.achievement-description {
+  line-height: 1.4;
+  min-height: 40px;
+}
+
+.achievements-progress .progress {
+  border-radius: 10px;
+}
+
+.achievements-progress .progress-bar {
+  border-radius: 10px;
+  background: linear-gradient(45deg, #007bff, #0056b3);
+}
+
+@media (max-width: 768px) {
+  .achievement-card {
+    margin-bottom: 1rem;
+  }
+  
+  .achievement-icon {
+    height: 50px;
+  }
+  
+  .achievement-icon i {
+    font-size: 1.5rem !important;
+  }
+}
+</style>

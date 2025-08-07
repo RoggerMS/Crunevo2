@@ -34,7 +34,6 @@ def upgrade():
                 server_default="all",
             ),
             schema=None,
-            if_not_exists=True,
         )
         added = True
 
@@ -52,4 +51,4 @@ def upgrade():
 
 def downgrade():
     with op.batch_alter_table("post", schema=None) as batch_op:
-        batch_op.drop_column("comment_permission", if_exists=True)
+        batch_op.drop_column("comment_permission")

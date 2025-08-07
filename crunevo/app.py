@@ -608,6 +608,11 @@ def create_app():
         scheduler.start()
         app.scheduler = scheduler
 
+    # Initialize database tables
+    with app.app_context():
+        from .utils.db_init import ensure_database_ready
+        ensure_database_ready()
+
     if not app.debug:
         if not os.path.exists("logs"):
             os.mkdir("logs")

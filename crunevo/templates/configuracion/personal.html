@@ -1,72 +1,104 @@
-<section id="personal" class="mb-4">
-  <div class="card shadow-sm border-0">
-    <div class="card-header bg-white">
-      <h5 class="mb-0">Nombre de usuario</h5>
-    </div>
-    <div class="card-body">
-      <form id="usernameForm" class="settings-form" method="post" action="{{ url_for('settings.update_personal') }}">
-        {{ csrf.csrf_field() }}
-        <div class="mb-3">
-          <label for="username" class="form-label">Nombre de usuario</label>
-          <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" data-current="{{ current_user.username }}">
-          <div id="usernameFeedback" class="form-text"></div>
-        </div>
-        <button type="submit" class="btn btn-primary">Guardar</button>
-      </form>
-    </div>
+<section id="personal" class="settings-section">
+  <div class="section-title">
+    <i class="bi bi-person-fill"></i>
+    Información personal
   </div>
-</section>
-
-<section id="descripcion" class="mb-4">
-  <div class="card shadow-sm border-0">
-    <div class="card-header bg-white">
-      <h5 class="mb-0">Descripción</h5>
-    </div>
-    <div class="card-body">
-      <form id="aboutForm" class="settings-form" method="post" action="{{ url_for('settings.update_personal') }}">
-        {{ csrf.csrf_field() }}
-        <div class="mb-3">
-          <label for="about" class="form-label">Descripción</label>
-          <textarea class="form-control" id="about" name="about" rows="3">{{ current_user.about }}</textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Guardar</button>
-      </form>
-    </div>
+  <p class="section-description">Actualiza tu información personal y preferencias de perfil</p>
+  
+  <!-- Nombre de usuario -->
+  <div class="mb-5">
+    <h6 class="fw-bold mb-3">Nombre de usuario</h6>
+    <form id="usernameForm" class="settings-form" method="post" action="{{ url_for('settings.update_personal') }}">
+      {{ csrf.csrf_field() }}
+      <div class="modern-form-group">
+        <label for="username" class="modern-form-label">Nombre de usuario</label>
+        <input type="text" class="form-control modern-form-control" id="username" name="username" value="{{ current_user.username }}" data-current="{{ current_user.username }}" placeholder="Elige un nombre único">
+        <div id="usernameFeedback" class="form-text mt-2"></div>
+      </div>
+      <button type="submit" class="modern-btn modern-btn-primary">
+        <i class="bi bi-check-circle-fill"></i>
+        Guardar cambios
+      </button>
+    </form>
   </div>
-</section>
-
-<section id="career" class="mb-4">
-  <div class="card shadow-sm border-0">
-    <div class="card-header bg-white">
-      <h5 class="mb-0">Carrera</h5>
-    </div>
-    <div class="card-body">
-      <form id="careerForm" class="settings-form" method="post" action="{{ url_for('settings.update_personal') }}">
-        {{ csrf.csrf_field() }}
-        <div class="mb-3">
-          <label for="career" class="form-label">Carrera</label>
-          <input type="text" class="form-control" id="career" name="career" value="{{ current_user.career }}">
-        </div>
-        <button type="submit" class="btn btn-primary">Guardar</button>
-      </form>
-    </div>
+  
+  <!-- Descripción personal -->
+  <div class="mb-5">
+    <h6 class="fw-bold mb-3">Descripción personal</h6>
+    <form id="aboutForm" class="settings-form" method="post" action="{{ url_for('settings.update_personal') }}">
+      {{ csrf.csrf_field() }}
+      <div class="modern-form-group">
+        <label for="about" class="modern-form-label">Cuéntanos sobre ti</label>
+        <textarea class="form-control modern-form-control" id="about" name="about" rows="4" placeholder="Escribe una breve descripción sobre ti, tus intereses o lo que estudias...">{{ current_user.about }}</textarea>
+        <small class="text-muted">Máximo 500 caracteres</small>
+      </div>
+      <button type="submit" class="modern-btn modern-btn-primary">
+        <i class="bi bi-check-circle-fill"></i>
+        Guardar descripción
+      </button>
+    </form>
   </div>
-</section>
-
-<section id="interests" class="mb-4">
-  <div class="card shadow-sm border-0">
-    <div class="card-header bg-white">
-      <h5 class="mb-0">Intereses</h5>
-    </div>
-    <div class="card-body">
-      <form id="interestsForm" class="settings-form" method="post" action="{{ url_for('settings.update_personal') }}">
-        {{ csrf.csrf_field() }}
-        <div class="mb-3">
-          <label for="interests" class="form-label">Intereses (separados por comas)</label>
-          <input type="text" class="form-control" id="interests" name="interests" value="{{ current_user.interests }}">
+  
+  <!-- Información académica -->
+  <div class="mb-5">
+    <h6 class="fw-bold mb-3">Información académica</h6>
+    <form id="careerForm" class="settings-form" method="post" action="{{ url_for('settings.update_personal') }}">
+      {{ csrf.csrf_field() }}
+      <div class="modern-form-group">
+        <label for="career" class="modern-form-label">Carrera o área de estudio</label>
+        <input type="text" class="form-control modern-form-control" id="career" name="career" value="{{ current_user.career }}" placeholder="Ej: Ingeniería en Sistemas, Medicina, etc.">
+      </div>
+      <button type="submit" class="modern-btn modern-btn-primary">
+        <i class="bi bi-mortarboard-fill"></i>
+        Guardar carrera
+      </button>
+    </form>
+  </div>
+  
+  <!-- Intereses -->
+  <div class="mb-5">
+    <h6 class="fw-bold mb-3">Intereses y materias</h6>
+    <form id="interestsForm" class="settings-form" method="post" action="{{ url_for('settings.update_personal') }}">
+      {{ csrf.csrf_field() }}
+      <div class="modern-form-group">
+        <label for="interests" class="modern-form-label">Tus intereses principales</label>
+        <input type="text" class="form-control modern-form-control" id="interests" name="interests" value="{{ current_user.interests }}" placeholder="Ej: Matemáticas, Programación, Historia, Arte">
+        <small class="text-muted">Separa cada interés con una coma</small>
+      </div>
+      <button type="submit" class="modern-btn modern-btn-primary">
+        <i class="bi bi-heart-fill"></i>
+        Guardar intereses
+      </button>
+    </form>
+  </div>
+  
+  <!-- Configuración de tienda -->
+  <div class="border-top pt-4">
+    <h6 class="fw-bold mb-3">
+      <i class="bi bi-shop me-2"></i>
+      Configuración de tienda
+    </h6>
+    <form id="tiendaPerfilForm" class="settings-form" method="post" action="{{ url_for('settings.update_personal') }}">
+      {{ csrf.csrf_field() }}
+      <div class="p-4 rounded-3" style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2);">
+        <div class="d-flex align-items-start gap-3">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="mostrar_tienda_perfil" name="mostrar_tienda_perfil" {{ 'checked' if current_user.mostrar_tienda_perfil }} style="transform: scale(1.2);">
+          </div>
+          <div class="flex-grow-1">
+            <label class="form-check-label fw-semibold" for="mostrar_tienda_perfil">
+              Mostrar mi tienda en mi perfil público
+            </label>
+            <p class="text-muted mb-0 mt-1">Si activas esta opción, otros usuarios podrán ver los productos que has publicado en tu perfil.</p>
+          </div>
         </div>
-        <button type="submit" class="btn btn-primary">Guardar</button>
-      </form>
-    </div>
+        <div class="mt-3">
+          <button type="submit" class="modern-btn modern-btn-primary">
+            <i class="bi bi-shop-window"></i>
+            Guardar configuración
+          </button>
+        </div>
+      </div>
+    </form>
   </div>
 </section>

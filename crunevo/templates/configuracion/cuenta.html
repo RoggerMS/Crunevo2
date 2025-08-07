@@ -1,53 +1,135 @@
 {% from 'components/csrf.html' import csrf_field %}
-<section id="account" class="mb-4">
-  <div class="card shadow-sm border-0">
-    <div class="card-header bg-white">
-      <h5 class="mb-0">Cuenta y seguridad</h5>
-    </div>
-    <div class="card-body">
-      <form id="passwordForm" class="settings-form" method="post" action="{{ url_for('settings.update_password') }}">
-        {{ csrf_field() }}
-        <div class="mb-3">
-          <label for="current_password" class="form-label">Contraseña actual</label>
-          <input type="password" class="form-control" id="current_password" name="current_password" autocomplete="current-password">
-        </div>
-        <div class="mb-3">
-          <label for="new_password" class="form-label">Nueva contraseña</label>
-          <input type="password" class="form-control" id="new_password" name="new_password" autocomplete="new-password">
-        </div>
-        <div class="mb-3">
-          <label for="confirm_new" class="form-label">Confirmar nueva contraseña</label>
-          <input type="password" class="form-control" id="confirm_new" name="confirm_new" autocomplete="new-password">
-        </div>
-        <button type="submit" class="btn btn-primary">Cambiar contraseña</button>
-      </form>
-      {% if current_user.is_authenticated %}
-      <button class="btn btn-danger mt-4" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
-        <i class="bi bi-trash me-2"></i>Eliminar cuenta
-      </button>
-      <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-              <h5 class="modal-title">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar eliminación
-              </h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-              <p>⚠ ¿Estás seguro de que deseas eliminar tu cuenta?<br>Esta acción es irreversible y se perderán todos tus datos, apuntes, comentarios, crolars, progreso en misiones, etc.</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              <form method="post" action="{{ url_for('auth.delete_account') }}" onsubmit="return confirm('¿Estás seguro de eliminar tu cuenta?');">
-                {{ csrf_field() }}
-                <button type="submit" class="btn btn-danger">Sí, eliminar mi cuenta</button>
-              </form>
-            </div>
-          </div>
-        </div>
+<section id="account" class="settings-section">
+  <div class="section-title">
+    <i class="bi bi-shield-lock-fill"></i>
+    Cuenta y seguridad
+  </div>
+  <p class="section-description">Gestiona tu contraseña y configuración de seguridad de la cuenta</p>
+  
+  <!-- Cambio de contraseña -->
+  <div class="mb-5">
+    <h6 class="fw-bold mb-3">Cambiar contraseña</h6>
+    <form id="passwordForm" class="settings-form" method="post" action="{{ url_for('settings.update_password') }}">
+      {{ csrf_field() }}
+      <div class="modern-form-group">
+        <label for="current_password" class="modern-form-label">Contraseña actual</label>
+        <input type="password" class="form-control modern-form-control" id="current_password" name="current_password" autocomplete="current-password" placeholder="Ingresa tu contraseña actual">
       </div>
-      {% endif %}
+      <div class="modern-form-group">
+        <label for="new_password" class="modern-form-label">Nueva contraseña</label>
+        <input type="password" class="form-control modern-form-control" id="new_password" name="new_password" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
+      </div>
+      <div class="modern-form-group">
+        <label for="confirm_new" class="modern-form-label">Confirmar nueva contraseña</label>
+        <input type="password" class="form-control modern-form-control" id="confirm_new" name="confirm_new" autocomplete="new-password" placeholder="Repite la nueva contraseña">
+      </div>
+      <button type="submit" class="modern-btn modern-btn-primary">
+        <i class="bi bi-key-fill"></i>
+        Cambiar contraseña
+      </button>
+    </form>
+  </div>
+  
+  <!-- Zona de peligro -->
+  {% if current_user.is_authenticated %}
+  <div class="border-top pt-4">
+    <h6 class="fw-bold mb-3 text-danger">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      Zona de peligro
+    </h6>
+    <div class="p-4 rounded-3" style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2);">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div>
+          <h6 class="fw-bold text-danger mb-2">Eliminar cuenta</h6>
+          <p class="mb-0 text-muted">Una vez eliminada, tu cuenta no se puede recuperar. Todos tus datos serán eliminados permanentemente.</p>
+        </div>
+        <button class="modern-btn modern-btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+          <i class="bi bi-trash-fill"></i>
+          Eliminar cuenta
+        </button>
+      </div>
     </div>
   </div>
+  
+  <!-- Modal de confirmación mejorado -->
+  <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header border-0" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+          <h5 class="modal-title text-white fw-bold">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            ¿Eliminar cuenta permanentemente?
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="text-center mb-4">
+            <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: rgba(239, 68, 68, 0.1); border-radius: 50%;">
+              <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 2rem;"></i>
+            </div>
+            <h6 class="fw-bold mb-2">Esta acción no se puede deshacer</h6>
+            <p class="text-muted mb-0">Se eliminarán permanentemente:</p>
+          </div>
+          
+          <div class="row g-3 mb-4">
+            <div class="col-6">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-file-text text-danger"></i>
+                <small>Todos tus apuntes</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-chat-dots text-danger"></i>
+                <small>Comentarios</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-heart text-danger"></i>
+                <small>Reacciones</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-trophy text-danger"></i>
+                <small>Progreso y logros</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-coin text-danger"></i>
+                <small>Créditos</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-person-circle text-danger"></i>
+                <small>Perfil completo</small>
+              </div>
+            </div>
+          </div>
+          
+          <div class="alert alert-danger border-0" style="background: rgba(239, 68, 68, 0.1);">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            <strong>Importante:</strong> Esta acción es irreversible y no podrás recuperar tu cuenta ni tus datos.
+          </div>
+        </div>
+        <div class="modal-footer border-0 p-4 pt-0">
+          <button type="button" class="modern-btn modern-btn-outline" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle"></i>
+            Cancelar
+          </button>
+          <form method="post" action="{{ url_for('auth.delete_account') }}" class="d-inline" onsubmit="return confirm('¿Estás completamente seguro? Esta acción NO se puede deshacer.');">
+            {{ csrf_field() }}
+            <button type="submit" class="modern-btn modern-btn-danger">
+              <i class="bi bi-trash-fill"></i>
+              Sí, eliminar mi cuenta
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 </section>

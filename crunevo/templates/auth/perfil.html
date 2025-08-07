@@ -119,312 +119,74 @@
         </div>
       </div>
 
+      <!-- Action Buttons -->
+      {% if not is_own_profile %}
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-3">
+          <div class="d-flex gap-2 justify-content-center">
+            <button class="btn btn-primary">
+              <i class="fas fa-heart me-2"></i>Agradecer
+            </button>
+            <button class="btn btn-outline-primary">
+              <i class="fas fa-envelope me-2"></i>Mensaje
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
       <!-- Profile Navigation -->
       <div class="card border-0 shadow-sm mb-4">
         <div class="card-body p-0">
-          <nav class="nav nav-pills nav-fill">
-            <a class="nav-link {% if not tab %}active{% endif %}"
-               href="{{ url_for('auth.view_profile', username=user.username) }}">
-              <i class="bi bi-house"></i> Resumen
-            </a>
-            <a class="nav-link {% if tab == 'apuntes' %}active{% endif %}"
-               href="{{ url_for('auth.view_profile', username=user.username, tab='apuntes') }}">
-              <i class="bi bi-journal-text"></i> Apuntes
-            </a>
-            <a class="nav-link {% if tab == 'clubes' %}active{% endif %}"
-               href="{{ url_for('auth.view_profile', username=user.username, tab='clubes') }}">
-              <i class="bi bi-people"></i> Clubes
-            </a>
-            <a class="nav-link {% if tab == 'misiones' %}active{% endif %}"
-               href="{{ url_for('auth.view_profile', username=user.username, tab='misiones') }}">
-              <i class="bi bi-trophy"></i> Misiones
-            </a>
-            <a class="nav-link {% if tab == 'compras' %}active{% endif %}"
-               href="{{ url_for('auth.view_profile', username=user.username, tab='compras') }}">
-              <i class="bi bi-receipt"></i> Compras
-            </a>
-            <a class="nav-link {% if tab == 'logros' %}active{% endif %}"
-               href="{{ url_for('auth.view_profile', username=user.username, tab='logros') }}">
-              <i class="bi bi-award"></i> Logros
-            </a>
-            {% if is_own_profile %}
-            <a class="nav-link {% if tab == 'referidos' %}active{% endif %}"
-               href="{{ url_for('auth.view_profile', username=user.username, tab='referidos') }}">
-              <i class="bi bi-person-plus"></i> Referidos
-            </a>
+          <ul class="nav nav-tabs nav-fill border-0" id="profileTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link {% if not tab or tab == 'publicaciones' %}active{% endif %}" 
+                      id="publicaciones-tab" data-bs-toggle="tab" data-bs-target="#publicaciones" 
+                      type="button" role="tab" aria-controls="publicaciones" aria-selected="true">
+                <i class="fas fa-newspaper me-2"></i>Publicaciones
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link {% if tab == 'apuntes' %}active{% endif %}" 
+                      id="apuntes-tab" data-bs-toggle="tab" data-bs-target="#apuntes" 
+                      type="button" role="tab" aria-controls="apuntes" aria-selected="false">
+                <i class="fas fa-book me-2"></i>Apuntes
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link {% if tab == 'logros' %}active{% endif %}" 
+                      id="logros-tab" data-bs-toggle="tab" data-bs-target="#logros" 
+                      type="button" role="tab" aria-controls="logros" aria-selected="false">
+                <i class="fas fa-trophy me-2"></i>Logros
+              </button>
+            </li>
+            {% if user.mostrar_tienda_perfil %}
+            <li class="nav-item" role="presentation">
+              <button class="nav-link {% if tab == 'tienda' %}active{% endif %}" 
+                      id="tienda-tab" data-bs-toggle="tab" data-bs-target="#tienda" 
+                      type="button" role="tab" aria-controls="tienda" aria-selected="false">
+                <i class="fas fa-store me-2"></i>Tienda
+              </button>
+            </li>
             {% endif %}
-          </nav>
+          </ul>
         </div>
       </div>
 
       <!-- Tab Content -->
-      <div class="tab-content">
-        <!-- Overview Tab -->
-        <div class="tab-pane fade {% if not tab %}show active{% endif %}" id="overview-tab">
-          <!-- Recent Activity -->
-          <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body p-4">
-              <h6 class="fw-bold text-primary mb-3">
-                <i class="bi bi-clock-history"></i> Actividad Reciente
-              </h6>
-
-              <div class="activity-timeline">
-                {% for activity in recent_activities %}
-                <div class="activity-item d-flex align-items-start gap-3 mb-3">
-                  <div class="activity-icon bg-{{ activity.type_color }}-subtle rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                    <i class="bi bi-{{ activity.icon }} text-{{ activity.type_color }}"></i>
-                  </div>
-                  <div class="flex-grow-1">
-                    <p class="mb-1">{{ activity.description }}</p>
-                    <small class="text-muted">{{ activity.timestamp.strftime('%d %b %Y, %H:%M') }}</small>
-                  </div>
-                </div>
-                {% else %}
-                <div class="text-center py-4">
-                  <i class="bi bi-clock-history display-1 text-muted mb-3"></i>
-                  <p class="text-muted">
-                    Aún no has realizado acciones recientes.
-                    ¡Comienza a participar para ver tu historial aquí!
-                  </p>
-                </div>
-                {% endfor %}
-              </div>
-            </div>
-          </div>
-
-          <!-- Statistics Overview -->
-          <div class="row g-3">
-            <div class="col-md-6">
-              <div class="card border-0 shadow-sm">
-                <div class="card-body p-4">
-                  <h6 class="fw-bold text-success mb-3">
-                    <i class="bi bi-graph-up"></i> Estadísticas Académicas
-                  </h6>
-                  <div class="stats-list">
-                    <div class="d-flex justify-content-between mb-2">
-                      <span>Apuntes subidos</span>
-                        <span class="fw-bold">{{ notes_count(user) }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                      <span>Comentarios hechos</span>
-                      <span class="fw-bold">{{ user.comments|length }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                      <span>Puntos ganados</span>
-                      <span class="fw-bold">{{ user.points or 0 }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                      <span>Nivel de verificación</span>
-                      <span class="fw-bold">{{ user.verification_level }}/5</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <div class="card border-0 shadow-sm">
-                <div class="card-body p-4">
-                  <h6 class="fw-bold text-warning mb-3">
-                    <i class="bi bi-coin"></i> Crolars y Recompensas
-                  </h6>
-                  <div class="crolars-info">
-                    <div class="text-center mb-3">
-                      <div class="display-6 fw-bold text-warning">{{ user.credits or 0 }}</div>
-                      <div class="text-muted">Crolars disponibles</div>
-                    </div>
-
-                    {% if is_own_profile %}
-                    <div class="d-grid gap-2">
-                      <button class="btn btn-warning btn-sm">
-                        <i class="bi bi-plus-circle"></i> Comprar más Crolars
-                      </button>
-                      <a href="{{ url_for('commerce.commerce_index') if 'commerce.commerce_index' in url_for.__globals__.get('current_app', {}).view_functions else '/tienda' }}" class="btn btn-outline-warning btn-sm">
-                        <i class="bi bi-shop"></i> Ir a la Tienda
-                      </a>
-                      <a href="{{ url_for('main.crolars') if 'main.crolars' in url_for.__globals__.get('current_app', {}).view_functions else '/crolars' }}" class="btn btn-outline-secondary btn-sm">
-                        <i class="bi bi-clock-history"></i> Ver historial de Crolars
-                      </a>
-                    </div>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Notes Tab -->
-        <div class="tab-pane fade {% if tab == 'apuntes' %}show active{% endif %}" id="notes-tab">
-          {% if notes_count(user) %}
-          <div class="row g-3">
-            {% for note in user.notes[:12] %}
-            <div class="col-md-6">
-              {% include 'components/note_card.html' %}
-            </div>
-            {% endfor %}
-          </div>
-
-          {% if notes_count(user) > 12 %}
-          <div class="text-center mt-4">
-            <a href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes' }}" class="btn btn-outline-primary">
-              Ver todos los apuntes ({{ notes_count(user) }})
-            </a>
-          </div>
-          {% endif %}
-          {% else %}
-          <div class="text-center py-5">
-            <i class="bi bi-journal-text display-1 text-muted mb-3"></i>
-            <h5 class="text-muted">Sin apuntes subidos</h5>
-            {% if is_own_profile %}
-            <p class="text-muted mb-3">¡Sube tu primer apunte y ayuda a la comunidad!</p>
-            <a href="{{ url_for('notes.upload') }}" class="btn btn-primary">
-              <i class="bi bi-plus-circle"></i> Subir Apunte
-            </a>
-            {% endif %}
-          </div>
-          {% endif %}
-        </div>
-
-        <!-- Clubs Tab -->
-        <div class="tab-pane fade {% if tab == 'clubes' %}show active{% endif %}" id="clubs-tab">
-          {% if user_clubs %}
-          <div class="row g-3">
-            {% for club in user_clubs %}
-            <div class="col-md-6">
-              <div class="card border-0 shadow-sm">
-                <div class="card-body p-3">
-                  <div class="d-flex align-items-center gap-3">
-                    <img src="{{ club.avatar_url or url_for('static', filename='img/default.png') }}" 
-                         alt="{{ club.name }}" 
-                         class="rounded-circle" 
-                         width="48" height="48">
-                    <div class="flex-grow-1">
-                      <h6 class="fw-bold mb-1">{{ club.name }}</h6>
-                      <p class="text-muted small mb-0">{{ club.career }}</p>
-                      <p class="text-muted small">{{ club.member_count }} miembros</p>
-                    </div>
-                    <a href="{{ url_for('club.view_club', club_id=club.id) }}" 
-                       class="btn btn-outline-primary btn-sm">
-                      Ver
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-          {% else %}
-          <div class="text-center py-5">
-            <i class="bi bi-people display-1 text-muted mb-3"></i>
-            <h5 class="text-muted">Sin clubes unidos</h5>
-            {% if is_own_profile %}
-            <p class="text-muted mb-3">¡Únete a clubes académicos y conecta con otros estudiantes!</p>
-            <a href="{{ url_for('club.list_clubs') }}" class="btn btn-primary">
-              <i class="bi bi-search"></i> Explorar Clubes
-            </a>
-            {% endif %}
-          </div>
-          {% endif %}
-        </div>
-
-        <!-- Missions Tab -->
-        <div class="tab-pane fade {% if tab == 'misiones' %}show active{% endif %}" id="missions-tab">
-          {% include 'auth/missions_tab.html' %}
-        </div>
-
-        <!-- Purchases Tab -->
-        <div class="tab-pane fade {% if tab == 'compras' %}show active{% endif %}" id="purchases-tab">
-          {% for compra in purchases or [] %}
-          <div class="card mb-3">
-            <div class="row g-0">
-              <div class="col-md-2 text-center">
-                <img loading="lazy" src="{{ (compra.product.image_url|cl_url(200,150,'fill')) if compra.product.image_url else '/static/img/producto-default.png' }}" class="img-fluid rounded-start" alt="{{ compra.product.name }}">
-              </div>
-              <div class="col-md-10">
-                <div class="card-body">
-                  <h5 class="card-title">{{ compra.product.name }}</h5>
-                  <p class="card-text text-muted">Comprado el {{ compra.timestamp.strftime('%d/%m/%Y') }}</p>
-                  {% if compra.price_soles %}
-                  <p class="card-text text-primary">S/ {{ '%.2f'|format(compra.price_soles) }}</p>
-                  {% else %}
-                  <p class="card-text text-warning">{{ render_price_credits(compra) }}</p>
-                  {% endif %}
-                  <a href="{{ url_for('store.download_receipt', purchase_id=compra.id) }}" class="btn btn-outline-secondary btn-sm me-2">Descargar comprobante</a>
-                  {% if compra.product.download_url %}
-                  <a href="{{ compra.product.download_url }}" target="_blank" class="btn btn-success btn-sm">Descargar</a>
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-          </div>
-          {% else %}
-          <p class="text-muted">Aún no has comprado nada.</p>
-          {% endfor %}
-        </div>
-
-        <!-- Achievements Tab -->
-        <div class="tab-pane fade {% if tab == 'logros' %}show active{% endif %}" id="achievements-tab">
-          <div class="mb-3">
-            <div class="progress" style="height: 8px;">
-              <div class="progress-bar bg-success" style="width: {{ (user_achievements|length / total_achievements) * 100 }}%"></div>
-            </div>
-            <small class="text-muted">Has desbloqueado {{ user_achievements|length }}/{{ total_achievements }} logros</small>
-          </div>
-          <div class="achievements-section">
-            <h6 class="fw-bold mb-2">Logros obtenidos</h6>
-            <div class="achievements-grid" data-show-more-target>
-              {% for code, info in unlocked_achievements %}
-              {% set ua = user_achievements_map.get(code) %}
-              <div class="achievement-card {% if loop.index > 12 %}d-none extra{% endif %}" data-bs-toggle="tooltip" title="{{ info.description }}">
-                <div class="icon-wrapper mb-2">
-                  <i class="bi {{ info.icon }} display-6 text-warning"></i>
-                </div>
-                <h6 class="fw-semibold mb-1">{{ info.title }}</h6>
-                <small class="text-muted">{{ ua.timestamp|timesince }}</small>
-              </div>
-              {% endfor %}
-            </div>
-            {% if unlocked_achievements|length > 12 %}
-            <div class="text-center mt-2">
-              <button type="button" class="btn btn-sm btn-outline-primary show-more-btn">Ver todos</button>
-            </div>
-            {% endif %}
-          </div>
-
-          <div class="achievements-section mt-4">
-            <h6 class="fw-bold mb-2">Logros por desbloquear</h6>
-            <div class="achievements-grid" data-show-more-target>
-              {% for code, info in locked_achievements %}
-              <div class="achievement-card locked {% if loop.index > 12 %}d-none extra{% endif %}" data-bs-toggle="tooltip" title="Aún no desbloqueado">
-                <div class="icon-wrapper mb-2">
-                  <i class="bi {{ info.icon }} display-6 text-muted"></i>
-                </div>
-                <h6 class="fw-semibold mb-1">{{ info.title }}</h6>
-                <small class="text-muted">Aún no desbloqueado</small>
-              </div>
-              {% endfor %}
-            </div>
-            {% if locked_achievements|length > 12 %}
-            <div class="text-center mt-2">
-              <button type="button" class="btn btn-sm btn-outline-primary show-more-btn">Ver todos</button>
-            </div>
-            {% endif %}
-          </div>
-
-          {% if user_achievements|length == 0 %}
-          <div class="text-center py-5">
-            <i class="bi bi-award display-1 text-muted mb-3"></i>
-            <p class="text-muted">Aún no has desbloqueado ningún logro. ¡Sigue participando en CRUNEVO para comenzar!</p>
-          </div>
-          {% endif %}
-        </div>
-
-        <!-- Referrals Tab -->
-        {% if is_own_profile %}
-        <div class="tab-pane fade {% if tab == 'referidos' %}show active{% endif %}" id="referrals-tab">
-          {% include 'auth/referrals_tab.html' %}
-        </div>
+      <div class="tab-content" id="profileTabContent">
+        <!-- Publicaciones Tab -->
+        {% include 'profile/tabs/publicaciones.html' %}
+        
+        <!-- Apuntes Tab -->
+        {% include 'profile/tabs/apuntes.html' %}
+        
+        <!-- Logros Tab -->
+        {% include 'profile/tabs/logros.html' %}
+        
+        <!-- Tienda Tab -->
+        {% if user.mostrar_tienda_perfil %}
+          {% include 'profile/tabs/tienda.html' %}
         {% endif %}
       </div>
     </div>

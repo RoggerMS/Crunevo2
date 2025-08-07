@@ -23,6 +23,7 @@ class User(UserMixin, db.Model):
     about = db.Column(db.Text)
     career = db.Column(db.String(120))
     interests = db.Column(db.Text)
+    mostrar_tienda_perfil = db.Column(db.Boolean, default=False)
     credit_history = db.relationship("Credit", back_populates="user", lazy=True)
     notes = db.relationship("Note", backref="author", lazy=True)
     posts = db.relationship(

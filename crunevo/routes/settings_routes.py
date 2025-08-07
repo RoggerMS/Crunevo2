@@ -22,6 +22,7 @@ def update_personal():
     about = request.form.get("about")
     career = request.form.get("career")
     interests = request.form.get("interests")
+    mostrar_tienda_perfil = request.form.get("mostrar_tienda_perfil") == "on"
     changed = False
     if username is not None:
         username = username.strip()
@@ -39,6 +40,8 @@ def update_personal():
         current_user.career = career
     if interests is not None:
         current_user.interests = interests
+    # Actualizar configuración de tienda en perfil
+    current_user.mostrar_tienda_perfil = mostrar_tienda_perfil
     db.session.commit()
     return jsonify(success=True, changed_username=changed)
 
