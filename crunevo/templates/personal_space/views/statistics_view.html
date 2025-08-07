@@ -330,10 +330,10 @@ function initializeCharts() {
     new Chart(productivityCtx, {
         type: 'line',
         data: {
-            labels: {{ stats.productivity_trend.labels | tojsonfilter }},
+            labels: {{ stats.productivity_trend.labels | tojson }},
             datasets: [{
                 label: 'Bloques Completados',
-                data: {{ stats.productivity_trend.data | tojsonfilter }},
+                data: {{ stats.productivity_trend.data | tojson }},
                 borderColor: '#8b5cf6',
                 backgroundColor: 'rgba(139, 92, 246, 0.1)',
                 tension: 0.4,
@@ -369,9 +369,9 @@ function initializeCharts() {
     new Chart(blockTypesCtx, {
         type: 'doughnut',
         data: {
-            labels: {{ stats.most_used_types.labels | tojsonfilter }},
+            labels: {{ stats.most_used_types.labels | tojson }},
             datasets: [{
-                data: {{ stats.most_used_types.data | tojsonfilter }},
+                data: {{ stats.most_used_types.data | tojson }},
                 backgroundColor: [
                     '#8b5cf6',
                     '#06b6d4',
@@ -396,7 +396,7 @@ function initializeCharts() {
 
 function generateActivityHeatmap() {
     const heatmap = document.getElementById('activityHeatmap');
-    const activityData = {{ stats.weekly_activity_data | tojsonfilter }};
+    const activityData = {{ stats.weekly_activity_data | tojson }};
     
     heatmap.innerHTML = '';
     

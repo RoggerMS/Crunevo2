@@ -43,10 +43,12 @@
                 </div>
                 <div class="col-md-2 text-center">
                   <div class="fw-bold text-primary">
-                    {% if purchase.product.price_credits > 0 %}
+                    {% if purchase.product.price_credits is defined and purchase.product.price_credits|default(0) > 0 %}
                       <i class="fas fa-coins me-1"></i>{{ purchase.product.price_credits }} Crolars
+                    {% else %}
+                      <span class="text-muted small">No disponible</span>
                     {% endif %}
-                    {% if purchase.product.price_soles > 0 %}
+                    {% if purchase.product.price_soles is defined and purchase.product.price_soles|default(0) > 0 %}
                       <div class="small">S/ {{ "%.2f"|format(purchase.product.price_soles) }}</div>
                     {% endif %}
                   </div>

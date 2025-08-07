@@ -412,6 +412,7 @@ def create_app():
         app.register_blueprint(auth_bp)
         app.register_blueprint(admin_bp)
         app.register_blueprint(admin_email_bp)
+        app.register_blueprint(event_bp)
     else:
         app.register_blueprint(onboarding_bp)
         app.register_blueprint(auth_bp)
@@ -612,6 +613,7 @@ def create_app():
     # Initialize database tables
     with app.app_context():
         from .utils.db_init import ensure_database_ready
+
         ensure_database_ready()
 
     if not app.debug:
