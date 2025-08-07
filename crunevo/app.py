@@ -158,6 +158,7 @@ def create_app():
     from .cache.link_preview import extract_first_url, get_preview
 
     app.jinja_env.filters["timesince"] = timesince
+    app.jinja_env.filters["notes_count"] = notes_count
 
     @app.template_filter("timeago")
     def timeago_filter(dt):
