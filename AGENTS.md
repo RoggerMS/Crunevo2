@@ -1213,3 +1213,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Fixed profile purchases tab by replacing obsolete `commerce.marketplace` link with `commerce.commerce_index`, updating product URLs to `commerce.view_product` and skipping purchases missing a product to avoid BuildError on `/perfil/<username>`.
 
 - Removed scroll-to-top button and associated styles and scripts, eliminating unused scroll event logic. (PR remove-scroll-top)
+- Updated private and public profile views to reuse feed's post creation input and post cards, syncing reaction and save data for a consistent feed-style experience. (PR perfil-feed-sync)
