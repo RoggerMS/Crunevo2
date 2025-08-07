@@ -1,0 +1,1069 @@
+{% extends 'base.html' %}
+{% block title %}Configuración - Mi Espacio Personal{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
+<style>
+.settings-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.dark-mode .settings-container {
+    background: #1e293b;
+    color: white;
+}
+
+.settings-section {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+}
+
+.dark-mode .settings-section {
+    border-bottom-color: #374151;
+}
+
+.settings-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+}
+
+.dark-mode .section-title {
+    color: white;
+}
+
+.section-title i {
+    margin-right: 0.5rem;
+    color: #8b5cf6;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.dark-mode .setting-item {
+    border-bottom-color: #374151;
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+}
+
+.setting-info {
+    flex: 1;
+}
+
+.setting-label {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: #1f2937;
+}
+
+.dark-mode .setting-label {
+    color: white;
+}
+
+.setting-description {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.setting-control {
+    margin-left: 1rem;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #8b5cf6;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+.color-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.color-option {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+}
+
+.color-option.selected {
+    border-color: #1f2937;
+    transform: scale(1.1);
+}
+
+.theme-preview {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.theme-card {
+    flex: 1;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.theme-card:hover {
+    border-color: #8b5cf6;
+}
+
+.theme-card.selected {
+    border-color: #8b5cf6;
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.theme-preview-box {
+    width: 100%;
+    height: 60px;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-light {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.theme-dark {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+
+.theme-auto {
+    background: linear-gradient(135deg, #ffffff 0%, #1e293b 100%);
+}
+
+.notification-type {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.notification-type:hover {
+    border-color: #8b5cf6;
+    background: rgba(139, 92, 246, 0.05);
+}
+
+.notification-type input[type="checkbox"] {
+    margin-right: 0.75rem;
+}
+
+.export-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.export-info {
+    display: flex;
+    align-items: center;
+}
+
+.export-info i {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    color: #8b5cf6;
+}
+
+.danger-zone {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
+.dark-mode .danger-zone {
+    background: #451a1a;
+    border-color: #7f1d1d;
+}
+
+.danger-title {
+    color: #dc2626;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.danger-title i {
+    margin-right: 0.5rem;
+}
+
+.stats-card {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.dark-mode .stats-card {
+    background: #374151;
+}
+
+.stats-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #8b5cf6;
+    margin: 0;
+}
+
+.stats-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.backup-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.backup-info {
+    flex: 1;
+}
+
+.backup-date {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.backup-size {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.backup-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="personal-space-container">
+    <!-- Header -->
+    <div class="ps-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="ps-title tw-text-indigo-600">
+                        <i class="bi bi-gear me-2"></i>
+                        Configuración del Espacio Personal
+                    </h1>
+                    <p class="ps-subtitle">Personaliza tu experiencia de estudio</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="ps-controls tw-space-x-2">
+                        <button class="btn btn-success me-2" onclick="saveAllSettings()">
+                            <i class="bi bi-check-circle"></i>
+                            Guardar Cambios
+                        </button>
+                        <a href="{{ url_for('personal_space.index') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i>
+                            Volver al Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Configuraciones Principales -->
+            <div class="col-lg-8">
+                <!-- Apariencia -->
+                <div class="settings-container">
+                    <div class="settings-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-palette"></i>
+                            Apariencia
+                        </h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Tema</div>
+                                <p class="setting-description">Elige el tema visual de tu espacio personal</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="theme-preview">
+                                    <div class="theme-card" data-theme="light" onclick="selectTheme('light')">
+                                        <div class="theme-preview-box theme-light"></div>
+                                        <small>Claro</small>
+                                    </div>
+                                    <div class="theme-card" data-theme="dark" onclick="selectTheme('dark')">
+                                        <div class="theme-preview-box theme-dark"></div>
+                                        <small>Oscuro</small>
+                                    </div>
+                                    <div class="theme-card selected" data-theme="auto" onclick="selectTheme('auto')">
+                                        <div class="theme-preview-box theme-auto"></div>
+                                        <small>Automático</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Color Principal</div>
+                                <p class="setting-description">Personaliza el color de acento de la interfaz</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="color-picker-grid">
+                                    <div class="color-option selected" style="background: #8b5cf6" data-color="#8b5cf6" onclick="selectColor('#8b5cf6')"></div>
+                                    <div class="color-option" style="background: #06b6d4" data-color="#06b6d4" onclick="selectColor('#06b6d4')"></div>
+                                    <div class="color-option" style="background: #10b981" data-color="#10b981" onclick="selectColor('#10b981')"></div>
+                                    <div class="color-option" style="background: #f59e0b" data-color="#f59e0b" onclick="selectColor('#f59e0b')"></div>
+                                    <div class="color-option" style="background: #ef4444" data-color="#ef4444" onclick="selectColor('#ef4444')"></div>
+                                    <div class="color-option" style="background: #8b5a2b" data-color="#8b5a2b" onclick="selectColor('#8b5a2b')"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Animaciones</div>
+                                <p class="setting-description">Habilitar animaciones y transiciones suaves</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="animations" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Modo Compacto</div>
+                                <p class="setting-description">Reduce el espaciado para mostrar más contenido</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="compactMode">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Funcionalidad -->
+                    <div class="settings-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-toggles"></i>
+                            Funcionalidad
+                        </h3>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Autoguardado</div>
+                                <p class="setting-description">Guardar cambios automáticamente cada 30 segundos</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="autoSave" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Sugerencias Inteligentes</div>
+                                <p class="setting-description">Mostrar sugerencias basadas en IA para mejorar productividad</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="smartSuggestions" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Arrastrar y Soltar</div>
+                                <p class="setting-description">Permitir reordenar bloques arrastrando</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="dragDrop" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Atajos de Teclado</div>
+                                <p class="setting-description">Habilitar atajos de teclado para acciones rápidas</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="keyboardShortcuts" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notificaciones -->
+                    <div class="settings-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-bell"></i>
+                            Notificaciones
+                        </h3>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Notificaciones del Navegador</div>
+                                <p class="setting-description">Permitir notificaciones push del navegador</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="browserNotifications">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Tipos de Notificaciones</div>
+                                <p class="setting-description">Selecciona qué tipos de notificaciones recibir</p>
+                            </div>
+                        </div>
+
+                        <div class="notification-type">
+                            <input type="checkbox" id="deadlineNotifications" checked>
+                            <div>
+                                <strong>Fechas límite</strong>
+                                <div class="text-muted">Recordatorios de objetivos y tareas próximas a vencer</div>
+                            </div>
+                        </div>
+
+                        <div class="notification-type">
+                            <input type="checkbox" id="achievementNotifications" checked>
+                            <div>
+                                <strong>Logros</strong>
+                                <div class="text-muted">Notificaciones cuando completes objetivos o alcances hitos</div>
+                            </div>
+                        </div>
+
+                        <div class="notification-type">
+                            <input type="checkbox" id="reminderNotifications" checked>
+                            <div>
+                                <strong>Recordatorios</strong>
+                                <div class="text-muted">Alertas de recordatorios personalizados</div>
+                            </div>
+                        </div>
+
+                        <div class="notification-type">
+                            <input type="checkbox" id="weeklyReports">
+                            <div>
+                                <strong>Reportes Semanales</strong>
+                                <div class="text-muted">Resumen semanal de tu productividad</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Privacidad y Datos -->
+                    <div class="settings-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-shield-check"></i>
+                            Privacidad y Datos
+                        </h3>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Análisis de Uso</div>
+                                <p class="setting-description">Permitir recopilar datos anónimos para mejorar la experiencia</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="analytics" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Compartir Estadísticas</div>
+                                <p class="setting-description">Permitir que otros vean tus estadísticas públicas</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="shareStats">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar con Información Adicional -->
+            <div class="col-lg-4">
+                <!-- Estadísticas de Uso -->
+                <div class="settings-container">
+                    <h5 class="mb-3">
+                        <i class="bi bi-graph-up text-primary"></i>
+                        Estadísticas de Uso
+                    </h5>
+                    
+                    <div class="stats-card">
+                        <h4 class="stats-number">{{ user_stats.total_blocks }}</h4>
+                        <p class="stats-label">Bloques Creados</p>
+                    </div>
+                    
+                    <div class="stats-card">
+                        <h4 class="stats-number">{{ user_stats.days_active }}</h4>
+                        <p class="stats-label">Días Activo</p>
+                    </div>
+                    
+                    <div class="stats-card">
+                        <h4 class="stats-number">{{ user_stats.goals_completed }}</h4>
+                        <p class="stats-label">Objetivos Completados</p>
+                    </div>
+                </div>
+
+                <!-- Exportar Datos -->
+                <div class="settings-container">
+                    <h5 class="mb-3">
+                        <i class="bi bi-download text-success"></i>
+                        Exportar Datos
+                    </h5>
+                    
+                    <div class="export-option">
+                        <div class="export-info">
+                            <i class="bi bi-file-earmark-text"></i>
+                            <div>
+                                <strong>Exportar como JSON</strong>
+                                <div class="text-muted">Datos completos en formato JSON</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm" onclick="exportData('json')">
+                            Descargar
+                        </button>
+                    </div>
+                    
+                    <div class="export-option">
+                        <div class="export-info">
+                            <i class="bi bi-file-earmark-pdf"></i>
+                            <div>
+                                <strong>Reporte PDF</strong>
+                                <div class="text-muted">Resumen visual de tu progreso</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm" onclick="exportData('pdf')">
+                            Descargar
+                        </button>
+                    </div>
+                    
+                    <div class="export-option">
+                        <div class="export-info">
+                            <i class="bi bi-file-earmark-spreadsheet"></i>
+                            <div>
+                                <strong>Hoja de Cálculo</strong>
+                                <div class="text-muted">Datos tabulares en formato CSV</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm" onclick="exportData('csv')">
+                            Descargar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Respaldos -->
+                <div class="settings-container">
+                    <h5 class="mb-3">
+                        <i class="bi bi-cloud-arrow-up text-info"></i>
+                        Respaldos
+                    </h5>
+                    
+                    <button class="btn btn-primary w-100 mb-3" onclick="createBackup()">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Crear Respaldo
+                    </button>
+                    
+                    <div id="backupsList">
+                        <!-- Se carga dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Zona de Peligro -->
+                <div class="danger-zone">
+                    <h6 class="danger-title">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Zona de Peligro
+                    </h6>
+                    <p class="text-muted mb-3">Estas acciones son irreversibles. Procede con precaución.</p>
+                    
+                    <button class="btn btn-outline-warning w-100 mb-2" onclick="resetSettings()">
+                        <i class="bi bi-arrow-clockwise me-2"></i>
+                        Restablecer Configuración
+                    </button>
+                    
+                    <button class="btn btn-outline-danger w-100 mb-2" onclick="clearAllData()">
+                        <i class="bi bi-trash me-2"></i>
+                        Borrar Todos los Datos
+                    </button>
+                    
+                    <button class="btn btn-danger w-100" onclick="deleteAccount()">
+                        <i class="bi bi-person-x me-2"></i>
+                        Eliminar Cuenta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let settings = {
+    theme: 'auto',
+    primaryColor: '#8b5cf6',
+    animations: true,
+    compactMode: false,
+    autoSave: true,
+    smartSuggestions: true,
+    dragDrop: true,
+    keyboardShortcuts: true,
+    browserNotifications: false,
+    notifications: {
+        deadlines: true,
+        achievements: true,
+        reminders: true,
+        weeklyReports: false
+    },
+    analytics: true,
+    shareStats: false
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadSettings();
+    loadBackups();
+});
+
+function selectTheme(theme) {
+    settings.theme = theme;
+    
+    // Actualizar UI
+    document.querySelectorAll('.theme-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    document.querySelector(`[data-theme="${theme}"]`).classList.add('selected');
+    
+    // Aplicar tema inmediatamente
+    applyTheme(theme);
+}
+
+function selectColor(color) {
+    settings.primaryColor = color;
+    
+    // Actualizar UI
+    document.querySelectorAll('.color-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    document.querySelector(`[data-color="${color}"]`).classList.add('selected');
+    
+    // Aplicar color inmediatamente
+    document.documentElement.style.setProperty('--primary-color', color);
+}
+
+function applyTheme(theme) {
+    const body = document.body;
+    
+    if (theme === 'dark') {
+        body.classList.add('dark-mode');
+    } else if (theme === 'light') {
+        body.classList.remove('dark-mode');
+    } else {
+        // Auto: detectar preferencia del sistema
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            body.classList.add('dark-mode');
+        } else {
+            body.classList.remove('dark-mode');
+        }
+    }
+}
+
+function loadSettings() {
+    fetch('/espacio-personal/api/settings')
+        .then(response => response.json())
+        .then(data => {
+            settings = { ...settings, ...data };
+            updateUI();
+        })
+        .catch(error => {
+            console.error('Error al cargar configuración:', error);
+        });
+}
+
+function updateUI() {
+    // Actualizar toggles
+    document.getElementById('animations').checked = settings.animations;
+    document.getElementById('compactMode').checked = settings.compactMode;
+    document.getElementById('autoSave').checked = settings.autoSave;
+    document.getElementById('smartSuggestions').checked = settings.smartSuggestions;
+    document.getElementById('dragDrop').checked = settings.dragDrop;
+    document.getElementById('keyboardShortcuts').checked = settings.keyboardShortcuts;
+    document.getElementById('browserNotifications').checked = settings.browserNotifications;
+    document.getElementById('analytics').checked = settings.analytics;
+    document.getElementById('shareStats').checked = settings.shareStats;
+    
+    // Actualizar notificaciones
+    document.getElementById('deadlineNotifications').checked = settings.notifications.deadlines;
+    document.getElementById('achievementNotifications').checked = settings.notifications.achievements;
+    document.getElementById('reminderNotifications').checked = settings.notifications.reminders;
+    document.getElementById('weeklyReports').checked = settings.notifications.weeklyReports;
+    
+    // Aplicar tema y color
+    selectTheme(settings.theme);
+    selectColor(settings.primaryColor);
+}
+
+function saveAllSettings() {
+    // Recopilar todos los valores
+    settings.animations = document.getElementById('animations').checked;
+    settings.compactMode = document.getElementById('compactMode').checked;
+    settings.autoSave = document.getElementById('autoSave').checked;
+    settings.smartSuggestions = document.getElementById('smartSuggestions').checked;
+    settings.dragDrop = document.getElementById('dragDrop').checked;
+    settings.keyboardShortcuts = document.getElementById('keyboardShortcuts').checked;
+    settings.browserNotifications = document.getElementById('browserNotifications').checked;
+    settings.analytics = document.getElementById('analytics').checked;
+    settings.shareStats = document.getElementById('shareStats').checked;
+    
+    settings.notifications.deadlines = document.getElementById('deadlineNotifications').checked;
+    settings.notifications.achievements = document.getElementById('achievementNotifications').checked;
+    settings.notifications.reminders = document.getElementById('reminderNotifications').checked;
+    settings.notifications.weeklyReports = document.getElementById('weeklyReports').checked;
+    
+    // Guardar en servidor
+    fetch('/espacio-personal/api/settings', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify(settings)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('¡Configuración guardada exitosamente!');
+        } else {
+            alert('Error al guardar la configuración');
+        }
+    })
+    .catch(error => {
+        console.error('Error al guardar configuración:', error);
+        alert('Error al guardar la configuración');
+    });
+}
+
+function exportData(format) {
+    fetch(`/espacio-personal/api/export/${format}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `espacio-personal-${new Date().toISOString().split('T')[0]}.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+        console.error('Error al exportar datos:', error);
+        alert('Error al exportar los datos');
+    });
+}
+
+function createBackup() {
+    fetch('/espacio-personal/api/backup', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('¡Respaldo creado exitosamente!');
+            loadBackups();
+        } else {
+            alert('Error al crear el respaldo');
+        }
+    })
+    .catch(error => {
+        console.error('Error al crear respaldo:', error);
+        alert('Error al crear el respaldo');
+    });
+}
+
+function loadBackups() {
+    fetch('/espacio-personal/api/backups')
+        .then(response => response.json())
+        .then(data => {
+            const backupsList = document.getElementById('backupsList');
+            
+            if (data.backups.length === 0) {
+                backupsList.innerHTML = '<p class="text-muted text-center">No hay respaldos disponibles</p>';
+                return;
+            }
+            
+            backupsList.innerHTML = data.backups.map(backup => `
+                <div class="backup-item">
+                    <div class="backup-info">
+                        <div class="backup-date">${backup.date}</div>
+                        <div class="backup-size">${backup.size}</div>
+                    </div>
+                    <div class="backup-actions">
+                        <button class="btn btn-outline-primary btn-sm" onclick="downloadBackup('${backup.id}')">
+                            <i class="bi bi-download"></i>
+                        </button>
+                        <button class="btn btn-outline-success btn-sm" onclick="restoreBackup('${backup.id}')">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="deleteBackup('${backup.id}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        })
+        .catch(error => {
+            console.error('Error al cargar respaldos:', error);
+        });
+}
+
+function downloadBackup(backupId) {
+    window.location.href = `/espacio-personal/api/backup/${backupId}/download`;
+}
+
+function restoreBackup(backupId) {
+    if (confirm('¿Estás seguro de que quieres restaurar este respaldo? Esto sobrescribirá todos tus datos actuales.')) {
+        fetch(`/espacio-personal/api/backup/${backupId}/restore`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken()
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('¡Respaldo restaurado exitosamente!');
+                window.location.reload();
+            } else {
+                alert('Error al restaurar el respaldo');
+            }
+        })
+        .catch(error => {
+            console.error('Error al restaurar respaldo:', error);
+            alert('Error al restaurar el respaldo');
+        });
+    }
+}
+
+function deleteBackup(backupId) {
+    if (confirm('¿Estás seguro de que quieres eliminar este respaldo?')) {
+        fetch(`/espacio-personal/api/backup/${backupId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': getCsrfToken()
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadBackups();
+            } else {
+                alert('Error al eliminar el respaldo');
+            }
+        })
+        .catch(error => {
+            console.error('Error al eliminar respaldo:', error);
+            alert('Error al eliminar el respaldo');
+        });
+    }
+}
+
+function resetSettings() {
+    if (confirm('¿Estás seguro de que quieres restablecer toda la configuración a los valores predeterminados?')) {
+        fetch('/espacio-personal/api/settings/reset', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken()
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('¡Configuración restablecida!');
+                window.location.reload();
+            } else {
+                alert('Error al restablecer la configuración');
+            }
+        })
+        .catch(error => {
+            console.error('Error al restablecer configuración:', error);
+            alert('Error al restablecer la configuración');
+        });
+    }
+}
+
+function clearAllData() {
+    const confirmation = prompt('Esta acción eliminará TODOS tus datos del espacio personal. Escribe "ELIMINAR" para confirmar:');
+    if (confirmation === 'ELIMINAR') {
+        fetch('/espacio-personal/api/clear-data', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken()
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Todos los datos han sido eliminados.');
+                window.location.href = '/espacio-personal';
+            } else {
+                alert('Error al eliminar los datos');
+            }
+        })
+        .catch(error => {
+            console.error('Error al eliminar datos:', error);
+            alert('Error al eliminar los datos');
+        });
+    }
+}
+
+function deleteAccount() {
+    const confirmation = prompt('Esta acción eliminará tu cuenta permanentemente. Escribe "ELIMINAR CUENTA" para confirmar:');
+    if (confirmation === 'ELIMINAR CUENTA') {
+        fetch('/api/delete-account', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken()
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Tu cuenta ha sido eliminada.');
+                window.location.href = '/';
+            } else {
+                alert('Error al eliminar la cuenta');
+            }
+        })
+        .catch(error => {
+            console.error('Error al eliminar cuenta:', error);
+            alert('Error al eliminar la cuenta');
+        });
+    }
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+}
+</script>
+{% endblock %}

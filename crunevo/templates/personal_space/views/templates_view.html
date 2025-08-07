@@ -1,0 +1,780 @@
+{% extends 'base.html' %}
+{% block title %}Plantillas - Mi Espacio Personal{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
+<style>
+.templates-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.dark-mode .templates-container {
+    background: #1e293b;
+    color: white;
+}
+
+.template-card {
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.template-card:hover {
+    border-color: #8b5cf6;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15);
+}
+
+.template-card.selected {
+    border-color: #8b5cf6;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+}
+
+.template-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.template-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    margin-right: 1rem;
+}
+
+.template-icon.student {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.template-icon.exam {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.template-icon.research {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.template-icon.project {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.template-icon.thesis {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.template-icon.course {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    color: #374151;
+}
+
+.template-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    color: #1f2937;
+}
+
+.dark-mode .template-title {
+    color: white;
+}
+
+.template-subtitle {
+    color: #6b7280;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.template-description {
+    color: #6b7280;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.template-blocks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.block-tag {
+    background: #f3f4f6;
+    color: #374151;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.dark-mode .block-tag {
+    background: #374151;
+    color: #d1d5db;
+}
+
+.template-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.dark-mode .template-stats {
+    border-top-color: #374151;
+}
+
+.template-popularity {
+    display: flex;
+    align-items: center;
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.template-difficulty {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.difficulty-star {
+    color: #fbbf24;
+    font-size: 0.8rem;
+}
+
+.difficulty-star.empty {
+    color: #d1d5db;
+}
+
+.apply-template-btn {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.apply-template-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.custom-template-section {
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.dark-mode .custom-template-section {
+    border-color: #4b5563;
+}
+
+.preview-modal .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.block-preview {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #f9fafb;
+}
+
+.dark-mode .block-preview {
+    border-color: #374151;
+    background: #374151;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.filter-tab {
+    padding: 0.75rem 1rem;
+    border: none;
+    background: none;
+    color: #6b7280;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.filter-tab.active {
+    color: #8b5cf6;
+    border-bottom-color: #8b5cf6;
+}
+
+.search-box {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.search-box i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="personal-space-container">
+    <!-- Header -->
+    <div class="ps-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="ps-title tw-text-indigo-600">
+                        <i class="bi bi-collection me-2"></i>
+                        Plantillas de Espacio Personal
+                    </h1>
+                    <p class="ps-subtitle">Configura tu espacio con plantillas prediseñadas</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="ps-controls tw-space-x-2">
+                        <button class="btn btn-outline-primary me-2" onclick="createCustomTemplate()">
+                            <i class="bi bi-plus-circle"></i>
+                            Crear Plantilla
+                        </button>
+                        <a href="{{ url_for('personal_space.index') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i>
+                            Volver al Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Filtros y Búsqueda -->
+        <div class="templates-container">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" id="templateSearch" placeholder="Buscar plantillas..." onkeyup="filterTemplates()">
+            </div>
+            
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterByCategory('all')">Todas</button>
+                <button class="filter-tab" onclick="filterByCategory('academic')">Académicas</button>
+                <button class="filter-tab" onclick="filterByCategory('project')">Proyectos</button>
+                <button class="filter-tab" onclick="filterByCategory('personal')">Personales</button>
+            </div>
+        </div>
+
+        <!-- Plantillas Predefinidas -->
+        <div class="row" id="templatesGrid">
+            <!-- Estudiante Universitario -->
+            <div class="col-lg-6 template-item" data-category="academic" data-difficulty="2">
+                <div class="template-card" data-template="university-student">
+                    <div class="template-header">
+                        <div class="template-icon student">
+                            <i class="bi bi-mortarboard"></i>
+                        </div>
+                        <div>
+                            <h3 class="template-title">Estudiante Universitario</h3>
+                            <p class="template-subtitle">Organización académica completa</p>
+                        </div>
+                    </div>
+                    <p class="template-description">
+                        Plantilla ideal para estudiantes universitarios que necesitan organizar materias, 
+                        tareas, exámenes y proyectos de manera eficiente.
+                    </p>
+                    <div class="template-blocks">
+                        <span class="block-tag">📚 Materias</span>
+                        <span class="block-tag">📝 Tareas</span>
+                        <span class="block-tag">📅 Calendario</span>
+                        <span class="block-tag">🎯 Objetivos</span>
+                        <span class="block-tag">📊 Notas</span>
+                    </div>
+                    <div class="template-stats">
+                        <div class="template-popularity">
+                            <i class="bi bi-people me-1"></i>
+                            Usado por 1,234 estudiantes
+                        </div>
+                        <div class="template-difficulty">
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star empty bi bi-star"></i>
+                            <i class="difficulty-star empty bi bi-star"></i>
+                            <i class="difficulty-star empty bi bi-star"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 d-flex gap-2">
+                        <button class="btn apply-template-btn flex-grow-1" onclick="applyTemplate('university-student')">
+                            Aplicar Plantilla
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="previewTemplate('university-student')">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preparación de Exámenes -->
+            <div class="col-lg-6 template-item" data-category="academic" data-difficulty="3">
+                <div class="template-card" data-template="exam-prep">
+                    <div class="template-header">
+                        <div class="template-icon exam">
+                            <i class="bi bi-clipboard-check"></i>
+                        </div>
+                        <div>
+                            <h3 class="template-title">Preparación de Exámenes</h3>
+                            <p class="template-subtitle">Enfoque intensivo en estudios</p>
+                        </div>
+                    </div>
+                    <p class="template-description">
+                        Diseñada para períodos de exámenes con cronogramas de estudio, 
+                        técnicas de repaso y seguimiento de progreso.
+                    </p>
+                    <div class="template-blocks">
+                        <span class="block-tag">⏰ Cronograma</span>
+                        <span class="block-tag">📖 Temas</span>
+                        <span class="block-tag">🔄 Repaso</span>
+                        <span class="block-tag">📈 Progreso</span>
+                        <span class="block-tag">⚡ Recordatorios</span>
+                    </div>
+                    <div class="template-stats">
+                        <div class="template-popularity">
+                            <i class="bi bi-people me-1"></i>
+                            Usado por 856 estudiantes
+                        </div>
+                        <div class="template-difficulty">
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star empty bi bi-star"></i>
+                            <i class="difficulty-star empty bi bi-star"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 d-flex gap-2">
+                        <button class="btn apply-template-btn flex-grow-1" onclick="applyTemplate('exam-prep')">
+                            Aplicar Plantilla
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="previewTemplate('exam-prep')">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investigación Académica -->
+            <div class="col-lg-6 template-item" data-category="academic" data-difficulty="4">
+                <div class="template-card" data-template="research">
+                    <div class="template-header">
+                        <div class="template-icon research">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <div>
+                            <h3 class="template-title">Investigación Académica</h3>
+                            <p class="template-subtitle">Gestión de proyectos de investigación</p>
+                        </div>
+                    </div>
+                    <p class="template-description">
+                        Para investigadores y estudiantes de posgrado que manejan múltiples fuentes, 
+                        referencias y fases de investigación.
+                    </p>
+                    <div class="template-blocks">
+                        <span class="block-tag">📚 Referencias</span>
+                        <span class="block-tag">🔬 Metodología</span>
+                        <span class="block-tag">📊 Datos</span>
+                        <span class="block-tag">✍️ Escritura</span>
+                        <span class="block-tag">📋 Revisiones</span>
+                    </div>
+                    <div class="template-stats">
+                        <div class="template-popularity">
+                            <i class="bi bi-people me-1"></i>
+                            Usado por 432 investigadores
+                        </div>
+                        <div class="template-difficulty">
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star empty bi bi-star"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 d-flex gap-2">
+                        <button class="btn apply-template-btn flex-grow-1" onclick="applyTemplate('research')">
+                            Aplicar Plantilla
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="previewTemplate('research')">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestión de Proyectos -->
+            <div class="col-lg-6 template-item" data-category="project" data-difficulty="3">
+                <div class="template-card" data-template="project-management">
+                    <div class="template-header">
+                        <div class="template-icon project">
+                            <i class="bi bi-kanban"></i>
+                        </div>
+                        <div>
+                            <h3 class="template-title">Gestión de Proyectos</h3>
+                            <p class="template-subtitle">Metodología ágil para proyectos</p>
+                        </div>
+                    </div>
+                    <p class="template-description">
+                        Plantilla basada en metodologías ágiles para gestionar proyectos académicos 
+                        o profesionales con equipos de trabajo.
+                    </p>
+                    <div class="template-blocks">
+                        <span class="block-tag">📋 Backlog</span>
+                        <span class="block-tag">🏃 Sprints</span>
+                        <span class="block-tag">👥 Equipo</span>
+                        <span class="block-tag">📈 Métricas</span>
+                        <span class="block-tag">🎯 Entregables</span>
+                    </div>
+                    <div class="template-stats">
+                        <div class="template-popularity">
+                            <i class="bi bi-people me-1"></i>
+                            Usado por 678 equipos
+                        </div>
+                        <div class="template-difficulty">
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star empty bi bi-star"></i>
+                            <i class="difficulty-star empty bi bi-star"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 d-flex gap-2">
+                        <button class="btn apply-template-btn flex-grow-1" onclick="applyTemplate('project-management')">
+                            Aplicar Plantilla
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="previewTemplate('project-management')">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tesis y Trabajos de Grado -->
+            <div class="col-lg-6 template-item" data-category="academic" data-difficulty="5">
+                <div class="template-card" data-template="thesis">
+                    <div class="template-header">
+                        <div class="template-icon thesis">
+                            <i class="bi bi-journal-text"></i>
+                        </div>
+                        <div>
+                            <h3 class="template-title">Tesis y Trabajos de Grado</h3>
+                            <p class="template-subtitle">Gestión completa de tesis</p>
+                        </div>
+                    </div>
+                    <p class="template-description">
+                        Plantilla especializada para la elaboración de tesis, trabajos de grado 
+                        y proyectos de investigación de largo plazo.
+                    </p>
+                    <div class="template-blocks">
+                        <span class="block-tag">📝 Capítulos</span>
+                        <span class="block-tag">📚 Bibliografía</span>
+                        <span class="block-tag">📊 Análisis</span>
+                        <span class="block-tag">👨‍🏫 Asesorías</span>
+                        <span class="block-tag">📅 Cronograma</span>
+                    </div>
+                    <div class="template-stats">
+                        <div class="template-popularity">
+                            <i class="bi bi-people me-1"></i>
+                            Usado por 289 tesistas
+                        </div>
+                        <div class="template-difficulty">
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 d-flex gap-2">
+                        <button class="btn apply-template-btn flex-grow-1" onclick="applyTemplate('thesis')">
+                            Aplicar Plantilla
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="previewTemplate('thesis')">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Curso Online -->
+            <div class="col-lg-6 template-item" data-category="personal" data-difficulty="2">
+                <div class="template-card" data-template="online-course">
+                    <div class="template-header">
+                        <div class="template-icon course">
+                            <i class="bi bi-laptop"></i>
+                        </div>
+                        <div>
+                            <h3 class="template-title">Curso Online</h3>
+                            <p class="template-subtitle">Aprendizaje autodidacta</p>
+                        </div>
+                    </div>
+                    <p class="template-description">
+                        Para estudiantes que toman cursos online, MOOCs o programas de 
+                        certificación con seguimiento de progreso.
+                    </p>
+                    <div class="template-blocks">
+                        <span class="block-tag">🎥 Lecciones</span>
+                        <span class="block-tag">📚 Recursos</span>
+                        <span class="block-tag">✅ Progreso</span>
+                        <span class="block-tag">🏆 Certificados</span>
+                        <span class="block-tag">💡 Notas</span>
+                    </div>
+                    <div class="template-stats">
+                        <div class="template-popularity">
+                            <i class="bi bi-people me-1"></i>
+                            Usado por 1,567 estudiantes
+                        </div>
+                        <div class="template-difficulty">
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star bi bi-star-fill"></i>
+                            <i class="difficulty-star empty bi bi-star"></i>
+                            <i class="difficulty-star empty bi bi-star"></i>
+                            <i class="difficulty-star empty bi bi-star"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 d-flex gap-2">
+                        <button class="btn apply-template-btn flex-grow-1" onclick="applyTemplate('online-course')">
+                            Aplicar Plantilla
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="previewTemplate('online-course')">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Plantilla Personalizada -->
+        <div class="custom-template-section">
+            <h4 class="mb-3">
+                <i class="bi bi-palette text-primary"></i>
+                ¿No encuentras lo que buscas?
+            </h4>
+            <p class="text-muted mb-3">
+                Crea tu propia plantilla personalizada o solicita una nueva plantilla a la comunidad.
+            </p>
+            <div class="d-flex gap-2 justify-content-center">
+                <button class="btn btn-primary" onclick="createCustomTemplate()">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Crear Plantilla Personalizada
+                </button>
+                <button class="btn btn-outline-secondary" onclick="requestTemplate()">
+                    <i class="bi bi-chat-dots me-2"></i>
+                    Solicitar Plantilla
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Vista Previa -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Vista Previa de Plantilla</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="previewContent">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="applyFromPreview">Aplicar Plantilla</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentTemplate = null;
+
+function filterByCategory(category) {
+    // Actualizar tabs activos
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Filtrar plantillas
+    const templates = document.querySelectorAll('.template-item');
+    templates.forEach(template => {
+        if (category === 'all' || template.dataset.category === category) {
+            template.style.display = 'block';
+        } else {
+            template.style.display = 'none';
+        }
+    });
+}
+
+function filterTemplates() {
+    const searchTerm = document.getElementById('templateSearch').value.toLowerCase();
+    const templates = document.querySelectorAll('.template-item');
+    
+    templates.forEach(template => {
+        const title = template.querySelector('.template-title').textContent.toLowerCase();
+        const description = template.querySelector('.template-description').textContent.toLowerCase();
+        const tags = Array.from(template.querySelectorAll('.block-tag')).map(tag => tag.textContent.toLowerCase());
+        
+        const matches = title.includes(searchTerm) || 
+                       description.includes(searchTerm) || 
+                       tags.some(tag => tag.includes(searchTerm));
+        
+        template.style.display = matches ? 'block' : 'none';
+    });
+}
+
+function previewTemplate(templateId) {
+    currentTemplate = templateId;
+    
+    // Obtener datos de la plantilla
+    fetch(`/espacio-personal/api/template-preview/${templateId}`)
+        .then(response => response.json())
+        .then(data => {
+            const previewContent = document.getElementById('previewContent');
+            previewContent.innerHTML = generatePreviewHTML(data);
+            
+            document.getElementById('applyFromPreview').onclick = () => applyTemplate(templateId);
+            
+            new bootstrap.Modal(document.getElementById('previewModal')).show();
+        })
+        .catch(error => {
+            console.error('Error al cargar vista previa:', error);
+            alert('Error al cargar la vista previa');
+        });
+}
+
+function generatePreviewHTML(templateData) {
+    let html = `
+        <h6 class="mb-3">${templateData.name}</h6>
+        <p class="text-muted mb-4">${templateData.description}</p>
+        <h6>Bloques incluidos:</h6>
+    `;
+    
+    templateData.blocks.forEach(block => {
+        html += `
+            <div class="block-preview">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-${block.icon} me-2 text-primary"></i>
+                    <strong>${block.title}</strong>
+                    <span class="badge bg-secondary ms-auto">${block.type}</span>
+                </div>
+                <p class="text-muted mb-0">${block.description}</p>
+            </div>
+        `;
+    });
+    
+    return html;
+}
+
+function applyTemplate(templateId) {
+    if (confirm('¿Estás seguro de que quieres aplicar esta plantilla? Esto creará nuevos bloques en tu espacio personal.')) {
+        fetch('/espacio-personal/api/apply-template', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({ template_id: templateId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('¡Plantilla aplicada exitosamente!');
+                window.location.href = '/espacio-personal';
+            } else {
+                alert('Error al aplicar la plantilla: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error al aplicar plantilla:', error);
+            alert('Error al aplicar la plantilla');
+        });
+    }
+}
+
+function createCustomTemplate() {
+    // Redirigir a página de creación de plantillas personalizadas
+    window.location.href = '/espacio-personal/plantillas/crear';
+}
+
+function requestTemplate() {
+    // Abrir modal para solicitar nueva plantilla
+    const message = prompt('Describe la plantilla que te gustaría que creáramos:');
+    if (message) {
+        fetch('/espacio-personal/api/request-template', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({ message: message })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('¡Solicitud enviada! Te notificaremos cuando esté disponible.');
+            } else {
+                alert('Error al enviar la solicitud');
+            }
+        })
+        .catch(error => {
+            console.error('Error al solicitar plantilla:', error);
+            alert('Error al enviar la solicitud');
+        });
+    }
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+}
+
+// Inicializar tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    // Agregar tooltips a las estrellas de dificultad
+    document.querySelectorAll('.template-difficulty').forEach(element => {
+        const stars = element.querySelectorAll('.difficulty-star.bi-star-fill').length;
+        const difficulty = ['Muy Fácil', 'Fácil', 'Intermedio', 'Difícil', 'Muy Difícil'][stars - 1];
+        element.title = `Dificultad: ${difficulty}`;
+    });
+});
+</script>
+{% endblock %}

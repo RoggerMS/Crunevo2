@@ -1,0 +1,966 @@
+{% extends 'base.html' %}
+{% block title %}Papelera - Mi Espacio Personal{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
+<style>
+.trash-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.dark-mode .trash-container {
+    background: #1e293b;
+    color: white;
+}
+
+.trash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.dark-mode .trash-header {
+    border-bottom-color: #374151;
+}
+
+.trash-stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    flex: 1;
+}
+
+.dark-mode .stat-card {
+    background: #374151;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #8b5cf6;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.trash-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.bulk-actions {
+    display: none;
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+    gap: 1rem;
+}
+
+.dark-mode .bulk-actions {
+    background: #92400e;
+    border-color: #d97706;
+}
+
+.bulk-actions.show {
+    display: flex;
+}
+
+.filter-options {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-select {
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    min-width: 150px;
+}
+
+.dark-mode .filter-select {
+    background: #374151;
+    border-color: #4b5563;
+    color: white;
+}
+
+.trash-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+    position: relative;
+}
+
+.trash-item:hover {
+    opacity: 1;
+    border-color: #8b5cf6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+}
+
+.dark-mode .trash-item {
+    border-color: #374151;
+    background: #374151;
+}
+
+.trash-item.selected {
+    border-color: #8b5cf6;
+    background: #f3f4f6;
+}
+
+.dark-mode .trash-item.selected {
+    background: #4b5563;
+}
+
+.trash-item-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.trash-checkbox {
+    margin-right: 1rem;
+    margin-top: 0.25rem;
+}
+
+.trash-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.2rem;
+    color: white;
+    opacity: 0.6;
+}
+
+.trash-icon.nota {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.trash-icon.kanban {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.trash-icon.objetivo {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.trash-icon.tarea {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.trash-icon.recordatorio {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.trash-content {
+    flex: 1;
+}
+
+.trash-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+    text-decoration: line-through;
+}
+
+.dark-mode .trash-title {
+    color: white;
+}
+
+.trash-description {
+    color: #6b7280;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+.trash-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.trash-type {
+    background: #f3f4f6;
+    color: #374151;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.dark-mode .trash-type {
+    background: #4b5563;
+    color: #d1d5db;
+}
+
+.trash-dates {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.deleted-date {
+    color: #ef4444;
+    font-weight: 500;
+}
+
+.auto-delete-warning {
+    color: #f59e0b;
+    font-weight: 500;
+}
+
+.trash-actions-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+.restore-btn {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+}
+
+.restore-btn:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.delete-permanent-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+}
+
+.delete-permanent-btn:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+.empty-trash {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6b7280;
+}
+
+.empty-trash i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: #d1d5db;
+}
+
+.auto-delete-info {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.dark-mode .auto-delete-info {
+    background: #92400e;
+    border-color: #d97706;
+}
+
+.confirmation-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.confirmation-modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+}
+
+.dark-mode .modal-content {
+    background: #1e293b;
+    color: white;
+}
+
+.modal-icon {
+    font-size: 3rem;
+    color: #ef4444;
+    margin-bottom: 1rem;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 1rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #8b5cf6;
+    transition: width 0.3s ease;
+}
+
+.dark-mode .progress-bar {
+    background: #374151;
+}
+
+@media (max-width: 768px) {
+    .trash-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .trash-actions {
+        flex-direction: column;
+    }
+    
+    .filter-options {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .trash-item-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .trash-actions-buttons {
+        margin-left: 0;
+        justify-content: flex-start;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="personal-space-container">
+    <!-- Header -->
+    <div class="ps-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="ps-title tw-text-red-600">
+                        <i class="bi bi-trash me-2"></i>
+                        Papelera
+                    </h1>
+                    <p class="ps-subtitle">Gestiona tus bloques eliminados</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="ps-controls tw-space-x-2">
+                        <button class="btn btn-outline-success me-2" onclick="restoreAll()" id="restoreAllBtn">
+                            <i class="bi bi-arrow-clockwise"></i>
+                            Restaurar Todo
+                        </button>
+                        <button class="btn btn-outline-danger me-2" onclick="emptyTrash()" id="emptyTrashBtn">
+                            <i class="bi bi-trash"></i>
+                            Vaciar Papelera
+                        </button>
+                        <a href="{{ url_for('personal_space.index') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i>
+                            Volver al Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Información de Auto-eliminación -->
+        <div class="auto-delete-info">
+            <i class="bi bi-info-circle"></i>
+            <div>
+                <strong>Eliminación automática:</strong> Los elementos en la papelera se eliminan permanentemente después de 30 días.
+                Los elementos próximos a eliminarse aparecen marcados en amarillo.
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="trash-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalItems">0</div>
+                <div class="stat-label">Elementos en papelera</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="soonToDelete">0</div>
+                <div class="stat-label">Se eliminan pronto</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalSize">0 MB</div>
+                <div class="stat-label">Espacio ocupado</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="oldestItem">-</div>
+                <div class="stat-label">Más antiguo</div>
+            </div>
+        </div>
+
+        <!-- Acciones y Filtros -->
+        <div class="trash-container">
+            <div class="trash-header">
+                <h3>Elementos Eliminados</h3>
+                <div class="filter-options">
+                    <select class="filter-select" id="typeFilter" onchange="filterTrash()">
+                        <option value="">Todos los tipos</option>
+                        <option value="nota">Notas</option>
+                        <option value="kanban">Tableros Kanban</option>
+                        <option value="objetivo">Objetivos</option>
+                        <option value="tarea">Tareas</option>
+                        <option value="recordatorio">Recordatorios</option>
+                        <option value="enlace">Enlaces</option>
+                        <option value="frase">Frases</option>
+                        <option value="lista">Listas</option>
+                    </select>
+                    <select class="filter-select" id="dateFilter" onchange="filterTrash()">
+                        <option value="">Cualquier fecha</option>
+                        <option value="today">Eliminado hoy</option>
+                        <option value="week">Esta semana</option>
+                        <option value="month">Este mes</option>
+                        <option value="soon">Se elimina pronto</option>
+                    </select>
+                    <button class="btn btn-outline-primary" onclick="toggleSelectAll()" id="selectAllBtn">
+                        <i class="bi bi-check-square"></i>
+                        Seleccionar Todo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Acciones en Lote -->
+            <div class="bulk-actions" id="bulkActions">
+                <i class="bi bi-info-circle"></i>
+                <span id="selectedCount">0 elementos seleccionados</span>
+                <div class="ms-auto">
+                    <button class="btn btn-success btn-sm me-2" onclick="restoreSelected()">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Restaurar Seleccionados
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteSelectedPermanently()">
+                        <i class="bi bi-trash"></i>
+                        Eliminar Permanentemente
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lista de Elementos -->
+            <div id="trashList">
+                <!-- Los elementos se cargan dinámicamente -->
+            </div>
+
+            <!-- Estado vacío -->
+            <div class="empty-trash" id="emptyTrash" style="display: none;">
+                <i class="bi bi-trash"></i>
+                <h4>La papelera está vacía</h4>
+                <p>No hay elementos eliminados para mostrar.</p>
+                <a href="{{ url_for('personal_space.index') }}" class="btn btn-primary">
+                    <i class="bi bi-plus"></i>
+                    Crear Nuevo Bloque
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div class="confirmation-modal" id="confirmationModal">
+    <div class="modal-content">
+        <i class="bi bi-exclamation-triangle modal-icon"></i>
+        <h4 id="modalTitle">Confirmar Acción</h4>
+        <p id="modalMessage">¿Estás seguro de que quieres realizar esta acción?</p>
+        <div class="modal-buttons">
+            <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+            <button class="btn btn-danger" id="confirmBtn" onclick="confirmAction()">Confirmar</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let trashItems = [];
+let selectedItems = [];
+let currentAction = null;
+let actionData = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadTrashItems();
+    updateStats();
+});
+
+function loadTrashItems() {
+    fetch('/espacio-personal/api/trash')
+        .then(response => response.json())
+        .then(data => {
+            trashItems = data.items;
+            displayTrashItems(trashItems);
+            updateStats();
+        })
+        .catch(error => {
+            console.error('Error al cargar papelera:', error);
+            showError('Error al cargar los elementos de la papelera');
+        });
+}
+
+function displayTrashItems(items) {
+    const trashList = document.getElementById('trashList');
+    const emptyTrash = document.getElementById('emptyTrash');
+    
+    if (items.length === 0) {
+        trashList.style.display = 'none';
+        emptyTrash.style.display = 'block';
+        return;
+    }
+    
+    trashList.style.display = 'block';
+    emptyTrash.style.display = 'none';
+    
+    trashList.innerHTML = items.map(item => createTrashItemHTML(item)).join('');
+}
+
+function createTrashItemHTML(item) {
+    const daysUntilDelete = calculateDaysUntilDelete(item.deleted_at);
+    const isExpiringSoon = daysUntilDelete <= 7;
+    const progressPercent = ((30 - daysUntilDelete) / 30) * 100;
+    
+    return `
+        <div class="trash-item ${isExpiringSoon ? 'expiring-soon' : ''}" data-id="${item.id}">
+            <div class="trash-item-header">
+                <input type="checkbox" class="trash-checkbox" onchange="toggleItemSelection(${item.id})">
+                <div class="trash-icon ${item.type}">
+                    <i class="bi bi-${getBlockIcon(item.type)}"></i>
+                </div>
+                <div class="trash-content">
+                    <h5 class="trash-title">${item.title}</h5>
+                    <p class="trash-description">${item.content || 'Sin descripción'}</p>
+                    <div class="trash-meta">
+                        <span class="trash-type">${getBlockTypeName(item.type)}</span>
+                        <div class="trash-dates">
+                            <span class="deleted-date">
+                                <i class="bi bi-trash me-1"></i>
+                                Eliminado: ${formatDate(item.deleted_at)}
+                            </span>
+                            ${isExpiringSoon ? 
+                                `<span class="auto-delete-warning">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>
+                                    Se elimina en ${daysUntilDelete} días
+                                </span>` : 
+                                `<span>Se elimina en ${daysUntilDelete} días</span>`
+                            }
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                    </div>
+                </div>
+                <div class="trash-actions-buttons">
+                    <button class="restore-btn" onclick="restoreItem(${item.id})">
+                        <i class="bi bi-arrow-clockwise me-1"></i>
+                        Restaurar
+                    </button>
+                    <button class="delete-permanent-btn" onclick="deleteItemPermanently(${item.id})">
+                        <i class="bi bi-trash me-1"></i>
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function calculateDaysUntilDelete(deletedAt) {
+    const deleted = new Date(deletedAt);
+    const now = new Date();
+    const deleteDate = new Date(deleted.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 días
+    const diffTime = deleteDate - now;
+    return Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+}
+
+function updateStats() {
+    const totalItems = trashItems.length;
+    const soonToDelete = trashItems.filter(item => calculateDaysUntilDelete(item.deleted_at) <= 7).length;
+    const totalSize = trashItems.reduce((sum, item) => sum + (item.size || 0), 0);
+    const oldestItem = trashItems.length > 0 ? 
+        Math.max(...trashItems.map(item => calculateDaysUntilDelete(item.deleted_at))) : 0;
+    
+    document.getElementById('totalItems').textContent = totalItems;
+    document.getElementById('soonToDelete').textContent = soonToDelete;
+    document.getElementById('totalSize').textContent = `${(totalSize / 1024 / 1024).toFixed(1)} MB`;
+    document.getElementById('oldestItem').textContent = oldestItem > 0 ? `${30 - oldestItem} días` : '-';
+    
+    // Actualizar botones
+    document.getElementById('restoreAllBtn').disabled = totalItems === 0;
+    document.getElementById('emptyTrashBtn').disabled = totalItems === 0;
+}
+
+function filterTrash() {
+    const typeFilter = document.getElementById('typeFilter').value;
+    const dateFilter = document.getElementById('dateFilter').value;
+    
+    let filteredItems = trashItems;
+    
+    if (typeFilter) {
+        filteredItems = filteredItems.filter(item => item.type === typeFilter);
+    }
+    
+    if (dateFilter) {
+        const now = new Date();
+        filteredItems = filteredItems.filter(item => {
+            const deletedDate = new Date(item.deleted_at);
+            const diffTime = now - deletedDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            switch (dateFilter) {
+                case 'today':
+                    return diffDays === 0;
+                case 'week':
+                    return diffDays <= 7;
+                case 'month':
+                    return diffDays <= 30;
+                case 'soon':
+                    return calculateDaysUntilDelete(item.deleted_at) <= 7;
+                default:
+                    return true;
+            }
+        });
+    }
+    
+    displayTrashItems(filteredItems);
+}
+
+function toggleItemSelection(itemId) {
+    const index = selectedItems.indexOf(itemId);
+    if (index > -1) {
+        selectedItems.splice(index, 1);
+    } else {
+        selectedItems.push(itemId);
+    }
+    
+    updateBulkActions();
+    updateItemSelection(itemId);
+}
+
+function updateItemSelection(itemId) {
+    const item = document.querySelector(`[data-id="${itemId}"]`);
+    if (selectedItems.includes(itemId)) {
+        item.classList.add('selected');
+    } else {
+        item.classList.remove('selected');
+    }
+}
+
+function toggleSelectAll() {
+    const visibleItems = document.querySelectorAll('.trash-item:not([style*="display: none"])');
+    const allSelected = visibleItems.length > 0 && 
+        Array.from(visibleItems).every(item => selectedItems.includes(parseInt(item.dataset.id)));
+    
+    if (allSelected) {
+        // Deseleccionar todos
+        visibleItems.forEach(item => {
+            const itemId = parseInt(item.dataset.id);
+            const index = selectedItems.indexOf(itemId);
+            if (index > -1) {
+                selectedItems.splice(index, 1);
+            }
+            item.classList.remove('selected');
+            item.querySelector('.trash-checkbox').checked = false;
+        });
+    } else {
+        // Seleccionar todos
+        visibleItems.forEach(item => {
+            const itemId = parseInt(item.dataset.id);
+            if (!selectedItems.includes(itemId)) {
+                selectedItems.push(itemId);
+            }
+            item.classList.add('selected');
+            item.querySelector('.trash-checkbox').checked = true;
+        });
+    }
+    
+    updateBulkActions();
+    updateSelectAllButton();
+}
+
+function updateSelectAllButton() {
+    const button = document.getElementById('selectAllBtn');
+    const visibleItems = document.querySelectorAll('.trash-item:not([style*="display: none"])');
+    const allSelected = visibleItems.length > 0 && 
+        Array.from(visibleItems).every(item => selectedItems.includes(parseInt(item.dataset.id)));
+    
+    if (allSelected) {
+        button.innerHTML = '<i class="bi bi-square"></i> Deseleccionar Todo';
+    } else {
+        button.innerHTML = '<i class="bi bi-check-square"></i> Seleccionar Todo';
+    }
+}
+
+function updateBulkActions() {
+    const bulkActions = document.getElementById('bulkActions');
+    const selectedCount = document.getElementById('selectedCount');
+    
+    if (selectedItems.length > 0) {
+        bulkActions.classList.add('show');
+        selectedCount.textContent = `${selectedItems.length} elemento${selectedItems.length !== 1 ? 's' : ''} seleccionado${selectedItems.length !== 1 ? 's' : ''}`;
+    } else {
+        bulkActions.classList.remove('show');
+    }
+}
+
+function restoreItem(itemId) {
+    currentAction = 'restore';
+    actionData = [itemId];
+    
+    const item = trashItems.find(i => i.id === itemId);
+    showConfirmationModal(
+        'Restaurar Elemento',
+        `¿Estás seguro de que quieres restaurar "${item.title}"?`,
+        'Restaurar'
+    );
+}
+
+function restoreSelected() {
+    if (selectedItems.length === 0) return;
+    
+    currentAction = 'restore';
+    actionData = [...selectedItems];
+    
+    showConfirmationModal(
+        'Restaurar Elementos',
+        `¿Estás seguro de que quieres restaurar ${selectedItems.length} elemento${selectedItems.length !== 1 ? 's' : ''}?`,
+        'Restaurar'
+    );
+}
+
+function restoreAll() {
+    if (trashItems.length === 0) return;
+    
+    currentAction = 'restore';
+    actionData = trashItems.map(item => item.id);
+    
+    showConfirmationModal(
+        'Restaurar Todo',
+        `¿Estás seguro de que quieres restaurar todos los ${trashItems.length} elementos?`,
+        'Restaurar Todo'
+    );
+}
+
+function deleteItemPermanently(itemId) {
+    currentAction = 'delete';
+    actionData = [itemId];
+    
+    const item = trashItems.find(i => i.id === itemId);
+    showConfirmationModal(
+        'Eliminar Permanentemente',
+        `¿Estás seguro de que quieres eliminar permanentemente "${item.title}"? Esta acción no se puede deshacer.`,
+        'Eliminar Permanentemente'
+    );
+}
+
+function deleteSelectedPermanently() {
+    if (selectedItems.length === 0) return;
+    
+    currentAction = 'delete';
+    actionData = [...selectedItems];
+    
+    showConfirmationModal(
+        'Eliminar Permanentemente',
+        `¿Estás seguro de que quieres eliminar permanentemente ${selectedItems.length} elemento${selectedItems.length !== 1 ? 's' : ''}? Esta acción no se puede deshacer.`,
+        'Eliminar Permanentemente'
+    );
+}
+
+function emptyTrash() {
+    if (trashItems.length === 0) return;
+    
+    currentAction = 'delete';
+    actionData = trashItems.map(item => item.id);
+    
+    showConfirmationModal(
+        'Vaciar Papelera',
+        `¿Estás seguro de que quieres eliminar permanentemente todos los ${trashItems.length} elementos? Esta acción no se puede deshacer.`,
+        'Vaciar Papelera'
+    );
+}
+
+function showConfirmationModal(title, message, confirmText) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalMessage').textContent = message;
+    document.getElementById('confirmBtn').textContent = confirmText;
+    document.getElementById('confirmationModal').classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('confirmationModal').classList.remove('show');
+    currentAction = null;
+    actionData = null;
+}
+
+function confirmAction() {
+    if (!currentAction || !actionData) return;
+    
+    const endpoint = currentAction === 'restore' ? '/espacio-personal/api/restore' : '/espacio-personal/api/delete-permanent';
+    
+    fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            item_ids: actionData
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Actualizar la lista
+            loadTrashItems();
+            selectedItems = [];
+            updateBulkActions();
+            
+            // Mostrar mensaje de éxito
+            const action = currentAction === 'restore' ? 'restaurado' : 'eliminado';
+            const count = actionData.length;
+            alert(`${count} elemento${count !== 1 ? 's' : ''} ${action}${count !== 1 ? 's' : ''} exitosamente.`);
+        } else {
+            alert('Error al realizar la acción: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al realizar la acción');
+    })
+    .finally(() => {
+        closeModal();
+    });
+}
+
+function getBlockIcon(type) {
+    const icons = {
+        'nota': 'journal-text',
+        'kanban': 'kanban',
+        'objetivo': 'target',
+        'tarea': 'check-square',
+        'recordatorio': 'alarm',
+        'enlace': 'link-45deg',
+        'frase': 'chat-quote',
+        'lista': 'list-ul',
+        'bloque': 'square'
+    };
+    return icons[type] || 'square';
+}
+
+function getBlockTypeName(type) {
+    const names = {
+        'nota': 'Nota',
+        'kanban': 'Tablero Kanban',
+        'objetivo': 'Objetivo',
+        'tarea': 'Tarea',
+        'recordatorio': 'Recordatorio',
+        'enlace': 'Enlace',
+        'frase': 'Frase Motivacional',
+        'lista': 'Lista',
+        'bloque': 'Bloque Personalizado'
+    };
+    return names[type] || 'Bloque';
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function showError(message) {
+    document.getElementById('trashList').innerHTML = `
+        <div class="text-center py-4 text-danger">
+            <i class="bi bi-exclamation-triangle"></i>
+            <p>${message}</p>
+        </div>
+    `;
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+}
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('confirmationModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+</script>
+{% endblock %}

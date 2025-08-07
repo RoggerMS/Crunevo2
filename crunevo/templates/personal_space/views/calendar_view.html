@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+{% block title %}Calendario - Mi Espacio Personal{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
+<style>
+.calendar-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.dark-mode .calendar-container {
+    background: #1e293b;
+    color: white;
+}
+
+.fc-event {
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 2px 6px !important;
+    font-size: 0.85rem !important;
+}
+
+.fc-event.type-objetivo {
+    background: #8b5cf6 !important;
+}
+
+.fc-event.type-tarea {
+    background: #06b6d4 !important;
+}
+
+.fc-event.type-recordatorio {
+    background: #f59e0b !important;
+}
+
+.upcoming-events {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.dark-mode .upcoming-events {
+    background: #1e293b;
+    color: white;
+}
+
+.event-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    border-left: 4px solid;
+    background: #f8fafc;
+}
+
+.dark-mode .event-item {
+    background: #334155;
+}
+
+.event-item.type-objetivo {
+    border-left-color: #8b5cf6;
+}
+
+.event-item.type-tarea {
+    border-left-color: #06b6d4;
+}
+
+.event-item.type-recordatorio {
+    border-left-color: #f59e0b;
+}
+
+.event-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    color: white;
+}
+
+.event-details h6 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.event-details p {
+    margin: 0;
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="personal-space-container">
+    <!-- Header -->
+    <div class="ps-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="ps-title tw-text-indigo-600">
+                        <i class="bi bi-calendar3 me-2"></i>
+                        Calendario Personal
+                    </h1>
+                    <p class="ps-subtitle">Visualiza tus tareas, objetivos y recordatorios</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="ps-controls tw-space-x-2">
+                        <button class="btn btn-outline-primary me-2" onclick="addQuickEvent()">
+                            <i class="bi bi-plus-lg"></i>
+                            Evento Rápido
+                        </button>
+                        <a href="{{ url_for('personal_space.index') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i>
+                            Volver al Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Calendar -->
+            <div class="col-lg-8">
+                <div class="calendar-container">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Próximos Eventos -->
+                <div class="upcoming-events mb-4">
+                    <h5 class="mb-3">
+                        <i class="bi bi-clock text-warning"></i>
+                        Próximos Eventos
+                    </h5>
+                    <div id="upcomingEventsList">
+                        {% for event in upcoming_events[:5] %}
+                        <div class="event-item type-{{ event.type }}">
+                            <div class="event-icon" style="background: {% if event.type == 'objetivo' %}#8b5cf6{% elif event.type == 'tarea' %}#06b6d4{% else %}#f59e0b{% endif %}">
+                                <i class="bi bi-{% if event.type == 'objetivo' %}trophy{% elif event.type == 'tarea' %}clipboard-check{% else %}alarm{% endif %}"></i>
+                            </div>
+                            <div class="event-details flex-grow-1">
+                                <h6>{{ event.title }}</h6>
+                                <p>{{ event.date_formatted }} - {{ event.type|title }}</p>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary" onclick="editEvent({{ event.id }})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                        </div>
+                        {% endfor %}
+                        
+                        {% if not upcoming_events %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-calendar-x text-muted" style="font-size: 2rem;"></i>
+                            <p class="text-muted mt-2">No hay eventos próximos</p>
+                            <button class="btn btn-primary btn-sm" onclick="addQuickEvent()">
+                                Crear primer evento
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="upcoming-events">
+                    <h6 class="mb-3">
+                        <i class="bi bi-funnel"></i>
+                        Filtros
+                    </h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="showObjetivos" checked>
+                        <label class="form-check-label" for="showObjetivos">
+                            <span class="badge" style="background: #8b5cf6;">●</span>
+                            Objetivos
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="showTareas" checked>
+                        <label class="form-check-label" for="showTareas">
+                            <span class="badge" style="background: #06b6d4;">●</span>
+                            Tareas
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="showRecordatorios" checked>
+                        <label class="form-check-label" for="showRecordatorios">
+                            <span class="badge" style="background: #f59e0b;">●</span>
+                            Recordatorios
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Evento Rápido -->
+<div class="modal fade" id="quickEventModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear Evento Rápido</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="quickEventForm">
+                    <div class="mb-3">
+                        <label class="form-label">Título</label>
+                        <input type="text" class="form-control" id="eventTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo</label>
+                        <select class="form-select" id="eventType">
+                            <option value="tarea">Tarea</option>
+                            <option value="objetivo">Objetivo</option>
+                            <option value="recordatorio">Recordatorio</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha</label>
+                        <input type="date" class="form-control" id="eventDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" id="eventDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveQuickEvent()">Crear Evento</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<script>
+let calendar;
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCalendar();
+    setupEventFilters();
+});
+
+function initializeCalendar() {
+    const calendarEl = document.getElementById('calendar');
+    
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,listWeek'
+        },
+        events: [
+            {% for event in events %}
+            {
+                id: '{{ event.id }}',
+                title: '{{ event.title }}',
+                start: '{{ event.date }}',
+                className: 'type-{{ event.type }}',
+                extendedProps: {
+                    type: '{{ event.type }}',
+                    blockId: {{ event.id }}
+                }
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ],
+        eventClick: function(info) {
+            editEvent(info.event.extendedProps.blockId);
+        },
+        dateClick: function(info) {
+            addQuickEvent(info.dateStr);
+        }
+    });
+    
+    calendar.render();
+}
+
+function setupEventFilters() {
+    ['showObjetivos', 'showTareas', 'showRecordatorios'].forEach(filterId => {
+        document.getElementById(filterId).addEventListener('change', filterEvents);
+    });
+}
+
+function filterEvents() {
+    const showObjetivos = document.getElementById('showObjetivos').checked;
+    const showTareas = document.getElementById('showTareas').checked;
+    const showRecordatorios = document.getElementById('showRecordatorios').checked;
+    
+    calendar.getEvents().forEach(event => {
+        const type = event.extendedProps.type;
+        let shouldShow = false;
+        
+        if (type === 'objetivo' && showObjetivos) shouldShow = true;
+        if (type === 'tarea' && showTareas) shouldShow = true;
+        if (type === 'recordatorio' && showRecordatorios) shouldShow = true;
+        
+        event.setProp('display', shouldShow ? 'auto' : 'none');
+    });
+}
+
+function addQuickEvent(date = null) {
+    if (date) {
+        document.getElementById('eventDate').value = date;
+    }
+    const modal = new bootstrap.Modal(document.getElementById('quickEventModal'));
+    modal.show();
+}
+
+function saveQuickEvent() {
+    const form = document.getElementById('quickEventForm');
+    const formData = new FormData();
+    
+    formData.append('type', document.getElementById('eventType').value);
+    formData.append('title', document.getElementById('eventTitle').value);
+    formData.append('content', document.getElementById('eventDescription').value);
+    formData.append('deadline', document.getElementById('eventDate').value);
+    
+    fetch('/espacio-personal/api/blocks', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error al crear el evento');
+        }
+    });
+}
+
+function editEvent(blockId) {
+    window.location.href = `/espacio-personal/bloque/${blockId}`;
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+}
+</script>
+{% endblock %}

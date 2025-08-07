@@ -21,6 +21,35 @@
                 </div>
                 <div class="col-md-6 text-md-end">
                     <div class="ps-controls tw-space-x-2">
+                        <!-- Quick Actions Dropdown -->
+                        <div class="dropdown me-2">
+                            <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-lightning"></i>
+                                Acciones Rápidas
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ url_for('personal_space.calendar_view') }}">
+                                    <i class="bi bi-calendar3 me-2"></i>Calendario
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('personal_space.statistics_view') }}">
+                                    <i class="bi bi-graph-up me-2"></i>Estadísticas
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('personal_space.search_view') }}">
+                                    <i class="bi bi-search me-2"></i>Búsqueda Avanzada
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('personal_space.templates_view') }}">
+                                    <i class="bi bi-collection me-2"></i>Plantillas
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('personal_space.settings_view') }}">
+                                    <i class="bi bi-gear me-2"></i>Configuración
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('personal_space.trash_view') }}">
+                                    <i class="bi bi-trash me-2"></i>Papelera
+                                </a></li>
+                            </ul>
+                        </div>
+                        
                         <button class="btn btn-outline-primary me-2" id="focusModeBtn" aria-label="Activar modo enfoque" title="Modo Enfoque">
                             <i class="bi bi-eye-slash"></i>
                             Modo Enfoque
@@ -64,17 +93,66 @@
     </div>
     {% endif %}
 
+    <!-- Enhanced Dashboard Overview -->
     <div class="container-fluid mb-4">
-        <div class="mochila-block shadow-sm p-3 rounded bg-white tw-flex tw-flex-col tw-gap-2">
-            <h6 class="mb-1">Mi Mochila</h6>
-            <p class="mb-2">Accede a tus recursos guardados</p>
-            <a href="/mochila" class="btn btn-primary btn-sm">Abrir Mochila</a>
+        <div class="row g-3">
+            <!-- Mochila Block -->
+            <div class="col-md-4">
+                <div class="mochila-block shadow-sm p-3 rounded bg-white tw-flex tw-flex-col tw-gap-2">
+                    <h6 class="mb-1">Mi Mochila</h6>
+                    <p class="mb-2">Accede a tus recursos guardados</p>
+                    <a href="/mochila" class="btn btn-primary btn-sm">Abrir Mochila</a>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="col-md-4">
+                <div class="quick-stats shadow-sm p-3 rounded bg-white">
+                    <h6 class="mb-2">Resumen Semanal</h6>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Productividad:</span>
+                        <span class="fw-bold text-success" id="weeklyProductivity">85%</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Próximas fechas:</span>
+                        <span class="fw-bold text-warning" id="upcomingDeadlines">3</span>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-gradient" role="progressbar" style="width: 85%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="col-md-4">
+                <div class="quick-actions shadow-sm p-3 rounded bg-white">
+                    <h6 class="mb-2">Acciones Rápidas</h6>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm" onclick="quickAddTask()">
+                            <i class="bi bi-plus-circle me-1"></i>Tarea Rápida
+                        </button>
+                        <div class="row g-1">
+                            <div class="col-6">
+                                <a href="{{ url_for('personal_space.calendar_view') }}" class="btn btn-outline-info btn-sm w-100">
+                                    <i class="bi bi-calendar3"></i>
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="{{ url_for('personal_space.statistics_view') }}" class="btn btn-outline-success btn-sm w-100">
+                                    <i class="bi bi-graph-up"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Blocks Grid -->
     <div class="ps-grid-container">
         <div class="container-fluid">
+            <!-- Enhanced Dashboard Metrics -->
             <div class="dashboard-metrics mb-4 {% if not blocks %}d-none{% endif %}" id="dashboardMetrics">
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -84,6 +162,10 @@
                         <div class="metric-info">
                             <span class="metric-number" id="notasCount">0</span>
                             <span class="metric-label">Notas</span>
+                        </div>
+                        <div class="metric-trend">
+                            <i class="bi bi-arrow-up text-success"></i>
+                            <span class="text-success">+12%</span>
                         </div>
                     </div>
 
@@ -95,6 +177,10 @@
                             <span class="metric-number" id="tareasCount">0</span>
                             <span class="metric-label">Tareas</span>
                         </div>
+                        <div class="metric-trend">
+                            <i class="bi bi-arrow-up text-success"></i>
+                            <span class="text-success">+8%</span>
+                        </div>
                     </div>
 
                     <div class="metric-card">
@@ -105,6 +191,10 @@
                             <span class="metric-number" id="objetivosCount">0</span>
                             <span class="metric-label">Objetivos</span>
                         </div>
+                        <div class="metric-trend">
+                            <i class="bi bi-arrow-up text-success"></i>
+                            <span class="text-success">+25%</span>
+                        </div>
                     </div>
 
                     <div class="metric-card">
@@ -114,6 +204,39 @@
                         <div class="metric-info">
                             <span class="metric-number" id="progressAvg">0%</span>
                             <span class="metric-label">Progreso</span>
+                        </div>
+                        <div class="metric-trend">
+                            <i class="bi bi-arrow-up text-success"></i>
+                            <span class="text-success">+15%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- New Advanced Metrics -->
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-calendar-week text-blue-500"></i>
+                        </div>
+                        <div class="metric-info">
+                            <span class="metric-number" id="weeklyStreak">7</span>
+                            <span class="metric-label">Días Activos</span>
+                        </div>
+                        <div class="metric-trend">
+                            <i class="bi bi-fire text-orange-500"></i>
+                            <span class="text-orange-500">Racha</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-clock text-red-500"></i>
+                        </div>
+                        <div class="metric-info">
+                            <span class="metric-number" id="pendingDeadlines">3</span>
+                            <span class="metric-label">Próximas</span>
+                        </div>
+                        <div class="metric-trend">
+                            <i class="bi bi-exclamation-triangle text-warning"></i>
+                            <span class="text-warning">Urgente</span>
                         </div>
                     </div>
                 </div>
@@ -144,11 +267,29 @@
                             <i class="bi bi-trophy"></i>
                             <span>Metas académicas</span>
                         </div>
+                        <div class="feature-item">
+                            <i class="bi bi-calendar3"></i>
+                            <span>Calendario integrado</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="bi bi-graph-up"></i>
+                            <span>Estadísticas avanzadas</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="bi bi-collection"></i>
+                            <span>Plantillas prediseñadas</span>
+                        </div>
                     </div>
-                    <button class="btn btn-primary btn-lg" id="createFirstBlock" aria-label="Comenzar mi espacio" title="Comenzar mi espacio">
-                        <i class="bi bi-plus-lg"></i>
-                        Comenzar mi espacio
-                    </button>
+                    <div class="empty-actions">
+                        <button class="btn btn-primary btn-lg me-3" id="createFirstBlock" aria-label="Comenzar mi espacio" title="Comenzar mi espacio">
+                            <i class="bi bi-plus-lg"></i>
+                            Comenzar mi espacio
+                        </button>
+                        <a href="{{ url_for('personal_space.templates_view') }}" class="btn btn-outline-primary btn-lg">
+                            <i class="bi bi-collection"></i>
+                            Ver Plantillas
+                        </a>
+                    </div>
                 </div>
                 {% endif %}
             </div>
@@ -288,5 +429,70 @@
 
 {% block extra_js %}
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script src="{{ url_for('static', filename='js/personal-space.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/personal-space.js') }}"></script>
+    <script>
+        // Enhanced dashboard functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load enhanced metrics
+            loadEnhancedMetrics();
+            
+            // Update metrics every 30 seconds
+            setInterval(loadEnhancedMetrics, 30000);
+        });
+        
+        function loadEnhancedMetrics() {
+            fetch('/espacio-personal/api/statistics')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const stats = data.statistics;
+                        
+                        // Update weekly productivity
+                        const productivity = Math.round((stats.weekly_activity / 7) * 100);
+                        document.getElementById('weeklyProductivity').textContent = productivity + '%';
+                        
+                        // Update upcoming deadlines (simulated)
+                        document.getElementById('upcomingDeadlines').textContent = '3';
+                        
+                        // Update progress bar
+                        const progressBar = document.querySelector('.progress-bar');
+                        if (progressBar) {
+                            progressBar.style.width = productivity + '%';
+                        }
+                        
+                        // Update weekly streak (simulated)
+                        document.getElementById('weeklyStreak').textContent = '7';
+                        
+                        // Update pending deadlines (simulated)
+                        document.getElementById('pendingDeadlines').textContent = '3';
+                    }
+                })
+                .catch(error => console.error('Error loading enhanced metrics:', error));
+        }
+        
+        function quickAddTask() {
+            // Quick task creation modal or inline form
+            const title = prompt('Título de la tarea rápida:');
+            if (title) {
+                fetch('/espacio-personal/api/blocks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: 'tarea',
+                        title: title,
+                        content: 'Tarea creada rápidamente'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                })
+                .catch(error => console.error('Error creating quick task:', error));
+            }
+        }
+    </script>
 {% endblock %}
