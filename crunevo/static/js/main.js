@@ -1737,14 +1737,22 @@ function initPrivateChat() {
       filePreview?.classList.add('d-none');
       return;
     }
-    const cancel = document.createElement('button');
-    cancel.type = 'button';
-    cancel.className = 'btn-close';
-    cancel.addEventListener('click', () => {
+    
+    // Validar tamaño del archivo (máximo 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (f.size > maxSize) {
+      showToast('El archivo es demasiado grande. Máximo 10MB permitido.', { delay: 5000 });
       fileInput.value = '';
-      filePreview.classList.add('d-none');
-    });
+      return;
+    }
+    
     filePreview.innerHTML = '';
+    
+    // Crear estructura del preview
+    const previewContainer = document.createElement('div');
+    previewContainer.className = 'd-flex align-items-center gap-3 w-100';
+    
+    // Preview del archivo
     if (f.type.startsWith('image/')) {
       const img = document.createElement('img');
       const reader = new FileReader();
@@ -1752,13 +1760,57 @@ function initPrivateChat() {
         img.src = e.target.result;
       };
       reader.readAsDataURL(f);
-      filePreview.appendChild(img);
+      previewContainer.appendChild(img);
     } else {
-      filePreview.textContent = f.name;
+      const fileIcon = document.createElement('div');
+      fileIcon.className = 'd-flex align-items-center justify-content-center';
+      fileIcon.style.width = '60px';
+      fileIcon.style.height = '60px';
+      fileIcon.style.background = 'rgba(102, 126, 234, 0.2)';
+      fileIcon.style.borderRadius = '8px';
+      fileIcon.innerHTML = '<i class="bi bi-file-earmark fs-4 text-primary"></i>';
+      previewContainer.appendChild(fileIcon);
     }
-    filePreview.appendChild(cancel);
+    
+    // Información del archivo
+    const fileInfo = document.createElement('div');
+    fileInfo.className = 'file-info';
+    
+    const fileName = document.createElement('div');
+    fileName.className = 'file-name';
+    fileName.textContent = f.name;
+    
+    const fileSize = document.createElement('div');
+    fileSize.className = 'file-size';
+    fileSize.textContent = formatFileSize(f.size);
+    
+    fileInfo.appendChild(fileName);
+    fileInfo.appendChild(fileSize);
+    previewContainer.appendChild(fileInfo);
+    
+    // Botón de cancelar
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'btn-close';
+    cancel.setAttribute('aria-label', 'Eliminar archivo');
+    cancel.addEventListener('click', () => {
+      fileInput.value = '';
+      filePreview.classList.add('d-none');
+    });
+    previewContainer.appendChild(cancel);
+    
+    filePreview.appendChild(previewContainer);
     filePreview.classList.remove('d-none');
   });
+  
+  // Función auxiliar para formatear el tamaño del archivo
+  function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
     const content = input.value.trim();
@@ -1945,17 +1997,50 @@ function initGlobalChat() {
     filePreview.classList.remove('d-none');
   });
 
+  // Indicador de escritura
+  let typingTimer;
+  let isTyping = false;
+  
+  input?.addEventListener('input', () => {
+    if (!isTyping && input.value.trim()) {
+      isTyping = true;
+      // Aquí se podría enviar una señal de "está escribiendo"
+    }
+    
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(() => {
+      isTyping = false;
+      // Aquí se podría enviar una señal de "dejó de escribir"
+    }, 1000);
+  });
+  
+  // Envío con Enter (pero no Shift+Enter)
+  input?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      form?.dispatchEvent(new Event('submit'));
+    }
+  });
+  
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
     const content = input.value.trim();
     const file = audioInput.files[0];
     const attach = fileInput.files[0];
     if (!content && !file && !attach) return;
+    
+    // Deshabilitar el botón de envío temporalmente
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalContent = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+    
     const fd = new FormData();
     fd.append('content', content);
     fd.append('is_global', 'true');
     if (file) fd.append('audio', file);
     if (attach) fd.append('file', attach);
+    
     csrfFetch('/chat/enviar', { method: 'POST', body: fd })
       .then((r) => r.json())
       .then((data) => {
@@ -1966,9 +2051,17 @@ function initGlobalChat() {
           if (filePreview) filePreview.classList.add('d-none');
           addMessage(data.message);
           lastId = data.message.id;
+          
+          // Enfocar el input nuevamente
+          input.focus();
         }
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => {
+        // Rehabilitar el botón
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+      });
   });
 
   setInterval(() => {
@@ -2014,28 +2107,101 @@ function initGlobalChat() {
   function addMessage(message) {
     const div = document.createElement('div');
     div.className = `message-item ${message.sender_id === window.CURRENT_USER_ID ? 'own' : ''}`;
-    let body = message.content || '';
-    if (message.audio_url) {
-      body += `<audio controls src="${message.audio_url}" class="w-100 mt-1"></audio>`;
+    
+    // Crear estructura del mensaje con el nuevo diseño
+    const messageContent = document.createElement('div');
+    messageContent.className = 'message-content';
+    
+    const messageBubble = document.createElement('div');
+    messageBubble.className = 'message-bubble';
+    
+    const messageHeader = document.createElement('div');
+    messageHeader.className = 'message-header';
+    messageHeader.innerHTML = `
+      <span class="sender-name">${message.sender_username}</span>
+      <span class="role-badge">${message.sender_role || 'Usuario'}</span>
+    `;
+    
+    const messageText = document.createElement('div');
+    messageText.className = 'message-text';
+    
+    let content = message.content || '';
+    if (content) {
+      messageText.innerHTML = content;
     }
+    
+    // Manejar archivos de audio
+    if (message.audio_url) {
+      const audioElement = document.createElement('audio');
+      audioElement.controls = true;
+      audioElement.src = message.audio_url;
+      audioElement.className = 'w-100 mt-2';
+      messageBubble.appendChild(audioElement);
+    }
+    
+    // Manejar archivos adjuntos
     if (message.attachment_url) {
       const ext = message.attachment_url.split('.').pop().toLowerCase();
       if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
-        body += `<img src="${message.attachment_url}" class="img-fluid mt-1" alt="" />`;
+        const img = document.createElement('img');
+        img.src = message.attachment_url;
+        img.className = 'img-fluid mt-2 rounded';
+        img.alt = 'Adjunto';
+        img.style.maxWidth = '250px';
+        img.style.maxHeight = '200px';
+        img.style.objectFit = 'cover';
+        messageBubble.appendChild(img);
       } else {
-        body += `<a href="${message.attachment_url}" target="_blank" class="d-block mt-1">Archivo adjunto</a>`;
+        const link = document.createElement('a');
+        link.href = message.attachment_url;
+        link.target = '_blank';
+        link.className = 'd-inline-flex align-items-center gap-2 mt-2 text-decoration-none';
+        link.innerHTML = `
+          <i class="bi bi-file-earmark"></i>
+          <span>Archivo adjunto</span>
+        `;
+        messageBubble.appendChild(link);
       }
     }
-    div.innerHTML = `
-      <img src="${message.sender_avatar || '/static/img/default.png'}" alt="${message.sender_username}" class="user-avatar">
-      <div class="message-content">
-        <div class="fw-semibold small">${message.sender_username}</div>
-        ${body}
-        <div class="message-meta">
-          ${new Date(message.timestamp).toLocaleTimeString()}
-        </div>
-      </div>`;
+    
+    const messageMeta = document.createElement('div');
+    messageMeta.className = 'message-meta';
+    messageMeta.innerHTML = `
+      <i class="bi bi-clock me-1"></i>
+      ${new Date(message.timestamp).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+    `;
+    
+    // Ensamblar el mensaje
+    if (content || message.audio_url || message.attachment_url) {
+      if (content) {
+        messageBubble.appendChild(messageHeader);
+        messageBubble.appendChild(messageText);
+      }
+      messageBubble.appendChild(messageMeta);
+      messageContent.appendChild(messageBubble);
+    }
+    
+    // Avatar del usuario
+    const avatar = document.createElement('img');
+    avatar.src = message.sender_avatar || '/static/img/default.png';
+    avatar.alt = message.sender_username;
+    avatar.className = 'user-avatar';
+    
+    div.appendChild(avatar);
+    div.appendChild(messageContent);
+    
+    // Animación de entrada
+    div.style.opacity = '0';
+    div.style.transform = 'translateY(20px)';
     container.appendChild(div);
+    
+    // Trigger animation
+    requestAnimationFrame(() => {
+      div.style.transition = 'all 0.3s ease';
+      div.style.opacity = '1';
+      div.style.transform = 'translateY(0)';
+    });
+    
     container.scrollTop = container.scrollHeight;
   }
 }

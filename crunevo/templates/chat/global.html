@@ -4,20 +4,36 @@
 
 {% block head_extra %}
 <style>
+/* Modern Chat Container */
 .chat-container {
-  max-height: calc(100vh - 160px);
+  height: calc(100vh - 200px);
   overflow-y: auto;
-  border: 1px solid #dee2e6;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.05);
-  padding: 0.5rem 0.75rem 80px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 1.5rem;
+  position: relative;
+  scroll-behavior: smooth;
 }
 
+.chat-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+/* Message Styling */
 .message-item {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  animation: messageSlideIn 0.3s ease-out;
 }
 
 .message-item.own {
@@ -25,84 +41,351 @@
 }
 
 .message-content {
-  max-width: 70%;
-  padding: 0.5rem 0.75rem;
-  border-radius: 18px;
-  background: rgba(233, 236, 239, 0.9);
-  word-wrap: break-word;
+  max-width: 75%;
+  position: relative;
+  z-index: 1;
 }
 
-.message-item.own .message-content {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.message-bubble {
+  padding: 0.875rem 1.125rem;
+  border-radius: 20px;
+  word-wrap: break-word;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.message-item:not(.own) .message-bubble {
+  background: rgba(255, 255, 255, 0.95);
+  color: #2c3e50;
+  border-bottom-left-radius: 8px;
+}
+
+.message-item.own .message-bubble {
+  background: rgba(255, 255, 255, 0.2);
   color: white;
+  border-bottom-right-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.message-bubble::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  pointer-events: none;
+}
+
+.message-header {
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .message-meta {
   font-size: 0.75rem;
-  opacity: 0.7;
-  margin-top: 0.25rem;
+  opacity: 0.8;
+  margin-top: 0.5rem;
+  font-weight: 500;
 }
 
+/* Avatar Styling */
 .user-avatar {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease;
 }
 
+.user-avatar:hover {
+  transform: scale(1.05);
+}
+
+/* Active Users Panel */
 .active-users {
-  max-height: 300px;
+  max-height: 400px;
   overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.active-users::-webkit-scrollbar {
+  width: 6px;
+}
+
+.active-users::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.05);
+  border-radius: 3px;
+}
+
+.active-users::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.3);
+  border-radius: 3px;
 }
 
 .user-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 8px;
-  transition: background 0.2s;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.user-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.user-item:hover::before {
+  left: 100%;
 }
 
 .user-item:hover {
   background: rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
 }
 
 .status-indicator {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: #28a745;
+  background: #10b981;
   border: 2px solid white;
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom: 2px;
+  right: 2px;
+  animation: pulse 2s infinite;
 }
 
+/* Chat Input */
 .chat-input {
   position: sticky;
   bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1.25rem;
+  border-radius: 20px;
+  margin-top: 1rem;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.chat-input form {
+  gap: 0.75rem !important;
+}
+
+.chat-input .form-control {
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  border-radius: 25px;
+  padding: 0.875rem 1.25rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.9);
+  min-height: 48px;
+}
+
+.chat-input .form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
   background: white;
-  padding: 0.5rem;
-  border-top: 1px solid #dee2e6;
+  outline: none;
 }
 
-.message-content img {
-  max-width: 60%;
-  max-height: 200px;
-}
-
-#filePreview {
+.chat-input .btn {
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  flex-shrink: 0;
 }
+
+.chat-input .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.chat-input .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.chat-input .btn-primary:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+.chat-input .btn-outline-secondary {
+  border-color: rgba(102, 126, 234, 0.3);
+  color: #667eea;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.chat-input .btn-outline-secondary:hover {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
+}
+
+.chat-input .flex-grow-1 {
+  flex: 1;
+  min-width: 0;
+}
+
+/* File Preview */
+#filePreview {
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 12px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: slideDown 0.3s ease;
+}
+
 #filePreview img {
-  width: 40px;
-  height: 40px;
+  max-width: 60px;
+  max-height: 60px;
+  border-radius: 8px;
   object-fit: cover;
+  flex-shrink: 0;
+}
+
+#filePreview .file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+#filePreview .file-name {
+  font-weight: 500;
+  color: #667eea;
+  margin-bottom: 0.25rem;
+  word-break: break-word;
+}
+
+#filePreview .file-size {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .chat-container {
+    height: calc(100vh - 160px);
+    padding: 1rem;
+    border-radius: 15px;
+  }
+  
+  .message-content {
+    max-width: 85%;
+  }
+  
+  .user-avatar {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+/* Animations */
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Card Enhancements */
+.card {
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px 20px 0 0 !important;
+  padding: 1.5rem;
+  border: none;
+}
+
+.card-header h5 {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.card-header small {
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* Scrollbar Styling */
+.chat-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.chat-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 </style>
 {% endblock %}
@@ -126,22 +409,35 @@
             <img src="{{ message.sender.avatar_url or url_for('static', filename='img/default.png') }}"
                  alt="{{ message.sender.username }}" class="user-avatar">
             <div class="message-content">
-              <div class="fw-semibold small">{{ message.sender.username }}</div>
-              {% if message.content.endswith('.mp3') or message.content.endswith('.ogg') %}
-                <audio controls src="{{ message.content }}" class="w-100 mt-1"></audio>
-              {% else %}
-                {{ message.content }}
-              {% endif %}
-              {% if message.attachment_url %}
-                {% set ext = message.attachment_url.split('.')[-1].lower() %}
-                {% if ext in ['jpg','jpeg','png','gif','webp'] %}
-                  <img src="{{ message.attachment_url }}" class="img-fluid mt-1" alt="Adjunto">
-                {% else %}
-                  <a href="{{ message.attachment_url }}" target="_blank" class="d-block mt-1">Archivo adjunto</a>
+              <div class="message-bubble">
+                <div class="message-header">
+                  <span class="fw-semibold">{{ message.sender.username }}</span>
+                  {% if message.sender.role %}
+                    <span class="badge badge-sm rounded-pill bg-light text-dark">{{ message.sender.role|title }}</span>
+                  {% endif %}
+                </div>
+                <div class="message-text">
+                  {% if message.content.endswith('.mp3') or message.content.endswith('.ogg') %}
+                    <audio controls src="{{ message.content }}" class="w-100 mt-1"></audio>
+                  {% else %}
+                    {{ message.content }}
+                  {% endif %}
+                </div>
+                {% if message.attachment_url %}
+                  {% set ext = message.attachment_url.split('.')[-1].lower() %}
+                  {% if ext in ['jpg','jpeg','png','gif','webp'] %}
+                    <img src="{{ message.attachment_url }}" class="img-fluid mt-2 rounded" alt="Adjunto" style="max-width: 250px; max-height: 200px; object-fit: cover;">
+                  {% else %}
+                    <a href="{{ message.attachment_url }}" target="_blank" class="d-inline-flex align-items-center gap-2 mt-2 text-decoration-none">
+                      <i class="bi bi-file-earmark"></i>
+                      <span>Archivo adjunto</span>
+                    </a>
+                  {% endif %}
                 {% endif %}
-              {% endif %}
-              <div class="message-meta">
-                {{ message.timestamp.strftime('%H:%M') }}
+                <div class="message-meta">
+                  <i class="bi bi-clock me-1"></i>
+                  {{ message.timestamp.strftime('%H:%M') }}
+                </div>
               </div>
             </div>
           </div>
@@ -149,21 +445,25 @@
         </div>
         
         <div class="chat-input">
-          <form id="messageForm" class="d-flex flex-wrap gap-2 align-items-center" enctype="multipart/form-data">
-            <div id="filePreview" class="d-none small"></div>
-            <input type="text" id="messageInput" class="form-control rounded-pill"
-                   placeholder="Escribe un mensaje..." maxlength="1000">
+          <div id="filePreview" class="d-none small mb-2"></div>
+          <form id="messageForm" class="d-flex gap-2 align-items-center" enctype="multipart/form-data">
+            <div class="flex-grow-1">
+              <input type="text" id="messageInput" class="form-control"
+                     placeholder="Escribe un mensaje..." maxlength="1000">
+            </div>
             <input type="file" id="audioInput" accept=".mp3,.ogg" class="form-control d-none">
             <input type="file" id="fileInput" class="form-control d-none">
-            <button type="button" id="audioBtn" class="btn btn-outline-secondary rounded-pill" aria-label="Adjuntar audio">
-              <i class="bi bi-mic"></i>
-            </button>
-            <button type="button" id="fileBtn" class="btn btn-outline-secondary rounded-pill" aria-label="Adjuntar archivo">
-              <i class="bi bi-paperclip"></i>
-            </button>
-            <button type="submit" class="btn btn-primary rounded-pill">
-              <i class="bi bi-send"></i>
-            </button>
+            <div class="d-flex gap-2">
+              <button type="button" id="audioBtn" class="btn btn-outline-secondary" aria-label="Adjuntar audio">
+                <i class="bi bi-mic"></i>
+              </button>
+              <button type="button" id="fileBtn" class="btn btn-outline-secondary" aria-label="Adjuntar archivo">
+                <i class="bi bi-paperclip"></i>
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-send"></i>
+              </button>
+            </div>
           </form>
         </div>
       </div>

@@ -4,25 +4,82 @@
 
 {% block head_extra %}
 <style>
+/* Modern Private Chat Styling */
 .chat-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 1rem;
-  border-radius: 12px 12px 0 0;
+  padding: 1.5rem;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.chat-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+  pointer-events: none;
+}
+
+.chat-header .btn-outline-light {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.chat-header .btn-outline-light:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.partner-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease;
+}
+
+.partner-avatar:hover {
+  transform: scale(1.05);
 }
 
 .chat-messages {
-  height: 400px;
+  height: 500px;
   overflow-y: auto;
-  padding: 0.5rem 0.75rem 80px;
-  background: rgba(255,255,255,0.02);
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  scroll-behavior: smooth;
+}
+
+.chat-messages::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+  pointer-events: none;
 }
 
 .message-bubble {
-  max-width: 80%;
-  margin-bottom: 0.5rem;
+  max-width: 75%;
+  margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
+  animation: messageSlideIn 0.3s ease-out;
+  position: relative;
+  z-index: 1;
 }
 
 .message-bubble.sent {
@@ -36,42 +93,193 @@
 }
 
 .bubble-content {
-  padding: 0.5rem 0.75rem;
-  border-radius: 18px;
+  padding: 1rem 1.25rem;
+  border-radius: 20px;
   word-wrap: break-word;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.bubble-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  pointer-events: none;
 }
 
 .bubble-content.sent {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: rgba(255, 255, 255, 0.2);
   color: white;
+  border-bottom-right-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .bubble-content.received {
-  background: rgba(233, 236, 239, 0.9);
-  color: #333;
+  background: rgba(255, 255, 255, 0.95);
+  color: #2c3e50;
+  border-bottom-left-radius: 8px;
 }
 
 .message-time {
   font-size: 0.75rem;
-  opacity: 0.7;
-  margin-top: 0.25rem;
+  opacity: 0.8;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .bubble-content img {
-  max-width: 60%;
+  max-width: 250px;
   max-height: 200px;
+  border-radius: 12px;
+  margin-top: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
+/* Chat Input Footer */
+.card-footer {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: none;
+  border-radius: 0 0 20px 20px;
+  padding: 1.5rem;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+}
+
+.card-footer .form-control {
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  border-radius: 25px;
+  padding: 0.875rem 1.25rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.card-footer .form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  background: white;
+}
+
+.card-footer .btn {
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.card-footer .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.card-footer .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.card-footer .btn-outline-secondary {
+  border-color: rgba(102, 126, 234, 0.3);
+  color: #667eea;
+}
+
+.card-footer .btn-outline-secondary:hover {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
+}
+
+/* File Preview */
 #filePreview {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
 }
+
 #filePreview img {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Card Enhancements */
+.card {
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  overflow: hidden;
+}
+
+/* Scrollbar Styling */
+.chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Animations */
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .chat-messages {
+    height: 400px;
+    padding: 1rem;
+  }
+  
+  .message-bubble {
+    max-width: 85%;
+  }
+  
+  .partner-avatar {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .chat-header {
+    padding: 1rem;
+  }
 }
 </style>
 {% endblock %}
@@ -88,7 +296,7 @@
             </a>
             <img src="{{ partner.avatar_url or '/static/img/default.png' }}" 
                  alt="{{ partner.username }}" 
-                 class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                 class="partner-avatar me-3">
             <div>
               <h5 class="mb-0">{{ partner.username }}</h5>
               <small class="opacity-75">{{ partner.role|title }}</small>
@@ -100,21 +308,29 @@
           {% for message in messages %}
           <div class="message-bubble {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}">
             <div class="bubble-content {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}">
-              {% if message.content.endswith('.mp3') or message.content.endswith('.ogg') %}
-                <audio controls src="{{ message.content }}" class="w-100 mt-1"></audio>
-              {% else %}
-                {{ message.content }}
-              {% endif %}
+              <div class="message-text">
+                {% if message.content.endswith('.mp3') or message.content.endswith('.ogg') %}
+                  <audio controls src="{{ message.content }}" class="w-100"></audio>
+                {% else %}
+                  {{ message.content }}
+                {% endif %}
+              </div>
               {% if message.attachment_url %}
                 {% set ext = message.attachment_url.split('.')[-1].lower() %}
                 {% if ext in ['jpg','jpeg','png','gif','webp'] %}
-                  <img src="{{ message.attachment_url }}" class="img-fluid mt-1" alt="Adjunto">
+                  <img src="{{ message.attachment_url }}" class="img-fluid" alt="Adjunto">
                 {% else %}
-                  <a href="{{ message.attachment_url }}" target="_blank" class="d-block mt-1">Archivo adjunto</a>
+                  <a href="{{ message.attachment_url }}" target="_blank" class="d-inline-flex align-items-center gap-2 text-decoration-none">
+                    <i class="bi bi-file-earmark"></i>
+                    <span>Archivo adjunto</span>
+                  </a>
                 {% endif %}
               {% endif %}
+              <div class="message-time">
+                <i class="bi bi-clock"></i>
+                {{ message.timestamp.strftime('%H:%M') }}
+              </div>
             </div>
-            <div class="message-time">{{ message.timestamp.strftime('%H:%M') }}</div>
           </div>
           {% endfor %}
         </div>
