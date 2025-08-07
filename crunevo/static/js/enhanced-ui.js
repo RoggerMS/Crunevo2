@@ -39,23 +39,6 @@ function initFloatingButtons() {
         });
     }
     
-    // Profile edit buttons
-    const avatarEditBtns = document.querySelectorAll('.avatar-edit-btn');
-    avatarEditBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            // Trigger file input for avatar upload
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            fileInput.onchange = function(e) {
-                uploadAvatar(e.target.files[0]);
-            };
-            fileInput.click();
-        });
-    });
-    
     // Banner edit button
     const bannerEditBtn = document.querySelector('.profile-banner-edit');
     if (bannerEditBtn) {
