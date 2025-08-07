@@ -534,14 +534,10 @@ def settings_view():
     # Basic user statistics to avoid template errors when no data exists
     blocks = Block.query.filter_by(user_id=current_user.id).all()
     goals_completed = sum(
-        1
-        for b in blocks
-        if b.type == "objetivo" and b.get_progress_percentage() == 100
+        1 for b in blocks if b.type == "objetivo" and b.get_progress_percentage() == 100
     )
     created = getattr(current_user, "created_at", None)
-    days_active = (
-        (datetime.utcnow().date() - created.date()).days + 1 if created else 0
-    )
+    days_active = (datetime.utcnow().date() - created.date()).days + 1 if created else 0
     user_stats = {
         "total_blocks": len(blocks),
         "days_active": days_active,
@@ -894,36 +890,21 @@ def get_templates():
     return jsonify({"success": True, "templates": templates})
 
 
-@personal_space_bp.route("/api/apply-template", methods=["POST"])
-@login_required
-@activated_required
-def apply_template():
-    """Apply a template to user's personal space"""
-    data = request.get_json() or {}
-    template_id = data.get("template_id")
+def _find_template(slug: str):
+    """Return template dict matching slug/id or None."""
+    slug = slug.replace("-", "_")
+    templates_data = get_templates().get_json()
+    return next((t for t in templates_data["templates"] if t["id"] == slug), None)
 
-    if not template_id:
-        return jsonify({"success": False, "message": "Template ID requerido"}), 400
 
-    # Get template data (in a real app, this would come from database)
-    templates_response = get_templates()
-    templates_data = json.loads(templates_response.data)
-    template = next(
-        (t for t in templates_data["templates"] if t["id"] == template_id), None
-    )
-
-    if not template:
-        return jsonify({"success": False, "message": "Plantilla no encontrada"}), 404
-
-    # Get current max order
+def _create_blocks_from_template(template):
+    """Create blocks for current user based on template definition."""
     max_order = (
         db.session.query(func.max(Block.order_index))
         .filter_by(user_id=current_user.id)
         .scalar()
         or 0
     )
-
-    # Create blocks from template
     created_blocks = []
     for i, block_data in enumerate(template["blocks"]):
         block = Block(
@@ -933,10 +914,7 @@ def apply_template():
             content=block_data["content"],
             order_index=max_order + i + 1,
         )
-
-        # Set default metadata
         metadata = {"color": "indigo", "icon": get_default_icon(block_data["type"])}
-
         if block_data["type"] == "kanban":
             metadata["columns"] = {"Por hacer": [], "En curso": [], "Hecho": []}
         elif block_data["type"] == "lista":
@@ -944,13 +922,44 @@ def apply_template():
         elif block_data["type"] == "objetivo":
             metadata["progress"] = 0
             metadata["target_date"] = ""
-
         block.set_metadata(metadata)
         db.session.add(block)
         created_blocks.append(block)
-
     db.session.commit()
+    return created_blocks
 
+
+@personal_space_bp.route("/api/apply-template", methods=["POST"])
+@login_required
+@activated_required
+def apply_template():
+    """Apply a template using ID sent in JSON body."""
+    data = request.get_json() or {}
+    template_id = data.get("template_id")
+    if not template_id:
+        return jsonify({"success": False, "message": "Template ID requerido"}), 400
+    template = _find_template(template_id)
+    if not template:
+        return jsonify({"success": False, "message": "Plantilla no encontrada"}), 404
+    created_blocks = _create_blocks_from_template(template)
+    return jsonify(
+        {
+            "success": True,
+            "message": f'Plantilla "{template["title"]}" aplicada exitosamente',
+            "blocks_created": len(created_blocks),
+        }
+    )
+
+
+@personal_space_bp.route("/plantillas/aplicar/<slug>", methods=["POST"])
+@login_required
+@activated_required
+def apply_template_slug(slug):
+    """Apply a template identified by slug in URL."""
+    template = _find_template(slug)
+    if not template:
+        return jsonify({"success": False, "message": "Plantilla no encontrada"}), 404
+    created_blocks = _create_blocks_from_template(template)
     return jsonify(
         {
             "success": True,
