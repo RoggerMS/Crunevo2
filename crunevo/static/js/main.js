@@ -2190,17 +2190,8 @@ function initGlobalChat() {
     div.appendChild(avatar);
     div.appendChild(messageContent);
     
-    // Animación de entrada
-    div.style.opacity = '0';
-    div.style.transform = 'translateY(20px)';
+    // Agregar el mensaje directamente sin animaciones complejas
     container.appendChild(div);
-    
-    // Trigger animation
-    requestAnimationFrame(() => {
-      div.style.transition = 'all 0.3s ease';
-      div.style.opacity = '1';
-      div.style.transform = 'translateY(0)';
-    });
     
     container.scrollTop = container.scrollHeight;
   }
