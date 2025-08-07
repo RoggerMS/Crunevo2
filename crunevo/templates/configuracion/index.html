@@ -101,6 +101,8 @@
 .settings-section {
   padding: 2rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: none;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 .settings-section:last-child {
@@ -109,6 +111,30 @@
 
 [data-bs-theme="dark"] .settings-section {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .section-title {

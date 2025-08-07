@@ -1225,3 +1225,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Evitado comparación con `None` en `profile/tabs/compras.html` verificando precios definidos.
 - Corregidos filtros de búsqueda utilizando `Product.is_approved` y removiendo `Post.is_deleted`.
 - Registrado `event_bp` también en modo admin para habilitar la gestión de eventos.
+- Optimized settings page navigation by auto-initializing scripts and moving animations CSS to template for faster load (PR settings-init-fix).
