@@ -1205,3 +1205,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Computed cart totals server-side and guarded price display to prevent /tienda/cart 500 errors.
 - Logged missing profile users and returned 404 instead of 500; wrapped profile queries in try/except to handle absent tables gracefully (PR perfil-500-fix).
 - Defaulted `verification_level` to 0 in profile logic and templates to prevent 500 errors when user records store NULL values.
+- Guarded profile note statistics against missing ratings to avoid `/perfil/<username>` 500 errors.
