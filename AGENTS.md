@@ -1226,3 +1226,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Corregidos filtros de búsqueda utilizando `Product.is_approved` y removiendo `Post.is_deleted`.
 - Registrado `event_bp` también en modo admin para habilitar la gestión de eventos.
 - Optimized settings page navigation by auto-initializing scripts and moving animations CSS to template for faster load (PR settings-init-fix).
+- Provided default user statistics in personal space settings view to prevent 500 errors and added view tests for main personal space pages. (PR personal-space-settings-fix)
