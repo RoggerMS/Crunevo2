@@ -198,6 +198,131 @@
   background: var(--forum-gradient);
 }
 
+/* Mobile Responsive Styles for Forum */
+@media (max-width: 768px) {
+  /* Forum header mobile */
+  .forum-header {
+    padding: 1.5rem 0;
+    margin-bottom: 1rem;
+    border-radius: 15px;
+  }
+
+  .forum-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Category filters mobile */
+  .category-filters {
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .category-badge {
+    padding: 0.5rem 1rem !important;
+    margin: 0.125rem !important;
+    font-size: 0.875rem;
+    border-radius: 20px !important;
+  }
+
+  /* Question cards mobile */
+  .question-card {
+    border-radius: 15px !important;
+    margin-bottom: 1rem;
+  }
+
+  .question-card .card-body {
+    padding: 1rem !important;
+  }
+
+  /* Quill editor mobile */
+  .quill-editor {
+    height: 150px;
+    border-radius: 8px;
+  }
+
+  .ql-toolbar {
+    padding: 0.5rem;
+  }
+
+  .ql-toolbar .ql-formats {
+    margin-right: 0.5rem;
+  }
+
+  /* Avatar mobile sizing */
+  .user-avatar {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  /* Stats mobile layout */
+  .stats-container {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .stat-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Extra small devices */
+  .forum-header {
+    padding: 1rem 0;
+    border-radius: 10px;
+  }
+
+  .category-filters {
+    padding: 0.75rem;
+  }
+
+  .category-badge {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.8rem;
+    margin: 0.1rem !important;
+  }
+
+  .question-card {
+    border-radius: 10px !important;
+  }
+
+  .question-card .card-body {
+    padding: 0.75rem !important;
+  }
+
+  .quill-editor {
+    height: 120px;
+  }
+
+  .ql-toolbar {
+    padding: 0.375rem;
+  }
+
+  .user-avatar {
+    width: 35px !important;
+    height: 35px !important;
+  }
+
+  .stats-container {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .stat-number {
+    font-size: 1rem;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+  }
+}
+
 .question-card:hover {
   transform: translateY(-8px) !important;
   box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2) !important;

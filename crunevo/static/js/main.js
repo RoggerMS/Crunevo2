@@ -1105,24 +1105,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  const bannerInput = document.getElementById('bannerInput');
-  const bannerPreview = document.getElementById('bannerPreview');
-  const saveBannerBtn = document.getElementById('saveBannerBtn');
-  if (bannerInput && bannerPreview) {
-    bannerInput.addEventListener('change', () => {
-      const file = bannerInput.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          bannerPreview.src = e.target.result;
-          if (saveBannerBtn) {
-            saveBannerBtn.classList.remove('d-none');
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
 
   const mainImage = document.getElementById('mainImage');
   if (mainImage) {

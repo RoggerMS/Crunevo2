@@ -23,18 +23,12 @@
       <div class="card border-0 shadow-sm mb-4 profile-header">
         <div class="position-relative">
           <div class="profile-header-bg position-relative" style="height: 200px;">
-  <img src="{{ user.banner_url or url_for('static', filename='img/default.png') }}" id="bannerPreview" class="w-100 h-100 object-fit-cover" alt="Banner">
+  <img src="{{ user.banner_url or url_for('static', filename='img/default.png') }}" class="profile-banner w-100 h-100 object-fit-cover" alt="Banner">
 
   {% if current_user.id == user.id %}
-  <form id="bannerForm" method="POST" enctype="multipart/form-data"
-        action="{{ url_for('auth.update_banner') }}" class="position-absolute end-0 top-0 p-2">
-    {{ csrf.csrf_field() }}
-    <input type="file" name="banner" id="bannerInput" accept="image/*" hidden>
-    <button type="button" class="profile-banner-edit" onclick="document.getElementById('bannerInput').click()">
+  <button type="button" class="profile-banner-edit">
       <i class="bi bi-camera"></i> Cambiar Banner
     </button>
-    <button type="submit" id="saveBannerBtn" class="btn btn-success d-none mt-2">Guardar Banner</button>
-  </form>
   {% endif %}
 </div>
         </div>
