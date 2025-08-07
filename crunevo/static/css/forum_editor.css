@@ -1,5 +1,5 @@
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
+[data-bs-theme="dark"] {
   :root {
     --forum-primary: #818cf8;
     --forum-secondary: #a78bfa;
