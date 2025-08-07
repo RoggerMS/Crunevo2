@@ -57,10 +57,13 @@
                                 <div class="col-md-4">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            {% if item.product.price > 0 %}
-                                            <span class="fs-5 fw-bold text-primary">S/ {{ "%.2f"|format(item.product.price) }}</span>
-                                            {% else %}
+                                            {% set price = item.product.price %}
+                                            {% if price is not none and price > 0 %}
+                                            <span class="fs-5 fw-bold text-primary">S/ {{ "%.2f"|format(price) }}</span>
+                                            {% elif price is not none %}
                                             <span class="fs-5 fw-bold text-success">Gratis</span>
+                                            {% else %}
+                                            <span class="fs-5 fw-bold text-muted">Precio no disponible</span>
                                             {% endif %}
                                             <span class="badge bg-warning ms-1">{{ render_price_credits(item.product) }}</span>
                                         </div>
@@ -93,9 +96,11 @@
                                     </div>
                                     
                                     <!-- Subtotal -->
+                                    {% if price is not none %}
                                     <div class="text-end mt-2">
-                                        <span class="text-muted">Subtotal: S/ {{ "%.2f"|format(item.product.price * item.quantity) }}</span>
+                                        <span class="text-muted">Subtotal: S/ {{ "%.2f"|format(price * item.quantity) }}</span>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -113,22 +118,19 @@
                     
                     <div class="d-flex justify-content-between mb-2">
                         <span>Subtotal</span>
-                        <span>S/ {{ "%.2f"|format(cart_items|sum(attribute='product.price * quantity')) }}</span>
+                        <span>S/ {{ "%.2f"|format(subtotal) }}</span>
                     </div>
-                    
+
                     <div class="d-flex justify-content-between mb-2">
                         <span>Envío</span>
-                        <span>S/ {{ "%.2f"|format(cart_items|sum(attribute='product.shipping_cost * quantity')) }}</span>
+                        <span>S/ {{ "%.2f"|format(shipping_total) }}</span>
                     </div>
-                    
+
                     <hr>
-                    
+
                     <div class="d-flex justify-content-between mb-3">
                         <span class="fw-bold">Total</span>
-                        <span class="fw-bold">S/ {{ "%.2f"|format(
-                            cart_items|sum(attribute='product.price * quantity') + 
-                            cart_items|sum(attribute='product.shipping_cost * quantity')
-                        ) }}</span>
+                        <span class="fw-bold">S/ {{ "%.2f"|format(total) }}</span>
                     </div>
                     
                     <a href="{{ url_for('commerce.checkout') }}" class="btn btn-primary w-100">Proceder al pago</a>
