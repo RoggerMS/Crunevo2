@@ -1228,3 +1228,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Optimized settings page navigation by auto-initializing scripts and moving animations CSS to template for faster load (PR settings-init-fix).
 - Provided default user statistics in personal space settings view to prevent 500 errors and added view tests for main personal space pages. (PR personal-space-settings-fix)
 - Improved profile dark mode and lazy image handling; added Tailwind dark variants, backdrop-filter fallback and IntersectionObserver fixes to mitigate console warnings. (PR perfil-darkmode-console-fix)
+- Added slug-based template application endpoint and modernized personal space template cards with badges, dark mode, and accessible preview buttons; updated JS fetch error handling and tests. (PR personal-template-apply)

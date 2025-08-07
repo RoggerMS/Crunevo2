@@ -18,24 +18,28 @@
 }
 
 .template-card {
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
+    border: 0;
+    border-radius: 1.5rem;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    transition: all 0.3s ease;
-    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
     overflow: hidden;
+    background: #ffffff;
+}
+
+.dark-mode .template-card {
+    background: #1e293b;
+    color: white;
 }
 
 .template-card:hover {
-    border-color: #8b5cf6;
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .template-card.selected {
-    border-color: #8b5cf6;
     background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
 }
 
@@ -299,28 +303,29 @@
         <div class="row" id="templatesGrid">
             <!-- Estudiante Universitario -->
             <div class="col-lg-6 template-item" data-category="academic" data-difficulty="2">
-                <div class="template-card" data-template="university-student">
+                <div class="template-card card shadow-sm hover:shadow-lg transition duration-300 rounded-3xl border-0 bg-white dark:bg-gray-900 p-4" data-template="university-student">
+                    <span class="badge bg-primary-subtle text-primary mb-2">Académica</span>
                     <div class="template-header">
                         <div class="template-icon student">
                             <i class="bi bi-mortarboard"></i>
                         </div>
                         <div>
-                            <h3 class="template-title">Estudiante Universitario</h3>
-                            <p class="template-subtitle">Organización académica completa</p>
+                            <h3 class="template-title text-xl font-bold text-gray-800 dark:text-white">Estudiante Universitario</h3>
+                            <p class="template-subtitle text-sm text-gray-500 dark:text-gray-400">Organización académica completa</p>
                         </div>
                     </div>
-                    <p class="template-description">
-                        Plantilla ideal para estudiantes universitarios que necesitan organizar materias, 
+                    <p class="template-description text-sm text-gray-500 dark:text-gray-400">
+                        Plantilla ideal para estudiantes universitarios que necesitan organizar materias,
                         tareas, exámenes y proyectos de manera eficiente.
                     </p>
-                    <div class="template-blocks">
+                    <div class="template-blocks flex flex-wrap gap-2 mt-2 text-sm">
                         <span class="block-tag">📚 Materias</span>
                         <span class="block-tag">📝 Tareas</span>
                         <span class="block-tag">📅 Calendario</span>
                         <span class="block-tag">🎯 Objetivos</span>
                         <span class="block-tag">📊 Notas</span>
                     </div>
-                    <div class="template-stats">
+                    <div class="template-stats text-sm text-gray-500 dark:text-gray-400">
                         <div class="template-popularity">
                             <i class="bi bi-people me-1"></i>
                             Usado por 1,234 estudiantes
@@ -337,7 +342,7 @@
                         <button class="btn apply-template-btn flex-grow-1" onclick="applyTemplate('university-student')">
                             Aplicar Plantilla
                         </button>
-                        <button class="btn btn-outline-primary" onclick="previewTemplate('university-student')">
+                        <button class="btn btn-outline-primary" onclick="previewTemplate('university-student')" title="Ver plantilla" aria-label="Ver plantilla">
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
@@ -346,28 +351,29 @@
 
             <!-- Preparación de Exámenes -->
             <div class="col-lg-6 template-item" data-category="academic" data-difficulty="3">
-                <div class="template-card" data-template="exam-prep">
+                <div class="template-card card shadow-sm hover:shadow-lg transition duration-300 rounded-3xl border-0 bg-white dark:bg-gray-900 p-4" data-template="exam-prep">
+                    <span class="badge bg-primary-subtle text-primary mb-2">Académica</span>
                     <div class="template-header">
                         <div class="template-icon exam">
                             <i class="bi bi-clipboard-check"></i>
                         </div>
                         <div>
-                            <h3 class="template-title">Preparación de Exámenes</h3>
-                            <p class="template-subtitle">Enfoque intensivo en estudios</p>
+                            <h3 class="template-title text-xl font-bold text-gray-800 dark:text-white">Preparación de Exámenes</h3>
+                            <p class="template-subtitle text-sm text-gray-500 dark:text-gray-400">Enfoque intensivo en estudios</p>
                         </div>
                     </div>
-                    <p class="template-description">
+                    <p class="template-description text-sm text-gray-500 dark:text-gray-400">
                         Diseñada para períodos de exámenes con cronogramas de estudio, 
                         técnicas de repaso y seguimiento de progreso.
                     </p>
-                    <div class="template-blocks">
+                    <div class="template-blocks flex flex-wrap gap-2 mt-2 text-sm">
                         <span class="block-tag">⏰ Cronograma</span>
                         <span class="block-tag">📖 Temas</span>
                         <span class="block-tag">🔄 Repaso</span>
                         <span class="block-tag">📈 Progreso</span>
                         <span class="block-tag">⚡ Recordatorios</span>
                     </div>
-                    <div class="template-stats">
+                    <div class="template-stats text-sm text-gray-500 dark:text-gray-400">
                         <div class="template-popularity">
                             <i class="bi bi-people me-1"></i>
                             Usado por 856 estudiantes
@@ -384,7 +390,7 @@
                         <button class="btn apply-template-btn flex-grow-1" onclick="applyTemplate('exam-prep')">
                             Aplicar Plantilla
                         </button>
-                        <button class="btn btn-outline-primary" onclick="previewTemplate('exam-prep')">
+                        <button class="btn btn-outline-primary" onclick="previewTemplate('exam-prep')" title="Ver plantilla" aria-label="Ver plantilla">
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
@@ -393,28 +399,29 @@
 
             <!-- Investigación Académica -->
             <div class="col-lg-6 template-item" data-category="academic" data-difficulty="4">
-                <div class="template-card" data-template="research">
+                <div class="template-card card shadow-sm hover:shadow-lg transition duration-300 rounded-3xl border-0 bg-white dark:bg-gray-900 p-4" data-template="research">
+                    <span class="badge bg-primary-subtle text-primary mb-2">Académica</span>
                     <div class="template-header">
                         <div class="template-icon research">
                             <i class="bi bi-search"></i>
                         </div>
                         <div>
-                            <h3 class="template-title">Investigación Académica</h3>
-                            <p class="template-subtitle">Gestión de proyectos de investigación</p>
+                            <h3 class="template-title text-xl font-bold text-gray-800 dark:text-white">Investigación Académica</h3>
+                            <p class="template-subtitle text-sm text-gray-500 dark:text-gray-400">Gestión de proyectos de investigación</p>
                         </div>
                     </div>
-                    <p class="template-description">
+                    <p class="template-description text-sm text-gray-500 dark:text-gray-400">
                         Para investigadores y estudiantes de posgrado que manejan múltiples fuentes, 
                         referencias y fases de investigación.
                     </p>
-                    <div class="template-blocks">
+                    <div class="template-blocks flex flex-wrap gap-2 mt-2 text-sm">
                         <span class="block-tag">📚 Referencias</span>
                         <span class="block-tag">🔬 Metodología</span>
                         <span class="block-tag">📊 Datos</span>
                         <span class="block-tag">✍️ Escritura</span>
                         <span class="block-tag">📋 Revisiones</span>
                     </div>
-                    <div class="template-stats">
+                    <div class="template-stats text-sm text-gray-500 dark:text-gray-400">
                         <div class="template-popularity">
                             <i class="bi bi-people me-1"></i>
                             Usado por 432 investigadores
@@ -431,7 +438,7 @@
                         <button class="btn apply-template-btn flex-grow-1" onclick="applyTemplate('research')">
                             Aplicar Plantilla
                         </button>
-                        <button class="btn btn-outline-primary" onclick="previewTemplate('research')">
+                        <button class="btn btn-outline-primary" onclick="previewTemplate('research')" title="Ver plantilla" aria-label="Ver plantilla">
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
@@ -440,28 +447,29 @@
 
             <!-- Gestión de Proyectos -->
             <div class="col-lg-6 template-item" data-category="project" data-difficulty="3">
-                <div class="template-card" data-template="project-management">
+                <div class="template-card card shadow-sm hover:shadow-lg transition duration-300 rounded-3xl border-0 bg-white dark:bg-gray-900 p-4" data-template="project-management">
+                    <span class="badge bg-success-subtle text-success mb-2">Proyectos</span>
                     <div class="template-header">
                         <div class="template-icon project">
                             <i class="bi bi-kanban"></i>
                         </div>
                         <div>
-                            <h3 class="template-title">Gestión de Proyectos</h3>
-                            <p class="template-subtitle">Metodología ágil para proyectos</p>
+                            <h3 class="template-title text-xl font-bold text-gray-800 dark:text-white">Gestión de Proyectos</h3>
+                            <p class="template-subtitle text-sm text-gray-500 dark:text-gray-400">Metodología ágil para proyectos</p>
                         </div>
                     </div>
-                    <p class="template-description">
+                    <p class="template-description text-sm text-gray-500 dark:text-gray-400">
                         Plantilla basada en metodologías ágiles para gestionar proyectos académicos 
                         o profesionales con equipos de trabajo.
                     </p>
-                    <div class="template-blocks">
+                    <div class="template-blocks flex flex-wrap gap-2 mt-2 text-sm">
                         <span class="block-tag">📋 Backlog</span>
                         <span class="block-tag">🏃 Sprints</span>
                         <span class="block-tag">👥 Equipo</span>
                         <span class="block-tag">📈 Métricas</span>
                         <span class="block-tag">🎯 Entregables</span>
                     </div>
-                    <div class="template-stats">
+                    <div class="template-stats text-sm text-gray-500 dark:text-gray-400">
                         <div class="template-popularity">
                             <i class="bi bi-people me-1"></i>
                             Usado por 678 equipos
@@ -478,7 +486,7 @@
                         <button class="btn apply-template-btn flex-grow-1" onclick="applyTemplate('project-management')">
                             Aplicar Plantilla
                         </button>
-                        <button class="btn btn-outline-primary" onclick="previewTemplate('project-management')">
+                        <button class="btn btn-outline-primary" onclick="previewTemplate('project-management')" title="Ver plantilla" aria-label="Ver plantilla">
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
@@ -487,28 +495,29 @@
 
             <!-- Tesis y Trabajos de Grado -->
             <div class="col-lg-6 template-item" data-category="academic" data-difficulty="5">
-                <div class="template-card" data-template="thesis">
+                <div class="template-card card shadow-sm hover:shadow-lg transition duration-300 rounded-3xl border-0 bg-white dark:bg-gray-900 p-4" data-template="thesis">
+                    <span class="badge bg-primary-subtle text-primary mb-2">Académica</span>
                     <div class="template-header">
                         <div class="template-icon thesis">
                             <i class="bi bi-journal-text"></i>
                         </div>
                         <div>
-                            <h3 class="template-title">Tesis y Trabajos de Grado</h3>
-                            <p class="template-subtitle">Gestión completa de tesis</p>
+                            <h3 class="template-title text-xl font-bold text-gray-800 dark:text-white">Tesis y Trabajos de Grado</h3>
+                            <p class="template-subtitle text-sm text-gray-500 dark:text-gray-400">Gestión completa de tesis</p>
                         </div>
                     </div>
-                    <p class="template-description">
+                    <p class="template-description text-sm text-gray-500 dark:text-gray-400">
                         Plantilla especializada para la elaboración de tesis, trabajos de grado 
                         y proyectos de investigación de largo plazo.
                     </p>
-                    <div class="template-blocks">
+                    <div class="template-blocks flex flex-wrap gap-2 mt-2 text-sm">
                         <span class="block-tag">📝 Capítulos</span>
                         <span class="block-tag">📚 Bibliografía</span>
                         <span class="block-tag">📊 Análisis</span>
                         <span class="block-tag">👨‍🏫 Asesorías</span>
                         <span class="block-tag">📅 Cronograma</span>
                     </div>
-                    <div class="template-stats">
+                    <div class="template-stats text-sm text-gray-500 dark:text-gray-400">
                         <div class="template-popularity">
                             <i class="bi bi-people me-1"></i>
                             Usado por 289 tesistas
@@ -525,7 +534,7 @@
                         <button class="btn apply-template-btn flex-grow-1" onclick="applyTemplate('thesis')">
                             Aplicar Plantilla
                         </button>
-                        <button class="btn btn-outline-primary" onclick="previewTemplate('thesis')">
+                        <button class="btn btn-outline-primary" onclick="previewTemplate('thesis')" title="Ver plantilla" aria-label="Ver plantilla">
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
@@ -534,28 +543,29 @@
 
             <!-- Curso Online -->
             <div class="col-lg-6 template-item" data-category="personal" data-difficulty="2">
-                <div class="template-card" data-template="online-course">
+                <div class="template-card card shadow-sm hover:shadow-lg transition duration-300 rounded-3xl border-0 bg-white dark:bg-gray-900 p-4" data-template="online-course">
+                    <span class="badge bg-secondary-subtle text-secondary mb-2">Personal</span>
                     <div class="template-header">
                         <div class="template-icon course">
                             <i class="bi bi-laptop"></i>
                         </div>
                         <div>
-                            <h3 class="template-title">Curso Online</h3>
-                            <p class="template-subtitle">Aprendizaje autodidacta</p>
+                            <h3 class="template-title text-xl font-bold text-gray-800 dark:text-white">Curso Online</h3>
+                            <p class="template-subtitle text-sm text-gray-500 dark:text-gray-400">Aprendizaje autodidacta</p>
                         </div>
                     </div>
-                    <p class="template-description">
+                    <p class="template-description text-sm text-gray-500 dark:text-gray-400">
                         Para estudiantes que toman cursos online, MOOCs o programas de 
                         certificación con seguimiento de progreso.
                     </p>
-                    <div class="template-blocks">
+                    <div class="template-blocks flex flex-wrap gap-2 mt-2 text-sm">
                         <span class="block-tag">🎥 Lecciones</span>
                         <span class="block-tag">📚 Recursos</span>
                         <span class="block-tag">✅ Progreso</span>
                         <span class="block-tag">🏆 Certificados</span>
                         <span class="block-tag">💡 Notas</span>
                     </div>
-                    <div class="template-stats">
+                    <div class="template-stats text-sm text-gray-500 dark:text-gray-400">
                         <div class="template-popularity">
                             <i class="bi bi-people me-1"></i>
                             Usado por 1,567 estudiantes
@@ -572,7 +582,7 @@
                         <button class="btn apply-template-btn flex-grow-1" onclick="applyTemplate('online-course')">
                             Aplicar Plantilla
                         </button>
-                        <button class="btn btn-outline-primary" onclick="previewTemplate('online-course')">
+                        <button class="btn btn-outline-primary" onclick="previewTemplate('online-course')" title="Ver plantilla" aria-label="Ver plantilla">
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
@@ -664,16 +674,21 @@ function filterTemplates() {
 
 function previewTemplate(templateId) {
     currentTemplate = templateId;
-    
+
     // Obtener datos de la plantilla
     fetch(`/espacio-personal/api/template-preview/${templateId}`)
-        .then(response => response.json())
+        .then(async response => {
+            if (!response.ok) {
+                throw new Error('Vista previa no disponible');
+            }
+            return response.json();
+        })
         .then(data => {
             const previewContent = document.getElementById('previewContent');
             previewContent.innerHTML = generatePreviewHTML(data);
-            
+
             document.getElementById('applyFromPreview').onclick = () => applyTemplate(templateId);
-            
+
             new bootstrap.Modal(document.getElementById('previewModal')).show();
         })
         .catch(error => {
@@ -707,27 +722,31 @@ function generatePreviewHTML(templateData) {
 
 function applyTemplate(templateId) {
     if (confirm('¿Estás seguro de que quieres aplicar esta plantilla? Esto creará nuevos bloques en tu espacio personal.')) {
-        fetch('/espacio-personal/api/apply-template', {
+        fetch(`/espacio-personal/plantillas/aplicar/${templateId}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'X-CSRFToken': getCsrfToken()
-            },
-            body: JSON.stringify({ template_id: templateId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('¡Plantilla aplicada exitosamente!');
-                window.location.href = '/espacio-personal';
-            } else {
-                alert('Error al aplicar la plantilla: ' + data.message);
             }
         })
-        .catch(error => {
-            console.error('Error al aplicar plantilla:', error);
-            alert('Error al aplicar la plantilla');
-        });
+            .then(async response => {
+                if (!response.ok) {
+                    const data = await response.json().catch(() => ({}));
+                    throw new Error(data.message || 'Error al aplicar la plantilla');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert('¡Plantilla aplicada exitosamente!');
+                    window.location.href = '/espacio-personal';
+                } else {
+                    alert('Error al aplicar la plantilla: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error al aplicar plantilla:', error);
+                alert('Error al aplicar la plantilla: ' + error.message);
+            });
     }
 }
 
