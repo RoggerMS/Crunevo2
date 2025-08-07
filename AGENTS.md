@@ -1229,3 +1229,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Provided default user statistics in personal space settings view to prevent 500 errors and added view tests for main personal space pages. (PR personal-space-settings-fix)
 - Improved profile dark mode and lazy image handling; added Tailwind dark variants, backdrop-filter fallback and IntersectionObserver fixes to mitigate console warnings. (PR perfil-darkmode-console-fix)
 - Added slug-based template application endpoint and modernized personal space template cards with badges, dark mode, and accessible preview buttons; updated JS fetch error handling and tests. (PR personal-template-apply)
+
+- Adjusted profile sidebar username and career text to inherit theme colors, ensuring readability on light and dark backgrounds. (PR perfil-sidebar-text-color)

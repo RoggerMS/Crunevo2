@@ -1,4 +1,4 @@
-<div class="sidebar-left bg-white dark:bg-gray-800 rounded-4 shadow-sm border-0 h-100">
+<div class="sidebar-left bg-white rounded-4 shadow-sm border-0 h-100">
   <div class="p-4">
     <!-- User Profile Section -->
     <div class="user-profile-section mb-4 pb-4 border-bottom">
@@ -9,8 +9,8 @@
                width="56"
                height="56" loading="lazy">
         <div class="flex-grow-1">
-            <h6 class="mb-1 fw-bold text-dark dark:text-gray-100 username">{{ current_user.username }}</h6>
-            <p class="small text-muted dark:text-gray-400 mb-0">{{ current_user.career or 'Estudiante' }}</p>
+            <h6 class="mb-1 fw-bold username">{{ current_user.username }}</h6>
+            <p class="small text-muted mb-0">{{ current_user.career or 'Estudiante' }}</p>
         </div>
       </div>
 
