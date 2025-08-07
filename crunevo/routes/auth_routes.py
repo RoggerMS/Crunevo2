@@ -463,9 +463,20 @@ def view_profile(username):
     # Calcular estadísticas para las pestañas
     total_downloads = sum(getattr(note, "downloads", 0) for note in user_notes)
     total_likes = sum(getattr(note, "likes", 0) for note in user_notes)
-    ratings = [
-        getattr(note, "rating") for note in user_notes if getattr(note, "rating", None)
-    ]
+
+    ratings = []
+    for note in user_notes:
+        rating = getattr(note, "rating", None)
+        if isinstance(rating, (int, float)):
+            ratings.append(rating)
+        elif isinstance(rating, (list, tuple, set)):
+            ratings.extend(r for r in rating if isinstance(r, (int, float)))
+        elif isinstance(rating, str):
+            try:
+                ratings.append(float(rating))
+            except ValueError:
+                pass
+
     average_rating = sum(ratings) / len(ratings) if ratings else 0
 
     # Datos de tienda si está habilitada

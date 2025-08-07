@@ -1,4 +1,20 @@
-from crunevo.models import User
+from crunevo.models import Note, User
+from flask import template_rendered
+import contextlib
+
+
+@contextlib.contextmanager
+def captured_templates(app):
+    recorded = []
+
+    def record(sender, template, context, **extra):
+        recorded.append((template, context))
+
+    template_rendered.connect(record, app)
+    try:
+        yield recorded
+    finally:
+        template_rendered.disconnect(record, app)
 
 
 def create_user(username, email):
@@ -35,3 +51,21 @@ def test_view_profile_null_verification_level(client, db_session):
     client.post("/login", data={"username": "charlie", "password": "pass"})
     resp = client.get("/perfil/charlie")
     assert resp.status_code == 200
+
+
+def test_view_profile_with_note_ratings(client, db_session, app):
+    user = create_user("dave", "dave@example.com")
+    db_session.add(user)
+    db_session.commit()
+
+    note = Note(title="n1", user_id=user.id)
+    note.rating = [4, 5]
+    db_session.add(note)
+    db_session.commit()
+
+    client.post("/login", data={"username": "dave", "password": "pass"})
+    with captured_templates(app) as templates:
+        resp = client.get("/perfil/dave")
+        assert resp.status_code == 200
+        template, context = templates[0]
+        assert context["average_rating"] == 4.5
