@@ -245,7 +245,9 @@ def view_profile(username):
         current_app.logger.exception("Failed to count notes for %s", username)
         db.session.rollback()
         notes_count = 0
-    activity_total = len(user.post_comments or []) + len(user.posts or []) + notes_count
+    post_comments = getattr(user, "post_comments", []) or []
+    posts_list = getattr(user, "posts", []) or []
+    activity_total = len(post_comments) + len(posts_list) + notes_count
     participation_percentage = (
         min(100, int((activity_total / 30) * 100)) if activity_total else 0
     )
@@ -453,16 +455,35 @@ def view_profile(username):
             )
 
     # Obtener datos adicionales para las pestañas
-    user_notes = (
-        Note.query.filter_by(user_id=user.id).order_by(Note.created_at.desc()).all()
-    )
-    user_posts = (
-        Post.query.filter_by(author_id=user.id).order_by(Post.created_at.desc()).all()
-    )
+    try:
+        user_notes = (
+            Note.query.filter_by(user_id=user.id).order_by(Note.created_at.desc()).all()
+        )
+    except (ProgrammingError, OperationalError):
+        current_app.logger.exception("Failed to load notes for %s", username)
+        db.session.rollback()
+        user_notes = []
+    try:
+        user_posts = (
+            Post.query.filter_by(author_id=user.id)
+            .order_by(Post.created_at.desc())
+            .all()
+        )
+    except (ProgrammingError, OperationalError):
+        current_app.logger.exception("Failed to load posts for %s", username)
+        db.session.rollback()
+        user_posts = []
 
     # Calcular estadísticas para las pestañas
-    total_downloads = sum(getattr(note, "downloads", 0) for note in user_notes)
-    total_likes = sum(getattr(note, "likes", 0) for note in user_notes)
+    total_downloads = 0
+    total_likes = 0
+    for note in user_notes:
+        downloads = getattr(note, "downloads", 0)
+        if isinstance(downloads, (int, float)):
+            total_downloads += downloads
+        likes = getattr(note, "likes", 0)
+        if isinstance(likes, (int, float)):
+            total_likes += likes
 
     ratings = []
     for note in user_notes:
