@@ -1,0 +1,138 @@
+<div class="tab-pane fade {% if tab == 'compras' %}show active{% endif %}" id="compras" role="tabpanel" aria-labelledby="compras-tab">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="mb-0">
+      <i class="fas fa-shopping-cart text-primary me-2"></i>
+      Mis Compras
+    </h5>
+    <div class="btn-group btn-group-sm" role="group">
+      <a href="{{ url_for('auth.perfil', username=user.username, tab='compras') }}" 
+         class="btn {% if not request.args.get('filter') %}btn-primary{% else %}btn-outline-primary{% endif %}">Todas</a>
+      <a href="{{ url_for('auth.perfil', username=user.username, tab='compras', filter='recent') }}" 
+         class="btn {% if request.args.get('filter') == 'recent' %}btn-primary{% else %}btn-outline-primary{% endif %}">Recientes</a>
+    </div>
+  </div>
+
+  {% if purchases %}
+    <div class="row g-3">
+      {% for purchase in purchases %}
+        <div class="col-12">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-md-2 text-center">
+                  {% if purchase.product.image_url %}
+                    <img src="{{ purchase.product.image_url }}" 
+                         class="img-fluid rounded" 
+                         style="max-height: 80px; max-width: 80px; object-fit: cover;" 
+                         alt="{{ purchase.product.name }}">
+                  {% else %}
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                         style="height: 80px; width: 80px;">
+                      <i class="fas fa-box text-muted"></i>
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="col-md-6">
+                  <h6 class="mb-1">{{ purchase.product.name }}</h6>
+                  <p class="text-muted mb-1 small">{{ purchase.product.description[:100] }}{% if purchase.product.description|length > 100 %}...{% endif %}</p>
+                  <small class="text-muted">
+                    <i class="fas fa-calendar me-1"></i>
+                    Comprado el {{ purchase.timestamp.strftime('%d/%m/%Y') }}
+                  </small>
+                </div>
+                <div class="col-md-2 text-center">
+                  <div class="fw-bold text-primary">
+                    {% if purchase.product.price_credits > 0 %}
+                      <i class="fas fa-coins me-1"></i>{{ purchase.product.price_credits }} Crolars
+                    {% endif %}
+                    {% if purchase.product.price_soles > 0 %}
+                      <div class="small">S/ {{ "%.2f"|format(purchase.product.price_soles) }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="col-md-2 text-end">
+                  <div class="btn-group-vertical btn-group-sm">
+                    <a href="{{ url_for('commerce.product_detail', id=purchase.product.id) }}" 
+                       class="btn btn-outline-primary btn-sm">
+                      <i class="fas fa-eye me-1"></i>Ver producto
+                    </a>
+                    {% if purchase.product.type == 'digital' and purchase.download_url %}
+                      <a href="{{ purchase.download_url }}" 
+                         class="btn btn-success btn-sm" 
+                         target="_blank">
+                        <i class="fas fa-download me-1"></i>Descargar
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Paginación si es necesaria -->
+    {% if purchases|length >= 10 %}
+      <div class="d-flex justify-content-center mt-4">
+        <nav>
+          <ul class="pagination pagination-sm">
+            <li class="page-item disabled">
+              <span class="page-link">Anterior</span>
+            </li>
+            <li class="page-item active">
+              <span class="page-link">1</span>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">Siguiente</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="text-center py-5">
+      <div class="mb-3">
+        <i class="fas fa-shopping-cart text-muted" style="font-size: 4rem;"></i>
+      </div>
+      <h5 class="text-muted mb-2">No tienes compras aún</h5>
+      <p class="text-muted mb-4">¡Explora nuestra tienda y encuentra productos increíbles!</p>
+      <a href="{{ url_for('commerce.marketplace') }}" class="btn btn-primary">
+        <i class="fas fa-store me-2"></i>Ir a la tienda
+      </a>
+    </div>
+  {% endif %}
+
+  <!-- Estadísticas de compras -->
+  {% if purchases %}
+    <div class="row g-3 mt-4">
+      <div class="col-md-4">
+        <div class="card bg-primary text-white">
+          <div class="card-body text-center">
+            <i class="fas fa-shopping-bag mb-2" style="font-size: 2rem;"></i>
+            <h4 class="mb-0">{{ purchases|length }}</h4>
+            <small>Total de compras</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card bg-success text-white">
+          <div class="card-body text-center">
+            <i class="fas fa-coins mb-2" style="font-size: 2rem;"></i>
+            <h4 class="mb-0">{{ purchases|sum(attribute='product.price_credits') or 0 }}</h4>
+            <small>Crolars gastados</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card bg-info text-white">
+          <div class="card-body text-center">
+            <i class="fas fa-calendar mb-2" style="font-size: 2rem;"></i>
+            <h4 class="mb-0">{{ purchases[0].timestamp.strftime('%m/%Y') if purchases else '-' }}</h4>
+            <small>Última compra</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>

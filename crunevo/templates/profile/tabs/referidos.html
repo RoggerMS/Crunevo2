@@ -1,0 +1,266 @@
+<div class="tab-pane fade {% if tab == 'referidos' %}show active{% endif %}" id="referidos" role="tabpanel" aria-labelledby="referidos-tab">
+  <!-- Header del programa de referidos -->
+  <div class="card mb-4 bg-gradient-primary text-white">
+    <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h5 class="mb-1">
+            <i class="fas fa-users me-2"></i>
+            Programa de Referidos
+          </h5>
+          <p class="mb-0">¡Invita amigos y gana Crolars por cada registro exitoso!</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+          <div class="btn-group">
+            <button class="btn btn-light btn-sm" onclick="copyReferralLink()">
+              <i class="fas fa-link me-1"></i>Copiar enlace
+            </button>
+            <button class="btn btn-outline-light btn-sm" onclick="shareReferral()">
+              <i class="fas fa-share me-1"></i>Compartir
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estadísticas de referidos -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <i class="fas fa-user-plus text-primary mb-2" style="font-size: 2.5rem;"></i>
+          <h3 class="mb-1">{{ total_referidos or 0 }}</h3>
+          <small class="text-muted">Total invitados</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <i class="fas fa-check-circle text-success mb-2" style="font-size: 2.5rem;"></i>
+          <h3 class="mb-1">{{ referidos_completados or 0 }}</h3>
+          <small class="text-muted">Referidos activos</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <i class="fas fa-hourglass-half text-warning mb-2" style="font-size: 2.5rem;"></i>
+          <h3 class="mb-1">{{ (total_referidos or 0) - (referidos_completados or 0) }}</h3>
+          <small class="text-muted">Pendientes</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <i class="fas fa-coins text-success mb-2" style="font-size: 2.5rem;"></i>
+          <h3 class="mb-1">{{ creditos_referidos or 0 }}</h3>
+          <small class="text-muted">Crolars ganados</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progreso hacia el siguiente objetivo -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h6 class="mb-3">
+        <i class="fas fa-target text-primary me-2"></i>
+        Próximo objetivo: 5 referidos activos
+      </h6>
+      <div class="progress mb-2" style="height: 12px;">
+        {% set progress_percent = ((referidos_completados or 0) / 5 * 100) if (referidos_completados or 0) <= 5 else 100 %}
+        <div class="progress-bar bg-gradient-success" 
+             style="width: {{ progress_percent }}%"></div>
+      </div>
+      <div class="d-flex justify-content-between">
+        <small class="text-muted">{{ referidos_completados or 0 }}/5 completados</small>
+        <small class="text-success fw-bold">+500 Crolars bonus</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enlace de referido -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h6 class="mb-3">
+        <i class="fas fa-link text-primary me-2"></i>
+        Tu enlace de referido
+      </h6>
+      <div class="input-group">
+        <input type="text" class="form-control" readonly 
+               value="{{ enlace_referido or '' }}" 
+               id="referralLink">
+        <button class="btn btn-outline-primary" type="button" onclick="copyReferralLink()">
+          <i class="fas fa-copy me-1"></i>Copiar
+        </button>
+      </div>
+      <small class="text-muted mt-2 d-block">
+        Comparte este enlace y gana 100 Crolars por cada amigo que se registre y complete su perfil.
+      </small>
+    </div>
+  </div>
+
+  <!-- Cómo funciona -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h6 class="mb-3">
+        <i class="fas fa-question-circle text-primary me-2"></i>
+        ¿Cómo funciona?
+      </h6>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="text-center">
+            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                 style="width: 50px; height: 50px;">
+              <span class="fw-bold">1</span>
+            </div>
+            <h6 class="small">Comparte tu enlace</h6>
+            <p class="small text-muted">Envía tu enlace único a amigos y familiares</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="text-center">
+            <div class="bg-warning text-dark rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                 style="width: 50px; height: 50px;">
+              <span class="fw-bold">2</span>
+            </div>
+            <h6 class="small">Se registran</h6>
+            <p class="small text-muted">Tus amigos se registran usando tu enlace</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="text-center">
+            <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                 style="width: 50px; height: 50px;">
+              <span class="fw-bold">3</span>
+            </div>
+            <h6 class="small">Ganas Crolars</h6>
+            <p class="small text-muted">Recibes 100 Crolars por cada referido exitoso</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de referidos -->
+  {% if referidos %}
+    <div class="card">
+      <div class="card-header">
+        <h6 class="mb-0">
+          <i class="fas fa-list text-primary me-2"></i>
+          Mis Referidos ({{ referidos|length }})
+        </h6>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Usuario</th>
+                <th>Fecha de registro</th>
+                <th>Estado</th>
+                <th>Crolars ganados</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for referido in referidos %}
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <img src="{{ referido.invitado.avatar_url or url_for('static', filename='img/default-avatar.png') }}"
+                           class="rounded-circle me-2" width="32" height="32" alt="avatar">
+                      <div>
+                        <div class="fw-medium">{{ referido.invitado.username }}</div>
+                        <small class="text-muted">{{ referido.invitado.email }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <small>{{ referido.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</small>
+                  </td>
+                  <td>
+                    {% if referido.completado %}
+                      <span class="badge bg-success">
+                        <i class="fas fa-check me-1"></i>Activo
+                      </span>
+                    {% else %}
+                      <span class="badge bg-warning text-dark">
+                        <i class="fas fa-clock me-1"></i>Pendiente
+                      </span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if referido.completado %}
+                      <span class="text-success fw-bold">
+                        <i class="fas fa-coins me-1"></i>+100
+                      </span>
+                    {% else %}
+                      <span class="text-muted">-</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="text-center py-5">
+      <div class="mb-3">
+        <i class="fas fa-users text-muted" style="font-size: 4rem;"></i>
+      </div>
+      <h5 class="text-muted mb-2">Aún no tienes referidos</h5>
+      <p class="text-muted mb-4">¡Comparte tu enlace y comienza a ganar Crolars!</p>
+      <button class="btn btn-primary" onclick="copyReferralLink()">
+        <i class="fas fa-link me-2"></i>Copiar mi enlace
+      </button>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+function copyReferralLink() {
+  const linkInput = document.getElementById('referralLink');
+  if (linkInput) {
+    linkInput.select();
+    linkInput.setSelectionRange(0, 99999); // Para móviles
+    
+    try {
+      document.execCommand('copy');
+      // Mostrar notificación de éxito
+      showToast('¡Enlace copiado!', 'El enlace de referido ha sido copiado al portapapeles.', 'success');
+    } catch (err) {
+      console.error('Error al copiar:', err);
+      showToast('Error', 'No se pudo copiar el enlace. Inténtalo manualmente.', 'error');
+    }
+  }
+}
+
+function shareReferral() {
+  const referralLink = document.getElementById('referralLink').value;
+  const shareText = '¡Únete a Crunevo usando mi enlace de referido y descubre una nueva forma de aprender!';
+  
+  if (navigator.share) {
+    navigator.share({
+      title: 'Únete a Crunevo',
+      text: shareText,
+      url: referralLink
+    }).catch(err => console.log('Error al compartir:', err));
+  } else {
+    // Fallback para navegadores que no soportan Web Share API
+    const shareUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + referralLink)}`;
+    window.open(shareUrl, '_blank');
+  }
+}
+
+function showToast(title, message, type) {
+  // Función auxiliar para mostrar notificaciones
+  // Puedes implementar tu sistema de notificaciones aquí
+  alert(title + ': ' + message);
+}
+</script>

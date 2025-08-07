@@ -1,0 +1,231 @@
+<div class="tab-pane fade {% if tab == 'misiones' %}show active{% endif %}" id="misiones" role="tabpanel" aria-labelledby="misiones-tab">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="mb-0">
+      <i class="fas fa-bullseye text-primary me-2"></i>
+      Mis Misiones
+    </h5>
+    <div class="btn-group btn-group-sm" role="group">
+      <button class="btn btn-primary" data-filter="all">Todas</button>
+      <button class="btn btn-outline-primary" data-filter="active">Activas</button>
+      <button class="btn btn-outline-primary" data-filter="completed">Completadas</button>
+    </div>
+  </div>
+
+  <!-- Estadísticas de misiones -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white">
+        <div class="card-body text-center">
+          <i class="fas fa-tasks mb-2" style="font-size: 2rem;"></i>
+          <h4 class="mb-0">{{ misiones|length if misiones else 0 }}</h4>
+          <small>Total misiones</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success text-white">
+        <div class="card-body text-center">
+          <i class="fas fa-check-circle mb-2" style="font-size: 2rem;"></i>
+          <h4 class="mb-0">
+            {{ (progresos.values() | selectattr('completada') | list | length) if progresos else 0 }}
+          </h4>
+          <small>Completadas</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-warning text-dark">
+        <div class="card-body text-center">
+          <i class="fas fa-hourglass-half mb-2" style="font-size: 2rem;"></i>
+          <h4 class="mb-0">
+            {{ (progresos.values() | rejectattr('completada') | list | length) if progresos else 0 }}
+          </h4>
+          <small>En progreso</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-info text-white">
+        <div class="card-body text-center">
+          <i class="fas fa-coins mb-2" style="font-size: 2rem;"></i>
+          <h4 class="mb-0">
+            {% set total_credits = 0 %}
+            {% for mission in misiones or [] %}
+              {% set progress = progresos.get(mission.id) if progresos else none %}
+              {% if progress and progress.reclamada %}
+                {% set total_credits = total_credits + (mission.credit_reward or 0) %}
+              {% endif %}
+            {% endfor %}
+            {{ total_credits }}
+          </h4>
+          <small>Crolars ganados</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de misiones -->
+  {% if misiones %}
+    <div class="missions-container">
+      {% for mision in misiones %}
+        {% set progreso = progresos.get(mision.id) if progresos else none %}
+        <div class="card mb-3 mission-card" 
+             data-status="{% if progreso and progreso.completada %}completed{% else %}active{% endif %}">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-md-1 text-center">
+                {% if progreso and progreso.reclamada %}
+                  <i class="fas fa-check-circle text-success" style="font-size: 2rem;"></i>
+                {% elif progreso and progreso.completada %}
+                  <i class="fas fa-gift text-warning" style="font-size: 2rem;"></i>
+                {% else %}
+                  <i class="fas fa-bullseye text-primary" style="font-size: 2rem;"></i>
+                {% endif %}
+              </div>
+              <div class="col-md-7">
+                <h6 class="mb-1">{{ mision.description }}</h6>
+                <p class="text-muted mb-2 small">{{ mision.long_description or 'Completa esta misión para ganar crolars' }}</p>
+                <div class="d-flex align-items-center gap-3">
+                  <small class="text-muted">
+                    <i class="fas fa-target me-1"></i>
+                    Meta: {{ mision.goal }}
+                  </small>
+                  <small class="text-success">
+                    <i class="fas fa-coins me-1"></i>
+                    +{{ mision.credit_reward }} Crolars
+                  </small>
+                </div>
+              </div>
+              <div class="col-md-2">
+                {% if progreso %}
+                  <div class="progress mb-2" style="height: 8px;">
+                    <div class="progress-bar {% if progreso.completada %}bg-success{% else %}bg-primary{% endif %}" 
+                         style="width: {{ (progreso.progreso / mision.goal * 100) if mision.goal > 0 else 0 }}%"></div>
+                  </div>
+                  <small class="text-muted">{{ progreso.progreso }}/{{ mision.goal }}</small>
+                {% else %}
+                  <div class="progress mb-2" style="height: 8px;">
+                    <div class="progress-bar bg-secondary" style="width: 0%"></div>
+                  </div>
+                  <small class="text-muted">0/{{ mision.goal }}</small>
+                {% endif %}
+              </div>
+              <div class="col-md-2 text-end">
+                {% if progreso %}
+                  {% if progreso.reclamada %}
+                    <span class="badge bg-success">
+                      <i class="fas fa-check me-1"></i>Reclamada
+                    </span>
+                  {% elif progreso.completada %}
+                    <form method="post" action="{{ url_for('missions.reclamar_mision', mission_id=mision.id) }}" class="d-inline">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                      <button type="submit" class="btn btn-success btn-sm">
+                        <i class="fas fa-gift me-1"></i>Reclamar
+                      </button>
+                    </form>
+                  {% else %}
+                    <span class="badge bg-warning text-dark">
+                      <i class="fas fa-clock me-1"></i>En progreso
+                    </span>
+                  {% endif %}
+                {% else %}
+                  <span class="badge bg-secondary">
+                    <i class="fas fa-play me-1"></i>Iniciar
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-5">
+      <div class="mb-3">
+        <i class="fas fa-bullseye text-muted" style="font-size: 4rem;"></i>
+      </div>
+      <h5 class="text-muted mb-2">No hay misiones disponibles</h5>
+      <p class="text-muted mb-4">Las misiones aparecerán aquí cuando estén disponibles.</p>
+    </div>
+  {% endif %}
+
+  <!-- Misiones grupales -->
+  {% if group_missions %}
+    <div class="mt-5">
+      <h6 class="mb-3">
+        <i class="fas fa-users text-primary me-2"></i>
+        Misiones Grupales
+      </h6>
+      {% for group_mission in group_missions %}
+        {% set group_prog = group_progress.get(group_mission.id) if group_progress else none %}
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <h6 class="mb-1">{{ group_mission.description }}</h6>
+                <p class="text-muted mb-2 small">Misión grupal con {{ group_mission.participants|length }} participantes</p>
+                <div class="progress mb-2" style="height: 8px;">
+                  {% if group_prog %}
+                    <div class="progress-bar bg-info" 
+                         style="width: {{ (group_prog.progreso / group_mission.goal * 100) if group_mission.goal > 0 else 0 }}%"></div>
+                  {% else %}
+                    <div class="progress-bar bg-secondary" style="width: 0%"></div>
+                  {% endif %}
+                </div>
+                <small class="text-muted">
+                  Progreso: {{ group_prog.progreso if group_prog else 0 }}/{{ group_mission.goal }}
+                </small>
+              </div>
+              <div class="col-md-4 text-end">
+                <div class="text-success fw-bold">
+                  <i class="fas fa-coins me-1"></i>+{{ group_mission.credit_reward }} Crolars
+                </div>
+                {% if group_prog and group_prog.completada %}
+                  <span class="badge bg-success mt-1">
+                    <i class="fas fa-check me-1"></i>Completada
+                  </span>
+                {% else %}
+                  <span class="badge bg-info mt-1">
+                    <i class="fas fa-users me-1"></i>En progreso
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+<script>
+// Filtros para misiones
+document.addEventListener('DOMContentLoaded', function() {
+  const filterButtons = document.querySelectorAll('[data-filter]');
+  const missionCards = document.querySelectorAll('.mission-card');
+  
+  filterButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const filter = this.getAttribute('data-filter');
+      
+      // Actualizar botones activos
+      filterButtons.forEach(btn => {
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-outline-primary');
+      });
+      this.classList.remove('btn-outline-primary');
+      this.classList.add('btn-primary');
+      
+      // Filtrar misiones
+      missionCards.forEach(card => {
+        const status = card.getAttribute('data-status');
+        if (filter === 'all' || status === filter) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+});
+</script>

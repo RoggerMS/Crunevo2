@@ -138,34 +138,64 @@
       <!-- Profile Navigation -->
       <div class="card border-0 shadow-sm mb-4">
         <div class="card-body p-0">
-          <ul class="nav nav-tabs nav-fill border-0" id="profileTabs" role="tablist">
+          <ul class="nav nav-tabs nav-fill border-0 bg-light rounded-top" id="profileTabs" role="tablist" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
             <li class="nav-item" role="presentation">
-              <button class="nav-link {% if not tab or tab == 'publicaciones' %}active{% endif %}" 
+              <button class="nav-link text-white {% if not tab or tab == 'publicaciones' %}active bg-white text-primary{% endif %}" 
                       id="publicaciones-tab" data-bs-toggle="tab" data-bs-target="#publicaciones" 
-                      type="button" role="tab" aria-controls="publicaciones" aria-selected="true">
+                      type="button" role="tab" aria-controls="publicaciones" aria-selected="true"
+                      style="border: none; transition: all 0.3s ease;">
                 <i class="fas fa-newspaper me-2"></i>Publicaciones
               </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link {% if tab == 'apuntes' %}active{% endif %}" 
+              <button class="nav-link text-white {% if tab == 'apuntes' %}active bg-white text-primary{% endif %}" 
                       id="apuntes-tab" data-bs-toggle="tab" data-bs-target="#apuntes" 
-                      type="button" role="tab" aria-controls="apuntes" aria-selected="false">
+                      type="button" role="tab" aria-controls="apuntes" aria-selected="false"
+                      style="border: none; transition: all 0.3s ease;">
                 <i class="fas fa-book me-2"></i>Apuntes
               </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link {% if tab == 'logros' %}active{% endif %}" 
+              <button class="nav-link text-white {% if tab == 'logros' %}active bg-white text-primary{% endif %}" 
                       id="logros-tab" data-bs-toggle="tab" data-bs-target="#logros" 
-                      type="button" role="tab" aria-controls="logros" aria-selected="false">
+                      type="button" role="tab" aria-controls="logros" aria-selected="false"
+                      style="border: none; transition: all 0.3s ease;">
                 <i class="fas fa-trophy me-2"></i>Logros
               </button>
             </li>
             {% if user.mostrar_tienda_perfil %}
             <li class="nav-item" role="presentation">
-              <button class="nav-link {% if tab == 'tienda' %}active{% endif %}" 
+              <button class="nav-link text-white {% if tab == 'tienda' %}active bg-white text-primary{% endif %}" 
                       id="tienda-tab" data-bs-toggle="tab" data-bs-target="#tienda" 
-                      type="button" role="tab" aria-controls="tienda" aria-selected="false">
+                      type="button" role="tab" aria-controls="tienda" aria-selected="false"
+                      style="border: none; transition: all 0.3s ease;">
                 <i class="fas fa-store me-2"></i>Tienda
+              </button>
+            </li>
+            {% endif %}
+            {% if is_own_profile %}
+            <li class="nav-item" role="presentation">
+              <button class="nav-link text-white {% if tab == 'misiones' %}active bg-white text-primary{% endif %}" 
+                      id="misiones-tab" data-bs-toggle="tab" data-bs-target="#misiones" 
+                      type="button" role="tab" aria-controls="misiones" aria-selected="false"
+                      style="border: none; transition: all 0.3s ease;">
+                <i class="fas fa-bullseye me-2"></i>Misiones
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link text-white {% if tab == 'compras' %}active bg-white text-primary{% endif %}" 
+                      id="compras-tab" data-bs-toggle="tab" data-bs-target="#compras" 
+                      type="button" role="tab" aria-controls="compras" aria-selected="false"
+                      style="border: none; transition: all 0.3s ease;">
+                <i class="fas fa-shopping-cart me-2"></i>Compras
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link text-white {% if tab == 'referidos' %}active bg-white text-primary{% endif %}" 
+                      id="referidos-tab" data-bs-toggle="tab" data-bs-target="#referidos" 
+                      type="button" role="tab" aria-controls="referidos" aria-selected="false"
+                      style="border: none; transition: all 0.3s ease;">
+                <i class="fas fa-users me-2"></i>Referidos
               </button>
             </li>
             {% endif %}
@@ -188,6 +218,21 @@
         {% if user.mostrar_tienda_perfil %}
           {% include 'profile/tabs/tienda.html' %}
         {% endif %}
+        
+        <!-- Misiones Tab -->
+         {% if is_own_profile %}
+           {% include 'profile/tabs/misiones.html' %}
+         {% endif %}
+         
+         <!-- Compras Tab -->
+         {% if is_own_profile %}
+           {% include 'profile/tabs/compras.html' %}
+         {% endif %}
+         
+         <!-- Referidos Tab -->
+         {% if is_own_profile %}
+           {% include 'profile/tabs/referidos.html' %}
+         {% endif %}
       </div>
     </div>
 
@@ -195,61 +240,129 @@
     <div class="col-lg-3 d-none d-lg-block">
       <div class="sticky-top" style="top: 100px;">
         <!-- Profile Stats -->
-        <div class="card border-0 shadow-sm mb-4">
-          <div class="card-body p-4">
-            <h6 class="fw-bold text-primary mb-3">
-              <i class="bi bi-bar-chart"></i> Estadísticas del Perfil
+        <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <div class="card-body p-4 text-white">
+            <h6 class="fw-bold mb-3">
+              <i class="bi bi-graph-up me-2"></i> Estadísticas del Perfil
             </h6>
 
-            <div class="stats-chart mb-3">
-              <canvas id="profileStatsChart" width="200" height="200"></canvas>
+            <!-- Stats Grid -->
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <div class="text-center p-2 bg-white bg-opacity-20 rounded">
+                  <div class="h5 fw-bold mb-0">{{ user_level }}</div>
+                  <small class="opacity-75">Nivel</small>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="text-center p-2 bg-white bg-opacity-20 rounded">
+                  <div class="h5 fw-bold mb-0">{{ participation_percentage }}%</div>
+                  <small class="opacity-75">Participación</small>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="text-center p-2 bg-white bg-opacity-20 rounded">
+                  <div class="h5 fw-bold mb-0">{{ notes_count(user) }}</div>
+                  <small class="opacity-75">Apuntes</small>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="text-center p-2 bg-white bg-opacity-20 rounded">
+                  <div class="h5 fw-bold mb-0">{{ user.credits }}</div>
+                  <small class="opacity-75">Crolars</small>
+                </div>
+              </div>
             </div>
 
-            <div class="stats-summary">
-              <div class="d-flex justify-content-between mb-2">
-                <span class="text-muted">
-                  Nivel académico
-                  <i class="bi bi-info-circle ms-1" data-bs-toggle="tooltip"
-                     title="Basado en tus logros, apuntes y participación."
-                  ></i>
-                </span>
-                <span class="fw-bold">{{ user_level }}/10</span>
+            <!-- Progress Bars -->
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-1">
+                <small class="opacity-75">Nivel académico</small>
+                <small class="opacity-75">{{ user_level }}/10</small>
               </div>
-              <div class="progress mb-3" style="height: 6px;">
-                <div class="progress-bar bg-primary" style="width: {{ (user_level/10*100) }}%"></div>
+              <div class="progress mb-2" style="height: 6px; background-color: rgba(255,255,255,0.2);">
+                <div class="progress-bar bg-warning" style="width: {{ (user_level/10*100) }}%"></div>
               </div>
-
-              <div class="d-flex justify-content-between mb-2">
-                <span class="text-muted">Participación</span>
-                <span class="fw-bold">{{ participation_percentage }}%</span>
+              
+              <div class="d-flex justify-content-between mb-1">
+                <small class="opacity-75">Participación</small>
+                <small class="opacity-75">{{ participation_percentage }}%</small>
               </div>
-              <div class="progress" style="height: 6px;">
+              <div class="progress" style="height: 6px; background-color: rgba(255,255,255,0.2);">
                 <div class="progress-bar bg-success" style="width: {{ participation_percentage }}%"></div>
               </div>
+            </div>
+              
+            {% if is_own_profile %}
+            <div class="text-center">
+              <a href="/tienda/comprar-crolars" class="btn btn-warning btn-sm">
+                <i class="bi bi-plus-circle me-1"></i> Comprar Crolars
+              </a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
 
-              <div class="d-flex justify-content-between mb-2">
-                <span><i class="bi bi-journal-text me-1"></i> Apuntes subidos</span>
-                <span class="fw-bold">{{ notes_count(user) }}</span>
+        <!-- Crolars Section -->
+        {% if is_own_profile %}
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body p-4">
+            <h6 class="fw-bold text-warning mb-3">
+              <i class="bi bi-coin"></i> Mis Crolars
+            </h6>
+            <div class="text-center mb-3">
+              <div class="display-6 fw-bold text-warning">{{ user.credits }}</div>
+              <small class="text-muted">Crolars disponibles</small>
+            </div>
+            <div class="d-grid gap-2">
+              <a href="/tienda/comprar-crolars" class="btn btn-warning">
+                <i class="bi bi-plus-circle me-2"></i>Comprar más Crolars
+              </a>
+              <a href="{{ url_for('auth.perfil', username=user.username, tab='compras') }}" class="btn btn-outline-warning btn-sm">
+                <i class="bi bi-receipt me-2"></i>Ver mis compras
+              </a>
+            </div>
+            <hr class="my-3">
+            <div class="small text-muted">
+              <div class="d-flex justify-content-between mb-1">
+                <span><i class="bi bi-bullseye me-1"></i>Ganados por misiones:</span>
+                <span class="text-success fw-bold">+{{ creditos_misiones or 0 }}</span>
               </div>
               <div class="d-flex justify-content-between">
-                <span><i class="bi bi-coin me-1"></i> Crolars acumulados</span>
-                <span class="fw-bold">{{ user.credits }}</span>
+                <span><i class="bi bi-people me-1"></i>Ganados por referidos:</span>
+                <span class="text-info fw-bold">+{{ creditos_referidos or 0 }}</span>
               </div>
             </div>
           </div>
         </div>
+        {% endif %}
 
         <!-- Achievements Summary -->
-        <div class="card border-0 shadow-sm mb-4">
-          <div class="card-body p-4">
-            <h6 class="fw-bold text-info mb-3">
-              <i class="bi bi-stars"></i> Resumen de Logros
+        <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <div class="card-body p-4 text-white">
+            <h6 class="fw-bold mb-3">
+              <i class="bi bi-trophy-fill me-2"></i> Resumen de Logros
             </h6>
-            <p class="mb-2">Has alcanzado {{ achievements|length }} logros.</p>
-            <div class="progress mb-2" style="height: 6px;">
-              <div class="progress-bar bg-info" style="width: {{ (achievements|length/10*100)|int }}%"></div>
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="text-center p-3 bg-white bg-opacity-20 rounded">
+                  <div class="h4 fw-bold mb-1">{{ achievements|length }}</div>
+                  <small class="opacity-75">Logros obtenidos</small>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="text-center p-3 bg-white bg-opacity-20 rounded">
+                  <div class="h4 fw-bold mb-1">{{ ((achievements|length/10*100)|int) }}%</div>
+                  <small class="opacity-75">Progreso total</small>
+                </div>
+              </div>
             </div>
-            <small class="text-muted">Has alcanzado {{ achievements|length }}/10 logros posibles</small>
+            <div class="mt-3">
+              <div class="progress" style="height: 8px; background-color: rgba(255,255,255,0.2);">
+                <div class="progress-bar bg-warning" style="width: {{ (achievements|length/10*100)|int }}%"></div>
+              </div>
+              <small class="opacity-75 mt-2 d-block">{{ achievements|length }}/10 logros completados</small>
+            </div>
           </div>
         </div>
 
