@@ -391,11 +391,24 @@ def remove_item(product_id):
 def view_cart():
     cart = get_cart()
     cart_items = []
+    subtotal = 0
+    shipping_total = 0
     for pid, qty in cart.items():
         product = Product.query.filter_by(id=int(pid)).first()
         if product:
             cart_items.append({"product": product, "quantity": qty})
-    return render_template("tienda/carrito.html", cart_items=cart_items)
+            price = product.price or 0
+            shipping_cost = getattr(product, "shipping_cost", 0) or 0
+            subtotal += price * qty
+            shipping_total += shipping_cost * qty
+    total = subtotal + shipping_total
+    return render_template(
+        "tienda/carrito.html",
+        cart_items=cart_items,
+        subtotal=subtotal,
+        shipping_total=shipping_total,
+        total=total,
+    )
 
 
 @commerce_bp.route("/api/cart_count")

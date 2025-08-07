@@ -1202,3 +1202,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
   saved courses table name, preventing `NoSuchTableError` on deployments.
 - Guarded `add_user_career_interests` migration against missing `users` table
   by checking for table existence before altering.
+- Computed cart totals server-side and guarded price display to prevent /tienda/cart 500 errors.
