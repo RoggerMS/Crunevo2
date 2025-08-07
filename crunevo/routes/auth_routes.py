@@ -238,9 +238,7 @@ def view_profile(username):
         completed_missions_count = 0
 
     # Academic level and participation metrics
-    user_level = min(
-        10, (user.points or 0) // 100 + (user.verification_level or 0)
-    )
+    user_level = min(10, (user.points or 0) // 100 + (user.verification_level or 0))
     try:
         notes_count = Note.query.filter_by(user_id=user.id).count()
     except (ProgrammingError, OperationalError):
@@ -463,14 +461,12 @@ def view_profile(username):
     )
 
     # Calcular estadísticas para las pestañas
-    total_downloads = sum(note.downloads for note in user_notes)
-    total_likes = sum(note.likes for note in user_notes)
-    average_rating = (
-        sum(note.rating for note in user_notes if note.rating)
-        / len([n for n in user_notes if n.rating])
-        if user_notes
-        else 0
-    )
+    total_downloads = sum(getattr(note, "downloads", 0) for note in user_notes)
+    total_likes = sum(getattr(note, "likes", 0) for note in user_notes)
+    ratings = [
+        getattr(note, "rating") for note in user_notes if getattr(note, "rating", None)
+    ]
+    average_rating = sum(ratings) / len(ratings) if ratings else 0
 
     # Datos de tienda si está habilitada
     user_products = []
