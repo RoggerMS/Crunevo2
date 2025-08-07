@@ -1214,3 +1214,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 
 - Removed scroll-to-top button and associated styles and scripts, eliminating unused scroll event logic. (PR remove-scroll-top)
 - Updated private and public profile views to reuse feed's post creation input and post cards, syncing reaction and save data for a consistent feed-style experience. (PR perfil-feed-sync)
+- Added JSON upload endpoints `/auth/upload-profile-picture` and `/auth/upload-banner` to update avatar and banner with Cloudinary or local storage; frontend now hits these routes and updates the preview with toasts. (PR profile-upload-fix)
+- Added JSON upload endpoints `/auth/upload-profile-picture` and `/auth/upload-banner` to update avatar and banner with Cloudinary or local storage; frontend now hits these routes and updates the preview with toasts. Marked legacy HTTP test scripts to skip in pytest. (PR profile-upload-fix)

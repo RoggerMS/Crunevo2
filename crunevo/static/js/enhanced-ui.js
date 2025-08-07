@@ -309,7 +309,7 @@ function uploadAvatar(file) {
     const formData = new FormData();
     formData.append('avatar', file);
     
-    csrfFetch('/auth/upload-avatar', {
+    csrfFetch('/auth/upload-profile-picture', {
         method: 'POST',
         body: formData
     })
