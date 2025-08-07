@@ -118,7 +118,7 @@
                     </span>
                   {% elif progreso.completada %}
                     <form method="post" action="{{ url_for('missions.reclamar_mision', mission_id=mision.id) }}" class="d-inline">
-                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                      {{ csrf_field() }}
                       <button type="submit" class="btn btn-success btn-sm">
                         <i class="fas fa-gift me-1"></i>Reclamar
                       </button>

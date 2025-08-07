@@ -627,6 +627,64 @@ def update_banner():
     return redirect(url_for("auth.view_profile", username=current_user.username))
 
 
+@auth_bp.route("/auth/upload-profile-picture", methods=["POST"])
+@login_required
+def upload_profile_picture():
+    """Upload a new avatar and return its URL as JSON."""
+    file = request.files.get("avatar")
+    if not file or not file.filename:
+        return jsonify({"success": False, "message": "No se seleccionó ningún archivo"}), 400
+
+    try:
+        cloud_url = current_app.config.get("CLOUDINARY_URL")
+        if cloud_url:
+            res = cloudinary.uploader.upload(file, resource_type="auto")
+            url = res["secure_url"]
+        else:
+            filename = secure_filename(file.filename)
+            upload_folder = current_app.config["UPLOAD_FOLDER"]
+            os.makedirs(upload_folder, exist_ok=True)
+            filepath = os.path.join(upload_folder, filename)
+            file.save(filepath)
+            url = filepath
+
+        current_user.avatar_url = url
+        db.session.commit()
+        return jsonify({"success": True, "avatarUrl": url})
+    except Exception as e:  # pragma: no cover - log unexpected errors
+        current_app.logger.exception("Error uploading avatar: %s", e)
+        return jsonify({"success": False, "message": "Error al subir avatar"}), 500
+
+
+@auth_bp.route("/auth/upload-banner", methods=["POST"])
+@login_required
+def upload_banner_ajax():
+    """Upload a new banner and return its URL as JSON."""
+    file = request.files.get("banner")
+    if not file or not file.filename:
+        return jsonify({"success": False, "message": "No se seleccionó ningún archivo"}), 400
+
+    try:
+        cloud_url = current_app.config.get("CLOUDINARY_URL")
+        if cloud_url:
+            res = cloudinary.uploader.upload(file, resource_type="auto")
+            url = res["secure_url"]
+        else:
+            filename = secure_filename(file.filename)
+            upload_folder = current_app.config["UPLOAD_FOLDER"]
+            os.makedirs(upload_folder, exist_ok=True)
+            filepath = os.path.join(upload_folder, filename)
+            file.save(filepath)
+            url = filepath
+
+        current_user.banner_url = url
+        db.session.commit()
+        return jsonify({"success": True, "bannerUrl": url})
+    except Exception as e:  # pragma: no cover - log unexpected errors
+        current_app.logger.exception("Error uploading banner: %s", e)
+        return jsonify({"success": False, "message": "Error al subir banner"}), 500
+
+
 @auth_bp.route("/user/<int:user_id>")
 @activated_required
 def public_profile(user_id):
