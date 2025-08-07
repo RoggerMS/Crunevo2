@@ -10,7 +10,7 @@
   <div class="card border-0 shadow-sm mb-4 profile-header">
     <div class="position-relative">
       <div class="profile-header-bg position-relative" style="height: 200px;">
-        <img src="{{ user.banner_url or url_for('static', filename='img/default.png') }}" class="w-100 h-100 object-fit-cover" alt="Banner del perfil de {{ user.username }}">
+        <img src="{{ user.banner_url or url_for('static', filename='img/default.png') }}" class="profile-banner w-100 h-100 object-fit-cover" alt="Banner del perfil de {{ user.username }}">
       </div>
     </div>
     <div class="card-body position-relative p-4" style="margin-top: -60px;">

@@ -333,10 +333,12 @@ function uploadAvatar(file) {
 
 function uploadBanner(file) {
     if (!file) return;
-    
+
+    console.log('Banner file selected:', file);
+
     const formData = new FormData();
     formData.append('banner', file);
-    
+
     csrfFetch('/auth/upload-banner', {
         method: 'POST',
         body: formData
@@ -344,13 +346,9 @@ function uploadBanner(file) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Update banner in UI
-            const bannerElement = document.querySelector('.profile-header-bg');
-            if (bannerElement) {
-                bannerElement.style.backgroundImage = `url(${data.bannerUrl})`;
-                bannerElement.style.backgroundSize = 'cover';
-                bannerElement.style.backgroundPosition = 'center';
-            }
+            document.querySelectorAll('.profile-banner').forEach(img => {
+                img.src = data.bannerUrl;
+            });
             showSuccessToast('Banner actualizado correctamente');
         } else {
             showErrorToast(data.message || 'Error al subir banner');

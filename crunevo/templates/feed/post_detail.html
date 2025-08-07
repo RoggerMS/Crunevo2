@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
-{% import 'components/reactions.html' as react %}
 {% import 'components/image_gallery.html' as gallery %}
 {% block og_title %}{{ og_title or 'Publicación de ' ~ (post.author.username if post.author else 'usuario') }}{% endblock %}
 {% block og_description %}{{ og_description or (post.content|striptags)|truncate(100) }}{% endblock %}
@@ -48,20 +47,67 @@
         {{ gallery.image_gallery([{'url': post.file_url}], post.id) }}
         {% endif %}
       {% endif %}
-      {% set counts = reaction_counts %}
-      {{ react.reaction_container(post, counts, user_reaction) }}
+      {% set post_reactions = reaction_counts %}
+      {% set total_reactions = post_reactions.values() | sum %}
+      {% if total_reactions > 0 %}
+      <div class="post-reactions-count" data-post-id="{{ post.id }}">
+        <div class="reactions-summary">
+          <span class="reaction-icons">
+            {% for reaction_type, count in post_reactions.items() %}
+            <span class="reaction-emoji">{{ reaction_type }}</span>
+            {% endfor %}
+          </span>
+          <span class="reactions-text">{{ total_reactions }}</span>
+        </div>
+        <div class="comments-count" onclick="document.getElementById('comments{{ post.id }}').scrollIntoView({behavior:'smooth'});">
+          <span>{{ post.comments|length }} comentarios</span>
+        </div>
+      </div>
+      {% endif %}
 
-      <div class="d-flex gap-2 my-3">
-        <button type="button" class="btn btn-outline-secondary btn-sm share-btn" data-share-url="{{ url_for('feed.view_post', post_id=post.id, _external=True) }}">
-          <i class="bi bi-share"></i> Compartir
+      <div class="post-actions">
+        <div class="relative reaction-container" data-post-id="{{ post.id }}" data-my-reaction="{{ user_reaction or '' }}">
+          <button class="fb-action-btn like-btn {{ 'active' if user_reaction }}" data-post-id="{{ post.id }}">
+            <i class="bi bi-fire{{ '-fill' if user_reaction else '' }}"></i>
+            <span class="action-text">Me gusta</span>
+            <span class="action-count">{{ reaction_counts.get('🔥', '') }}</span>
+          </button>
+          <div class="reaction-panel d-none">
+            <button class="reaction-btn" data-reaction="🔥" title="Crunazo">🔥</button>
+            <button class="reaction-btn" data-reaction="🧠" title="Neuro">🧠</button>
+            <button class="reaction-btn" data-reaction="💔" title="Roto">💔</button>
+            <button class="reaction-btn" data-reaction="😠" title="Molesto">😠</button>
+            <button class="reaction-btn" data-reaction="🥶" title="Congelao">🥶</button>
+            <button class="reaction-btn" data-reaction="😂" title="Vacilón">😂</button>
+            <button class="reaction-btn" data-reaction="🤡" title="Cringe">🤡</button>
+            <button class="reaction-btn" data-reaction="😲" title="Asu">😲</button>
+            <button class="reaction-btn" data-reaction="👍" title="Me gusta">👍</button>
+            <button class="reaction-btn" data-reaction="💡" title="Interesante">💡</button>
+            <button class="reaction-btn" data-reaction="🙌" title="Gracias">🙌</button>
+            <button class="reaction-btn" data-reaction="📌" title="Lo guardé">📌</button>
+          </div>
+        </div>
+
+        <button class="fb-action-btn comment-btn" onclick="document.getElementById('comments{{ post.id }}').scrollIntoView({behavior:'smooth'});">
+          <i class="bi bi-chat"></i>
+          <span class="action-text">Comentar</span>
+          <span class="action-count">{{ post.comments|length if post.comments|length > 0 else '' }}</span>
         </button>
-        {% if author %}
+
+        <button class="fb-action-btn share-btn" data-share-url="{{ url_for('feed.view_post', post_id=post.id, _external=True) }}">
+          <i class="bi bi-share"></i>
+          <span class="action-text">Compartir</span>
+        </button>
+      </div>
+
+      {% if author %}
+      <div class="d-flex gap-2 my-3">
         <a href="{{ url_for('auth.view_profile', username=author.username) }}" class="btn btn-outline-info btn-sm">Ver perfil</a>
         <a href="{{ url_for('feed.user_posts', user_id=author.id) }}" class="btn btn-outline-primary btn-sm">
           Ver más publicaciones de este usuario
         </a>
-        {% endif %}
       </div>
+      {% endif %}
 
       <h6 class="mt-3 mb-2">Comentarios</h6>
       {% if photo_index %}
@@ -103,6 +149,9 @@
       {% endif %}
     </div>
   </div>
+  {% with post=post %}
+    {% include 'components/reactions_modal.html' %}
+  {% endwith %}
 {% endblock %}
 
 {% block body_end %}
