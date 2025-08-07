@@ -38,8 +38,12 @@ from crunevo.services.feed_service import (
     get_featured_posts,
     get_weekly_ranking,
 )
-
 from . import feed_bp
+
+# File upload settings
+ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
+MAX_FILE_SIZE_MB = 5
+MAX_IMAGES = 10
 
 
 @feed_bp.route("/post", methods=["POST"], endpoint="create_post")
@@ -56,29 +60,20 @@ def create_post():
         flash("Debes escribir algo", "danger")
         return redirect(url_for("feed.view_feed"))
 
+    if len(valid_files) > MAX_IMAGES:
+        flash(f"Máximo {MAX_IMAGES} imágenes permitidas", "danger")
+        return redirect(url_for("feed.view_feed"))
+
     urls = []
-    allowed_exts = {
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".gif",
-        ".webp",
-        ".mp4",
-        ".webm",
-        ".mov",
-        ".mp3",
-        ".wav",
-        ".ogg",
-    }
-    max_size = 5 * 1024 * 1024
+    max_size = MAX_FILE_SIZE_MB * 1024 * 1024
     for f in valid_files:
         ext = os.path.splitext(f.filename)[1].lower()
         f.seek(0, os.SEEK_END)
         size = f.tell()
         f.seek(0)
-        if ext not in allowed_exts or size > max_size:
+        if ext not in ALLOWED_EXTENSIONS or size > max_size:
             flash(
-                "Archivo no permitido o excede el tamaño máximo de 5 MB",
+                f"Archivo no permitido o excede el tamaño máximo de {MAX_FILE_SIZE_MB} MB",
                 "danger",
             )
             return redirect(url_for("feed.view_feed"))
@@ -100,7 +95,6 @@ def create_post():
             flash("Ocurrió un problema al subir el archivo", "danger")
             return redirect(url_for("feed.view_feed"))
 
-    comment_permission = request.form.get("comment_permission", "all")
     post = Post(
         content=content,
         file_url=urls[0] if urls else None,
