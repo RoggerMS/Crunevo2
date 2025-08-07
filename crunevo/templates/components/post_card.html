@@ -25,7 +25,7 @@
         <span class="deleted-user">Usuario eliminado</span>
         {% endif %}
         
-        {% if author and author.verification_level >= 2 %}
+        {% if author and author.verification_level|default(0) >= 2 %}
         <span class="verified-badge" title="Usuario verificado">
           <i class="bi bi-check-circle-fill"></i>
         </span>

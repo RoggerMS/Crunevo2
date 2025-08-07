@@ -41,7 +41,7 @@
       <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}" alt="{{ author.username if author else 'Usuario' }}">
       {% if author %}
       <a href="{{ url_for('auth.view_profile', username=author.username) }}" class="text-decoration-none">{{ author.username }}</a>
-      {% if author and author.verification_level >= 2 %}
+      {% if author and author.verification_level|default(0) >= 2 %}
       <span class="ms-1" style="color: var(--bs-primary);" data-bs-toggle="tooltip" title="Usuario Verificado">
         <i class="bi bi-patch-check-fill"></i>
       </span>
