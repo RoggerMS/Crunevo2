@@ -20,9 +20,6 @@ function initializeEnhancedUI() {
     // Initialize mission completion animations
     initMissionAnimations();
     
-    // Initialize scroll to top button
-    initScrollToTop();
-    
     // Initialize enhanced tooltips
     initEnhancedTooltips();
     
@@ -218,30 +215,6 @@ function triggerConfetti(container) {
     }, 5000);
 }
 
-function initScrollToTop() {
-    const scrollBtn = document.createElement('button');
-    scrollBtn.className = 'scroll-to-top';
-    scrollBtn.innerHTML = '<i class="bi bi-arrow-up"></i>';
-    scrollBtn.setAttribute('aria-label', 'Volver arriba');
-    document.body.appendChild(scrollBtn);
-    
-    // Show/hide based on scroll position
-    window.addEventListener('scroll', function() {
-        if (window.pageYOffset > 300) {
-            scrollBtn.classList.add('visible');
-        } else {
-            scrollBtn.classList.remove('visible');
-        }
-    });
-    
-    // Smooth scroll to top
-    scrollBtn.addEventListener('click', function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    });
-}
 
 function initEnhancedTooltips() {
     // Initialize custom tooltips for elements with data-tooltip
