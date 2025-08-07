@@ -1208,3 +1208,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Guarded profile note statistics against missing ratings to avoid `/perfil/<username>` 500 errors.
 - Filtered non-numeric note ratings and averaged safely to prevent division errors on profile; added tests for profiles with and without notes (PR profile-average-rating-fix).
 - Fixed achievement progress on profile by counting unlocked achievements and avoiding list/int division; added test for logros tab (PR perfil-achievements-fix).
+- Added fallback `rating` property on `Note` and strengthened profile stats calculations with numeric checks and safe queries to prevent `/perfil/<username>` 500 errors.

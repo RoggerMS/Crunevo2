@@ -24,3 +24,19 @@ class Note(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     comments = db.relationship("Comment", backref="note", lazy=True)
+
+    @property
+    def rating(self):
+        """Optional rating attribute for backward compatibility.
+
+        Notes historically exposed a ``rating`` field that no longer exists in
+        the database. Some views or templates may still attempt to access this
+        attribute, so we provide a lightweight property that returns any value
+        assigned at runtime or ``None`` when unavailable.
+        """
+
+        return getattr(self, "_rating", None)
+
+    @rating.setter
+    def rating(self, value):
+        self._rating = value
