@@ -42,6 +42,9 @@ function initFloatingButtons() {
     // Profile edit buttons
     const avatarEditBtns = document.querySelectorAll('.avatar-edit-btn');
     avatarEditBtns.forEach(btn => {
+        // If a dedicated avatar input exists, main.js handles the click to avoid duplicate dialogs
+        if (document.getElementById('avatarInput')) return;
+
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();

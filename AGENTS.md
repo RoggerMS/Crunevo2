@@ -1231,3 +1231,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added slug-based template application endpoint and modernized personal space template cards with badges, dark mode, and accessible preview buttons; updated JS fetch error handling and tests. (PR personal-template-apply)
 
 - Adjusted profile sidebar username and career text to inherit theme colors, ensuring readability on light and dark backgrounds. (PR perfil-sidebar-text-color)
+- Fixed double avatar picker by skipping enhanced-ui.js listener when a dedicated input exists, preventing dual file dialogs. (hotfix avatar-dialog)
