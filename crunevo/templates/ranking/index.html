@@ -426,7 +426,7 @@
               </small>
               <div>
                 <span class="badge bg-primary">{{ user.points or 0 }} pts</span>
-                {% if user.verification_level >= 2 %}
+                {% if user.verification_level|default(0) >= 2 %}
                 <span class="badge bg-success">✓ Verificado</span>
                 {% endif %}
               </div>

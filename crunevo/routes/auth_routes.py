@@ -238,7 +238,9 @@ def view_profile(username):
         completed_missions_count = 0
 
     # Academic level and participation metrics
-    user_level = min(10, (user.points or 0) // 100 + user.verification_level)
+    user_level = min(
+        10, (user.points or 0) // 100 + (user.verification_level or 0)
+    )
     try:
         notes_count = Note.query.filter_by(user_id=user.id).count()
     except (ProgrammingError, OperationalError):

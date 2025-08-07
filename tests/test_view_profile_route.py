@@ -25,3 +25,13 @@ def test_view_profile_not_found(client, db_session, caplog):
         resp = client.get("/perfil/missing")
     assert resp.status_code == 404
     assert "User missing not found" in caplog.text
+
+
+def test_view_profile_null_verification_level(client, db_session):
+    user = create_user("charlie", "charlie@example.com")
+    user.verification_level = None
+    db_session.add(user)
+    db_session.commit()
+    client.post("/login", data={"username": "charlie", "password": "pass"})
+    resp = client.get("/perfil/charlie")
+    assert resp.status_code == 200

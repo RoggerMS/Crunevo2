@@ -5,9 +5,9 @@
     </div>
     <div class="card-body">
       <p class="text-muted">Estado de verificación:
-        {% if current_user.verification_level >= 2 %}Verificado{% elif current_user.verification_level == 1 %}En revisión{% else %}No verificado{% endif %}
+        {% if current_user.verification_level|default(0) >= 2 %}Verificado{% elif current_user.verification_level|default(0) == 1 %}En revisión{% else %}No verificado{% endif %}
       </p>
-      {% if current_user.verification_level == 0 %}
+      {% if current_user.verification_level|default(0) == 0 %}
       <form class="settings-form" method="post" action="{{ url_for('settings.submit_verification') }}">
         {{ csrf.csrf_field() }}
         <div class="mb-3">
@@ -16,7 +16,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Enviar solicitud</button>
       </form>
-      {% elif current_user.verification_level == 1 %}
+      {% elif current_user.verification_level|default(0) == 1 %}
       <p class="text-muted mt-2"><i>Tu solicitud está en revisión.</i></p>
       {% endif %}
     </div>
