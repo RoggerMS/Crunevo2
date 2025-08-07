@@ -1,0 +1,1228 @@
+{% extends 'base.html' %}
+{% block title %}Enlace Educativo - {{ block.title }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
+<style>
+.enlace-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.enlace-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.enlace-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-20px, -20px) rotate(180deg); }
+}
+
+.enlace-info {
+    position: relative;
+    z-index: 2;
+}
+
+.enlace-url {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    font-family: monospace;
+    word-break: break-all;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.enlace-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.enlace-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.enlace-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.content-section {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--bs-dark);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.categorias-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.categoria-card {
+    background: var(--bs-gray-50);
+    border: 2px solid var(--bs-border-color);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.categoria-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.categoria-card.selected {
+    border-color: var(--bs-primary);
+    background: var(--bs-primary-bg);
+    color: var(--bs-primary);
+}
+
+.categoria-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.categoria-nombre {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.categoria-descripcion {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.enlaces-relacionados {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.enlace-card {
+    background: white;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.enlace-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: var(--bs-primary);
+}
+
+.enlace-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--bs-primary);
+    transform: scaleY(0);
+    transition: transform 0.3s;
+}
+
+.enlace-card:hover::before {
+    transform: scaleY(1);
+}
+
+.enlace-card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.enlace-favicon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--bs-gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.enlace-card-title {
+    font-weight: 600;
+    margin: 0;
+    color: var(--bs-dark);
+    flex: 1;
+}
+
+.enlace-card-description {
+    color: var(--bs-secondary);
+    margin-bottom: 15px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.enlace-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--bs-secondary);
+}
+
+.enlace-card-categoria {
+    background: var(--bs-primary-bg);
+    color: var(--bs-primary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.enlace-card-actions {
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.enlace-card:hover .enlace-card-actions {
+    opacity: 1;
+}
+
+.action-btn {
+    background: none;
+    border: 1px solid var(--bs-border-color);
+    color: var(--bs-secondary);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn:hover {
+    background: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+}
+
+.estadisticas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.estadistica-card {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.estadistica-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.2); opacity: 0.3; }
+}
+
+.estadistica-numero {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 2;
+}
+
+.estadistica-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 2;
+}
+
+.filtros-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filtro-btn {
+    background: var(--bs-gray-100);
+    border: 1px solid var(--bs-border-color);
+    color: var(--bs-dark);
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+}
+
+.filtro-btn.active {
+    background: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+}
+
+.filtro-btn:hover {
+    background: var(--bs-primary-bg);
+    border-color: var(--bs-primary);
+    color: var(--bs-primary);
+}
+
+.search-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 20px 12px 50px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 25px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--bs-secondary);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--bs-secondary);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    opacity: 0.3;
+    margin-bottom: 20px;
+}
+
+.btn-floating {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--bs-primary);
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 1000;
+}
+
+.btn-floating:hover {
+    transform: scale(1.1);
+    background: var(--bs-primary-dark, #0056b3);
+}
+
+.preview-modal .modal-body {
+    padding: 0;
+}
+
+.preview-iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+    border-radius: 0 0 8px 8px;
+}
+
+.preview-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--bs-border-color);
+    background: var(--bs-gray-50);
+}
+
+.preview-url {
+    font-family: monospace;
+    color: var(--bs-primary);
+    word-break: break-all;
+}
+
+@media (max-width: 768px) {
+    .enlace-container {
+        padding: 15px;
+    }
+    
+    .enlace-header {
+        padding: 30px 20px;
+    }
+    
+    .categorias-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .enlaces-relacionados {
+        grid-template-columns: 1fr;
+    }
+    
+    .estadisticas-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .filtros-container {
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="enlace-container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-link-45deg me-2"></i>Enlace Educativo</h2>
+            <p class="text-muted">Recursos útiles para tu aprendizaje</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="exportEnlaces()">
+                <i class="bi bi-download"></i> Exportar
+            </button>
+            <button class="btn btn-primary" onclick="editEnlace()">
+                <i class="bi bi-gear"></i> Configurar
+            </button>
+            <a href="{{ url_for('personal_space.index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+    
+    <!-- Enlace Principal -->
+    <div class="enlace-header">
+        <div class="enlace-info">
+            <h3>{{ block.title }}</h3>
+            <p class="mb-3">{{ block.content or 'Descripción del recurso educativo' }}</p>
+            
+            <div class="enlace-url">
+                <span id="enlaceUrl">{{ block.get_metadata().get('url', 'https://ejemplo.com') }}</span>
+                <button class="btn btn-sm btn-light" onclick="copiarUrl()">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+            </div>
+            
+            <div class="enlace-actions">
+                <a href="{{ block.get_metadata().get('url', '#') }}" target="_blank" class="enlace-btn">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                    Abrir enlace
+                </a>
+                <button class="enlace-btn" onclick="previsualizarEnlace()">
+                    <i class="bi bi-eye"></i>
+                    Vista previa
+                </button>
+                <button class="enlace-btn" onclick="compartirEnlace()">
+                    <i class="bi bi-share"></i>
+                    Compartir
+                </button>
+                <button class="enlace-btn" onclick="verificarEnlace()">
+                    <i class="bi bi-shield-check"></i>
+                    Verificar
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Categorías -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-tags"></i>
+            Categorías de Recursos
+        </div>
+        
+        <div class="categorias-grid">
+            <div class="categoria-card selected" onclick="seleccionarCategoria('general')" data-categoria="general">
+                <i class="categoria-icon bi bi-globe"></i>
+                <div class="categoria-nombre">General</div>
+                <div class="categoria-descripcion">Recursos educativos generales</div>
+            </div>
+            
+            <div class="categoria-card" onclick="seleccionarCategoria('programacion')" data-categoria="programacion">
+                <i class="categoria-icon bi bi-code-slash"></i>
+                <div class="categoria-nombre">Programación</div>
+                <div class="categoria-descripcion">Tutoriales y documentación</div>
+            </div>
+            
+            <div class="categoria-card" onclick="seleccionarCategoria('matematicas')" data-categoria="matematicas">
+                <i class="categoria-icon bi bi-calculator"></i>
+                <div class="categoria-nombre">Matemáticas</div>
+                <div class="categoria-descripcion">Recursos matemáticos</div>
+            </div>
+            
+            <div class="categoria-card" onclick="seleccionarCategoria('ciencias')" data-categoria="ciencias">
+                <i class="categoria-icon bi bi-flask"></i>
+                <div class="categoria-nombre">Ciencias</div>
+                <div class="categoria-descripcion">Contenido científico</div>
+            </div>
+            
+            <div class="categoria-card" onclick="seleccionarCategoria('idiomas')" data-categoria="idiomas">
+                <i class="categoria-icon bi bi-translate"></i>
+                <div class="categoria-nombre">Idiomas</div>
+                <div class="categoria-descripcion">Aprendizaje de idiomas</div>
+            </div>
+            
+            <div class="categoria-card" onclick="seleccionarCategoria('herramientas')" data-categoria="herramientas">
+                <i class="categoria-icon bi bi-tools"></i>
+                <div class="categoria-nombre">Herramientas</div>
+                <div class="categoria-descripcion">Utilidades y software</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Estadísticas -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-graph-up"></i>
+            Estadísticas de Uso
+        </div>
+        
+        <div class="estadisticas-grid">
+            <div class="estadistica-card">
+                <div class="estadistica-numero" id="totalEnlaces">0</div>
+                <div class="estadistica-label">Enlaces guardados</div>
+            </div>
+            
+            <div class="estadistica-card">
+                <div class="estadistica-numero" id="enlacesVisitados">0</div>
+                <div class="estadistica-label">Visitados</div>
+            </div>
+            
+            <div class="estadistica-card">
+                <div class="estadistica-numero" id="categoriasFavoritas">0</div>
+                <div class="estadistica-label">Categorías</div>
+            </div>
+            
+            <div class="estadistica-card">
+                <div class="estadistica-numero" id="enlacesEstasSemana">0</div>
+                <div class="estadistica-label">Esta semana</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Enlaces Relacionados -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-collection"></i>
+            Enlaces Relacionados
+        </div>
+        
+        <!-- Búsqueda y Filtros -->
+        <div class="search-container">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" class="search-input" placeholder="Buscar enlaces..." id="searchInput">
+        </div>
+        
+        <div class="filtros-container">
+            <button class="filtro-btn active" onclick="filtrarEnlaces('todos')" data-filtro="todos">
+                <i class="bi bi-grid"></i> Todos
+            </button>
+            <button class="filtro-btn" onclick="filtrarEnlaces('favoritos')" data-filtro="favoritos">
+                <i class="bi bi-heart"></i> Favoritos
+            </button>
+            <button class="filtro-btn" onclick="filtrarEnlaces('recientes')" data-filtro="recientes">
+                <i class="bi bi-clock"></i> Recientes
+            </button>
+            <button class="filtro-btn" onclick="filtrarEnlaces('verificados')" data-filtro="verificados">
+                <i class="bi bi-shield-check"></i> Verificados
+            </button>
+        </div>
+        
+        <div class="enlaces-relacionados" id="enlacesContainer">
+            <!-- Los enlaces se cargarán dinámicamente -->
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Button -->
+<button class="btn-floating" onclick="agregarEnlace()" title="Agregar enlace">
+    <i class="bi bi-plus"></i>
+</button>
+
+<!-- Modal para configurar enlace -->
+<div class="modal fade" id="enlaceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Configurar Enlace Educativo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="enlaceForm">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="enlaceTituloInput" required>
+                        <label for="enlaceTituloInput">Título del enlace</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="enlaceDescripcionInput" style="height: 100px"></textarea>
+                        <label for="enlaceDescripcionInput">Descripción</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input type="url" class="form-control" id="enlaceUrlInput" required>
+                        <label for="enlaceUrlInput">URL del enlace</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="enlaceCategoriaInput">
+                            <option value="general">General</option>
+                            <option value="programacion">Programación</option>
+                            <option value="matematicas">Matemáticas</option>
+                            <option value="ciencias">Ciencias</option>
+                            <option value="idiomas">Idiomas</option>
+                            <option value="herramientas">Herramientas</option>
+                        </select>
+                        <label for="enlaceCategoriaInput">Categoría</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="enlaceTagsInput" placeholder="Separar con comas">
+                        <label for="enlaceTagsInput">Etiquetas (separar con comas)</label>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="enlaceFavoritoInput">
+                        <label class="form-check-label" for="enlaceFavoritoInput">
+                            Marcar como favorito
+                        </label>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="enlaceVerificadoInput">
+                        <label class="form-check-label" for="enlaceVerificadoInput">
+                            Enlace verificado y seguro
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveEnlace()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para agregar nuevo enlace -->
+<div class="modal fade" id="nuevoEnlaceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Nuevo Enlace</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="nuevoEnlaceForm">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="nuevoTitulo" required>
+                        <label for="nuevoTitulo">Título</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="nuevoDescripcion" style="height: 80px"></textarea>
+                        <label for="nuevoDescripcion">Descripción</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input type="url" class="form-control" id="nuevoUrl" required>
+                        <label for="nuevoUrl">URL</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="nuevaCategoria">
+                            <option value="general">General</option>
+                            <option value="programacion">Programación</option>
+                            <option value="matematicas">Matemáticas</option>
+                            <option value="ciencias">Ciencias</option>
+                            <option value="idiomas">Idiomas</option>
+                            <option value="herramientas">Herramientas</option>
+                        </select>
+                        <label for="nuevaCategoria">Categoría</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveNuevoEnlace()">Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para vista previa -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Vista Previa del Enlace</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body preview-modal">
+                <div class="preview-header">
+                    <div class="preview-url" id="previewUrl"></div>
+                </div>
+                <iframe class="preview-iframe" id="previewIframe"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let enlaceData = {
+    titulo: '{{ block.title }}',
+    descripcion: '{{ block.content }}',
+    url: '{{ block.get_metadata().get("url", "") }}',
+    categoria: '{{ block.get_metadata().get("category", "general") }}',
+    tags: {{ block.get_metadata().get('tags', [])|tojson }},
+    favorito: {{ block.get_metadata().get('is_favorite', false)|tojson }},
+    verificado: {{ block.get_metadata().get('is_verified', false)|tojson }},
+    estadisticas: {
+        visitas: {{ block.get_metadata().get('stats', {}).get('visits', 0)|tojson }},
+        ultimaVisita: '{{ block.get_metadata().get("stats", {}).get("last_visit", "") }}',
+        fechaCreacion: '{{ block.get_metadata().get("stats", {}).get("created_at", "") }}'
+    },
+    enlacesRelacionados: {{ block.get_metadata().get('related_links', [])|tojson }}
+};
+
+let filtroActual = 'todos';
+let busquedaActual = '';
+
+document.addEventListener('DOMContentLoaded', function() {
+    updateEstadisticas();
+    loadEnlacesRelacionados();
+    seleccionarCategoria(enlaceData.categoria);
+    
+    // Event listeners
+    document.getElementById('searchInput').addEventListener('input', function() {
+        busquedaActual = this.value.toLowerCase();
+        loadEnlacesRelacionados();
+    });
+    
+    // Auto-save cada 30 segundos
+    setInterval(saveData, 30000);
+});
+
+function updateEstadisticas() {
+    document.getElementById('totalEnlaces').textContent = enlaceData.enlacesRelacionados.length + 1;
+    document.getElementById('enlacesVisitados').textContent = enlaceData.estadisticas.visitas;
+    
+    // Contar categorías únicas
+    const categorias = new Set([enlaceData.categoria, ...enlaceData.enlacesRelacionados.map(e => e.categoria)]);
+    document.getElementById('categoriasFavoritas').textContent = categorias.size;
+    
+    // Enlaces de esta semana
+    const haceUnaSemana = new Date();
+    haceUnaSemana.setDate(haceUnaSemana.getDate() - 7);
+    const enlacesRecientes = enlaceData.enlacesRelacionados.filter(e => 
+        new Date(e.fechaAgregado) > haceUnaSemana
+    ).length;
+    document.getElementById('enlacesEstasSemana').textContent = enlacesRecientes;
+}
+
+function loadEnlacesRelacionados() {
+    const container = document.getElementById('enlacesContainer');
+    container.innerHTML = '';
+    
+    let enlacesFiltrados = enlaceData.enlacesRelacionados;
+    
+    // Aplicar filtros
+    if (filtroActual === 'favoritos') {
+        enlacesFiltrados = enlacesFiltrados.filter(e => e.favorito);
+    } else if (filtroActual === 'recientes') {
+        const haceUnaSemana = new Date();
+        haceUnaSemana.setDate(haceUnaSemana.getDate() - 7);
+        enlacesFiltrados = enlacesFiltrados.filter(e => new Date(e.fechaAgregado) > haceUnaSemana);
+    } else if (filtroActual === 'verificados') {
+        enlacesFiltrados = enlacesFiltrados.filter(e => e.verificado);
+    }
+    
+    // Aplicar búsqueda
+    if (busquedaActual) {
+        enlacesFiltrados = enlacesFiltrados.filter(e => 
+            e.titulo.toLowerCase().includes(busquedaActual) ||
+            e.descripcion.toLowerCase().includes(busquedaActual) ||
+            e.tags.some(tag => tag.toLowerCase().includes(busquedaActual))
+        );
+    }
+    
+    if (enlacesFiltrados.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <div class="empty-icon">
+                    <i class="bi bi-link"></i>
+                </div>
+                <h4>No se encontraron enlaces</h4>
+                <p>Agrega enlaces relacionados para organizar mejor tus recursos</p>
+                <button class="btn btn-primary" onclick="agregarEnlace()">
+                    <i class="bi bi-plus"></i> Agregar enlace
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    enlacesFiltrados.forEach((enlace, index) => {
+        const div = document.createElement('div');
+        div.className = 'enlace-card';
+        div.onclick = () => abrirEnlace(enlace.url, index);
+        
+        const favicon = enlace.favicon || getFaviconByCategory(enlace.categoria);
+        const fechaFormateada = new Date(enlace.fechaAgregado).toLocaleDateString();
+        
+        div.innerHTML = `
+            <div class="enlace-card-header">
+                <div class="enlace-favicon">
+                    <i class="bi ${favicon}"></i>
+                </div>
+                <h5 class="enlace-card-title">${enlace.titulo}</h5>
+                <div class="enlace-card-actions">
+                    <button class="action-btn" onclick="event.stopPropagation(); toggleFavorito(${index})" title="${enlace.favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
+                        <i class="bi ${enlace.favorito ? 'bi-heart-fill' : 'bi-heart'}"></i>
+                    </button>
+                    <button class="action-btn" onclick="event.stopPropagation(); editarEnlaceRelacionado(${index})" title="Editar">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="action-btn" onclick="event.stopPropagation(); eliminarEnlaceRelacionado(${index})" title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="enlace-card-description">${enlace.descripcion}</div>
+            <div class="enlace-card-meta">
+                <span class="enlace-card-categoria">${getCategoryName(enlace.categoria)}</span>
+                <span>${fechaFormateada}</span>
+            </div>
+        `;
+        
+        container.appendChild(div);
+    });
+}
+
+function seleccionarCategoria(categoria) {
+    enlaceData.categoria = categoria;
+    
+    // Actualizar UI
+    document.querySelectorAll('.categoria-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    const selectedCard = document.querySelector(`[data-categoria="${categoria}"]`);
+    if (selectedCard) {
+        selectedCard.classList.add('selected');
+    }
+    
+    saveData();
+}
+
+function filtrarEnlaces(filtro) {
+    filtroActual = filtro;
+    
+    // Actualizar botones
+    document.querySelectorAll('.filtro-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    const selectedBtn = document.querySelector(`[data-filtro="${filtro}"]`);
+    if (selectedBtn) {
+        selectedBtn.classList.add('active');
+    }
+    
+    loadEnlacesRelacionados();
+}
+
+function abrirEnlace(url, index = null) {
+    // Incrementar contador de visitas
+    enlaceData.estadisticas.visitas++;
+    enlaceData.estadisticas.ultimaVisita = new Date().toISOString();
+    
+    if (index !== null) {
+        enlaceData.enlacesRelacionados[index].visitas = (enlaceData.enlacesRelacionados[index].visitas || 0) + 1;
+        enlaceData.enlacesRelacionados[index].ultimaVisita = new Date().toISOString();
+    }
+    
+    updateEstadisticas();
+    saveData();
+    
+    window.open(url, '_blank');
+}
+
+function copiarUrl() {
+    navigator.clipboard.writeText(enlaceData.url).then(() => {
+        // Mostrar confirmación
+        const btn = event.target.closest('button');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check"></i>';
+        btn.style.background = 'var(--bs-success)';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.background = '';
+        }, 2000);
+    });
+}
+
+function previsualizarEnlace() {
+    document.getElementById('previewUrl').textContent = enlaceData.url;
+    document.getElementById('previewIframe').src = enlaceData.url;
+    
+    const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+    modal.show();
+}
+
+function compartirEnlace() {
+    const shareData = {
+        title: enlaceData.titulo,
+        text: enlaceData.descripcion,
+        url: enlaceData.url
+    };
+    
+    if (navigator.share) {
+        navigator.share(shareData);
+    } else {
+        copiarUrl();
+    }
+}
+
+function verificarEnlace() {
+    // Simular verificación del enlace
+    const btn = event.target.closest('.enlace-btn');
+    const originalHTML = btn.innerHTML;
+    
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Verificando...';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+        enlaceData.verificado = true;
+        btn.innerHTML = '<i class="bi bi-check-circle"></i> Verificado';
+        btn.style.background = 'rgba(25, 135, 84, 0.2)';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+            btn.style.background = '';
+        }, 3000);
+        
+        saveData();
+    }, 2000);
+}
+
+function agregarEnlace() {
+    document.getElementById('nuevoTitulo').value = '';
+    document.getElementById('nuevoDescripcion').value = '';
+    document.getElementById('nuevoUrl').value = '';
+    document.getElementById('nuevaCategoria').value = 'general';
+    
+    const modal = new bootstrap.Modal(document.getElementById('nuevoEnlaceModal'));
+    modal.show();
+}
+
+function saveNuevoEnlace() {
+    const form = document.getElementById('nuevoEnlaceForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const nuevoEnlace = {
+        id: Date.now().toString(),
+        titulo: document.getElementById('nuevoTitulo').value,
+        descripcion: document.getElementById('nuevoDescripcion').value,
+        url: document.getElementById('nuevoUrl').value,
+        categoria: document.getElementById('nuevaCategoria').value,
+        tags: [],
+        favorito: false,
+        verificado: false,
+        visitas: 0,
+        fechaAgregado: new Date().toISOString(),
+        favicon: getFaviconByCategory(document.getElementById('nuevaCategoria').value)
+    };
+    
+    enlaceData.enlacesRelacionados.unshift(nuevoEnlace);
+    loadEnlacesRelacionados();
+    updateEstadisticas();
+    saveData();
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('nuevoEnlaceModal'));
+    modal.hide();
+}
+
+function toggleFavorito(index) {
+    enlaceData.enlacesRelacionados[index].favorito = !enlaceData.enlacesRelacionados[index].favorito;
+    loadEnlacesRelacionados();
+    saveData();
+}
+
+function editarEnlaceRelacionado(index) {
+    const enlace = enlaceData.enlacesRelacionados[index];
+    
+    document.getElementById('nuevoTitulo').value = enlace.titulo;
+    document.getElementById('nuevoDescripcion').value = enlace.descripcion;
+    document.getElementById('nuevoUrl').value = enlace.url;
+    document.getElementById('nuevaCategoria').value = enlace.categoria;
+    
+    // Cambiar el botón para editar
+    const modal = new bootstrap.Modal(document.getElementById('nuevoEnlaceModal'));
+    const modalTitle = document.querySelector('#nuevoEnlaceModal .modal-title');
+    const saveBtn = document.querySelector('#nuevoEnlaceModal .btn-primary');
+    
+    modalTitle.textContent = 'Editar Enlace';
+    saveBtn.textContent = 'Actualizar';
+    saveBtn.onclick = () => updateEnlaceRelacionado(index);
+    
+    modal.show();
+}
+
+function updateEnlaceRelacionado(index) {
+    const form = document.getElementById('nuevoEnlaceForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    enlaceData.enlacesRelacionados[index] = {
+        ...enlaceData.enlacesRelacionados[index],
+        titulo: document.getElementById('nuevoTitulo').value,
+        descripcion: document.getElementById('nuevoDescripcion').value,
+        url: document.getElementById('nuevoUrl').value,
+        categoria: document.getElementById('nuevaCategoria').value,
+        favicon: getFaviconByCategory(document.getElementById('nuevaCategoria').value)
+    };
+    
+    loadEnlacesRelacionados();
+    saveData();
+    
+    // Restaurar modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('nuevoEnlaceModal'));
+    const modalTitle = document.querySelector('#nuevoEnlaceModal .modal-title');
+    const saveBtn = document.querySelector('#nuevoEnlaceModal .btn-primary');
+    
+    modalTitle.textContent = 'Agregar Nuevo Enlace';
+    saveBtn.textContent = 'Agregar';
+    saveBtn.onclick = saveNuevoEnlace;
+    
+    modal.hide();
+}
+
+function eliminarEnlaceRelacionado(index) {
+    if (confirm('¿Estás seguro de que quieres eliminar este enlace?')) {
+        enlaceData.enlacesRelacionados.splice(index, 1);
+        loadEnlacesRelacionados();
+        updateEstadisticas();
+        saveData();
+    }
+}
+
+function editEnlace() {
+    document.getElementById('enlaceTituloInput').value = enlaceData.titulo;
+    document.getElementById('enlaceDescripcionInput').value = enlaceData.descripcion;
+    document.getElementById('enlaceUrlInput').value = enlaceData.url;
+    document.getElementById('enlaceCategoriaInput').value = enlaceData.categoria;
+    document.getElementById('enlaceTagsInput').value = enlaceData.tags.join(', ');
+    document.getElementById('enlaceFavoritoInput').checked = enlaceData.favorito;
+    document.getElementById('enlaceVerificadoInput').checked = enlaceData.verificado;
+    
+    const modal = new bootstrap.Modal(document.getElementById('enlaceModal'));
+    modal.show();
+}
+
+function saveEnlace() {
+    const form = document.getElementById('enlaceForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    enlaceData.titulo = document.getElementById('enlaceTituloInput').value;
+    enlaceData.descripcion = document.getElementById('enlaceDescripcionInput').value;
+    enlaceData.url = document.getElementById('enlaceUrlInput').value;
+    enlaceData.categoria = document.getElementById('enlaceCategoriaInput').value;
+    enlaceData.tags = document.getElementById('enlaceTagsInput').value.split(',').map(tag => tag.trim()).filter(tag => tag);
+    enlaceData.favorito = document.getElementById('enlaceFavoritoInput').checked;
+    enlaceData.verificado = document.getElementById('enlaceVerificadoInput').checked;
+    
+    // Actualizar UI
+    document.querySelector('.enlace-header h3').textContent = enlaceData.titulo;
+    document.querySelector('.enlace-header p').textContent = enlaceData.descripcion;
+    document.getElementById('enlaceUrl').textContent = enlaceData.url;
+    document.querySelector('.enlace-header a').href = enlaceData.url;
+    
+    seleccionarCategoria(enlaceData.categoria);
+    saveData();
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('enlaceModal'));
+    modal.hide();
+}
+
+function exportEnlaces() {
+    const data = {
+        enlacePrincipal: {
+            titulo: enlaceData.titulo,
+            descripcion: enlaceData.descripcion,
+            url: enlaceData.url,
+            categoria: enlaceData.categoria,
+            tags: enlaceData.tags,
+            favorito: enlaceData.favorito,
+            verificado: enlaceData.verificado
+        },
+        estadisticas: enlaceData.estadisticas,
+        enlacesRelacionados: enlaceData.enlacesRelacionados,
+        exportadoEn: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${enlaceData.titulo || 'enlace_educativo'}_datos.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function getFaviconByCategory(categoria) {
+    const iconos = {
+        general: 'bi-globe',
+        programacion: 'bi-code-slash',
+        matematicas: 'bi-calculator',
+        ciencias: 'bi-flask',
+        idiomas: 'bi-translate',
+        herramientas: 'bi-tools'
+    };
+    return iconos[categoria] || 'bi-link-45deg';
+}
+
+function getCategoryName(categoria) {
+    const nombres = {
+        general: 'General',
+        programacion: 'Programación',
+        matematicas: 'Matemáticas',
+        ciencias: 'Ciencias',
+        idiomas: 'Idiomas',
+        herramientas: 'Herramientas'
+    };
+    return nombres[categoria] || 'General';
+}
+
+function saveData() {
+    fetch(`/espacio-personal/api/blocks/{{ block.id }}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            title: enlaceData.titulo,
+            content: enlaceData.descripcion,
+            metadata: {
+                url: enlaceData.url,
+                category: enlaceData.categoria,
+                tags: enlaceData.tags,
+                is_favorite: enlaceData.favorito,
+                is_verified: enlaceData.verificado,
+                stats: enlaceData.estadisticas,
+                related_links: enlaceData.enlacesRelacionados
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Enlace guardado correctamente');
+        }
+    })
+    .catch(error => console.error('Error saving enlace:', error));
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+}
+</script>
+{% endblock %}

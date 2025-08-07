@@ -1,0 +1,1122 @@
+{% extends 'base.html' %}
+{% block title %}Frase Motivacional - {{ block.title }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
+<style>
+.frase-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.frase-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 60px 40px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.frase-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float-left 10s ease-in-out infinite;
+}
+
+.frase-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -30%;
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    animation: float-right 8s ease-in-out infinite reverse;
+}
+
+@keyframes float-left {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(30px, -30px) rotate(120deg); }
+    66% { transform: translate(-20px, 20px) rotate(240deg); }
+}
+
+@keyframes float-right {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-20px, -20px) rotate(180deg); }
+}
+
+.frase-quote {
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1.4;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 2;
+    font-style: italic;
+}
+
+.frase-quote::before {
+    content: '"';
+    font-size: 4rem;
+    position: absolute;
+    top: -20px;
+    left: -30px;
+    opacity: 0.3;
+    font-family: serif;
+}
+
+.frase-quote::after {
+    content: '"';
+    font-size: 4rem;
+    position: absolute;
+    bottom: -40px;
+    right: -30px;
+    opacity: 0.3;
+    font-family: serif;
+}
+
+.frase-author {
+    font-size: 1.2rem;
+    font-weight: 500;
+    opacity: 0.9;
+    position: relative;
+    z-index: 2;
+}
+
+.frase-author::before {
+    content: '— ';
+    opacity: 0.7;
+}
+
+.refresh-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 3;
+}
+
+.refresh-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(180deg);
+}
+
+.content-section {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--bs-dark);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.categorias-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.categoria-card {
+    background: var(--bs-gray-50);
+    border: 2px solid var(--bs-border-color);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.categoria-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.categoria-card.selected {
+    border-color: var(--bs-primary);
+    background: var(--bs-primary-bg);
+    color: var(--bs-primary);
+}
+
+.categoria-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s;
+}
+
+.categoria-card:hover::before {
+    left: 100%;
+}
+
+.categoria-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.categoria-nombre {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.categoria-descripcion {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.frases-favoritas {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.frase-favorita {
+    background: var(--bs-gray-50);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-left: 4px solid var(--bs-primary);
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.frase-favorita:hover {
+    background: var(--bs-primary-bg);
+    transform: translateX(5px);
+}
+
+.frase-favorita-texto {
+    font-style: italic;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    line-height: 1.5;
+}
+
+.frase-favorita-autor {
+    font-weight: 500;
+    color: var(--bs-secondary);
+    font-size: 0.9rem;
+}
+
+.frase-favorita-fecha {
+    font-size: 0.8rem;
+    color: var(--bs-secondary);
+    opacity: 0.7;
+    float: right;
+}
+
+.frase-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.frase-favorita:hover .frase-actions {
+    opacity: 1;
+}
+
+.estadisticas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.estadistica-card {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.estadistica-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.2); opacity: 0.3; }
+}
+
+.estadistica-numero {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 2;
+}
+
+.estadistica-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 2;
+}
+
+.configuracion-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.config-item {
+    background: var(--bs-gray-50);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--bs-border-color);
+}
+
+.config-label {
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.config-toggle {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    background: var(--bs-gray-300);
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.config-toggle.active {
+    background: var(--bs-success);
+}
+
+.config-toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.config-toggle.active::after {
+    transform: translateX(30px);
+}
+
+.config-select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 6px;
+    background: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--bs-secondary);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    opacity: 0.3;
+    margin-bottom: 20px;
+}
+
+.btn-floating {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--bs-primary);
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 1000;
+}
+
+.btn-floating:hover {
+    transform: scale(1.1);
+    background: var(--bs-primary-dark, #0056b3);
+}
+
+.share-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.share-btn {
+    padding: 8px 15px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 20px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.share-btn:hover {
+    background: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+}
+
+@media (max-width: 768px) {
+    .frase-container {
+        padding: 15px;
+    }
+    
+    .frase-hero {
+        padding: 40px 20px;
+        min-height: 250px;
+    }
+    
+    .frase-quote {
+        font-size: 1.5rem;
+    }
+    
+    .categorias-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .configuracion-form {
+        grid-template-columns: 1fr;
+    }
+    
+    .estadisticas-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="frase-container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-lightbulb me-2"></i>Frase Motivacional</h2>
+            <p class="text-muted">Inspiración diaria para mantener tu motivación</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="exportFrase()">
+                <i class="bi bi-download"></i> Exportar
+            </button>
+            <button class="btn btn-primary" onclick="editFrase()">
+                <i class="bi bi-gear"></i> Configurar
+            </button>
+            <a href="{{ url_for('personal_space.index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+    
+    <!-- Frase Hero Section -->
+    <div class="frase-hero" id="fraseHero">
+        <button class="refresh-btn" onclick="nuevaFrase()" title="Nueva frase">
+            <i class="bi bi-arrow-clockwise"></i>
+        </button>
+        
+        <div class="frase-quote" id="fraseTexto">
+            {{ block.content or 'El éxito es la suma de pequeños esfuerzos repetidos día tras día.' }}
+        </div>
+        
+        <div class="frase-author" id="fraseAutor">
+            {{ block.get_metadata().get('author', 'Robert Collier') }}
+        </div>
+        
+        <div class="share-options">
+            <div class="share-btn" onclick="compartirFrase()">
+                <i class="bi bi-share"></i> Compartir
+            </div>
+            <div class="share-btn" onclick="guardarFavorita()">
+                <i class="bi bi-heart"></i> Favorita
+            </div>
+            <div class="share-btn" onclick="copiarFrase()">
+                <i class="bi bi-clipboard"></i> Copiar
+            </div>
+        </div>
+    </div>
+    
+    <!-- Categorías -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-tags"></i>
+            Categorías de Inspiración
+        </div>
+        
+        <div class="categorias-grid">
+            <div class="categoria-card" onclick="seleccionarCategoria('motivacion')" data-categoria="motivacion">
+                <i class="categoria-icon bi bi-lightning-charge"></i>
+                <div class="categoria-nombre">Motivación</div>
+                <div class="categoria-descripcion">Frases para impulsar tu energía</div>
+            </div>
+            
+            <div class="categoria-card selected" onclick="seleccionarCategoria('exito')" data-categoria="exito">
+                <i class="categoria-icon bi bi-trophy"></i>
+                <div class="categoria-nombre">Éxito</div>
+                <div class="categoria-descripcion">Inspiración para alcanzar metas</div>
+            </div>
+            
+            <div class="categoria-card" onclick="seleccionarCategoria('perseverancia')" data-categoria="perseverancia">
+                <i class="categoria-icon bi bi-arrow-up-circle"></i>
+                <div class="categoria-nombre">Perseverancia</div>
+                <div class="categoria-descripcion">Fuerza para seguir adelante</div>
+            </div>
+            
+            <div class="categoria-card" onclick="seleccionarCategoria('creatividad')" data-categoria="creatividad">
+                <i class="categoria-icon bi bi-palette"></i>
+                <div class="categoria-nombre">Creatividad</div>
+                <div class="categoria-descripcion">Estimula tu lado creativo</div>
+            </div>
+            
+            <div class="categoria-card" onclick="seleccionarCategoria('liderazgo')" data-categoria="liderazgo">
+                <i class="categoria-icon bi bi-people"></i>
+                <div class="categoria-nombre">Liderazgo</div>
+                <div class="categoria-descripcion">Inspira y guía a otros</div>
+            </div>
+            
+            <div class="categoria-card" onclick="seleccionarCategoria('aprendizaje')" data-categoria="aprendizaje">
+                <i class="categoria-icon bi bi-book"></i>
+                <div class="categoria-nombre">Aprendizaje</div>
+                <div class="categoria-descripcion">Crecimiento personal</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Estadísticas -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-graph-up"></i>
+            Estadísticas de Inspiración
+        </div>
+        
+        <div class="estadisticas-grid">
+            <div class="estadistica-card">
+                <div class="estadistica-numero" id="totalFrases">0</div>
+                <div class="estadistica-label">Frases vistas</div>
+            </div>
+            
+            <div class="estadistica-card">
+                <div class="estadistica-numero" id="frasesHoy">0</div>
+                <div class="estadistica-label">Hoy</div>
+            </div>
+            
+            <div class="estadistica-card">
+                <div class="estadistica-numero" id="frasesFavoritas">0</div>
+                <div class="estadistica-label">Favoritas</div>
+            </div>
+            
+            <div class="estadistica-card">
+                <div class="estadistica-numero" id="diasConsecutivos">0</div>
+                <div class="estadistica-label">Días seguidos</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Frases Favoritas -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-heart-fill"></i>
+            Mis Frases Favoritas
+        </div>
+        
+        <div class="frases-favoritas" id="frasesFavoritasContainer">
+            <!-- Las frases favoritas se cargarán dinámicamente -->
+        </div>
+    </div>
+    
+    <!-- Configuración -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-gear"></i>
+            Configuración
+        </div>
+        
+        <div class="configuracion-form">
+            <div class="config-item">
+                <div class="config-label">
+                    <i class="bi bi-bell"></i>
+                    Notificación diaria
+                </div>
+                <div class="config-toggle" onclick="toggleConfig('notificacionDiaria')" id="toggleNotificacion"></div>
+                <small class="text-muted">Recibe una frase motivacional cada día</small>
+            </div>
+            
+            <div class="config-item">
+                <div class="config-label">
+                    <i class="bi bi-clock"></i>
+                    Hora de notificación
+                </div>
+                <select class="config-select" id="horaNotificacion">
+                    <option value="08:00">8:00 AM</option>
+                    <option value="09:00">9:00 AM</option>
+                    <option value="10:00">10:00 AM</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="18:00">6:00 PM</option>
+                    <option value="20:00">8:00 PM</option>
+                </select>
+            </div>
+            
+            <div class="config-item">
+                <div class="config-label">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Cambio automático
+                </div>
+                <div class="config-toggle active" onclick="toggleConfig('cambioAutomatico')" id="toggleCambio"></div>
+                <small class="text-muted">Cambia la frase automáticamente cada día</small>
+            </div>
+            
+            <div class="config-item">
+                <div class="config-label">
+                    <i class="bi bi-palette"></i>
+                    Tema visual
+                </div>
+                <select class="config-select" id="temaVisual">
+                    <option value="gradiente">Gradiente</option>
+                    <option value="solido">Color sólido</option>
+                    <option value="imagen">Imagen de fondo</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Button -->
+<button class="btn-floating" onclick="nuevaFrase()" title="Nueva frase">
+    <i class="bi bi-arrow-clockwise"></i>
+</button>
+
+<!-- Modal para configurar frase -->
+<div class="modal fade" id="fraseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Configurar Frase Motivacional</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="fraseForm">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="fraseTituloInput" required>
+                        <label for="fraseTituloInput">Título del bloque</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="frasePersonalizada" style="height: 100px"></textarea>
+                        <label for="frasePersonalizada">Frase personalizada (opcional)</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="autorPersonalizado">
+                        <label for="autorPersonalizado">Autor (opcional)</label>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="soloFrasesPersonales">
+                        <label class="form-check-label" for="soloFrasesPersonales">
+                            Mostrar solo mis frases personalizadas
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveFrase()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let fraseData = {
+    titulo: '{{ block.title }}',
+    fraseActual: '{{ block.content }}',
+    autorActual: '{{ block.get_metadata().get("author", "Robert Collier") }}',
+    categoriaSeleccionada: '{{ block.get_metadata().get("category", "exito") }}',
+    configuracion: {
+        notificacionDiaria: {{ block.get_metadata().get('daily_notification', false)|tojson }},
+        horaNotificacion: '{{ block.get_metadata().get("notification_time", "09:00") }}',
+        cambioAutomatico: {{ block.get_metadata().get('auto_change', true)|tojson }},
+        temaVisual: '{{ block.get_metadata().get("visual_theme", "gradiente") }}',
+        soloPersonales: {{ block.get_metadata().get('only_personal', false)|tojson }}
+    },
+    estadisticas: {
+        totalFrases: {{ block.get_metadata().get('stats', {}).get('total_phrases', 0)|tojson }},
+        frasesHoy: {{ block.get_metadata().get('stats', {}).get('today_phrases', 0)|tojson }},
+        diasConsecutivos: {{ block.get_metadata().get('stats', {}).get('consecutive_days', 0)|tojson }}
+    },
+    favoritas: {{ block.get_metadata().get('favorites', [])|tojson }},
+    personalizadas: {{ block.get_metadata().get('custom_phrases', [])|tojson }}
+};
+
+const frasesDatabase = {
+    motivacion: [
+        { texto: "El único modo de hacer un gran trabajo es amar lo que haces.", autor: "Steve Jobs" },
+        { texto: "La motivación te pone en marcha, el hábito te mantiene en movimiento.", autor: "Jim Ryun" },
+        { texto: "No esperes por el momento perfecto, toma el momento y hazlo perfecto.", autor: "Zoey Sayward" }
+    ],
+    exito: [
+        { texto: "El éxito es la suma de pequeños esfuerzos repetidos día tras día.", autor: "Robert Collier" },
+        { texto: "El éxito no es definitivo, el fracaso no es fatal: lo que cuenta es el valor para continuar.", autor: "Winston Churchill" },
+        { texto: "El éxito es ir de fracaso en fracaso sin perder el entusiasmo.", autor: "Winston Churchill" }
+    ],
+    perseverancia: [
+        { texto: "La perseverancia es la clave del éxito.", autor: "Benjamin Franklin" },
+        { texto: "No importa lo lento que vayas, siempre y cuando no te detengas.", autor: "Confucio" },
+        { texto: "Los obstáculos no pueden aplastarte; cada obstáculo cede ante una resolución firme.", autor: "Leonardo da Vinci" }
+    ],
+    creatividad: [
+        { texto: "La creatividad es la inteligencia divirtiéndose.", autor: "Albert Einstein" },
+        { texto: "La imaginación es más importante que el conocimiento.", autor: "Albert Einstein" },
+        { texto: "La creatividad requiere el coraje de desprenderse de las certezas.", autor: "Erich Fromm" }
+    ],
+    liderazgo: [
+        { texto: "Un líder es aquel que conoce el camino, va por el camino y muestra el camino.", autor: "John C. Maxwell" },
+        { texto: "El liderazgo es la capacidad de traducir la visión en realidad.", autor: "Warren Bennis" },
+        { texto: "No gestiones, lidera el cambio.", autor: "John Kotter" }
+    ],
+    aprendizaje: [
+        { texto: "El aprendizaje nunca agota la mente.", autor: "Leonardo da Vinci" },
+        { texto: "Vive como si fueras a morir mañana. Aprende como si fueras a vivir para siempre.", autor: "Mahatma Gandhi" },
+        { texto: "La educación es el arma más poderosa que puedes usar para cambiar el mundo.", autor: "Nelson Mandela" }
+    ]
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    updateEstadisticas();
+    loadFavoritas();
+    loadConfiguracion();
+    seleccionarCategoria(fraseData.categoriaSeleccionada);
+    
+    // Verificar si es un nuevo día
+    checkNuevoDia();
+    
+    // Auto-save cada 30 segundos
+    setInterval(saveData, 30000);
+});
+
+function updateEstadisticas() {
+    document.getElementById('totalFrases').textContent = fraseData.estadisticas.totalFrases;
+    document.getElementById('frasesHoy').textContent = fraseData.estadisticas.frasesHoy;
+    document.getElementById('frasesFavoritas').textContent = fraseData.favoritas.length;
+    document.getElementById('diasConsecutivos').textContent = fraseData.estadisticas.diasConsecutivos;
+}
+
+function loadFavoritas() {
+    const container = document.getElementById('frasesFavoritasContainer');
+    container.innerHTML = '';
+    
+    if (fraseData.favoritas.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-heart"></i>
+                </div>
+                <h4>No tienes frases favoritas</h4>
+                <p>Guarda tus frases inspiradoras favoritas para acceder a ellas fácilmente</p>
+            </div>
+        `;
+        return;
+    }
+    
+    fraseData.favoritas.forEach((frase, index) => {
+        const div = document.createElement('div');
+        div.className = 'frase-favorita';
+        div.onclick = () => mostrarFrase(frase.texto, frase.autor);
+        
+        const fecha = new Date(frase.fechaGuardada).toLocaleDateString();
+        
+        div.innerHTML = `
+            <div class="frase-favorita-texto">${frase.texto}</div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="frase-favorita-autor">— ${frase.autor}</div>
+                <div class="frase-favorita-fecha">${fecha}</div>
+            </div>
+            <div class="frase-actions">
+                <button class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); compartirFrase('${frase.texto}', '${frase.autor}')">
+                    <i class="bi bi-share"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); eliminarFavorita(${index})">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+        
+        container.appendChild(div);
+    });
+}
+
+function loadConfiguracion() {
+    // Cargar toggles
+    const toggleNotificacion = document.getElementById('toggleNotificacion');
+    const toggleCambio = document.getElementById('toggleCambio');
+    
+    if (fraseData.configuracion.notificacionDiaria) {
+        toggleNotificacion.classList.add('active');
+    }
+    
+    if (fraseData.configuracion.cambioAutomatico) {
+        toggleCambio.classList.add('active');
+    }
+    
+    // Cargar selects
+    document.getElementById('horaNotificacion').value = fraseData.configuracion.horaNotificacion;
+    document.getElementById('temaVisual').value = fraseData.configuracion.temaVisual;
+}
+
+function seleccionarCategoria(categoria) {
+    fraseData.categoriaSeleccionada = categoria;
+    
+    // Actualizar UI
+    document.querySelectorAll('.categoria-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    const selectedCard = document.querySelector(`[data-categoria="${categoria}"]`);
+    if (selectedCard) {
+        selectedCard.classList.add('selected');
+    }
+    
+    saveData();
+}
+
+function nuevaFrase() {
+    let frasesDisponibles = [];
+    
+    if (fraseData.configuracion.soloPersonales && fraseData.personalizadas.length > 0) {
+        frasesDisponibles = fraseData.personalizadas;
+    } else {
+        frasesDisponibles = frasesDatabase[fraseData.categoriaSeleccionada] || frasesDatabase.exito;
+        
+        // Agregar frases personalizadas si las hay
+        if (fraseData.personalizadas.length > 0) {
+            frasesDisponibles = [...frasesDisponibles, ...fraseData.personalizadas];
+        }
+    }
+    
+    // Seleccionar una frase aleatoria diferente a la actual
+    let nuevaFrase;
+    do {
+        nuevaFrase = frasesDisponibles[Math.floor(Math.random() * frasesDisponibles.length)];
+    } while (nuevaFrase.texto === fraseData.fraseActual && frasesDisponibles.length > 1);
+    
+    mostrarFrase(nuevaFrase.texto, nuevaFrase.autor);
+    
+    // Actualizar estadísticas
+    fraseData.estadisticas.totalFrases++;
+    fraseData.estadisticas.frasesHoy++;
+    updateEstadisticas();
+    
+    saveData();
+}
+
+function mostrarFrase(texto, autor) {
+    fraseData.fraseActual = texto;
+    fraseData.autorActual = autor;
+    
+    document.getElementById('fraseTexto').textContent = texto;
+    document.getElementById('fraseAutor').textContent = autor;
+    
+    // Animación de entrada
+    const hero = document.getElementById('fraseHero');
+    hero.style.opacity = '0.7';
+    hero.style.transform = 'scale(0.98)';
+    
+    setTimeout(() => {
+        hero.style.opacity = '1';
+        hero.style.transform = 'scale(1)';
+    }, 200);
+}
+
+function guardarFavorita() {
+    const fraseExiste = fraseData.favoritas.some(f => f.texto === fraseData.fraseActual);
+    
+    if (fraseExiste) {
+        alert('Esta frase ya está en tus favoritas');
+        return;
+    }
+    
+    const nuevaFavorita = {
+        id: Date.now().toString(),
+        texto: fraseData.fraseActual,
+        autor: fraseData.autorActual,
+        categoria: fraseData.categoriaSeleccionada,
+        fechaGuardada: new Date().toISOString()
+    };
+    
+    fraseData.favoritas.unshift(nuevaFavorita);
+    loadFavoritas();
+    updateEstadisticas();
+    saveData();
+    
+    // Mostrar confirmación
+    const btn = event.target.closest('.share-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="bi bi-check"></i> Guardada';
+    btn.style.background = 'var(--bs-success)';
+    btn.style.color = 'white';
+    
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.background = '';
+        btn.style.color = '';
+    }, 2000);
+}
+
+function eliminarFavorita(index) {
+    if (confirm('¿Estás seguro de que quieres eliminar esta frase favorita?')) {
+        fraseData.favoritas.splice(index, 1);
+        loadFavoritas();
+        updateEstadisticas();
+        saveData();
+    }
+}
+
+function compartirFrase(texto = fraseData.fraseActual, autor = fraseData.autorActual) {
+    const shareData = {
+        title: 'Frase Motivacional',
+        text: `"${texto}" — ${autor}`,
+        url: window.location.href
+    };
+    
+    if (navigator.share) {
+        navigator.share(shareData);
+    } else {
+        copiarFrase(texto, autor);
+    }
+}
+
+function copiarFrase(texto = fraseData.fraseActual, autor = fraseData.autorActual) {
+    const fraseCompleta = `"${texto}" — ${autor}`;
+    navigator.clipboard.writeText(fraseCompleta).then(() => {
+        // Mostrar confirmación
+        const btn = event.target.closest('.share-btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check"></i> Copiada';
+        btn.style.background = 'var(--bs-success)';
+        btn.style.color = 'white';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = '';
+            btn.style.color = '';
+        }, 2000);
+    });
+}
+
+function toggleConfig(config) {
+    fraseData.configuracion[config] = !fraseData.configuracion[config];
+    loadConfiguracion();
+    saveData();
+}
+
+function checkNuevoDia() {
+    const hoy = new Date().toDateString();
+    const ultimaVisita = localStorage.getItem('ultimaVisitaFrase');
+    
+    if (ultimaVisita !== hoy) {
+        // Es un nuevo día
+        if (ultimaVisita) {
+            // Verificar días consecutivos
+            const ayer = new Date();
+            ayer.setDate(ayer.getDate() - 1);
+            
+            if (ultimaVisita === ayer.toDateString()) {
+                fraseData.estadisticas.diasConsecutivos++;
+            } else {
+                fraseData.estadisticas.diasConsecutivos = 1;
+            }
+        } else {
+            fraseData.estadisticas.diasConsecutivos = 1;
+        }
+        
+        // Resetear contador diario
+        fraseData.estadisticas.frasesHoy = 0;
+        
+        // Cambiar frase automáticamente si está habilitado
+        if (fraseData.configuracion.cambioAutomatico) {
+            nuevaFrase();
+        }
+        
+        localStorage.setItem('ultimaVisitaFrase', hoy);
+        updateEstadisticas();
+        saveData();
+    }
+}
+
+function editFrase() {
+    document.getElementById('fraseTituloInput').value = fraseData.titulo;
+    document.getElementById('frasePersonalizada').value = '';
+    document.getElementById('autorPersonalizado').value = '';
+    document.getElementById('soloFrasesPersonales').checked = fraseData.configuracion.soloPersonales;
+    
+    const modal = new bootstrap.Modal(document.getElementById('fraseModal'));
+    modal.show();
+}
+
+function saveFrase() {
+    const form = document.getElementById('fraseForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    fraseData.titulo = document.getElementById('fraseTituloInput').value;
+    fraseData.configuracion.soloPersonales = document.getElementById('soloFrasesPersonales').checked;
+    
+    // Agregar frase personalizada si se proporcionó
+    const frasePersonalizada = document.getElementById('frasePersonalizada').value.trim();
+    const autorPersonalizado = document.getElementById('autorPersonalizado').value.trim();
+    
+    if (frasePersonalizada) {
+        const nuevaFrasePersonal = {
+            texto: frasePersonalizada,
+            autor: autorPersonalizado || 'Anónimo'
+        };
+        
+        fraseData.personalizadas.push(nuevaFrasePersonal);
+        mostrarFrase(nuevaFrasePersonal.texto, nuevaFrasePersonal.autor);
+    }
+    
+    saveData();
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('fraseModal'));
+    modal.hide();
+}
+
+function exportFrase() {
+    const data = {
+        frase: {
+            titulo: fraseData.titulo,
+            fraseActual: fraseData.fraseActual,
+            autorActual: fraseData.autorActual,
+            categoriaSeleccionada: fraseData.categoriaSeleccionada
+        },
+        configuracion: fraseData.configuracion,
+        estadisticas: fraseData.estadisticas,
+        favoritas: fraseData.favoritas,
+        personalizadas: fraseData.personalizadas,
+        exportadoEn: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${fraseData.titulo || 'frase_motivacional'}_datos.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function saveData() {
+    fetch(`/espacio-personal/api/blocks/{{ block.id }}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            title: fraseData.titulo,
+            content: fraseData.fraseActual,
+            metadata: {
+                author: fraseData.autorActual,
+                category: fraseData.categoriaSeleccionada,
+                daily_notification: fraseData.configuracion.notificacionDiaria,
+                notification_time: fraseData.configuracion.horaNotificacion,
+                auto_change: fraseData.configuracion.cambioAutomatico,
+                visual_theme: fraseData.configuracion.temaVisual,
+                only_personal: fraseData.configuracion.soloPersonales,
+                stats: fraseData.estadisticas,
+                favorites: fraseData.favoritas,
+                custom_phrases: fraseData.personalizadas
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Frase guardada correctamente');
+        }
+    })
+    .catch(error => console.error('Error saving frase:', error));
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+}
+
+// Event listeners para configuración
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('horaNotificacion').addEventListener('change', function() {
+        fraseData.configuracion.horaNotificacion = this.value;
+        saveData();
+    });
+    
+    document.getElementById('temaVisual').addEventListener('change', function() {
+        fraseData.configuracion.temaVisual = this.value;
+        saveData();
+    });
+});
+</script>
+{% endblock %}
