@@ -8,6 +8,7 @@ from flask import (
     current_app,
     jsonify,
     session,
+    abort,
 )
 from flask_login import login_user, logout_user, current_user, login_required
 from crunevo.utils.helpers import activated_required
@@ -34,6 +35,7 @@ from datetime import datetime, date, timedelta
 import pyotp
 import secrets
 from sqlalchemy import inspect
+from sqlalchemy.exc import ProgrammingError, OperationalError
 
 IS_ADMIN = os.environ.get("ADMIN_INSTANCE") == "1"
 
@@ -172,7 +174,10 @@ def perfil():
 @activated_required
 def view_profile(username):
     """Vista unificada para perfil propio y perfil público."""
-    user = User.query.filter_by(username=username).first_or_404()
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        current_app.logger.warning("User %s not found when rendering profile", username)
+        abort(404)
     is_own_profile = current_user.id == user.id
     tab = request.args.get("tab")
     force_public = request.args.get("public", "false").lower() == "true"
@@ -207,121 +212,165 @@ def view_profile(username):
     from crunevo.constants import ACHIEVEMENT_DETAILS, ACHIEVEMENT_CATEGORIES
 
     # Obtener publicaciones guardadas del usuario que se está viendo
-    saved = SavedPost.query.filter_by(user_id=user.id).all()
-    posts = [Post.query.get(sp.post_id) for sp in saved if Post.query.get(sp.post_id)]
+    try:
+        saved = SavedPost.query.filter_by(user_id=user.id).all()
+        posts = [
+            Post.query.get(sp.post_id) for sp in saved if Post.query.get(sp.post_id)
+        ]
+    except (ProgrammingError, OperationalError):
+        current_app.logger.exception("Failed to load saved posts for %s", username)
+        db.session.rollback()
+        saved = []
+        posts = []
 
     # Quick counts for profile stats
-    user_clubs = [cm.club for cm in ClubMember.query.filter_by(user_id=user.id).all()]
-    completed_missions_count = UserMission.query.filter_by(user_id=user.id).count()
+    try:
+        user_clubs = [
+            cm.club for cm in ClubMember.query.filter_by(user_id=user.id).all()
+        ]
+        completed_missions_count = UserMission.query.filter_by(user_id=user.id).count()
+    except (ProgrammingError, OperationalError):
+        current_app.logger.exception(
+            "Failed to load club or mission data for %s", username
+        )
+        db.session.rollback()
+        user_clubs = []
+        completed_missions_count = 0
 
     # Academic level and participation metrics
     user_level = min(10, (user.points or 0) // 100 + user.verification_level)
-    activity_total = (
-        len(user.post_comments or [])
-        + len(user.posts or [])
-        + Note.query.filter_by(user_id=user.id).count()
-    )
+    try:
+        notes_count = Note.query.filter_by(user_id=user.id).count()
+    except (ProgrammingError, OperationalError):
+        current_app.logger.exception("Failed to count notes for %s", username)
+        db.session.rollback()
+        notes_count = 0
+    activity_total = len(user.post_comments or []) + len(user.posts or []) + notes_count
     participation_percentage = (
         min(100, int((activity_total / 30) * 100)) if activity_total else 0
     )
 
     # Build recent activity feed
     recent_activities = []
-    for post in (
-        Post.query.filter_by(author_id=user.id)
-        .order_by(Post.created_at.desc())
-        .limit(5)
-    ):
-        recent_activities.append(
-            {
-                "timestamp": post.created_at,
-                "description": (
-                    "Publicaste en el feed"
-                    if is_own_profile
-                    else f"{user.username} publicó en el feed"
-                ),
-                "icon": "pencil-square",
-                "type_color": "primary",
-            }
-        )
-
-    for note in (
-        Note.query.filter_by(user_id=user.id).order_by(Note.created_at.desc()).limit(5)
-    ):
-        recent_activities.append(
-            {
-                "timestamp": note.created_at,
-                "description": (
-                    f"Subiste un apunte llamado {note.title}"
-                    if is_own_profile
-                    else f"{user.username} subió un apunte llamado {note.title}"
-                ),
-                "icon": "journal-text",
-                "type_color": "success",
-            }
-        )
-
-    for comment in (
-        Comment.query.filter_by(user_id=user.id)
-        .order_by(Comment.created_at.desc())
-        .limit(5)
-    ):
-        recent_activities.append(
-            {
-                "timestamp": comment.created_at,
-                "description": (
-                    "Comentaste en un apunte"
-                    if is_own_profile
-                    else f"{user.username} comentó en un apunte"
-                ),
-                "icon": "chat-left-text",
-                "type_color": "info",
-            }
-        )
-
-    for pcom in (
-        PostComment.query.filter_by(author_id=user.id)
-        .order_by(PostComment.timestamp.desc())
-        .limit(5)
-    ):
-        recent_activities.append(
-            {
-                "timestamp": pcom.timestamp,
-                "description": (
-                    "Comentaste en una publicación"
-                    if is_own_profile
-                    else f"{user.username} comentó en una publicación"
-                ),
-                "icon": "chat-left-text",
-                "type_color": "info",
-            }
-        )
-
-    for um in (
-        UserMission.query.filter_by(user_id=user.id)
-        .order_by(UserMission.completed_at.desc())
-        .limit(5)
-    ):
-        if um.mission:
-            desc = (
-                f"Completaste la misión {um.mission.description}"
-                if is_own_profile
-                else f"{user.username} completó la misión {um.mission.description}"
+    try:
+        for post in (
+            Post.query.filter_by(author_id=user.id)
+            .order_by(Post.created_at.desc())
+            .limit(5)
+        ):
+            recent_activities.append(
+                {
+                    "timestamp": post.created_at,
+                    "description": (
+                        "Publicaste en el feed"
+                        if is_own_profile
+                        else f"{user.username} publicó en el feed"
+                    ),
+                    "icon": "pencil-square",
+                    "type_color": "primary",
+                }
             )
-        else:
-            desc = (
-                "Completaste una misión"
-                if is_own_profile
-                else f"{user.username} completó una misión"
+    except (ProgrammingError, OperationalError):
+        current_app.logger.exception("Failed to load recent posts for %s", username)
+        db.session.rollback()
+
+    try:
+        for note in (
+            Note.query.filter_by(user_id=user.id)
+            .order_by(Note.created_at.desc())
+            .limit(5)
+        ):
+            recent_activities.append(
+                {
+                    "timestamp": note.created_at,
+                    "description": (
+                        f"Subiste un apunte llamado {note.title}"
+                        if is_own_profile
+                        else f"{user.username} subió un apunte llamado {note.title}"
+                    ),
+                    "icon": "journal-text",
+                    "type_color": "success",
+                }
             )
-        recent_activities.append(
-            {
-                "timestamp": um.completed_at,
-                "description": desc,
-                "icon": "trophy",
-                "type_color": "warning",
-            }
+    except (ProgrammingError, OperationalError):
+        current_app.logger.exception("Failed to load recent notes for %s", username)
+        db.session.rollback()
+
+    try:
+        for comment in (
+            Comment.query.filter_by(user_id=user.id)
+            .order_by(Comment.created_at.desc())
+            .limit(5)
+        ):
+            recent_activities.append(
+                {
+                    "timestamp": comment.created_at,
+                    "description": (
+                        "Comentaste en un apunte"
+                        if is_own_profile
+                        else f"{user.username} comentó en un apunte"
+                    ),
+                    "icon": "chat-left-text",
+                    "type_color": "info",
+                }
+            )
+    except (ProgrammingError, OperationalError):
+        current_app.logger.exception("Failed to load note comments for %s", username)
+        db.session.rollback()
+
+    try:
+        for pcom in (
+            PostComment.query.filter_by(author_id=user.id)
+            .order_by(PostComment.timestamp.desc())
+            .limit(5)
+        ):
+            recent_activities.append(
+                {
+                    "timestamp": pcom.timestamp,
+                    "description": (
+                        "Comentaste en una publicación"
+                        if is_own_profile
+                        else f"{user.username} comentó en una publicación"
+                    ),
+                    "icon": "chat-left-text",
+                    "type_color": "info",
+                }
+            )
+    except (ProgrammingError, OperationalError):
+        current_app.logger.exception("Failed to load post comments for %s", username)
+        db.session.rollback()
+
+    try:
+        for um in (
+            UserMission.query.filter_by(user_id=user.id)
+            .order_by(UserMission.completed_at.desc())
+            .limit(5)
+        ):
+            if um.mission:
+                desc = (
+                    f"Completaste la misión {um.mission.description}"
+                    if is_own_profile
+                    else f"{user.username} completó la misión {um.mission.description}"
+                )
+            else:
+                desc = (
+                    "Completaste una misión"
+                    if is_own_profile
+                    else f"{user.username} completó una misión"
+                )
+            recent_activities.append(
+                {
+                    "timestamp": um.completed_at,
+                    "description": desc,
+                    "icon": "trophy",
+                    "type_color": "warning",
+                }
+            )
+    except (ProgrammingError, OperationalError):
+        current_app.logger.exception(
+            "Failed to load mission activities for %s", username
         )
+        db.session.rollback()
 
     recent_activities.sort(key=lambda a: a["timestamp"], reverse=True)
     recent_activities = recent_activities[:5]
@@ -386,7 +435,6 @@ def view_profile(username):
             from crunevo.models import Credit
             from crunevo.constants import CreditReasons
             from sqlalchemy import func
-            from sqlalchemy.exc import ProgrammingError, OperationalError
 
             try:
                 referidos = Referral.query.filter_by(invitador_id=user.id).all()
@@ -405,29 +453,44 @@ def view_profile(username):
             )
 
     # Obtener datos adicionales para las pestañas
-    user_notes = Note.query.filter_by(user_id=user.id).order_by(Note.created_at.desc()).all()
-    user_posts = Post.query.filter_by(author_id=user.id).order_by(Post.created_at.desc()).all()
-    
+    user_notes = (
+        Note.query.filter_by(user_id=user.id).order_by(Note.created_at.desc()).all()
+    )
+    user_posts = (
+        Post.query.filter_by(author_id=user.id).order_by(Post.created_at.desc()).all()
+    )
+
     # Calcular estadísticas para las pestañas
     total_downloads = sum(note.downloads for note in user_notes)
     total_likes = sum(note.likes for note in user_notes)
-    average_rating = sum(note.rating for note in user_notes if note.rating) / len([n for n in user_notes if n.rating]) if user_notes else 0
-    
+    average_rating = (
+        sum(note.rating for note in user_notes if note.rating)
+        / len([n for n in user_notes if n.rating])
+        if user_notes
+        else 0
+    )
+
     # Datos de tienda si está habilitada
     user_products = []
     total_sales = 0
     total_earnings = 0
-    if hasattr(user, 'products'):
+    if hasattr(user, "products"):
         user_products = user.products
-        total_sales = sum(product.sales_count for product in user_products if hasattr(product, 'sales_count'))
-        total_earnings = sum(product.earnings for product in user_products if hasattr(product, 'earnings'))
+        total_sales = sum(
+            product.sales_count
+            for product in user_products
+            if hasattr(product, "sales_count")
+        )
+        total_earnings = sum(
+            product.earnings
+            for product in user_products
+            if hasattr(product, "earnings")
+        )
 
     # Determinar qué plantilla usar
     if not is_own_profile or force_public:
         return render_template(
-            "perfil_publico.html", 
-            user=user, 
-            ACHIEVEMENT_DETAILS=ACHIEVEMENT_DETAILS
+            "perfil_publico.html", user=user, ACHIEVEMENT_DETAILS=ACHIEVEMENT_DETAILS
         )
     else:
         return render_template(
