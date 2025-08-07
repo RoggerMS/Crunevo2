@@ -1087,22 +1087,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const profileInput = document.getElementById('avatarInput');
-  const profilePreview = document.getElementById('avatarPreview');
-  const profileSaveBtn = document.getElementById('saveAvatarBtn');
   const triggerBtn = document.getElementById('editAvatarBtn');
-  if (triggerBtn && profileInput && profilePreview && profileSaveBtn) {
-    triggerBtn.onclick = () => profileInput.click();
-    profileInput.onchange = () => {
+  if (triggerBtn && profileInput) {
+    triggerBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      profileInput.click();
+    });
+    profileInput.addEventListener('change', () => {
       const file = profileInput.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          profilePreview.src = e.target.result;
-          profileSaveBtn.classList.remove('d-none');
-        };
-        reader.readAsDataURL(file);
+        uploadAvatar(file);
       }
-    };
+    });
   }
 
 
