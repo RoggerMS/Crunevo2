@@ -8,6 +8,8 @@ load_dotenv()
 
 class Config:
     DEBUG = os.getenv("FLASK_DEBUG", "0").lower() in ("1", "true", "yes")
+    FLASK_ENV = os.getenv("FLASK_ENV", "development")
+    IS_PRODUCTION = FLASK_ENV == "production"
 
     SECRET_KEY = os.getenv("SECRET_KEY")
     if not SECRET_KEY:
@@ -21,8 +23,8 @@ class Config:
                 "SECRET_KEY environment variable is required in production"
             )
 
-    # Secure session cookies in production, allow HTTP in debug
-    SESSION_COOKIE_SECURE = not DEBUG
+    # Secure session cookies in production, allow HTTP in development
+    SESSION_COOKIE_SECURE = IS_PRODUCTION
     SESSION_COOKIE_SAMESITE = "Lax"
 
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///data.db").replace(
