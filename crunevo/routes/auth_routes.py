@@ -396,6 +396,9 @@ def view_profile(username):
         else:
             locked_achievements.append((code, info))
 
+    unlocked_count = len(unlocked_achievements)
+    locked_count = len(locked_achievements)
+
     misiones = None
     progresos = None
     group_missions = None
@@ -529,7 +532,9 @@ def view_profile(username):
             user_achievements_map=user_achievements_map,
             user_achievements=all_user_achievements,
             unlocked_achievements=unlocked_achievements,
+            unlocked_count=unlocked_count,
             locked_achievements=locked_achievements,
+            locked_count=locked_count,
             user_notes=user_notes,
             user_posts=user_posts,
             total_downloads=total_downloads,
