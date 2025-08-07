@@ -1,0 +1,117 @@
+<div class="bitacora-content">
+    {% set metadata = block.get_metadata() %}
+    
+    <!-- Entrada más reciente -->
+    {% set entries = metadata.get('entries', []) %}
+    {% if entries %}
+        {% set latest_entry = entries[-1] %}
+        <div class="bitacora-latest-entry">
+            <div class="entry-header">
+                <span class="entry-date">{{ latest_entry.date }}</span>
+                <span class="entry-mood mood-{{ latest_entry.mood or 'neutral' }}">
+                    <i class="bi bi-emoji-{{ latest_entry.mood or 'neutral' }}"></i>
+                </span>
+            </div>
+            <div class="entry-content">
+                <p>{{ latest_entry.content[:100] }}{% if latest_entry.content|length > 100 %}...{% endif %}</p>
+            </div>
+            {% if latest_entry.tags %}
+            <div class="entry-tags">
+                {% for tag in latest_entry.tags[:3] %}
+                <span class="tag-pill">{{ tag }}</span>
+                {% endfor %}
+                {% if latest_entry.tags|length > 3 %}
+                <span class="tag-pill">+{{ latest_entry.tags|length - 3 }}</span>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="bitacora-empty">
+            <i class="bi bi-journal-plus text-muted"></i>
+            <p class="text-muted">Comienza tu bitácora académica</p>
+        </div>
+    {% endif %}
+    
+    <!-- Estadísticas rápidas -->
+    <div class="bitacora-stats">
+        <div class="stat-item">
+            <span class="stat-number">{{ entries|length }}</span>
+            <span class="stat-label">Entradas</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">{{ metadata.get('streak', 0) }}</span>
+            <span class="stat-label">Racha</span>
+        </div>
+    </div>
+    
+    <button class="btn btn-sm btn-outline-primary mt-2" onclick="openBlock({{ block.id }})">
+        <i class="bi bi-plus"></i>
+        Nueva entrada
+    </button>
+</div>
+
+<style>
+.bitacora-latest-entry {
+    border-left: 3px solid var(--bs-primary);
+    padding-left: 12px;
+    margin-bottom: 12px;
+}
+
+.entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.entry-date {
+    font-size: 0.85rem;
+    color: var(--bs-secondary);
+    font-weight: 500;
+}
+
+.entry-mood {
+    font-size: 1.1rem;
+}
+
+.mood-happy { color: #10b981; }
+.mood-neutral { color: #6b7280; }
+.mood-sad { color: #ef4444; }
+.mood-excited { color: #f59e0b; }
+.mood-stressed { color: #8b5cf6; }
+
+.bitacora-stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--bs-primary);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--bs-secondary);
+}
+
+.bitacora-empty {
+    text-align: center;
+    padding: 20px;
+}
+
+.bitacora-empty i {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+</style>

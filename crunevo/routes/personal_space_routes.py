@@ -138,6 +138,22 @@ def create_block():
         metadata.setdefault("grouped_blocks", [])
         metadata.setdefault("subject", "")
         metadata.setdefault("expandable", True)
+    elif data["type"] == "bitacora":
+        metadata.setdefault("entries", [])
+        metadata.setdefault("streak", 0)
+        metadata.setdefault("mood_tracking", True)
+    elif data["type"] == "nota_enriquecida":
+        metadata.setdefault("blocks", [])
+        metadata.setdefault("template_type", "")
+        metadata.setdefault("tags", [])
+    elif data["type"] == "bloque_personalizado":
+        metadata.setdefault("subject", "")
+        metadata.setdefault("subject_code", "")
+        metadata.setdefault("professor", "")
+        metadata.setdefault("elementos", [])
+        metadata.setdefault("completed_tasks", 0)
+        metadata.setdefault("pending_tasks", 0)
+        metadata.setdefault("grade_average", 0)
 
     db.session.add(block)
     db.session.commit()
@@ -353,6 +369,9 @@ def get_default_icon(block_type):
         "kanban": "bi-kanban",
         "objetivo": "bi-trophy",
         "bloque": "bi-grid-3x3",
+        "bitacora": "bi-journal-text",
+        "nota_enriquecida": "bi-file-richtext",
+        "bloque_personalizado": "bi-collection",
     }
     return icons.get(block_type, "bi-card-text")
 

@@ -1,0 +1,204 @@
+<div class="nota-enriquecida-content">
+    {% set metadata = block.get_metadata() %}
+    
+    <!-- Header con icono y título -->
+    <div class="nota-header">
+        <div class="nota-icon">
+            <i class="{{ metadata.get('icon', 'bi bi-file-text') }}"></i>
+        </div>
+        <div class="nota-title-section">
+            <h6 class="nota-title">{{ block.title or 'Nota sin título' }}</h6>
+            {% if metadata.get('template_type') %}
+            <span class="template-badge">{{ metadata.get('template_type')|title }}</span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Contenido preview -->
+    <div class="nota-preview">
+        {% if metadata.get('blocks') %}
+            {% set content_blocks = metadata.get('blocks', []) %}
+            {% for content_block in content_blocks[:3] %}
+                <div class="content-block content-{{ content_block.type }}">
+                    {% if content_block.type == 'heading' %}
+                        <h6 class="block-heading">{{ content_block.content[:50] }}{% if content_block.content|length > 50 %}...{% endif %}</h6>
+                    {% elif content_block.type == 'text' %}
+                        <p class="block-text">{{ content_block.content[:80] }}{% if content_block.content|length > 80 %}...{% endif %}</p>
+                    {% elif content_block.type == 'list' %}
+                        <ul class="block-list">
+                            {% for item in content_block.items[:2] %}
+                            <li>{{ item[:40] }}{% if item|length > 40 %}...{% endif %}</li>
+                            {% endfor %}
+                            {% if content_block.items|length > 2 %}
+                            <li class="text-muted">+{{ content_block.items|length - 2 }} más...</li>
+                            {% endif %}
+                        </ul>
+                    {% elif content_block.type == 'code' %}
+                        <div class="block-code">
+                            <code>{{ content_block.content[:60] }}{% if content_block.content|length > 60 %}...{% endif %}</code>
+                        </div>
+                    {% elif content_block.type == 'quote' %}
+                        <blockquote class="block-quote">
+                            {{ content_block.content[:70] }}{% if content_block.content|length > 70 %}...{% endif %}
+                        </blockquote>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% if content_blocks|length > 3 %}
+            <div class="more-blocks">
+                <span class="text-muted">+{{ content_blocks|length - 3 }} bloques más...</span>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="nota-empty">
+                <i class="bi bi-plus-circle text-muted"></i>
+                <p class="text-muted">Comienza a escribir tu nota</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Metadatos -->
+    <div class="nota-metadata">
+        {% if metadata.get('tags') %}
+        <div class="nota-tags">
+            {% for tag in metadata.get('tags', [])[:3] %}
+            <span class="tag-pill">{{ tag }}</span>
+            {% endfor %}
+            {% if metadata.get('tags')|length > 3 %}
+            <span class="tag-pill">+{{ metadata.get('tags')|length - 3 }}</span>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <div class="nota-stats">
+            <span class="stat-item">
+                <i class="bi bi-file-text"></i>
+                {{ metadata.get('blocks', [])|length }} bloques
+            </span>
+            <span class="stat-item">
+                <i class="bi bi-clock"></i>
+                {{ block.updated_at.strftime('%d/%m') }}
+            </span>
+        </div>
+    </div>
+    
+    <button class="btn btn-sm btn-outline-primary mt-2" onclick="openBlock({{ block.id }})">
+        <i class="bi bi-pencil"></i>
+        Editar nota
+    </button>
+</div>
+
+<style>
+.nota-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.nota-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bs-primary-bg);
+    border-radius: 6px;
+    color: var(--bs-primary);
+}
+
+.nota-title {
+    margin: 0;
+    font-weight: 600;
+}
+
+.template-badge {
+    font-size: 0.7rem;
+    background: var(--bs-success-bg);
+    color: var(--bs-success);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.content-block {
+    margin-bottom: 8px;
+    padding: 6px 0;
+}
+
+.block-heading {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--bs-dark);
+}
+
+.block-text {
+    font-size: 0.85rem;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.block-list {
+    font-size: 0.85rem;
+    margin: 0;
+    padding-left: 16px;
+}
+
+.block-list li {
+    margin-bottom: 2px;
+}
+
+.block-code {
+    background: var(--bs-gray-100);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+}
+
+.block-quote {
+    border-left: 3px solid var(--bs-primary);
+    padding-left: 12px;
+    margin: 0;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--bs-secondary);
+}
+
+.more-blocks {
+    text-align: center;
+    padding: 8px;
+    font-size: 0.8rem;
+}
+
+.nota-metadata {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.nota-stats {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.stat-item {
+    font-size: 0.75rem;
+    color: var(--bs-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.nota-empty {
+    text-align: center;
+    padding: 20px;
+}
+
+.nota-empty i {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+</style>

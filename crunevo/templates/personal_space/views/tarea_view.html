@@ -1,0 +1,1051 @@
+{% extends 'base.html' %}
+{% block title %}Tarea - {{ block.title }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
+<style>
+.tarea-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.tarea-header {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.tarea-header.completada {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.tarea-header.vencida {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.tarea-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.1); opacity: 0.3; }
+}
+
+.tarea-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.tarea-checkbox {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.tarea-checkbox.completada {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.tarea-checkbox i {
+    font-size: 1.5rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tarea-checkbox.completada i {
+    opacity: 1;
+}
+
+.tarea-details h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.tarea-meta {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.meta-item {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.prioridad-alta {
+    background: rgba(255, 107, 107, 0.3);
+}
+
+.prioridad-media {
+    background: rgba(255, 193, 7, 0.3);
+}
+
+.prioridad-baja {
+    background: rgba(40, 167, 69, 0.3);
+}
+
+.content-section {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--bs-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.descripcion-editor {
+    min-height: 120px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    padding: 15px;
+    font-family: inherit;
+    line-height: 1.6;
+    resize: vertical;
+    width: 100%;
+}
+
+.descripcion-editor:focus {
+    outline: none;
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.subtareas-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.subtarea-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background: var(--bs-gray-50);
+    transition: all 0.2s;
+}
+
+.subtarea-item:hover {
+    background: var(--bs-gray-100);
+    transform: translateX(5px);
+}
+
+.subtarea-item.completada {
+    background: var(--bs-success-bg);
+    border-color: var(--bs-success);
+}
+
+.subtarea-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--bs-border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.subtarea-checkbox.completada {
+    background: var(--bs-success);
+    border-color: var(--bs-success);
+    color: white;
+}
+
+.subtarea-text {
+    flex-grow: 1;
+    font-weight: 500;
+}
+
+.subtarea-text.completada {
+    text-decoration: line-through;
+    color: var(--bs-secondary);
+}
+
+.subtarea-actions {
+    display: flex;
+    gap: 5px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.subtarea-item:hover .subtarea-actions {
+    opacity: 1;
+}
+
+.archivos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.archivo-card {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.2s;
+    background: var(--bs-gray-50);
+}
+
+.archivo-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.archivo-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: var(--bs-primary);
+}
+
+.archivo-nombre {
+    font-weight: 600;
+    margin-bottom: 5px;
+    word-break: break-word;
+}
+
+.archivo-info {
+    font-size: 0.85rem;
+    color: var(--bs-secondary);
+    margin-bottom: 10px;
+}
+
+.archivo-actions {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+}
+
+.upload-zone {
+    border: 2px dashed var(--bs-border-color);
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--bs-gray-50);
+}
+
+.upload-zone:hover {
+    border-color: var(--bs-primary);
+    background: var(--bs-primary-bg);
+}
+
+.upload-zone.dragover {
+    border-color: var(--bs-success);
+    background: var(--bs-success-bg);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: var(--bs-secondary);
+    margin-bottom: 15px;
+}
+
+.comentarios-timeline {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.comentario-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+    padding: 12px;
+    background: var(--bs-gray-50);
+    border-radius: 8px;
+}
+
+.comentario-avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--bs-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.comentario-content {
+    flex-grow: 1;
+}
+
+.comentario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.comentario-autor {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.comentario-fecha {
+    font-size: 0.8rem;
+    color: var(--bs-secondary);
+}
+
+.comentario-texto {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.add-comentario {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.comentario-input {
+    flex-grow: 1;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+}
+
+.comentario-input:focus {
+    outline: none;
+    border-color: var(--bs-primary);
+}
+
+.btn-floating {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--bs-primary);
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 1000;
+}
+
+.btn-floating:hover {
+    transform: scale(1.1);
+    background: var(--bs-primary-dark, #0056b3);
+}
+
+.modal-content {
+    border-radius: 12px;
+}
+
+.form-floating {
+    margin-bottom: 15px;
+}
+
+.progress-indicator {
+    margin-top: 20px;
+    padding: 15px;
+    background: var(--bs-info-bg);
+    border-radius: 8px;
+    border-left: 4px solid var(--bs-info);
+}
+
+.progress-text {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.progress-bar-custom {
+    height: 8px;
+    background: var(--bs-gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--bs-info);
+    transition: width 0.3s;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tarea-container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-clipboard-check me-2"></i>Gestión de Tarea</h2>
+            <p class="text-muted">Organiza tu tarea con subtareas, archivos y seguimiento</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="exportTarea()">
+                <i class="bi bi-download"></i> Exportar
+            </button>
+            <button class="btn btn-primary" onclick="editTarea()">
+                <i class="bi bi-gear"></i> Configurar
+            </button>
+            <a href="{{ url_for('personal_space.index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+    
+    <!-- Tarea Header -->
+    <div class="tarea-header" id="tareaHeader">
+        <div class="tarea-info">
+            <div class="tarea-checkbox" id="tareaCheckbox" onclick="toggleTareaCompletada()">
+                <i class="bi bi-check"></i>
+            </div>
+            <div class="tarea-details">
+                <h2 id="tareaTitulo">{{ block.title }}</h2>
+                <div class="tarea-meta">
+                    <div class="meta-item" id="prioridadBadge">
+                        <i class="bi bi-flag"></i>
+                        <span id="prioridadText">{{ block.get_metadata().get('priority', 'media').title() }}</span>
+                    </div>
+                    <div class="meta-item" id="categoriaBadge">
+                        <i class="bi bi-tag"></i>
+                        <span id="categoriaText">{{ block.get_metadata().get('category', 'General') }}</span>
+                    </div>
+                    <div class="meta-item" id="fechaBadge">
+                        <i class="bi bi-calendar"></i>
+                        <span id="fechaText">{{ block.get_metadata().get('due_date', 'Sin fecha') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Progress Indicator -->
+        <div class="progress-indicator" id="progressIndicator">
+            <div class="progress-text">Progreso de la tarea: <span id="progressPercentage">0%</span></div>
+            <div class="progress-bar-custom">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Descripción -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-file-text"></i>
+            Descripción
+        </div>
+        <textarea class="descripcion-editor" id="descripcionEditor" 
+                  placeholder="Describe los detalles de tu tarea...">{{ block.content }}</textarea>
+    </div>
+    
+    <!-- Subtareas -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-list-check"></i>
+            Subtareas
+        </div>
+        
+        <ul class="subtareas-list" id="subtareasList">
+            <!-- Las subtareas se cargarán dinámicamente -->
+        </ul>
+        
+        <button class="btn btn-outline-primary" onclick="addSubtarea()">
+            <i class="bi bi-plus-circle"></i> Agregar Subtarea
+        </button>
+    </div>
+    
+    <!-- Archivos Adjuntos -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-paperclip"></i>
+            Archivos Adjuntos
+        </div>
+        
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">
+                <i class="bi bi-cloud-upload"></i>
+            </div>
+            <h5>Arrastra archivos aquí o haz clic para seleccionar</h5>
+            <p class="text-muted">Soporta documentos, imágenes y archivos de hasta 10MB</p>
+        </div>
+        
+        <input type="file" id="fileInput" multiple style="display: none" onchange="handleFileSelect(event)">
+        
+        <div class="archivos-grid" id="archivosGrid">
+            <!-- Los archivos se cargarán dinámicamente -->
+        </div>
+    </div>
+    
+    <!-- Comentarios y Notas -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-chat-dots"></i>
+            Comentarios y Notas
+        </div>
+        
+        <div class="comentarios-timeline" id="comentariosTimeline">
+            <!-- Los comentarios se cargarán dinámicamente -->
+        </div>
+        
+        <div class="add-comentario">
+            <input type="text" class="comentario-input" id="comentarioInput" 
+                   placeholder="Agregar un comentario o nota..." 
+                   onkeypress="handleComentarioKeypress(event)">
+            <button class="btn btn-primary" onclick="addComentario()">
+                <i class="bi bi-send"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Button -->
+<button class="btn-floating" onclick="toggleTareaCompletada()" title="Marcar como completada">
+    <i class="bi bi-check" id="floatingIcon"></i>
+</button>
+
+<!-- Modal para configurar tarea -->
+<div class="modal fade" id="tareaModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Configurar Tarea</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="tareaForm">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="tareaTituloInput" required>
+                        <label for="tareaTituloInput">Título de la tarea</label>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select class="form-select" id="tareaPrioridad">
+                                    <option value="baja">Baja</option>
+                                    <option value="media" selected>Media</option>
+                                    <option value="alta">Alta</option>
+                                </select>
+                                <label for="tareaPrioridad">Prioridad</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="tareaCategoria">
+                                <label for="tareaCategoria">Categoría</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-floating">
+                        <input type="datetime-local" class="form-control" id="tareaFechaLimite">
+                        <label for="tareaFechaLimite">Fecha límite</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveTarea()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let tareaData = {
+    titulo: '{{ block.title }}',
+    descripcion: '{{ block.content }}',
+    completada: {{ block.get_metadata().get('completed', false)|tojson }},
+    prioridad: '{{ block.get_metadata().get("priority", "media") }}',
+    categoria: '{{ block.get_metadata().get("category", "General") }}',
+    fechaLimite: '{{ block.get_metadata().get("due_date", "") }}',
+    subtareas: {{ block.get_metadata().get('subtasks', [])|tojson }},
+    archivos: {{ block.get_metadata().get('attachments', [])|tojson }},
+    comentarios: {{ block.get_metadata().get('comments', [])|tojson }}
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    updateTareaHeader();
+    loadSubtareas();
+    loadArchivos();
+    loadComentarios();
+    setupEventListeners();
+    updateProgress();
+    
+    // Auto-save cada 30 segundos
+    setInterval(saveData, 30000);
+});
+
+function setupEventListeners() {
+    // Descripción editor
+    document.getElementById('descripcionEditor').addEventListener('input', function() {
+        tareaData.descripcion = this.value;
+        debounceAutoSave();
+    });
+    
+    // Drag and drop para archivos
+    const uploadZone = document.getElementById('uploadZone');
+    
+    uploadZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('dragover');
+    });
+    
+    uploadZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+    });
+    
+    uploadZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+        handleFileSelect({ target: { files: e.dataTransfer.files } });
+    });
+}
+
+function updateTareaHeader() {
+    const header = document.getElementById('tareaHeader');
+    const checkbox = document.getElementById('tareaCheckbox');
+    const titulo = document.getElementById('tareaTitulo');
+    const prioridadBadge = document.getElementById('prioridadBadge');
+    const prioridadText = document.getElementById('prioridadText');
+    
+    titulo.textContent = tareaData.titulo;
+    prioridadText.textContent = tareaData.prioridad.charAt(0).toUpperCase() + tareaData.prioridad.slice(1);
+    
+    // Actualizar clases de prioridad
+    prioridadBadge.className = `meta-item prioridad-${tareaData.prioridad}`;
+    
+    // Estado de completada
+    if (tareaData.completada) {
+        header.classList.add('completada');
+        checkbox.classList.add('completada');
+    } else {
+        header.classList.remove('completada');
+        checkbox.classList.remove('completada');
+        
+        // Verificar si está vencida
+        if (tareaData.fechaLimite && new Date(tareaData.fechaLimite) < new Date()) {
+            header.classList.add('vencida');
+        }
+    }
+    
+    // Actualizar fecha
+    const fechaText = document.getElementById('fechaText');
+    if (tareaData.fechaLimite) {
+        const fecha = new Date(tareaData.fechaLimite);
+        fechaText.textContent = fecha.toLocaleDateString() + ' ' + fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    } else {
+        fechaText.textContent = 'Sin fecha';
+    }
+    
+    // Actualizar categoría
+    document.getElementById('categoriaText').textContent = tareaData.categoria || 'General';
+}
+
+function loadSubtareas() {
+    const container = document.getElementById('subtareasList');
+    container.innerHTML = '';
+    
+    if (tareaData.subtareas.length === 0) {
+        container.innerHTML = `
+            <li class="text-center text-muted py-3">
+                <i class="bi bi-list-check" style="font-size: 2rem; opacity: 0.5;"></i>
+                <p class="mt-2">No hay subtareas agregadas</p>
+            </li>
+        `;
+        return;
+    }
+    
+    tareaData.subtareas.forEach((subtarea, index) => {
+        const li = document.createElement('li');
+        li.className = `subtarea-item ${subtarea.completada ? 'completada' : ''}`;
+        
+        li.innerHTML = `
+            <div class="subtarea-checkbox ${subtarea.completada ? 'completada' : ''}" 
+                 onclick="toggleSubtarea(${index})">
+                ${subtarea.completada ? '<i class="bi bi-check"></i>' : ''}
+            </div>
+            <span class="subtarea-text ${subtarea.completada ? 'completada' : ''}">${subtarea.texto}</span>
+            <div class="subtarea-actions">
+                <button class="btn btn-sm btn-outline-primary" onclick="editSubtarea(${index})">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteSubtarea(${index})">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+        
+        container.appendChild(li);
+    });
+}
+
+function loadArchivos() {
+    const container = document.getElementById('archivosGrid');
+    container.innerHTML = '';
+    
+    if (tareaData.archivos.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-muted py-4" style="grid-column: 1 / -1;">
+                <i class="bi bi-paperclip" style="font-size: 2rem; opacity: 0.5;"></i>
+                <p class="mt-2">No hay archivos adjuntos</p>
+            </div>
+        `;
+        return;
+    }
+    
+    tareaData.archivos.forEach((archivo, index) => {
+        const div = document.createElement('div');
+        div.className = 'archivo-card';
+        
+        const icon = getFileIcon(archivo.tipo);
+        const size = formatFileSize(archivo.tamaño);
+        
+        div.innerHTML = `
+            <div class="archivo-icon">
+                <i class="${icon}"></i>
+            </div>
+            <div class="archivo-nombre">${archivo.nombre}</div>
+            <div class="archivo-info">${size} • ${archivo.tipo}</div>
+            <div class="archivo-actions">
+                <button class="btn btn-sm btn-outline-primary" onclick="downloadArchivo(${index})">
+                    <i class="bi bi-download"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteArchivo(${index})">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+        
+        container.appendChild(div);
+    });
+}
+
+function loadComentarios() {
+    const container = document.getElementById('comentariosTimeline');
+    container.innerHTML = '';
+    
+    if (tareaData.comentarios.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-muted py-3">
+                <i class="bi bi-chat-dots" style="font-size: 2rem; opacity: 0.5;"></i>
+                <p class="mt-2">No hay comentarios agregados</p>
+            </div>
+        `;
+        return;
+    }
+    
+    tareaData.comentarios.forEach(comentario => {
+        const div = document.createElement('div');
+        div.className = 'comentario-item';
+        
+        const fecha = new Date(comentario.fecha).toLocaleString();
+        const inicial = comentario.autor.charAt(0).toUpperCase();
+        
+        div.innerHTML = `
+            <div class="comentario-avatar">${inicial}</div>
+            <div class="comentario-content">
+                <div class="comentario-header">
+                    <span class="comentario-autor">${comentario.autor}</span>
+                    <span class="comentario-fecha">${fecha}</span>
+                </div>
+                <div class="comentario-texto">${comentario.texto}</div>
+            </div>
+        `;
+        
+        container.appendChild(div);
+    });
+    
+    // Scroll al final
+    container.scrollTop = container.scrollHeight;
+}
+
+function updateProgress() {
+    const totalSubtareas = tareaData.subtareas.length;
+    const completadas = tareaData.subtareas.filter(s => s.completada).length;
+    const progreso = totalSubtareas > 0 ? (completadas / totalSubtareas) * 100 : (tareaData.completada ? 100 : 0);
+    
+    document.getElementById('progressPercentage').textContent = `${Math.round(progreso)}%`;
+    document.getElementById('progressFill').style.width = `${progreso}%`;
+}
+
+function toggleTareaCompletada() {
+    tareaData.completada = !tareaData.completada;
+    updateTareaHeader();
+    updateProgress();
+    saveData();
+}
+
+function addSubtarea() {
+    const texto = prompt('Ingresa el texto de la subtarea:');
+    if (texto && texto.trim()) {
+        tareaData.subtareas.push({
+            id: Date.now().toString(),
+            texto: texto.trim(),
+            completada: false
+        });
+        loadSubtareas();
+        updateProgress();
+        saveData();
+    }
+}
+
+function toggleSubtarea(index) {
+    tareaData.subtareas[index].completada = !tareaData.subtareas[index].completada;
+    loadSubtareas();
+    updateProgress();
+    saveData();
+}
+
+function editSubtarea(index) {
+    const nuevoTexto = prompt('Editar subtarea:', tareaData.subtareas[index].texto);
+    if (nuevoTexto && nuevoTexto.trim()) {
+        tareaData.subtareas[index].texto = nuevoTexto.trim();
+        loadSubtareas();
+        saveData();
+    }
+}
+
+function deleteSubtarea(index) {
+    if (confirm('¿Estás seguro de que quieres eliminar esta subtarea?')) {
+        tareaData.subtareas.splice(index, 1);
+        loadSubtareas();
+        updateProgress();
+        saveData();
+    }
+}
+
+function handleFileSelect(event) {
+    const files = Array.from(event.target.files);
+    
+    files.forEach(file => {
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+            alert(`El archivo ${file.name} es demasiado grande. Máximo 10MB.`);
+            return;
+        }
+        
+        const archivo = {
+            id: Date.now().toString() + Math.random(),
+            nombre: file.name,
+            tipo: file.type || 'application/octet-stream',
+            tamaño: file.size,
+            fechaSubida: new Date().toISOString(),
+            // En una implementación real, aquí se subiría el archivo al servidor
+            url: URL.createObjectURL(file)
+        };
+        
+        tareaData.archivos.push(archivo);
+    });
+    
+    loadArchivos();
+    saveData();
+    
+    // Limpiar input
+    event.target.value = '';
+}
+
+function deleteArchivo(index) {
+    if (confirm('¿Estás seguro de que quieres eliminar este archivo?')) {
+        tareaData.archivos.splice(index, 1);
+        loadArchivos();
+        saveData();
+    }
+}
+
+function downloadArchivo(index) {
+    const archivo = tareaData.archivos[index];
+    if (archivo.url) {
+        const a = document.createElement('a');
+        a.href = archivo.url;
+        a.download = archivo.nombre;
+        a.click();
+    }
+}
+
+function addComentario() {
+    const input = document.getElementById('comentarioInput');
+    const texto = input.value.trim();
+    
+    if (texto) {
+        const comentario = {
+            id: Date.now().toString(),
+            autor: '{{ current_user.username }}',
+            texto: texto,
+            fecha: new Date().toISOString()
+        };
+        
+        tareaData.comentarios.push(comentario);
+        input.value = '';
+        loadComentarios();
+        saveData();
+    }
+}
+
+function handleComentarioKeypress(event) {
+    if (event.key === 'Enter') {
+        addComentario();
+    }
+}
+
+function editTarea() {
+    document.getElementById('tareaTituloInput').value = tareaData.titulo;
+    document.getElementById('tareaPrioridad').value = tareaData.prioridad;
+    document.getElementById('tareaCategoria').value = tareaData.categoria;
+    document.getElementById('tareaFechaLimite').value = tareaData.fechaLimite;
+    
+    const modal = new bootstrap.Modal(document.getElementById('tareaModal'));
+    modal.show();
+}
+
+function saveTarea() {
+    const form = document.getElementById('tareaForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    tareaData.titulo = document.getElementById('tareaTituloInput').value;
+    tareaData.prioridad = document.getElementById('tareaPrioridad').value;
+    tareaData.categoria = document.getElementById('tareaCategoria').value;
+    tareaData.fechaLimite = document.getElementById('tareaFechaLimite').value;
+    
+    updateTareaHeader();
+    saveData();
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('tareaModal'));
+    modal.hide();
+}
+
+function getFileIcon(tipo) {
+    if (tipo.startsWith('image/')) return 'bi bi-file-image';
+    if (tipo.includes('pdf')) return 'bi bi-file-pdf';
+    if (tipo.includes('word')) return 'bi bi-file-word';
+    if (tipo.includes('excel') || tipo.includes('spreadsheet')) return 'bi bi-file-excel';
+    if (tipo.includes('powerpoint') || tipo.includes('presentation')) return 'bi bi-file-ppt';
+    if (tipo.includes('zip') || tipo.includes('rar')) return 'bi bi-file-zip';
+    return 'bi bi-file-earmark';
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+let autoSaveTimeout;
+function debounceAutoSave() {
+    clearTimeout(autoSaveTimeout);
+    autoSaveTimeout = setTimeout(saveData, 2000);
+}
+
+function saveData() {
+    fetch(`/espacio-personal/api/blocks/{{ block.id }}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            title: tareaData.titulo,
+            content: tareaData.descripcion,
+            metadata: {
+                completed: tareaData.completada,
+                priority: tareaData.prioridad,
+                category: tareaData.categoria,
+                due_date: tareaData.fechaLimite,
+                subtasks: tareaData.subtareas,
+                attachments: tareaData.archivos,
+                comments: tareaData.comentarios
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Tarea guardada correctamente');
+        }
+    })
+    .catch(error => console.error('Error saving tarea:', error));
+}
+
+function exportTarea() {
+    const data = {
+        tarea: {
+            titulo: tareaData.titulo,
+            descripcion: tareaData.descripcion,
+            completada: tareaData.completada,
+            prioridad: tareaData.prioridad,
+            categoria: tareaData.categoria,
+            fechaLimite: tareaData.fechaLimite
+        },
+        subtareas: tareaData.subtareas,
+        archivos: tareaData.archivos.map(a => ({ nombre: a.nombre, tipo: a.tipo, tamaño: a.tamaño })),
+        comentarios: tareaData.comentarios,
+        estadisticas: {
+            totalSubtareas: tareaData.subtareas.length,
+            subtareasCompletadas: tareaData.subtareas.filter(s => s.completada).length,
+            progreso: tareaData.subtareas.length > 0 ? (tareaData.subtareas.filter(s => s.completada).length / tareaData.subtareas.length) * 100 : 0
+        }
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${tareaData.titulo || 'tarea'}_datos.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+}
+</script>
+{% endblock %}
