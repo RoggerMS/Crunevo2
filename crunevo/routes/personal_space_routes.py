@@ -531,7 +531,25 @@ def templates_view():
 @activated_required
 def settings_view():
     """Settings view for personal space"""
-    return render_template("personal_space/views/settings_view.html")
+    # Basic user statistics to avoid template errors when no data exists
+    blocks = Block.query.filter_by(user_id=current_user.id).all()
+    goals_completed = sum(
+        1
+        for b in blocks
+        if b.type == "objetivo" and b.get_progress_percentage() == 100
+    )
+    created = getattr(current_user, "created_at", None)
+    days_active = (
+        (datetime.utcnow().date() - created.date()).days + 1 if created else 0
+    )
+    user_stats = {
+        "total_blocks": len(blocks),
+        "days_active": days_active,
+        "goals_completed": goals_completed,
+    }
+    return render_template(
+        "personal_space/views/settings_view.html", user_stats=user_stats
+    )
 
 
 @personal_space_bp.route("/buscar")
