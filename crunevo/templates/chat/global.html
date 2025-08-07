@@ -292,6 +292,52 @@
   color: #6b7280;
 }
 
+/* Temporary Message Styles */
+.temporary-message {
+  opacity: 0.8;
+}
+
+.temporary-message .message-bubble {
+  border: 1px dashed rgba(102, 126, 234, 0.5);
+  position: relative;
+}
+
+.temporary-message:not(.own) .message-bubble {
+  background: rgba(102, 126, 234, 0.05) !important;
+}
+
+.temporary-message.own .message-bubble {
+  background: #667eea !important;
+  color: white !important;
+  border: 1px dashed rgba(255, 255, 255, 0.5);
+}
+
+.temporary-message .message-meta {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.temporary-message.own .message-meta {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.temporary-message.own .sender-name {
+  color: white !important;
+}
+
+.temporary-message .message-meta i {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @keyframes slideDown {
   from {
     opacity: 0;

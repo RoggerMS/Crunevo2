@@ -2014,9 +2014,12 @@ function initGlobalChat() {
     }, 1000);
   });
   
+  // Variable para prevenir envíos múltiples
+  let isSubmitting = false;
+  
   // Envío con Enter (pero no Shift+Enter)
   input?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey && !isSubmitting) {
       e.preventDefault();
       form?.dispatchEvent(new Event('submit'));
     }
@@ -2024,16 +2027,46 @@ function initGlobalChat() {
   
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
+    
+    // Prevenir envíos múltiples
+    if (isSubmitting) return;
+    
     const content = input.value.trim();
     const file = audioInput.files[0];
     const attach = fileInput.files[0];
     if (!content && !file && !attach) return;
+    
+    isSubmitting = true;
     
     // Deshabilitar el botón de envío temporalmente
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalContent = submitBtn.innerHTML;
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+    
+    // Crear mensaje temporal para feedback inmediato
+    const tempMessage = {
+      id: 'temp-' + Date.now(),
+      content: content,
+      sender_id: window.CURRENT_USER_ID,
+      sender_username: window.CURRENT_USER_USERNAME || 'Tú',
+      sender_role: window.CURRENT_USER_ROLE || 'Usuario',
+      sender_avatar: window.CURRENT_USER_AVATAR,
+      timestamp: new Date().toISOString(),
+      audio_url: file ? URL.createObjectURL(file) : null,
+      attachment_url: attach ? URL.createObjectURL(attach) : null,
+      is_temporary: true
+    };
+    
+    // Mostrar mensaje temporal inmediatamente
+    addMessage(tempMessage);
+    
+    // Limpiar campos inmediatamente para mejor UX
+    const originalInputValue = input.value;
+    input.value = '';
+    audioInput.value = '';
+    if (fileInput) fileInput.value = '';
+    if (filePreview) filePreview.classList.add('d-none');
     
     const fd = new FormData();
     fd.append('content', content);
@@ -2045,20 +2078,45 @@ function initGlobalChat() {
       .then((r) => r.json())
       .then((data) => {
         if (data.status === 'ok') {
-          input.value = '';
-          audioInput.value = '';
-          if (fileInput) fileInput.value = '';
-          if (filePreview) filePreview.classList.add('d-none');
+          // Remover mensaje temporal
+          const tempElement = document.querySelector(`[data-message-id="${tempMessage.id}"]`);
+          if (tempElement) {
+            tempElement.remove();
+          }
+          
+          // Agregar mensaje real
           addMessage(data.message);
           lastId = data.message.id;
           
           // Enfocar el input nuevamente
           input.focus();
+        } else {
+          // Si hay error, restaurar el contenido
+          input.value = originalInputValue;
+          showToast('Error al enviar mensaje', { type: 'error' });
+          
+          // Remover mensaje temporal
+          const tempElement = document.querySelector(`[data-message-id="${tempMessage.id}"]`);
+          if (tempElement) {
+            tempElement.remove();
+          }
         }
       })
-      .catch(console.error)
+      .catch((error) => {
+        console.error(error);
+        // Restaurar contenido en caso de error
+        input.value = originalInputValue;
+        showToast('Error de conexión', { type: 'error' });
+        
+        // Remover mensaje temporal
+        const tempElement = document.querySelector(`[data-message-id="${tempMessage.id}"]`);
+        if (tempElement) {
+          tempElement.remove();
+        }
+      })
       .finally(() => {
         // Rehabilitar el botón
+        isSubmitting = false;
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalContent;
       });
@@ -2107,6 +2165,16 @@ function initGlobalChat() {
   function addMessage(message) {
     const div = document.createElement('div');
     div.className = `message-item ${message.sender_id === window.CURRENT_USER_ID ? 'own' : ''}`;
+    
+    // Agregar ID único para identificar mensajes temporales
+    if (message.id) {
+      div.setAttribute('data-message-id', message.id);
+    }
+    
+    // Agregar clase para mensajes temporales
+    if (message.is_temporary) {
+      div.classList.add('temporary-message');
+    }
     
     // Crear estructura del mensaje con el nuevo diseño
     const messageContent = document.createElement('div');
@@ -2166,10 +2234,19 @@ function initGlobalChat() {
     
     const messageMeta = document.createElement('div');
     messageMeta.className = 'message-meta';
-    messageMeta.innerHTML = `
-      <i class="bi bi-clock me-1"></i>
-      ${new Date(message.timestamp).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-    `;
+    
+    // Agregar indicador de estado para mensajes temporales
+    if (message.is_temporary) {
+      messageMeta.innerHTML = `
+        <i class="bi bi-hourglass-split me-1"></i>
+        <span class="text-muted">Enviando...</span>
+      `;
+    } else {
+      messageMeta.innerHTML = `
+        <i class="bi bi-clock me-1"></i>
+        ${new Date(message.timestamp).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+      `;
+    }
     
     // Ensamblar el mensaje
     if (content || message.audio_url || message.attachment_url) {
@@ -2190,8 +2267,18 @@ function initGlobalChat() {
     div.appendChild(avatar);
     div.appendChild(messageContent);
     
-    // Agregar el mensaje directamente sin animaciones complejas
+    // Agregar animación suave
+    div.style.opacity = '0';
+    div.style.transform = 'translateY(20px)';
+    
     container.appendChild(div);
+    
+    // Animar la entrada del mensaje
+    requestAnimationFrame(() => {
+      div.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+      div.style.opacity = '1';
+      div.style.transform = 'translateY(0)';
+    });
     
     container.scrollTop = container.scrollHeight;
   }
