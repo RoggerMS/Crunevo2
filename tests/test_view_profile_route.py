@@ -69,3 +69,16 @@ def test_view_profile_with_note_ratings(client, db_session, app):
         assert resp.status_code == 200
         template, context = templates[0]
         assert context["average_rating"] == 4.5
+
+
+def test_view_profile_achievements_progress(client, db_session, app):
+    user = create_user("eve", "eve@example.com")
+    db_session.add(user)
+    db_session.commit()
+
+    client.post("/login", data={"username": "eve", "password": "pass"})
+    with captured_templates(app) as templates:
+        resp = client.get("/perfil/eve?tab=logros")
+        assert resp.status_code == 200
+        template, context = templates[0]
+        assert context["unlocked_count"] == 0

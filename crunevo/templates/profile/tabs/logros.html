@@ -9,12 +9,12 @@
             <div class="card-body">
               <div class="d-flex align-items-center justify-content-between mb-3">
                 <h6 class="mb-0">Progreso de Logros</h6>
-                <span class="badge bg-primary">{{ unlocked_achievements }}/{{ total_achievements }}</span>
+                <span class="badge bg-primary">{{ unlocked_count }}/{{ total_achievements }}</span>
               </div>
               <div class="progress" style="height: 8px;">
                 <div class="progress-bar bg-gradient" role="progressbar" 
-                     style="width: {{ (unlocked_achievements / total_achievements * 100) if total_achievements > 0 else 0 }}%"
-                     aria-valuenow="{{ unlocked_achievements }}" 
+                     style="width: {{ (unlocked_count / total_achievements * 100) if total_achievements > 0 else 0 }}%"
+                     aria-valuenow="{{ unlocked_count }}"
                      aria-valuemin="0" 
                      aria-valuemax="{{ total_achievements }}">
                 </div>
@@ -24,7 +24,7 @@
         </div>
 
         <!-- Logros obtenidos -->
-        {% if unlocked_achievements > 0 %}
+        {% if unlocked_count > 0 %}
           <div class="achievements-unlocked mb-4">
             <h6 class="mb-3"><i class="fas fa-trophy text-warning me-2"></i>Logros Obtenidos</h6>
             <div class="row g-3">
@@ -50,7 +50,7 @@
         {% endif %}
 
         <!-- Logros bloqueados -->
-        {% if locked_achievements > 0 %}
+        {% if locked_count > 0 %}
           <div class="achievements-locked">
             <h6 class="mb-3"><i class="fas fa-lock text-muted me-2"></i>Logros por Desbloquear</h6>
             <div class="row g-3">
