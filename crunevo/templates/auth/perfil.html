@@ -303,16 +303,17 @@
 
 
 <script>
-// Initialize profile stats chart
+// Initialize profile stats chart and tabs
 document.addEventListener('DOMContentLoaded', function() {
+  // Initialize Chart.js if available
   const ctx = document.getElementById('profileStatsChart');
-  if (ctx) {
+  if (ctx && typeof Chart !== 'undefined') {
     new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: ['Apuntes', 'Comentarios', 'Misiones', 'Clubes'],
         datasets: [{
-          data: [{{ notes_count(user) }}, {{ user.comments|length }}, {{ completed_missions_count }}, {{ user_clubs|length }}],
+          data: [{{ user_notes|length }}, {{ user.comments|length }}, {{ completed_missions_count }}, {{ user_clubs|length }}],
           backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c']
         }]
       },
@@ -332,6 +333,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
     });
+  }
+
+  // Initialize Bootstrap tabs
+  const triggerTabList = document.querySelectorAll('#profileTabs button[data-bs-toggle="tab"]');
+  triggerTabList.forEach(triggerEl => {
+    const tabTrigger = new bootstrap.Tab(triggerEl);
+    
+    triggerEl.addEventListener('click', event => {
+      event.preventDefault();
+      tabTrigger.show();
+      
+      // Update URL with tab parameter
+      const tab = triggerEl.getAttribute('data-bs-target').replace('#', '');
+      const url = new URL(window.location);
+      url.searchParams.set('tab', tab);
+      window.history.replaceState({}, '', url);
+    });
+  });
+
+  // Activate tab based on URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const activeTab = urlParams.get('tab');
+  if (activeTab) {
+    const tabButton = document.querySelector(`#profileTabs button[data-bs-target="#${activeTab}"]`);
+    if (tabButton) {
+      const tab = new bootstrap.Tab(tabButton);
+      tab.show();
+    }
   }
 });
 </script>

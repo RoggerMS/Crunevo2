@@ -404,13 +404,26 @@ def view_profile(username):
                 "onboarding.register", ref=user.username, _external=True
             )
 
+    # Obtener datos adicionales para las pestañas
+    user_notes = Note.query.filter_by(user_id=user.id).order_by(Note.created_at.desc()).all()
+    user_posts = Post.query.filter_by(author_id=user.id).order_by(Post.created_at.desc()).all()
+    
+    # Calcular estadísticas para las pestañas
+    total_downloads = sum(note.downloads for note in user_notes)
+    total_likes = sum(note.likes for note in user_notes)
+    average_rating = sum(note.rating for note in user_notes if note.rating) / len([n for n in user_notes if n.rating]) if user_notes else 0
+    
+    # Datos de tienda si está habilitada
+    user_products = []
+    total_sales = 0
+    total_earnings = 0
+    if hasattr(user, 'products'):
+        user_products = user.products
+        total_sales = sum(product.sales_count for product in user_products if hasattr(product, 'sales_count'))
+        total_earnings = sum(product.earnings for product in user_products if hasattr(product, 'earnings'))
+
     # Determinar qué plantilla usar
-    if tab == "apuntes":
-        notes = (
-            Note.query.filter_by(user_id=user.id).order_by(Note.created_at.desc()).all()
-        )
-        return render_template("perfil_notas.html", user=user, notes=notes)
-    elif not is_own_profile or force_public:
+    if not is_own_profile or force_public:
         return render_template(
             "perfil_publico.html", 
             user=user, 
@@ -445,6 +458,14 @@ def view_profile(username):
             user_achievements=all_user_achievements,
             unlocked_achievements=unlocked_achievements,
             locked_achievements=locked_achievements,
+            user_notes=user_notes,
+            user_posts=user_posts,
+            total_downloads=total_downloads,
+            total_likes=total_likes,
+            average_rating=round(average_rating, 1) if average_rating else 0,
+            user_products=user_products,
+            total_sales=total_sales,
+            total_earnings=total_earnings,
         )
 
 

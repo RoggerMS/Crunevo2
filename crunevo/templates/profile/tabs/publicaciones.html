@@ -1,11 +1,32 @@
 <!-- Tab de Publicaciones del Perfil -->
-<div class="tab-pane fade show active" id="publicaciones" role="tabpanel">
+<div class="tab-pane fade {% if not tab or tab == 'publicaciones' %}show active{% endif %}" id="publicaciones" role="tabpanel">
   <div class="row">
     <div class="col-12">
       {% if user_posts %}
         <div class="posts-container">
           {% for post in user_posts %}
-            {% include 'components/post_card.html' %}
+            <div class="card border-0 shadow-sm mb-3">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                  <img src="{{ (post.author.avatar_url|cl_url(40,40,'thumb')) if post.author.avatar_url else url_for('static', filename='img/default.png') }}" 
+                       class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                  <div>
+                    <h6 class="mb-0">{{ post.author.username }}</h6>
+                    <small class="text-muted">{{ post.created_at.strftime('%d %b %Y, %H:%M') }}</small>
+                  </div>
+                </div>
+                <div class="post-content">
+                  {{ post.content|safe }}
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <div class="d-flex gap-3">
+                    <span class="text-muted"><i class="bi bi-heart"></i> {{ post.likes }}</span>
+                    <span class="text-muted"><i class="bi bi-chat"></i> {{ post.comments|length }}</span>
+                  </div>
+                  <small class="text-muted">{{ post.created_at.strftime('%d/%m/%Y') }}</small>
+                </div>
+              </div>
+            </div>
           {% endfor %}
         </div>
         
@@ -21,12 +42,12 @@
           <div class="empty-icon mb-3">
             <i class="fas fa-pen-fancy fa-3x text-muted"></i>
           </div>
-          <h5 class="text-muted mb-2">Este usuario aún no ha publicado nada</h5>
-          <p class="text-muted">Las publicaciones aparecerán aquí cuando comience a compartir contenido.</p>
-          {% if user.id == current_user.id %}
-            <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#createPostModal">
+          <h5 class="text-muted mb-2">{% if is_own_profile %}Aún no has publicado nada{% else %}Este usuario aún no ha publicado nada{% endif %}</h5>
+          <p class="text-muted">Las publicaciones aparecerán aquí cuando {% if is_own_profile %}comiences{% else %}comience{% endif %} a compartir contenido.</p>
+          {% if is_own_profile %}
+            <a href="{{ url_for('feed.view_feed') }}" class="btn btn-primary mt-3">
               <i class="fas fa-plus me-2"></i>Crear primera publicación
-            </button>
+            </a>
           {% endif %}
         </div>
       {% endif %}

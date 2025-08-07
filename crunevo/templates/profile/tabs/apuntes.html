@@ -1,5 +1,5 @@
 <!-- Tab de Apuntes del Perfil -->
-<div class="tab-pane fade" id="apuntes" role="tabpanel">
+<div class="tab-pane fade {% if tab == 'apuntes' %}show active{% endif %}" id="apuntes" role="tabpanel">
   <div class="row">
     <div class="col-12">
       {% if user_notes %}
@@ -57,7 +57,7 @@
         <div class="notes-list">
           <div class="d-flex align-items-center justify-content-between mb-3">
             <h6 class="mb-0"><i class="fas fa-book me-2"></i>Apuntes Subidos</h6>
-            {% if user.id == current_user.id %}
+            {% if is_own_profile %}
               <a href="{{ url_for('notes.upload') }}" class="btn btn-sm btn-primary">
                 <i class="fas fa-plus me-1"></i>Subir Apunte
               </a>
@@ -86,20 +86,20 @@
             <i class="fas fa-file-alt fa-3x text-muted"></i>
           </div>
           <h5 class="text-muted mb-2">
-            {% if user.id == current_user.id %}
+            {% if is_own_profile %}
               Aún no has subido apuntes
             {% else %}
               Este usuario aún no ha subido apuntes
             {% endif %}
           </h5>
           <p class="text-muted">
-            {% if user.id == current_user.id %}
+            {% if is_own_profile %}
               Comparte tus apuntes con la comunidad y ayuda a otros estudiantes.
             {% else %}
               Los apuntes aparecerán aquí cuando comience a compartir contenido académico.
             {% endif %}
           </p>
-          {% if user.id == current_user.id %}
+          {% if is_own_profile %}
             <div class="mt-4">
               <a href="{{ url_for('notes.upload') }}" class="btn btn-primary me-2">
                 <i class="fas fa-upload me-2"></i>Subir Primer Apunte

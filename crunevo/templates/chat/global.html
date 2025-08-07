@@ -71,6 +71,28 @@
   font-weight: 600;
 }
 
+/* Fix for username visibility in messages */
+.message-header .fw-semibold {
+  color: #2c3e50 !important;
+}
+
+.message-item.own .message-header .fw-semibold {
+  color: white !important;
+}
+
+/* Ensure text is visible in all message types */
+.message-bubble .message-text {
+  color: inherit;
+}
+
+.message-item:not(.own) .message-bubble .message-text {
+  color: #2c3e50;
+}
+
+.message-item.own .message-bubble .message-text {
+  color: white;
+}
+
 .role-badge {
   background: rgba(102, 126, 234, 0.1);
   color: #667eea;
@@ -537,7 +559,7 @@
             <div class="message-content">
               <div class="message-bubble">
                 <div class="message-header">
-                  <span class="fw-semibold">{{ message.sender.username }}</span>
+                  <span class="fw-semibold sender-name">{{ message.sender.username }}</span>
                   {% if message.sender.role %}
                     <span class="badge badge-sm rounded-pill bg-light text-dark">{{ message.sender.role|title }}</span>
                   {% endif %}
