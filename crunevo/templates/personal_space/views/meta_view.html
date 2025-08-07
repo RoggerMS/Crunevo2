@@ -1,0 +1,1134 @@
+{% extends 'base.html' %}
+{% block title %}Bloque Meta - {{ block.title }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
+<style>
+.meta-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.meta-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.meta-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-20px, -20px) rotate(180deg); }
+}
+
+.meta-info {
+    position: relative;
+    z-index: 2;
+}
+
+.meta-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.meta-stat {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.meta-stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.meta-stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.content-section {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--bs-dark);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.bloques-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.bloque-card {
+    background: white;
+    border: 2px solid var(--bs-border-color);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.bloque-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: var(--bs-primary);
+}
+
+.bloque-card.selected {
+    border-color: var(--bs-primary);
+    background: var(--bs-primary-bg);
+}
+
+.bloque-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--bs-primary);
+    transform: scaleY(0);
+    transition: transform 0.3s;
+}
+
+.bloque-card:hover::before,
+.bloque-card.selected::before {
+    transform: scaleY(1);
+}
+
+.bloque-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.bloque-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    background: var(--bs-primary-bg);
+    color: var(--bs-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.bloque-info {
+    flex: 1;
+}
+
+.bloque-title {
+    font-weight: 600;
+    margin: 0;
+    color: var(--bs-dark);
+}
+
+.bloque-type {
+    font-size: 0.9rem;
+    color: var(--bs-secondary);
+    margin: 0;
+}
+
+.bloque-description {
+    color: var(--bs-secondary);
+    margin-bottom: 15px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.bloque-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--bs-secondary);
+}
+
+.bloque-fecha {
+    opacity: 0.7;
+}
+
+.bloque-actions {
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.bloque-card:hover .bloque-actions {
+    opacity: 1;
+}
+
+.action-btn {
+    background: none;
+    border: 1px solid var(--bs-border-color);
+    color: var(--bs-secondary);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn:hover {
+    background: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+}
+
+.filtros-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filtro-btn {
+    background: var(--bs-gray-100);
+    border: 1px solid var(--bs-border-color);
+    color: var(--bs-dark);
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+}
+
+.filtro-btn.active {
+    background: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+}
+
+.filtro-btn:hover {
+    background: var(--bs-primary-bg);
+    border-color: var(--bs-primary);
+    color: var(--bs-primary);
+}
+
+.search-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 20px 12px 50px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 25px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--bs-secondary);
+}
+
+.organizacion-tools {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.tool-btn {
+    background: white;
+    border: 1px solid var(--bs-border-color);
+    color: var(--bs-dark);
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tool-btn:hover {
+    background: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--bs-secondary);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    opacity: 0.3;
+    margin-bottom: 20px;
+}
+
+.btn-floating {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--bs-primary);
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 1000;
+}
+
+.btn-floating:hover {
+    transform: scale(1.1);
+    background: var(--bs-primary-dark, #0056b3);
+}
+
+.drag-drop-zone {
+    border: 2px dashed var(--bs-border-color);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    color: var(--bs-secondary);
+    transition: all 0.3s;
+    margin-bottom: 20px;
+}
+
+.drag-drop-zone.drag-over {
+    border-color: var(--bs-primary);
+    background: var(--bs-primary-bg);
+    color: var(--bs-primary);
+}
+
+.vista-selector {
+    display: flex;
+    gap: 5px;
+    background: var(--bs-gray-100);
+    padding: 5px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    width: fit-content;
+}
+
+.vista-btn {
+    background: none;
+    border: none;
+    color: var(--bs-secondary);
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.vista-btn.active {
+    background: white;
+    color: var(--bs-dark);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .meta-container {
+        padding: 15px;
+    }
+    
+    .meta-header {
+        padding: 30px 20px;
+    }
+    
+    .meta-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .bloques-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filtros-container,
+    .organizacion-tools {
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="meta-container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-collection me-2"></i>Bloque Meta</h2>
+            <p class="text-muted">Organiza y agrupa tus bloques</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="exportMeta()">
+                <i class="bi bi-download"></i> Exportar
+            </button>
+            <button class="btn btn-primary" onclick="editMeta()">
+                <i class="bi bi-gear"></i> Configurar
+            </button>
+            <a href="{{ url_for('personal_space.index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+    
+    <!-- Meta Header -->
+    <div class="meta-header">
+        <div class="meta-info">
+            <h3>{{ block.title }}</h3>
+            <p class="mb-0">{{ block.content or 'Colección de bloques organizados' }}</p>
+            
+            <div class="meta-stats">
+                <div class="meta-stat">
+                    <div class="meta-stat-number" id="totalBloques">0</div>
+                    <div class="meta-stat-label">Bloques</div>
+                </div>
+                
+                <div class="meta-stat">
+                    <div class="meta-stat-number" id="tiposBloques">0</div>
+                    <div class="meta-stat-label">Tipos</div>
+                </div>
+                
+                <div class="meta-stat">
+                    <div class="meta-stat-number" id="bloquesActivos">0</div>
+                    <div class="meta-stat-label">Activos</div>
+                </div>
+                
+                <div class="meta-stat">
+                    <div class="meta-stat-number" id="ultimaActividad">-</div>
+                    <div class="meta-stat-label">Última actividad</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Herramientas de Organización -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-tools"></i>
+            Herramientas de Organización
+        </div>
+        
+        <div class="organizacion-tools">
+            <button class="tool-btn" onclick="seleccionarTodos()">
+                <i class="bi bi-check-all"></i>
+                Seleccionar todos
+            </button>
+            <button class="tool-btn" onclick="deseleccionarTodos()">
+                <i class="bi bi-x-square"></i>
+                Deseleccionar
+            </button>
+            <button class="tool-btn" onclick="ordenarPorFecha()">
+                <i class="bi bi-sort-down"></i>
+                Ordenar por fecha
+            </button>
+            <button class="tool-btn" onclick="ordenarPorTipo()">
+                <i class="bi bi-sort-alpha-down"></i>
+                Ordenar por tipo
+            </button>
+            <button class="tool-btn" onclick="agruparPorTipo()">
+                <i class="bi bi-collection"></i>
+                Agrupar por tipo
+            </button>
+        </div>
+        
+        <!-- Vista Selector -->
+        <div class="vista-selector">
+            <button class="vista-btn active" onclick="cambiarVista('grid')" data-vista="grid">
+                <i class="bi bi-grid"></i>
+            </button>
+            <button class="vista-btn" onclick="cambiarVista('list')" data-vista="list">
+                <i class="bi bi-list"></i>
+            </button>
+            <button class="vista-btn" onclick="cambiarVista('kanban')" data-vista="kanban">
+                <i class="bi bi-kanban"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Zona de Drag & Drop -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-plus-circle"></i>
+            Agregar Bloques
+        </div>
+        
+        <div class="drag-drop-zone" id="dragDropZone">
+            <i class="bi bi-cloud-upload" style="font-size: 3rem; opacity: 0.3; margin-bottom: 15px;"></i>
+            <h4>Arrastra bloques aquí</h4>
+            <p>O haz clic para seleccionar bloques existentes</p>
+            <button class="btn btn-primary" onclick="mostrarSelectorBloques()">
+                <i class="bi bi-plus"></i> Seleccionar bloques
+            </button>
+        </div>
+    </div>
+    
+    <!-- Filtros y Búsqueda -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-funnel"></i>
+            Filtros y Búsqueda
+        </div>
+        
+        <!-- Búsqueda -->
+        <div class="search-container">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" class="search-input" placeholder="Buscar bloques..." id="searchInput">
+        </div>
+        
+        <!-- Filtros -->
+        <div class="filtros-container">
+            <button class="filtro-btn active" onclick="filtrarBloques('todos')" data-filtro="todos">
+                <i class="bi bi-grid"></i> Todos
+            </button>
+            <button class="filtro-btn" onclick="filtrarBloques('tareas')" data-filtro="tareas">
+                <i class="bi bi-check-square"></i> Tareas
+            </button>
+            <button class="filtro-btn" onclick="filtrarBloques('notas')" data-filtro="notas">
+                <i class="bi bi-journal-text"></i> Notas
+            </button>
+            <button class="filtro-btn" onclick="filtrarBloques('objetivos')" data-filtro="objetivos">
+                <i class="bi bi-target"></i> Objetivos
+            </button>
+            <button class="filtro-btn" onclick="filtrarBloques('recordatorios')" data-filtro="recordatorios">
+                <i class="bi bi-alarm"></i> Recordatorios
+            </button>
+            <button class="filtro-btn" onclick="filtrarBloques('enlaces')" data-filtro="enlaces">
+                <i class="bi bi-link"></i> Enlaces
+            </button>
+        </div>
+    </div>
+    
+    <!-- Bloques Agrupados -->
+    <div class="content-section">
+        <div class="section-title">
+            <i class="bi bi-collection"></i>
+            Bloques en esta Colección
+            <span class="badge bg-primary ms-2" id="contadorBloques">0</span>
+        </div>
+        
+        <div class="bloques-grid" id="bloquesContainer">
+            <!-- Los bloques se cargarán dinámicamente -->
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Button -->
+<button class="btn-floating" onclick="mostrarSelectorBloques()" title="Agregar bloques">
+    <i class="bi bi-plus"></i>
+</button>
+
+<!-- Modal para configurar meta -->
+<div class="modal fade" id="metaModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Configurar Bloque Meta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="metaForm">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="metaTituloInput" required>
+                        <label for="metaTituloInput">Título de la colección</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="metaDescripcionInput" style="height: 100px"></textarea>
+                        <label for="metaDescripcionInput">Descripción</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="metaTipoOrganizacion">
+                            <option value="manual">Organización manual</option>
+                            <option value="por_tipo">Agrupar por tipo</option>
+                            <option value="por_fecha">Ordenar por fecha</option>
+                            <option value="por_prioridad">Ordenar por prioridad</option>
+                        </select>
+                        <label for="metaTipoOrganizacion">Tipo de organización</label>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="metaAutoActualizar">
+                        <label class="form-check-label" for="metaAutoActualizar">
+                            Auto-actualizar cuando cambien los bloques
+                        </label>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="metaMostrarEstadisticas">
+                        <label class="form-check-label" for="metaMostrarEstadisticas">
+                            Mostrar estadísticas en el dashboard
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveMeta()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para selector de bloques -->
+<div class="modal fade" id="selectorBloquesModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Seleccionar Bloques</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="search-container mb-3">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Buscar bloques disponibles..." id="searchBloquesDisponibles">
+                </div>
+                
+                <div id="bloquesDisponiblesContainer" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Los bloques disponibles se cargarán aquí -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="agregarBloquesSeleccionados()">Agregar Seleccionados</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let metaData = {
+    titulo: '{{ block.title }}',
+    descripcion: '{{ block.content }}',
+    tipoOrganizacion: '{{ block.get_metadata().get("organization_type", "manual") }}',
+    autoActualizar: {{ block.get_metadata().get('auto_update', true)|tojson }},
+    mostrarEstadisticas: {{ block.get_metadata().get('show_stats', true)|tojson }},
+    bloquesAgrupados: {{ block.get_metadata().get('grouped_blocks', [])|tojson }},
+    configuracion: {
+        vistaActual: 'grid',
+        filtroActual: 'todos',
+        ordenActual: 'fecha'
+    }
+};
+
+let bloquesDisponibles = [];
+let bloquesSeleccionados = [];
+let filtroActual = 'todos';
+let busquedaActual = '';
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadBloquesAgrupados();
+    updateEstadisticas();
+    loadBloquesDisponibles();
+    
+    // Event listeners
+    document.getElementById('searchInput').addEventListener('input', function() {
+        busquedaActual = this.value.toLowerCase();
+        loadBloquesAgrupados();
+    });
+    
+    document.getElementById('searchBloquesDisponibles').addEventListener('input', function() {
+        loadBloquesDisponibles(this.value.toLowerCase());
+    });
+    
+    // Drag and drop
+    setupDragAndDrop();
+    
+    // Auto-save cada 30 segundos
+    setInterval(saveData, 30000);
+});
+
+function updateEstadisticas() {
+    const totalBloques = metaData.bloquesAgrupados.length;
+    const tiposUnicos = new Set(metaData.bloquesAgrupados.map(b => b.type)).size;
+    const bloquesActivos = metaData.bloquesAgrupados.filter(b => !b.completed).length;
+    
+    document.getElementById('totalBloques').textContent = totalBloques;
+    document.getElementById('tiposBloques').textContent = tiposUnicos;
+    document.getElementById('bloquesActivos').textContent = bloquesActivos;
+    document.getElementById('contadorBloques').textContent = totalBloques;
+    
+    // Última actividad
+    if (metaData.bloquesAgrupados.length > 0) {
+        const fechas = metaData.bloquesAgrupados.map(b => new Date(b.updated_at || b.created_at));
+        const ultimaFecha = new Date(Math.max(...fechas));
+        const diasPasados = Math.floor((new Date() - ultimaFecha) / (1000 * 60 * 60 * 24));
+        
+        if (diasPasados === 0) {
+            document.getElementById('ultimaActividad').textContent = 'Hoy';
+        } else if (diasPasados === 1) {
+            document.getElementById('ultimaActividad').textContent = 'Ayer';
+        } else {
+            document.getElementById('ultimaActividad').textContent = `${diasPasados}d`;
+        }
+    }
+}
+
+function loadBloquesAgrupados() {
+    const container = document.getElementById('bloquesContainer');
+    container.innerHTML = '';
+    
+    let bloquesFiltrados = metaData.bloquesAgrupados;
+    
+    // Aplicar filtros
+    if (filtroActual !== 'todos') {
+        const tiposFiltro = {
+            'tareas': ['tarea', 'lista'],
+            'notas': ['nota_enriquecida', 'frase'],
+            'objetivos': ['objetivo'],
+            'recordatorios': ['recordatorio'],
+            'enlaces': ['enlace']
+        };
+        
+        if (tiposFiltro[filtroActual]) {
+            bloquesFiltrados = bloquesFiltrados.filter(b => tiposFiltro[filtroActual].includes(b.type));
+        }
+    }
+    
+    // Aplicar búsqueda
+    if (busquedaActual) {
+        bloquesFiltrados = bloquesFiltrados.filter(b => 
+            b.title.toLowerCase().includes(busquedaActual) ||
+            (b.content && b.content.toLowerCase().includes(busquedaActual))
+        );
+    }
+    
+    if (bloquesFiltrados.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <div class="empty-icon">
+                    <i class="bi bi-collection"></i>
+                </div>
+                <h4>No hay bloques en esta colección</h4>
+                <p>Agrega bloques para organizar tu espacio de trabajo</p>
+                <button class="btn btn-primary" onclick="mostrarSelectorBloques()">
+                    <i class="bi bi-plus"></i> Agregar bloques
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    bloquesFiltrados.forEach((bloque, index) => {
+        const div = document.createElement('div');
+        div.className = 'bloque-card';
+        div.onclick = () => abrirBloque(bloque.id);
+        
+        const icono = getBlockIcon(bloque.type);
+        const tipoNombre = getBlockTypeName(bloque.type);
+        const fechaFormateada = new Date(bloque.created_at).toLocaleDateString();
+        
+        div.innerHTML = `
+            <div class="bloque-header">
+                <div class="bloque-icon">
+                    <i class="bi ${icono}"></i>
+                </div>
+                <div class="bloque-info">
+                    <h5 class="bloque-title">${bloque.title}</h5>
+                    <p class="bloque-type">${tipoNombre}</p>
+                </div>
+                <div class="bloque-actions">
+                    <button class="action-btn" onclick="event.stopPropagation(); editarBloqueEnMeta(${index})" title="Editar">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="action-btn" onclick="event.stopPropagation(); removerBloqueDelMeta(${index})" title="Remover">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="bloque-description">${bloque.content || 'Sin descripción'}</div>
+            <div class="bloque-meta">
+                <span class="bloque-fecha">${fechaFormateada}</span>
+                <span class="badge ${bloque.is_featured ? 'bg-warning' : 'bg-secondary'}">
+                    ${bloque.is_featured ? 'Destacado' : 'Normal'}
+                </span>
+            </div>
+        `;
+        
+        container.appendChild(div);
+    });
+}
+
+function loadBloquesDisponibles(busqueda = '') {
+    // Simular carga de bloques disponibles desde la API
+    fetch('/espacio-personal/api/blocks')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                bloquesDisponibles = data.blocks.filter(b => 
+                    b.id !== {{ block.id }} && // Excluir el bloque actual
+                    !metaData.bloquesAgrupados.some(bg => bg.id === b.id) // Excluir ya agrupados
+                );
+                
+                if (busqueda) {
+                    bloquesDisponibles = bloquesDisponibles.filter(b => 
+                        b.title.toLowerCase().includes(busqueda) ||
+                        (b.content && b.content.toLowerCase().includes(busqueda))
+                    );
+                }
+                
+                renderBloquesDisponibles();
+            }
+        })
+        .catch(error => console.error('Error loading available blocks:', error));
+}
+
+function renderBloquesDisponibles() {
+    const container = document.getElementById('bloquesDisponiblesContainer');
+    container.innerHTML = '';
+    
+    if (bloquesDisponibles.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <h5>No hay bloques disponibles</h5>
+                <p>Todos los bloques ya están en esta colección o no hay bloques creados</p>
+            </div>
+        `;
+        return;
+    }
+    
+    bloquesDisponibles.forEach(bloque => {
+        const div = document.createElement('div');
+        div.className = 'bloque-card';
+        div.style.marginBottom = '10px';
+        
+        const icono = getBlockIcon(bloque.type);
+        const tipoNombre = getBlockTypeName(bloque.type);
+        
+        div.innerHTML = `
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="${bloque.id}" id="bloque_${bloque.id}">
+                <label class="form-check-label w-100" for="bloque_${bloque.id}">
+                    <div class="bloque-header">
+                        <div class="bloque-icon">
+                            <i class="bi ${icono}"></i>
+                        </div>
+                        <div class="bloque-info">
+                            <h6 class="bloque-title">${bloque.title}</h6>
+                            <small class="bloque-type">${tipoNombre}</small>
+                        </div>
+                    </div>
+                </label>
+            </div>
+        `;
+        
+        container.appendChild(div);
+    });
+}
+
+function filtrarBloques(filtro) {
+    filtroActual = filtro;
+    
+    // Actualizar botones
+    document.querySelectorAll('.filtro-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    const selectedBtn = document.querySelector(`[data-filtro="${filtro}"]`);
+    if (selectedBtn) {
+        selectedBtn.classList.add('active');
+    }
+    
+    loadBloquesAgrupados();
+}
+
+function cambiarVista(vista) {
+    metaData.configuracion.vistaActual = vista;
+    
+    // Actualizar botones
+    document.querySelectorAll('.vista-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    const selectedBtn = document.querySelector(`[data-vista="${vista}"]`);
+    if (selectedBtn) {
+        selectedBtn.classList.add('active');
+    }
+    
+    // Aplicar estilos de vista
+    const container = document.getElementById('bloquesContainer');
+    container.className = vista === 'list' ? 'bloques-list' : 'bloques-grid';
+    
+    saveData();
+}
+
+function seleccionarTodos() {
+    document.querySelectorAll('.bloque-card').forEach(card => {
+        card.classList.add('selected');
+    });
+}
+
+function deseleccionarTodos() {
+    document.querySelectorAll('.bloque-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+}
+
+function ordenarPorFecha() {
+    metaData.bloquesAgrupados.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    loadBloquesAgrupados();
+    saveData();
+}
+
+function ordenarPorTipo() {
+    metaData.bloquesAgrupados.sort((a, b) => a.type.localeCompare(b.type));
+    loadBloquesAgrupados();
+    saveData();
+}
+
+function agruparPorTipo() {
+    metaData.tipoOrganizacion = 'por_tipo';
+    // Implementar agrupación visual por tipo
+    loadBloquesAgrupados();
+    saveData();
+}
+
+function mostrarSelectorBloques() {
+    loadBloquesDisponibles();
+    const modal = new bootstrap.Modal(document.getElementById('selectorBloquesModal'));
+    modal.show();
+}
+
+function agregarBloquesSeleccionados() {
+    const checkboxes = document.querySelectorAll('#bloquesDisponiblesContainer input[type="checkbox"]:checked');
+    const idsSeleccionados = Array.from(checkboxes).map(cb => parseInt(cb.value));
+    
+    if (idsSeleccionados.length === 0) {
+        alert('Selecciona al menos un bloque');
+        return;
+    }
+    
+    // Agregar bloques seleccionados
+    idsSeleccionados.forEach(id => {
+        const bloque = bloquesDisponibles.find(b => b.id === id);
+        if (bloque) {
+            metaData.bloquesAgrupados.push(bloque);
+        }
+    });
+    
+    loadBloquesAgrupados();
+    updateEstadisticas();
+    saveData();
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('selectorBloquesModal'));
+    modal.hide();
+}
+
+function removerBloqueDelMeta(index) {
+    if (confirm('¿Estás seguro de que quieres remover este bloque de la colección?')) {
+        metaData.bloquesAgrupados.splice(index, 1);
+        loadBloquesAgrupados();
+        updateEstadisticas();
+        saveData();
+    }
+}
+
+function abrirBloque(bloqueId) {
+    window.open(`/espacio-personal/view/${bloqueId}`, '_blank');
+}
+
+function editMeta() {
+    document.getElementById('metaTituloInput').value = metaData.titulo;
+    document.getElementById('metaDescripcionInput').value = metaData.descripcion;
+    document.getElementById('metaTipoOrganizacion').value = metaData.tipoOrganizacion;
+    document.getElementById('metaAutoActualizar').checked = metaData.autoActualizar;
+    document.getElementById('metaMostrarEstadisticas').checked = metaData.mostrarEstadisticas;
+    
+    const modal = new bootstrap.Modal(document.getElementById('metaModal'));
+    modal.show();
+}
+
+function saveMeta() {
+    const form = document.getElementById('metaForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    metaData.titulo = document.getElementById('metaTituloInput').value;
+    metaData.descripcion = document.getElementById('metaDescripcionInput').value;
+    metaData.tipoOrganizacion = document.getElementById('metaTipoOrganizacion').value;
+    metaData.autoActualizar = document.getElementById('metaAutoActualizar').checked;
+    metaData.mostrarEstadisticas = document.getElementById('metaMostrarEstadisticas').checked;
+    
+    // Actualizar UI
+    document.querySelector('.meta-header h3').textContent = metaData.titulo;
+    document.querySelector('.meta-header p').textContent = metaData.descripcion;
+    
+    saveData();
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('metaModal'));
+    modal.hide();
+}
+
+function exportMeta() {
+    const data = {
+        meta: {
+            titulo: metaData.titulo,
+            descripcion: metaData.descripcion,
+            tipoOrganizacion: metaData.tipoOrganizacion,
+            autoActualizar: metaData.autoActualizar,
+            mostrarEstadisticas: metaData.mostrarEstadisticas
+        },
+        bloquesAgrupados: metaData.bloquesAgrupados,
+        configuracion: metaData.configuracion,
+        exportadoEn: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${metaData.titulo || 'bloque_meta'}_datos.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function setupDragAndDrop() {
+    const dropZone = document.getElementById('dragDropZone');
+    
+    dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('drag-over');
+    });
+    
+    dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+    });
+    
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        
+        // Aquí se manejaría el drop de bloques
+        console.log('Bloque dropped');
+    });
+}
+
+function getBlockIcon(type) {
+    const iconos = {
+        'tarea': 'bi-check-square',
+        'lista': 'bi-list-check',
+        'recordatorio': 'bi-alarm',
+        'frase': 'bi-lightbulb',
+        'enlace': 'bi-link-45deg',
+        'kanban': 'bi-kanban',
+        'objetivo': 'bi-target',
+        'bloque': 'bi-collection',
+        'bitacora': 'bi-journal-bookmark',
+        'nota_enriquecida': 'bi-journal-richtext',
+        'bloque_personalizado': 'bi-folder-plus',
+        'meta': 'bi-collection'
+    };
+    return iconos[type] || 'bi-square';
+}
+
+function getBlockTypeName(type) {
+    const nombres = {
+        'tarea': 'Tarea Individual',
+        'lista': 'Lista de Tareas',
+        'recordatorio': 'Recordatorio',
+        'frase': 'Frase Motivacional',
+        'enlace': 'Enlace Educativo',
+        'kanban': 'Tablero Kanban',
+        'objetivo': 'Objetivo Académico',
+        'bloque': 'Bloque',
+        'bitacora': 'Bitácora Inteligente',
+        'nota_enriquecida': 'Nota Enriquecida',
+        'bloque_personalizado': 'Bloque Personalizado',
+        'meta': 'Bloque Meta'
+    };
+    return nombres[type] || 'Bloque';
+}
+
+function saveData() {
+    fetch(`/espacio-personal/api/blocks/{{ block.id }}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            title: metaData.titulo,
+            content: metaData.descripcion,
+            metadata: {
+                organization_type: metaData.tipoOrganizacion,
+                auto_update: metaData.autoActualizar,
+                show_stats: metaData.mostrarEstadisticas,
+                grouped_blocks: metaData.bloquesAgrupados,
+                configuration: metaData.configuracion
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Meta guardado correctamente');
+        }
+    })
+    .catch(error => console.error('Error saving meta:', error));
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+}
+</script>
+{% endblock %}
