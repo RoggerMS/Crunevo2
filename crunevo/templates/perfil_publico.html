@@ -85,24 +85,24 @@
 
   <div class="row g-4">
     <div class="col-lg-8 order-lg-2">
-      <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-          <h3 class="mb-3"><i class="bi bi-collection"></i> Publicaciones</h3>
-      {% if user.posts %}
-      <div class="row row-cols-1 g-3">
-        {% for p in user.posts|sort(attribute='created_at', reverse=True) %}
-        {% set item = {'data': p} %}
-        <div class="col">
-          {% include 'components/post_card.html' with context %}
-        </div>
+      {% include 'components/create_post_modal.html' %}
+
+      <div id="feedContainer">
+        {% if user_posts %}
+          {% for post in user_posts %}
+            {% set item = {'data': post} %}
+            {% include 'components/post_card.html' with context %}
+          {% endfor %}
         {% else %}
-        <p class="text-muted">Aún no ha publicado.</p>
-        {% endfor %}
-      </div>
-      {% else %}
-       <p class="text-muted">Aún no ha publicado.</p>
-       {% endif %}
-        </div>
+          <div class="empty-state text-center py-5">
+            <div class="empty-state-icon mb-3">📱</div>
+            <h4 class="text-muted mb-2">¡Este usuario aún no ha publicado!</h4>
+            {% if current_user.is_authenticated and current_user.id == user.id %}
+            <p class="text-muted mb-4">Sé el primero en compartir algo increíble con la comunidad educativa</p>
+            <button class="btn btn-primary rounded-pill post-creation-trigger">Crear publicación</button>
+            {% endif %}
+          </div>
+        {% endif %}
       </div>
     </div>
     <div class="col-lg-4 order-lg-1">

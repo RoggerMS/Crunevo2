@@ -208,20 +208,9 @@ def view_profile(username):
         PostComment,
         Comment,
         Purchase,
+        PostReaction,
     )
     from crunevo.constants import ACHIEVEMENT_DETAILS, ACHIEVEMENT_CATEGORIES
-
-    # Obtener publicaciones guardadas del usuario que se está viendo
-    try:
-        saved = SavedPost.query.filter_by(user_id=user.id).all()
-        posts = [
-            Post.query.get(sp.post_id) for sp in saved if Post.query.get(sp.post_id)
-        ]
-    except (ProgrammingError, OperationalError):
-        current_app.logger.exception("Failed to load saved posts for %s", username)
-        db.session.rollback()
-        saved = []
-        posts = []
 
     # Quick counts for profile stats
     try:
@@ -477,6 +466,27 @@ def view_profile(username):
         db.session.rollback()
         user_posts = []
 
+    post_ids = [p.id for p in user_posts]
+    try:
+        reaction_map = PostReaction.counts_for_posts(post_ids)
+        if current_user.is_authenticated:
+            user_reactions = PostReaction.reactions_for_user_posts(
+                current_user.id, post_ids
+            )
+            saved_posts_map = {
+                sp.post_id: True
+                for sp in SavedPost.query.filter_by(user_id=current_user.id).all()
+            }
+        else:
+            user_reactions = {}
+            saved_posts_map = {}
+    except (ProgrammingError, OperationalError):
+        current_app.logger.exception("Failed to load reaction data for %s", username)
+        db.session.rollback()
+        reaction_map = {}
+        user_reactions = {}
+        saved_posts_map = {}
+
     # Calcular estadísticas para las pestañas
     total_downloads = 0
     total_likes = 0
@@ -523,14 +533,21 @@ def view_profile(username):
     # Determinar qué plantilla usar
     if not is_own_profile or force_public:
         return render_template(
-            "perfil_publico.html", user=user, ACHIEVEMENT_DETAILS=ACHIEVEMENT_DETAILS
+            "perfil_publico.html",
+            user=user,
+            ACHIEVEMENT_DETAILS=ACHIEVEMENT_DETAILS,
+            user_posts=user_posts,
+            reaction_counts=reaction_map,
+            user_reactions=user_reactions,
+            saved_posts=saved_posts_map,
+            is_own_profile=is_own_profile,
         )
     else:
         return render_template(
             "auth/perfil.html",
             user=user,
             is_own_profile=is_own_profile,
-            saved_posts=posts,
+            saved_posts=saved_posts_map,
             achievements=achievements,
             ach_type=ach_type,
             tab=tab,
@@ -564,6 +581,8 @@ def view_profile(username):
             user_products=user_products,
             total_sales=total_sales,
             total_earnings=total_earnings,
+            reaction_counts=reaction_map,
+            user_reactions=user_reactions,
         )
 
 
