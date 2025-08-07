@@ -1211,3 +1211,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added fallback `rating` property on `Note` and strengthened profile stats calculations with numeric checks and safe queries to prevent `/perfil/<username>` 500 errors.
 
 - Fixed profile purchases tab by replacing obsolete `commerce.marketplace` link with `commerce.commerce_index`, updating product URLs to `commerce.view_product` and skipping purchases missing a product to avoid BuildError on `/perfil/<username>`.
+
+- Removed scroll-to-top button and associated styles and scripts, eliminating unused scroll event logic. (PR remove-scroll-top)
