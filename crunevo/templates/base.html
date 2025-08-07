@@ -82,11 +82,11 @@
         <div class="container-fluid px-md-5 pb-5 pt-2">
             <!-- Toast notifications -->
             {% import 'components/toast.html' as toast %}
-            {% with messages = get_flashed_messages() %}
+            {% with messages = get_flashed_messages(with_categories=True) %}
               {% if messages %}
                 <div class="toast-container position-fixed top-0 start-0 end-0 z-50 d-flex flex-column align-items-center gap-2 mt-5" style="z-index: 1080;">
-                  {% for msg in messages %}
-                    {{ toast.toast(msg) }}
+                  {% for category, msg in messages %}
+                    {{ toast.toast(msg, category) }}
                   {% endfor %}
                 </div>
               {% endif %}

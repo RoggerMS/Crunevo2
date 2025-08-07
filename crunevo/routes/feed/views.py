@@ -57,7 +57,32 @@ def create_post():
         return redirect(url_for("feed.view_feed"))
 
     urls = []
+    allowed_exts = {
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".webp",
+        ".mp4",
+        ".webm",
+        ".mov",
+        ".mp3",
+        ".wav",
+        ".ogg",
+    }
+    max_size = 5 * 1024 * 1024
     for f in valid_files:
+        ext = os.path.splitext(f.filename)[1].lower()
+        f.seek(0, os.SEEK_END)
+        size = f.tell()
+        f.seek(0)
+        if ext not in allowed_exts or size > max_size:
+            flash(
+                "Archivo no permitido o excede el tamaño máximo de 5 MB",
+                "danger",
+            )
+            return redirect(url_for("feed.view_feed"))
+
         cloud_url = current_app.config.get("CLOUDINARY_URL")
         try:
             if cloud_url:

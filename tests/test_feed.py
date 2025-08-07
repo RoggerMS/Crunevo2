@@ -7,6 +7,7 @@ from crunevo.models import (
     PostComment,
     PostReaction,
 )
+from io import BytesIO
 from crunevo.utils.feed import create_feed_item_for_all
 from crunevo.cache import feed_cache
 from crunevo.utils.achievements import unlock_achievement
@@ -16,6 +17,35 @@ from flask_login import login_user
 
 def login(client, username, password):
     return client.post("/login", data={"username": username, "password": password})
+
+
+def test_create_post_rejects_invalid_extension(client, db_session, test_user):
+    login(client, test_user.username, "secret")
+    data = {"content": "hola", "files": (BytesIO(b"bad"), "file.exe")}
+    resp = client.post(
+        "/feed/post",
+        data=data,
+        content_type="multipart/form-data",
+        follow_redirects=True,
+    )
+    assert resp.status_code == 200
+    assert "Archivo no permitido" in resp.get_data(as_text=True)
+    assert Post.query.count() == 0
+
+
+def test_create_post_rejects_large_file(client, db_session, test_user):
+    login(client, test_user.username, "secret")
+    big = BytesIO(b"a" * (6 * 1024 * 1024))
+    data = {"content": "hola", "files": (big, "big.jpg")}
+    resp = client.post(
+        "/feed/post",
+        data=data,
+        content_type="multipart/form-data",
+        follow_redirects=True,
+    )
+    assert resp.status_code == 200
+    assert "Archivo no permitido" in resp.get_data(as_text=True)
+    assert Post.query.count() == 0
 
 
 def test_feed_shows_post_for_other_user(client, db_session, test_user, another_user):

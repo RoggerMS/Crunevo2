@@ -1232,3 +1232,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 
 - Adjusted profile sidebar username and career text to inherit theme colors, ensuring readability on light and dark backgrounds. (PR perfil-sidebar-text-color)
 - Fixed avatar edit button opening file dialog twice by removing duplicate listener and handling upload through the existing input. (PR perfil-avatar-dialog-fix)
+- Validated feed post uploads by limiting files to safe extensions and 5MB max size, updated toast templates for flash categories and added tests. (PR feed-upload-validation)
