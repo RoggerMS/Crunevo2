@@ -76,7 +76,7 @@ def check_app_creation():
             try:
                 from crunevo.extensions import db
                 # Intentar una consulta simple
-                result = db.engine.execute('SELECT 1')
+                db.engine.execute('SELECT 1')
                 print("✅ Conexión a base de datos: OK")
             except Exception as e:
                 print(f"❌ Error de base de datos: {e}")

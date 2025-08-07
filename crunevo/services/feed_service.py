@@ -80,7 +80,7 @@ def get_weekly_ranking(limit=5):
     return top_ranked, recent_achievements
 
 
-def fetch_feed_data(user, categoria: str | None = None, limit: int = 20):
+def fetch_feed_data(user, categoria: str | None = None, limit: int = 10):
     query = FeedItem.query.filter_by(owner_id=user.id).options(
         joinedload(FeedItem.post), joinedload(FeedItem.note)
     )
