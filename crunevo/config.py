@@ -21,8 +21,8 @@ class Config:
                 "SECRET_KEY environment variable is required in production"
             )
 
-    # Secure session cookies in all environments
-    SESSION_COOKIE_SECURE = True
+    # Secure session cookies in production, allow HTTP in debug
+    SESSION_COOKIE_SECURE = not DEBUG
     SESSION_COOKIE_SAMESITE = "Lax"
 
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///data.db").replace(
