@@ -1236,3 +1236,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Limited feed post uploads to images only, enforced 5MB max per file, rejected more than 10 images and read `comment_permission` once. (PR feed-upload-limits)
 - Improved forum question and answer pages with responsive layout, theme-aware card and badge colors, and dark/light compatible vote buttons. (PR forum-responsive-theme)
 - Allowed uploading .webp note files and listed .webp in the upload form accept attribute. (PR notes-webp-upload)
+- Comentarios en publicaciones requieren usuarios activados; intentos bloqueados se registran para monitoreo. (PR comment-auth-log)
