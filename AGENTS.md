@@ -1251,3 +1251,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Generated thumbnails for notes by converting first page to image and storing `thumbnail_url`; note cards now display the miniaturas when available. (PR note-thumbnail)
 - Resolved Jinja syntax error in tienda pagination by popping existing `page` from args and moving `**args` after explicit page parameter in `_product_cards.html`.
 - Ajustados colores de la tarjeta de estadísticas en perfil removiendo `text-white`, añadiendo `text-dark`/`text-primary` según el bloque y eliminando el enlace duplicado "Comprar Crolars". (PR perfil-stats-colors)
+- Added migration to add `thumbnail_url` to `note` with fallback and normalized error logging to store numeric status codes. (PR note-thumbnail-log-fix)
