@@ -166,8 +166,10 @@ class ModernFeedManager {
       });
       const response = await this.fetchWithCSRF(form.action || window.location.pathname, {
         method: 'POST',
-        body: formData
+        body: formData,
+        headers: { 'Accept': 'application/json' }
       });
+      const data = await response.json();
 
       if (response.ok) {
         this.showToast('¡Publicación creada exitosamente! 🎉', 'success');
@@ -175,15 +177,17 @@ class ModernFeedManager {
         this.clearImagePreview();
         this.updatePostButtonState();
 
-        // Close modal if open
         const modal = bootstrap.Modal.getInstance(document.getElementById('crearPublicacionModal'));
         if (modal) modal.hide();
 
-        // Refresh feed
-        setTimeout(() => window.location.reload(), 1000);
+        const container = document.getElementById('feedContainer');
+        if (container && data.html) {
+          container.insertAdjacentHTML('afterbegin', data.html);
+          this.initPostInteractions();
+          this.initCommentSystem();
+        }
       } else {
-        const errorText = await response.text();
-        this.showToast('Error al publicar: ' + errorText, 'error');
+        this.showToast('Error al publicar: ' + (data.error || 'Error desconocido'), 'error');
       }
     } catch (error) {
       console.error('Error submitting post:', error);

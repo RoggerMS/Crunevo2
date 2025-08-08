@@ -9,6 +9,7 @@ from flask import (
     flash,
     current_app,
     abort,
+    jsonify,
 )
 from flask_login import current_user
 
@@ -53,15 +54,25 @@ def create_post():
     content = request.form.get("content", "").strip()
     comment_permission = request.form.get("comment_permission", "all")
     files = request.files.getlist("files") or request.files.getlist("file")
+    wants_json = (
+        request.accept_mimetypes["application/json"]
+        >= request.accept_mimetypes["text/html"]
+    )
 
     valid_files = [f for f in files if f and f.filename]
 
     if not content and not valid_files:
-        flash("Debes escribir algo", "danger")
+        msg = "Debes escribir algo"
+        if wants_json:
+            return jsonify({"error": msg}), 400
+        flash(msg, "danger")
         return redirect(url_for("feed.view_feed"))
 
     if len(valid_files) > MAX_IMAGES:
-        flash(f"Máximo {MAX_IMAGES} imágenes permitidas", "danger")
+        msg = f"Máximo {MAX_IMAGES} imágenes permitidas"
+        if wants_json:
+            return jsonify({"error": msg}), 400
+        flash(msg, "danger")
         return redirect(url_for("feed.view_feed"))
 
     urls = []
@@ -72,10 +83,10 @@ def create_post():
         size = f.tell()
         f.seek(0)
         if ext not in ALLOWED_EXTENSIONS or size > max_size:
-            flash(
-                f"Archivo no permitido o excede el tamaño máximo de {MAX_FILE_SIZE_MB} MB",
-                "danger",
-            )
+            msg = f"Archivo no permitido o excede el tamaño máximo de {MAX_FILE_SIZE_MB} MB"
+            if wants_json:
+                return jsonify({"error": msg}), 400
+            flash(msg, "danger")
             return redirect(url_for("feed.view_feed"))
 
         cloud_url = current_app.config.get("CLOUDINARY_URL")
@@ -92,7 +103,10 @@ def create_post():
                 urls.append(filepath)
         except Exception:
             current_app.logger.exception("Error al subir archivo")
-            flash("Ocurrió un problema al subir el archivo", "danger")
+            msg = "Ocurrió un problema al subir el archivo"
+            if wants_json:
+                return jsonify({"error": msg}), 500
+            flash(msg, "danger")
             return redirect(url_for("feed.view_feed"))
 
     post = Post(
@@ -108,6 +122,9 @@ def create_post():
     db.session.commit()
     record_activity("post_created", post.id, "post")
     create_feed_item_for_all("post", post.id)
+    if wants_json:
+        html = render_template("feed/_posts.html", posts=[post])
+        return jsonify({"html": html, "id": post.id})
     flash("Publicación creada")
     return redirect(url_for("feed.view_feed"))
 
