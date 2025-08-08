@@ -48,6 +48,20 @@ def test_create_post_rejects_large_file(client, db_session, test_user):
     assert Post.query.count() == 0
 
 
+def test_create_post_returns_html_snippet(client, db_session, test_user):
+    login(client, test_user.username, "secret")
+    resp = client.post(
+        "/feed/post",
+        data={"content": "hola"},
+        headers={"Accept": "application/json"},
+    )
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert "html" in data
+    assert "hola" in data["html"]
+    assert Post.query.count() == 1
+
+
 def test_feed_shows_post_for_other_user(client, db_session, test_user, another_user):
     post = Post(content="Feed post", author=test_user)
     db_session.add(post)

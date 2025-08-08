@@ -1237,3 +1237,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Improved forum question and answer pages with responsive layout, theme-aware card and badge colors, and dark/light compatible vote buttons. (PR forum-responsive-theme)
 - Allowed uploading .webp note files and listed .webp in the upload form accept attribute. (PR notes-webp-upload)
 - Comentarios en publicaciones requieren usuarios activados; intentos bloqueados se registran para monitoreo. (PR comment-auth-log)
+- Reemplazada recarga del feed tras publicar por inserción dinámica usando `_posts.html` retornado en JSON y prueba asociada. (PR feed-dynamic-insert)
