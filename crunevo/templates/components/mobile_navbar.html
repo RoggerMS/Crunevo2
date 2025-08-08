@@ -1,656 +1,99 @@
-<!-- Navbar móvil estilo Facebook - Superior único -->
-<nav class="navbar facebook-mobile-navbar fixed-top d-lg-none shadow-sm" id="mobileNavbar">
-  <div class="container-fluid d-flex align-items-center justify-content-between px-3 py-2">
-    <!-- Logo/Brand -->
-    <div class="navbar-brand-section">
-      <a class="navbar-brand-mobile fw-bold text-decoration-none" href="{{ url_for('main.index') }}" aria-label="Ir a inicio">
-        <span class="brand-text">CRUNEVO</span>
-      </a>
-    </div>
-    
-    <!-- Barra de búsqueda central -->
-    <div class="search-container flex-grow-1 mx-3">
-      <div class="position-relative">
-        <input id="mobileNavbarSearch" type="search" class="form-control search-input rounded-pill ps-4 pe-4" placeholder="Buscar en CRUNEVO" aria-label="Buscar en CRUNEVO">
-        <i class="bi bi-search search-icon position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-      </div>
-    </div>
-    
-    <!-- Iconos de navegación principal -->
-    <div class="nav-icons d-flex align-items-center gap-1">
-      <!-- Home -->
-      <a href="{{ url_for('feed.feed_home') if 'feed.feed_home' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}" class="nav-icon-btn {{ 'active' if request.endpoint == 'feed.feed_home' else '' }}" aria-label="Inicio">
-        <i class="bi bi-house{{ '-fill' if request.endpoint == 'feed.feed_home' else '' }}"></i>
-      </a>
-      
-      <!-- Explorar/Foro -->
-      <a href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}" class="nav-icon-btn {{ 'active' if 'forum' in request.endpoint else '' }}" aria-label="Explorar">
-        <i class="bi bi-compass{{ '-fill' if 'forum' in request.endpoint else '' }}"></i>
-      </a>
-      
-      <!-- Notificaciones -->
-      <a href="{{ url_for('noti.ver_notificaciones') }}" class="nav-icon-btn position-relative" aria-label="Notificaciones">
-        <i class="bi bi-bell"></i>
-        <span id="mobileNotificationBadge" class="notification-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none"></span>
-      </a>
-      
-      <!-- Chat -->
-      <a href="{{ url_for('chat.chat_index') }}" class="nav-icon-btn" aria-label="Mensajes">
-        <i class="bi bi-chat-dots"></i>
-      </a>
-      
-      <!-- Menú/Perfil -->
-      <div class="dropdown">
-        <a href="#" class="nav-icon-btn dropdown-toggle" data-bs-toggle="dropdown" aria-label="Menú">
-          {% if current_user.is_authenticated and current_user.avatar %}
-            <img src="{{ current_user.avatar }}" alt="Avatar" class="profile-avatar rounded-circle">
-          {% else %}
-            <i class="bi bi-person-circle"></i>
-          {% endif %}
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2">
-          {% if current_user.is_authenticated %}
-            <li><a class="dropdown-item" href="{{ url_for('auth.perfil') }}"><i class="bi bi-person me-2"></i>Mi Perfil</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('notes.my_notes') if 'notes.my_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notas' }}"><i class="bi bi-journal-text me-2"></i>Mis Notas</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('commerce.commerce_index') if 'commerce.commerce_index' in url_for.__globals__.get('current_app', {}).view_functions else '/tienda' }}"><i class="bi bi-shop me-2"></i>Tienda</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
-          {% else %}
-            <li><a class="dropdown-item" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('onboarding.register') }}"><i class="bi bi-person-plus me-2"></i>Registrarse</a></li>
-          {% endif %}
-        </ul>
-      </div>
-    </div>
+<nav class="facebook-mobile-navbar d-lg-none" id="mobileNavbar">
+  <a href="{{ url_for('feed.feed_home') if 'feed.feed_home' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}" class="nav-icon-btn {{ 'active' if request.endpoint == 'feed.feed_home' else '' }}" aria-label="Inicio">
+    <i class="bi bi-house{{ '-fill' if request.endpoint == 'feed.feed_home' else '' }}"></i>
+  </a>
+  <a href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}" class="nav-icon-btn {{ 'active' if 'forum' in request.endpoint else '' }}" aria-label="Explorar">
+    <i class="bi bi-compass{{ '-fill' if 'forum' in request.endpoint else '' }}"></i>
+  </a>
+  <a href="{{ url_for('noti.ver_notificaciones') }}" class="nav-icon-btn position-relative" aria-label="Notificaciones">
+    <i class="bi bi-bell"></i>
+    <span id="mobileNotificationBadge" class="notification-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none"></span>
+  </a>
+  <a href="{{ url_for('chat.chat_index') }}" class="nav-icon-btn" aria-label="Mensajes">
+    <i class="bi bi-chat-dots"></i>
+  </a>
+  <div class="dropdown">
+    <a href="#" class="nav-icon-btn dropdown-toggle" data-bs-toggle="dropdown" aria-label="Menú">
+      {% if current_user.is_authenticated and current_user.avatar %}
+        <img src="{{ current_user.avatar }}" alt="Avatar" class="profile-avatar rounded-circle">
+      {% else %}
+        <i class="bi bi-person-circle"></i>
+      {% endif %}
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2">
+      {% if current_user.is_authenticated %}
+        <li><a class="dropdown-item" href="{{ url_for('auth.perfil') }}"><i class="bi bi-person me-2"></i>Mi Perfil</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('notes.my_notes') if 'notes.my_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notas' }}"><i class="bi bi-journal-text me-2"></i>Mis Notas</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('commerce.commerce_index') if 'commerce.commerce_index' in url_for.__globals__.get('current_app', {}).view_functions else '/tienda' }}"><i class="bi bi-shop me-2"></i>Tienda</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
+      {% else %}
+        <li><a class="dropdown-item" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('onboarding.register') }}"><i class="bi bi-person-plus me-2"></i>Registrarse</a></li>
+      {% endif %}
+    </ul>
   </div>
 </nav>
 
-
-
-<!-- Estilos CSS para navbar móvil estilo Facebook -->
 <style>
-  /* Navbar principal estilo Facebook */
-  .facebook-mobile-navbar {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border-bottom: 1px solid #e4e6ea;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    min-height: 56px;
-    height: 60px;
-    z-index: 1030;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
+#mobileNavbar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.95);
+  z-index: 1030;
+  transition: transform 0.3s ease;
+}
+[data-bs-theme="dark"] #mobileNavbar {
+  background: rgba(36, 37, 38, 0.95);
+}
+body.with-mobile-navbar {
+  padding-top: var(--mobile-navbar-height, 56px);
+}
+@media (min-width: 992px) {
+  body.with-mobile-navbar {
+    padding-top: 0;
   }
-  
-  /* Espacio para evitar que el navbar tape el contenido */
-  body {
-    padding-top: 60px;
-  }
-  
-  @media (min-width: 992px) {
-    body {
-      padding-top: 0;
-    }
-  }
-  
-  /* Auto-hide states */
-  .facebook-mobile-navbar.navbar-hidden {
-    transform: translateY(-100%);
-  }
-  
-  .facebook-mobile-navbar.navbar-visible {
-    transform: translateY(0);
-  }
-  
-  /* Brand/Logo section */
-  .navbar-brand-section {
-    min-width: 80px;
-  }
-  
-  .navbar-brand-mobile {
-    color: #1877f2 !important;
-    font-size: 1.5rem;
-    font-weight: 700;
-    transition: color 0.3s ease;
-  }
-  
-  .navbar-brand-mobile:hover {
-    color: #166fe5 !important;
-    text-decoration: none;
-  }
-  
-  .brand-text {
-    letter-spacing: -0.5px;
-  }
-  
-  /* Search container */
-  .search-container {
-    max-width: 300px;
-  }
-  
-  .search-input {
-    background: #f0f2f5 !important;
-    border: none !important;
-    color: #050505 !important;
-    font-size: 0.9rem;
-    height: 40px;
-    transition: all 0.3s ease;
-    padding-left: 2.5rem !important;
-  }
-  
-  .search-input::placeholder {
-    color: #65676b !important;
-  }
-  
-  .search-input:focus {
-    background: #ffffff !important;
-    border: 1px solid #1877f2 !important;
-    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2) !important;
-    color: #050505 !important;
-  }
-  
-  .search-icon {
-    color: #65676b;
-    font-size: 1rem;
-    z-index: 10;
-  }
-  
-  /* Navigation icons */
-  .nav-icons {
-    flex: 0 0 auto;
-    justify-content: flex-end;
-    gap: 2px;
-  }
-  
-  .nav-icon-btn {
-    background: transparent;
-    border: none;
-    border-radius: 50%;
-    color: #65676b !important;
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    font-size: 1.2rem;
-    position: relative;
-    flex-shrink: 0;
-  }
-  
-  .nav-icon-btn:hover {
-    background: #f0f2f5;
-    color: #1877f2 !important;
-    text-decoration: none;
-  }
-  
-  .nav-icon-btn.active {
-    color: #1877f2 !important;
-    background: #e7f3ff;
-  }
-  
-  .nav-icon-btn.active::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 20px;
-    height: 3px;
-    background: #1877f2;
-    border-radius: 2px;
-  }
-  
-  /* Profile avatar in navbar */
-  .profile-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
-  /* Notification badge */
-  .notification-badge {
-    font-size: 0.7rem;
-    min-width: 16px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #e41e3f !important;
-    border: 2px solid #ffffff;
-  }
-  
-  /* Dropdown menu styling */
-  .dropdown-menu {
-    border: 1px solid #dadde1;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    border-radius: 8px;
-    padding: 8px 0;
-    min-width: 200px;
-  }
-  
-  .dropdown-item {
-    padding: 8px 16px;
-    color: #050505;
-    font-size: 0.9rem;
-    transition: background-color 0.2s ease;
-  }
-  
-  .dropdown-item:hover {
-    background: #f0f2f5;
-    color: #050505;
-  }
-  
-  .dropdown-item i {
-    color: #65676b;
-    width: 20px;
-  }
-  
-  .dropdown-divider {
-    margin: 8px 0;
-    border-color: #dadde1;
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 575px) {
-    .facebook-mobile-navbar {
-      height: 56px;
-      min-height: 56px;
-    }
-    
-    body {
-      padding-top: 56px;
-    }
-    
-    .container-fluid {
-      padding: 0.5rem 0.75rem;
-    }
-    
-    .search-container {
-      max-width: 160px;
-      margin: 0 0.5rem;
-    }
-    
-    .nav-icons {
-      gap: 1px;
-    }
-    
-    .nav-icon-btn {
-      width: 36px;
-      height: 36px;
-      min-width: 36px;
-      font-size: 1.1rem;
-    }
-    
-    .navbar-brand-mobile {
-      font-size: 1.2rem;
-    }
-    
-    .brand-text {
-      display: none;
-    }
-    
-    .navbar-brand-section::after {
-      content: 'C';
-      font-weight: bold;
-      font-size: 1.4rem;
-      color: #1877f2;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .search-container {
-      max-width: 120px;
-      margin: 0 0.25rem;
-    }
-    
-    .nav-icons {
-      gap: 0;
-    }
-    
-    .nav-icon-btn {
-      width: 34px;
-      height: 34px;
-      min-width: 34px;
-      font-size: 1rem;
-    }
-  }
-  
-  @media (max-width: 360px) {
-    .search-container {
-      max-width: 100px;
-    }
-    
-    .nav-icon-btn {
-      width: 32px;
-      height: 32px;
-      min-width: 32px;
-      font-size: 0.9rem;
-    }
-  }
-  
-  /* Dark mode support */
-  @media (prefers-color-scheme: dark) {
-    .facebook-mobile-navbar {
-      background: rgba(36, 37, 38, 0.95) !important;
-      border-bottom-color: #3a3b3c;
-    }
-    
-    .navbar-brand-mobile {
-      color: #e4e6ea !important;
-    }
-    
-    .navbar-brand-mobile:hover {
-      color: #ffffff !important;
-    }
-    
-    .search-input {
-      background: #3a3b3c !important;
-      color: #e4e6ea !important;
-    }
-    
-    .search-input::placeholder {
-      color: #b0b3b8 !important;
-    }
-    
-    .search-input:focus {
-      background: #4e4f50 !important;
-      border-color: #1877f2 !important;
-      color: #e4e6ea !important;
-    }
-    
-    .search-icon {
-      color: #b0b3b8;
-    }
-    
-    .nav-icon-btn {
-      color: #b0b3b8 !important;
-    }
-    
-    .nav-icon-btn:hover {
-      background: #3a3b3c;
-      color: #e4e6ea !important;
-    }
-    
-    .nav-icon-btn.active {
-      color: #1877f2 !important;
-      background: #263951;
-    }
-    
-    .dropdown-menu {
-      background: #242526;
-      border-color: #3a3b3c;
-    }
-    
-    .dropdown-item {
-      color: #e4e6ea;
-    }
-    
-    .dropdown-item:hover {
-      background: #3a3b3c;
-      color: #e4e6ea;
-    }
-    
-    .dropdown-divider {
-      border-color: #3a3b3c;
-    }
-  }
-  
-  /* Accessibility improvements */
-  @media (prefers-reduced-motion: reduce) {
-    .nav-icon-btn,
-    .search-input,
-    .navbar-brand-mobile {
-      transition: none !important;
-    }
-  }
-  
-  /* High contrast mode */
-  @media (prefers-contrast: high) {
-    .facebook-mobile-navbar {
-      background: #ffffff !important;
-      border-bottom: 2px solid #000000;
-    }
-    
-    .nav-icon-btn {
-      border: 1px solid #000000;
-    }
-    
-    .search-input {
-      border: 2px solid #000000 !important;
-    }
-  }
+}
+#mobileNavbar a.nav-icon-btn,
+#mobileNavbar .dropdown > a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.profile-avatar {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+}
 </style>
 
 <script>
-  // Facebook-style mobile navbar functionality
-  document.addEventListener('DOMContentLoaded', function() {
-    const mobileSearch = document.getElementById('mobileNavbarSearch');
-    
-    // Enhanced search functionality
-    if (mobileSearch) {
-      // Show search modal on focus if available
-      mobileSearch.addEventListener('focus', () => {
-        const modalEl = document.getElementById('mobileSearchModal');
-        if (modalEl) {
-          bootstrap.Modal.getOrCreateInstance(modalEl).show();
-        }
-      });
-      
-      // Real-time search suggestions (placeholder for future implementation)
-      let searchTimeout;
-      mobileSearch.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        const query = this.value.trim();
-        
-        if (query.length > 2) {
-          searchTimeout = setTimeout(() => {
-            // Future: Implement real-time search suggestions
-            console.log('Searching for:', query);
-          }, 300);
-        }
-      });
-    }
-    
-    // Update notification badge
-    function updateNotificationBadge() {
-      fetch('/notifications/api/count')
-        .then(r => (r.ok ? r.json() : null))
-        .then(data => {
-          const count = data && typeof data.count === 'number' ? data.count : 0;
-          const badge = document.getElementById('mobileNotificationBadge');
-          if (badge) {
-            if (count > 0) {
-              badge.textContent = count > 99 ? '99+' : count;
-              badge.style.display = 'flex';
-            } else {
-              badge.style.display = 'none';
-            }
-          }
-        })
-        .catch(() => {
-          // Silently fail - notification count is not critical
-        });
-    }
-    
-    // Update badges periodically
-    updateNotificationBadge();
-    setInterval(updateNotificationBadge, 30000);
-    
-    // Enhanced touch feedback for navigation icons
-    document.querySelectorAll('.nav-icon-btn').forEach(element => {
-      element.addEventListener('touchstart', function() {
-        this.style.transform = 'scale(0.95)';
-      }, { passive: true });
-      
-      element.addEventListener('touchend', function() {
-        setTimeout(() => {
-          this.style.transform = '';
-        }, 150);
-      }, { passive: true });
-    });
-    
-    // Keyboard navigation support
-    document.addEventListener('keydown', function(e) {
-      // Focus search with '/' key
-      if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.target.matches('input, textarea')) {
-        e.preventDefault();
-        if (mobileSearch) {
-          mobileSearch.focus();
-        }
-      }
-      
-      // Escape to blur search
-      if (e.key === 'Escape' && mobileSearch && document.activeElement === mobileSearch) {
-        mobileSearch.blur();
-      }
-    });
-    
-    // Auto-hide navbar on scroll (mobile only)
-    let lastScrollY = window.scrollY;
-    let ticking = false;
-    let hideTimeout;
-    let showTimeout;
-    let isScrolling = false;
-    
-    function updateNavbarVisibility() {
-      const navbar = document.getElementById('mobileNavbar');
-      if (!navbar || window.innerWidth > 991) return;
-      
-      const currentScrollY = window.scrollY;
-      const scrollDifference = currentScrollY - lastScrollY;
-      
-      // Clear any pending timeouts
-      clearTimeout(hideTimeout);
-      clearTimeout(showTimeout);
-      
-      if (Math.abs(scrollDifference) < 5) return; // Ignore very small scrolls
-      
-      if (scrollDifference > 0 && currentScrollY > 100) {
-        // Scrolling down - hide navbar
-        navbar.classList.add('navbar-hidden');
-        navbar.classList.remove('navbar-visible');
-      } else if (scrollDifference < 0) {
-        // Scrolling up - show navbar immediately
-        navbar.classList.remove('navbar-hidden');
-        navbar.classList.add('navbar-visible');
-      }
-      
-      lastScrollY = currentScrollY;
-      isScrolling = true;
-      
-      // Auto-show after stopping scroll
-      showTimeout = setTimeout(() => {
-        isScrolling = false;
-        navbar.classList.remove('navbar-hidden');
-        navbar.classList.add('navbar-visible');
-      }, 2000);
-    }
-    
-    function requestTick() {
-      if (!ticking) {
-        requestAnimationFrame(updateNavbarVisibility);
-        ticking = true;
-        setTimeout(() => { ticking = false; }, 16); // ~60fps
-      }
-    }
-    
-    function showNavbar() {
-      const navbar = document.getElementById('mobileNavbar');
-      if (navbar) {
-        navbar.classList.remove('navbar-hidden');
-        navbar.classList.add('navbar-visible');
-      }
-    }
-    
-    // Enable auto-hide on mobile devices
-    if (window.innerWidth <= 991) {
-      window.addEventListener('scroll', requestTick, { passive: true });
-      
-      // Show navbar on touch interactions
-      document.addEventListener('touchstart', showNavbar, { passive: true });
-      document.addEventListener('touchend', function() {
-        const navbar = document.getElementById('mobileNavbar');
-        if (navbar) {
-          clearTimeout(hideTimeout);
-          navbar.classList.remove('navbar-hidden');
-          navbar.classList.add('navbar-visible');
-        }
-      }, { passive: true });
-      
-      // Show navbar when focusing on input fields (accessibility)
-      document.addEventListener('focusin', function(e) {
-        if (e.target.matches('input, textarea, select')) {
-          showNavbar();
-        }
-      });
-      
-      // Show navbar on window resize to mobile
-      window.addEventListener('resize', function() {
-        if (window.innerWidth <= 991) {
-          showNavbar();
-        }
-      });
-    }
-    
-    // Touch feedback for nav buttons
-    document.querySelectorAll('.nav-icon-btn').forEach(btn => {
-      btn.addEventListener('touchstart', function() {
-        this.style.transform = 'scale(0.95)';
-        this.style.transition = 'transform 0.1s ease';
-      }, { passive: true });
-      
-      btn.addEventListener('touchend', function() {
-        this.style.transform = 'scale(1)';
-      }, { passive: true });
-    });
-    
-    // Handle dropdown toggle for better UX
-    const dropdownToggles = document.querySelectorAll('.nav-icon-btn.dropdown-toggle');
-    dropdownToggles.forEach(toggle => {
-      toggle.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const dropdown = bootstrap.Dropdown.getOrCreateInstance(this);
-        dropdown.toggle();
-      });
-    });
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('.dropdown')) {
-        const openDropdowns = document.querySelectorAll('.dropdown-menu.show');
-        openDropdowns.forEach(menu => {
-          const dropdown = bootstrap.Dropdown.getInstance(menu.previousElementSibling);
-          if (dropdown) dropdown.hide();
-        });
-      }
-    });
-    
-    // Enhanced keyboard navigation support
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        // Close any open dropdowns
-        const openDropdowns = document.querySelectorAll('.dropdown-menu.show');
-        openDropdowns.forEach(dropdown => {
-          const toggle = dropdown.previousElementSibling;
-          if (toggle) {
-            bootstrap.Dropdown.getInstance(toggle)?.hide();
-          }
-        });
-      }
-    });
-    
-    // Initialize navbar as visible
-    const navbar = document.getElementById('mobileNavbar');
-    if (navbar) {
-      navbar.classList.add('navbar-visible');
-    }
-  });
-</script>
+document.addEventListener("DOMContentLoaded", () => {
+  const navbar = document.getElementById("mobileNavbar");
+  if (navbar) {
+    const h = navbar.offsetHeight;
+    document.body.classList.add("with-mobile-navbar");
+    document.body.style.setProperty("--mobile-navbar-height", h + "px");
+  }
+});
 
+let lastScroll = 0;
+window.addEventListener("scroll", () => {
+  const navbar = document.getElementById("mobileNavbar");
+  if (!navbar) return;
+  const currentScroll = window.pageYOffset;
+  if (currentScroll > lastScroll && currentScroll > 50) {
+    navbar.style.transform = "translateY(-100%)";
+  } else {
+    navbar.style.transform = "translateY(0)";
+  }
+  lastScroll = currentScroll;
+});
+</script>
