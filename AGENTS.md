@@ -1234,3 +1234,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Fixed avatar edit button opening file dialog twice by removing duplicate listener and handling upload through the existing input. (PR perfil-avatar-dialog-fix)
 - Validated feed post uploads by limiting files to safe extensions and 5MB max size, updated toast templates for flash categories and added tests. (PR feed-upload-validation)
 - Limited feed post uploads to images only, enforced 5MB max per file, rejected more than 10 images and read `comment_permission` once. (PR feed-upload-limits)
+- Improved forum question and answer pages with responsive layout, theme-aware card and badge colors, and dark/light compatible vote buttons. (PR forum-responsive-theme)
