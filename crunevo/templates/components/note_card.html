@@ -55,7 +55,9 @@
 
   <div class="note-preview">
     <div class="loading-shimmer"></div>
-    {% if ext == 'pdf' %}
+    {% if note.thumbnail_url %}
+      <img src="{{ note.thumbnail_url }}" class="note-img d-none" alt="preview">
+    {% elif ext == 'pdf' %}
       <canvas class="pdf-thumb d-none" data-pdf="{{ note.filename }}"></canvas>
     {% elif ext in ['jpg','jpeg','png','webp'] %}
       <img src="{{ note.filename }}" class="note-img d-none" alt="preview">

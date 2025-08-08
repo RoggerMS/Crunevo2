@@ -8,6 +8,7 @@ class Note(db.Model):
     description = db.Column(db.Text, default="")
     filename = db.Column(db.String(200), default="")
     original_file_url = db.Column(db.String(200), default="")
+    thumbnail_url = db.Column(db.String(200), default="")
     file_type = db.Column(db.String(20), default="")
     tags = db.Column(db.String(200), default="")
     category = db.Column(db.String(100), default="")
