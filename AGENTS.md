@@ -1249,3 +1249,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Feed cache ahora incluye timestamp 'cached_at' y `cleanup` elimina entradas tras 10 minutos; considerar backend Redis con TTL por usuario. (PR feed-cache-expiry)
 
 - Generated thumbnails for notes by converting first page to image and storing `thumbnail_url`; note cards now display the miniaturas when available. (PR note-thumbnail)
+- Resolved Jinja syntax error in tienda pagination by popping existing `page` from args and moving `**args` after explicit page parameter in `_product_cards.html`.
