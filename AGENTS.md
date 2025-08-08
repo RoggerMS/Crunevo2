@@ -1254,3 +1254,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added migration to add `thumbnail_url` to `note` with fallback and normalized error logging to store numeric status codes. (PR note-thumbnail-log-fix)
 - Fixed duplicate `head_extra` block in `forum/question.html`, resolving 500 on `/foro/pregunta/<id>` and loading Quill styles once. (PR forum-question-head-fix)
 - Modernized mobile navbar: ensured compact logo sizing and unified quick link styles in `navbar.css` for a social app feel. (PR mobile-navbar-modern)
+- Fixed mobile navbar profile tab to use `auth.view_profile` with login fallback and updated active state detection, resolving BuildError when rendering profile links. (PR mobile-navbar-profile-link)
