@@ -25,6 +25,7 @@
                 <div class="card-body">
                     <h5 class="card-title mb-3">Filtros</h5>
                     <form id="filter-form" method="get" action="{{ url_for('commerce.commerce_index') }}">
+                        <input type="hidden" name="sort" value="{{ sort }}">
                         <!-- Búsqueda -->
                         <div class="mb-3">
                             <label for="search" class="form-label">Buscar</label>
@@ -215,12 +216,27 @@
             <!-- Lista de productos -->
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="card-title mb-0">Productos</h5>
-                        <span class="text-muted">{{ products|length }} productos encontrados</span>
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+                        <div>
+                            <h5 class="card-title mb-0">Productos</h5>
+                            <span class="text-muted">{{ pagination.total }} productos encontrados</span>
+                        </div>
+                        <form method="get" class="d-flex align-items-center">
+                            {% for key, values in request.args.lists() if key not in ['sort','page'] %}
+                                {% for val in values %}
+                                <input type="hidden" name="{{ key }}" value="{{ val }}">
+                                {% endfor %}
+                            {% endfor %}
+                            <label for="sort" class="me-2 mb-0">Ordenar por:</label>
+                            <select name="sort" id="sort" class="form-select" onchange="this.form.submit()">
+                                <option value="date" {% if sort == 'date' %}selected{% endif %}>Fecha</option>
+                                <option value="price" {% if sort == 'price' %}selected{% endif %}>Precio</option>
+                                <option value="popular" {% if sort == 'popular' %}selected{% endif %}>Popularidad</option>
+                            </select>
+                        </form>
                     </div>
-                    
-                    {% if products %}
+
+                    {% if pagination.items %}
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="products-container">
                         {% include "tienda/_product_cards.html" %}
                     </div>
