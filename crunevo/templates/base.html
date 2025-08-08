@@ -137,17 +137,9 @@
     <audio id="notifSound" class="d-none" src="{{ url_for('static', filename='audio/notification.wav') }}" preload="auto"></audio>
 
     {% if request.endpoint not in ['auth.login', 'onboarding.register'] %}
-    <button id="menuToggleBtn"
-            class="btn btn-primary rounded-circle shadow position-fixed d-lg-none"
-            style="width: 48px; height: 48px; bottom: 88px; left: 16px; z-index: 1050;"
-            aria-label="Menú"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#mobileSidebar">
-      <i class="bi bi-list fs-3"></i>
-    </button>
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebarLeft" aria-labelledby="mobileSidebarLeftLabel">
       <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="mobileSidebarLabel">Menú</h5>
+        <h5 class="offcanvas-title" id="mobileSidebarLeftLabel">Menú</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
       </div>
       <div class="offcanvas-body p-0">
