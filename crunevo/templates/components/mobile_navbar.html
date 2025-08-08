@@ -1,5 +1,5 @@
 <!-- Navbar móvil estilo Facebook - Superior único -->
-<nav class="navbar facebook-mobile-navbar fixed-top d-lg-none shadow-sm">
+<nav class="navbar facebook-mobile-navbar fixed-top d-lg-none shadow-sm" id="mobileNavbar">
   <div class="container-fluid d-flex align-items-center justify-content-between px-3 py-2">
     <!-- Logo/Brand -->
     <div class="navbar-brand-section">
@@ -71,12 +71,36 @@
 <style>
   /* Navbar principal estilo Facebook */
   .facebook-mobile-navbar {
-    background: #ffffff !important;
+    background: rgba(255, 255, 255, 0.95) !important;
     border-bottom: 1px solid #e4e6ea;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     min-height: 56px;
+    height: 60px;
     z-index: 1030;
-    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+  }
+  
+  /* Espacio para evitar que el navbar tape el contenido */
+  body {
+    padding-top: 60px;
+  }
+  
+  @media (min-width: 992px) {
+    body {
+      padding-top: 0;
+    }
+  }
+  
+  /* Auto-hide states */
+  .facebook-mobile-navbar.navbar-hidden {
+    transform: translateY(-100%);
+  }
+  
+  .facebook-mobile-navbar.navbar-visible {
+    transform: translateY(0);
   }
   
   /* Brand/Logo section */
@@ -134,8 +158,9 @@
   
   /* Navigation icons */
   .nav-icons {
-    min-width: 200px;
+    flex: 0 0 auto;
     justify-content: flex-end;
+    gap: 2px;
   }
   
   .nav-icon-btn {
@@ -145,6 +170,7 @@
     color: #65676b !important;
     width: 40px;
     height: 40px;
+    min-width: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -152,6 +178,7 @@
     text-decoration: none;
     font-size: 1.2rem;
     position: relative;
+    flex-shrink: 0;
   }
   
   .nav-icon-btn:hover {
@@ -230,40 +257,86 @@
   
   /* Responsive adjustments */
   @media (max-width: 575px) {
+    .facebook-mobile-navbar {
+      height: 56px;
+      min-height: 56px;
+    }
+    
+    body {
+      padding-top: 56px;
+    }
+    
+    .container-fluid {
+      padding: 0.5rem 0.75rem;
+    }
+    
     .search-container {
-      max-width: 180px;
+      max-width: 160px;
+      margin: 0 0.5rem;
     }
     
     .nav-icons {
-      min-width: 160px;
-      gap: 0;
+      gap: 1px;
     }
     
     .nav-icon-btn {
       width: 36px;
       height: 36px;
+      min-width: 36px;
       font-size: 1.1rem;
     }
     
     .navbar-brand-mobile {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
+    }
+    
+    .brand-text {
+      display: none;
+    }
+    
+    .navbar-brand-section::after {
+      content: 'C';
+      font-weight: bold;
+      font-size: 1.4rem;
+      color: #1877f2;
     }
   }
   
   @media (max-width: 480px) {
     .search-container {
-      max-width: 140px;
+      max-width: 120px;
+      margin: 0 0.25rem;
     }
     
     .nav-icons {
-      min-width: 140px;
+      gap: 0;
+    }
+    
+    .nav-icon-btn {
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+      font-size: 1rem;
+    }
+  }
+  
+  @media (max-width: 360px) {
+    .search-container {
+      max-width: 100px;
+    }
+    
+    .nav-icon-btn {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      font-size: 0.9rem;
     }
   }
   
   /* Dark mode support */
   @media (prefers-color-scheme: dark) {
     .facebook-mobile-navbar {
-      background: #242526 !important;
+      background: rgba(36, 37, 38, 0.95) !important;
       border-bottom-color: #3a3b3c;
     }
     
@@ -437,34 +510,45 @@
       }
     });
     
-    // Auto-hide navbar on scroll (Facebook-style)
+    // Auto-hide navbar on scroll (mobile only)
     let lastScrollY = window.scrollY;
     let ticking = false;
     let hideTimeout;
+    let showTimeout;
+    let isScrolling = false;
     
     function updateNavbarVisibility() {
-      const navbar = document.querySelector('.facebook-mobile-navbar');
-      if (!navbar) return;
+      const navbar = document.getElementById('mobileNavbar');
+      if (!navbar || window.innerWidth > 991) return;
       
       const currentScrollY = window.scrollY;
       const scrollDifference = currentScrollY - lastScrollY;
       
-      // Clear any pending hide timeout
+      // Clear any pending timeouts
       clearTimeout(hideTimeout);
+      clearTimeout(showTimeout);
       
-      if (Math.abs(scrollDifference) < 3) return; // Ignore very small scrolls
+      if (Math.abs(scrollDifference) < 5) return; // Ignore very small scrolls
       
-      if (scrollDifference > 0 && currentScrollY > 80) {
-        // Scrolling down - hide navbar with delay
-        hideTimeout = setTimeout(() => {
-          navbar.style.transform = 'translateY(-100%)';
-        }, 150);
-      } else {
+      if (scrollDifference > 0 && currentScrollY > 100) {
+        // Scrolling down - hide navbar
+        navbar.classList.add('navbar-hidden');
+        navbar.classList.remove('navbar-visible');
+      } else if (scrollDifference < 0) {
         // Scrolling up - show navbar immediately
-        navbar.style.transform = 'translateY(0)';
+        navbar.classList.remove('navbar-hidden');
+        navbar.classList.add('navbar-visible');
       }
       
       lastScrollY = currentScrollY;
+      isScrolling = true;
+      
+      // Auto-show after stopping scroll
+      showTimeout = setTimeout(() => {
+        isScrolling = false;
+        navbar.classList.remove('navbar-hidden');
+        navbar.classList.add('navbar-visible');
+      }, 2000);
     }
     
     function requestTick() {
@@ -475,19 +559,55 @@
       }
     }
     
+    function showNavbar() {
+      const navbar = document.getElementById('mobileNavbar');
+      if (navbar) {
+        navbar.classList.remove('navbar-hidden');
+        navbar.classList.add('navbar-visible');
+      }
+    }
+    
     // Enable auto-hide on mobile devices
     if (window.innerWidth <= 991) {
       window.addEventListener('scroll', requestTick, { passive: true });
       
-      // Show navbar on any touch interaction
-      document.addEventListener('touchstart', function() {
-        const navbar = document.querySelector('.facebook-mobile-navbar');
+      // Show navbar on touch interactions
+      document.addEventListener('touchstart', showNavbar, { passive: true });
+      document.addEventListener('touchend', function() {
+        const navbar = document.getElementById('mobileNavbar');
         if (navbar) {
           clearTimeout(hideTimeout);
-          navbar.style.transform = 'translateY(0)';
+          navbar.classList.remove('navbar-hidden');
+          navbar.classList.add('navbar-visible');
         }
       }, { passive: true });
+      
+      // Show navbar when focusing on input fields (accessibility)
+      document.addEventListener('focusin', function(e) {
+        if (e.target.matches('input, textarea, select')) {
+          showNavbar();
+        }
+      });
+      
+      // Show navbar on window resize to mobile
+      window.addEventListener('resize', function() {
+        if (window.innerWidth <= 991) {
+          showNavbar();
+        }
+      });
     }
+    
+    // Touch feedback for nav buttons
+    document.querySelectorAll('.nav-icon-btn').forEach(btn => {
+      btn.addEventListener('touchstart', function() {
+        this.style.transform = 'scale(0.95)';
+        this.style.transition = 'transform 0.1s ease';
+      }, { passive: true });
+      
+      btn.addEventListener('touchend', function() {
+        this.style.transform = 'scale(1)';
+      }, { passive: true });
+    });
     
     // Handle dropdown toggle for better UX
     const dropdownToggles = document.querySelectorAll('.nav-icon-btn.dropdown-toggle');
@@ -511,6 +631,26 @@
         });
       }
     });
+    
+    // Enhanced keyboard navigation support
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        // Close any open dropdowns
+        const openDropdowns = document.querySelectorAll('.dropdown-menu.show');
+        openDropdowns.forEach(dropdown => {
+          const toggle = dropdown.previousElementSibling;
+          if (toggle) {
+            bootstrap.Dropdown.getInstance(toggle)?.hide();
+          }
+        });
+      }
+    });
+    
+    // Initialize navbar as visible
+    const navbar = document.getElementById('mobileNavbar');
+    if (navbar) {
+      navbar.classList.add('navbar-visible');
+    }
   });
 </script>
 
