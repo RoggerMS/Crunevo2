@@ -1243,3 +1243,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Reemplazada recarga del feed tras publicar por inserción dinámica usando `_posts.html` retornado en JSON y prueba asociada. (PR feed-dynamic-insert)
 - Optimized feed loading by preloading posts with `joinedload` in `/load` API and using loaded objects instead of `Post.query.get`. (PR feed-joinedload-opt)
 - Reemplazado `innerHTML` por creación de nodos y uso de `textContent` en `notes/list.html` para stats y título dinámicos. (PR notes-textcontent)
+- feed.js ahora inserta dinámicamente el nuevo post en `#feedContainer` construyendo el HTML con los datos JSON del servidor y evitando recargar la página. (PR feed-json-insert)
