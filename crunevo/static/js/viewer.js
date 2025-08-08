@@ -69,15 +69,53 @@ function initNoteViewer() {
         annotationHandler({ page: pageNum, x: ev.offsetX, y: ev.offsetY });
       }
     });
-  } else if (type === 'docx' && typeof mammoth !== 'undefined') {
-    const display = document.createElement('div');
-    display.className = 'docx-preview';
-    container.appendChild(display);
+  } else if (type === 'docx' && typeof docx !== 'undefined') {
+    const display = document.getElementById('docxWrapper') || document.createElement('div');
+    if (!display.id) {
+      display.id = 'docxWrapper';
+      container.appendChild(display);
+    }
+    const controls = container.querySelector('#docxControls') || document.createElement('div');
+    if (!controls.id) {
+      controls.id = 'docxControls';
+      controls.className = 'd-flex justify-content-between align-items-center mb-2';
+      controls.innerHTML = `
+        <button class="btn btn-outline-secondary btn-sm" id="prevPage">&#x25C0;</button>
+        <span id="pageInfo" class="small"></span>
+        <button class="btn btn-outline-secondary btn-sm" id="nextPage">&#x25B6;</button>
+      `;
+      container.appendChild(controls);
+    }
     fetch(url)
       .then((res) => res.arrayBuffer())
-      .then((buf) => mammoth.convertToHtml({ arrayBuffer: buf }))
-      .then((result) => {
-        display.innerHTML = result.value;
+      .then((buf) =>
+        docx.renderAsync(buf, display, null, {
+          inWrapper: false,
+          ignoreWidth: false,
+          ignoreHeight: false,
+          breakPages: true,
+        })
+      )
+      .then(() => {
+        const pages = display.querySelectorAll('.docx-page');
+        const pageInfo = controls.querySelector('#pageInfo');
+        let pageNum = 1;
+        function showPage(num) {
+          pages.forEach((p, i) => {
+            p.style.display = i === num - 1 ? 'block' : 'none';
+          });
+          if (pageInfo) pageInfo.textContent = `${num}/${pages.length}`;
+        }
+        showPage(pageNum);
+        controls.addEventListener('click', (e) => {
+          if (e.target.id === 'prevPage' && pageNum > 1) {
+            pageNum--;
+            showPage(pageNum);
+          } else if (e.target.id === 'nextPage' && pageNum < pages.length) {
+            pageNum++;
+            showPage(pageNum);
+          }
+        });
       })
       .catch(() => {
         display.innerHTML = '<p class="alert alert-info">No se pudo mostrar el documento</p>';

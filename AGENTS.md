@@ -1239,3 +1239,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Comentarios en publicaciones requieren usuarios activados; intentos bloqueados se registran para monitoreo. (PR comment-auth-log)
 
 - Moved tienda filters into a Bootstrap offcanvas with a mobile-only toggle button and updated store.js for cloning, events and focus return. (PR tienda-filter-offcanvas)
+- Integrado docx-preview para previsualizar DOCX con paginación y controles en viewer.js, viewer_docx.html y notes/detalle.html.
+- Reemplazada recarga del feed tras publicar por inserción dinámica usando `_posts.html` retornado en JSON y prueba asociada. (PR feed-dynamic-insert)
