@@ -489,7 +489,7 @@
 
 /* Vote Buttons */
 .vote-group {
-  background: #f8fafc;
+  background: var(--bs-light-bg-subtle);
   border-radius: 12px;
   padding: 0.5rem;
 }
@@ -500,6 +500,8 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  color: var(--bs-body-color);
+  background: transparent;
 }
 
 .vote-btn::before {
@@ -517,6 +519,19 @@
 .vote-btn:hover::before {
   width: 100px;
   height: 100px;
+}
+
+/* Theme adjustments */
+[data-bs-theme="dark"] .vote-group {
+  background: var(--bs-dark-bg-subtle);
+}
+
+[data-bs-theme="dark"] .vote-btn {
+  color: var(--bs-light);
+}
+
+[data-bs-theme="light"] .vote-btn {
+  color: var(--bs-body-color);
 }
 
 .vote-up:hover {

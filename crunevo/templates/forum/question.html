@@ -371,6 +371,100 @@ document.addEventListener('DOMContentLoaded', function() {
 {% endblock %}
 
 <style>
+/* Base responsive styling */
+.question-detail-card .card-body,
+.answer-card .card-body,
+.answer-body {
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.question-content,
+.question-content .lead {
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.question-content img,
+.answer-body img {
+  max-width: 100%;
+  height: auto;
+}
+
+.question-content table,
+.answer-body table,
+.question-content pre,
+.answer-body pre {
+  overflow-x: auto;
+  display: block;
+}
+
+.vote-group {
+  max-width: 100%;
+  word-break: break-word;
+}
+
+@media (max-width: 768px) {
+  .question-detail-card .card-body,
+  .answer-card .card-body,
+  .answer-body {
+    padding: 1rem;
+  }
+}
+
+/* Theme adjustments */
+[data-bs-theme="light"] .card-body,
+[data-bs-theme="light"] .answer-body {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .card-body,
+[data-bs-theme="dark"] .answer-body {
+  background-color: var(--bs-dark-bg-subtle);
+  color: var(--bs-body-color);
+}
+
+.answer-card .answer-body {
+  border-left: 4px solid var(--forum-primary);
+  background-color: var(--bs-light-bg-subtle);
+}
+
+.answer-card.accepted .answer-body {
+  border-left-color: #4ade80;
+  background-color: rgba(74, 222, 128, 0.05);
+}
+
+[data-bs-theme="dark"] .answer-card .answer-body {
+  background-color: var(--bs-dark-bg-subtle);
+}
+
+[data-bs-theme="dark"] .answer-card.accepted .answer-body {
+  background-color: rgba(74, 222, 128, 0.1);
+}
+
+[data-bs-theme="dark"] .vote-group .vote-btn {
+  color: var(--bs-light);
+}
+
+[data-bs-theme="light"] .vote-group .vote-btn {
+  color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .badge,
+[data-bs-theme="dark"] .btn,
+[data-bs-theme="dark"] .label {
+  color: var(--bs-body-color);
+}
+
+[data-bs-theme="light"] .badge,
+[data-bs-theme="light"] .btn,
+[data-bs-theme="light"] .label {
+  color: var(--bs-body-color);
+}
+
 /* Dark Mode Overrides for Question Detail */
 [data-bs-theme="dark"] {
   body {

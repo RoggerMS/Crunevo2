@@ -39,7 +39,7 @@
                 </div>
                 
                 <!-- Answer Content with Enhanced Typography -->
-                <div class="answer-body mb-4 p-3 rounded-3" style="background: {% if answer.is_accepted %}rgba(74, 222, 128, 0.05){% else %}#f8fafc{% endif %}; border-left: 4px solid {% if answer.is_accepted %}#4ade80{% else %}var(--forum-primary){% endif %};">
+                <div class="answer-body mb-4 p-3 rounded-3">
                     {{ answer.content|safe }}
                 </div>
                 
