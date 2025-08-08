@@ -11,9 +11,16 @@
 
 {% block content %}
 <div class="container-fluid py-4">
+    <!-- Botón de filtros para móviles -->
+    <div class="d-lg-none mb-3">
+        <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas"
+            data-bs-target="#filtersOffcanvas" aria-controls="filtersOffcanvas" id="filtersToggleBtn">
+            Filtros
+        </button>
+    </div>
     <div class="row">
         <!-- Sidebar de filtros -->
-        <div class="col-md-3 mb-4">
+        <div class="col-lg-3 mb-4 d-none d-lg-block filters-container">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Filtros</h5>
@@ -141,7 +148,7 @@
         </div>
 
         <!-- Contenido principal -->
-        <div class="col-md-9">
+        <div class="col-lg-9">
             <!-- Encabezado -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="h3">Tienda Crunevo</h1>
@@ -227,6 +234,16 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Offcanvas de filtros para móviles -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="filtersOffcanvas"
+        aria-labelledby="filtersOffcanvasLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="filtersOffcanvasLabel">Filtros</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
+        <div class="offcanvas-body"></div>
     </div>
 </div>
 {% endblock %}
