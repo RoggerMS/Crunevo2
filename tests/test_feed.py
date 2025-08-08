@@ -117,6 +117,23 @@ def test_push_items_persists(reset_caches):
     assert fetch(1)[0] == {"a": 1}
 
 
+def test_feed_cache_cleanup_removes_old_entries(reset_caches):
+
+    from datetime import datetime, timedelta
+
+    feed_cache.push_items(
+        1, [{"score": 0, "created_at": datetime.utcnow(), "payload": {"a": 1}}]
+    )
+
+    feed_cache._cache[1][0]["cached_at"] = datetime.utcnow() - timedelta(
+        seconds=feed_cache.CACHE_TTL + 1
+    )
+
+    feed_cache.cleanup()
+
+    assert feed_cache.fetch(1) == []
+
+
 def test_feed_fetch_handles_error(monkeypatch, client, db_session, test_user):
     monkeypatch.setattr(
         feed_cache, "fetch", lambda *a, **k: (_ for _ in ()).throw(Exception("boom"))
