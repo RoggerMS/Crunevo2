@@ -31,7 +31,7 @@
 
 <!-- Mobile Quick Links (used in mobile_navbar.html) -->
 {% macro mobile_quick_links() %}
-<div class="d-flex align-items-center justify-content-end gap-2">
+<div class="d-flex align-items-center justify-content-between gap-2 mobile-quick-links">
   <a href="{{ url_for('feed.feed_home') if 'feed.feed_home' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}" class="btn btn-link text-white p-1" aria-label="Feed principal">
     <i class="bi bi-house{{ '-fill' if request.endpoint == 'feed.feed_home' else '' }}"></i>
   </a>

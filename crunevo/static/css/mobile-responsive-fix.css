@@ -1,0 +1,359 @@
+/* ==========================================================================
+   MOBILE RESPONSIVE FIXES
+   Correcciones específicas para mejorar la experiencia móvil
+   ========================================================================== */
+
+/* Contenedor principal - eliminar padding excesivo en móviles */
+@media (max-width: 767.98px) {
+  .container-fluid {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  
+  /* Ajustar padding del contenido principal */
+  main .container-fluid {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    padding-bottom: 2rem !important;
+    padding-top: 0.5rem !important;
+  }
+}
+
+/* Pantallas muy pequeñas */
+@media (max-width: 575.98px) {
+  .container-fluid {
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+  }
+  
+  main .container-fluid {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+}
+
+/* Pantallas extra pequeñas */
+@media (max-width: 360px) {
+  .container-fluid {
+    padding-left: 0.125rem !important;
+    padding-right: 0.125rem !important;
+  }
+  
+  main .container-fluid {
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+  }
+}
+
+/* Ajustes para tarjetas en móviles */
+@media (max-width: 767.98px) {
+  .card {
+    margin-bottom: 0.75rem;
+    border-radius: 12px;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  /* Ajustar títulos para móviles */
+  h1 {
+    font-size: 1.75rem !important;
+    line-height: 1.3;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+    line-height: 1.3;
+  }
+  
+  h3 {
+    font-size: 1.25rem !important;
+    line-height: 1.3;
+  }
+  
+  h4 {
+    font-size: 1.1rem !important;
+    line-height: 1.3;
+  }
+  
+  /* Ajustar párrafos */
+  p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Ajustes específicos para el espacio personal */
+@media (max-width: 767.98px) {
+  .personal-space-container {
+    padding: 0;
+  }
+  
+  .ps-header {
+    padding: 1rem 0.5rem;
+  }
+  
+  .ps-title {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.5rem;
+  }
+  
+  .ps-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  
+  .ps-controls {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .ps-controls .btn {
+    width: 100%;
+    margin: 0 !important;
+  }
+}
+
+/* Ajustes para plantillas */
+@media (max-width: 767.98px) {
+  .templates-container {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .template-card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .template-header {
+    flex-direction: column;
+    text-align: center;
+    margin-bottom: 0.75rem;
+  }
+  
+  .template-icon {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 0.5rem;
+  }
+  
+  .template-title {
+    font-size: 1.1rem !important;
+    margin-bottom: 0.25rem;
+  }
+  
+  .template-subtitle {
+    font-size: 0.85rem;
+  }
+  
+  .template-description {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  
+  .template-blocks {
+    justify-content: center;
+  }
+  
+  .block-tag {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Ajustes para botones en móviles */
+@media (max-width: 767.98px) {
+  .btn {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+    min-height: 44px;
+  }
+  
+  .btn-sm {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    min-height: 36px;
+  }
+  
+  .btn-lg {
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+    min-height: 48px;
+  }
+}
+
+/* Ajustes para formularios */
+@media (max-width: 767.98px) {
+  .form-control {
+    font-size: 1rem;
+    min-height: 44px;
+    padding: 0.6rem 0.8rem;
+  }
+  
+  .form-label {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-text {
+    font-size: 0.8rem;
+  }
+}
+
+/* Ajustes para navegación móvil */
+@media (max-width: 767.98px) {
+  .mobile-navbar {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .mobile-navbar .form-control {
+    font-size: 0.9rem;
+    height: 36px;
+  }
+  
+  .mobile-navbar .btn-link {
+    min-width: 36px;
+    height: 36px;
+    padding: 0.25rem;
+  }
+}
+
+/* Ajustes para texto largo y contenido */
+@media (max-width: 767.98px) {
+  /* Prevenir overflow horizontal */
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Ajustar imágenes */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  
+  /* Ajustar tablas */
+  .table-responsive {
+    font-size: 0.85rem;
+  }
+  
+  /* Ajustar listas */
+  ul, ol {
+    padding-left: 1.25rem;
+  }
+  
+  /* Ajustar código */
+  pre, code {
+    font-size: 0.8rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+/* Ajustes para modales en móviles */
+@media (max-width: 767.98px) {
+  .modal-dialog {
+    margin: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+  
+  .modal-content {
+    border-radius: 12px;
+  }
+  
+  .modal-header {
+    padding: 1rem;
+  }
+  
+  .modal-body {
+    padding: 1rem;
+  }
+  
+  .modal-footer {
+    padding: 1rem;
+    flex-direction: column;
+  }
+  
+  .modal-footer .btn {
+    width: 100%;
+    margin: 0.25rem 0;
+  }
+}
+
+/* Ajustes para alertas y notificaciones */
+@media (max-width: 767.98px) {
+  .alert {
+    font-size: 0.9rem;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .toast {
+    font-size: 0.9rem;
+  }
+}
+
+/* Ajustes para espaciado general */
+@media (max-width: 767.98px) {
+  .mt-5, .my-5 {
+    margin-top: 2rem !important;
+  }
+  
+  .mb-5, .my-5 {
+    margin-bottom: 2rem !important;
+  }
+  
+  .pt-5, .py-5 {
+    padding-top: 2rem !important;
+  }
+  
+  .pb-5, .py-5 {
+    padding-bottom: 2rem !important;
+  }
+}
+
+/* Ajustes para accesibilidad táctil */
+@media (hover: none) and (pointer: coarse) {
+  .btn, .nav-link, .dropdown-item, .form-control, .form-select {
+    min-height: 44px;
+  }
+  
+  .btn-sm {
+    min-height: 36px;
+  }
+  
+  .btn-lg {
+    min-height: 48px;
+  }
+}
+
+/* Prevenir zoom en inputs en iOS */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  select, textarea, input[type="text"], input[type="password"], 
+  input[type="datetime"], input[type="datetime-local"], 
+  input[type="date"], input[type="month"], input[type="time"], 
+  input[type="week"], input[type="number"], input[type="email"], 
+  input[type="url"], input[type="search"], input[type="tel"], 
+  input[type="color"] {
+    font-size: 16px !important;
+  }
+}
+
+/* Ajustes específicos para pantallas muy anchas en móviles (landscape) */
+@media (max-height: 500px) and (orientation: landscape) {
+  .mobile-navbar {
+    min-height: 48px;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .ps-header {
+    padding: 0.5rem;
+  }
+  
+  .card {
+    margin-bottom: 0.5rem;
+  }
+}

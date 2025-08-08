@@ -135,12 +135,16 @@
                 </div>
 
                 {% if answers %}
-                <div class="row g-3 mb-4">
-                    {% for answer in answers %}
-                    <div class="col-12">
-                        {% include 'forum/partials/answer_card.html' with context %}
+                <div class="container-fluid">
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-md-10 col-lg-8">
+                            {% for answer in answers %}
+                            <div class="mb-3">
+                                {% include 'forum/partials/answer_card.html' with context %}
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                    {% endfor %}
                 </div>
                 {% else %}
                 <div class="empty-state text-center py-5 mb-4">
