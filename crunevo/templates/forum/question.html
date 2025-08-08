@@ -3,8 +3,12 @@
 
 {% block title %}{{ question.title }} - Foro Estudiantil{% endblock %}
 
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/forum_question.mobile.css') }}">
+{% endblock %}
+
 {% block content %}
-<div class="container my-4">
+<div class="container my-4 forum-question-page">
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">

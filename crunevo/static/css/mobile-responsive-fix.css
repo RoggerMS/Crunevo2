@@ -3,47 +3,7 @@
    Correcciones específicas para mejorar la experiencia móvil
    ========================================================================== */
 
-/* Contenedor principal - eliminar padding excesivo en móviles */
-@media (max-width: 767.98px) {
-  .container-fluid {
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
-  }
-  
-  /* Ajustar padding del contenido principal */
-  main .container-fluid {
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
-    padding-bottom: 2rem !important;
-    padding-top: 0.5rem !important;
-  }
-}
-
-/* Pantallas muy pequeñas */
-@media (max-width: 575.98px) {
-  .container-fluid {
-    padding-left: 0.25rem !important;
-    padding-right: 0.25rem !important;
-  }
-  
-  main .container-fluid {
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
-  }
-}
-
-/* Pantallas extra pequeñas */
-@media (max-width: 360px) {
-  .container-fluid {
-    padding-left: 0.125rem !important;
-    padding-right: 0.125rem !important;
-  }
-  
-  main .container-fluid {
-    padding-left: 0.25rem !important;
-    padding-right: 0.25rem !important;
-  }
-}
+/* Reglas globales de container-fluid removidas para evitar conflictos con otras páginas */
 
 /* Ajustes para tarjetas en móviles */
 @media (max-width: 767.98px) {
@@ -223,12 +183,6 @@
 
 /* Ajustes para texto largo y contenido */
 @media (max-width: 767.98px) {
-  /* Prevenir overflow horizontal */
-  * {
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-  
   /* Ajustar imágenes */
   img {
     max-width: 100% !important;
