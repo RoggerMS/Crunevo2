@@ -1246,3 +1246,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added pagination and sorting controls to tienda products, preserving existing filters in page links. (PR tienda-pagination-sort)
 - Reemplazado `innerHTML` por creación de nodos y uso de `textContent` en `notes/list.html` para stats y título dinámicos. (PR notes-textcontent)
 - feed.js ahora inserta dinámicamente el nuevo post en `#feedContainer` construyendo el HTML con los datos JSON del servidor y evitando recargar la página. (PR feed-json-insert)
+- Feed cache ahora incluye timestamp 'cached_at' y `cleanup` elimina entradas tras 10 minutos; considerar backend Redis con TTL por usuario. (PR feed-cache-expiry)
