@@ -29,9 +29,9 @@
 
 /* Mobile-first container */
 .forum-question-container {
-  padding: var(--spacing-sm);
+  padding: 0;
   max-width: 100%;
-  margin: 0 auto;
+  margin: 0;
 }
 
 @media (min-width: 768px) {
@@ -43,6 +43,7 @@
 @media (min-width: 1200px) {
   .forum-question-container {
     max-width: 1200px;
+    margin: 0 auto;
   }
 }
 
@@ -113,6 +114,35 @@
 }
 
 @media (max-width: 768px) {
+  /* Full width cards on mobile */
+  .forum-question-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .container-fluid,
+  .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .question-card-modern,
+  .answer-card-modern,
+  .sidebar-card-modern {
+    margin: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    width: 100%;
+    box-shadow: none;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
   .question-header-modern {
     padding: var(--spacing-md);
   }
@@ -150,19 +180,22 @@
     flex-direction: row;
     align-items: center;
     gap: var(--spacing-sm);
+    padding: 0;
   }
 
   .answer-header-mobile {
     flex-direction: row;
     align-items: flex-start;
     gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
   }
 
   .answer-actions-mobile {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-top: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-sm);
   }
 
   .author-name-row {
@@ -175,11 +208,69 @@
     gap: var(--spacing-xs) !important;
     margin-bottom: var(--spacing-xs);
   }
+
+  /* Content centering and full width */
+  .question-content-modern,
+  .answer-content-modern {
+    width: 100%;
+    text-align: left;
+    margin: 0;
+    padding: var(--spacing-md);
+    box-sizing: border-box;
+  }
+
+  .question-content-modern img,
+  .answer-content-modern img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: var(--spacing-sm) auto;
+  }
+
+  /* Ensure proper spacing */
+  .answer-header-mobile {
+    padding: var(--spacing-md);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .answer-actions-mobile {
+    padding: var(--spacing-md);
+    width: 100%;
+    box-sizing: border-box;
+    border-top: 1px solid #f1f5f9;
+    margin-top: 0;
+  }
 }
 
 @media (max-width: 576px) {
+  /* Ultra full width for small screens */
+  .forum-question-container {
+    padding: 0;
+    margin: 0;
+  }
+
+  .question-card-modern,
+  .answer-card-modern,
+  .sidebar-card-modern {
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
   .question-title-modern {
     font-size: 1.125rem;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  /* Ultra compact spacing */
+  .question-header-modern,
+  .answer-header-mobile,
+  .question-content-modern,
+  .answer-content-modern,
+  .answer-actions-mobile {
+    padding: var(--spacing-sm) !important;
   }
   
   /* Extra small devices - compact vote system */
@@ -228,6 +319,13 @@
     flex-direction: column;
     align-items: flex-start !important;
     gap: var(--spacing-xs) !important;
+  }
+
+  .question-header-modern,
+  .answer-header-modern,
+  .question-content-modern,
+  .answer-content-modern {
+    padding: var(--spacing-sm);
   }
 }
 
@@ -999,14 +1097,17 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="answer-actions-mobile">
-                                        {% if current_user.is_authenticated and current_user.id == question.author_id and not answer.is_accepted %}
-                                        <button class="btn-modern btn-outline-modern" onclick="acceptAnswer({{ answer.id }})">
-                                            <i class="bi bi-check-circle me-1"></i>Aceptar
-                                        </button>
-                                        {% endif %}
-                                        
-                                        <!-- Vote System -->
+                                    <!-- Actions removed from header, moved below content -->
+                                </div>
+                                
+                                <!-- Answer Content -->
+                                <div class="answer-content-modern">
+                                    {{ answer.content|safe }}
+                                </div>
+                                
+                                <!-- Answer Actions moved below content -->
+                                <div class="answer-actions-mobile mt-3 pt-3" style="border-top: 1px solid #f1f5f9;">
+                                    <div class="d-flex justify-content-between align-items-center">
                                         <div class="vote-system-modern">
                                             <button class="vote-btn-modern" onclick="voteAnswer({{ answer.id }}, 'up')">
                                                 <i class="bi bi-chevron-up"></i>
@@ -1016,12 +1117,12 @@
                                                 <i class="bi bi-chevron-down"></i>
                                             </button>
                                         </div>
+                                        {% if current_user.is_authenticated and current_user.id == question.author_id and not answer.is_accepted %}
+                                        <button class="btn-modern btn-outline-modern" onclick="acceptAnswer({{ answer.id }})">
+                                            <i class="bi bi-check-circle me-1"></i>Aceptar
+                                        </button>
+                                        {% endif %}
                                     </div>
-                                </div>
-                                
-                                <!-- Answer Content -->
-                                <div class="answer-content-modern">
-                                    {{ answer.content|safe }}
                                 </div>
                             </div>
                             {% endfor %}
