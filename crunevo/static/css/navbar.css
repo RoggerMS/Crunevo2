@@ -330,6 +330,45 @@
   transform: scale(1.1);
 }
 
+/* Ensure consistent small logo sizing */
+.crunevo-logo-small {
+  height: 28px;
+  width: auto;
+  display: block;
+}
+
+/* Mobile quick links styling */
+.mobile-quick-links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 12px;
+}
+
+.mobile-quick-links .icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.mobile-quick-links .icon-btn:active {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(0.95);
+}
+
+.mobile-quick-links .icon-btn:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 2px;
+}
+
 /* Performance optimizations */
 .navbar-crunevo * {
   will-change: auto;
