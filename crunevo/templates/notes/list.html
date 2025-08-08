@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(r => r.json())
       .then(data => {
         const list = document.getElementById('notesList');
-        list.innerHTML = '';
+        list.textContent = '';
         data.forEach(n => {
           list.appendChild(createNoteCard(n));
         });
@@ -64,12 +64,17 @@ function createNoteCard(n) {
 
   const header = document.createElement('div');
   header.className = 'p-3 pb-0';
-  header.innerHTML = `<p class="note-title mb-1">${n.title}</p>`;
+  const title = document.createElement('p');
+  title.className = 'note-title mb-1';
+  title.textContent = n.title;
+  header.appendChild(title);
   card.appendChild(header);
 
   const preview = document.createElement('div');
   preview.className = 'note-preview';
-  preview.innerHTML = '<div class="loading-shimmer"></div>';
+  const shimmer = document.createElement('div');
+  shimmer.className = 'loading-shimmer';
+  preview.appendChild(shimmer);
 
   const ext = n.filename.split('?')[0].split('.').pop().toLowerCase();
   if (ext === 'pdf') {
@@ -85,7 +90,12 @@ function createNoteCard(n) {
   } else {
     const div = document.createElement('div');
     div.className = 'text-muted d-flex flex-column justify-content-center align-items-center h-100';
-    div.innerHTML = '<i class="bi bi-file-earmark fs-1"></i><small>Vista previa no disponible</small>';
+    const icon = document.createElement('i');
+    icon.className = 'bi bi-file-earmark fs-1';
+    const msg = document.createElement('small');
+    msg.textContent = 'Vista previa no disponible';
+    div.appendChild(icon);
+    div.appendChild(msg);
     preview.appendChild(div);
   }
   card.appendChild(preview);
@@ -104,13 +114,34 @@ function createNoteCard(n) {
 
   const actions = document.createElement('div');
   actions.className = 'px-3 note-actions pb-3';
-  actions.innerHTML = `
-    <div class="note-stats mb-2">
-      <span><i class="bi bi-eye me-1"></i>${n.views || 0}</span>
-      <span><i class="bi bi-heart me-1"></i>${n.likes || 0}</span>
-    </div>
-    <a href="/notes/${n.id}" class="btn btn-primary btn-sm w-100">Ver Detalle</a>
-  `;
+
+  const stats = document.createElement('div');
+  stats.className = 'note-stats mb-2';
+
+  const viewsSpan = document.createElement('span');
+  const viewsIcon = document.createElement('i');
+  viewsIcon.className = 'bi bi-eye me-1';
+  viewsSpan.appendChild(viewsIcon);
+  const viewsText = document.createTextNode(n.views || 0);
+  viewsSpan.appendChild(viewsText);
+
+  const likesSpan = document.createElement('span');
+  const likesIcon = document.createElement('i');
+  likesIcon.className = 'bi bi-heart me-1';
+  likesSpan.appendChild(likesIcon);
+  const likesText = document.createTextNode(n.likes || 0);
+  likesSpan.appendChild(likesText);
+
+  stats.appendChild(viewsSpan);
+  stats.appendChild(likesSpan);
+
+  const detailLink = document.createElement('a');
+  detailLink.href = `/notes/${n.id}`;
+  detailLink.className = 'btn btn-primary btn-sm w-100';
+  detailLink.textContent = 'Ver Detalle';
+
+  actions.appendChild(stats);
+  actions.appendChild(detailLink);
 
   card.appendChild(actions);
   col.appendChild(card);
