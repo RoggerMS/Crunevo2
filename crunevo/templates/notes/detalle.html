@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 {% import 'components/csrf.html' as csrf %}
+{% block head_extra %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docx-preview/dist/docx-preview.min.css">
+<style>
+  .docx-page { margin-bottom: 1rem; }
+</style>
+{% endblock %}
 {% block content %}
 <div class="container-xl my-4">
   <div class="row g-4">
@@ -202,7 +208,7 @@
 
 {% block body_end %}
 <script src="{{ url_for('static', filename='pdfjs/pdf.min.js') }}"></script>
-<script src="{{ url_for('static', filename='vendor/mammoth.browser.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx-preview/dist/docx-preview.min.js"></script>
 <script src="{{ url_for('static', filename='js/viewer.js') }}"></script>
 <script>pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/pdf.worker.min.js') }}";</script>
 {% endblock %}
