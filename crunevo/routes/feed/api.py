@@ -1,6 +1,7 @@
 from flask import render_template, request, jsonify, url_for, current_app
 from flask_login import current_user
 from sqlalchemy import func
+from sqlalchemy.orm import joinedload
 from datetime import datetime, timedelta
 
 from crunevo.extensions import db
@@ -477,7 +478,9 @@ def load_feed():
     page = int(request.args.get("page", 1))
     categoria = request.args.get("categoria")
 
-    query = FeedItem.query.filter_by(owner_id=current_user.id)
+    query = FeedItem.query.options(joinedload(FeedItem.post)).filter_by(
+        owner_id=current_user.id
+    )
     if categoria == "apuntes":
         query = query.filter_by(item_type="apunte")
     else:
@@ -491,12 +494,10 @@ def load_feed():
     post_ids = []
 
     if categoria == "apuntes":
-        notes = [Note.query.get(i.ref_id) for i in items if i.item_type == "apunte"]
-        notes = [n for n in notes if n]
+        notes = [i.note for i in items if i.item_type == "apunte" and i.note]
         return render_template("feed/_notes.html", notes=notes) if notes else ""
 
-    posts = [Post.query.get(i.ref_id) for i in items if i.item_type == "post"]
-    posts = [p for p in posts if p]
+    posts = [i.post for i in items if i.item_type == "post" and i.post]
     if categoria == "imagen":
         posts = [p for p in posts if p.file_url and not p.file_url.endswith(".pdf")]
     post_ids = [p.id for p in posts]
