@@ -618,13 +618,10 @@ class CrunevoStore {
     }
 
     toggleMobileFilters() {
-        const overlay = document.getElementById('offcanvasOverlay');
-        const filters = document.getElementById('offcanvasFilters');
-
-        if (overlay && filters) {
-            overlay.classList.add('active');
-            filters.classList.add('active');
-            document.body.style.overflow = 'hidden';
+        const offcanvasEl = document.getElementById('filtersOffcanvas');
+        if (offcanvasEl) {
+            const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+            offcanvas.show();
         }
     }
 
@@ -633,34 +630,87 @@ class CrunevoStore {
     }
 
     closeMobileFilters() {
-        const overlay = document.getElementById('offcanvasOverlay');
-        const filters = document.getElementById('offcanvasFilters');
-
-        if (overlay && filters) {
-            overlay.classList.remove('active');
-            filters.classList.remove('active');
-            document.body.style.overflow = 'auto';
+        const offcanvasEl = document.getElementById('filtersOffcanvas');
+        if (offcanvasEl) {
+            const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+            offcanvas.hide();
         }
     }
 
     cloneSidebarForMobile() {
         const sidebar = document.querySelector('.filters-container');
-        const offcanvasBody = document.querySelector('.offcanvas-body');
+        const offcanvasBody = document.querySelector('#filtersOffcanvas .offcanvas-body');
 
         if (sidebar && offcanvasBody) {
             offcanvasBody.innerHTML = sidebar.innerHTML;
 
             const idMap = {
-                productSearch: 'mobileProductSearch',
-                priceRangeMin: 'mobilePriceRangeMin',
-                priceRangeMax: 'mobilePriceRangeMax',
-                applyFiltersBtn: 'mobileApplyFiltersBtn',
+                'filter-form': 'mobile-filter-form',
+                categoria: 'mobile-categoria',
+                subcategoria: 'mobile-subcategoria',
+                'subcategoria-container': 'mobile-subcategoria-container',
+                show_marketplace: 'mobile-show_marketplace',
+                'condicion-container': 'mobile-condicion-container',
+                condicion: 'mobile-condicion',
+                'vendedor-verificado-container': 'mobile-vendedor-verificado-container',
+                show_official: 'mobile-show_official',
+                stock: 'mobile-stock',
+                free: 'mobile-free',
+                envio_gratis: 'mobile-envio_gratis',
+                vendedor_verificado: 'mobile-vendedor_verificado',
             };
 
             Object.entries(idMap).forEach(([desktopId, mobileId]) => {
                 const el = offcanvasBody.querySelector(`#${desktopId}`);
                 if (el) el.id = mobileId;
             });
+
+            if (window.TomSelect) {
+                const mobileCat = offcanvasBody.querySelector('#mobile-categoria');
+                if (mobileCat) {
+                    new TomSelect(mobileCat, { create: false, sortField: { field: 'text', direction: 'asc' } });
+                }
+                const mobileSubcat = offcanvasBody.querySelector('#mobile-subcategoria');
+                if (mobileSubcat) {
+                    new TomSelect(mobileSubcat, { create: false, sortField: { field: 'text', direction: 'asc' } });
+                }
+            }
+
+            const mobileCategoria = document.getElementById('mobile-categoria');
+            if (mobileCategoria) {
+                mobileCategoria.addEventListener('change', function () {
+                    const categoria = this.value;
+                    const subcategoriaContainer = document.getElementById('mobile-subcategoria-container');
+                    const subcategoriaSelect = document.getElementById('mobile-subcategoria');
+
+                    if (categoria) {
+                        subcategoriaContainer.style.display = 'block';
+                        fetch(`/tienda/api/subcategorias?categoria=${encodeURIComponent(categoria)}`)
+                            .then((response) => response.json())
+                            .then((data) => {
+                                const tomSelect = subcategoriaSelect.tomselect;
+                                tomSelect.clear();
+                                tomSelect.clearOptions();
+                                tomSelect.addOption({ value: '', text: 'Todas las subcategorías' });
+                                data.subcategorias.forEach((subcat) => {
+                                    tomSelect.addOption({ value: subcat, text: subcat });
+                                });
+                                tomSelect.refreshOptions(false);
+                            });
+                    } else {
+                        subcategoriaContainer.style.display = 'none';
+                    }
+                });
+            }
+
+            const mobileMarketplace = document.getElementById('mobile-show_marketplace');
+            if (mobileMarketplace) {
+                mobileMarketplace.addEventListener('change', function () {
+                    const showMarketplace = this.checked;
+                    document.getElementById('mobile-condicion-container').style.display = showMarketplace ? 'block' : 'none';
+                    document.getElementById('mobile-vendedor-verificado-container').style.display = showMarketplace ? 'block' : 'none';
+                });
+            }
         }
     }
 
@@ -768,16 +818,15 @@ function initCrunevoStore() {
         });
     }
 
-    // Close mobile filters when clicking overlay
-    const overlay = document.getElementById('offcanvasOverlay');
-    if (overlay) {
-        overlay.addEventListener('click', closeMobileFilters);
-    }
-
-    // Close mobile filters button
-    const closeBtn = document.querySelector('.offcanvas-close');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeMobileFilters);
+    // Return focus to toggle button when offcanvas closes
+    const filtersOffcanvas = document.getElementById('filtersOffcanvas');
+    if (filtersOffcanvas) {
+        filtersOffcanvas.addEventListener('hidden.bs.offcanvas', () => {
+            const toggleBtn = document.getElementById('filtersToggleBtn');
+            if (toggleBtn) {
+                toggleBtn.focus();
+            }
+        });
     }
 }
 

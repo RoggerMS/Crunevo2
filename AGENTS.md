@@ -1237,3 +1237,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Improved forum question and answer pages with responsive layout, theme-aware card and badge colors, and dark/light compatible vote buttons. (PR forum-responsive-theme)
 - Allowed uploading .webp note files and listed .webp in the upload form accept attribute. (PR notes-webp-upload)
 - Comentarios en publicaciones requieren usuarios activados; intentos bloqueados se registran para monitoreo. (PR comment-auth-log)
+
+- Moved tienda filters into a Bootstrap offcanvas with a mobile-only toggle button and updated store.js for cloning, events and focus return. (PR tienda-filter-offcanvas)
