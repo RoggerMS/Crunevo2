@@ -567,10 +567,15 @@ def create_app():
     def log_exception(e):
         try:
             db.session.rollback()
+            code = getattr(e, "code", 500)
+            try:
+                code = int(code)
+            except (TypeError, ValueError):
+                code = 500
             err = SystemErrorLog(
                 ruta=request.path,
                 mensaje=str(e),
-                status_code=getattr(e, "code", 500),
+                status_code=code,
                 user_id=current_user.id if current_user.is_authenticated else None,
             )
             db.session.add(err)
