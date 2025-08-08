@@ -142,7 +142,7 @@ def upload_note():
         f = files[0]
 
         ext = os.path.splitext(f.filename)[1].lower()
-        allowed_exts = {".pdf", ".jpg", ".jpeg", ".png", ".docx", ".pptx"}
+        allowed_exts = {".pdf", ".jpg", ".jpeg", ".png", ".webp", ".docx", ".pptx"}
         if ext not in allowed_exts:
             flash(
                 "Formato no soportado. Usa PDF, imagen, Word o PowerPoint",
