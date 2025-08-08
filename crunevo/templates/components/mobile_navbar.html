@@ -70,12 +70,12 @@
       </a>
       
       <!-- Perfil -->
-      <a href="{{ url_for('profile.profile', username=current_user.username) if current_user.is_authenticated else '/login' }}" class="mobile-tab-item {{ 'active' if 'profile' in request.endpoint else '' }}" aria-label="Perfil">
+      <a href="{{ url_for('auth.view_profile', username=current_user.username) if current_user.is_authenticated else url_for('auth.login') }}" class="mobile-tab-item {{ 'active' if request.endpoint in ('auth.perfil', 'auth.view_profile') else '' }}" aria-label="Perfil">
         <div class="tab-icon">
           {% if current_user.is_authenticated and current_user.avatar %}
             <img src="{{ current_user.avatar }}" alt="Avatar" class="profile-avatar">
           {% else %}
-            <i class="bi bi-person{{ '-fill' if 'profile' in request.endpoint else '' }}"></i>
+            <i class="bi bi-person{{ '-fill' if request.endpoint in ('auth.perfil', 'auth.view_profile') else '' }}"></i>
           {% endif %}
         </div>
         <span class="tab-label">Perfil</span>
