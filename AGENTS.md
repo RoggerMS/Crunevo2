@@ -1247,4 +1247,6 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Reemplazado `innerHTML` por creación de nodos y uso de `textContent` en `notes/list.html` para stats y título dinámicos. (PR notes-textcontent)
 - feed.js ahora inserta dinámicamente el nuevo post en `#feedContainer` construyendo el HTML con los datos JSON del servidor y evitando recargar la página. (PR feed-json-insert)
 - Feed cache ahora incluye timestamp 'cached_at' y `cleanup` elimina entradas tras 10 minutos; considerar backend Redis con TTL por usuario. (PR feed-cache-expiry)
+
+- Generated thumbnails for notes by converting first page to image and storing `thumbnail_url`; note cards now display the miniaturas when available. (PR note-thumbnail)
 - Resolved Jinja syntax error in tienda pagination by popping existing `page` from args and moving `**args` after explicit page parameter in `_product_cards.html`.

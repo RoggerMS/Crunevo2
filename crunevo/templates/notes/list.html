@@ -77,7 +77,12 @@ function createNoteCard(n) {
   preview.appendChild(shimmer);
 
   const ext = n.filename.split('?')[0].split('.').pop().toLowerCase();
-  if (ext === 'pdf') {
+  if (n.thumbnail_url) {
+    const img = document.createElement('img');
+    img.src = n.thumbnail_url;
+    img.className = 'note-img d-none';
+    preview.appendChild(img);
+  } else if (ext === 'pdf') {
     const canvas = document.createElement('canvas');
     canvas.className = 'pdf-thumb d-none';
     canvas.dataset.pdf = n.filename;

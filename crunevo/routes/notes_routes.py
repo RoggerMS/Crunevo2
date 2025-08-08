@@ -2,6 +2,7 @@ import os
 import json
 import subprocess
 import tempfile
+from pdf2image import convert_from_path
 from urllib.parse import urlparse
 from flask import (
     Blueprint,
@@ -112,6 +113,7 @@ def search_notes():
                 "description": n.description,
                 "tags": n.tags,
                 "filename": n.filename,
+                "thumbnail_url": n.thumbnail_url,
                 "views": n.views,
                 "likes": n.likes,
             }
@@ -186,13 +188,18 @@ def upload_note():
 
         cloud_url = current_app.config.get("CLOUDINARY_URL")
         original_url = ""
+        thumbnail_url = ""
         try:
+            filename = secure_filename(f.filename)
+            public_id = os.path.splitext(filename)[0]
+            pdf_for_thumb = None
             if cloud_url:
-                filename = secure_filename(f.filename)
-                public_id = os.path.splitext(filename)[0]
+                tmpdir = tempfile.mkdtemp()
+                tmp_path = os.path.join(tmpdir, filename)
+                f.save(tmp_path)
                 if ext == ".pdf":
                     result = cloudinary.uploader.upload(
-                        f,
+                        tmp_path,
                         resource_type="auto",
                         public_id=f"notes/{public_id}",
                         format="pdf",
@@ -204,22 +211,31 @@ def upload_note():
                     )
                     filepath = view_url
                     original_url = result["secure_url"]
+                    pdf_for_thumb = tmp_path
                 elif ext == ".docx":
-                    tmpdir = tempfile.mkdtemp()
-                    tmp_path = os.path.join(tmpdir, filename)
-                    f.save(tmp_path)
-                    result = cloudinary.uploader.upload(
+                    orig = cloudinary.uploader.upload(
                         tmp_path,
                         resource_type="raw",
                         public_id=f"notes/{public_id}",
                         format="docx",
                     )
-                    filepath = result["secure_url"]
-                    original_url = filepath
+                    original_url = orig["secure_url"]
+                    filepath = original_url
+                    subprocess.run(
+                        [
+                            "soffice",
+                            "--headless",
+                            "--convert-to",
+                            "pdf",
+                            "--outdir",
+                            tmpdir,
+                            tmp_path,
+                        ],
+                        check=True,
+                        shell=False,
+                    )
+                    pdf_for_thumb = os.path.join(tmpdir, f"{public_id}.pdf")
                 elif ext == ".pptx":
-                    tmpdir = tempfile.mkdtemp()
-                    tmp_path = os.path.join(tmpdir, filename)
-                    f.save(tmp_path)
                     orig = cloudinary.uploader.upload(
                         tmp_path,
                         resource_type="raw",
@@ -239,11 +255,9 @@ def upload_note():
                         check=True,
                         shell=False,
                     )
-                    pdf_path = os.path.join(
-                        tmpdir, os.path.splitext(filename)[0] + ".pdf"
-                    )
+                    pdf_for_thumb = os.path.join(tmpdir, f"{public_id}.pdf")
                     _ = cloudinary.uploader.upload(
-                        pdf_path,
+                        pdf_for_thumb,
                         resource_type="auto",
                         public_id=f"notes/{public_id}",
                         format="pdf",
@@ -257,19 +271,38 @@ def upload_note():
                     original_url = orig["secure_url"]
                 else:
                     result = cloudinary.uploader.upload(
-                        f,
+                        tmp_path,
                         resource_type="image",
                         public_id=f"notes/{public_id}",
                     )
                     filepath = result["secure_url"]
                     original_url = filepath
+                    pdf_for_thumb = None
+
+                if ext in {".pdf", ".pptx", ".docx"} and pdf_for_thumb:
+                    try:
+                        images = convert_from_path(
+                            pdf_for_thumb, first_page=1, last_page=1, fmt="png"
+                        )
+                        thumb_path = os.path.join(tmpdir, f"{public_id}_thumb.png")
+                        images[0].save(thumb_path, "PNG")
+                        up = cloudinary.uploader.upload(
+                            thumb_path,
+                            resource_type="image",
+                            public_id=f"notes/{public_id}_thumb",
+                        )
+                        thumbnail_url = up["secure_url"]
+                    except Exception:
+                        current_app.logger.exception("Error generando miniatura")
+                elif ext in {".jpg", ".jpeg", ".png", ".webp"}:
+                    thumbnail_url = filepath
             else:
-                filename = secure_filename(f.filename)
                 upload_folder = current_app.config["UPLOAD_FOLDER"]
                 os.makedirs(upload_folder, exist_ok=True)
                 filepath = os.path.join(upload_folder, filename)
                 f.save(filepath)
                 original_url = filepath
+                pdf_for_thumb = None
                 if ext == ".pptx":
                     subprocess.run(
                         [
@@ -287,6 +320,39 @@ def upload_note():
                     filepath = os.path.join(
                         upload_folder, os.path.splitext(filename)[0] + ".pdf"
                     )
+                    pdf_for_thumb = filepath
+                elif ext == ".docx":
+                    tmpdir = tempfile.mkdtemp()
+                    subprocess.run(
+                        [
+                            "soffice",
+                            "--headless",
+                            "--convert-to",
+                            "pdf",
+                            "--outdir",
+                            tmpdir,
+                            filepath,
+                        ],
+                        check=True,
+                        shell=False,
+                    )
+                    pdf_for_thumb = os.path.join(tmpdir, f"{public_id}.pdf")
+                elif ext == ".pdf":
+                    pdf_for_thumb = filepath
+                if ext in {".pdf", ".pptx", ".docx"} and pdf_for_thumb:
+                    try:
+                        images = convert_from_path(
+                            pdf_for_thumb, first_page=1, last_page=1, fmt="png"
+                        )
+                        thumb_path = os.path.join(
+                            upload_folder, os.path.splitext(filename)[0] + "_thumb.png"
+                        )
+                        images[0].save(thumb_path, "PNG")
+                        thumbnail_url = thumb_path
+                    except Exception:
+                        current_app.logger.exception("Error generando miniatura")
+                elif ext in {".jpg", ".jpeg", ".png", ".webp"}:
+                    thumbnail_url = filepath
         except Exception:
             current_app.logger.exception("Error al subir el archivo")
             flash("Ocurrió un problema al subir el archivo", "danger")
@@ -306,6 +372,7 @@ def upload_note():
             description=description,
             filename=filepath,
             original_file_url=original_url,
+            thumbnail_url=thumbnail_url,
             file_type=ftype,
             tags=request.form.get("tags"),
             category=category,
