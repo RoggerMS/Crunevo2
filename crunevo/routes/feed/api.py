@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, url_for
+from flask import render_template, request, jsonify, url_for, current_app
 from flask_login import current_user
 from sqlalchemy import func
 from datetime import datetime, timedelta
@@ -124,36 +124,45 @@ def like_post(post_id):
 
 
 @feed_bp.route("/comment/<int:post_id>", methods=["POST"])
+@activated_required
 def comment_post(post_id):
     post = Post.query.get_or_404(post_id)
     if post.comment_permission == "none" and post.author_id != current_user.id:
+        current_app.logger.info(
+            "Comment blocked: comments disabled user=%s post=%s",
+            current_user.id,
+            post_id,
+        )
         return jsonify({"error": "Comentarios deshabilitados"}), 403
     if post.comment_permission == "friends" and post.author_id != current_user.id:
-        if hasattr(post.author, "is_friend") and not post.author.is_friend(
-            current_user
-        ):
+        if hasattr(post.author, "is_friend") and not post.author.is_friend(current_user):
+            current_app.logger.info(
+                "Comment blocked: friend-only user=%s post=%s",
+                current_user.id,
+                post_id,
+            )
             return jsonify({"error": "Solo amigos pueden comentar"}), 403
     body = request.form.get("body", "").strip()
     if not body:
+        current_app.logger.info(
+            "Comment failed: empty body user=%s post=%s",
+            current_user.id,
+            post_id,
+        )
         return jsonify({"error": "Comentario vacío"}), 400
-    if current_user.is_authenticated:
-        comment = PostComment(body=body, author=current_user, post=post)
-    else:
-        comment = PostComment(body=body, post=post, pending=True)
+    comment = PostComment(body=body, author=current_user, post=post)
     db.session.add(comment)
     db.session.commit()
-    if current_user.is_authenticated:
-        record_activity("comment_post", comment.id, "post")
-        return jsonify(
-            {
-                "body": comment.body,
-                "author": comment.author.username,
-                "avatar": comment.author.avatar_url
-                or url_for("static", filename="img/default.png"),
-                "timestamp": comment.timestamp.strftime("%Y-%m-%d %H:%M"),
-            }
-        )
-    return jsonify({"pending": True}), 202
+    record_activity("comment_post", comment.id, "post")
+    return jsonify(
+        {
+            "body": comment.body,
+            "author": comment.author.username,
+            "avatar": comment.author.avatar_url
+            or url_for("static", filename="img/default.png"),
+            "timestamp": comment.timestamp.strftime("%Y-%m-%d %H:%M"),
+        }
+    )
 
 
 @feed_bp.route("/comment/delete/<int:comment_id>", methods=["POST"])

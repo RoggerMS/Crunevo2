@@ -6,18 +6,15 @@ def login(client, username, password="secret"):
     return client.post("/login", data={"username": username, "password": password})
 
 
-def test_anonymous_comment_pending(client, db_session, test_user):
+def test_anonymous_comment_blocked(client, db_session, test_user):
     post = Post(content="x", author=test_user)
     db_session.add(post)
     db_session.commit()
     create_feed_item_for_all("post", post.id)
 
     resp = client.post(f"/feed/comment/{post.id}", data={"body": "hi"})
-    assert resp.status_code == 202
-
-    c = PostComment.query.first()
-    assert c.pending is True
-    assert c.author_id is None
+    assert resp.status_code == 302
+    assert PostComment.query.count() == 0
 
 
 def test_admin_approves_comment(client, db_session, test_user):
