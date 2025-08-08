@@ -1,54 +1,434 @@
-<!-- Navbar móvil para pantallas pequeñas; reemplaza la antigua navegación inferior -->
-<nav class="navbar mobile-navbar fixed-top d-lg-none text-white navbar-crunevo shadow-sm">
-  <div class="container-fluid d-flex align-items-center justify-content-between gap-1 px-2">
-    <a class="p-0" href="{{ url_for('main.index') }}" aria-label="Ir a inicio">
-      <img src="{{ url_for('static', filename='img/icon-512.png') }}" alt="Crunevo" height="28" class="crunevo-logo-small">
+<!-- Navbar móvil superior optimizado para redes sociales -->
+<nav class="navbar mobile-navbar-top fixed-top d-lg-none text-white navbar-crunevo shadow-sm">
+  <div class="container-fluid d-flex align-items-center justify-content-between gap-2 px-3">
+    <!-- Logo con animación -->
+    <a class="navbar-brand-mobile" href="{{ url_for('main.index') }}" aria-label="Ir a inicio">
+      <img src="{{ url_for('static', filename='img/icon-512.png') }}" alt="Crunevo" height="32" class="crunevo-logo-mobile">
     </a>
-    <div class="flex-grow-1 position-relative mx-2">
-      <input id="mobileNavbarSearch" type="search" class="form-control form-control-sm rounded-pill ps-4" placeholder="Buscar en CRUNEVO..." aria-label="Buscar en CRUNEVO">
-      <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted"></i>
+    
+    <!-- Barra de búsqueda mejorada -->
+    <div class="search-container flex-grow-1 mx-3">
+      <div class="position-relative">
+        <input id="mobileNavbarSearch" type="search" class="form-control search-input rounded-pill ps-5 pe-4" placeholder="Buscar..." aria-label="Buscar en CRUNEVO">
+        <i class="bi bi-search search-icon position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+        <button class="btn btn-sm search-clear position-absolute top-50 end-0 translate-middle-y me-2" type="button" style="display: none;" aria-label="Limpiar búsqueda">
+          <i class="bi bi-x-circle-fill"></i>
+        </button>
+      </div>
     </div>
-    {% from 'components/navbar_links.html' import mobile_quick_links %}
-    {{ mobile_quick_links() }}
+    
+    <!-- Iconos de acción rápida -->
+    <div class="d-flex align-items-center gap-2">
+      <!-- Notificaciones con badge animado -->
+      <a href="{{ url_for('noti.ver_notificaciones') }}" class="btn btn-icon position-relative" aria-label="Notificaciones">
+        <i class="bi bi-bell"></i>
+        <span id="mobileNotificationBadge" class="notification-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none"></span>
+      </a>
+      
+      <!-- Chat -->
+      <a href="{{ url_for('chat.chat_index') }}" class="btn btn-icon" aria-label="Mensajes">
+        <i class="bi bi-chat-dots"></i>
+      </a>
+    </div>
   </div>
 </nav>
-<script>
-  const mobileSearch = document.getElementById('mobileNavbarSearch');
-  if (mobileSearch) {
-    mobileSearch.addEventListener('focus', () => {
-      const modalEl = document.getElementById('mobileSearchModal');
-      if (modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
-    });
-  }
-  
-  function updateMobileNotificationBadge() {
-    fetch('/notifications/api/count')
-      .then(r => (r.ok ? r.json() : null))
-      .then(data => {
-        const count = data && typeof data.count === 'number' ? data.count : 0;
-        const badge = document.getElementById('mobileNotificationBadge');
-        if (badge) {
-          badge.textContent = count > 0 ? count : '';
-          badge.style.display = count > 0 ? 'flex' : 'none';
-        }
-      })
-      .catch(() => {});
-  }
 
-  if (document.getElementById('mobileNotificationBadge')) {
-    updateMobileNotificationBadge();
-    setInterval(updateMobileNotificationBadge, 30000);
+<!-- Navbar móvil inferior tipo tab bar -->
+<nav class="mobile-navbar-bottom fixed-bottom d-lg-none bg-white border-top shadow-lg">
+  <div class="container-fluid p-0">
+    <div class="d-flex justify-content-around align-items-center mobile-tab-bar">
+      <!-- Home -->
+      <a href="{{ url_for('feed.feed_home') if 'feed.feed_home' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}" class="mobile-tab-item {{ 'active' if request.endpoint == 'feed.feed_home' else '' }}" aria-label="Inicio">
+        <div class="tab-icon">
+          <i class="bi bi-house{{ '-fill' if request.endpoint == 'feed.feed_home' else '' }}"></i>
+        </div>
+        <span class="tab-label">Inicio</span>
+      </a>
+      
+      <!-- Explorar/Foro -->
+      <a href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}" class="mobile-tab-item {{ 'active' if 'forum' in request.endpoint else '' }}" aria-label="Explorar">
+        <div class="tab-icon">
+          <i class="bi bi-compass{{ '-fill' if 'forum' in request.endpoint else '' }}"></i>
+        </div>
+        <span class="tab-label">Explorar</span>
+      </a>
+      
+      <!-- Crear/Añadir -->
+      <a href="{{ url_for('notes.create_note') if 'notes.create_note' in url_for.__globals__.get('current_app', {}).view_functions else '/notes/new' }}" class="mobile-tab-item create-btn" aria-label="Crear">
+        <div class="tab-icon create-icon">
+          <i class="bi bi-plus-lg"></i>
+        </div>
+        <span class="tab-label">Crear</span>
+      </a>
+      
+      <!-- Apuntes/Guardados -->
+      <a href="{{ url_for('notes.list_notes') if 'notes.list_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/notes'}}" class="mobile-tab-item {{ 'active' if 'notes' in request.endpoint else '' }}" aria-label="Apuntes">
+        <div class="tab-icon">
+          <i class="bi bi-bookmark{{ '-fill' if 'notes' in request.endpoint else '' }}"></i>
+        </div>
+        <span class="tab-label">Apuntes</span>
+      </a>
+      
+      <!-- Perfil -->
+      <a href="{{ url_for('profile.profile', username=current_user.username) if current_user.is_authenticated else '/login' }}" class="mobile-tab-item {{ 'active' if 'profile' in request.endpoint else '' }}" aria-label="Perfil">
+        <div class="tab-icon">
+          {% if current_user.is_authenticated and current_user.avatar %}
+            <img src="{{ current_user.avatar }}" alt="Avatar" class="profile-avatar">
+          {% else %}
+            <i class="bi bi-person{{ '-fill' if 'profile' in request.endpoint else '' }}"></i>
+          {% endif %}
+        </div>
+        <span class="tab-label">Perfil</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Estilos CSS específicos para el navbar móvil mejorado -->
+<style>
+  /* Navbar superior móvil */
+  .mobile-navbar-top {
+    background: linear-gradient(135deg, rgba(108, 92, 231, 0.95), rgba(102, 126, 234, 0.95)) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    min-height: 60px;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1030;
   }
   
-  // Optimize touch interactions for mobile navbar
-  document.querySelectorAll('.mobile-navbar .btn-link').forEach(btn => {
-    btn.addEventListener('touchstart', function() {
-      this.style.transform = 'scale(0.95)';
-    }, { passive: true });
+  .navbar-brand-mobile {
+    transition: transform 0.3s ease;
+  }
+  
+  .navbar-brand-mobile:hover {
+    transform: scale(1.05);
+  }
+  
+  .crunevo-logo-mobile {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    transition: filter 0.3s ease;
+  }
+  
+  .search-container {
+    max-width: 280px;
+  }
+  
+  .search-input {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    font-size: 0.9rem;
+    height: 40px;
+    transition: all 0.3s ease;
+  }
+  
+  .search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+  
+  .search-input:focus {
+    background: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.15) !important;
+    transform: scale(1.02);
+  }
+  
+  .search-icon {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+  }
+  
+  .search-clear {
+    background: none !important;
+    border: none !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    padding: 0.25rem !important;
+  }
+  
+  .btn-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white !important;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+  
+  .btn-icon:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    color: white !important;
+  }
+  
+  .notification-badge {
+    font-size: 0.7rem;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: none;
+  }
+  
+  .notification-pulse {
+    animation: pulse 1s ease-in-out;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  
+  /* Navbar inferior tipo tab bar */
+  .mobile-navbar-bottom {
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+    z-index: 1030;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  
+  .mobile-tab-bar {
+    padding: 0.5rem 0;
+    min-height: 60px;
+  }
+  
+  .mobile-tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #6c757d;
+    transition: all 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 12px;
+    min-width: 60px;
+    position: relative;
+  }
+  
+  .mobile-tab-item.active {
+    color: #6c5ce7;
+  }
+  
+  .mobile-tab-item.active .tab-icon {
+    transform: scale(1.1);
+  }
+  
+  .mobile-tab-item.active::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    background: #6c5ce7;
+    border-radius: 2px;
+  }
+  
+  .tab-icon {
+    font-size: 1.3rem;
+    margin-bottom: 0.25rem;
+    transition: transform 0.3s ease;
+  }
+  
+  .tab-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-align: center;
+  }
+  
+  .create-btn {
+    position: relative;
+  }
+  
+  .create-icon {
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: white;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+  }
+  
+  .create-btn:hover .create-icon {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(108, 92, 231, 0.4);
+  }
+  
+  .profile-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #6c5ce7;
+    object-fit: cover;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 375px) {
+    .search-container {
+      max-width: 200px;
+    }
     
-    btn.addEventListener('touchend', function() {
-      this.style.transform = 'scale(1)';
-    }, { passive: true });
+    .tab-label {
+      font-size: 0.65rem;
+    }
+    
+    .mobile-tab-bar {
+      padding: 0.25rem 0;
+    }
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .mobile-navbar-bottom {
+      background: rgba(20, 20, 35, 0.98) !important;
+      border-top-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .mobile-tab-item {
+      color: #adb5bd;
+    }
+    
+    .mobile-tab-item.active {
+      color: #a29bfe;
+    }
+  }
+  
+  /* Accessibility improvements */
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-tab-item,
+    .btn-icon,
+    .search-input {
+      transition: none !important;
+    }
+    
+    .notification-pulse {
+      animation: none !important;
+    }
+  }
+  
+  /* High contrast mode */
+  @media (prefers-contrast: high) {
+    .mobile-navbar-top {
+      background: #6c5ce7 !important;
+      border-bottom: 2px solid white;
+    }
+    
+    .mobile-navbar-bottom {
+      background: white !important;
+      border-top: 2px solid black;
+    }
+  }
+</style>
+
+<script>
+  // Enhanced mobile navbar functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const mobileSearch = document.getElementById('mobileNavbarSearch');
+    const searchClear = document.querySelector('.search-clear');
+    
+    // Enhanced search functionality
+    if (mobileSearch) {
+      // Show modal on focus
+      mobileSearch.addEventListener('focus', () => {
+        const modalEl = document.getElementById('mobileSearchModal');
+        if (modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
+      });
+      
+      // Show/hide clear button
+      mobileSearch.addEventListener('input', function() {
+        if (searchClear) {
+          searchClear.style.display = this.value.length > 0 ? 'block' : 'none';
+        }
+      });
+      
+      // Clear search
+      if (searchClear) {
+        searchClear.addEventListener('click', function() {
+          mobileSearch.value = '';
+          this.style.display = 'none';
+          mobileSearch.focus();
+        });
+      }
+    }
+    
+    // Update notification badge with animation
+    function updateMobileNotificationBadge() {
+      fetch('/notifications/api/count')
+        .then(r => (r.ok ? r.json() : null))
+        .then(data => {
+          const count = data && typeof data.count === 'number' ? data.count : 0;
+          const badge = document.getElementById('mobileNotificationBadge');
+          if (badge) {
+            const oldCount = parseInt(badge.textContent) || 0;
+            badge.textContent = count > 0 ? count : '';
+            badge.style.display = count > 0 ? 'flex' : 'none';
+            
+            // Animate if count increased
+            if (count > oldCount && count > 0) {
+              badge.classList.add('notification-pulse');
+              setTimeout(() => badge.classList.remove('notification-pulse'), 1000);
+            }
+          }
+        })
+        .catch(() => {});
+    }
+
+    if (document.getElementById('mobileNotificationBadge')) {
+      updateMobileNotificationBadge();
+      setInterval(updateMobileNotificationBadge, 30000);
+    }
+    
+    // Enhanced touch interactions for all mobile navbar elements
+    document.querySelectorAll('.mobile-tab-item, .btn-icon').forEach(btn => {
+      btn.addEventListener('touchstart', function() {
+        this.style.transform = 'scale(0.95)';
+        this.style.opacity = '0.8';
+      }, { passive: true });
+      
+      btn.addEventListener('touchend', function() {
+        this.style.transform = 'scale(1)';
+        this.style.opacity = '1';
+      }, { passive: true });
+      
+      btn.addEventListener('touchcancel', function() {
+        this.style.transform = 'scale(1)';
+        this.style.opacity = '1';
+      }, { passive: true });
+    });
+    
+    // Add haptic feedback for supported devices
+    if ('vibrate' in navigator) {
+      document.querySelectorAll('.mobile-tab-item').forEach(btn => {
+        btn.addEventListener('click', function() {
+          navigator.vibrate(10); // Subtle haptic feedback
+        });
+      });
+    }
+    
+    // Add active state management
+    const currentPath = window.location.pathname;
+    document.querySelectorAll('.mobile-tab-item').forEach(item => {
+      const href = item.getAttribute('href');
+      if (href && currentPath.includes(href.split('/')[1])) {
+        item.classList.add('active');
+      }
+    });
   });
 </script>
 

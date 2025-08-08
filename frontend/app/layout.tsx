@@ -16,7 +16,34 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+        {/* Navbar móvil: fijo en la parte inferior, solo visible en mobile */}
+        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 md:hidden flex justify-around items-center h-16 z-50">
+          <Link href="/" className="flex flex-col items-center">
+            <HomeIcon className="w-6 h-6" />
+            <span className="text-xs">Home</span>
+          </Link>
+          <Link href="/feed" className="flex flex-col items-center">
+            <RssIcon className="w-6 h-6" />
+            <span className="text-xs">Feed</span>
+          </Link>
+          <Link href="/search" className="flex flex-col items-center">
+            <SearchIcon className="w-6 h-6" />
+            <span className="text-xs">Buscar</span>
+          </Link>
+          <Link href="/notifications" className="flex flex-col items-center">
+            <BellIcon className="w-6 h-6" />
+            <span className="text-xs">Notif.</span>
+          </Link>
+          <Link href="/profile" className="flex flex-col items-center">
+            <UserIcon className="w-6 h-6" />
+            <span className="text-xs">Perfil</span>
+          </Link>
+        </nav>
+      </body>
     </html>
   );
 }
+import Link from "next/link";
+import { HomeIcon, SearchIcon, BellIcon, UserIcon, RssIcon } from '@heroicons/react/24/outline';
