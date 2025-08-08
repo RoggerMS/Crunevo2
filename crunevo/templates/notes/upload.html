@@ -63,7 +63,7 @@
 
             <div class="mb-4">
               <label for="file" class="form-label">Archivo *</label>
-              <input class="form-control" type="file" id="file" name="file" accept=".pdf,.docx,.pptx,image/*" required>
+              <input class="form-control" type="file" id="file" name="file" accept=".pdf,.docx,.pptx,.jpg,.jpeg,.png,.webp" required>
               <div class="mt-2">
                 <a href="{{ url_for('notes.drive_authorize') }}" class="btn btn-outline-secondary btn-sm me-2">Importar Drive</a>
                 <a href="{{ url_for('notes.dropbox_authorize') }}" class="btn btn-outline-secondary btn-sm">Importar Dropbox</a>
