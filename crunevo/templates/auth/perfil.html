@@ -235,8 +235,8 @@
       <div class="sticky-top" style="top: 100px;">
         <!-- Profile Stats -->
         <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-          <div class="card-body p-4 text-white">
-            <h6 class="fw-bold mb-3">
+          <div class="card-body p-4">
+            <h6 class="fw-bold mb-3 text-primary">
               <i class="bi bi-graph-up me-2"></i> Estadísticas del Perfil
             </h6>
 
@@ -244,26 +244,26 @@
             <div class="row g-2 mb-3">
               <div class="col-6">
                 <div class="text-center p-2 bg-white bg-opacity-20 dark:bg-gray-800 dark:bg-opacity-40 rounded dark:text-gray-100">
-                  <div class="h5 fw-bold mb-0">{{ user_level }}</div>
-                  <small class="opacity-75 dark:text-gray-300">Nivel</small>
+                  <div class="h5 fw-bold mb-0 text-primary">{{ user_level }}</div>
+                  <small class="opacity-75 text-dark dark:text-gray-300">Nivel</small>
                 </div>
               </div>
               <div class="col-6">
                 <div class="text-center p-2 bg-white bg-opacity-20 dark:bg-gray-800 dark:bg-opacity-40 rounded dark:text-gray-100">
-                  <div class="h5 fw-bold mb-0">{{ participation_percentage }}%</div>
-                  <small class="opacity-75 dark:text-gray-300">Participación</small>
+                  <div class="h5 fw-bold mb-0 text-primary">{{ participation_percentage }}%</div>
+                  <small class="opacity-75 text-dark dark:text-gray-300">Participación</small>
                 </div>
               </div>
               <div class="col-6">
                 <div class="text-center p-2 bg-white bg-opacity-20 dark:bg-gray-800 dark:bg-opacity-40 rounded dark:text-gray-100">
-                  <div class="h5 fw-bold mb-0">{{ notes_count(user) }}</div>
-                  <small class="opacity-75 dark:text-gray-300">Apuntes</small>
+                  <div class="h5 fw-bold mb-0 text-primary">{{ notes_count(user) }}</div>
+                  <small class="opacity-75 text-dark dark:text-gray-300">Apuntes</small>
                 </div>
               </div>
               <div class="col-6">
                 <div class="text-center p-2 bg-white bg-opacity-20 dark:bg-gray-800 dark:bg-opacity-40 rounded dark:text-gray-100">
-                  <div class="h5 fw-bold mb-0">{{ user.credits }}</div>
-                  <small class="opacity-75 dark:text-gray-300">Crolars</small>
+                  <div class="h5 fw-bold mb-0 text-primary">{{ user.credits }}</div>
+                  <small class="opacity-75 text-dark dark:text-gray-300">Crolars</small>
                 </div>
               </div>
             </div>
@@ -271,29 +271,21 @@
             <!-- Progress Bars -->
             <div class="mb-3">
               <div class="d-flex justify-content-between mb-1">
-                <small class="opacity-75">Nivel académico</small>
-                <small class="opacity-75">{{ user_level }}/10</small>
+                <small class="opacity-75 text-dark">Nivel académico</small>
+                <small class="opacity-75 text-dark">{{ user_level }}/10</small>
               </div>
               <div class="progress mb-2" style="height: 6px; background-color: rgba(255,255,255,0.2);">
                 <div class="progress-bar bg-warning" style="width: {{ (user_level/10*100) }}%"></div>
               </div>
-              
+
               <div class="d-flex justify-content-between mb-1">
-                <small class="opacity-75">Participación</small>
-                <small class="opacity-75">{{ participation_percentage }}%</small>
+                <small class="opacity-75 text-dark">Participación</small>
+                <small class="opacity-75 text-dark">{{ participation_percentage }}%</small>
               </div>
               <div class="progress" style="height: 6px; background-color: rgba(255,255,255,0.2);">
                 <div class="progress-bar bg-success" style="width: {{ participation_percentage }}%"></div>
               </div>
             </div>
-              
-            {% if is_own_profile %}
-            <div class="text-center">
-              <a href="/tienda/comprar-crolars" class="btn btn-warning btn-sm">
-                <i class="bi bi-plus-circle me-1"></i> Comprar Crolars
-              </a>
-            </div>
-            {% endif %}
           </div>
         </div>
 
