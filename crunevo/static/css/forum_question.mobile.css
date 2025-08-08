@@ -12,16 +12,9 @@
   }
 }
 
-/* Logo pequeño - NO gigante */
-.crunevo-logo-small { 
-  width: 72px; 
-  height: auto; 
-  display: block; 
-}
-
-.forum-question-page .crunevo-hero { 
-  padding: 8px 12px; 
-  border-radius: 12px; 
+.forum-question-page .crunevo-hero {
+  padding: 8px 12px;
+  border-radius: 12px;
 }
 
 /* Texto que no se corte (sólo en foro) */
@@ -72,33 +65,6 @@
   align-items: center;
   gap: .4rem;
   max-width: 100%;
-}
-
-/* Logo ya definido arriba - regla eliminada para evitar duplicación */
-
-/* Navbar móvil (los 6 iconos) - distribución uniforme y targets táctiles */
-.mobile-quick-links {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-  padding: 8px 12px;
-}
-
-.mobile-quick-links .icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  min-height: 40px;
-  border-radius: 12px;
-}
-
-/* Accesibilidad y animaciones */
-.mobile-quick-links .icon-btn:focus-visible {
-  outline: 2px solid var(--bs-primary);
-  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
