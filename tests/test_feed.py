@@ -26,6 +26,7 @@ def test_create_post_rejects_invalid_extension(client, db_session, test_user):
         "/feed/post",
         data=data,
         content_type="multipart/form-data",
+        headers={"Accept": "text/html"},
         follow_redirects=True,
     )
     assert resp.status_code == 200
@@ -41,6 +42,7 @@ def test_create_post_rejects_large_file(client, db_session, test_user):
         "/feed/post",
         data=data,
         content_type="multipart/form-data",
+        headers={"Accept": "text/html"},
         follow_redirects=True,
     )
     assert resp.status_code == 200

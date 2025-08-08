@@ -181,10 +181,13 @@ class ModernFeedManager {
         if (modal) modal.hide();
 
         const container = document.getElementById('feedContainer');
-        if (container && data.html) {
-          container.insertAdjacentHTML('afterbegin', data.html);
-          this.initPostInteractions();
-          this.initCommentSystem();
+        if (container) {
+          const html = this.buildPostHTML(data);
+          if (html) {
+            container.insertAdjacentHTML('afterbegin', html);
+            this.initPostInteractions();
+            this.initCommentSystem();
+          }
         }
       } else {
         this.showToast('Error al publicar: ' + (data.error || 'Error desconocido'), 'error');
@@ -195,6 +198,49 @@ class ModernFeedManager {
     } finally {
       this.setButtonLoading(submitBtn, false);
     }
+  }
+
+  buildPostHTML(data) {
+    if (data.html) return data.html;
+
+    const images = (data.images || [])
+      .map(
+        url => `
+        <div class="facebook-gallery single-image">
+          <img src="${url}" alt="Imagen de la publicación" class="gallery-image" loading="lazy" onclick="openImageModal('${url}', 0, '${data.id}', event)" />
+        </div>`
+      )
+      .join('');
+
+    const gallery = images
+      ? `<div class="facebook-gallery-container" data-post-id="${data.id}" data-images='${JSON.stringify(data.images)}'>${images}</div>`
+      : '';
+
+    const content = data.content ? `<p>${this.escapeHtml(data.content)}</p>` : '';
+
+    return `
+      <article id="post-${data.id}" class="facebook-post" data-post-id="${data.id}" data-comment-permission="${data.comment_permission || 'all'}">
+        <div class="post-header">
+          <div class="post-avatar">
+            <img src="${data.author_avatar || '/static/img/default.png'}" alt="${data.author_username || ''}" class="avatar-img">
+          </div>
+          <div class="post-user-info">
+            <div class="user-name">
+              <a href="/perfil/${data.author_username || ''}" class="username-link">${data.author_username || ''}</a>
+            </div>
+            <div class="post-timestamp">justo ahora</div>
+          </div>
+        </div>
+        <div class="post-content">${content}</div>
+        <div class="post-media">${gallery}</div>
+      </article>
+    `;
+  }
+
+  escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
   }
 
   // Initialize comment system
