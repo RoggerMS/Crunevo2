@@ -1,49 +1,63 @@
 <nav class="facebook-mobile-navbar d-lg-none" id="mobileNavbar">
-  <a href="{{ url_for('feed.feed_home') if 'feed.feed_home' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}" class="nav-icon-btn {{ 'active' if request.endpoint == 'feed.feed_home' else '' }}" aria-label="Inicio">
-    <i class="bi bi-house{{ '-fill' if request.endpoint == 'feed.feed_home' else '' }}"></i>
+  {# 1) MENU (☰) - abre offcanvas lateral #}
+  <a href="#"
+     class="nav-icon-btn"
+     aria-label="Menú"
+     data-bs-toggle="offcanvas"
+     data-bs-target="#mobileSidebarLeft"
+     role="button">
+    <i class="bi bi-list"></i>
   </a>
-  <a href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}" class="nav-icon-btn {{ 'active' if 'forum' in request.endpoint else '' }}" aria-label="Explorar">
-    <i class="bi bi-compass{{ '-fill' if 'forum' in request.endpoint else '' }}"></i>
+  {# 2) INICIO #}
+  <a href="{{ url_for('feed.feed_home') if 'feed.feed_home' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}"
+     class="nav-icon-btn {{ 'active' if request.endpoint == 'feed.feed_home' or (request.endpoint and request.endpoint.startswith('feed.')) else '' }}"
+     aria-label="Inicio">
+    <i class="bi bi-house{{ '-fill' if request.endpoint and request.endpoint.startswith('feed.') else '' }}"></i>
   </a>
-  {# Botón TIENDA en lugar de notificaciones #}
+  {# 3) FORO #}
+  <a href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}"
+     class="nav-icon-btn {{ 'active' if request.endpoint and request.endpoint.startswith('forum.') else '' }}"
+     aria-label="Foro">
+    <i class="bi bi-compass{{ '-fill' if request.endpoint and request.endpoint.startswith('forum.') else '' }}"></i>
+  </a>
+  {# 4) TIENDA #}
   <a href="{{ url_for('commerce.commerce_index') if 'commerce.commerce_index' in url_for.__globals__.get('current_app', {}).view_functions else '/tienda' }}"
-     class="nav-icon-btn" aria-label="Tienda">
+     class="nav-icon-btn {{ 'active' if request.endpoint and request.endpoint.startswith('commerce.') else '' }}"
+     aria-label="Tienda">
     <i class="bi bi-shop"></i>
   </a>
-  {# Botón APUNTES en lugar de chat #}
+  {# 5) APUNTES #}
   <a href="{{ url_for('notes.my_notes') if 'notes.my_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/apuntes' }}"
-     class="nav-icon-btn" aria-label="Apuntes">
+     class="nav-icon-btn {{ 'active' if request.endpoint and request.endpoint.startswith('notes.') else '' }}"
+     aria-label="Apuntes">
     <i class="bi bi-journal-text"></i>
   </a>
-  <div class="dropdown">
-    <a href="#" class="nav-icon-btn dropdown-toggle" data-bs-toggle="dropdown" aria-label="Menú">
-      {% if current_user.is_authenticated and current_user.avatar %}
-        <img src="{{ current_user.avatar }}" alt="Avatar" class="profile-avatar rounded-circle">
-      {% else %}
-        <i class="bi bi-person-circle"></i>
-      {% endif %}
-    </a>
-    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2">
-      {% if current_user.is_authenticated %}
-        <li><a class="dropdown-item" href="{{ url_for('auth.perfil') }}"><i class="bi bi-person me-2"></i>Mi Perfil</a></li>
-        {# En el dropdown ahora va CHAT en lugar de notas #}
-        <li><a class="dropdown-item" href="{{ url_for('chat.chat_index') }}"><i class="bi bi-chat-dots me-2"></i>Chat</a></li>
-        {# En el dropdown ahora van NOTIFICACIONES en lugar de tienda #}
-        <li><a class="dropdown-item" href="{{ url_for('noti.ver_notificaciones') }}"><i class="bi bi-bell me-2"></i>Notificaciones</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
-      {% else %}
-        <li><a class="dropdown-item" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión</a></li>
-        <li><a class="dropdown-item" href="{{ url_for('onboarding.register') }}"><i class="bi bi-person-plus me-2"></i>Registrarse</a></li>
-      {% endif %}
-    </ul>
-  </div>
+  {# 6) CHAT #}
+  <a href="{{ url_for('chat.chat_index') }}"
+     class="nav-icon-btn {{ 'active' if request.endpoint and request.endpoint.startswith('chat.') else '' }}"
+     aria-label="Chat">
+    <i class="bi bi-chat-dots"></i>
+  </a>
+  {# 7) NOTIFICACIONES (con badge) #}
+  <a href="{{ url_for('noti.ver_notificaciones') }}"
+     class="nav-icon-btn position-relative {{ 'active' if request.endpoint and request.endpoint.startswith('noti.') else '' }}"
+     aria-label="Notificaciones">
+    <i class="bi bi-bell"></i>
+    <span id="mobileNotificationBadge" class="notification-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none"></span>
+  </a>
+  {# 8) BUSCAR (abre modal) #}
+  <a href="#"
+     class="nav-icon-btn"
+     aria-label="Buscar"
+     data-action="open-search">
+    <i class="bi bi-search"></i>
+  </a>
 </nav>
 
 <style>
 #mobileNavbar {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(8, 1fr); /* menu + 6 iconos + buscar */
   align-items: center;
   position: fixed;
   top: 0;
@@ -57,20 +71,21 @@
 [data-bs-theme="dark"] #mobileNavbar {
   background: rgba(36, 37, 38, 0.95);
 }
-/* Dejar SIEMPRE espacio para que no tape el contenido */
+/* Dejar SIEMPRE espacio para que no tape el contenido (sin doble-contar safe-area) */
 body.with-mobile-navbar { padding-top: var(--mobile-navbar-height, 56px); }
 [id] { scroll-margin-top: calc(var(--mobile-navbar-height, 56px) + 8px); }
-
-/* Safe area para iPhone con notch */
+/* Safe area para iPhone con notch (aplicado SOLO en el navbar) */
 #mobileNavbar { padding-top: env(safe-area-inset-top); height: calc(56px + env(safe-area-inset-top)); }
-body.with-mobile-navbar { padding-top: calc(var(--mobile-navbar-height, 56px) + env(safe-area-inset-top)); }
-#mobileNavbar a.nav-icon-btn,
-#mobileNavbar .dropdown > a {
+
+/* Tocar objetivos: tamaño táctil y centrado */
+#mobileNavbar .nav-icon-btn {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 56px;
+  min-width: 44px;
 }
+
 .profile-avatar {
   width: 24px;
   height: 24px;
@@ -82,14 +97,41 @@ body.with-mobile-navbar { padding-top: calc(var(--mobile-navbar-height, 56px) + 
 document.addEventListener("DOMContentLoaded", () => {
   const navbar = document.getElementById("mobileNavbar");
   if (!navbar) return;
-  // Medir altura real (incluye safe-area gracias al padding-top)
   requestAnimationFrame(() => {
-    const h = navbar.getBoundingClientRect().height || 56;
+    const h = navbar.getBoundingClientRect().height || 56; // ya incluye safe-area
     document.body.classList.add("with-mobile-navbar");
     document.body.style.setProperty("--mobile-navbar-height", h + "px");
-    // fallback directo por si alguna hoja CSS ignora la var
-    document.body.style.paddingTop = `calc(${h}px + env(safe-area-inset-top))`;
+    // fallback directo (sin sumar safe-area de nuevo)
+    document.body.style.paddingTop = h + "px";
   });
+
+  // Modal de búsqueda (simple): si existe #mobileSearchModal, ábrelo; si no, crea uno básico
+  const openSearch = () => {
+    let modalEl = document.getElementById('mobileSearchModal');
+    if (!modalEl) {
+      const tpl = document.createElement('div');
+      tpl.innerHTML = `
+      <div class="modal fade" id="mobileSearchModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen-sm-down">
+          <div class="modal-content">
+            <div class="modal-header">
+              <input type="search" class="form-control" placeholder="Buscar en CRUNEVO" autofocus>
+              <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+              <div id="mobileSearchResults" class="list-group list-group-flush"></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+      document.body.appendChild(tpl.firstElementChild);
+      modalEl = document.getElementById('mobileSearchModal');
+    }
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+  };
+  document.querySelector('#mobileNavbar [data-action="open-search"]')?.addEventListener('click', (e) => {
+    e.preventDefault(); openSearch();
+  }, { passive: false });
 });
 
 let lastScroll = 0;

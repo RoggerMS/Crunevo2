@@ -1259,3 +1259,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Reworked mobile navbar with grid layout, dynamic body padding and scroll hide to prevent overlap (PR mobile-navbar-grid-autohide)
 
 - Mobile navbar now reserves body space with safe-area support, adds scroll-margin-top for anchors, swaps Tienda/Notificaciones and Chat/Apuntes buttons, and renames "Mis Notas" to "Apuntes". (PR mobile-navbar-shop-notes)
+- Expanded mobile navbar to include menu offcanvas, separate chat and notification icons with badge, search modal trigger and updated offcanvas markup. (PR mobile-navbar-menu-search)
