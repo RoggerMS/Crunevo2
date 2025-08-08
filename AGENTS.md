@@ -1257,3 +1257,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Fixed mobile navbar profile tab to use `auth.view_profile` with login fallback and updated active state detection, resolving BuildError when rendering profile links. (PR mobile-navbar-profile-link)
 
 - Reworked mobile navbar with grid layout, dynamic body padding and scroll hide to prevent overlap (PR mobile-navbar-grid-autohide)
+
+- Mobile navbar now reserves body space with safe-area support, adds scroll-margin-top for anchors, swaps Tienda/Notificaciones and Chat/Apuntes buttons, and renames "Mis Notas" to "Apuntes". (PR mobile-navbar-shop-notes)
