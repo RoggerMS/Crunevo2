@@ -1242,3 +1242,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Integrado docx-preview para previsualizar DOCX con paginación y controles en viewer.js, viewer_docx.html y notes/detalle.html.
 - Reemplazada recarga del feed tras publicar por inserción dinámica usando `_posts.html` retornado en JSON y prueba asociada. (PR feed-dynamic-insert)
 - Optimized feed loading by preloading posts with `joinedload` in `/load` API and using loaded objects instead of `Post.query.get`. (PR feed-joinedload-opt)
+
+- Added pagination and sorting controls to tienda products, preserving existing filters in page links. (PR tienda-pagination-sort)

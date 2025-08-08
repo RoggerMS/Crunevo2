@@ -62,6 +62,8 @@ def commerce_index():
     search = request.args.get("search")
     show_marketplace = request.args.get("marketplace", type=int, default=1)
     show_official = request.args.get("official", type=int, default=1)
+    page = request.args.get("page", 1, type=int)
+    sort = request.args.get("sort", "date")
 
     # Base query
     query = Product.query
@@ -128,8 +130,17 @@ def commerce_index():
         )
     elif pack:
         query = query.filter_by(category="Pack")
+    else:
+        if sort == "price":
+            query = query.order_by(Product.price.asc())
+        elif sort == "popular":
+            query = query.order_by(Product.views_count.desc())
+        else:
+            sort = "date"
+            query = query.order_by(Product.created_at.desc())
 
-    products = query.all()
+    pagination = query.paginate(page=page, per_page=12, error_out=False)
+    products = pagination.items
     from sqlalchemy import func
 
     # Get product ratings
@@ -181,9 +192,10 @@ def commerce_index():
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return render_template(
             "tienda/_product_cards.html",
-            products=products,
+            pagination=pagination,
             favorite_ids=favorite_ids,
             purchased_ids=purchased_ids,
+            ratings=ratings,
         )
 
     # Use the correct template for the tienda (commerce) section
@@ -191,6 +203,7 @@ def commerce_index():
 
     return render_template(
         template,
+        pagination=pagination,
         products=products,
         favorite_ids=favorite_ids,
         purchased_ids=purchased_ids,
@@ -207,6 +220,7 @@ def commerce_index():
         csrf_token=generate_csrf,
         show_marketplace=show_marketplace,
         show_official=show_official,
+        sort=sort,
         filters={
             "categoria": categoria,
             "subcategoria": subcategoria,
