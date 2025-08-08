@@ -7,12 +7,691 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/forum_question.mobile.css') }}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/forum_editor.css') }}">
+<style>
+/* Modern Mobile-First Responsive Design */
+:root {
+  --forum-primary: #667eea;
+  --forum-secondary: #764ba2;
+  --forum-success: #4ade80;
+  --forum-warning: #fbbf24;
+  --forum-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+  --border-radius: 16px;
+  --border-radius-sm: 12px;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+}
+
+/* Mobile-first container */
+.forum-question-container {
+  padding: var(--spacing-sm);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .forum-question-container {
+    padding: var(--spacing-lg);
+  }
+}
+
+@media (min-width: 1200px) {
+  .forum-question-container {
+    max-width: 1200px;
+  }
+}
+
+/* Modern breadcrumb */
+.modern-breadcrumb {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.modern-breadcrumb .breadcrumb {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.modern-breadcrumb .breadcrumb-item {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+  .modern-breadcrumb .breadcrumb-item {
+    max-width: 100px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Enhanced question card */
+.question-card-modern {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  border: none;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: var(--spacing-lg);
+}
+
+.question-card-modern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--forum-gradient);
+}
+
+.question-header-modern {
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.question-title-modern {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: var(--spacing-md);
+  background: var(--forum-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@media (max-width: 768px) {
+  .question-header-modern {
+    padding: var(--spacing-md);
+  }
+  
+  .question-title-modern {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .question-title-modern {
+    font-size: 1.125rem;
+  }
+}
+
+/* Author info mobile-optimized */
+.author-info-modern {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.author-avatar-modern {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid var(--forum-primary);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+@media (max-width: 576px) {
+  .author-avatar-modern {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.author-details-modern {
+  flex: 1;
+  min-width: 0;
+}
+
+.author-name-modern {
+  font-weight: 600;
+  color: var(--forum-primary);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.author-meta-modern {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Question meta badges */
+.question-meta-modern {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.meta-badge-modern {
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: none;
+}
+
+.badge-solved {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  color: white;
+}
+
+.badge-category {
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--forum-primary);
+}
+
+.badge-difficulty {
+  background: rgba(251, 191, 36, 0.1);
+  color: #f59e0b;
+}
+
+@media (max-width: 576px) {
+  .meta-badge-modern {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Question content */
+.question-content-modern {
+  padding: var(--spacing-lg);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #374151;
+}
+
+@media (max-width: 768px) {
+  .question-content-modern {
+    padding: var(--spacing-md);
+    font-size: 0.95rem;
+  }
+}
+
+.question-content-modern img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--border-radius-sm);
+  margin: var(--spacing-md) 0;
+}
+
+/* Action buttons */
+.question-actions-modern {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+@media (max-width: 768px) {
+  .question-actions-modern {
+    padding: var(--spacing-md);
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.action-group-modern {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+@media (max-width: 768px) {
+  .action-group-modern {
+    justify-content: center;
+  }
+}
+
+.btn-modern {
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-sm);
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.btn-modern:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary-modern {
+  background: var(--forum-gradient);
+  color: white;
+}
+
+.btn-outline-modern {
+  background: transparent;
+  color: var(--forum-primary);
+  border-color: var(--forum-primary);
+}
+
+.btn-outline-modern:hover {
+  background: var(--forum-primary);
+  color: white;
+}
+
+/* Answers section */
+.answers-section-modern {
+  margin-top: var(--spacing-xl);
+}
+
+.answers-header-modern {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.answers-title-modern {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+@media (max-width: 576px) {
+  .answers-title-modern {
+    font-size: 1.125rem;
+  }
+}
+
+.answers-sort-modern {
+  display: flex;
+  gap: 0.25rem;
+  background: #f1f5f9;
+  padding: 0.25rem;
+  border-radius: var(--border-radius-sm);
+}
+
+@media (max-width: 768px) {
+  .answers-sort-modern {
+    width: 100%;
+  }
+}
+
+.sort-btn-modern {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.sort-btn-modern.active {
+  background: white;
+  color: var(--forum-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Answer cards */
+.answer-card-modern {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  border: 2px solid #f1f5f9;
+  margin-bottom: var(--spacing-lg);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.answer-card-modern:hover {
+  border-color: var(--forum-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.answer-card-modern.accepted {
+  border-color: var(--forum-success);
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.02), rgba(34, 197, 94, 0.02));
+}
+
+.answer-header-modern {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: #f8fafc;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+@media (max-width: 768px) {
+  .answer-header-modern {
+    padding: var(--spacing-md);
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.answer-content-modern {
+  padding: var(--spacing-lg);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #374151;
+}
+
+@media (max-width: 768px) {
+  .answer-content-modern {
+    padding: var(--spacing-md);
+  }
+}
+
+.answer-content-modern img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--border-radius-sm);
+  margin: var(--spacing-md) 0;
+}
+
+/* Vote system */
+.vote-system-modern {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: var(--spacing-sm);
+  background: #f8fafc;
+  border-radius: var(--border-radius-sm);
+  min-width: 60px;
+}
+
+.vote-btn-modern {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.vote-btn-modern:hover {
+  background: var(--forum-primary);
+  color: white;
+  transform: scale(1.1);
+}
+
+.vote-count-modern {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #1f2937;
+}
+
+/* Sidebar modern */
+.sidebar-modern {
+  margin-top: var(--spacing-lg);
+}
+
+@media (min-width: 992px) {
+  .sidebar-modern {
+    margin-top: 0;
+  }
+}
+
+.sidebar-card-modern {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid #f1f5f9;
+  margin-bottom: var(--spacing-lg);
+  overflow: hidden;
+}
+
+.sidebar-header-modern {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.sidebar-title-modern {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--forum-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sidebar-content-modern {
+  padding: var(--spacing-lg);
+}
+
+@media (max-width: 768px) {
+  .sidebar-header-modern,
+  .sidebar-content-modern {
+    padding: var(--spacing-md);
+  }
+}
+
+/* Statistics */
+.stats-grid-modern {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.stat-item-modern {
+  text-align: center;
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+  border-radius: var(--border-radius-sm);
+}
+
+.stat-number-modern {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: var(--forum-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+}
+
+.stat-label-modern {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 576px) {
+  .stat-item-modern {
+    padding: var(--spacing-sm);
+  }
+  
+  .stat-number-modern {
+    font-size: 1.25rem;
+  }
+  
+  .stat-label-modern {
+    font-size: 0.75rem;
+  }
+}
+
+/* Answer form modern */
+.answer-form-modern {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  border: 2px solid #f1f5f9;
+  margin-top: var(--spacing-xl);
+  overflow: hidden;
+}
+
+.answer-form-header-modern {
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.answer-form-title-modern {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--forum-primary);
+  margin: 0;
+}
+
+.answer-form-content-modern {
+  padding: var(--spacing-lg);
+}
+
+@media (max-width: 768px) {
+  .answer-form-header-modern,
+  .answer-form-content-modern {
+    padding: var(--spacing-md);
+  }
+}
+
+/* Quill editor mobile optimization */
+.quill-editor-modern {
+  border-radius: var(--border-radius-sm);
+  border: 2px solid #f1f5f9;
+  transition: border-color 0.3s ease;
+}
+
+.quill-editor-modern:focus-within {
+  border-color: var(--forum-primary);
+}
+
+.ql-toolbar {
+  border-top-left-radius: var(--border-radius-sm);
+  border-top-right-radius: var(--border-radius-sm);
+  background: #f8fafc;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ql-container {
+  border-bottom-left-radius: var(--border-radius-sm);
+  border-bottom-right-radius: var(--border-radius-sm);
+  min-height: 200px;
+}
+
+@media (max-width: 768px) {
+  .ql-container {
+    min-height: 150px;
+  }
+  
+  .ql-toolbar {
+    padding: 0.5rem;
+  }
+  
+  .ql-toolbar .ql-formats {
+    margin-right: 0.5rem;
+  }
+}
+
+/* Dark mode support */
+[data-bs-theme="dark"] {
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+[data-bs-theme="dark"] .question-card-modern,
+[data-bs-theme="dark"] .answer-card-modern,
+[data-bs-theme="dark"] .sidebar-card-modern,
+[data-bs-theme="dark"] .answer-form-modern {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+[data-bs-theme="dark"] .modern-breadcrumb {
+  background: rgba(31, 41, 55, 0.8);
+  border-color: rgba(102, 126, 234, 0.2);
+}
+
+[data-bs-theme="dark"] .question-header-modern,
+[data-bs-theme="dark"] .answer-header-modern,
+[data-bs-theme="dark"] .sidebar-header-modern,
+[data-bs-theme="dark"] .answer-form-header-modern,
+[data-bs-theme="dark"] .question-actions-modern {
+  background: #111827;
+  border-color: #374151;
+}
+
+[data-bs-theme="dark"] .question-title-modern,
+[data-bs-theme="dark"] .answers-title-modern,
+[data-bs-theme="dark"] .sidebar-title-modern,
+[data-bs-theme="dark"] .answer-form-title-modern {
+  color: #f9fafb;
+}
+
+[data-bs-theme="dark"] .question-content-modern,
+[data-bs-theme="dark"] .answer-content-modern {
+  color: #d1d5db;
+}
+
+[data-bs-theme="dark"] .author-meta-modern,
+[data-bs-theme="dark"] .stat-label-modern {
+  color: #9ca3af;
+}
+
+[data-bs-theme="dark"] .vote-system-modern,
+[data-bs-theme="dark"] .stat-item-modern,
+[data-bs-theme="dark"] .answers-sort-modern {
+  background: #111827;
+}
+
+[data-bs-theme="dark"] .sort-btn-modern.active {
+  background: #1f2937;
+  color: var(--forum-primary);
+}
+
+[data-bs-theme="dark"] .ql-toolbar {
+  background: #111827;
+  border-color: #374151;
+}
+
+[data-bs-theme="dark"] .quill-editor-modern {
+  border-color: #374151;
+}
+
+[data-bs-theme="dark"] .quill-editor-modern:focus-within {
+  border-color: var(--forum-primary);
+}
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container my-4 forum-question-page">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-4">
+<div class="forum-question-container">
+    <!-- Modern Breadcrumb -->
+    <nav aria-label="breadcrumb" class="modern-breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
                 <a href="{{ url_for('forum.list_questions') }}" class="text-decoration-none">
@@ -31,8 +710,8 @@
     <div class="row">
         <div class="col-lg-8">
             <!-- Enhanced Question Card -->
-            <div class="card question-detail-card mb-4">
-                <div class="card-body p-4">
+            <div class="question-card-modern">
+                <div class="question-header-modern">
                     <!-- Question Status & Meta -->
                     <div class="d-flex align-items-center justify-content-between mb-4">
                         <div class="d-flex align-items-center gap-3">
@@ -65,52 +744,59 @@
                     </div>
                     
                     <!-- Question Title -->
-                    <h1 class="question-title mb-4">{{ question.title }}</h1>
+                    <h1 class="question-title-modern">{{ question.title }}</h1>
                     
                     <!-- Author Info -->
-                    <div class="d-flex align-items-center mb-4 p-3 rounded-3" style="background: var(--forum-light-gradient);">
+                    <div class="author-info-modern">
                         {% set author = question.author %}
                         <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}"
-                             class="rounded-circle user-avatar me-3" width="52" height="52" alt="Avatar">
-                        <div class="flex-grow-1">
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <h6 class="mb-0 fw-bold">@{{ author.username if author else 'Usuario eliminado' }}</h6>
-                                <span class="badge bg-primary bg-opacity-10 text-primary">
-                                    <i class="bi bi-mortarboard me-1"></i>Estudiante
-                                </span>
-                            </div>
-                            <small class="text-muted">
+                             class="author-avatar-modern" alt="Avatar">
+                        <div class="author-details-modern">
+                            <h6 class="author-name-modern">@{{ author.username if author else 'Usuario eliminado' }}</h6>
+                            <p class="author-meta-modern">
                                 <i class="bi bi-calendar3 me-1"></i>
                                 Preguntó el {{ question.created_at.strftime('%d de %B, %Y a las %H:%M') }}
-                            </small>
-                        </div>
-                        <div class="text-end">
-                            <div class="small text-muted">Contribuciones</div>
-                            <div class="fw-bold text-primary">{{ author.points if author else 0 }} pts</div>
+                            </p>
                         </div>
                     </div>
                     
-                    <!-- Question Content -->
-                    <div class="question-content">
-                        <div class="lead lh-lg">{{ question.content|safe }}</div>
+                    <!-- Question Meta -->
+                    <div class="question-meta-modern">
+                        {% if question.is_solved %}
+                        <span class="meta-badge-modern badge-solved">
+                            <i class="bi bi-check-circle me-1"></i>Resuelto
+                        </span>
+                        {% endif %}
+                        <span class="meta-badge-modern badge-category">
+                            {{ question.category }}
+                        </span>
+                        <span class="meta-badge-modern badge-difficulty">
+                            <i class="bi bi-eye me-1"></i>{{ question.views }} vistas
+                        </span>
                     </div>
-
-                    <!-- Question Actions -->
-                    <div class="d-flex align-items-center justify-content-between mt-4 pt-3 border-top">
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-bookmark me-1"></i>Guardar
-                            </button>
-                            <button class="btn btn-outline-secondary btn-sm">
-                                <i class="bi bi-share me-1"></i>Compartir
-                            </button>
-                        </div>
-                        <div class="text-muted small">
-                            <i class="bi bi-hash me-1"></i>ID: {{ question.id }}
-                        </div>
+                </div>
+                
+                <!-- Question Content -->
+                <div class="question-content-modern">
+                    <div class="lead lh-lg">{{ question.content|safe }}</div>
+                </div>
+                
+                <!-- Question Actions -->
+                <div class="question-actions-modern">
+                    <div class="action-group-modern">
+                        <button class="btn-modern btn-outline-modern">
+                            <i class="bi bi-bookmark"></i>Guardar
+                        </button>
+                        <button class="btn-modern btn-outline-modern">
+                            <i class="bi bi-share"></i>Compartir
+                        </button>
+                    </div>
+                    <div class="text-muted small">
+                        <i class="bi bi-hash me-1"></i>ID: {{ question.id }}
                     </div>
                 </div>
             </div>
+
 
             <!-- Mathematical Separator -->
             <div class="text-center my-4">
@@ -122,18 +808,18 @@
             </div>
 
             <!-- Answers Section -->
-            <div class="answers-section">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="d-flex align-items-center gap-2">
+            <div class="answers-section-modern">
+                <div class="answers-header-modern">
+                    <h3 class="answers-title-modern">
                         <i class="bi bi-chat-right-text text-primary"></i>
                         {{ answers|length }} Respuesta{{ 's' if answers|length != 1 else '' }}
                     </h3>
                     {% if answers|length > 1 %}
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-secondary btn-sm active">
+                    <div class="answers-sort-modern">
+                        <button type="button" class="sort-btn-modern active">
                             <i class="bi bi-sort-down me-1"></i>Mejor valoradas
                         </button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm">
+                        <button type="button" class="sort-btn-modern">
                             <i class="bi bi-clock me-1"></i>Más recientes
                         </button>
                     </div>
@@ -145,36 +831,79 @@
                     <div class="row justify-content-center">
                         <div class="col-12 col-md-10 col-lg-8">
                             {% for answer in answers %}
-                            <div class="mb-3">
-                                {% include 'forum/partials/answer_card.html' with context %}
+                            <div class="answer-card-modern {% if answer.is_accepted %}accepted{% endif %}">
+                                <div class="answer-header-modern">
+                                    <div class="author-info-modern">
+                                        {% set answer_author = answer.author %}
+                                        <img src="{{ answer_author.avatar_url if answer_author else url_for('static', filename='img/default.png') }}"
+                                             class="author-avatar-modern" alt="Avatar">
+                                        <div class="author-details-modern">
+                                            <h6 class="author-name-modern">@{{ answer_author.username if answer_author else 'Usuario eliminado' }}</h6>
+                                            <p class="author-meta-modern">
+                                                <i class="bi bi-clock me-1"></i>
+                                                {{ answer.created_at.strftime('%d/%m/%Y %H:%M') }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex align-items-center gap-2">
+                                        {% if answer.is_accepted %}
+                                        <span class="meta-badge-modern badge-solved">
+                                            <i class="bi bi-check-circle me-1"></i>Aceptada
+                                        </span>
+                                        {% elif current_user.is_authenticated and current_user.id == question.author_id %}
+                                        <button class="btn-modern btn-outline-modern" onclick="acceptAnswer({{ answer.id }})">
+                                            <i class="bi bi-check-circle me-1"></i>Aceptar
+                                        </button>
+                                        {% endif %}
+                                        
+                                        <!-- Vote System -->
+                                        <div class="vote-system-modern">
+                                            <button class="vote-btn-modern" onclick="voteAnswer({{ answer.id }}, 'up')">
+                                                <i class="bi bi-chevron-up"></i>
+                                            </button>
+                                            <span class="vote-count-modern">{{ answer.votes }}</span>
+                                            <button class="vote-btn-modern" onclick="voteAnswer({{ answer.id }}, 'down')">
+                                                <i class="bi bi-chevron-down"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Answer Content -->
+                                <div class="answer-content-modern">
+                                    {{ answer.content|safe }}
+                                </div>
                             </div>
                             {% endfor %}
                         </div>
                     </div>
                 </div>
                 {% else %}
-                <div class="empty-state text-center py-5 mb-4">
-                    <i class="bi bi-chat-right-dots" style="font-size: 4rem; color: var(--forum-primary); opacity: 0.7;"></i>
-                    <h4 class="mt-3 fw-bold">¡Sé el primero en resolver este problema!</h4>
-                    <p class="text-muted mb-4">Tu conocimiento puede ayudar a otro estudiante. ¡Comparte tu respuesta!</p>
-                    {% if current_user.is_authenticated %}
-                    <button class="btn btn-primary btn-lg" onclick="document.getElementById('answerSection').scrollIntoView({behavior: 'smooth'})">
-                        <i class="bi bi-lightbulb me-2"></i>Escribir respuesta
-                    </button>
-                    {% endif %}
+                <div class="answer-card-modern text-center">
+                    <div class="answer-content-modern">
+                        <i class="bi bi-chat-right-dots" style="font-size: 4rem; color: var(--forum-primary); opacity: 0.7;"></i>
+                        <h4 class="mt-3 fw-bold">¡Sé el primero en resolver este problema!</h4>
+                        <p class="text-muted mb-4">Tu conocimiento puede ayudar a otro estudiante. ¡Comparte tu respuesta!</p>
+                        {% if current_user.is_authenticated %}
+                        <button class="btn-modern btn-primary-modern" onclick="document.getElementById('answerSection').scrollIntoView({behavior: 'smooth'})">
+                            <i class="bi bi-lightbulb me-2"></i>Escribir respuesta
+                        </button>
+                        {% endif %}
+                    </div>
                 </div>
                 {% endif %}
 
                 <!-- Enhanced Answer Form -->
                 {% if current_user.is_authenticated %}
-                <div id="answerSection" class="card question-detail-card">
-                    <div class="card-header" style="background: var(--forum-gradient); color: white;">
-                        <h5 class="mb-0 d-flex align-items-center">
+                <div id="answerSection" class="answer-form-modern">
+                    <div class="answer-form-header-modern">
+                        <h5 class="answer-form-title-modern">
                             <i class="bi bi-pencil-square me-2"></i>
                             Tu respuesta
                         </h5>
                     </div>
-                    <div class="card-body p-4">
+                    <div class="answer-form-content-modern">
                         <div class="mb-3">
                             <div class="d-flex align-items-center gap-2 mb-3 p-3 rounded-3" style="background: var(--forum-light-gradient);">
                                 <span class="fs-4">💡</span>
@@ -187,7 +916,7 @@
                         <form method="post" action="{{ url_for('forum.answer_question', question_id=question.id) }}">
                             {{ csrf.csrf_field() }}
                             <div class="mb-3">
-                                <div id="answerEditor" class="quill-editor"></div>
+                                <div id="answerEditor" class="quill-editor-modern"></div>
                                 <input type="hidden" name="content" required>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
@@ -195,7 +924,7 @@
                                     <i class="bi bi-info-circle me-1"></i>
                                     Usa el editor para dar formato y añadir diagramas
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-lg">
+                                <button type="submit" class="btn-modern btn-primary-modern">
                                     <i class="bi bi-send me-2"></i>
                                     Publicar respuesta
                                 </button>
@@ -204,18 +933,18 @@
                     </div>
                 </div>
                 {% else %}
-                <div class="card question-detail-card">
-                    <div class="card-body text-center p-5">
+                <div class="answer-form-modern">
+                    <div class="answer-form-content-modern text-center">
                         <div class="mb-4">
                             <i class="bi bi-person-plus" style="font-size: 4rem; color: var(--forum-primary);"></i>
                         </div>
                         <h5 class="fw-bold mb-3">¿Conoces la solución?</h5>
                         <p class="text-muted mb-4">Únete a nuestra comunidad para compartir tu conocimiento y ayudar a otros estudiantes.</p>
-                        <div class="d-flex gap-2 justify-content-center">
-                            <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                            <a href="{{ url_for('auth.login') }}" class="btn-modern btn-primary-modern">
                                 <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar Sesión
                             </a>
-                            <a href="{{ url_for('onboarding.register') }}" class="btn btn-outline-primary">
+                            <a href="{{ url_for('onboarding.register') }}" class="btn-modern btn-outline-modern">
                                 <i class="bi bi-person-plus me-1"></i>Registrarse
                             </a>
                         </div>
@@ -228,31 +957,25 @@
         <!-- Enhanced Sidebar -->
         <div class="col-lg-4">
             <!-- Question Statistics -->
-            <div class="card sidebar-card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="bi bi-graph-up me-2"></i>Estadísticas
+            <div class="sidebar-card-modern">
+                <div class="sidebar-header-modern">
+                    <h5 class="sidebar-title-modern">
+                        <i class="bi bi-graph-up"></i>Estadísticas
                     </h5>
-                    <div class="row text-center g-3">
-                        <div class="col-4">
-                            <div class="stats-container">
-                                <div class="stat-number">{{ question.views }}</div>
-                                <div class="stat-label">Vistas</div>
-                            </div>
+                </div>
+                <div class="sidebar-content-modern">
+                    <div class="stats-grid-modern">
+                        <div class="stat-item-modern">
+                            <span class="stat-number-modern">{{ question.views }}</span>
+                            <div class="stat-label-modern">Vistas</div>
                         </div>
-                        <div class="col-4">
-                            <div class="stats-container">
-                                <div class="stat-number">{{ answers|length }}</div>
-                                <div class="stat-label">Respuestas</div>
-                            </div>
+                        <div class="stat-item-modern">
+                            <span class="stat-number-modern">{{ answers|length }}</span>
+                            <div class="stat-label-modern">Respuestas</div>
                         </div>
-                        <div class="col-4">
-                            <div class="stats-container">
-                                <div class="stat-number {% if question.is_solved %}text-success{% else %}text-muted{% endif %}">
-                                    {% if question.is_solved %}✓{% else %}?{% endif %}
-                                </div>
-                                <div class="stat-label">Estado</div>
-                            </div>
+                        <div class="stat-item-modern">
+                            <span class="stat-number-modern">{% if question.is_solved %}✓{% else %}?{% endif %}</span>
+                            <div class="stat-label-modern">Estado</div>
                         </div>
                     </div>
                     
@@ -270,11 +993,13 @@
             </div>
 
             <!-- Mathematical Categories -->
-            <div class="card sidebar-card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="bi bi-tags me-2"></i>Categorías relacionadas
+            <div class="sidebar-card-modern">
+                <div class="sidebar-header-modern">
+                    <h5 class="sidebar-title-modern">
+                        <i class="bi bi-tags"></i>Categorías relacionadas
                     </h5>
+                </div>
+                <div class="sidebar-content-modern">
                     <div class="d-flex flex-wrap gap-2">
                         {% for cat in ['Matemáticas', 'Ciencias', 'Lenguas', 'Historia', 'Tecnología'] %}
                         <a href="{{ url_for('forum.list_questions', category=cat) }}" 
@@ -288,19 +1013,21 @@
             </div>
 
             <!-- Mathematical Tools -->
-            <div class="card sidebar-card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="bi bi-tools me-2"></i>Herramientas útiles
+            <div class="sidebar-card-modern">
+                <div class="sidebar-header-modern">
+                    <h5 class="sidebar-title-modern">
+                        <i class="bi bi-tools"></i>Herramientas útiles
                     </h5>
+                </div>
+                <div class="sidebar-content-modern">
                     <div class="d-grid gap-2">
-                        <a href="https://www.desmos.com/calculator" target="_blank" class="btn btn-outline-primary btn-sm">
+                        <a href="https://www.desmos.com/calculator" target="_blank" class="btn-modern btn-outline-modern">
                             <i class="bi bi-graph-up me-1"></i> Calculadora Gráfica
                         </a>
-                        <a href="https://www.symbolab.com/" target="_blank" class="btn btn-outline-secondary btn-sm">
+                        <a href="https://www.symbolab.com/" target="_blank" class="btn-modern btn-outline-modern">
                             <i class="bi bi-calculator me-1"></i> Resolver ecuaciones
                         </a>
-                        <a href="https://www.geogebra.org/" target="_blank" class="btn btn-outline-info btn-sm">
+                        <a href="https://www.geogebra.org/" target="_blank" class="btn-modern btn-outline-modern">
                             <i class="bi bi-triangle me-1"></i> Geometría interactiva
                         </a>
                     </div>
@@ -308,8 +1035,8 @@
             </div>
 
             <!-- Inspirational Quote -->
-            <div class="card sidebar-card">
-                <div class="card-body text-center">
+            <div class="sidebar-card-modern">
+                <div class="sidebar-content-modern text-center">
                     <div class="mb-3" style="font-size: 2rem;">📖</div>
                     <blockquote class="blockquote mb-3">
                         <p class="small">"Aprender es un tesoro que seguirá a su dueño a todas partes."</p>
@@ -380,394 +1107,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 {% endblock %}
 
-<style>
-/* Base responsive styling */
-.question-detail-card .card-body,
-.answer-card .card-body,
-.answer-body {
-  max-width: 100%;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
-.question-content,
-.question-content .lead {
-  max-width: 100%;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
-.question-content img,
-.answer-body img {
-  max-width: 100%;
-  height: auto;
-}
-
-.question-content table,
-.answer-body table,
-.question-content pre,
-.answer-body pre {
-  overflow-x: auto;
-  display: block;
-}
-
-.vote-group {
-  max-width: 100%;
-  word-break: break-word;
-}
-
-@media (max-width: 768px) {
-  .question-detail-card .card-body,
-  .answer-card .card-body,
-  .answer-body {
-    padding: 1rem;
-  }
-}
-
-/* Theme adjustments */
-[data-bs-theme="light"] .card-body,
-[data-bs-theme="light"] .answer-body {
-  background-color: var(--bs-body-bg);
-  color: var(--bs-body-color);
-}
-
-[data-bs-theme="dark"] .card-body,
-[data-bs-theme="dark"] .answer-body {
-  background-color: var(--bs-dark-bg-subtle);
-  color: var(--bs-body-color);
-}
-
-.answer-card .answer-body {
-  border-left: 4px solid var(--forum-primary);
-  background-color: var(--bs-light-bg-subtle);
-}
-
-.answer-card.accepted .answer-body {
-  border-left-color: #4ade80;
-  background-color: rgba(74, 222, 128, 0.05);
-}
-
-[data-bs-theme="dark"] .answer-card .answer-body {
-  background-color: var(--bs-dark-bg-subtle);
-}
-
-[data-bs-theme="dark"] .answer-card.accepted .answer-body {
-  background-color: rgba(74, 222, 128, 0.1);
-}
-
-[data-bs-theme="dark"] .vote-group .vote-btn {
-  color: var(--bs-light);
-}
-
-[data-bs-theme="light"] .vote-group .vote-btn {
-  color: var(--bs-body-color);
-}
-
-[data-bs-theme="dark"] .badge,
-[data-bs-theme="dark"] .btn,
-[data-bs-theme="dark"] .label {
-  color: var(--bs-body-color);
-}
-
-[data-bs-theme="light"] .badge,
-[data-bs-theme="light"] .btn,
-[data-bs-theme="light"] .label {
-  color: var(--bs-body-color);
-}
-
-/* Dark Mode Overrides for Question Detail */
-[data-bs-theme="dark"] {
-  body {
-    background-color: #111827;
-    color: #d1d5db;
-  }
-
-  .breadcrumb-item a {
-    color: #9ca3af;
-  }
-
-  .breadcrumb-item.active {
-    color: #6b7280;
-  }
-
-  .question-detail-card, .sidebar-card, .card {
-    background-color: #1f2937;
-    border-color: #374151;
-  }
-
-  .question-title {
-    color: #f9fafb;
-  }
-
-  .text-muted {
-    color: #9ca3af !important;
-  }
-
-  .question-content, .lead {
-    color: #d1d5db;
-  }
-
-  .card-header {
-    background-color: #1f2937 !important;
-    border-bottom-color: #374151 !important;
-  }
-
-  h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-    color: #f9fafb;
-  }
-
-  .btn-outline-primary {
-    color: #60a5fa;
-    border-color: #60a5fa;
-  }
-
-  .btn-outline-primary:hover {
-    background-color: #60a5fa;
-    color: #1f2937;
-  }
-
-  .btn-outline-secondary {
-    color: #9ca3af;
-    border-color: #9ca3af;
-  }
-
-  .btn-outline-secondary:hover {
-    background-color: #9ca3af;
-    color: #1f2937;
-  }
-
-  hr {
-    border-top-color: #374151;
-  }
-
-  .empty-state {
-    background-color: transparent;
-  }
-
-  .progress {
-    background-color: #374151;
-  }
-
-  .blockquote-footer {
-    color: #9ca3af;
-  }
-}
-
-/* Mobile Responsive Improvements */
-@media (max-width: 768px) {
-  .container {
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-
-  /* Breadcrumb mobile optimization */
-  .breadcrumb {
-    font-size: 0.875rem;
-    padding: 0.5rem 0;
-    margin-bottom: 1rem;
-  }
-
-  .breadcrumb-item {
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  /* Question title responsive */
-  .question-title {
-    font-size: 1.5rem !important;
-    line-height: 1.3;
-    margin-bottom: 1rem !important;
-    word-wrap: break-word;
-    hyphens: auto;
-  }
-
-  /* Author info mobile layout */
-  .question-detail-card .card-body {
-    padding: 1rem !important;
-  }
-
-  .user-avatar {
-    width: 40px !important;
-    height: 40px !important;
-  }
-
-  /* Question meta info stack on mobile */
-  .d-flex.align-items-center.justify-content-between {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 0.75rem;
-  }
-
-  .d-flex.align-items-center.gap-3 {
-    flex-wrap: wrap;
-    gap: 0.5rem !important;
-  }
-
-  /* Badge responsive sizing */
-  .badge {
-    font-size: 0.75rem;
-    padding: 0.375rem 0.75rem;
-  }
-
-  /* Question content mobile optimization */
-  .question-content {
-    font-size: 1rem;
-    line-height: 1.6;
-  }
-
-  .question-content img {
-    max-width: 100%;
-    height: auto;
-  }
-
-  /* Action buttons mobile layout */
-  .d-flex.align-items-center.justify-content-between.mt-4 {
-    flex-direction: column;
-    align-items: stretch !important;
-    gap: 1rem;
-  }
-
-  .d-flex.gap-2 {
-    justify-content: center;
-  }
-
-  /* Answers section mobile */
-  .answers-section h3 {
-    font-size: 1.25rem;
-  }
-
-  .btn-group {
-    width: 100%;
-  }
-
-  .btn-group .btn {
-    font-size: 0.875rem;
-    padding: 0.375rem 0.75rem;
-  }
-
-  /* Answer form mobile optimization */
-  #answerSection .card-body {
-    padding: 1rem !important;
-  }
-
-  .quill-editor {
-    height: 150px !important;
-  }
-
-  /* Sidebar mobile - stack below content */
-  .col-lg-4 {
-    margin-top: 2rem;
-  }
-
-  /* Statistics cards mobile layout */
-  .stats-container {
-    padding: 0.5rem;
-  }
-
-  .stat-number {
-    font-size: 1.25rem;
-    font-weight: bold;
-  }
-
-  .stat-label {
-    font-size: 0.75rem;
-  }
-
-  /* Tools section mobile */
-  .d-grid.gap-2 .btn {
-    font-size: 0.875rem;
-    padding: 0.5rem 1rem;
-  }
-
-  /* Category badges mobile */
-  .d-flex.flex-wrap.gap-2 {
-    justify-content: center;
-  }
-
-  /* Empty state mobile */
-  .empty-state {
-    padding: 2rem 1rem !important;
-  }
-
-  .empty-state i {
-    font-size: 3rem !important;
-  }
-
-  .empty-state h4 {
-    font-size: 1.25rem;
-  }
-
-  /* Form buttons mobile */
-  .d-flex.justify-content-between.align-items-center {
-    flex-direction: column;
-    align-items: stretch !important;
-    gap: 1rem;
-  }
-
-  .btn-lg {
-    width: 100%;
-    padding: 0.75rem 1rem;
-  }
-
-  /* Mathematical separator mobile */
-  .text-center.my-4 {
-    margin: 1.5rem 0 !important;
-  }
-
-  /* Progress bar mobile */
-  .progress {
-    height: 4px !important;
-  }
-}
-
-@media (max-width: 576px) {
-  /* Extra small devices optimization */
-  .container {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .question-title {
-    font-size: 1.25rem !important;
-  }
-
-  .card {
-    border-radius: 10px !important;
-  }
-
-  .btn {
-    font-size: 0.875rem;
-  }
-
-  .badge {
-    font-size: 0.7rem;
-    padding: 0.25rem 0.5rem;
-  }
-
-  /* Hide less important elements on very small screens */
-  .text-muted.small {
-    font-size: 0.75rem !important;
-  }
-
-  /* Compact author info */
-  .d-flex.align-items-center.gap-2.mb-1 {
-    flex-direction: column;
-    align-items: flex-start !important;
-    gap: 0.25rem !important;
-  }
-
-  /* Compact statistics */
-  .row.text-center.g-3 {
-    margin: 0 !important;
-  }
-
-  .col-4 {
-    padding: 0.25rem !important;
-  }
-}
-}</style>
+<!-- Removed old CSS - now using modern responsive design -->
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
