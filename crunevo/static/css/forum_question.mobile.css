@@ -1,9 +1,30 @@
 /* ====== SOLO dentro de la pagina del foro ====== */
-.forum-question-page .answer-card .card-body,
-.forum-question-page .question-card .card-body {
-  padding: clamp(12px, 3.6vw, 20px);
+
+/* Safe areas + padding lateral */
+.forum-question-page .page-wrap { 
+  --side-pad: clamp(12px, 4vw, 20px); 
 }
 
+@supports (padding: max(0px)) {
+  .forum-question-page .page-wrap {
+    padding-left: max(var(--side-pad), env(safe-area-inset-left));
+    padding-right: max(var(--side-pad), env(safe-area-inset-right));
+  }
+}
+
+/* Logo pequeño - NO gigante */
+.crunevo-logo-small { 
+  width: 72px; 
+  height: auto; 
+  display: block; 
+}
+
+.forum-question-page .crunevo-hero { 
+  padding: 8px 12px; 
+  border-radius: 12px; 
+}
+
+/* Texto que no se corte (sólo en foro) */
 .forum-question-page .answer-body,
 .forum-question-page .answer-body p,
 .forum-question-page .answer-body li {
@@ -12,18 +33,19 @@
   white-space: normal;
 }
 
-/* No permitimos recortes en contenedores internos */
 .forum-question-page .answer-card,
-.forum-question-page .answer-body,
-.forum-question-page .card {
-  overflow: visible; /* nunca hidden en el texto */
+.forum-question-page .answer-body {
+  overflow: visible;
 }
 
-/* Imagenes dentro del contenido */
-.forum-question-page .answer-body img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+.forum-question-page .answer-body img { 
+  max-width: 100%; 
+  height: auto; 
+  display: block; 
+}
+
+.forum-question-page .card-body { 
+  padding: clamp(12px, 3.6vw, 20px); 
 }
 
 /* Contenedor y gutters en mobile sin romper Bootstrap */
@@ -52,18 +74,13 @@
   max-width: 100%;
 }
 
-/* Logo/hero del foro en móvil (evitar 371px de alto fijo) */
-.forum-question-page .crunevo-logo-small {
-  width: clamp(120px, 40vw, 220px);
-  height: auto;        /* evita que ocupe 371px fijos */
-  display: block;
-}
+/* Logo ya definido arriba - regla eliminada para evitar duplicación */
 
-/* Navbar móvil (los 6 iconos pegados a la izquierda) */
+/* Navbar móvil (los 6 iconos) - distribución uniforme y targets táctiles */
 .mobile-quick-links {
   display: flex;
   align-items: center;
-  justify-content: space-between;  /* distribucion uniforme */
+  justify-content: space-between;
   gap: 12px;
   width: 100%;
   padding: 8px 12px;
@@ -74,8 +91,8 @@
   align-items: center;
   justify-content: center;
   min-width: 40px;
-  min-height: 40px;  /* objetivo tactil */
-  border-radius: 10px;
+  min-height: 40px;
+  border-radius: 12px;
 }
 
 /* Accesibilidad y animaciones */
