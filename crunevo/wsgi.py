@@ -21,8 +21,8 @@ def health():
 # Si la petición es para /healthz, va a la app ligera.
 # Para todo lo demás, va a la app principal.
 application = DispatcherMiddleware(
-    health_app,
+    app,  # App principal como default
     {
-        "/": app,
+        "/healthz": health_app,  # Health check en ruta específica
     },
 )
