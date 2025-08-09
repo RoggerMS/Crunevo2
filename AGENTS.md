@@ -1269,3 +1269,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Renamed WSGI exports from `application` to `app` and updated Fly config files and helper script accordingly for deployment (PR wsgi-app-rename).
 - Dockerfile now runs Gunicorn with eventlet bound to 0.0.0.0:8080, sets `PORT` and exposes 8080 to align with Fly.io checks (PR fly-gunicorn-port-fix).
 - Added `/healthz` blueprint returning 200 without auth and exempt from Talisman and CSRF (PR health-endpoint).
+
+- Introduced dedicated health blueprint with `/healthz`, `/live` and `/ready` endpoints, config validation script, smoke check and docs; updated Fly configs and tests accordingly. (PR health-blueprint-refresh)

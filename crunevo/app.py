@@ -12,6 +12,7 @@ from flask_login import current_user
 import logging
 from logging.handlers import RotatingFileHandler
 import os
+import json
 from datetime import datetime
 from markupsafe import Markup
 from humanize import naturaltime
@@ -32,6 +33,8 @@ from .extensions import (
 )
 from flask_wtf.csrf import CSRFError
 from werkzeug.exceptions import HTTPException
+from werkzeug.middleware.proxy_fix import ProxyFix
+from flask import has_request_context
 
 DEFAULT_CSP = {
     "default-src": "'self'",
@@ -41,6 +44,18 @@ DEFAULT_CSP = {
     "script-src": ["'self'", "'unsafe-inline'"],
     "connect-src": "'self'",
 }
+
+
+class JSONRequestFormatter(logging.Formatter):
+    def format(self, record):
+        data = {
+            "level": record.levelname,
+            "message": record.getMessage(),
+        }
+        if has_request_context():  # pragma: no cover - depends on request
+            data["request_id"] = request.headers.get("X-Request-ID")
+            data["path"] = request.path
+        return json.dumps(data)
 
 
 def create_app():
@@ -60,6 +75,8 @@ def create_app():
     env_rlimit = os.getenv("RATELIMIT_STORAGE_URI")
     if env_rlimit:
         app.config["RATELIMIT_STORAGE_URI"] = env_rlimit
+
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
     sentry_dsn = app.config.get("SENTRY_DSN")
     if sentry_dsn:
@@ -231,7 +248,7 @@ def create_app():
         talisman.init_app(
             app,
             content_security_policy=csp,
-            force_https=not app.config.get("TESTING", False),
+            force_https=app.config.get("FORCE_HTTPS", True),
             strict_transport_security=True,
         )
     login_manager.login_view = "auth.login"
@@ -241,9 +258,14 @@ def create_app():
 
     @app.before_request
     def record_page_view():
+        health_paths = {
+            app.config.get("HEALTH_PATH", "/healthz"),
+            "/live",
+            "/ready",
+        }
         if (
             request.path.startswith("/static/")
-            or request.path in {"/healthz", "/ping"}
+            or request.path in health_paths
             or request.path.startswith("/socket.io")
         ):
             return
@@ -404,12 +426,17 @@ def create_app():
 
     app.register_blueprint(health_bp)
     csrf.exempt("health.healthz")
-    csrf.exempt("health.health")
-    try:
-        talisman.exempt_view("health.healthz")
-        talisman.exempt_view("health.health")
-    except Exception:
-        pass
+    csrf.exempt("health.live")
+    csrf.exempt("health.ready")
+    if app.config.get("ENABLE_TALISMAN", True) and app.config.get(
+        "EXEMPT_HEALTH_FROM_HTTPS", True
+    ):
+        try:
+            talisman.exempt_view("health.healthz")
+            talisman.exempt_view("health.live")
+            talisman.exempt_view("health.ready")
+        except Exception:
+            pass
     app.register_blueprint(maintenance_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(developer_bp)
@@ -635,15 +662,12 @@ def create_app():
             "logs/crunevo.log", maxBytes=10240, backupCount=10
         )
         file_handler.setLevel(logging.INFO)
+        file_handler.setFormatter(JSONRequestFormatter())
         app.logger.addHandler(file_handler)
 
         app.logger.setLevel(logging.INFO)
         app.logger.info("CRUNEVO startup")
         app.logger.info("Debug=%s", app.debug)
         app.logger.info("DB=%s", app.config.get("SQLALCHEMY_DATABASE_URI"))
-
-    @app.route("/health")
-    def health():
-        return {"status": "healthy"}, 200
 
     return app

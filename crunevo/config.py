@@ -80,6 +80,14 @@ class Config:
         "true",
         "yes",
     )
+    FORCE_HTTPS = os.getenv("FORCE_HTTPS", "True").lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+    EXEMPT_HEALTH_FROM_HTTPS = True
+    HEALTH_PATH = os.getenv("HEALTH_PATH", "/healthz")
+    GIT_SHA = os.getenv("GIT_SHA")
     ENABLE_CSP_OVERRIDE = os.getenv("ENABLE_CSP_OVERRIDE", "False").lower() in (
         "1",
         "true",
