@@ -11,6 +11,9 @@ def test_healthz_returns_200_no_redirect(client, monkeypatch):
     monkeypatch.setattr(db.engine, "connect", fail_connect)
     resp = client.get("/healthz", follow_redirects=False)
     assert resp.status_code == 200
+    assert resp.is_json
+    assert resp.get_json() == {"status": "ok"}
+    assert resp.content_type == "application/json"
     assert b"Redirecting" not in resp.data
     assert not called
 
