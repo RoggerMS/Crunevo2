@@ -12,6 +12,9 @@ primary_region = 'gru'
   FLASK_APP = 'crunevo.wsgi:app'
   FLASK_ENV = 'production'
   PORT = "8080"
+  FORCE_HTTPS = "true"
+  EXEMPT_HEALTH_FROM_HTTPS = "true"
+  HEALTH_PATH = "/healthz"
   SESSION_COOKIE_HTTPONLY = "true"
 
 [experimental]
@@ -19,7 +22,6 @@ primary_region = 'gru'
 
 [http_service]
   internal_port = 8080
-  force_https = true
   auto_stop_machines = true
   auto_start_machines = true
   min_machines_running = 1

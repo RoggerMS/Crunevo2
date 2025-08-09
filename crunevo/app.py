@@ -248,13 +248,31 @@ def create_app():
         talisman.init_app(
             app,
             content_security_policy=csp,
-            force_https=app.config.get("FORCE_HTTPS", True),
+            force_https=False,
             strict_transport_security=True,
         )
     login_manager.login_view = "auth.login"
 
     migrate.init_app(app, db)
     socketio.init_app(app)
+
+    @app.before_request
+    def enforce_https():
+        if app.testing or not app.config.get("FORCE_HTTPS", True):
+            return
+        health_paths = {
+            app.config.get("HEALTH_PATH", "/healthz"),
+            "/live",
+            "/ready",
+        }
+        if (
+            app.config.get("EXEMPT_HEALTH_FROM_HTTPS", True)
+            and request.path in health_paths
+        ):
+            return
+        if request.url.startswith("http://"):
+            url = request.url.replace("http://", "https://", 1)
+            return redirect(url, code=301)
 
     @app.before_request
     def record_page_view():
@@ -294,6 +312,16 @@ def create_app():
 
     @app.after_request
     def apply_security_headers(response):
+        health_paths = {
+            app.config.get("HEALTH_PATH", "/healthz"),
+            "/live",
+            "/ready",
+        }
+        if (
+            app.config.get("EXEMPT_HEALTH_FROM_HTTPS", True)
+            and request.path in health_paths
+        ):
+            return response
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; "

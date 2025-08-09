@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, current_app, make_response
+from flask import Blueprint, jsonify, current_app
 from crunevo.extensions import csrf
 import os
 
@@ -12,11 +12,11 @@ health_bp = Blueprint("health", __name__)
 
 @health_bp.get("/healthz")
 def healthz():
-    resp = make_response("ok", 200)
+    resp = jsonify(status="ok")
     revision = current_app.config.get("GIT_SHA") or os.getenv("GIT_SHA")
     if revision:
         resp.headers["X-App-Revision"] = revision
-    return resp
+    return resp, 200
 
 
 @health_bp.get("/live")

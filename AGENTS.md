@@ -1271,3 +1271,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added `/healthz` blueprint returning 200 without auth and exempt from Talisman and CSRF (PR health-endpoint).
 
 - Introduced dedicated health blueprint with `/healthz`, `/live` and `/ready` endpoints, config validation script, smoke check and docs; updated Fly configs and tests accordingly. (PR health-blueprint-refresh)
+- Centralized env config for HTTPS and health checks, returning JSON in /healthz; added deploy and secret scripts with docs (PR health-config-middleware).
