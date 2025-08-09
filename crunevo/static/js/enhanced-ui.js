@@ -421,3 +421,15 @@ window.CRUNEVO_UI = {
     updateCartCount,
     showRewardNotification
 };
+
+(function () {
+  function setMobileNavbarHeight() {
+    var nb = document.getElementById('mobileNavbar');
+    if (!nb) return;
+    var h = nb.getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--mobile-navbar-h', Math.round(h) + 'px');
+  }
+  window.addEventListener('load', setMobileNavbarHeight);
+  window.addEventListener('resize', setMobileNavbarHeight);
+  window.addEventListener('orientationchange', setMobileNavbarHeight);
+})();
