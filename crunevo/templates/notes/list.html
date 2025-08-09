@@ -4,10 +4,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/notes.css') }}">
 {% endblock %}
 {% block content %}
-<div class="row">
-  <div class="col-12">
-    <h2 class="mb-3">Apuntes</h2>
-    <div class="d-flex flex-wrap gap-2 mb-3 justify-content-center notes-filters">
+<div class="page-notes px-3 px-lg-4">
+  <h2 class="mb-3">Apuntes</h2>
+  <div class="top-filters d-flex gap-3 mb-3 overflow-auto pb-2 notes-filters">
       <a href="{{ url_for('notes.list_notes', filter='recientes', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'recientes' %}active{% endif %}"><i class="bi bi-clock me-1"></i>Recientes</a>
       <a href="{{ url_for('notes.list_notes', filter='vistos', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'vistos' %}active{% endif %}"><i class="bi bi-eye-fill me-1"></i>Más vistos</a>
       <a href="{{ url_for('notes.list_notes', filter='gustados', tag=selected_tag) }}" class="btn btn-outline-primary {% if filter == 'gustados' %}active{% endif %}"><i class="bi bi-hand-thumbs-up-fill me-1"></i>Más gustados</a>
@@ -23,23 +22,23 @@
         </ul>
       </div>
     </div>
-    <div class="row align-items-center mb-3 d-flex justify-content-between">
-      <div class="col">
-        <input type="text" id="noteSearch" class="form-control" placeholder="Buscar...">
-      </div>
-      <div class="col-auto">
-        <a href="{{ url_for('notes.upload_note') }}" class="btn btn-primary">Subir apunte</a>
-      </div>
+  <div class="row align-items-center mb-3">
+    <div class="col">
+      <input type="text" id="noteSearch" class="form-control" placeholder="Buscar...">
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 row-cols-xl-6 row-cols-xxl-7 g-3" id="notesList">
+    <div class="col-auto">
+      <a href="{{ url_for('notes.upload_note') }}" class="btn btn-primary">Subir apunte</a>
+    </div>
+  </div>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 row-cols-xl-6 row-cols-xxl-7 g-3" id="notesList">
 {% for note in notes %}
   <div class="col">
     {% set show_quick_view = True %}
     {% include 'components/note_card.html' %}
   </div>
 {% endfor %}
-</div>
-<script>
+  </div>
+  <script>
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('noteSearch').addEventListener('input', function(e){
     fetch("{{ url_for('notes.search_notes') }}?q=" + encodeURIComponent(e.target.value))
@@ -152,8 +151,7 @@ function createNoteCard(n) {
   col.appendChild(card);
   return col;
 }
-</script>
-  </div>
+  </script>
 </div>
 {% endblock %}
 
