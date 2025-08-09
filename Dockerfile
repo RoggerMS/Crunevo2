@@ -19,5 +19,5 @@ COPY migrations /app/migrations
 COPY migrations/versions /app/migrations/versions
 
 # Ejecutar aplicación
-# Run gunicorn with eventlet worker for websocket support
-CMD ["gunicorn", "--workers", "3", "--timeout", "120", "-k", "eventlet", "-b", "0.0.0.0:8080", "crunevo.wsgi:application"]
+# Use FLASK_APP to allow running admin or main instance
+CMD ["sh", "-c", "gunicorn --workers 3 --timeout 120 -k eventlet -b 0.0.0.0:8080 ${FLASK_APP}"]

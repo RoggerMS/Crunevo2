@@ -4,4 +4,5 @@ os.environ["ADMIN_INSTANCE"] = "1"
 
 from crunevo.app import create_app  # noqa: E402
 
-app = create_app()
+# Expose the Flask application as `application` to mirror the main WSGI module
+application = create_app()
