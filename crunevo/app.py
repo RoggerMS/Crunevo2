@@ -404,8 +404,10 @@ def create_app():
 
     app.register_blueprint(health_bp)
     csrf.exempt("health.healthz")
+    csrf.exempt("health.health")
     try:
         talisman.exempt_view("health.healthz")
+        talisman.exempt_view("health.health")
     except Exception:
         pass
     app.register_blueprint(maintenance_bp)
