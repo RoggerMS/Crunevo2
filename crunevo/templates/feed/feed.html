@@ -5,7 +5,7 @@
 {% block title %}Feed - Crunevo{% endblock %}
 
 {% block content %}
-<div class="container-fluid px-0 page-feed">
+<div class="container-fluid px-0">
   <div class="row g-0">
     <!-- Left Sidebar -->
     <div class="col-lg-3 d-none d-lg-block">
@@ -14,12 +14,12 @@
 
     <!-- Main Feed Content -->
     <div class="col-lg-6 col-12">
-      <div class="px-3 px-lg-4">
+      <div class="page-feed px-3 px-lg-4">
         <!-- Create Post Form -->
         {% include 'components/create_post_modal.html' %}
 
         <!-- Feed Filters -->
-        <div class="d-flex gap-3 mb-4 overflow-auto pb-2">
+        <div class="top-filters d-flex gap-3 mb-4 overflow-auto pb-2">
           <button class="btn btn-primary btn-sm rounded-pill px-4 active" data-filter="recientes">
             <i class="bi bi-clock me-1"></i> Recientes
           </button>
