@@ -1277,3 +1277,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 
 - Reserved body space for fixed mobile navbar with dynamic height variable and improved mobile filter chips for readability. (PR mobile-navbar-chips)
 - Global mobile navbar padding now handled via --mobile-navbar-height variable, body safe-area reservation, and script moved to enhanced-ui.js without defer; removed inline styles/scripts from mobile_navbar.html. (PR mobile-navbar-spacing-fix)
+- Notes list page adopts feed-style mobile full-width layout, wrapping content in `.page-notes` with responsive chips, search and edge-to-edge cards. (PR notes-mobile-full-width)
