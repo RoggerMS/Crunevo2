@@ -640,4 +640,8 @@ def create_app():
         app.logger.info("Debug=%s", app.debug)
         app.logger.info("DB=%s", app.config.get("SQLALCHEMY_DATABASE_URI"))
 
+    @app.route("/health")
+    def health():
+        return {"status": "healthy"}, 200
+
     return app

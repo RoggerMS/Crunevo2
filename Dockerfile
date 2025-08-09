@@ -23,4 +23,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # Ejecutar aplicación
-CMD ["gunicorn", "-k", "eventlet", "-w", "1", "--threads", "8", "--timeout", "120", "--bind", "0.0.0.0:8080", "crunevo.wsgi:app"]
+CMD ["gunicorn", "-k", "eventlet", "-w", "1", "--threads", "8", "--timeout", "120", "--access-logfile", "-", "--bind", "0.0.0.0:8080", "crunevo.wsgi:app"]

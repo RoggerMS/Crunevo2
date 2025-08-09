@@ -25,11 +25,11 @@ primary_region = 'gru'
   min_machines_running = 1
 
   [[http_service.checks]]
-    grace_period = '15s'
-    interval = '15s'
-    method = 'GET'
-    timeout = '15s'
-    path = "/healthz"
+    method = "GET"
+    path = "/health"
+    interval = "10s"
+    timeout = "20s"
+    grace_period = "60s"
 
 [[vm]]
   cpu_kind = "performance"
