@@ -1339,4 +1339,58 @@ select:focus {
   gap: 1rem;
 }
 
+/* Mobile styles - Feed full width */
+@media (max-width: 768px) {
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .page-feed,
+  .page-feed .container,
+  .page-feed .content {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Tarjetas de publicación */
+  .page-feed article.facebook-post {
+    border-radius: 14px;
+    margin: 8px 0;
+    background: var(--surface, #fff);
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+
+  .page-feed .post-header,
+  .page-feed .post-content,
+  .page-feed .post-actions {
+    padding: 12px 14px;
+  }
+
+  .page-feed .post-media,
+  .page-feed .post-media img,
+  .page-feed .post-media video {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Barra de filtros tipo chips */
+  .page-feed .top-filters {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px 12px;
+    background: var(--bg, #f7f7f8);
+    position: sticky;
+    top: var(--navbar-h, 56px);
+  }
+  .page-feed .top-filters::-webkit-scrollbar { display: none; }
+}
+
 
