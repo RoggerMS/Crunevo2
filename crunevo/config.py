@@ -11,6 +11,9 @@ class Config:
     FLASK_ENV = os.getenv("FLASK_ENV", "development")
     IS_PRODUCTION = FLASK_ENV == "production"
 
+    # Avoid host-matching issues in production
+    SERVER_NAME = None if IS_PRODUCTION else os.getenv("SERVER_NAME")
+
     SECRET_KEY = os.getenv("SECRET_KEY")
     if not SECRET_KEY:
         if DEBUG:

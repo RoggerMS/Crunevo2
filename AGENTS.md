@@ -1260,3 +1260,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 
 - Mobile navbar now reserves body space with safe-area support, adds scroll-margin-top for anchors, swaps Tienda/Notificaciones and Chat/Apuntes buttons, and renames "Mis Notas" to "Apuntes". (PR mobile-navbar-shop-notes)
 - Expanded mobile navbar to include menu offcanvas, separate chat and notification icons with badge, search modal trigger and updated offcanvas markup. (PR mobile-navbar-menu-search)
+- Config now defaults `SERVER_NAME` to `None` in production to avoid host-matching 404s on `www` vs apex domains. (PR remove-server-name)
