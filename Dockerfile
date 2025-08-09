@@ -20,4 +20,4 @@ COPY migrations/versions /app/migrations/versions
 
 # Ejecutar aplicación
 # Run gunicorn with eventlet worker for websocket support
-CMD ["gunicorn", "--workers", "3", "--timeout", "120", "-k", "eventlet", "-b", "0.0.0.0:8080", "crunevo.wsgi:app"]
+CMD ["gunicorn", "--workers", "3", "--timeout", "120", "-k", "eventlet", "-b", "0.0.0.0:8080", "crunevo.wsgi:application"]
