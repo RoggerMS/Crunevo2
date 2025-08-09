@@ -42,7 +42,6 @@ mutagen==1.47.0
 sentry-sdk==2.34.1
 Authlib==1.2.1
 bleach==6.1.0
-flask
 PyJWT==2.8.0
 humanize==4.12.3
 pdf2image==1.17.0
