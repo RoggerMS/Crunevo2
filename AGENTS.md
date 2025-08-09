@@ -1262,3 +1262,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Expanded mobile navbar to include menu offcanvas, separate chat and notification icons with badge, search modal trigger and updated offcanvas markup. (PR mobile-navbar-menu-search)
 - Config now defaults `SERVER_NAME` to `None` in production to avoid host-matching 404s on `www` vs apex domains. (PR remove-server-name)
 - Renamed `wsgi_admin` export to `application`, made `Dockerfile` honor `FLASK_APP`, and adjusted `fly-admin.toml` to point to `crunevo.wsgi_admin:application` for correct admin deployment. (PR wsgi-application-refactor)
+- Config now generates a temporary random SECRET_KEY when missing to avoid deployment failures during migrations (PR secret-key-fallback).
