@@ -28,8 +28,8 @@ primary_region = 'gru'
     method = "GET"
     path = "/healthz"
     interval = "10s"
-    timeout = "2s"
-    grace_period = "60s"
+    timeout = "5s"
+    grace_period = "90s"
 
 [[vm]]
   cpu_kind = "performance"
