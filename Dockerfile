@@ -18,6 +18,9 @@ COPY crunevo /app/crunevo
 COPY migrations /app/migrations
 COPY migrations/versions /app/migrations/versions
 
+# Configuración de puerto
+ENV PORT=8080
+EXPOSE 8080
+
 # Ejecutar aplicación
-# Use FLASK_APP to allow running admin or main instance
-CMD ["sh", "-c", "gunicorn --workers 3 --timeout 120 -k eventlet -b 0.0.0.0:8080 ${FLASK_APP}"]
+CMD ["gunicorn", "-k", "eventlet", "-w", "1", "--threads", "8", "--timeout", "120", "--bind", "0.0.0.0:8080", "crunevo.wsgi:app"]

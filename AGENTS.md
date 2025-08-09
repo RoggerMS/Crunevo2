@@ -1267,3 +1267,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Removed obsolete `crunevo/cli.py` and updated `fly.toml` release_command to use `crunevo.app:create_app` for database migrations (PR fly-release-create-app).
 - Replaced Fly.io release commands with `flask --app crunevo.app:create_app db upgrade` to avoid spawning errors during migrations (PR fix-fly-release-command-args).
 - Renamed WSGI exports from `application` to `app` and updated Fly config files and helper script accordingly for deployment (PR wsgi-app-rename).
+- Dockerfile now runs Gunicorn with eventlet bound to 0.0.0.0:8080, sets `PORT` and exposes 8080 to align with Fly.io checks (PR fly-gunicorn-port-fix).
