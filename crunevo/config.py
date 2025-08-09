@@ -22,8 +22,9 @@ class Config:
                 "SECRET_KEY not set; using insecure default in debug mode"
             )
         else:
-            raise RuntimeError(
-                "SECRET_KEY environment variable is required in production"
+            SECRET_KEY = os.urandom(24)
+            logging.getLogger(__name__).warning(
+                "SECRET_KEY not set; using temporary random value"
             )
 
     # Secure session cookies in production, allow HTTP in development
