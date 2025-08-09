@@ -9,7 +9,7 @@ primary_region = "gru"
   release_command = "flask db upgrade"
 
 [env]
-  FLASK_APP = "crunevo.wsgi_admin:app"
+  FLASK_APP = "crunevo.wsgi_admin:application"
   FLASK_ENV = "production"
   ADMIN_INSTANCE = "1"
   MAINTENANCE_MODE = "0"
