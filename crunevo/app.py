@@ -403,6 +403,11 @@ def create_app():
     app.config["ADMIN_INSTANCE"] = is_admin
 
     app.register_blueprint(health_bp)
+    csrf.exempt("health.healthz")
+    try:
+        talisman.exempt_view("health.healthz")
+    except Exception:
+        pass
     app.register_blueprint(maintenance_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(developer_bp)
