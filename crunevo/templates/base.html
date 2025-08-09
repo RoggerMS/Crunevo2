@@ -61,7 +61,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-responsive-fix.css') }}">
     {% block head_extra %}{% endblock %}
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 {% if not request.path.startswith('/admin') and request.endpoint not in ['auth.login', 'onboarding.register'] %}with-mobile-navbar{% endif %}">
     {% if current_app.config.MAINTENANCE_MODE and not request.path.startswith('/admin') %}
     <div class="alert alert-warning text-center m-0" role="alert">
         El sitio se encuentra en mantenimiento. Algunas funciones pueden no estar disponibles.

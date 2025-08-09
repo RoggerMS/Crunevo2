@@ -966,3 +966,26 @@ textarea.form-control {
 body.photo-modal-open {
   overflow: hidden;
 }
+
+:root {
+  --mobile-navbar-h: 56px; /* altura visual del navbar móvil */
+}
+
+@media (max-width: 768px) {
+  /* El body reserva espacio para el navbar fijo */
+  body.with-mobile-navbar {
+    padding-top: calc(var(--mobile-navbar-h) + env(safe-area-inset-top, 0px));
+  }
+
+  /* Los anclajes/páginas no quedan ocultos al navegar con hash/links */
+  .page-feed,
+  [id] {
+    scroll-margin-top: calc(var(--mobile-navbar-h) + 8px);
+  }
+
+  /* El contenedor del feed no debe reintroducir gutters */
+  .with-mobile-navbar .container-fluid {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}

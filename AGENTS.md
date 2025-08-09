@@ -1274,3 +1274,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Centralized env config for HTTPS and health checks, returning JSON in /healthz; added deploy and secret scripts with docs (PR health-config-middleware).
 - Feed on mobile now spans full width by wrapping posts in `.page-feed` and adding responsive card and filter styles. (PR feed-mobile-full-width)
 - Removed mobile feed side gutters by adding `px-0` to the main container and appending CSS rules to eliminate padding and gutters under 768px. (PR feed-mobile-gutterless)
+
+- Reserved body space for fixed mobile navbar with dynamic height variable and improved mobile filter chips for readability. (PR mobile-navbar-chips)

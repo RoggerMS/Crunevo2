@@ -72,8 +72,6 @@
   background: rgba(36, 37, 38, 0.95);
 }
 /* Dejar SIEMPRE espacio para que no tape el contenido (sin doble-contar safe-area) */
-body.with-mobile-navbar { padding-top: var(--mobile-navbar-height, 56px); }
-[id] { scroll-margin-top: calc(var(--mobile-navbar-height, 56px) + 8px); }
 /* Safe area para iPhone con notch (aplicado SOLO en el navbar) */
 #mobileNavbar { padding-top: env(safe-area-inset-top); height: calc(56px + env(safe-area-inset-top)); }
 
@@ -97,13 +95,6 @@ body.with-mobile-navbar { padding-top: var(--mobile-navbar-height, 56px); }
 document.addEventListener("DOMContentLoaded", () => {
   const navbar = document.getElementById("mobileNavbar");
   if (!navbar) return;
-  requestAnimationFrame(() => {
-    const h = navbar.getBoundingClientRect().height || 56; // ya incluye safe-area
-    document.body.classList.add("with-mobile-navbar");
-    document.body.style.setProperty("--mobile-navbar-height", h + "px");
-    // fallback directo (sin sumar safe-area de nuevo)
-    document.body.style.paddingTop = h + "px";
-  });
 
   // Modal de búsqueda (simple): si existe #mobileSearchModal, ábrelo; si no, crea uno básico
   const openSearch = () => {

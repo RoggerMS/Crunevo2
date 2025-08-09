@@ -1441,4 +1441,32 @@ select:focus {
   }
 }
 
+@media (max-width: 768px) {
+  .top-filters {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 8px;
+  }
+  .top-filters::-webkit-scrollbar { display: none; }
+
+  .top-filters .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    line-height: 1.25;
+    padding: 8px 14px;
+    min-height: 36px;
+    border-radius: 9999px;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+  .top-filters .btn i,
+  .top-filters .btn .bi {
+    margin-right: 4px;
+  }
+}
+
 
