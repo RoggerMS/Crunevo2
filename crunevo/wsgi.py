@@ -4,7 +4,7 @@ from crunevo.app import create_app
 from crunevo.extensions import talisman
 
 # Creamos la aplicación principal
-app = create_app()
+flask_app = create_app()
 
 # Creamos una mini-app súper ligera SOLO para el health check
 health_app = Flask(__name__)
@@ -20,8 +20,8 @@ def health():
 # Usamos un Dispatcher para enrutar el tráfico.
 # Si la petición es para /healthz, va a la app ligera.
 # Para todo lo demás, va a la app principal.
-application = DispatcherMiddleware(
-    app,  # App principal como default
+app = DispatcherMiddleware(
+    flask_app,  # App principal como default
     {
         "/healthz": health_app,  # Health check en ruta específica
     },
