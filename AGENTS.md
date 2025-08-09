@@ -1265,3 +1265,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Config now generates a temporary random SECRET_KEY when missing to avoid deployment failures during migrations (PR secret-key-fallback).
 
 - Removed obsolete `crunevo/cli.py` and updated `fly.toml` release_command to use `crunevo.app:create_app` for database migrations (PR fly-release-create-app).
+- Replaced Fly.io release commands with `flask --app crunevo.app:create_app db upgrade` to avoid spawning errors during migrations (PR fix-fly-release-command-args).
