@@ -283,6 +283,20 @@
   padding: 0.5rem 0.75rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1030;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--mobile-navbar-height);
+  padding-top: env(safe-area-inset-top);
+  transition: transform 0.3s ease;
+}
+
+[data-bs-theme="dark"] .mobile-navbar {
+  background: rgba(36, 37, 38, 0.95) !important;
 }
 
 .mobile-navbar .btn-link {
@@ -301,6 +315,20 @@
   color: #fff !important;
   background: rgba(255, 255, 255, 0.2);
   transform: scale(1.05);
+}
+
+.mobile-navbar .nav-icon-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: var(--mobile-navbar-height);
+  min-width: 44px;
+}
+
+.mobile-navbar .profile-avatar {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
 }
 
 .mobile-navbar .form-control {

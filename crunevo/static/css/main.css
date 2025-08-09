@@ -967,25 +967,24 @@ body.photo-modal-open {
   overflow: hidden;
 }
 
+/* === Solución Global para Navbar Móvil Fijo === */
+
+/* 1. Definimos una variable CSS con la altura por defecto del navbar */
 :root {
-  --mobile-navbar-h: 56px; /* altura visual del navbar móvil */
+  --mobile-navbar-height: 56px; /* Fallback inicial */
 }
 
 @media (max-width: 768px) {
-  /* El body reserva espacio para el navbar fijo */
+  /* 2. El body reserva el espacio necesario para el navbar en la parte superior.
+     Usa la variable y también considera el 'notch' de los iPhones (safe-area). */
   body.with-mobile-navbar {
-    padding-top: calc(var(--mobile-navbar-h) + env(safe-area-inset-top, 0px));
+    padding-top: calc(var(--mobile-navbar-height) + env(safe-area-inset-top));
   }
 
-  /* Los anclajes/páginas no quedan ocultos al navegar con hash/links */
-  .page-feed,
+  /* 3. Asegura que los enlaces de anclaje (#) no queden ocultos debajo del navbar
+     al navegar a una sección específica de la página. */
   [id] {
-    scroll-margin-top: calc(var(--mobile-navbar-h) + 8px);
-  }
-
-  /* El contenedor del feed no debe reintroducir gutters */
-  .with-mobile-navbar .container-fluid {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    scroll-margin-top: calc(var(--mobile-navbar-height) + 12px); /* Un poco de aire extra */
   }
 }
+

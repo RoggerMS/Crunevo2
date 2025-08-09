@@ -1276,3 +1276,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Removed mobile feed side gutters by adding `px-0` to the main container and appending CSS rules to eliminate padding and gutters under 768px. (PR feed-mobile-gutterless)
 
 - Reserved body space for fixed mobile navbar with dynamic height variable and improved mobile filter chips for readability. (PR mobile-navbar-chips)
+- Global mobile navbar padding now handled via --mobile-navbar-height variable, body safe-area reservation, and script moved to enhanced-ui.js without defer; removed inline styles/scripts from mobile_navbar.html. (PR mobile-navbar-spacing-fix)

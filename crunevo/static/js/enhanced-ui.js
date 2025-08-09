@@ -427,7 +427,8 @@ window.CRUNEVO_UI = {
     var nb = document.getElementById('mobileNavbar');
     if (!nb) return;
     var h = nb.getBoundingClientRect().height;
-    document.documentElement.style.setProperty('--mobile-navbar-h', Math.round(h) + 'px');
+    var pt = parseFloat(getComputedStyle(nb).paddingTop) || 0;
+    document.documentElement.style.setProperty('--mobile-navbar-height', Math.round(h - pt) + 'px');
   }
   window.addEventListener('load', setMobileNavbarHeight);
   window.addEventListener('resize', setMobileNavbarHeight);
