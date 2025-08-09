@@ -9,7 +9,7 @@ primary_region = 'gru'
   release_command = "flask --app crunevo.app:create_app db upgrade"
 
 [env]
-  FLASK_APP = 'crunevo.wsgi:application'
+  FLASK_APP = 'crunevo.wsgi:app'
   FLASK_ENV = 'production'
   PORT = "8080"
   SESSION_COOKIE_HTTPONLY = "true"

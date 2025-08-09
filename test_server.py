@@ -4,7 +4,7 @@ Script para probar la aplicación localmente con el DispatcherMiddleware
 """
 
 from werkzeug.serving import run_simple
-from crunevo.wsgi import application
+from crunevo.wsgi import app
 
 if __name__ == "__main__":
     print("Iniciando servidor de prueba en http://0.0.0.0:8080")
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     run_simple(
         hostname="0.0.0.0",
         port=8080,
-        application=application,
+        application=app,
         use_debugger=True,
         use_reloader=True,
     )
