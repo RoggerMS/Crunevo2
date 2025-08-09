@@ -6,7 +6,7 @@ primary_region = 'gru'
   dockerfile = 'Dockerfile'
 
 [deploy]
-  release_command = "FLASK_APP=crunevo.cli:app flask db upgrade"
+  release_command = "FLASK_APP=crunevo.app:create_app flask db upgrade"
 
 [env]
   FLASK_APP = 'crunevo.wsgi:application'

@@ -1263,3 +1263,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Config now defaults `SERVER_NAME` to `None` in production to avoid host-matching 404s on `www` vs apex domains. (PR remove-server-name)
 - Renamed `wsgi_admin` export to `application`, made `Dockerfile` honor `FLASK_APP`, and adjusted `fly-admin.toml` to point to `crunevo.wsgi_admin:application` for correct admin deployment. (PR wsgi-application-refactor)
 - Config now generates a temporary random SECRET_KEY when missing to avoid deployment failures during migrations (PR secret-key-fallback).
+
+- Removed obsolete `crunevo/cli.py` and updated `fly.toml` release_command to use `crunevo.app:create_app` for database migrations (PR fly-release-create-app).
