@@ -1,7 +1,7 @@
-<nav class="facebook-mobile-navbar d-lg-none" id="mobileNavbar">
+<nav class="mobile-navbar d-lg-none" id="mobileNavbar">
   {# 1) MENU (☰) - abre offcanvas lateral #}
   <a href="#"
-     class="nav-icon-btn"
+     class="nav-icon-btn btn-link"
      aria-label="Menú"
      data-bs-toggle="offcanvas"
      data-bs-target="#mobileSidebarLeft"
@@ -10,86 +10,49 @@
   </a>
   {# 2) INICIO #}
   <a href="{{ url_for('feed.feed_home') if 'feed.feed_home' in url_for.__globals__.get('current_app', {}).view_functions else '/' }}"
-     class="nav-icon-btn {{ 'active' if request.endpoint == 'feed.feed_home' or (request.endpoint and request.endpoint.startswith('feed.')) else '' }}"
+     class="nav-icon-btn btn-link {{ 'active' if request.endpoint == 'feed.feed_home' or (request.endpoint and request.endpoint.startswith('feed.')) else '' }}"
      aria-label="Inicio">
     <i class="bi bi-house{{ '-fill' if request.endpoint and request.endpoint.startswith('feed.') else '' }}"></i>
   </a>
   {# 3) FORO #}
   <a href="{{ url_for('forum.list_questions') if 'forum.list_questions' in url_for.__globals__.get('current_app', {}).view_functions else '/foro' }}"
-     class="nav-icon-btn {{ 'active' if request.endpoint and request.endpoint.startswith('forum.') else '' }}"
+     class="nav-icon-btn btn-link {{ 'active' if request.endpoint and request.endpoint.startswith('forum.') else '' }}"
      aria-label="Foro">
     <i class="bi bi-compass{{ '-fill' if request.endpoint and request.endpoint.startswith('forum.') else '' }}"></i>
   </a>
   {# 4) TIENDA #}
   <a href="{{ url_for('commerce.commerce_index') if 'commerce.commerce_index' in url_for.__globals__.get('current_app', {}).view_functions else '/tienda' }}"
-     class="nav-icon-btn {{ 'active' if request.endpoint and request.endpoint.startswith('commerce.') else '' }}"
+     class="nav-icon-btn btn-link {{ 'active' if request.endpoint and request.endpoint.startswith('commerce.') else '' }}"
      aria-label="Tienda">
     <i class="bi bi-shop"></i>
   </a>
   {# 5) APUNTES #}
   <a href="{{ url_for('notes.my_notes') if 'notes.my_notes' in url_for.__globals__.get('current_app', {}).view_functions else '/apuntes' }}"
-     class="nav-icon-btn {{ 'active' if request.endpoint and request.endpoint.startswith('notes.') else '' }}"
+     class="nav-icon-btn btn-link {{ 'active' if request.endpoint and request.endpoint.startswith('notes.') else '' }}"
      aria-label="Apuntes">
     <i class="bi bi-journal-text"></i>
   </a>
   {# 6) CHAT #}
   <a href="{{ url_for('chat.chat_index') }}"
-     class="nav-icon-btn {{ 'active' if request.endpoint and request.endpoint.startswith('chat.') else '' }}"
+     class="nav-icon-btn btn-link {{ 'active' if request.endpoint and request.endpoint.startswith('chat.') else '' }}"
      aria-label="Chat">
     <i class="bi bi-chat-dots"></i>
   </a>
   {# 7) NOTIFICACIONES (con badge) #}
   <a href="{{ url_for('noti.ver_notificaciones') }}"
-     class="nav-icon-btn position-relative {{ 'active' if request.endpoint and request.endpoint.startswith('noti.') else '' }}"
+     class="nav-icon-btn btn-link position-relative {{ 'active' if request.endpoint and request.endpoint.startswith('noti.') else '' }}"
      aria-label="Notificaciones">
     <i class="bi bi-bell"></i>
     <span id="mobileNotificationBadge" class="notification-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none"></span>
   </a>
   {# 8) BUSCAR (abre modal) #}
   <a href="#"
-     class="nav-icon-btn"
+     class="nav-icon-btn btn-link"
      aria-label="Buscar"
      data-action="open-search">
     <i class="bi bi-search"></i>
   </a>
 </nav>
-
-<style>
-#mobileNavbar {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr); /* menu + 6 iconos + buscar */
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 56px;
-  background: rgba(255, 255, 255, 0.95);
-  z-index: 1030;
-  transition: transform 0.3s ease;
-}
-[data-bs-theme="dark"] #mobileNavbar {
-  background: rgba(36, 37, 38, 0.95);
-}
-/* Dejar SIEMPRE espacio para que no tape el contenido (sin doble-contar safe-area) */
-/* Safe area para iPhone con notch (aplicado SOLO en el navbar) */
-#mobileNavbar { padding-top: env(safe-area-inset-top); height: calc(56px + env(safe-area-inset-top)); }
-
-/* Tocar objetivos: tamaño táctil y centrado */
-#mobileNavbar .nav-icon-btn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 56px;
-  min-width: 44px;
-}
-
-.profile-avatar {
-  width: 24px;
-  height: 24px;
-  object-fit: cover;
-}
-</style>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
