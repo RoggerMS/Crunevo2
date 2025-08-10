@@ -2,6 +2,7 @@
 {% block title %}Nota Enriquecida - {{ block.title }}{% endblock %}
 
 {% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
 <style>
 /* Modern Notion-style Editor */
 .nota-editor-container {
@@ -341,7 +342,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="modern-block-container">
+<div class="modern-block-container tw-prose">
     <!-- Header -->
     <div class="modern-hero">
         <div class="hero-header">

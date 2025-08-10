@@ -2,6 +2,7 @@
 {% block title %}Bloque Personalizado - {{ block.title }}{% endblock %}
 
 {% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
 <style>
 .bloque-container {
     max-width: 1000px;
@@ -285,7 +286,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="bloque-container container py-4">
+<div class="bloque-container container py-4 tw-prose">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
