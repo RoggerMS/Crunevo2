@@ -414,118 +414,138 @@
 {% endblock %}
 
 {% block content %}
-<div class="kanban-container">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2><i class="bi bi-kanban me-2"></i>Tablero Kanban</h2>
-            <p class="text-muted">Gestión visual de tareas tipo Trello</p>
-        </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-primary" onclick="exportKanban()">
-                <i class="bi bi-download"></i> Exportar
-            </button>
-            <button class="btn btn-primary" onclick="configureKanban()">
-                <i class="bi bi-gear"></i> Configurar
-            </button>
-            <a href="{{ url_for('personal_space.index') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Volver
-            </a>
-        </div>
-    </div>
-    
-    <!-- Kanban Header -->
-    <div class="kanban-header">
-        <div class="kanban-info">
-            <h3>{{ block.title }}</h3>
-            <p class="mb-0">{{ block.content or 'Organiza tus tareas visualmente' }}</p>
-            
-            <div class="kanban-stats">
-                <div class="kanban-stat">
-                    <div class="kanban-stat-number" id="totalTareas">0</div>
-                    <div class="kanban-stat-label">Total</div>
+<div class="modern-block-container">
+    <!-- Modern Hero Header -->
+    <div class="modern-hero">
+        <div class="hero-content">
+            <div class="hero-header">
+                <div class="hero-icon">
+                    <i class="bi bi-kanban"></i>
                 </div>
-                
-                <div class="kanban-stat">
-                    <div class="kanban-stat-number" id="tareasEnProceso">0</div>
-                    <div class="kanban-stat-label">En proceso</div>
-                </div>
-                
-                <div class="kanban-stat">
-                    <div class="kanban-stat-number" id="tareasCompletadas">0</div>
-                    <div class="kanban-stat-label">Completadas</div>
-                </div>
-                
-                <div class="kanban-stat">
-                    <div class="kanban-stat-number" id="progresoGeneral">0%</div>
-                    <div class="kanban-stat-label">Progreso</div>
+                <div>
+                    <h1 class="hero-title">{{ block.title or 'Tablero Kanban' }}</h1>
+                    <p class="hero-subtitle">{{ block.content or 'Gestión visual de tareas tipo Trello' }}</p>
                 </div>
             </div>
             
-            <div class="progress-bar-container">
+            <!-- Stats Grid -->
+            <div class="modern-grid modern-grid-4 mt-4">
+                <div class="modern-card text-center">
+                    <div class="card-body">
+                        <div class="fs-2 fw-bold text-primary" id="totalTareas">0</div>
+                        <div class="content-text">Total</div>
+                    </div>
+                </div>
+                <div class="modern-card text-center">
+                    <div class="card-body">
+                        <div class="fs-2 fw-bold text-warning" id="tareasEnProceso">0</div>
+                        <div class="content-text">En proceso</div>
+                    </div>
+                </div>
+                <div class="modern-card text-center">
+                    <div class="card-body">
+                        <div class="fs-2 fw-bold text-success" id="tareasCompletadas">0</div>
+                        <div class="content-text">Completadas</div>
+                    </div>
+                </div>
+                <div class="modern-card text-center">
+                    <div class="card-body">
+                        <div class="fs-2 fw-bold text-info" id="progresoGeneral">0%</div>
+                        <div class="content-text">Progreso</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="modern-progress mt-3">
                 <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <!-- Action Footer -->
+        <div class="action-footer">
+            <div class="action-group">
+                <button class="modern-btn modern-btn-outline" onclick="exportKanban()">
+                    <i class="bi bi-download"></i> Exportar
+                </button>
+                <button class="modern-btn modern-btn-primary" onclick="configureKanban()">
+                    <i class="bi bi-gear"></i> Configurar
+                </button>
+                <a href="{{ url_for('personal_space.index') }}" class="modern-btn modern-btn-outline">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
             </div>
         </div>
     </div>
     
     <!-- Herramientas -->
-    <div class="kanban-tools">
-        <button class="tool-btn" onclick="addColumn()">
-            <i class="bi bi-plus"></i> Agregar columna
-        </button>
-        
-        <div class="filter-dropdown">
-            <button class="tool-btn" onclick="toggleFilter()">
-                <i class="bi bi-funnel"></i> Filtros
-            </button>
-            <div class="filter-content">
-                <div class="filter-option" onclick="filterByPriority('todas')">
-                    <input type="radio" name="priority" value="todas" checked>
-                    <span>Todas las prioridades</span>
-                </div>
-                <div class="filter-option" onclick="filterByPriority('alta')">
-                    <input type="radio" name="priority" value="alta">
-                    <span>Alta prioridad</span>
-                </div>
-                <div class="filter-option" onclick="filterByPriority('media')">
-                    <input type="radio" name="priority" value="media">
-                    <span>Media prioridad</span>
-                </div>
-                <div class="filter-option" onclick="filterByPriority('baja')">
-                    <input type="radio" name="priority" value="baja">
-                    <span>Baja prioridad</span>
-                </div>
-                <hr>
-                <div class="filter-option" onclick="filterByDueDate('todas')">
-                    <input type="radio" name="duedate" value="todas" checked>
-                    <span>Todas las fechas</span>
-                </div>
-                <div class="filter-option" onclick="filterByDueDate('vencidas')">
-                    <input type="radio" name="duedate" value="vencidas">
-                    <span>Vencidas</span>
-                </div>
-                <div class="filter-option" onclick="filterByDueDate('hoy')">
-                    <input type="radio" name="duedate" value="hoy">
-                    <span>Vencen hoy</span>
-                </div>
-                <div class="filter-option" onclick="filterByDueDate('semana')">
-                    <input type="radio" name="duedate" value="semana">
-                    <span>Esta semana</span>
+    <div class="modern-card mb-4">
+        <div class="card-body">
+            <div class="section-header">
+                <h5 class="mb-0">Herramientas del tablero</h5>
+            </div>
+            
+            <div class="action-footer mt-3">
+                <div class="action-group">
+                    <button class="modern-btn modern-btn-primary" onclick="addColumn()">
+                        <i class="bi bi-plus"></i> Agregar columna
+                    </button>
+                    
+                    <div class="filter-dropdown">
+                        <button class="modern-btn modern-btn-outline" onclick="toggleFilter()">
+                            <i class="bi bi-funnel"></i> Filtros
+                        </button>
+                        <div class="filter-content">
+                            <div class="filter-option" onclick="filterByPriority('todas')">
+                                <input type="radio" name="priority" value="todas" checked>
+                                <span>Todas las prioridades</span>
+                            </div>
+                            <div class="filter-option" onclick="filterByPriority('alta')">
+                                <input type="radio" name="priority" value="alta">
+                                <span>Alta prioridad</span>
+                            </div>
+                            <div class="filter-option" onclick="filterByPriority('media')">
+                                <input type="radio" name="priority" value="media">
+                                <span>Media prioridad</span>
+                            </div>
+                            <div class="filter-option" onclick="filterByPriority('baja')">
+                                <input type="radio" name="priority" value="baja">
+                                <span>Baja prioridad</span>
+                            </div>
+                            <hr>
+                            <div class="filter-option" onclick="filterByDueDate('todas')">
+                                <input type="radio" name="duedate" value="todas" checked>
+                                <span>Todas las fechas</span>
+                            </div>
+                            <div class="filter-option" onclick="filterByDueDate('vencidas')">
+                                <input type="radio" name="duedate" value="vencidas">
+                                <span>Vencidas</span>
+                            </div>
+                            <div class="filter-option" onclick="filterByDueDate('hoy')">
+                                <input type="radio" name="duedate" value="hoy">
+                                <span>Vencen hoy</span>
+                            </div>
+                            <div class="filter-option" onclick="filterByDueDate('semana')">
+                                <input type="radio" name="duedate" value="semana">
+                                <span>Esta semana</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="modern-btn modern-btn-outline" onclick="clearFilters()">
+                        <i class="bi bi-x-circle"></i> Limpiar filtros
+                    </button>
+                    
+                    <button class="modern-btn modern-btn-outline" onclick="autoOrganize()">
+                        <i class="bi bi-magic"></i> Auto-organizar
+                    </button>
+                    
+                    <button class="modern-btn modern-btn-outline" onclick="archiveCompleted()">
+                        <i class="bi bi-archive"></i> Archivar completadas
+                    </button>
                 </div>
             </div>
         </div>
-        
-        <button class="tool-btn" onclick="clearFilters()">
-            <i class="bi bi-x-circle"></i> Limpiar filtros
-        </button>
-        
-        <button class="tool-btn" onclick="autoOrganize()">
-            <i class="bi bi-magic"></i> Auto-organizar
-        </button>
-        
-        <button class="tool-btn" onclick="archiveCompleted()">
-            <i class="bi bi-archive"></i> Archivar completadas
-        </button>
     </div>
     
     <!-- Tablero Kanban -->

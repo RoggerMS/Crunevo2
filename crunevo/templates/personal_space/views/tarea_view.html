@@ -418,126 +418,150 @@
 {% endblock %}
 
 {% block content %}
-<div class="tarea-container">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2><i class="bi bi-clipboard-check me-2"></i>Gestión de Tarea</h2>
-            <p class="text-muted">Organiza tu tarea con subtareas, archivos y seguimiento</p>
-        </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-primary" onclick="exportTarea()">
-                <i class="bi bi-download"></i> Exportar
-            </button>
-            <button class="btn btn-primary" onclick="editTarea()">
-                <i class="bi bi-gear"></i> Configurar
-            </button>
-            <a href="{{ url_for('personal_space.index') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Volver
-            </a>
-        </div>
-    </div>
-    
-    <!-- Tarea Header -->
-    <div class="tarea-header" id="tareaHeader">
-        <div class="tarea-info">
-            <div class="tarea-checkbox" id="tareaCheckbox" onclick="toggleTareaCompletada()">
-                <i class="bi bi-check"></i>
-            </div>
-            <div class="tarea-details">
-                <h2 id="tareaTitulo">{{ block.title }}</h2>
-                <div class="tarea-meta">
-                    <div class="meta-item" id="prioridadBadge">
-                        <i class="bi bi-flag"></i>
-                        <span id="prioridadText">{{ block.get_metadata().get('priority', 'media').title() }}</span>
-                    </div>
-                    <div class="meta-item" id="categoriaBadge">
-                        <i class="bi bi-tag"></i>
-                        <span id="categoriaText">{{ block.get_metadata().get('category', 'General') }}</span>
-                    </div>
-                    <div class="meta-item" id="fechaBadge">
-                        <i class="bi bi-calendar"></i>
-                        <span id="fechaText">{{ block.get_metadata().get('due_date', 'Sin fecha') }}</span>
-                    </div>
+<div class="modern-block-container">
+    <!-- Modern Hero Header -->
+    <div class="modern-hero">
+        <div class="hero-content">
+            <div class="hero-header">
+                <div class="hero-icon">
+                    <i class="bi bi-clipboard-check"></i>
+                </div>
+                <div>
+                    <h1 class="hero-title">Gestión de Tarea</h1>
+                    <p class="hero-subtitle">Organiza tu tarea con subtareas, archivos y seguimiento</p>
                 </div>
             </div>
         </div>
         
-        <!-- Progress Indicator -->
-        <div class="progress-indicator" id="progressIndicator">
-            <div class="progress-text">Progreso de la tarea: <span id="progressPercentage">0%</span></div>
-            <div class="progress-bar-custom">
-                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        <!-- Action Footer -->
+        <div class="action-footer">
+            <div class="action-group">
+                <button class="modern-btn modern-btn-outline" onclick="exportTarea()">
+                    <i class="bi bi-download"></i> Exportar
+                </button>
+                <button class="modern-btn modern-btn-primary" onclick="editTarea()">
+                    <i class="bi bi-gear"></i> Configurar
+                </button>
+                <a href="{{ url_for('personal_space.index') }}" class="modern-btn modern-btn-outline">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tarea Card -->
+    <div class="modern-card mb-4">
+        <div class="card-body">
+            <div class="d-flex align-items-start gap-3">
+                <div class="tarea-checkbox" id="tareaCheckbox" onclick="toggleTareaCompletada()">
+                    <i class="bi bi-check"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h3 class="card-title mb-3" id="tareaTitulo">{{ block.title }}</h3>
+                    
+                    <!-- Meta Information -->
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="chip" id="prioridadBadge">
+                            <i class="bi bi-flag"></i>
+                            <span id="prioridadText">{{ block.get_metadata().get('priority', 'media').title() }}</span>
+                        </span>
+                        <span class="chip" id="categoriaBadge">
+                            <i class="bi bi-tag"></i>
+                            <span id="categoriaText">{{ block.get_metadata().get('category', 'General') }}</span>
+                        </span>
+                        <span class="chip" id="fechaBadge">
+                            <i class="bi bi-calendar"></i>
+                            <span id="fechaText">{{ block.get_metadata().get('due_date', 'Sin fecha') }}</span>
+                        </span>
+                    </div>
+                    
+                    <!-- Progress Indicator -->
+                    <div class="progress-indicator" id="progressIndicator">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="content-text">Progreso de la tarea</span>
+                            <span class="fw-bold" id="progressPercentage">0%</span>
+                        </div>
+                        <div class="modern-progress">
+                            <div class="progress-bar" id="progressFill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
     <!-- Descripción -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-file-text"></i>
-            Descripción
+    <div class="modern-card mb-4">
+        <div class="card-body">
+            <div class="section-header">
+                <h5 class="mb-0"><i class="bi bi-file-text me-2"></i>Descripción</h5>
+            </div>
+            <textarea class="form-control mt-3" id="descripcionEditor" rows="4"
+                      placeholder="Describe los detalles de tu tarea...">{{ block.content }}</textarea>
         </div>
-        <textarea class="descripcion-editor" id="descripcionEditor" 
-                  placeholder="Describe los detalles de tu tarea...">{{ block.content }}</textarea>
     </div>
     
     <!-- Subtareas -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-list-check"></i>
-            Subtareas
+    <div class="modern-card mb-4">
+        <div class="card-body">
+            <div class="section-header">
+                <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Subtareas</h5>
+            </div>
+            
+            <ul class="list-unstyled mt-3" id="subtareasList">
+                <!-- Las subtareas se cargarán dinámicamente -->
+            </ul>
+            
+            <div class="action-footer mt-3">
+                <button class="modern-btn modern-btn-primary" onclick="addSubtarea()">
+                    <i class="bi bi-plus-circle"></i> Agregar Subtarea
+                </button>
+            </div>
         </div>
-        
-        <ul class="subtareas-list" id="subtareasList">
-            <!-- Las subtareas se cargarán dinámicamente -->
-        </ul>
-        
-        <button class="btn btn-outline-primary" onclick="addSubtarea()">
-            <i class="bi bi-plus-circle"></i> Agregar Subtarea
-        </button>
     </div>
     
     <!-- Archivos Adjuntos -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-paperclip"></i>
-            Archivos Adjuntos
-        </div>
-        
-        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
-            <div class="upload-icon">
-                <i class="bi bi-cloud-upload"></i>
+    <div class="modern-card mb-4">
+        <div class="card-body">
+            <div class="section-header">
+                <h5 class="mb-0"><i class="bi bi-paperclip me-2"></i>Archivos Adjuntos</h5>
             </div>
-            <h5>Arrastra archivos aquí o haz clic para seleccionar</h5>
-            <p class="text-muted">Soporta documentos, imágenes y archivos de hasta 10MB</p>
-        </div>
-        
-        <input type="file" id="fileInput" multiple style="display: none" onchange="handleFileSelect(event)">
-        
-        <div class="archivos-grid" id="archivosGrid">
-            <!-- Los archivos se cargarán dinámicamente -->
+            
+            <div class="upload-zone mt-3" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">
+                    <i class="bi bi-cloud-upload"></i>
+                </div>
+                <h5>Arrastra archivos aquí o haz clic para seleccionar</h5>
+                <p class="text-muted">Soporta documentos, imágenes y archivos de hasta 10MB</p>
+            </div>
+            
+            <input type="file" id="fileInput" multiple style="display: none" onchange="handleFileSelect(event)">
+            
+            <div class="modern-grid modern-grid-3 mt-3" id="archivosGrid">
+                <!-- Los archivos se cargarán dinámicamente -->
+            </div>
         </div>
     </div>
     
     <!-- Comentarios y Notas -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-chat-dots"></i>
-            Comentarios y Notas
-        </div>
-        
-        <div class="comentarios-timeline" id="comentariosTimeline">
-            <!-- Los comentarios se cargarán dinámicamente -->
-        </div>
-        
-        <div class="add-comentario">
-            <input type="text" class="comentario-input" id="comentarioInput" 
-                   placeholder="Agregar un comentario o nota..." 
-                   onkeypress="handleComentarioKeypress(event)">
-            <button class="btn btn-primary" onclick="addComentario()">
-                <i class="bi bi-send"></i>
-            </button>
+    <div class="modern-card mb-4">
+        <div class="card-body">
+            <div class="section-header">
+                <h5 class="mb-0"><i class="bi bi-chat-dots me-2"></i>Comentarios y Notas</h5>
+            </div>
+            
+            <div class="comentarios-timeline mt-3" id="comentariosTimeline">
+                <!-- Los comentarios se cargarán dinámicamente -->
+            </div>
+            
+            <div class="d-flex gap-2 mt-3">
+                <input type="text" class="form-control" id="comentarioInput" 
+                       placeholder="Agregar un comentario o nota..." 
+                       onkeypress="handleComentarioKeypress(event)">
+                <button class="modern-btn modern-btn-primary" onclick="addComentario()">
+                    <i class="bi bi-send"></i>
+                </button>
+            </div>
         </div>
     </div>
 </div>

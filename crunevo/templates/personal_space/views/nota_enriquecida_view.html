@@ -257,65 +257,81 @@
 {% endblock %}
 
 {% block content %}
-<div class="nota-editor-container container py-4">
+<div class="modern-block-container">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2><i class="bi bi-file-richtext me-2"></i>Editor de Notas Enriquecidas</h2>
-            <p class="text-muted">Crea notas estructuradas con bloques de contenido</p>
+    <div class="modern-hero">
+        <div class="hero-header">
+            <div class="hero-icon">
+                <i class="bi bi-file-richtext"></i>
+            </div>
+            <div class="hero-content">
+                <h1 class="hero-title">Editor de Notas Enriquecidas</h1>
+                <p class="hero-subtitle">Crea notas estructuradas con bloques de contenido</p>
+            </div>
         </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-primary" onclick="exportNote()">
+        <div class="action-footer">
+            <button class="modern-btn modern-btn-outline" onclick="exportNote()">
                 <i class="bi bi-download"></i> Exportar
             </button>
-            <a href="{{ url_for('personal_space.index') }}" class="btn btn-outline-secondary">
+            <a href="{{ url_for('personal_space.index') }}" class="modern-btn modern-btn-secondary">
                 <i class="bi bi-arrow-left"></i> Volver
             </a>
         </div>
     </div>
     
     <!-- Nota Header -->
-    <div class="nota-header">
-        <div class="nota-icon-selector">
-            <div class="icon-display" onclick="toggleIconSelector()">
-                <i class="{{ block.get_metadata().get('icon', 'bi bi-file-text') }}" id="currentIcon"></i>
+    <div class="modern-card">
+        <div class="card-body">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="nota-icon-selector">
+                    <div class="icon-display" onclick="toggleIconSelector()">
+                        <i class="{{ block.get_metadata().get('icon', 'bi bi-file-text') }}" id="currentIcon"></i>
+                    </div>
+                </div>
+                <div class="flex-grow-1">
+                    <input type="text" class="nota-title-input" id="notaTitle" 
+                           value="{{ block.title }}" placeholder="Título de la nota...">
+                </div>
             </div>
-        </div>
-        <div class="flex-grow-1">
-            <input type="text" class="nota-title-input" id="notaTitle" 
-                   value="{{ block.title }}" placeholder="Título de la nota...">
-        </div>
-    </div>
-    
-    <!-- Template Selector -->
-    <div class="template-selector">
-        <label class="form-label">Plantilla:</label>
-        <div class="template-options">
-            <div class="template-option" data-template="">Libre</div>
-            <div class="template-option" data-template="apuntes">Apuntes de Clase</div>
-            <div class="template-option" data-template="proyecto">Proyecto</div>
-            <div class="template-option" data-template="investigacion">Investigación</div>
-            <div class="template-option" data-template="resumen">Resumen</div>
+            
+            <!-- Template Selector -->
+            <div class="template-selector">
+                <h5 class="section-header">Plantilla</h5>
+                <div class="template-options d-flex gap-2 flex-wrap">
+                    <div class="template-option chip" data-template="">Libre</div>
+                    <div class="template-option chip" data-template="apuntes">Apuntes de Clase</div>
+                    <div class="template-option chip" data-template="proyecto">Proyecto</div>
+                    <div class="template-option chip" data-template="investigacion">Investigación</div>
+                    <div class="template-option chip" data-template="resumen">Resumen</div>
+                </div>
+            </div>
         </div>
     </div>
     
     <!-- Blocks Container -->
-    <div class="blocks-container" id="blocksContainer">
-        <!-- Los bloques se cargarán aquí dinámicamente -->
+    <div class="modern-card">
+        <div class="card-body">
+            <h5 class="section-header">Contenido de la Nota</h5>
+            <div class="blocks-container" id="blocksContainer">
+                <!-- Los bloques se cargarán aquí dinámicamente -->
+            </div>
+            
+            <!-- Add Block Button -->
+            <button class="modern-btn modern-btn-outline w-100 mt-3" onclick="addNewBlock()">
+                <i class="bi bi-plus-circle"></i>
+                <span>Agregar bloque</span>
+            </button>
+        </div>
     </div>
     
-    <!-- Add Block Button -->
-    <button class="add-block-btn" onclick="addNewBlock()">
-        <i class="bi bi-plus-circle"></i>
-        <span>Agregar bloque</span>
-    </button>
-    
     <!-- Tags Input -->
-    <div class="tags-input">
-        <label class="form-label">Etiquetas:</label>
-        <input type="text" class="form-control" id="tagsInput" 
-               placeholder="Presiona Enter para agregar etiquetas...">
-        <div class="tags-display" id="tagsDisplay"></div>
+    <div class="modern-card">
+        <div class="card-body">
+            <h5 class="section-header">Etiquetas</h5>
+            <input type="text" class="form-control" id="tagsInput" 
+                   placeholder="Presiona Enter para agregar etiquetas...">
+            <div class="tags-display mt-3" id="tagsDisplay"></div>
+        </div>
     </div>
 </div>
 

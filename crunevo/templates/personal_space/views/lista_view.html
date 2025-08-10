@@ -448,121 +448,141 @@
 {% endblock %}
 
 {% block content %}
-<div class="lista-container">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2><i class="bi bi-list-check me-2"></i>Lista de Tareas</h2>
-            <p class="text-muted">Checklist simple y rápido para organizar tus pendientes</p>
-        </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-primary" onclick="exportLista()">
-                <i class="bi bi-download"></i> Exportar
-            </button>
-            <button class="btn btn-primary" onclick="editLista()">
-                <i class="bi bi-gear"></i> Configurar
-            </button>
-            <a href="{{ url_for('personal_space.index') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Volver
-            </a>
-        </div>
-    </div>
-    
-    <!-- Lista Header -->
-    <div class="lista-header">
-        <div class="lista-info">
-            <div class="lista-icon">
-                <i class="bi bi-list-check"></i>
+<div class="modern-block-container">
+    <!-- Modern Hero Header -->
+    <div class="modern-hero">
+        <div class="hero-content">
+            <div class="hero-header">
+                <div class="hero-icon">
+                    <i class="bi bi-list-check"></i>
+                </div>
+                <div>
+                    <h1 class="hero-title">{{ block.title or 'Lista de Tareas' }}</h1>
+                    <p class="hero-subtitle">Checklist simple y rápido para organizar tus pendientes</p>
+                </div>
             </div>
-            <div class="lista-details">
-                <h2 id="listaTitulo">{{ block.title }}</h2>
-                <div class="lista-stats">
-                    <div class="stat-item">
-                        <i class="bi bi-check-circle"></i>
-                        <span id="completedCount">0</span> completadas
+            
+            <!-- Stats Grid -->
+            <div class="modern-grid modern-grid-3 mt-4">
+                <div class="modern-card text-center">
+                    <div class="card-body">
+                        <div class="fs-2 fw-bold text-success" id="completedCount">0</div>
+                        <div class="content-text">Completadas</div>
                     </div>
-                    <div class="stat-item">
-                        <i class="bi bi-circle"></i>
-                        <span id="pendingCount">0</span> pendientes
+                </div>
+                <div class="modern-card text-center">
+                    <div class="card-body">
+                        <div class="fs-2 fw-bold text-warning" id="pendingCount">0</div>
+                        <div class="content-text">Pendientes</div>
                     </div>
-                    <div class="stat-item">
-                        <i class="bi bi-list-ul"></i>
-                        <span id="totalCount">0</span> total
+                </div>
+                <div class="modern-card text-center">
+                    <div class="card-body">
+                        <div class="fs-2 fw-bold text-primary" id="totalCount">0</div>
+                        <div class="content-text">Total</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Progress Ring -->
+            <div class="d-flex justify-content-center mt-4">
+                <div class="progress-ring">
+                    <svg width="80" height="80">
+                        <circle cx="40" cy="40" r="36" stroke-width="4"></circle>
+                        <circle cx="40" cy="40" r="36" stroke-width="4" class="progress" 
+                                stroke-dasharray="0 226" id="progressCircle"></circle>
+                    </svg>
+                    <div class="progress-text">
+                        <div id="progressPercentage">0%</div>
+                        <div style="font-size: 0.7rem;">completo</div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Progress Ring -->
-        <div class="progress-ring">
-            <svg width="80" height="80">
-                <circle cx="40" cy="40" r="36" stroke-width="4"></circle>
-                <circle cx="40" cy="40" r="36" stroke-width="4" class="progress" 
-                        stroke-dasharray="0 226" id="progressCircle"></circle>
-            </svg>
-            <div class="progress-text">
-                <div id="progressPercentage">0%</div>
-                <div style="font-size: 0.7rem;">completo</div>
+        <!-- Action Footer -->
+        <div class="action-footer">
+            <div class="action-group">
+                <button class="modern-btn modern-btn-outline" onclick="exportLista()">
+                    <i class="bi bi-download"></i> Exportar
+                </button>
+                <button class="modern-btn modern-btn-primary" onclick="editLista()">
+                    <i class="bi bi-gear"></i> Configurar
+                </button>
+                <a href="{{ url_for('personal_space.index') }}" class="modern-btn modern-btn-outline">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
             </div>
         </div>
     </div>
     
     <!-- Content Section -->
-    <div class="content-section">
-        <!-- Add Item Form -->
-        <div class="add-item-form">
-            <input type="text" class="add-item-input" id="newItemInput" 
-                   placeholder="Agregar nueva tarea..." 
-                   onkeypress="handleAddKeypress(event)">
-            <button class="btn btn-primary" onclick="addItem()">
-                <i class="bi bi-plus"></i>
-            </button>
+    <div class="modern-card mb-4">
+        <div class="card-body">
+            <div class="section-header">
+                <h5 class="mb-0">Gestión de tareas</h5>
+            </div>
+            
+            <!-- Add Item Form -->
+            <div class="d-flex gap-2 mt-3">
+                <input type="text" class="form-control" id="newItemInput" 
+                       placeholder="Agregar nueva tarea..." 
+                       onkeypress="handleAddKeypress(event)">
+                <button class="modern-btn modern-btn-primary" onclick="addItem()">
+                    <i class="bi bi-plus"></i>
+                </button>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="modern-grid modern-grid-4 mt-3">
+                <button class="modern-btn modern-btn-outline" onclick="addQuickItem('Revisar emails')">
+                    <i class="bi bi-envelope me-1"></i> Revisar emails
+                </button>
+                <button class="modern-btn modern-btn-outline" onclick="addQuickItem('Llamar a...')">
+                    <i class="bi bi-telephone me-1"></i> Llamar a...
+                </button>
+                <button class="modern-btn modern-btn-outline" onclick="addQuickItem('Comprar...')">
+                    <i class="bi bi-cart me-1"></i> Comprar...
+                </button>
+                <button class="modern-btn modern-btn-outline" onclick="addQuickItem('Estudiar...')">
+                    <i class="bi bi-book me-1"></i> Estudiar...
+                </button>
+            </div>
         </div>
-        
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-            <div class="quick-action" onclick="addQuickItem('Revisar emails')">
-                <i class="bi bi-envelope"></i> Revisar emails
+    </div>
+    
+    <!-- Filter and Items -->
+    <div class="modern-card mb-4">
+        <div class="card-body">
+            <!-- Filter Tabs -->
+            <div class="d-flex gap-2 mb-3">
+                <button class="modern-btn modern-btn-primary active" onclick="filterItems('all')" id="filterAll">
+                    <i class="bi bi-list-ul"></i> Todas
+                </button>
+                <button class="modern-btn modern-btn-outline" onclick="filterItems('pending')" id="filterPending">
+                    <i class="bi bi-circle"></i> Pendientes
+                </button>
+                <button class="modern-btn modern-btn-outline" onclick="filterItems('completed')" id="filterCompleted">
+                    <i class="bi bi-check-circle"></i> Completadas
+                </button>
             </div>
-            <div class="quick-action" onclick="addQuickItem('Llamar a...')">
-                <i class="bi bi-telephone"></i> Llamar a...
+            
+            <!-- Items List -->
+            <ul class="list-unstyled" id="itemsList">
+                <!-- Los items se cargarán dinámicamente -->
+            </ul>
+            
+            <!-- Empty State -->
+            <div class="text-center py-5" id="emptyState" style="display: none;">
+                <div class="text-muted mb-3">
+                    <i class="bi bi-list-check" style="font-size: 3rem;"></i>
+                </div>
+                <h4>¡Lista vacía!</h4>
+                <p class="content-text">Agrega tu primera tarea para comenzar a organizarte</p>
+                <button class="modern-btn modern-btn-primary" onclick="document.getElementById('newItemInput').focus()">
+                    <i class="bi bi-plus"></i> Agregar tarea
+                </button>
             </div>
-            <div class="quick-action" onclick="addQuickItem('Comprar...')">
-                <i class="bi bi-cart"></i> Comprar...
-            </div>
-            <div class="quick-action" onclick="addQuickItem('Estudiar...')">
-                <i class="bi bi-book"></i> Estudiar...
-            </div>
-        </div>
-        
-        <!-- Filter Tabs -->
-        <div class="filter-tabs">
-            <button class="filter-tab active" onclick="filterItems('all')" id="filterAll">
-                <i class="bi bi-list-ul"></i> Todas
-            </button>
-            <button class="filter-tab" onclick="filterItems('pending')" id="filterPending">
-                <i class="bi bi-circle"></i> Pendientes
-            </button>
-            <button class="filter-tab" onclick="filterItems('completed')" id="filterCompleted">
-                <i class="bi bi-check-circle"></i> Completadas
-            </button>
-        </div>
-        
-        <!-- Items List -->
-        <ul class="items-list" id="itemsList">
-            <!-- Los items se cargarán dinámicamente -->
-        </ul>
-        
-        <!-- Empty State -->
-        <div class="empty-state" id="emptyState" style="display: none;">
-            <div class="empty-icon">
-                <i class="bi bi-list-check"></i>
-            </div>
-            <h4>¡Lista vacía!</h4>
-            <p>Agrega tu primera tarea para comenzar a organizarte</p>
-            <button class="btn btn-primary" onclick="document.getElementById('newItemInput').focus()">
-                <i class="bi bi-plus"></i> Agregar tarea
-            </button>
         </div>
     </div>
 </div>

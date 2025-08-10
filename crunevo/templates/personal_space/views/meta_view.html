@@ -405,163 +405,180 @@
 {% endblock %}
 
 {% block content %}
-<div class="meta-container">
+<div class="modern-block-container">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2><i class="bi bi-collection me-2"></i>Bloque Meta</h2>
-            <p class="text-muted">Organiza y agrupa tus bloques</p>
+    <div class="modern-hero">
+        <div class="hero-header">
+            <div class="hero-icon">
+                <i class="bi bi-collection"></i>
+            </div>
+            <div class="hero-content">
+                <h1 class="hero-title">Bloque Meta</h1>
+                <p class="hero-subtitle">Organiza y agrupa tus bloques</p>
+            </div>
         </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-primary" onclick="exportMeta()">
+        <div class="action-footer">
+            <button class="modern-btn modern-btn-outline" onclick="exportMeta()">
                 <i class="bi bi-download"></i> Exportar
             </button>
-            <button class="btn btn-primary" onclick="editMeta()">
+            <button class="modern-btn modern-btn-primary" onclick="editMeta()">
                 <i class="bi bi-gear"></i> Configurar
             </button>
-            <a href="{{ url_for('personal_space.index') }}" class="btn btn-outline-secondary">
+            <a href="{{ url_for('personal_space.index') }}" class="modern-btn modern-btn-secondary">
                 <i class="bi bi-arrow-left"></i> Volver
             </a>
         </div>
     </div>
     
     <!-- Meta Header -->
-    <div class="meta-header">
-        <div class="meta-info">
-            <h3>{{ block.title }}</h3>
-            <p class="mb-0">{{ block.content or 'Colección de bloques organizados' }}</p>
+    <div class="modern-card">
+        <div class="card-body">
+            <div class="hero-header mb-4">
+                <div class="hero-content">
+                    <h2 class="hero-title">{{ block.title }}</h2>
+                    <p class="content-text">{{ block.content or 'Colección de bloques organizados' }}</p>
+                </div>
+            </div>
             
-            <div class="meta-stats">
-                <div class="meta-stat">
-                    <div class="meta-stat-number" id="totalBloques">0</div>
-                    <div class="meta-stat-label">Bloques</div>
+            <div class="modern-grid modern-grid-4">
+                <div class="modern-card">
+                    <div class="card-body text-center">
+                        <div class="display-4 fw-bold text-primary" id="totalBloques">0</div>
+                        <div class="content-text">Bloques</div>
+                    </div>
                 </div>
                 
-                <div class="meta-stat">
-                    <div class="meta-stat-number" id="tiposBloques">0</div>
-                    <div class="meta-stat-label">Tipos</div>
+                <div class="modern-card">
+                    <div class="card-body text-center">
+                        <div class="display-4 fw-bold text-primary" id="tiposBloques">0</div>
+                        <div class="content-text">Tipos</div>
+                    </div>
                 </div>
                 
-                <div class="meta-stat">
-                    <div class="meta-stat-number" id="bloquesActivos">0</div>
-                    <div class="meta-stat-label">Activos</div>
+                <div class="modern-card">
+                    <div class="card-body text-center">
+                        <div class="display-4 fw-bold text-primary" id="bloquesActivos">0</div>
+                        <div class="content-text">Activos</div>
+                    </div>
                 </div>
                 
-                <div class="meta-stat">
-                    <div class="meta-stat-number" id="ultimaActividad">-</div>
-                    <div class="meta-stat-label">Última actividad</div>
+                <div class="modern-card">
+                    <div class="card-body text-center">
+                        <div class="display-4 fw-bold text-primary" id="ultimaActividad">-</div>
+                        <div class="content-text">Última actividad</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     
     <!-- Herramientas de Organización -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-tools"></i>
-            Herramientas de Organización
-        </div>
-        
-        <div class="organizacion-tools">
-            <button class="tool-btn" onclick="seleccionarTodos()">
-                <i class="bi bi-check-all"></i>
-                Seleccionar todos
-            </button>
-            <button class="tool-btn" onclick="deseleccionarTodos()">
-                <i class="bi bi-x-square"></i>
-                Deseleccionar
-            </button>
-            <button class="tool-btn" onclick="ordenarPorFecha()">
-                <i class="bi bi-sort-down"></i>
-                Ordenar por fecha
-            </button>
-            <button class="tool-btn" onclick="ordenarPorTipo()">
-                <i class="bi bi-sort-alpha-down"></i>
-                Ordenar por tipo
-            </button>
-            <button class="tool-btn" onclick="agruparPorTipo()">
-                <i class="bi bi-collection"></i>
-                Agrupar por tipo
-            </button>
-        </div>
-        
-        <!-- Vista Selector -->
-        <div class="vista-selector">
-            <button class="vista-btn active" onclick="cambiarVista('grid')" data-vista="grid">
-                <i class="bi bi-grid"></i>
-            </button>
-            <button class="vista-btn" onclick="cambiarVista('list')" data-vista="list">
-                <i class="bi bi-list"></i>
-            </button>
-            <button class="vista-btn" onclick="cambiarVista('kanban')" data-vista="kanban">
-                <i class="bi bi-kanban"></i>
-            </button>
+    <div class="modern-card">
+        <div class="card-body">
+            <h5 class="section-header">Herramientas de Organización</h5>
+            
+            <div class="modern-grid modern-grid-5 mb-4">
+                <button class="modern-btn modern-btn-outline" onclick="seleccionarTodos()">
+                    <i class="bi bi-check-all"></i>
+                    Seleccionar todos
+                </button>
+                <button class="modern-btn modern-btn-outline" onclick="deseleccionarTodos()">
+                    <i class="bi bi-x-square"></i>
+                    Deseleccionar
+                </button>
+                <button class="modern-btn modern-btn-outline" onclick="ordenarPorFecha()">
+                    <i class="bi bi-sort-down"></i>
+                    Ordenar por fecha
+                </button>
+                <button class="modern-btn modern-btn-outline" onclick="ordenarPorTipo()">
+                    <i class="bi bi-sort-alpha-down"></i>
+                    Ordenar por tipo
+                </button>
+                <button class="modern-btn modern-btn-outline" onclick="agruparPorTipo()">
+                    <i class="bi bi-collection"></i>
+                    Agrupar por tipo
+                </button>
+            </div>
+            
+            <!-- Vista Selector -->
+            <div class="action-footer">
+                <div class="d-flex gap-2">
+                    <button class="modern-btn modern-btn-primary" onclick="cambiarVista('grid')" data-vista="grid">
+                        <i class="bi bi-grid"></i>
+                    </button>
+                    <button class="modern-btn modern-btn-outline" onclick="cambiarVista('list')" data-vista="list">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <button class="modern-btn modern-btn-outline" onclick="cambiarVista('kanban')" data-vista="kanban">
+                        <i class="bi bi-kanban"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     
     <!-- Zona de Drag & Drop -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-plus-circle"></i>
-            Agregar Bloques
-        </div>
-        
-        <div class="drag-drop-zone" id="dragDropZone">
-            <i class="bi bi-cloud-upload" style="font-size: 3rem; opacity: 0.3; margin-bottom: 15px;"></i>
-            <h4>Arrastra bloques aquí</h4>
-            <p>O haz clic para seleccionar bloques existentes</p>
-            <button class="btn btn-primary" onclick="mostrarSelectorBloques()">
-                <i class="bi bi-plus"></i> Seleccionar bloques
-            </button>
+    <div class="modern-card">
+        <div class="card-body">
+            <h5 class="section-header">Agregar Bloques</h5>
+            
+            <div class="drag-drop-zone text-center p-5" id="dragDropZone">
+                <i class="bi bi-cloud-upload" style="font-size: 3rem; opacity: 0.3; margin-bottom: 15px;"></i>
+                <h4>Arrastra bloques aquí</h4>
+                <p class="content-text">O haz clic para seleccionar bloques existentes</p>
+                <button class="modern-btn modern-btn-primary" onclick="mostrarSelectorBloques()">
+                    <i class="bi bi-plus"></i> Seleccionar bloques
+                </button>
+            </div>
         </div>
     </div>
     
     <!-- Filtros y Búsqueda -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-funnel"></i>
-            Filtros y Búsqueda
-        </div>
-        
-        <!-- Búsqueda -->
-        <div class="search-container">
-            <i class="bi bi-search search-icon"></i>
-            <input type="text" class="search-input" placeholder="Buscar bloques..." id="searchInput">
-        </div>
-        
-        <!-- Filtros -->
-        <div class="filtros-container">
-            <button class="filtro-btn active" onclick="filtrarBloques('todos')" data-filtro="todos">
-                <i class="bi bi-grid"></i> Todos
-            </button>
-            <button class="filtro-btn" onclick="filtrarBloques('tareas')" data-filtro="tareas">
-                <i class="bi bi-check-square"></i> Tareas
-            </button>
-            <button class="filtro-btn" onclick="filtrarBloques('notas')" data-filtro="notas">
-                <i class="bi bi-journal-text"></i> Notas
-            </button>
-            <button class="filtro-btn" onclick="filtrarBloques('objetivos')" data-filtro="objetivos">
-                <i class="bi bi-target"></i> Objetivos
-            </button>
-            <button class="filtro-btn" onclick="filtrarBloques('recordatorios')" data-filtro="recordatorios">
-                <i class="bi bi-alarm"></i> Recordatorios
-            </button>
-            <button class="filtro-btn" onclick="filtrarBloques('enlaces')" data-filtro="enlaces">
-                <i class="bi bi-link"></i> Enlaces
-            </button>
+    <div class="modern-card">
+        <div class="card-body">
+            <h5 class="section-header">Filtros y Búsqueda</h5>
+            
+            <!-- Búsqueda -->
+            <div class="search-container mb-3">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Buscar bloques..." id="searchInput">
+            </div>
+            
+            <!-- Filtros -->
+            <div class="d-flex gap-2 flex-wrap">
+                <button class="chip chip-active" onclick="filtrarBloques('todos')" data-filtro="todos">
+                    <i class="bi bi-grid"></i> Todos
+                </button>
+                <button class="chip" onclick="filtrarBloques('tareas')" data-filtro="tareas">
+                    <i class="bi bi-check-square"></i> Tareas
+                </button>
+                <button class="chip" onclick="filtrarBloques('notas')" data-filtro="notas">
+                    <i class="bi bi-journal-text"></i> Notas
+                </button>
+                <button class="chip" onclick="filtrarBloques('objetivos')" data-filtro="objetivos">
+                    <i class="bi bi-target"></i> Objetivos
+                </button>
+                <button class="chip" onclick="filtrarBloques('recordatorios')" data-filtro="recordatorios">
+                    <i class="bi bi-alarm"></i> Recordatorios
+                </button>
+                <button class="chip" onclick="filtrarBloques('enlaces')" data-filtro="enlaces">
+                    <i class="bi bi-link"></i> Enlaces
+                </button>
+            </div>
         </div>
     </div>
     
     <!-- Bloques Agrupados -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-collection"></i>
-            Bloques en esta Colección
-            <span class="badge bg-primary ms-2" id="contadorBloques">0</span>
-        </div>
-        
-        <div class="bloques-grid" id="bloquesContainer">
-            <!-- Los bloques se cargarán dinámicamente -->
+    <div class="modern-card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="section-header mb-0">Bloques en esta Colección</h5>
+                <span class="chip" id="contadorBloques">0</span>
+            </div>
+            
+            <div class="bloques-grid" id="bloquesContainer">
+                <!-- Los bloques se cargarán dinámicamente -->
+            </div>
         </div>
     </div>
 </div>

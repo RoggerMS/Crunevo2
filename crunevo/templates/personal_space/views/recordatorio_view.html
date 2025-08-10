@@ -463,195 +463,216 @@
 {% endblock %}
 
 {% block content %}
-<div class="recordatorio-container">
+<div class="modern-block-container">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2><i class="bi bi-alarm me-2"></i>Recordatorio</h2>
-            <p class="text-muted">Gestiona avisos importantes con fechas límite</p>
+    <div class="modern-hero">
+        <div class="hero-header">
+            <div class="hero-icon">
+                <i class="bi bi-alarm"></i>
+            </div>
+            <div class="hero-content">
+                <h1 class="hero-title">Recordatorio</h1>
+                <p class="hero-subtitle">Gestiona avisos importantes con fechas límite</p>
+            </div>
         </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-primary" onclick="exportRecordatorio()">
+        <div class="action-footer">
+            <button class="modern-btn modern-btn-outline" onclick="exportRecordatorio()">
                 <i class="bi bi-download"></i> Exportar
             </button>
-            <button class="btn btn-primary" onclick="editRecordatorio()">
+            <button class="modern-btn modern-btn-primary" onclick="editRecordatorio()">
                 <i class="bi bi-gear"></i> Configurar
             </button>
-            <a href="{{ url_for('personal_space.index') }}" class="btn btn-outline-secondary">
+            <a href="{{ url_for('personal_space.index') }}" class="modern-btn modern-btn-secondary">
                 <i class="bi bi-arrow-left"></i> Volver
             </a>
         </div>
     </div>
     
     <!-- Recordatorio Header -->
-    <div class="recordatorio-header" id="recordatorioHeader">
-        <div class="recordatorio-info">
-            <div class="recordatorio-icon" onclick="toggleCompletado()">
-                <i class="bi bi-alarm" id="recordatorioIcon"></i>
-            </div>
-            <div class="recordatorio-details">
-                <h2 id="recordatorioTitulo">{{ block.title }}</h2>
-                <div class="recordatorio-meta">
-                    <div class="meta-item" id="prioridadBadge">
-                        <i class="bi bi-flag"></i>
-                        <span id="prioridadText">{{ block.get_metadata().get('priority', 'media').title() }}</span>
+    <div class="modern-card" id="recordatorioHeader">
+        <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="recordatorio-icon" onclick="toggleCompletado()">
+                        <i class="bi bi-alarm" id="recordatorioIcon"></i>
                     </div>
-                    <div class="meta-item" id="estadoBadge">
-                        <i class="bi bi-circle"></i>
-                        <span id="estadoText">Pendiente</span>
+                    <div>
+                        <h2 class="hero-title mb-2" id="recordatorioTitulo">{{ block.title }}</h2>
+                        <div class="d-flex gap-2">
+                            <span class="chip" id="prioridadBadge">
+                                <i class="bi bi-flag"></i>
+                                <span id="prioridadText">{{ block.get_metadata().get('priority', 'media').title() }}</span>
+                            </span>
+                            <span class="chip" id="estadoBadge">
+                                <i class="bi bi-circle"></i>
+                                <span id="estadoText">Pendiente</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Countdown Display -->
+                <div class="modern-card">
+                    <div class="card-body text-center" id="countdownDisplay">
+                        <div class="display-6 fw-bold text-primary" id="countdownNumber">--</div>
+                        <div class="content-text" id="countdownLabel">días restantes</div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Countdown Display -->
-        <div class="countdown-display" id="countdownDisplay">
-            <div class="countdown-number" id="countdownNumber">--</div>
-            <div class="countdown-label" id="countdownLabel">días restantes</div>
         </div>
     </div>
     
     <!-- Descripción -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-file-text"></i>
-            Descripción del Recordatorio
+    <div class="modern-card">
+        <div class="card-body">
+            <h5 class="section-header">Descripción del Recordatorio</h5>
+            <textarea class="form-control" id="descripcionEditor" rows="4"
+                      placeholder="Describe los detalles de tu recordatorio...">{{ block.content }}</textarea>
         </div>
-        <textarea class="descripcion-editor" id="descripcionEditor" 
-                  placeholder="Describe los detalles de tu recordatorio...">{{ block.content }}</textarea>
     </div>
     
     <!-- Configuración de Fechas -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-calendar-event"></i>
-            Configuración de Fechas
-        </div>
-        
-        <div class="fecha-config">
-            <div class="fecha-item">
-                <div class="fecha-label">
-                    <i class="bi bi-calendar-plus"></i>
-                    Fecha de Inicio
+    <div class="modern-card">
+        <div class="card-body">
+            <h5 class="section-header">Configuración de Fechas</h5>
+            
+            <div class="modern-grid modern-grid-2">
+                <div class="modern-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-calendar-plus text-primary"></i>
+                            <strong>Fecha de Inicio</strong>
+                        </div>
+                        <input type="datetime-local" class="form-control" id="fechaInicio">
+                    </div>
                 </div>
-                <input type="datetime-local" class="fecha-input" id="fechaInicio">
-            </div>
-            <div class="fecha-item">
-                <div class="fecha-label">
-                    <i class="bi bi-calendar-x"></i>
-                    Fecha Límite
+                <div class="modern-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-calendar-x text-danger"></i>
+                            <strong>Fecha Límite</strong>
+                        </div>
+                        <input type="datetime-local" class="form-control" id="fechaLimite">
+                    </div>
                 </div>
-                <input type="datetime-local" class="fecha-input" id="fechaLimite">
             </div>
         </div>
     </div>
     
     <!-- Prioridad -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-flag"></i>
-            Nivel de Prioridad
-        </div>
-        
-        <div class="prioridad-selector">
-            <div class="prioridad-option prioridad-baja" onclick="setPrioridad('baja')">
-                <i class="bi bi-flag" style="font-size: 1.2rem; margin-bottom: 8px;"></i>
-                <div><strong>Baja</strong></div>
-                <div style="font-size: 0.8rem; opacity: 0.8;">Sin urgencia</div>
-            </div>
-            <div class="prioridad-option prioridad-media selected" onclick="setPrioridad('media')">
-                <i class="bi bi-flag-fill" style="font-size: 1.2rem; margin-bottom: 8px;"></i>
-                <div><strong>Media</strong></div>
-                <div style="font-size: 0.8rem; opacity: 0.8;">Importante</div>
-            </div>
-            <div class="prioridad-option prioridad-alta" onclick="setPrioridad('alta')">
-                <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.2rem; margin-bottom: 8px;"></i>
-                <div><strong>Alta</strong></div>
-                <div style="font-size: 0.8rem; opacity: 0.8;">Urgente</div>
+    <div class="modern-card">
+        <div class="card-body">
+            <h5 class="section-header">Nivel de Prioridad</h5>
+            
+            <div class="modern-grid modern-grid-3">
+                <div class="modern-card prioridad-option prioridad-baja" onclick="setPrioridad('baja')">
+                    <div class="card-body text-center">
+                        <i class="bi bi-flag text-success" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+                        <div><strong>Baja</strong></div>
+                        <div class="content-text">Sin urgencia</div>
+                    </div>
+                </div>
+                <div class="modern-card prioridad-option prioridad-media selected" onclick="setPrioridad('media')">
+                    <div class="card-body text-center">
+                        <i class="bi bi-flag-fill text-warning" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+                        <div><strong>Media</strong></div>
+                        <div class="content-text">Importante</div>
+                    </div>
+                </div>
+                <div class="modern-card prioridad-option prioridad-alta" onclick="setPrioridad('alta')">
+                    <div class="card-body text-center">
+                        <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+                        <div><strong>Alta</strong></div>
+                        <div class="content-text">Urgente</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
     <!-- Notificaciones -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-bell"></i>
-            Configuración de Notificaciones
-        </div>
-        
-        <div class="notificaciones-config">
-            <h6 class="mb-3"><i class="bi bi-info-circle me-2"></i>Recibir avisos automáticos</h6>
+    <div class="modern-card">
+        <div class="card-body">
+            <h5 class="section-header">Configuración de Notificaciones</h5>
             
-            <div class="notificacion-item">
-                <div class="notificacion-info">
-                    <i class="bi bi-calendar-week"></i>
-                    <span>1 semana antes</span>
+            <div class="d-flex flex-column gap-3">
+                <div class="d-flex justify-content-between align-items-center p-3 border rounded">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-calendar-week text-primary"></i>
+                        <span>1 semana antes</span>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="toggleSemana" onclick="toggleNotificacion('semana')">
+                    </div>
                 </div>
-                <div class="notificacion-toggle" onclick="toggleNotificacion('semana')" id="toggleSemana"></div>
-            </div>
-            
-            <div class="notificacion-item">
-                <div class="notificacion-info">
-                    <i class="bi bi-calendar-day"></i>
-                    <span>1 día antes</span>
+                
+                <div class="d-flex justify-content-between align-items-center p-3 border rounded">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-calendar-day text-primary"></i>
+                        <span>1 día antes</span>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="toggleDia" checked onclick="toggleNotificacion('dia')">
+                    </div>
                 </div>
-                <div class="notificacion-toggle active" onclick="toggleNotificacion('dia')" id="toggleDia"></div>
-            </div>
-            
-            <div class="notificacion-item">
-                <div class="notificacion-info">
-                    <i class="bi bi-clock"></i>
-                    <span>1 hora antes</span>
+                
+                <div class="d-flex justify-content-between align-items-center p-3 border rounded">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-clock text-primary"></i>
+                        <span>1 hora antes</span>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="toggleHora" onclick="toggleNotificacion('hora')">
+                    </div>
                 </div>
-                <div class="notificacion-toggle" onclick="toggleNotificacion('hora')" id="toggleHora"></div>
-            </div>
-            
-            <div class="notificacion-item">
-                <div class="notificacion-info">
-                    <i class="bi bi-alarm"></i>
-                    <span>En el momento exacto</span>
+                
+                <div class="d-flex justify-content-between align-items-center p-3 border rounded">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-alarm text-primary"></i>
+                        <span>En el momento exacto</span>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="toggleMomento" checked onclick="toggleNotificacion('momento')">
+                    </div>
                 </div>
-                <div class="notificacion-toggle active" onclick="toggleNotificacion('momento')" id="toggleMomento"></div>
             </div>
         </div>
     </div>
     
     <!-- Acciones Rápidas -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-lightning"></i>
-            Acciones Rápidas
-        </div>
-        
-        <div class="acciones-rapidas">
-            <div class="accion-btn" onclick="postponeRecordatorio(1)">
-                <i class="bi bi-calendar-plus"></i>
-                Posponer 1 día
-            </div>
-            <div class="accion-btn" onclick="postponeRecordatorio(7)">
-                <i class="bi bi-calendar-week"></i>
-                Posponer 1 semana
-            </div>
-            <div class="accion-btn" onclick="duplicateRecordatorio()">
-                <i class="bi bi-files"></i>
-                Duplicar
-            </div>
-            <div class="accion-btn" onclick="shareRecordatorio()">
-                <i class="bi bi-share"></i>
-                Compartir
+    <div class="modern-card">
+        <div class="card-body">
+            <h5 class="section-header">Acciones Rápidas</h5>
+            
+            <div class="modern-grid modern-grid-2">
+                <button class="modern-btn modern-btn-outline" onclick="postponeRecordatorio(1)">
+                    <i class="bi bi-calendar-plus me-2"></i>
+                    Posponer 1 día
+                </button>
+                <button class="modern-btn modern-btn-outline" onclick="postponeRecordatorio(7)">
+                    <i class="bi bi-calendar-week me-2"></i>
+                    Posponer 1 semana
+                </button>
+                <button class="modern-btn modern-btn-secondary" onclick="duplicateRecordatorio()">
+                    <i class="bi bi-files me-2"></i>
+                    Duplicar
+                </button>
+                <button class="modern-btn modern-btn-primary" onclick="shareRecordatorio()">
+                    <i class="bi bi-share me-2"></i>
+                    Compartir
+                </button>
             </div>
         </div>
     </div>
     
     <!-- Historial de Notificaciones -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-clock-history"></i>
-            Historial de Notificaciones
-        </div>
-        
-        <div class="historial-notificaciones" id="historialNotificaciones">
-            <!-- Las notificaciones se cargarán dinámicamente -->
+    <div class="modern-card">
+        <div class="card-body">
+            <h5 class="section-header">Historial de Notificaciones</h5>
+            
+            <div class="historial-notificaciones" id="historialNotificaciones">
+                <!-- Las notificaciones se cargarán dinámicamente -->
+            </div>
         </div>
     </div>
 </div>
