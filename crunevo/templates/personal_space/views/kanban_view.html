@@ -4,97 +4,113 @@
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
 <style>
-/* Kanban Board Styles */
+/* Modern Kanban Board Styles */
 .kanban-board {
     display: flex;
-    gap: 20px;
-    min-height: 70vh;
-    padding-bottom: 20px;
+    gap: 1.5rem;
+    min-height: 75vh;
+    padding: 2rem;
+    padding-bottom: 2rem;
     overflow-x: auto;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.02), rgba(139, 92, 246, 0.01));
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.1);
 }
 
 .kanban-column {
-    background: var(--bs-gray-50);
-    border-radius: 12px;
-    padding: 20px;
-    min-width: 300px;
-    max-width: 350px;
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    min-width: 320px;
+    max-width: 380px;
     flex-shrink: 0;
-    border: 2px solid transparent;
+    border: 2px solid rgba(139, 92, 246, 0.1);
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.1);
+}
+
+.kanban-column:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(139, 92, 246, 0.15);
 }
 
 .kanban-column.drag-over {
-    border-color: var(--bs-primary);
-    background: var(--bs-primary-bg);
-    transform: scale(1.02);
+    border-color: #8b5cf6;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(139, 92, 246, 0.02));
+    transform: scale(1.02) translateY(-4px);
+    box-shadow: 0 16px 40px rgba(139, 92, 246, 0.25);
 }
 
 .column-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid var(--bs-border-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(139, 92, 246, 0.1);
 }
 
 .column-title {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: var(--bs-dark);
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #374151;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .column-count {
-    background: linear-gradient(135deg, #6f42c1, #8b5cf6);
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
     color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(111, 66, 193, 0.3);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    min-width: 24px;
+    text-align: center;
 }
 
 .column-actions {
     display: flex;
-    gap: 5px;
+    gap: 8px;
 }
 
 .column-action-btn {
-    background: none;
-    border: 1px solid var(--bs-border-color);
-    color: var(--bs-secondary);
-    width: 30px;
-    height: 30px;
-    border-radius: 6px;
+    background: white;
+    border: 2px solid rgba(139, 92, 246, 0.2);
+    color: #8b5cf6;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
 }
 
 .column-action-btn:hover {
-    background: linear-gradient(135deg, #6f42c1, #8b5cf6);
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
     color: white;
-    border-color: #6f42c1;
-    transform: scale(1.1);
+    border-color: #8b5cf6;
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 6px 15px rgba(139, 92, 246, 0.3);
 }
 
 .tasks-container {
-    min-height: 200px;
-    max-height: 60vh;
+    min-height: 250px;
+    max-height: 65vh;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: #6f42c1 transparent;
+    scrollbar-color: #8b5cf6 transparent;
+    padding-right: 4px;
 }
 
 .tasks-container::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
 }
 
 .tasks-container::-webkit-scrollbar-track {
