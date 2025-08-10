@@ -1,4 +1,33 @@
 
+/* Global search dropdown width = input width  */
+#globalSearchWrap{ position:relative; }
+#searchDropdown{
+  display:none;
+  min-width:100%;
+  max-width:100%;
+  overflow:hidden; /* evita desbordes horizontales */
+  border-radius: .75rem;
+}
+#searchDropdown.show{ display:block; }
+
+/* Items */
+.search-item{
+  padding:.65rem .85rem;
+  cursor:pointer;
+  white-space: normal;         /* ENVOLVER texto largo */
+  word-break: break-word;      /* no salir del contenedor */
+}
+.search-item:hover{ background: var(--bs-light-bg-subtle, #f7f7f9); }
+.search-empty, .search-loading{ padding:.8rem .9rem; color:#6c757d; }
+.search-cta{ padding:.7rem .9rem; border-top:1px solid rgba(0,0,0,.06); }
+
+/* Mobile modal fixes */
+@media (max-width: 767.98px){
+  #mobileSearchModal .modal-dialog{ margin:0; max-width:100vw; }
+  #mobileSearchModal .modal-content{ border-radius:0; }
+  #mobileSearchResults{ max-height: calc(100vh - 180px); overflow:auto; }
+}
+
 /* Enhanced Modern Responsive Navbar with Glassmorphism */
 .navbar-crunevo {
   background: rgba(102, 126, 234, 0.9);
