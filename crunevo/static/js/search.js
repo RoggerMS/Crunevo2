@@ -115,12 +115,13 @@ document.addEventListener('click', (e) => {
   if (!modalEl || !input || !list || !submit) return;
 
   const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-  const hideOnDesktop = () => {
-    if (window.innerWidth >= 768) {
-      modal.hide();
-    }
-  };
-  window.addEventListener('resize', hideOnDesktop);
+    const hideOnDesktop = () => {
+      if (window.innerWidth >= 768) {
+        modal.hide();
+      }
+    };
+    window.addEventListener('resize', hideOnDesktop);
+    hideOnDesktop();
   const goToFullSearch = (q) => {
     modal.hide();
     window.location.href = `/search?q=${encodeURIComponent(q)}`;
@@ -176,9 +177,10 @@ document.addEventListener('click', (e) => {
     if (q) goToFullSearch(q);
   });
 
-  modalEl.addEventListener('shown.bs.modal', () => {
-    input.focus();
-  });
+    modalEl.addEventListener('shown.bs.modal', () => {
+      hideOnDesktop();
+      input.focus();
+    });
 })();
 
 // ---- helpers ----
