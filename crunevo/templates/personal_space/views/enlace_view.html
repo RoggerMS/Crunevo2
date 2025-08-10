@@ -458,102 +458,128 @@
 {% endblock %}
 
 {% block content %}
-<div class="enlace-container">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2><i class="bi bi-link-45deg me-2"></i>Enlace Educativo</h2>
-            <p class="text-muted">Recursos útiles para tu aprendizaje</p>
-        </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-primary" onclick="exportEnlaces()">
-                <i class="bi bi-download"></i> Exportar
-            </button>
-            <button class="btn btn-primary" onclick="editEnlace()">
-                <i class="bi bi-gear"></i> Configurar
-            </button>
-            <a href="{{ url_for('personal_space.index') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Volver
-            </a>
+<div class="modern-block-container">
+    <!-- Modern Hero Header -->
+    <div class="modern-hero">
+        <div class="hero-content">
+            <div class="hero-header">
+                <div class="hero-icon">
+                    <i class="bi bi-link-45deg"></i>
+                </div>
+                <div>
+                    <h1 class="hero-title">{{ block.title }}</h1>
+                    <div class="hero-subtitle">Recurso educativo</div>
+                </div>
+            </div>
         </div>
     </div>
     
     <!-- Enlace Principal -->
-    <div class="enlace-header">
-        <div class="enlace-info">
-            <h3>{{ block.title }}</h3>
-            <p class="mb-3">{{ block.content or 'Descripción del recurso educativo' }}</p>
-            
-            <div class="enlace-url">
-                <span id="enlaceUrl">{{ block.get_metadata().get('url', 'https://ejemplo.com') }}</span>
-                <button class="btn btn-sm btn-light" onclick="copiarUrl()">
-                    <i class="bi bi-clipboard"></i>
-                </button>
+    <div class="modern-card mb-4">
+        <div class="card-body">
+            <div class="d-flex align-items-start gap-3 mb-3">
+                <div class="flex-shrink-0">
+                    <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                        <i class="bi bi-globe text-primary fs-4"></i>
+                    </div>
+                </div>
+                <div class="flex-grow-1">
+                    <h3 class="h5 mb-2">{{ block.title }}</h3>
+                    <p class="content-text line-clamp-2 mb-3">{{ block.content or 'Descripción del recurso educativo' }}</p>
+                    
+                    <div class="d-flex align-items-center gap-2 mb-3 p-2 bg-light rounded">
+                        <i class="bi bi-link-45deg text-muted"></i>
+                        <code class="flex-grow-1 text-primary" id="enlaceUrl">{{ block.get_metadata().get('url', 'https://ejemplo.com') }}</code>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="copiarUrl()" title="Copiar URL">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="d-flex flex-wrap gap-2">
+                        {% set categoria = block.get_metadata().get('categoria', 'general') %}
+                        <span class="chip chip-primary">{{ categoria|title }}</span>
+                        {% if block.get_metadata().get('verificado') %}
+                        <span class="chip chip-success"><i class="bi bi-shield-check me-1"></i>Verificado</span>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
             
-            <div class="enlace-actions">
-                <a href="{{ block.get_metadata().get('url', '#') }}" target="_blank" class="enlace-btn">
+            <div class="action-footer">
+                <div class="action-group">
+                    <button class="modern-btn btn-secondary" onclick="previsualizarEnlace()" title="Vista previa">
+                        <i class="bi bi-eye"></i>
+                        Vista previa
+                    </button>
+                    <button class="modern-btn btn-secondary" onclick="verificarEnlace()" title="Verificar enlace">
+                        <i class="bi bi-shield-check"></i>
+                        Verificar
+                    </button>
+                </div>
+                <a href="{{ block.get_metadata().get('url', '#') }}" target="_blank" class="modern-btn" title="Abrir enlace">
                     <i class="bi bi-box-arrow-up-right"></i>
-                    Abrir enlace
+                    Abrir
                 </a>
-                <button class="enlace-btn" onclick="previsualizarEnlace()">
-                    <i class="bi bi-eye"></i>
-                    Vista previa
-                </button>
-                <button class="enlace-btn" onclick="compartirEnlace()">
-                    <i class="bi bi-share"></i>
-                    Compartir
-                </button>
-                <button class="enlace-btn" onclick="verificarEnlace()">
-                    <i class="bi bi-shield-check"></i>
-                    Verificar
-                </button>
             </div>
         </div>
     </div>
     
     <!-- Categorías -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-tags"></i>
-            Categorías de Recursos
-        </div>
-        
-        <div class="categorias-grid">
-            <div class="categoria-card selected" onclick="seleccionarCategoria('general')" data-categoria="general">
-                <i class="categoria-icon bi bi-globe"></i>
-                <div class="categoria-nombre">General</div>
-                <div class="categoria-descripcion">Recursos educativos generales</div>
+    <div class="modern-card mb-4">
+        <div class="card-body">
+            <div class="section-header mb-3">
+                <i class="bi bi-tags"></i>
+                <h3>Categorías de Recursos</h3>
             </div>
             
-            <div class="categoria-card" onclick="seleccionarCategoria('programacion')" data-categoria="programacion">
-                <i class="categoria-icon bi bi-code-slash"></i>
-                <div class="categoria-nombre">Programación</div>
-                <div class="categoria-descripcion">Tutoriales y documentación</div>
-            </div>
-            
-            <div class="categoria-card" onclick="seleccionarCategoria('matematicas')" data-categoria="matematicas">
-                <i class="categoria-icon bi bi-calculator"></i>
-                <div class="categoria-nombre">Matemáticas</div>
-                <div class="categoria-descripcion">Recursos matemáticos</div>
-            </div>
-            
-            <div class="categoria-card" onclick="seleccionarCategoria('ciencias')" data-categoria="ciencias">
-                <i class="categoria-icon bi bi-flask"></i>
-                <div class="categoria-nombre">Ciencias</div>
-                <div class="categoria-descripcion">Contenido científico</div>
-            </div>
-            
-            <div class="categoria-card" onclick="seleccionarCategoria('idiomas')" data-categoria="idiomas">
-                <i class="categoria-icon bi bi-translate"></i>
-                <div class="categoria-nombre">Idiomas</div>
-                <div class="categoria-descripcion">Aprendizaje de idiomas</div>
-            </div>
-            
-            <div class="categoria-card" onclick="seleccionarCategoria('herramientas')" data-categoria="herramientas">
-                <i class="categoria-icon bi bi-tools"></i>
-                <div class="categoria-nombre">Herramientas</div>
-                <div class="categoria-descripcion">Utilidades y software</div>
+            <div class="modern-grid modern-grid-3">
+                <div class="modern-card categoria-card selected" onclick="seleccionarCategoria('general')" data-categoria="general">
+                    <div class="card-body text-center">
+                        <i class="bi bi-globe text-primary fs-2 mb-2"></i>
+                        <h5 class="card-title">General</h5>
+                        <p class="card-text content-text line-clamp-2">Recursos educativos generales</p>
+                    </div>
+                </div>
+                
+                <div class="modern-card categoria-card" onclick="seleccionarCategoria('programacion')" data-categoria="programacion">
+                    <div class="card-body text-center">
+                        <i class="bi bi-code-slash text-primary fs-2 mb-2"></i>
+                        <h5 class="card-title">Programación</h5>
+                        <p class="card-text content-text line-clamp-2">Tutoriales y documentación</p>
+                    </div>
+                </div>
+                
+                <div class="modern-card categoria-card" onclick="seleccionarCategoria('matematicas')" data-categoria="matematicas">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calculator text-primary fs-2 mb-2"></i>
+                        <h5 class="card-title">Matemáticas</h5>
+                        <p class="card-text content-text line-clamp-2">Recursos matemáticos</p>
+                    </div>
+                </div>
+                
+                <div class="modern-card categoria-card" onclick="seleccionarCategoria('ciencias')" data-categoria="ciencias">
+                    <div class="card-body text-center">
+                        <i class="bi bi-flask text-primary fs-2 mb-2"></i>
+                        <h5 class="card-title">Ciencias</h5>
+                        <p class="card-text content-text line-clamp-2">Contenido científico</p>
+                    </div>
+                </div>
+                
+                <div class="modern-card categoria-card" onclick="seleccionarCategoria('idiomas')" data-categoria="idiomas">
+                    <div class="card-body text-center">
+                        <i class="bi bi-translate text-primary fs-2 mb-2"></i>
+                        <h5 class="card-title">Idiomas</h5>
+                        <p class="card-text content-text line-clamp-2">Aprendizaje de idiomas</p>
+                    </div>
+                </div>
+                
+                <div class="modern-card categoria-card" onclick="seleccionarCategoria('herramientas')" data-categoria="herramientas">
+                    <div class="card-body text-center">
+                        <i class="bi bi-tools text-primary fs-2 mb-2"></i>
+                        <h5 class="card-title">Herramientas</h5>
+                        <p class="card-text content-text line-clamp-2">Utilidades y software</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

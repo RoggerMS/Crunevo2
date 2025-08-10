@@ -4,49 +4,68 @@
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
 <style>
-.frase-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.frase-hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 60px 40px;
-    border-radius: 20px;
-    margin-bottom: 30px;
-    position: relative;
-    overflow: hidden;
+/* Frase-specific styles */
+.frase-quote-card {
     text-align: center;
     min-height: 300px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    position: relative;
 }
 
-.frase-hero::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200px;
-    height: 200px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    animation: float-left 10s ease-in-out infinite;
+.quote-text {
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1.4;
+    margin-bottom: 2rem;
+    font-style: italic;
+    position: relative;
+    z-index: 2;
 }
 
-.frase-hero::after {
-    content: '';
+.quote-text::before {
+    content: '"';
+    font-size: 4rem;
     position: absolute;
-    bottom: -30%;
-    right: -30%;
-    width: 150px;
-    height: 150px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 50%;
-    animation: float-right 8s ease-in-out infinite reverse;
+    top: -20px;
+    left: -30px;
+    opacity: 0.3;
+    font-family: serif;
+}
+
+.quote-text::after {
+    content: '"';
+    font-size: 4rem;
+    position: absolute;
+    bottom: -40px;
+    right: -30px;
+    opacity: 0.3;
+    font-family: serif;
+}
+
+.quote-author {
+    font-size: 1.2rem;
+    font-weight: 500;
+    opacity: 0.9;
+    position: relative;
+    z-index: 2;
+}
+
+.quote-author::before {
+    content: '— ';
+    opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+    .quote-text {
+        font-size: 1.5rem;
+    }
+    
+    .quote-text::before,
+    .quote-text::after {
+        font-size: 3rem;
+    }
 }
 
 @keyframes float-left {
@@ -451,49 +470,49 @@
 {% endblock %}
 
 {% block content %}
-<div class="frase-container">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2><i class="bi bi-lightbulb me-2"></i>Frase Motivacional</h2>
-            <p class="text-muted">Inspiración diaria para mantener tu motivación</p>
-        </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-primary" onclick="exportFrase()">
-                <i class="bi bi-download"></i> Exportar
-            </button>
-            <button class="btn btn-primary" onclick="editFrase()">
-                <i class="bi bi-gear"></i> Configurar
-            </button>
-            <a href="{{ url_for('personal_space.index') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Volver
-            </a>
-        </div>
-    </div>
-    
-    <!-- Frase Hero Section -->
-    <div class="frase-hero" id="fraseHero">
-        <button class="refresh-btn" onclick="nuevaFrase()" title="Nueva frase">
-            <i class="bi bi-arrow-clockwise"></i>
-        </button>
-        
-        <div class="frase-quote" id="fraseTexto">
-            {{ block.content or 'El éxito es la suma de pequeños esfuerzos repetidos día tras día.' }}
-        </div>
-        
-        <div class="frase-author" id="fraseAutor">
-            {{ block.get_metadata().get('author', 'Robert Collier') }}
-        </div>
-        
-        <div class="share-options">
-            <div class="share-btn" onclick="compartirFrase()">
-                <i class="bi bi-share"></i> Compartir
+<div class="modern-block-container">
+    <!-- Modern Hero Header -->
+    <div class="modern-hero">
+        <div class="hero-content">
+            <div class="hero-header">
+                <div class="hero-icon">
+                    <i class="bi bi-lightbulb"></i>
+                </div>
+                <div>
+                    <h1 class="hero-title">{{ block.title }}</h1>
+                    <div class="hero-subtitle">Inspiración diaria</div>
+                </div>
             </div>
-            <div class="share-btn" onclick="guardarFavorita()">
-                <i class="bi bi-heart"></i> Favorita
+            
+            <div class="frase-quote-card">
+                <div class="quote-text" id="fraseTexto">
+                    {{ block.content or 'El éxito es la suma de pequeños esfuerzos repetidos día tras día.' }}
+                </div>
+                
+                <div class="quote-author" id="fraseAutor">
+                    {{ block.get_metadata().get('author', 'Robert Collier') }}
+                </div>
             </div>
-            <div class="share-btn" onclick="copiarFrase()">
-                <i class="bi bi-clipboard"></i> Copiar
+            
+            <div class="action-footer">
+                <div class="action-group">
+                    <button class="modern-btn btn-secondary" onclick="copiarFrase()" title="Copiar frase">
+                        <i class="bi bi-clipboard"></i>
+                        Copiar
+                    </button>
+                    <button class="modern-btn btn-secondary" onclick="compartirFrase()" title="Compartir">
+                        <i class="bi bi-share"></i>
+                        Compartir
+                    </button>
+                    <button class="modern-btn btn-secondary" onclick="guardarFavorita()" title="Favorita">
+                        <i class="bi bi-heart"></i>
+                        Favorita
+                    </button>
+                </div>
+                <button class="modern-btn" onclick="nuevaFrase()" title="Nueva frase">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Nueva Frase
+                </button>
             </div>
         </div>
     </div>

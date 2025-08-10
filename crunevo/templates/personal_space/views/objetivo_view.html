@@ -374,115 +374,205 @@
 {% endblock %}
 
 {% block content %}
-<div class="objetivo-container">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2><i class="bi bi-target me-2"></i>Objetivo Académico</h2>
-            <p class="text-muted">Gestiona tu objetivo con hitos y seguimiento de progreso</p>
-        </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-primary" onclick="exportObjetivo()">
-                <i class="bi bi-download"></i> Exportar
-            </button>
-            <button class="btn btn-primary" onclick="editObjetivo()">
-                <i class="bi bi-gear"></i> Configurar
-            </button>
-            <a href="{{ url_for('personal_space.index') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Volver
-            </a>
+<div class="modern-block-container">
+    <!-- Modern Hero Header -->
+    <div class="modern-hero">
+        <div class="hero-content">
+            <div class="hero-header">
+                <div class="hero-icon">
+                    <i class="{{ block.get_metadata().get('icon', 'bi bi-target') }}"></i>
+                </div>
+                <div>
+                    <h1 class="hero-title">{{ block.title }}</h1>
+                    <div class="hero-subtitle">Objetivo académico</div>
+                </div>
+            </div>
         </div>
     </div>
     
-    <!-- Objetivo Header -->
-    <div class="objetivo-header">
-        <div class="objetivo-info">
-            <div class="objetivo-icon">
-                <i class="{{ block.get_metadata().get('icon', 'bi bi-target') }}" id="objetivoIcon"></i>
+    <!-- Resumen del Objetivo -->
+    <div class="modern-card mb-4">
+        <div class="card-body">
+            <div class="d-flex align-items-start gap-3 mb-4">
+                <div class="flex-shrink-0">
+                    <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                        <i class="{{ block.get_metadata().get('icon', 'bi bi-target') }} text-primary fs-4"></i>
+                    </div>
+                </div>
+                <div class="flex-grow-1">
+                    <h3 class="h5 mb-2" id="objetivoTitulo">{{ block.title }}</h3>
+                    <p class="content-text line-clamp-2 mb-3">{{ block.content or 'Descripción del objetivo académico' }}</p>
+                    
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="chip chip-primary" id="objetivoCategoria">
+                            {{ block.get_metadata().get('categoria', 'General') }}
+                        </span>
+                        {% set prioridad = block.get_metadata().get('prioridad', 'media') %}
+                        <span class="chip chip-{% if prioridad == 'alta' %}danger{% elif prioridad == 'media' %}warning{% else %}secondary{% endif %}">
+                            Prioridad {{ prioridad|title }}
+                        </span>
+                    </div>
+                </div>
             </div>
-            <div class="objetivo-details">
-                <h2 id="objetivoTitulo">{{ block.title }}</h2>
-                <span class="objetivo-categoria" id="objetivoCategoria">
-                    {{ block.get_metadata().get('categoria', 'General') }}
-                </span>
+            
+            <!-- Progreso -->
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-medium">Progreso del objetivo</span>
+                    <span class="fw-bold text-primary" id="progressPercentage">0%</span>
+                </div>
+                <div class="modern-progress">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
             </div>
-        </div>
-        
-        <div class="progress-section">
-            <div class="progress-info">
-                <span>Progreso del objetivo</span>
-                <span class="progress-percentage" id="progressPercentage">0%</span>
-            </div>
-            <div class="progress-bar-custom">
-                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-            </div>
-            <div class="deadline-info">
-                <span id="deadlineText">Fecha límite: --</span>
-                <span class="deadline-status" id="deadlineStatus">Sin definir</span>
+            
+            <!-- Fechas -->
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-calendar-event text-muted"></i>
+                        <div>
+                            <div class="small text-muted">Fecha límite</div>
+                            <div class="fw-medium" id="deadlineText">--</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-clock text-muted"></i>
+                        <div>
+                            <div class="small text-muted">Estado</div>
+                            <span class="chip chip-secondary" id="deadlineStatus">Sin definir</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
     <!-- Estadísticas -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <span class="stat-number" id="totalHitos">0</span>
-            <div class="stat-label">Hitos Totales</div>
+    <div class="modern-card mb-4">
+        <div class="card-body">
+            <div class="section-header mb-3">
+                <i class="bi bi-graph-up"></i>
+                <h3>Estadísticas</h3>
+            </div>
+            
+            <div class="modern-grid modern-grid-2">
+                <div class="text-center p-3 bg-light rounded">
+                    <div class="fs-2 fw-bold text-primary" id="totalHitos">0</div>
+                    <div class="small text-muted">Hitos Totales</div>
+                </div>
+                <div class="text-center p-3 bg-light rounded">
+                    <div class="fs-2 fw-bold text-success" id="hitosCompletados">0</div>
+                    <div class="small text-muted">Completados</div>
+                </div>
+                <div class="text-center p-3 bg-light rounded">
+                    <div class="fs-2 fw-bold text-warning" id="diasRestantes">--</div>
+                    <div class="small text-muted">Días Restantes</div>
+                </div>
+                <div class="text-center p-3 bg-light rounded">
+                    <div class="fs-2 fw-bold text-info" id="velocidadProgreso">0%</div>
+                    <div class="small text-muted">Velocidad Semanal</div>
+                </div>
+            </div>
         </div>
-        <div class="stat-card">
-            <span class="stat-number" id="hitosCompletados">0</span>
-            <div class="stat-label">Completados</div>
-        </div>
-        <div class="stat-card">
-            <span class="stat-number" id="diasRestantes">--</span>
-            <div class="stat-label">Días Restantes</div>
-        </div>
-        <div class="stat-card">
-            <span class="stat-number" id="velocidadProgreso">0%</span>
-            <div class="stat-label">Velocidad Semanal</div>
-        </div>
-    </div>
-    
-    <!-- Sección de Motivación -->
-    <div class="motivacion-section" id="motivacionSection">
-        <div class="motivacion-quote" id="motivacionQuote">
-            "El éxito es la suma de pequeños esfuerzos repetidos día tras día."
-        </div>
-        <div class="motivacion-author">- Robert Collier</div>
     </div>
     
     <!-- Hitos y Timeline -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-flag"></i>
-            Hitos del Objetivo
+    <div class="modern-card mb-4">
+        <div class="card-body">
+            <div class="section-header mb-3">
+                <i class="bi bi-flag"></i>
+                <h3>Hitos del Objetivo</h3>
+            </div>
+            
+            <div class="hitos-timeline" id="hitosTimeline">
+                <!-- Los hitos se cargarán dinámicamente -->
+                <div class="d-flex align-items-center gap-3 p-3 border rounded mb-3">
+                    <div class="flex-shrink-0">
+                        <div class="bg-success bg-opacity-10 rounded-circle p-2">
+                            <i class="bi bi-check-circle text-success"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">Hito de ejemplo completado</h6>
+                        <p class="content-text line-clamp-2 mb-1">Descripción del hito que ya fue completado exitosamente.</p>
+                        <div class="d-flex gap-2">
+                            <span class="chip chip-success">Completado</span>
+                            <span class="chip chip-secondary">15 Mar 2024</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center gap-3 p-3 border rounded mb-3">
+                    <div class="flex-shrink-0">
+                        <div class="bg-warning bg-opacity-10 rounded-circle p-2">
+                            <i class="bi bi-clock text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">Hito en progreso</h6>
+                        <p class="content-text line-clamp-2 mb-1">Descripción del hito que está actualmente en desarrollo.</p>
+                        <div class="d-flex gap-2">
+                            <span class="chip chip-warning">En progreso</span>
+                            <span class="chip chip-secondary">30 Mar 2024</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-footer">
+                <button class="modern-btn" onclick="addHito()">
+                    <i class="bi bi-plus-circle"></i>
+                    Agregar Hito
+                </button>
+            </div>
         </div>
-        
-        <div class="hitos-timeline" id="hitosTimeline">
-            <!-- Los hitos se cargarán dinámicamente -->
-        </div>
-        
-        <button class="add-item-btn" onclick="addHito()">
-            <i class="bi bi-plus-circle"></i>
-            Agregar Hito
-        </button>
     </div>
     
     <!-- Recursos -->
-    <div class="content-section">
-        <div class="section-title">
-            <i class="bi bi-collection"></i>
-            Recursos de Apoyo
+    <div class="modern-card mb-4">
+        <div class="card-body">
+            <div class="section-header mb-3">
+                <i class="bi bi-collection"></i>
+                <h3>Recursos de Apoyo</h3>
+            </div>
+            
+            <div class="recursos-grid" id="recursosGrid">
+                <!-- Los recursos se cargarán dinámicamente -->
+                <div class="modern-grid modern-grid-2">
+                    <div class="d-flex align-items-center gap-3 p-3 border rounded">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-book text-primary fs-4"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">Libro de referencia</h6>
+                            <p class="content-text line-clamp-1 mb-1">Material de estudio principal</p>
+                            <span class="chip chip-primary">Libro</span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center gap-3 p-3 border rounded">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-play-circle text-primary fs-4"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">Video tutorial</h6>
+                            <p class="content-text line-clamp-1 mb-1">Explicación práctica del tema</p>
+                            <span class="chip chip-info">Video</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-footer">
+                <button class="modern-btn" onclick="addRecurso()">
+                    <i class="bi bi-plus-circle"></i>
+                    Agregar Recurso
+                </button>
+            </div>
         </div>
-        
-        <div class="recursos-grid" id="recursosGrid">
-            <!-- Los recursos se cargarán dinámicamente -->
-        </div>
-        
-        <button class="add-item-btn" onclick="addRecurso()">
-            <i class="bi bi-plus-circle"></i>
-            Agregar Recurso
-        </button>
     </div>
 </div>
 
