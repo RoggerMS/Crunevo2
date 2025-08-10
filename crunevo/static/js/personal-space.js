@@ -32,6 +32,12 @@ function initializePersonalSpace() {
     initializeEventListeners();
     initializeAutoSave();
 
+    // Ensure modals are not constrained by parent containers
+    const editModal = document.getElementById('editBlockModal');
+    if (editModal && editModal.parentNode !== document.body) {
+        document.body.appendChild(editModal);
+    }
+
     // Restore dismissed suggestions
     hideDismissedSuggestions();
 
@@ -195,7 +201,11 @@ function createBlockElement(block) {
 
     div.innerHTML = generateBlockHTML(block);
 
-    div.addEventListener('dblclick', () => openBlock(block.id));
+    div.addEventListener('click', (e) => {
+        if (!e.target.closest('.dropdown') && !e.target.closest('.enter-block')) {
+            showEditBlockModal(block.id);
+        }
+    });
 
     return div;
 }
@@ -501,7 +511,7 @@ function handleBlockInteractions(e) {
     } else if (e.target.closest('.enter-block')) {
         e.preventDefault();
         openBlock(blockId);
-    } else if (e.target.closest('.block-content') && !e.target.closest('.dropdown')) {
+    } else if (!e.target.closest('.dropdown') && !e.target.closest('.enter-block')) {
         showEditBlockModal(blockId);
     }
 }

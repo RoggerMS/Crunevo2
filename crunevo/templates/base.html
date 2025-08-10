@@ -56,7 +56,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/notes.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/photo-modal.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}?v=20240603">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/carrera.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-responsive-fix.css') }}">
     {% block head_extra %}{% endblock %}
@@ -212,7 +212,7 @@
 
     <!-- Main app initialization -->
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js" defer></script>
-    <script src="{{ url_for('static', filename='js/search.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/search.js') }}?v=20240603" defer></script>
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/share.js') }}" defer></script>
     <script>

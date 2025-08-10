@@ -1281,3 +1281,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added global search suggestions with debounce, accessible dropdown and full-screen mobile modal, plus `/api/search/suggest` endpoint. (PR navbar-search-suggest)
 - Mobile nav search uses Bootstrap modal attributes with legacy [data-action="open-search"] fallback listener and auto-hides modal on desktop resize. (PR mobile-search-modal-fix)
 - Moved mobile search modal outside desktop-only navbar wrapper and included globally so it renders on mobile. (PR mobile-search-modal-visible)
+
+- Namespaced global `CRUNEVO.debounce` to prevent duplicate search.js execution, fixed personal space block modal/backdrop with body-appended modal and single-click opener, added container layout to block detail views, and versioned assets with aria-label fixes. (PR personal-space-modal-debounce)

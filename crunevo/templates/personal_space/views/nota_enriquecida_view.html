@@ -2,7 +2,6 @@
 {% block title %}Nota Enriquecida - {{ block.title }}{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
 <style>
 .nota-editor-container {
     max-width: 900px;
@@ -258,7 +257,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="nota-editor-container">
+<div class="nota-editor-container container py-4">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
