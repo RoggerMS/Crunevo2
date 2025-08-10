@@ -1054,7 +1054,8 @@ body.photo-modal-open {
 
 /* Mobile Search Modal - Visible above Fixed Navbar */
 #mobileSearchModal { z-index: 1080; }            /* modal */
-.modal-backdrop.show { z-index: 1075; }          /* backdrop por debajo del modal, encima del navbar */
+.modal-backdrop.show { z-index: 1075; opacity: .5; }          /* backdrop por debajo del modal, encima del navbar, opacidad armonizada */
+body[data-bs-theme="dark"] .modal-content { background-color: var(--bs-body-bg); }
 
 @media (max-width: 768px) {
   #mobileSearchModal .modal-dialog { margin: 0; }

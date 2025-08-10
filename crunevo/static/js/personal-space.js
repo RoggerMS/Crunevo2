@@ -253,7 +253,7 @@ function generateBlockHTML(block) {
             </small>
             <div class="d-flex align-items-center">
                 ${block.progress > 0 ? `<span class="progress-badge me-2">${block.progress}%</span>` : ''}
-                <button class="btn btn-link btn-sm enter-block" data-id="${block.id}">Entrar</button>
+                <a class="btn btn-link btn-sm enter-block" href="/espacio-personal/bloque/${block.id}" data-id="${block.id}">Entrar</a>
             </div>
         </div>
     `;
@@ -535,27 +535,51 @@ function showEditBlockModal(blockId) {
     const blockType = blockCard.dataset.blockType;
     currentEditingBlock = blockId;
 
-    // Get current block data
-    fetch(`/espacio-personal/api/blocks`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const block = data.blocks.find(b => b.id == blockId);
-                if (block) {
-                    renderEditForm(block);
-                    const modal = new bootstrap.Modal(document.getElementById('editBlockModal'));
-                    modal.show();
-                }
-            }
+    // Prefer fetching only this block if endpoint exists
+    fetch(`/espacio-personal/api/blocks/${blockId}`)
+        .then(response => {
+            if (!response.ok) throw new Error('single-endpoint-missing');
+            return response.json();
         })
-        .catch(error => {
-            console.error('Error loading block data:', error);
-            showNotification('Error al cargar los datos del bloque', 'error');
+        .then(data => {
+            const block = data.block || data;
+            renderEditForm(block);
+            // Clean any orphaned backdrops
+            document.querySelectorAll('.modal-backdrop').forEach((b, i) => { if (i) b.remove(); });
+            const el = document.getElementById('editBlockModal');
+            const modal = bootstrap.Modal.getOrCreateInstance(el);
+            modal.show();
+        })
+        .catch(() => {
+            // Fallback to full list fetch
+            fetch(`/espacio-personal/api/blocks`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const block = data.blocks.find(b => b.id == blockId);
+                        if (block) {
+                            renderEditForm(block);
+                            document.querySelectorAll('.modal-backdrop').forEach((b, i) => { if (i) b.remove(); });
+                            const el = document.getElementById('editBlockModal');
+                            const modal = bootstrap.Modal.getOrCreateInstance(el);
+                            modal.show();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading block data:', error);
+                    showNotification('Error al cargar los datos del bloque', 'error');
+                });
         });
 }
 
 function renderEditForm(block) {
     const content = document.getElementById('editBlockContent');
+    if (!content) {
+        console.warn('[PS] editBlockContent no existe, reintentando...');
+        setTimeout(() => renderEditForm(block), 50);
+        return;
+    }
     const form = generateEditForm(block);
     content.innerHTML = form;
 

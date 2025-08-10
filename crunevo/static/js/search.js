@@ -1,5 +1,7 @@
-// Lightweight debounce with global namespace guard
+// Lightweight debounce with global namespace guard and single-init protection
 window.CRUNEVO = window.CRUNEVO || {};
+if (window.CRUNEVO.searchInit) { /* evita re-ejecución */ return; }
+window.CRUNEVO.searchInit = true;
 window.CRUNEVO.debounce = window.CRUNEVO.debounce || ((fn, ms = 250) => {
   let t;
   return (...args) => {
