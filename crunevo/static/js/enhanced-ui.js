@@ -520,3 +520,19 @@ window.CRUNEVO_UI = {
     }
   });
 })();
+
+// Mobile navbar hide/show on scroll (centralized)
+(function(){
+  var lastScroll = 0;
+  window.addEventListener('scroll', function(){
+    var navbar = document.getElementById('mobileNavbar');
+    if (!navbar) return;
+    var currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    if (currentScroll > lastScroll && currentScroll > 50) {
+      navbar.style.transform = 'translateY(-100%)';
+    } else {
+      navbar.style.transform = 'translateY(0)';
+    }
+    lastScroll = currentScroll;
+  }, { passive: true });
+})();

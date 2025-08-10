@@ -55,49 +55,5 @@
 </nav>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const navbar = document.getElementById("mobileNavbar");
-  if (!navbar) return;
-
-  // Modal de búsqueda (simple): si existe #mobileSearchModal, ábrelo; si no, crea uno básico
-  const openSearch = () => {
-    let modalEl = document.getElementById('mobileSearchModal');
-    if (!modalEl) {
-      const tpl = document.createElement('div');
-      tpl.innerHTML = `
-      <div class="modal fade" id="mobileSearchModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen-sm-down">
-          <div class="modal-content">
-            <div class="modal-header">
-              <input type="search" class="form-control" placeholder="Buscar en CRUNEVO" autofocus>
-              <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-0">
-              <div id="mobileSearchResults" class="list-group list-group-flush"></div>
-            </div>
-          </div>
-        </div>
-      </div>`;
-      document.body.appendChild(tpl.firstElementChild);
-      modalEl = document.getElementById('mobileSearchModal');
-    }
-    bootstrap.Modal.getOrCreateInstance(modalEl).show();
-  };
-  document.querySelector('#mobileNavbar [data-action="open-search"]')?.addEventListener('click', (e) => {
-    e.preventDefault(); openSearch();
-  }, { passive: false });
-});
-
-let lastScroll = 0;
-window.addEventListener("scroll", () => {
-  const navbar = document.getElementById("mobileNavbar");
-  if (!navbar) return;
-  const currentScroll = window.pageYOffset;
-  if (currentScroll > lastScroll && currentScroll > 50) {
-    navbar.style.transform = "translateY(-100%)";
-  } else {
-    navbar.style.transform = "translateY(0)";
-  }
-  lastScroll = currentScroll;
-});
+// Eliminado: la lógica ahora vive en enhanced-ui.js
 </script>
