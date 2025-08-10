@@ -103,12 +103,20 @@ function initializeEventListeners() {
         btn.addEventListener('click', handleSuggestionClick);
     });
 
-    // Centralized block interaction delegation 
+    // Centralized block interaction delegation
     const grid = document.getElementById('blocksGrid');
-    if (grid && !grid.dataset.clickBound) {
+    if (grid && !grid.dataset.bound) {
         grid.addEventListener('click', handleBlockInteractions, { passive: true });
-        grid.dataset.clickBound = '1';
+        grid.addEventListener('dblclick', handleBlockInteractions, { passive: true });
+        grid.dataset.bound = '1';
     }
+
+    document.querySelectorAll('.block-card').forEach(card => {
+        card.setAttribute('role', 'button');
+        card.tabIndex = 0;
+        const title = card.querySelector('.block-title');
+        card.setAttribute('aria-label', title ? title.textContent.trim() : 'Bloque');
+    });
 
     // Auto-save on content change
     document.addEventListener('input', debounce(handleContentChange, 500));
@@ -203,18 +211,11 @@ function createBlockElement(block) {
     blockElement.dataset.blockId = block.id;
     blockElement.dataset.blockType = block.type;
 
+    blockElement.setAttribute('role', 'button');
+    blockElement.tabIndex = 0;
+    blockElement.setAttribute('aria-label', block.title || 'Bloque');
+
     blockElement.innerHTML = generateBlockHTML(block);
-
-    // Single click opens edit modal unless clicking dropdown or enter button
-    blockElement.addEventListener('click', (e) => {
-        if (e.target.closest('.dropdown') || e.target.closest('.btn-enter')) return;
-        showEditBlockModal(block.id);
-    });
-
-    // Double-click navigates into block
-    blockElement.addEventListener('dblclick', () => {
-        openBlock(block.id);
-    });
 
     return blockElement;
 }
@@ -235,7 +236,7 @@ function generateBlockHTML(block) {
                 <i class="${block.icon}"></i>
             </div>
             <div class="block-meta">
-                <h6 class="block-title">${block.title || 'Sin título'}</h6>
+                <h6 class="block-title line-clamp-2">${block.title || 'Sin título'}</h6>
                 <small class="block-type-label">${typeLabels[block.type] || 'Bloque'}</small>
             </div>
             <div class="block-actions">
@@ -256,14 +257,14 @@ function generateBlockHTML(block) {
         <div class="block-content">
             ${generateBlockContent(block)}
         </div>
-        <div class="block-footer d-flex justify-content-between align-items-center">
+        <div class="block-footer">
             <small class="text-muted">
                 Actualizado ${formatDate(block.updated_at)}
             </small>
             <div class="d-flex align-items-center">
                 ${block.progress > 0 ? `<span class="progress-badge me-2">${block.progress}%</span>` : ''}
-                <a class="btn btn-link btn-sm btn-enter" href="/espacio-personal/bloque/${block.id}" data-id="${block.id}">Entrar</a>
-            </div>
+                <a class="btn btn-link btn-sm btn-enter" href="/espacio-personal/bloque/${block.id}" data-id="${block.id}" aria-label="Entrar al bloque">Entrar</a>
+                </div>
         </div>
     `;
 }
@@ -273,8 +274,8 @@ function generateBlockContent(block) {
         case 'nota':
             return `
                 <div class="note-content">
-                    ${block.content ? 
-                        `<p>${block.content.substring(0, 200)}${block.content.length > 200 ? '...' : ''}</p>` :
+                    ${block.content ?
+                        `<p class="line-clamp-2">${block.content.substring(0, 200)}${block.content.length > 200 ? '...' : ''}</p>` :
                         '<p class="text-muted">Haz clic para escribir...</p>'
                     }
                 </div>
@@ -319,7 +320,7 @@ function generateBlockContent(block) {
                             <small>Meta: ${formatDate(block.metadata.target_date)}</small>
                         </div>
                     ` : ''}
-                    ${block.content ? `<p class="goal-description">${block.content.substring(0, 100)}...</p>` : ''}
+                    ${block.content ? `<p class="goal-description line-clamp-2">${block.content.substring(0, 100)}${block.content.length > 100 ? '...' : ''}</p>` : ''}
                 </div>
             `;
 
@@ -337,7 +338,7 @@ function generateBlockContent(block) {
                             <small>${formatDate(block.metadata.due_date)}</small>
                         </div>
                     ` : ''}
-                    ${block.content ? `<p>${block.content.substring(0, 150)}...</p>` : ''}
+                    ${block.content ? `<p class="line-clamp-2">${block.content.substring(0, 150)}${block.content.length > 150 ? '...' : ''}</p>` : ''}
                 </div>
             `;
 
@@ -346,7 +347,7 @@ function generateBlockContent(block) {
                 <div class="quote-content text-center">
                     ${block.content ? `
                         <blockquote class="blockquote">
-                            <p>"${block.content}"</p>
+                            <p class="line-clamp-2">"${block.content}"</p>
                         </blockquote>
                         ${block.metadata.author ? `
                             <footer class="blockquote-footer">${block.metadata.author}</footer>
@@ -366,7 +367,7 @@ function generateBlockContent(block) {
                             <div class="link-info">
                                 <h6>${block.title || 'Enlace'}</h6>
                                 ${block.metadata.description ? `
-                                    <p class="text-muted">${block.metadata.description.substring(0, 100)}</p>
+                                    <p class="text-muted line-clamp-2">${block.metadata.description.substring(0, 100)}</p>
                                 ` : ''}
                                 <small class="text-primary">${block.metadata.url.substring(0, 50)}...</small>
                             </div>
@@ -502,21 +503,17 @@ function startPersonalSpace() {
 }
 
 // Block Editing Functions
+const debouncedShowEdit = debounce((id) => showEditBlockModal(id), 200);
+
 function handleBlockInteractions(e) {
     const blockCard = e.target.closest('.block-card');
     if (!blockCard) return;
 
     const blockId = blockCard.dataset.blockId;
 
-    // Primary: Enter link opens detail
-    if (e.target.closest('.btn-enter')) {
-        e.preventDefault();
-        openBlock(blockId);
-        return;
-    }
-
     if (e.target.closest('.edit-block')) {
         e.preventDefault();
+        debouncedShowEdit.cancel?.();
         showEditBlockModal(blockId);
         return;
     }
@@ -530,10 +527,15 @@ function handleBlockInteractions(e) {
         toggleBlockFeatured(blockId);
         return;
     }
+    if (e.target.closest('.dropdown, .btn-enter')) {
+        return;
+    }
 
-    // General click on card (not dropdown/enter) opens edit modal
-    if (!e.target.closest('.dropdown')) {
-        showEditBlockModal(blockId);
+    if (e.type === 'dblclick') {
+        debouncedShowEdit.cancel?.();
+        openBlock(blockId);
+    } else {
+        debouncedShowEdit(blockId);
     }
 }
 
@@ -556,7 +558,9 @@ function showEditBlockModal(blockId) {
         .then(data => {
             const block = data.block || data;
             renderEditForm(block);
-            $('#editBlockModal').modal('show');
+            const modalEl = document.getElementById('editBlockModal');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
         })
         .catch(() => {
             // Fallback to full list fetch
@@ -567,7 +571,9 @@ function showEditBlockModal(blockId) {
                         const block = data.blocks.find(b => b.id == blockId);
                         if (block) {
                             renderEditForm(block);
-                            $('#editBlockModal').modal('show');
+                            const modalEl = document.getElementById('editBlockModal');
+                            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                            modal.show();
                         } else {
                             showNotification('Bloque no encontrado', 'error');
                         }
@@ -1345,14 +1351,12 @@ function debounce(func, wait) {
         return window.CRUNEVO.debounce(func, wait);
     }
     let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
+    const debounced = function (...args) {
         clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+        timeout = setTimeout(() => func(...args), wait);
     };
+    debounced.cancel = () => clearTimeout(timeout);
+    return debounced;
 }
 
 window.initPersonalSpace = initPersonalSpace;
