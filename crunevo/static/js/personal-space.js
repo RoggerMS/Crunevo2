@@ -1332,6 +1332,9 @@ function getToastIcon(type) {
 }
 
 function debounce(func, wait) {
+    if (window.CRUNEVO && typeof window.CRUNEVO.debounce === 'function') {
+        return window.CRUNEVO.debounce(func, wait);
+    }
     let timeout;
     return function executedFunction(...args) {
         const later = () => {
@@ -1549,16 +1552,4 @@ function autoSaveBlock(blockId, element) {
         },
         body: JSON.stringify(data)
     }).catch(error => console.error('Auto-save error:', error));
-}
-
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
 }

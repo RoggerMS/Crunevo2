@@ -1,4 +1,5 @@
 // Lightweight debounce with global namespace guard and single-init protection
+(function() {
 window.CRUNEVO = window.CRUNEVO || {};
 if (window.CRUNEVO.searchInit) { /* evita re-ejecución */ return; }
 window.CRUNEVO.searchInit = true;
@@ -196,4 +197,6 @@ function escapeHtml(str) {
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
 }
+
+})();
 
