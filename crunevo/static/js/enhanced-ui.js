@@ -495,19 +495,31 @@ window.CRUNEVO_UI = {
   }
 })();
 
-// Live Search with Debounce
+// Live Search with Debounce (robusto)
 (function () {
   var timer;
+  function getResultsBox(modalEl) {
+    var box = modalEl.querySelector('#mobileSearchResults, #mobileSearchSuggestions');
+    if (!box) {
+      var body = modalEl.querySelector('.modal-body');
+      box = document.createElement('div');
+      box.id = 'mobileSearchResults';
+      box.className = 'list-group list-group-flush';
+      if (body) body.appendChild(box);
+    }
+    return box;
+  }
   document.addEventListener('input', function (e) {
-    if (e.target.closest('#mobileSearchModal') && e.target.matches('input[type="search"]')) {
+    var modalEl = e.target.closest('#mobileSearchModal');
+    if (modalEl && e.target.matches('input[type="search"]')) {
       clearTimeout(timer);
       var q = e.target.value.trim();
+      var box = getResultsBox(modalEl);
       timer = setTimeout(function () {
-        if (!q) { document.getElementById('mobileSearchResults').innerHTML = ''; return; }
+        if (!q) { box.innerHTML = ''; return; }
         fetch('/search?q=' + encodeURIComponent(q))
           .then(r => r.ok ? r.json() : [])
           .then(items => {
-            var box = document.getElementById('mobileSearchResults');
             box.innerHTML = '';
             (items || []).forEach(it => {
               var a = document.createElement('a');
