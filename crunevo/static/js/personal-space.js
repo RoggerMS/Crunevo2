@@ -198,24 +198,25 @@ function computeProgress(block) {
 }
 
 function createBlockElement(block) {
-    const div = document.createElement('div');
-    div.className = `block-card ${block.color}-block ${block.is_featured ? 'featured' : ''}`;
-    div.dataset.blockId = block.id;
-    div.dataset.blockType = block.type;
+    const blockElement = document.createElement('div');
+    blockElement.className = `block-card ${block.color}-block ${block.is_featured ? 'featured' : ''}`;
+    blockElement.dataset.blockId = block.id;
+    blockElement.dataset.blockType = block.type;
 
-    div.innerHTML = generateBlockHTML(block);
+    blockElement.innerHTML = generateBlockHTML(block);
 
-    // Double-click to enter block
-    div.addEventListener('dblclick', () => openBlock(block.id));
-    
-    // Single click to edit (avoid dropdown and enter button)
-    div.addEventListener('click', (e) => {
-        if (!e.target.closest('.dropdown') && !e.target.closest('.enter-block')) {
-            showEditBlockModal(block.id);
-        }
+    // Single click opens edit modal unless clicking dropdown or enter button
+    blockElement.addEventListener('click', (e) => {
+        if (e.target.closest('.dropdown') || e.target.closest('.btn-enter')) return;
+        showEditBlockModal(block.id);
     });
 
-    return div;
+    // Double-click navigates into block
+    blockElement.addEventListener('dblclick', () => {
+        openBlock(block.id);
+    });
+
+    return blockElement;
 }
 
 function generateBlockHTML(block) {
@@ -261,7 +262,7 @@ function generateBlockHTML(block) {
             </small>
             <div class="d-flex align-items-center">
                 ${block.progress > 0 ? `<span class="progress-badge me-2">${block.progress}%</span>` : ''}
-                <a class="btn btn-link btn-sm enter-block" href="/espacio-personal/bloque/${block.id}" data-id="${block.id}">Entrar</a>
+                <a class="btn btn-link btn-sm btn-enter" href="/espacio-personal/bloque/${block.id}" data-id="${block.id}">Entrar</a>
             </div>
         </div>
     `;
@@ -508,7 +509,7 @@ function handleBlockInteractions(e) {
     const blockId = blockCard.dataset.blockId;
 
     // Primary: Enter link opens detail
-    if (e.target.closest('.enter-block')) {
+    if (e.target.closest('.btn-enter')) {
         e.preventDefault();
         openBlock(blockId);
         return;
@@ -555,9 +556,7 @@ function showEditBlockModal(blockId) {
         .then(data => {
             const block = data.block || data;
             renderEditForm(block);
-            const el = document.getElementById('editBlockModal');
-            const modal = bootstrap.Modal.getOrCreateInstance(el);
-            modal.show();
+            $('#editBlockModal').modal('show');
         })
         .catch(() => {
             // Fallback to full list fetch
@@ -568,9 +567,7 @@ function showEditBlockModal(blockId) {
                         const block = data.blocks.find(b => b.id == blockId);
                         if (block) {
                             renderEditForm(block);
-                            const el = document.getElementById('editBlockModal');
-                            const modal = bootstrap.Modal.getOrCreateInstance(el);
-                            modal.show();
+                            $('#editBlockModal').modal('show');
                         } else {
                             showNotification('Bloque no encontrado', 'error');
                         }

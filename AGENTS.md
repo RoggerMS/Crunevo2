@@ -1283,3 +1283,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Moved mobile search modal outside desktop-only navbar wrapper and included globally so it renders on mobile. (PR mobile-search-modal-visible)
 
 - Namespaced global `CRUNEVO.debounce` to prevent duplicate search.js execution, fixed personal space block modal/backdrop with body-appended modal and single-click opener, added container layout to block detail views, and versioned assets with aria-label fixes. (PR personal-space-modal-debounce)
+- Ajustado z-index de `.modal-backdrop.show` a 1050 para evitar doble sombra, diferenciados click simple y doble click en bloques ignorando botones internos, limpieza de backdrops huérfanos antes de mostrar el modal y .env listo para SQLite local. (PR personal-space-clicks-backdrop)
