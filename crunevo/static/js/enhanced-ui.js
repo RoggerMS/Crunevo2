@@ -434,3 +434,89 @@ window.CRUNEVO_UI = {
   window.addEventListener('resize', setMobileNavbarHeight);
   window.addEventListener('orientationchange', setMobileNavbarHeight);
 })();
+
+
+// Mobile Search Modal with Live Search
+(function () {
+  var MQ = '(max-width: 768px)';
+
+  function ensureMobileSearchModal() {
+    var el = document.getElementById('mobileSearchModal');
+    if (el) return el;
+
+    var tpl = document.createElement('div');
+    tpl.innerHTML = `
+<div class="modal fade" id="mobileSearchModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content bg-body">
+      <div class="modal-header">
+        <input type="search" class="form-control" placeholder="Buscar en CRUNEVO" aria-label="Buscar" autofocus>
+        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div id="mobileSearchResults" class="list-group list-group-flush"></div>
+      </div>
+    </div>
+  </div>
+</div>`;
+    document.body.appendChild(tpl.firstElementChild);
+    return document.getElementById('mobileSearchModal');
+  }
+
+  function openMobileSearch() {
+    // Solo en móvil
+    if (!window.matchMedia(MQ).matches) return;
+    var el = ensureMobileSearchModal();
+    var modal = bootstrap.Modal.getOrCreateInstance(el, { backdrop: true, focus: true });
+    el.addEventListener('shown.bs.modal', function onShown() {
+      el.removeEventListener('shown.bs.modal', onShown);
+      var input = el.querySelector('input[type="search"]');
+      if (input) input.focus();
+    });
+    modal.show();
+  }
+
+  // Delegación de clics desde el botón del navbar móvil
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-action="open-search"]');
+    if (!btn) return;
+    e.preventDefault();
+    openMobileSearch();
+  });
+
+  // Si el usuario cambia el viewport (DevTools), cerrar modal al salir de móvil
+  var mql = window.matchMedia(MQ);
+  if (mql.addEventListener) {
+    mql.addEventListener('change', function (ev) {
+      var el = document.getElementById('mobileSearchModal');
+      if (!el) return;
+      if (!ev.matches) bootstrap.Modal.getInstance(el)?.hide();
+    });
+  }
+})();
+
+// Live Search with Debounce
+(function () {
+  var timer;
+  document.addEventListener('input', function (e) {
+    if (e.target.closest('#mobileSearchModal') && e.target.matches('input[type="search"]')) {
+      clearTimeout(timer);
+      var q = e.target.value.trim();
+      timer = setTimeout(function () {
+        if (!q) { document.getElementById('mobileSearchResults').innerHTML = ''; return; }
+        fetch('/search?q=' + encodeURIComponent(q))
+          .then(r => r.ok ? r.json() : [])
+          .then(items => {
+            var box = document.getElementById('mobileSearchResults');
+            box.innerHTML = '';
+            (items || []).forEach(it => {
+              var a = document.createElement('a');
+              a.className = 'list-group-item list-group-item-action';
+              a.href = it.url; a.textContent = it.title || it.url;
+              box.appendChild(a);
+            });
+          }).catch(()=>{});
+      }, 250);
+    }
+  });
+})();
