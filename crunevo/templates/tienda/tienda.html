@@ -10,6 +10,7 @@
 {% endblock %}
 
 {% block content %}
+<div class="page-edge">
 <div class="container-fluid py-4">
     <!-- Botón de filtros para móviles -->
     <div class="d-lg-none mb-3">
@@ -251,16 +252,7 @@
             </div>
         </div>
     </div>
-
-    <!-- Offcanvas de filtros para móviles -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="filtersOffcanvas"
-        aria-labelledby="filtersOffcanvasLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="filtersOffcanvasLabel">Filtros</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-        </div>
-        <div class="offcanvas-body"></div>
-    </div>
+</div>
 </div>
 {% endblock %}
 
