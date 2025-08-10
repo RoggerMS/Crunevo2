@@ -146,7 +146,7 @@ def create_block():
         metadata.setdefault("template_type", "")
         metadata.setdefault("tags", [])
     elif data["type"] == "bloque_personalizado":
-        metadata.setdefault("subject", "")
+        metadata.setdefault("subject", {"name": "", "code": "", "profesor": "", "color": "", "icon": "bi bi-book"})
         metadata.setdefault("subject_code", "")
         metadata.setdefault("professor", "")
         metadata.setdefault("elementos", [])
