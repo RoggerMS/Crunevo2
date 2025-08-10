@@ -7,6 +7,17 @@ const debounce = (fn, ms = 250) => {
   };
 };
 
+// Fallback for legacy templates still using data-action="open-search"
+document.addEventListener('click', (e) => {
+  const trigger = e.target.closest('[data-action="open-search"]');
+  if (!trigger) return;
+  e.preventDefault();
+  const modalEl = document.getElementById('mobileSearchModal');
+  if (modalEl) {
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+  }
+});
+
 // ---- DESKTOP ----
 (() => {
   const input = document.getElementById('globalSearchInput');
@@ -104,6 +115,12 @@ const debounce = (fn, ms = 250) => {
   if (!modalEl || !input || !list || !submit) return;
 
   const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+  const hideOnDesktop = () => {
+    if (window.innerWidth >= 768) {
+      modal.hide();
+    }
+  };
+  window.addEventListener('resize', hideOnDesktop);
   const goToFullSearch = (q) => {
     modal.hide();
     window.location.href = `/search?q=${encodeURIComponent(q)}`;
