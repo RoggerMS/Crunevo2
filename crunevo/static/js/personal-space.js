@@ -205,7 +205,15 @@ function createBlockElement(block) {
 
     div.innerHTML = generateBlockHTML(block);
 
-    // Clicks are handled via centralized delegation on #blocksGrid
+    // Double-click to enter block
+    div.addEventListener('dblclick', () => openBlock(block.id));
+    
+    // Single click to edit (avoid dropdown and enter button)
+    div.addEventListener('click', (e) => {
+        if (!e.target.closest('.dropdown') && !e.target.closest('.enter-block')) {
+            showEditBlockModal(block.id);
+        }
+    });
 
     return div;
 }
@@ -535,6 +543,9 @@ function showEditBlockModal(blockId) {
     const blockType = blockCard.dataset.blockType;
     currentEditingBlock = blockId;
 
+    // Clean any orphaned backdrops before showing modal
+    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+
     // Prefer fetching only this block if endpoint exists
     fetch(`/espacio-personal/api/blocks/${blockId}`)
         .then(response => {
@@ -544,8 +555,6 @@ function showEditBlockModal(blockId) {
         .then(data => {
             const block = data.block || data;
             renderEditForm(block);
-            // Clean any orphaned backdrops
-            document.querySelectorAll('.modal-backdrop').forEach((b, i) => { if (i) b.remove(); });
             const el = document.getElementById('editBlockModal');
             const modal = bootstrap.Modal.getOrCreateInstance(el);
             modal.show();
@@ -559,11 +568,14 @@ function showEditBlockModal(blockId) {
                         const block = data.blocks.find(b => b.id == blockId);
                         if (block) {
                             renderEditForm(block);
-                            document.querySelectorAll('.modal-backdrop').forEach((b, i) => { if (i) b.remove(); });
                             const el = document.getElementById('editBlockModal');
                             const modal = bootstrap.Modal.getOrCreateInstance(el);
                             modal.show();
+                        } else {
+                            showNotification('Bloque no encontrado', 'error');
                         }
+                    } else {
+                        showNotification('Error al cargar los bloques', 'error');
                     }
                 })
                 .catch(error => {
