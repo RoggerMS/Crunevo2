@@ -1,11 +1,13 @@
-// Lightweight debounce
-const debounce = (fn, ms = 250) => {
+// Lightweight debounce with global namespace guard
+window.CRUNEVO = window.CRUNEVO || {};
+window.CRUNEVO.debounce = window.CRUNEVO.debounce || ((fn, ms = 250) => {
   let t;
   return (...args) => {
     clearTimeout(t);
     t = setTimeout(() => fn(...args), ms);
   };
-};
+});
+const debounce = window.CRUNEVO.debounce;
 
 // Fallback for legacy templates still using data-action="open-search"
 document.addEventListener('click', (e) => {

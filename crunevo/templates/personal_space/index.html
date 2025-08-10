@@ -2,9 +2,7 @@
 {% import 'personal_space/components/macros.html' as ps_macros %}
 {% block title %}Mi Espacio Personal{% endblock %}
 
-{% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
-{% endblock %}
+{% block head %}{% endblock %}
 
 {% block content %}
 <div class="personal-space-container">
@@ -133,12 +131,12 @@
                         </button>
                         <div class="row g-1">
                             <div class="col-6">
-                                <a href="{{ url_for('personal_space.calendar_view') }}" class="btn btn-outline-info btn-sm w-100">
+                                <a href="{{ url_for('personal_space.calendar_view') }}" class="btn btn-outline-info btn-sm w-100" aria-label="Calendario">
                                     <i class="bi bi-calendar3"></i>
                                 </a>
                             </div>
                             <div class="col-6">
-                                <a href="{{ url_for('personal_space.statistics_view') }}" class="btn btn-outline-success btn-sm w-100">
+                                <a href="{{ url_for('personal_space.statistics_view') }}" class="btn btn-outline-success btn-sm w-100" aria-label="Estadísticas">
                                     <i class="bi bi-graph-up"></i>
                                 </a>
                             </div>
@@ -429,7 +427,7 @@
 
 {% block extra_js %}
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <script src="{{ url_for('static', filename='js/personal-space.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/personal-space.js') }}?v=20240603"></script>
     <script>
         // Enhanced dashboard functionality
         document.addEventListener('DOMContentLoaded', function() {
