@@ -14,12 +14,15 @@
 
     <!-- Global Search Bar -->
     <div class="navbar-search d-none d-lg-block mx-auto" style="max-width: 200px; width: 100%;">
-      <div class="position-relative">
-        <input type="text" id="globalSearch" class="form-control bg-light border-0 rounded-pill ps-4" 
-               placeholder="Buscar en CRUNEVO..." autocomplete="off">
-        <div id="searchDropdown" class="dropdown-menu w-100 shadow-lg border-0 rounded-3" style="display: none; top: 100%; z-index: 1050;">
-          <div id="searchResults"></div>
-        </div>
+      <div class="position-relative" id="globalSearchWrap">
+        <input id="globalSearchInput" type="text"
+               class="form-control bg-light border-0 rounded-pill ps-4"
+               placeholder="Buscar en CRUNEVO..." autocomplete="off"
+               aria-label="Buscar"
+               aria-expanded="false"
+               aria-controls="searchDropdown">
+        <div id="searchDropdown" class="dropdown-menu w-100 shadow-lg border-0 rounded-3 p-0"
+             role="listbox" aria-live="polite"></div>
       </div>
     </div>
 
@@ -122,3 +125,22 @@
     </div>
   </div>
 </nav>
+
+<!-- Mobile Search Modal -->
+<div class="modal fade" id="mobileSearchModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen-sm-down">
+    <div class="modal-content bg-body">
+      <div class="modal-header border-0">
+        <input id="mobileSearchInput" type="search" class="form-control"
+               placeholder="Buscar en CRUNEVO" aria-label="Buscar" autofocus>
+        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div id="mobileSearchResults" class="list-group list-group-flush" role="listbox" aria-live="polite"></div>
+      </div>
+      <div class="modal-footer border-0">
+        <button id="mobileSearchSubmit" class="btn btn-primary w-100">Buscar en toda la plataforma</button>
+      </div>
+    </div>
+  </div>
+</div>
