@@ -1,6 +1,7 @@
 
 {% extends 'base.html' %}
 {% block content %}
+<div class="page-edge">
 <script>
 window.location.href = "{{ url_for('chat.chat_index') }}";
 </script>
@@ -8,5 +9,6 @@ window.location.href = "{{ url_for('chat.chat_index') }}";
   <h2 class="mb-3"><i class="bi bi-chat-dots me-2"></i>Redirigiendo al chat...</h2>
   <p>Te estamos llevando al nuevo chat global de Crunevo.</p>
   <a href="{{ url_for('chat.chat_index') }}" class="btn btn-primary">Ir al Chat Global</a>
+</div>
 </div>
 {% endblock %}

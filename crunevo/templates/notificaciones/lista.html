@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+<div class="page-edge">
 <div class="container my-4">
   <h3 class="mb-3">🔔 Notificaciones</h3>
   <form method="post" action="{{ url_for('noti.marcar_leidas') }}" class="mb-3">
@@ -7,7 +8,7 @@
     {{ csrf.csrf_field() }}
     <button class="btn btn-sm btn-outline-secondary">Marcar todo como leído</button>
   </form>
-  <div class="d-flex flex-nowrap overflow-auto py-2 gap-2 px-2 mb-3" id="notiFilterGroup" role="group">
+  <div class="top-filters" id="notiFilterGroup" role="group">
     <button class="btn btn-sm btn-outline-primary active" data-noti-filter="all">Todos</button>
     <button class="btn btn-sm btn-outline-warning" data-noti-filter="reaction">❤️ Reacciones</button>
     <button class="btn btn-sm btn-outline-info" data-noti-filter="comment">📝 Comentarios</button>
@@ -47,5 +48,6 @@
   {% else %}
   <p>No tienes notificaciones.</p>
   {% endfor %}
+</div>
 </div>
 {% endblock %}
