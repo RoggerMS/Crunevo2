@@ -103,8 +103,12 @@ function initializeEventListeners() {
         btn.addEventListener('click', handleSuggestionClick);
     });
 
-    // Block interaction events
-    document.addEventListener('click', handleBlockInteractions);
+    // Centralized block interaction delegation 
+    const grid = document.getElementById('blocksGrid');
+    if (grid && !grid.dataset.clickBound) {
+        grid.addEventListener('click', handleBlockInteractions, { passive: true });
+        grid.dataset.clickBound = '1';
+    }
 
     // Auto-save on content change
     document.addEventListener('input', debounce(handleContentChange, 500));
@@ -201,11 +205,7 @@ function createBlockElement(block) {
 
     div.innerHTML = generateBlockHTML(block);
 
-    div.addEventListener('click', (e) => {
-        if (!e.target.closest('.dropdown') && !e.target.closest('.enter-block')) {
-            showEditBlockModal(block.id);
-        }
-    });
+    // Clicks are handled via centralized delegation on #blocksGrid
 
     return div;
 }
@@ -499,19 +499,31 @@ function handleBlockInteractions(e) {
 
     const blockId = blockCard.dataset.blockId;
 
+    // Primary: Enter link opens detail
+    if (e.target.closest('.enter-block')) {
+        e.preventDefault();
+        openBlock(blockId);
+        return;
+    }
+
     if (e.target.closest('.edit-block')) {
         e.preventDefault();
         showEditBlockModal(blockId);
-    } else if (e.target.closest('.delete-block')) {
+        return;
+    }
+    if (e.target.closest('.delete-block')) {
         e.preventDefault();
         deleteBlock(blockId);
-    } else if (e.target.closest('.toggle-featured')) {
+        return;
+    }
+    if (e.target.closest('.toggle-featured')) {
         e.preventDefault();
         toggleBlockFeatured(blockId);
-    } else if (e.target.closest('.enter-block')) {
-        e.preventDefault();
-        openBlock(blockId);
-    } else if (!e.target.closest('.dropdown') && !e.target.closest('.enter-block')) {
+        return;
+    }
+
+    // General click on card (not dropdown/enter) opens edit modal
+    if (!e.target.closest('.dropdown')) {
         showEditBlockModal(blockId);
     }
 }
