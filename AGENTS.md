@@ -1290,3 +1290,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Fixed personal space note creation by switching the Bitácora Inteligente card to use `nota_enriquecida` blocks and updating related JS, routes and styles. (PR personal-space-nota-enriquecida)
 - Simplified Nota Enriquecida block and view with Notion-like neutral styling using Tailwind utilities for improved readability. (PR personal-space-nota-notion-style)
 - Created dedicated /espacio-personal/bitacora page listing Nota Enriquecida blocks with sorting, linked block cards and styles. (PR personal-space-logbook-view)
+- Refactored Nota Enriquecida editor into a two-panel workspace with sidebar metadata, popover icon picker and responsive layout. (PR personal-space-note-editor-workspace)
