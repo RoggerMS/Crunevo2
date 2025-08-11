@@ -52,6 +52,26 @@ def index():
     )
 
 
+@personal_space_bp.route("/bitacora")
+@activated_required
+def view_bitacora():
+    sort_order = request.args.get("sort", "newest")
+    order_by = Block.updated_at.desc() if sort_order == "newest" else Block.updated_at.asc()
+
+    logbook_blocks = (
+        Block.query.filter_by(user_id=current_user.id, type="nota_enriquecida")
+        .order_by(order_by)
+        .all()
+    )
+
+    return render_template(
+        "personal_space/views/bitacora_view.html",
+        blocks=logbook_blocks,
+        current_sort=sort_order,
+        get_default_icon=get_default_icon,
+    )
+
+
 @personal_space_bp.route("/api/blocks", methods=["GET"])
 @login_required
 @activated_required
