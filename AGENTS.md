@@ -1288,3 +1288,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Linked shared stylesheet and added Tailwind typography classes in Bloque Personalizado and Nota Enriquecida views for consistent block design. (PR personal-space-block-styles)
 - Added test covering creation and view rendering for all personal space block types and fixed 'bloque_personalizado' metadata to use structured subject data. (PR personal-space-block-tests)
 - Fixed personal space note creation by switching the Bitácora Inteligente card to use `nota_enriquecida` blocks and updating related JS, routes and styles. (PR personal-space-nota-enriquecida)
+- Simplified Nota Enriquecida block and view with Notion-like neutral styling using Tailwind utilities for improved readability. (PR personal-space-nota-notion-style)
