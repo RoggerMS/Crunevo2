@@ -1265,56 +1265,62 @@ function saveTask() {
         .filter(label => label.length > 0);
     const assignee = document.getElementById('taskAssignee').value;
     
-    if (currentTaskId) {
-        // Update existing task
-        const task = kanbanData.tasks.find(t => t.id === currentTaskId);
-        if (task) {
-            task.title = title;
-            task.description = description;
-            task.priority = priority;
-            task.dueDate = dueDate;
-            task.columnId = columnId;
-            task.labels = labels;
-            task.assignee = assignee;
-        }
-    } else {
-        // Create new task
-        const newId = Math.max(...kanbanData.tasks.map(t => t.id), 0) + 1;
-        const newTask = {
-            id: newId,
-            title: title,
-            description: description,
-            priority: priority,
-            dueDate: dueDate,
-            columnId: columnId,
-            labels: labels,
-            assignee: assignee,
-            createdAt: new Date().toISOString()
-        };
-        
-        kanbanData.tasks.push(newTask);
+    const column = kanbanData.columns.find(c => c.id === columnId);
+    if (!column) {
+        alert('Columna no encontrada');
+        return;
     }
     
-    loadKanbanBoard();
-    updateStatistics();
-    saveData();
+    const taskData = {
+        title: title,
+        description: description,
+        priority: priority,
+        due_date: dueDate
+    };
     
-    const modal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
-    modal.hide();
+    if (currentTaskId) {
+        // Update existing task via API
+        updateTaskViaAPI(currentTaskId, taskData)
+            .then(() => {
+                console.log('Tarea actualizada correctamente');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
+                modal.hide();
+            })
+            .catch(error => {
+                console.error('Error updating task:', error);
+                alert('Error al actualizar la tarea: ' + error.message);
+            });
+    } else {
+        // Create new task via API
+        addTaskViaAPI(column.title, taskData)
+            .then(() => {
+                console.log('Tarea creada correctamente');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
+                modal.hide();
+            })
+            .catch(error => {
+                console.error('Error creating task:', error);
+                alert('Error al crear la tarea: ' + error.message);
+            });
+    }
 }
 
 function deleteTask(taskId) {
     if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
-        kanbanData.tasks = kanbanData.tasks.filter(t => t.id !== taskId);
-        loadKanbanBoard();
-        updateStatistics();
-        saveData();
-        
-        // Hide task detail if this task was selected
-        if (selectedTaskId === taskId) {
-            document.getElementById('taskDetail').classList.remove('active');
-            selectedTaskId = null;
-        }
+        deleteTaskViaAPI(taskId)
+            .then(() => {
+                console.log('Tarea eliminada correctamente');
+                
+                // Hide task detail if this task was selected
+                if (selectedTaskId === taskId) {
+                    document.getElementById('taskDetail').classList.remove('active');
+                    selectedTaskId = null;
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting task:', error);
+                alert('Error al eliminar la tarea: ' + error.message);
+            });
     }
 }
 
@@ -1579,20 +1585,35 @@ function moveTask(taskId, newColumnId) {
         }
     }
     
-    task.columnId = newColumnId;
-    
-    // Auto-complete if column has autoComplete enabled
-    if (newColumn && newColumn.autoComplete) {
-        task.completedAt = new Date().toISOString();
-    }
-    
-    loadKanbanBoard();
-    updateStatistics();
-    saveData();
+    // Move task via API
+    moveTaskViaAPI(taskId, newColumn.title)
+        .then(() => {
+            console.log('Tarea movida correctamente');
+        })
+        .catch(error => {
+            console.error('Error moving task:', error);
+            alert('Error al mover la tarea: ' + error.message);
+        });
 }
 
-// Data Persistence
+// Data Persistence using new APIs
 function saveData() {
+    // Convert current data structure to new API format
+    const columnsData = {};
+    
+    kanbanData.columns.forEach(column => {
+        const columnTasks = kanbanData.tasks.filter(t => t.columnId === column.id);
+        columnsData[column.title] = columnTasks.map(task => ({
+            id: task.id,
+            title: task.title,
+            description: task.description || '',
+            priority: task.priority || 'medium',
+            due_date: task.dueDate || '',
+            created_at: task.createdAt || new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        }));
+    });
+    
     fetch(`/espacio-personal/api/blocks/{{ block.id }}`, {
         method: 'PUT',
         headers: {
@@ -1605,8 +1626,7 @@ function saveData() {
             metadata: {
                 auto_archive: kanbanData.autoArchive,
                 notifications: kanbanData.notifications,
-                columns: kanbanData.columns,
-                tasks: kanbanData.tasks
+                columns: columnsData
             }
         })
     })
@@ -1617,6 +1637,185 @@ function saveData() {
         }
     })
     .catch(error => console.error('Error saving kanban:', error));
+}
+
+// New API functions for task management
+function addTaskViaAPI(columnName, taskData) {
+    return fetch(`/espacio-personal/api/kanban/{{ block.id }}/tasks`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            column: columnName,
+            title: taskData.title,
+            description: taskData.description || '',
+            priority: taskData.priority || 'medium',
+            due_date: taskData.dueDate || ''
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadKanbanData(); // Reload data from server
+            return data.task;
+        }
+        throw new Error(data.message || 'Error adding task');
+    });
+}
+
+function updateTaskViaAPI(taskId, taskData) {
+    return fetch(`/espacio-personal/api/kanban/{{ block.id }}/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify(taskData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadKanbanData(); // Reload data from server
+            return data;
+        }
+        throw new Error(data.message || 'Error updating task');
+    });
+}
+
+function deleteTaskViaAPI(taskId) {
+    return fetch(`/espacio-personal/api/kanban/{{ block.id }}/tasks/${taskId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadKanbanData(); // Reload data from server
+            return data;
+        }
+        throw new Error(data.message || 'Error deleting task');
+    });
+}
+
+function moveTaskViaAPI(taskId, targetColumn) {
+    return fetch(`/espacio-personal/api/kanban/{{ block.id }}/tasks/${taskId}/move`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            target_column: targetColumn
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadKanbanData(); // Reload data from server
+            return data;
+        }
+        throw new Error(data.message || 'Error moving task');
+    });
+}
+
+function addColumnViaAPI(columnName) {
+    return fetch(`/espacio-personal/api/kanban/{{ block.id }}/columns`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            name: columnName
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadKanbanData(); // Reload data from server
+            return data;
+        }
+        throw new Error(data.message || 'Error adding column');
+    });
+}
+
+function deleteColumnViaAPI(columnName) {
+    return fetch(`/espacio-personal/api/kanban/{{ block.id }}/columns/${encodeURIComponent(columnName)}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadKanbanData(); // Reload data from server
+            return data;
+        }
+        throw new Error(data.message || 'Error deleting column');
+    });
+}
+
+// Load kanban data from server
+function loadKanbanData() {
+    fetch(`/espacio-personal/api/kanban/{{ block.id }}/tasks`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Convert server data to client format
+            const columns = [];
+            const tasks = [];
+            let taskIdCounter = 1;
+            let columnIdCounter = 1;
+            
+            Object.entries(data.columns).forEach(([columnName, columnTasks]) => {
+                const columnId = columnIdCounter++;
+                columns.push({
+                    id: columnId,
+                    title: columnName,
+                    limit: 0,
+                    autoComplete: columnName.toLowerCase().includes('hecho') || columnName.toLowerCase().includes('completado')
+                });
+                
+                columnTasks.forEach(task => {
+                    tasks.push({
+                        id: task.id || taskIdCounter++,
+                        title: task.title,
+                        description: task.description || '',
+                        priority: task.priority || 'medium',
+                        dueDate: task.due_date || '',
+                        columnId: columnId,
+                        createdAt: task.created_at || new Date().toISOString(),
+                        updatedAt: task.updated_at || new Date().toISOString()
+                    });
+                });
+            });
+            
+            kanbanData.columns = columns;
+            kanbanData.tasks = tasks;
+            
+            loadKanbanBoard();
+            updateStatistics();
+        }
+    })
+    .catch(error => {
+        console.error('Error loading kanban data:', error);
+        // Fallback to existing data structure
+        loadKanbanBoard();
+        updateStatistics();
+    });
 }
 
 function getCsrfToken() {
