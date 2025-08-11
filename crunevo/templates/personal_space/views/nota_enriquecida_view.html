@@ -1,724 +1,358 @@
 {% extends 'base.html' %}
-{% block title %}Nota Enriquecida - {{ block.title }}{% endblock %}
+{% set metadata = block.get_metadata() %}
+{% block title %}Editor: {{ block.title }}{% endblock %}
 
-{% block head %}
+{% block head_extra %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
-<style>
-/* Modern Notion-style Editor */
-.nota-editor-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 2rem;
-    background: var(--bs-body-bg);
-    border-radius: 0.75rem;
-    border: 1px solid var(--bs-border-color);
-}
-
-.nota-header {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 3rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--bs-border-color);
-}
-
-.nota-icon-selector {
-    position: relative;
-}
-
-.icon-display {
-    width: 60px;
-    height: 60px;
-    background: var(--bs-primary-bg-subtle);
-    border: 1px solid var(--bs-border-color);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.8rem;
-    color: var(--bs-primary);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.icon-display:hover {
-    background: var(--bs-primary);
-    color: #fff;
-    transform: scale(1.05);
-}
-
-.icon-selector-menu {
-    position: absolute;
-    top: 70px;
-    left: 0;
-    z-index: 20;
-    background: var(--bs-body-bg);
-    border: 1px solid var(--bs-border-color);
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-    width: 320px;
-    display: none;
-}
-
-.icon-selector-header {
-    font-weight: 600;
-    color: #6b7280;
-    margin-bottom: 8px;
-}
-
-.icon-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 8px;
-}
-
-.icon-option {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 40px;
-    border: 1px solid var(--bs-border-color);
-    border-radius: 10px;
-    cursor: pointer;
-    color: var(--bs-primary);
-    background: var(--bs-primary-bg-subtle);
-    transition: all 0.2s ease;
-}
-
-.icon-option:hover {
-    background: var(--bs-primary);
-    color: #fff;
-    transform: translateY(-2px);
-}
-
-.nota-title-input {
-    border: none;
-    font-size: 2rem;
-    font-weight: 700;
-    background: transparent;
-    width: 100%;
-    padding: 12px 0;
-    color: var(--bs-emphasis-color);
-}
-
-.nota-title-input:focus {
-    outline: none;
-    border-bottom: 2px solid var(--bs-primary);
-    box-shadow: none;
-}
-
-.template-selector {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background: var(--bs-body-bg);
-    border: 1px solid var(--bs-border-color);
-    border-radius: 16px;
-}
-
-.template-options {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.template-option {
-    padding: 10px 18px;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    background: white;
-    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.1);
-}
-
-.template-option:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(139, 92, 246, 0.2);
-    border-color: #8b5cf6;
-}
-
-.template-option.active {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    color: white;
-    border-color: #8b5cf6;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
-}
-
-.blocks-container {
-    min-height: 500px;
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    border: 1px solid rgba(139, 92, 246, 0.1);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.05);
-}
-
-.content-block {
-    margin-bottom: 20px;
-    padding: 15px;
-    border: 1px solid transparent;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    position: relative;
-    background: rgba(139, 92, 246, 0.01);
-}
-
-.content-block:hover {
-    border-color: rgba(139, 92, 246, 0.2);
-    background: rgba(139, 92, 246, 0.05);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(139, 92, 246, 0.1);
-}
-
-.block-controls {
-    position: absolute;
-    right: 15px;
-    top: 15px;
-    opacity: 0;
-    transition: all 0.3s ease;
-    display: flex;
-    gap: 8px;
-}
-
-.content-block:hover .block-controls {
-    opacity: 1;
-    transform: translateY(-2px);
-}
-
-.block-type-selector {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-}
-
-.block-type-btn {
-    padding: 8px 14px;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    background: white;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.05);
-}
-
-.block-type-btn:hover {
-    border-color: #8b5cf6;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
-}
-
-.block-type-btn.active {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    color: white;
-    border-color: #8b5cf6;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba(139, 92, 246, 0.3);
-}
-
-.block-heading {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0;
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.block-text, .block-code, .block-quote {
-    font-size: 1.05rem;
-    line-height: 1.7;
-    margin: 0;
-    color: #374151;
-}
-
-.block-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.block-list-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 5px;
-}
-
-.tags-display {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-}
-
-.tag-item {
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
-    color: #8b5cf6;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.tag-remove {
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.save-indicator {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #10b981;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.save-indicator.show {
-    opacity: 1;
-}
-</style>
 {% endblock %}
 
 {% block content %}
-<div class="modern-block-container tw-prose">
-    <!-- Header -->
-    <div class="modern-hero">
-        <div class="hero-header">
-            <div class="hero-icon">
-                <i class="bi bi-file-richtext"></i>
-            </div>
-            <div class="hero-content">
-                <h1 class="hero-title">Editor de Notas Enriquecidas</h1>
-                <p class="hero-subtitle">Crea notas estructuradas con bloques de contenido</p>
-            </div>
-        </div>
-        <div class="action-footer">
-            <button class="modern-btn modern-btn-outline" onclick="exportNote()">
-                <i class="bi bi-download"></i> Exportar
-            </button>
-            <a href="{{ url_for('personal_space.index') }}" class="modern-btn modern-btn-secondary">
-                <i class="bi bi-arrow-left"></i> Volver
+<div class="editor-workspace">
+    <aside class="editor-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('personal_space.view_bitacora') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a la Bitácora
             </a>
         </div>
-    </div>
-    
-    <!-- Nota Header -->
-    <div class="modern-card">
-        <div class="card-body">
-            <div class="d-flex align-items-center gap-3 mb-3">
-                <div class="nota-icon-selector">
-                    <div class="icon-display" onclick="toggleIconSelector()">
-                        <i class="{{ block.get_metadata().get('icon', 'bi bi-file-text') }}" id="currentIcon"></i>
-                    </div>
-                    <div class="icon-selector-menu" id="iconSelectorMenu">
-                        <div class="icon-selector-header">Elige un icono</div>
-                        <div class="icon-grid">
-                            <div class="icon-option" onclick="selectIcon('bi bi-file-text')"><i class="bi bi-file-text"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-journal-text')"><i class="bi bi-journal-text"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-lightbulb')"><i class="bi bi-lightbulb"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-book')"><i class="bi bi-book"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-code-slash')"><i class="bi bi-code-slash"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-bookmark-star')"><i class="bi bi-bookmark-star"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-check2-circle')"><i class="bi bi-check2-circle"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-star')"><i class="bi bi-star"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-calendar-event')"><i class="bi bi-calendar-event"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-clipboard-data')"><i class="bi bi-clipboard-data"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-collection')"><i class="bi bi-collection"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-diagram-3')"><i class="bi bi-diagram-3"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-emoji-smile')"><i class="bi bi-emoji-smile"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-gear')"><i class="bi bi-gear"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-graph-up')"><i class="bi bi-graph-up"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-heart')"><i class="bi bi-heart"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-link-45deg')"><i class="bi bi-link-45deg"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-list-check')"><i class="bi bi-list-check"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-pen')"><i class="bi bi-pen"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-quote')"><i class="bi bi-quote"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-search')"><i class="bi bi-search"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-shield-check')"><i class="bi bi-shield-check"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-stickies')"><i class="bi bi-stickies"></i></div>
-                            <div class="icon-option" onclick="selectIcon('bi bi-translate')"><i class="bi bi-translate"></i></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex-grow-1">
-                    <input type="text" class="nota-title-input" id="notaTitle" 
-                           value="{{ block.title }}" placeholder="Título de la nota...">
-                </div>
-            </div>
-            
-            <!-- Template Selector -->
-            <div class="template-selector">
-                <h5 class="section-header">Plantilla</h5>
-                <div class="template-options d-flex gap-2 flex-wrap">
-                    <div class="template-option" data-template="">Libre</div>
-                    <div class="template-option" data-template="apuntes">Apuntes de Clase</div>
-                    <div class="template-option" data-template="proyecto">Proyecto</div>
-                    <div class="template-option" data-template="investigacion">Investigación</div>
-                    <div class="template-option" data-template="resumen">Resumen</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Blocks Container -->
-    <div class="modern-card">
-        <div class="card-body">
-            <h5 class="section-header">Contenido de la Nota</h5>
-            <div class="blocks-container" id="blocksContainer">
-                <!-- Los bloques se cargarán aquí dinámicamente -->
-            </div>
-            
-            <!-- Add Block Button -->
-            <button class="modern-btn modern-btn-outline w-100 mt-3" onclick="addNewBlock()">
-                <i class="bi bi-plus-circle"></i>
-                <span>Agregar bloque</span>
+
+        <div class="sidebar-section">
+            <label class="form-label">Icono</label>
+            <button class="icon-display-btn" id="iconDisplayBtn" data-bs-toggle="popover" data-bs-placement="bottom" title="Elige un icono">
+                <i id="currentIcon" class="{{ metadata.get('icon', 'bi bi-file-text') }}"></i>
             </button>
         </div>
-    </div>
-    
-    <!-- Tags Input -->
-    <div class="modern-card">
-        <div class="card-body">
-            <h5 class="section-header">Etiquetas</h5>
-            <input type="text" class="form-control" id="tagsInput" 
-                   placeholder="Presiona Enter para agregar etiquetas...">
-            <div class="tags-display mt-3" id="tagsDisplay"></div>
-        </div>
-    </div>
-</div>
 
-<!-- Save Indicator -->
-<div class="save-indicator" id="saveIndicator">
-    <i class="bi bi-check-circle"></i> Guardado
+        <div class="sidebar-section">
+            <label for="templateSelectorInput" class="form-label">Plantilla</label>
+            <select id="templateSelectorInput" class="form-select">
+                <option value="">Ninguna</option>
+                <option value="apuntes" {% if metadata.get('template_type') == 'apuntes' %}selected{% endif %}>Apuntes de Clase</option>
+                <option value="proyecto" {% if metadata.get('template_type') == 'proyecto' %}selected{% endif %}>Proyecto</option>
+                <option value="investigacion" {% if metadata.get('template_type') == 'investigacion' %}selected{% endif %}>Investigación</option>
+                <option value="resumen" {% if metadata.get('template_type') == 'resumen' %}selected{% endif %}>Resumen</option>
+            </select>
+        </div>
+
+        <div class="sidebar-section">
+            <label for="tagsInput" class="form-label">Etiquetas</label>
+            <input type="text" id="tagsInput" class="form-control" placeholder="Presiona Enter para agregar...">
+            <div id="tagsContainer" class="mt-2"></div>
+        </div>
+
+        <div class="sidebar-footer">
+            <span id="saveIndicator" class="text-muted small">Guardado</span>
+            <button class="btn btn-sm btn-outline-danger" id="deleteNoteBtn">Eliminar</button>
+        </div>
+    </aside>
+
+    <main class="editor-main-content">
+        <div class="editor-title-container">
+            <input type="text" id="noteTitleInput" class="nota-title-input" value="{{ block.title }}" placeholder="Nueva nota...">
+        </div>
+
+        <div id="noteContent" class="note-content-area"></div>
+
+        <div class="add-block-container">
+            <button id="addBlockBtn" class="btn btn-light w-100">
+                <i class="bi bi-plus"></i> Agregar bloque
+            </button>
+        </div>
+    </main>
 </div>
 
 <script>
-let noteData = {
-    title: '{{ block.title }}',
-    icon: '{{ block.get_metadata().get("icon", "bi bi-file-text") }}',
-    template_type: '{{ block.get_metadata().get("template_type", "") }}',
-    blocks: {{ block.get_metadata().get('blocks', [])|tojson }},
-    tags: {{ block.get_metadata().get('tags', [])|tojson }}
-};
+    const noteData = {
+        title: {{ block.title|tojson }},
+        icon: {{ metadata.get('icon', 'bi bi-file-text')|tojson }},
+        template_type: {{ metadata.get('template_type', '')|tojson }},
+        blocks: {{ metadata.get('blocks', [])|tojson }},
+        tags: {{ metadata.get('tags', [])|tojson }}
+    };
 
-let blockIdCounter = noteData.blocks.length;
+    let blockIdCounter = noteData.blocks.length;
+    let autoSaveTimeout;
 
-document.addEventListener('DOMContentLoaded', function() {
-    loadBlocks();
-    loadTags();
-    setupEventListeners();
-    
-    // Close icon menu on outside click
-    document.addEventListener('click', function(e) {
-        const menu = document.getElementById('iconSelectorMenu');
-        const selector = document.querySelector('.nota-icon-selector');
-        if (!selector.contains(e.target)) {
-            menu.style.display = 'none';
-        }
+    document.addEventListener('DOMContentLoaded', function () {
+        loadBlocks();
+        loadTags();
+        setupEventListeners();
+        setInterval(saveNote, 30000);
     });
-    
-    // Auto-save every 30 seconds
-    setInterval(saveNote, 30000);
-});
 
-function toggleIconSelector() {
-    const menu = document.getElementById('iconSelectorMenu');
-    menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
-}
-
-function selectIcon(iconClass) {
-    noteData.icon = iconClass;
-    const current = document.getElementById('currentIcon');
-    current.className = iconClass;
-    debounceAutoSave();
-    const menu = document.getElementById('iconSelectorMenu');
-    menu.style.display = 'none';
-}
-
-function setupEventListeners() {
-    // Title input
-    document.getElementById('notaTitle').addEventListener('input', function() {
-        noteData.title = this.value;
-        debounceAutoSave();
-    });
-    
-    // Template selector
-    document.querySelectorAll('.template-option').forEach(option => {
-        option.addEventListener('click', function() {
-            document.querySelectorAll('.template-option').forEach(opt => opt.classList.remove('active'));
-            this.classList.add('active');
-            noteData.template_type = this.dataset.template;
-            applyTemplate(this.dataset.template);
+    function setupEventListeners() {
+        document.getElementById('noteTitleInput').addEventListener('input', function () {
+            noteData.title = this.value;
             debounceAutoSave();
         });
-    });
-    
-    // Tags input
-    document.getElementById('tagsInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const tag = this.value.trim();
-            if (tag && !noteData.tags.includes(tag)) {
-                noteData.tags.push(tag);
-                this.value = '';
-                loadTags();
-                debounceAutoSave();
+
+        document.getElementById('templateSelectorInput').addEventListener('change', function () {
+            noteData.template_type = this.value;
+            applyTemplate(this.value);
+            debounceAutoSave();
+        });
+
+        document.getElementById('tagsInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const tag = this.value.trim();
+                if (tag && !noteData.tags.includes(tag)) {
+                    noteData.tags.push(tag);
+                    this.value = '';
+                    loadTags();
+                    debounceAutoSave();
+                }
             }
-        }
-    });
-}
+        });
 
-function loadBlocks() {
-    const container = document.getElementById('blocksContainer');
-    container.innerHTML = '';
-    
-    noteData.blocks.forEach((block, index) => {
-        const blockElement = createBlockElement(block, index);
-        container.appendChild(blockElement);
-    });
-}
-
-function createBlockElement(block, index) {
-    const div = document.createElement('div');
-    div.className = 'content-block';
-    div.dataset.index = index;
-    
-    let content = '';
-    
-    switch (block.type) {
-        case 'heading':
-            content = `<h3 class="block-heading" contenteditable="true" data-field="content">${block.content || ''}</h3>`;
-            break;
-        case 'text':
-            content = `<p class="block-text" contenteditable="true" data-field="content">${block.content || ''}</p>`;
-            break;
-        case 'list':
-            const listItems = (block.items || []).map(item => 
-                `<div class="block-list-item">
-                    <span>•</span>
-                    <span contenteditable="true" data-field="item">${item}</span>
-                </div>`
-            ).join('');
-            content = `<div class="block-list" data-field="items">${listItems}</div>`;
-            break;
-        case 'code':
-            content = `<pre class="block-code" contenteditable="true" data-field="content">${block.content || ''}</pre>`;
-            break;
-        case 'quote':
-            content = `<blockquote class="block-quote" contenteditable="true" data-field="content">${block.content || ''}</blockquote>`;
-            break;
-    }
-    
-    div.innerHTML = `
-        <div class="block-controls">
-            <button class="btn btn-sm btn-outline-danger" onclick="removeBlock(${index})">
-                <i class="bi bi-trash"></i>
-            </button>
-        </div>
-        <div class="block-type-selector">
-            <button class="block-type-btn ${block.type === 'heading' ? 'active' : ''}" onclick="changeBlockType(${index}, 'heading')">H</button>
-            <button class="block-type-btn ${block.type === 'text' ? 'active' : ''}" onclick="changeBlockType(${index}, 'text')">T</button>
-            <button class="block-type-btn ${block.type === 'list' ? 'active' : ''}" onclick="changeBlockType(${index}, 'list')">L</button>
-            <button class="block-type-btn ${block.type === 'code' ? 'active' : ''}" onclick="changeBlockType(${index}, 'code')">C</button>
-            <button class="block-type-btn ${block.type === 'quote' ? 'active' : ''}" onclick="changeBlockType(${index}, 'quote')">Q</button>
-        </div>
-        ${content}
-    `;
-    
-    // Add event listeners for content editing
-    div.querySelectorAll('[contenteditable]').forEach(element => {
-        element.addEventListener('input', function() {
-            updateBlockContent(index, this);
+        document.getElementById('addBlockBtn').addEventListener('click', function () {
+            addNewBlock();
             debounceAutoSave();
         });
-    });
-    
-    return div;
-}
 
-function addNewBlock() {
-    const newBlock = {
-        id: blockIdCounter++,
-        type: 'text',
-        content: ''
-    };
-    
-    noteData.blocks.push(newBlock);
-    loadBlocks();
-    debounceAutoSave();
-}
+        document.getElementById('deleteNoteBtn').addEventListener('click', function () {
+            if (confirm('¿Eliminar esta nota?')) {
+                fetch(`/espacio-personal/api/blocks/{{ block.id }}`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRFToken': getCsrfToken() }
+                }).then(r => r.json()).then(data => {
+                    if (data.success) {
+                        window.location.href = "{{ url_for('personal_space.view_bitacora') }}";
+                    }
+                });
+            }
+        });
 
-function removeBlock(index) {
-    noteData.blocks.splice(index, 1);
-    loadBlocks();
-    debounceAutoSave();
-}
-
-function changeBlockType(index, newType) {
-    noteData.blocks[index].type = newType;
-    if (newType === 'list' && !noteData.blocks[index].items) {
-        noteData.blocks[index].items = [''];
+        initIconPopover();
     }
-    loadBlocks();
-    debounceAutoSave();
-}
 
-function updateBlockContent(index, element) {
-    const field = element.dataset.field;
-    const block = noteData.blocks[index];
-    
-    if (field === 'content') {
-        block.content = element.textContent;
-    } else if (field === 'items') {
-        const items = Array.from(element.querySelectorAll('[data-field="item"]'))
-            .map(item => item.textContent.trim())
-            .filter(item => item);
-        block.items = items;
+    function initIconPopover() {
+        const ICONS = ['bi-file-text','bi-journal-text','bi-lightbulb','bi-book','bi-code-slash','bi-bookmark-star','bi-check2-circle','bi-star','bi-calendar-event','bi-clipboard-data','bi-collection','bi-diagram-3','bi-emoji-smile','bi-gear','bi-graph-up','bi-heart','bi-link-45deg','bi-list-check','bi-pen','bi-quote','bi-search','bi-shield-check','bi-stickies','bi-translate'];
+        const btn = document.getElementById('iconDisplayBtn');
+        const popover = new bootstrap.Popover(btn, {
+            html: true,
+            sanitize: false,
+            content: () => {
+                return `<div class="icon-grid">${ICONS.map(icon => `<i class='bi ${icon} icon-option' data-icon='bi ${icon}'></i>`).join('')}</div>`;
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const iconEl = e.target.closest('.icon-option');
+            if (iconEl) {
+                const iconClass = iconEl.getAttribute('data-icon');
+                noteData.icon = iconClass;
+                document.getElementById('currentIcon').className = iconClass;
+                debounceAutoSave();
+                popover.hide();
+            }
+        });
     }
-}
 
-function loadTags() {
-    const container = document.getElementById('tagsDisplay');
-    container.innerHTML = '';
-    
-    noteData.tags.forEach((tag, index) => {
-        const tagElement = document.createElement('div');
-        tagElement.className = 'tag-item';
-        tagElement.innerHTML = `
-            <span>${tag}</span>
-            <span class="tag-remove" onclick="removeTag(${index})">&times;</span>
+    function loadBlocks() {
+        const container = document.getElementById('noteContent');
+        container.innerHTML = '';
+        noteData.blocks.forEach((block, index) => {
+            const blockElement = createBlockElement(block, index);
+            container.appendChild(blockElement);
+        });
+    }
+
+    function createBlockElement(block, index) {
+        const div = document.createElement('div');
+        div.className = 'content-block';
+        div.dataset.index = index;
+
+        let content = '';
+        switch (block.type) {
+            case 'heading':
+                content = `<h3 class="block-heading" contenteditable="true" data-field="content">${block.content || ''}</h3>`;
+                break;
+            case 'text':
+                content = `<p class="block-text" contenteditable="true" data-field="content">${block.content || ''}</p>`;
+                break;
+            case 'list':
+                const listItems = (block.items || []).map(item =>
+                    `<div class="block-list-item">
+                        <span>•</span>
+                        <span contenteditable="true" data-field="item">${item}</span>
+                    </div>`
+                ).join('');
+                content = `<div class="block-list" data-field="items">${listItems}</div>`;
+                break;
+            case 'code':
+                content = `<pre class="block-code" contenteditable="true" data-field="content">${block.content || ''}</pre>`;
+                break;
+            case 'quote':
+                content = `<blockquote class="block-quote" contenteditable="true" data-field="content">${block.content || ''}</blockquote>`;
+                break;
+        }
+
+        div.innerHTML = `
+            <div class="block-controls">
+                <button class="btn btn-sm btn-outline-danger" onclick="removeBlock(${index})">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+            <div class="block-type-selector">
+                <button class="block-type-btn ${block.type === 'heading' ? 'active' : ''}" onclick="changeBlockType(${index}, 'heading')">H</button>
+                <button class="block-type-btn ${block.type === 'text' ? 'active' : ''}" onclick="changeBlockType(${index}, 'text')">T</button>
+                <button class="block-type-btn ${block.type === 'list' ? 'active' : ''}" onclick="changeBlockType(${index}, 'list')">L</button>
+                <button class="block-type-btn ${block.type === 'code' ? 'active' : ''}" onclick="changeBlockType(${index}, 'code')">C</button>
+                <button class="block-type-btn ${block.type === 'quote' ? 'active' : ''}" onclick="changeBlockType(${index}, 'quote')">Q</button>
+            </div>
+            ${content}
         `;
-        container.appendChild(tagElement);
-    });
-}
 
-function removeTag(index) {
-    noteData.tags.splice(index, 1);
-    loadTags();
-    debounceAutoSave();
-}
+        div.querySelectorAll('[contenteditable]').forEach(element => {
+            element.addEventListener('input', function () {
+                updateBlockContent(index, this);
+                debounceAutoSave();
+            });
+        });
 
-function applyTemplate(templateType) {
-    const templates = {
-        'apuntes': [
-            { type: 'heading', content: 'Tema de la clase' },
-            { type: 'text', content: 'Fecha y contexto...' },
-            { type: 'heading', content: 'Conceptos principales' },
-            { type: 'list', items: ['Concepto 1', 'Concepto 2'] },
-            { type: 'heading', content: 'Notas adicionales' },
-            { type: 'text', content: 'Observaciones y reflexiones...' }
-        ],
-        'proyecto': [
-            { type: 'heading', content: 'Nombre del proyecto' },
-            { type: 'text', content: 'Descripción general...' },
-            { type: 'heading', content: 'Objetivos' },
-            { type: 'list', items: ['Objetivo 1', 'Objetivo 2'] },
-            { type: 'heading', content: 'Tareas' },
-            { type: 'list', items: ['Tarea 1', 'Tarea 2'] }
-        ],
-        'investigacion': [
-            { type: 'heading', content: 'Título de la investigación' },
-            { type: 'text', content: 'Pregunta de investigación...' },
-            { type: 'heading', content: 'Hipótesis' },
-            { type: 'text', content: 'Hipótesis principal...' },
-            { type: 'heading', content: 'Fuentes' },
-            { type: 'list', items: ['Fuente 1', 'Fuente 2'] }
-        ],
-        'resumen': [
-            { type: 'heading', content: 'Título del material' },
-            { type: 'text', content: 'Autor y contexto...' },
-            { type: 'heading', content: 'Ideas principales' },
-            { type: 'list', items: ['Idea 1', 'Idea 2'] },
-            { type: 'heading', content: 'Conclusiones' },
-            { type: 'text', content: 'Síntesis personal...' }
-        ]
-    };
-    
-    if (templates[templateType]) {
-        noteData.blocks = templates[templateType];
+        return div;
+    }
+
+    function addNewBlock() {
+        const newBlock = {
+            id: blockIdCounter++,
+            type: 'text',
+            content: ''
+        };
+        noteData.blocks.push(newBlock);
         loadBlocks();
     }
-}
 
-let autoSaveTimeout;
-function debounceAutoSave() {
-    clearTimeout(autoSaveTimeout);
-    autoSaveTimeout = setTimeout(saveNote, 2000);
-}
+    function changeBlockType(index, newType) {
+        const block = noteData.blocks[index];
+        block.type = newType;
+        if (newType === 'list') {
+            block.items = block.items || [''];
+        } else {
+            delete block.items;
+            block.content = '';
+        }
+        loadBlocks();
+    }
 
-function saveNote() {
-    fetch(`/espacio-personal/api/blocks/{{ block.id }}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken()
-        },
-        body: JSON.stringify({
-            title: noteData.title,
-            metadata: {
-                icon: noteData.icon,
-                template_type: noteData.template_type,
-                blocks: noteData.blocks,
-                tags: noteData.tags
+    function updateBlockContent(index, element) {
+        const block = noteData.blocks[index];
+        const field = element.getAttribute('data-field');
+
+        if (block.type === 'list') {
+            const items = Array.from(element.querySelectorAll('[data-field="item"]')).map(el => el.textContent.trim());
+            block.items = items;
+        } else if (field === 'content') {
+            block.content = element.textContent.trim();
+        }
+    }
+
+    function removeBlock(index) {
+        noteData.blocks.splice(index, 1);
+        loadBlocks();
+    }
+
+    function loadTags() {
+        const container = document.getElementById('tagsContainer');
+        container.innerHTML = '';
+        noteData.tags.forEach((tag, index) => {
+            const tagElement = document.createElement('div');
+            tagElement.className = 'tag-item';
+            tagElement.innerHTML = `
+                <span>${tag}</span>
+                <span class="tag-remove" onclick="removeTag(${index})">&times;</span>
+            `;
+            container.appendChild(tagElement);
+        });
+    }
+
+    function removeTag(index) {
+        noteData.tags.splice(index, 1);
+        loadTags();
+        debounceAutoSave();
+    }
+
+    function applyTemplate(templateType) {
+        const templates = {
+            'apuntes': [
+                { type: 'heading', content: 'Tema de la clase' },
+                { type: 'text', content: 'Fecha y contexto...' },
+                { type: 'heading', content: 'Conceptos principales' },
+                { type: 'list', items: ['Concepto 1', 'Concepto 2'] },
+                { type: 'heading', content: 'Notas adicionales' },
+                { type: 'text', content: 'Observaciones y reflexiones...' }
+            ],
+            'proyecto': [
+                { type: 'heading', content: 'Nombre del proyecto' },
+                { type: 'text', content: 'Descripción general...' },
+                { type: 'heading', content: 'Objetivos' },
+                { type: 'list', items: ['Objetivo 1', 'Objetivo 2'] },
+                { type: 'heading', content: 'Tareas' },
+                { type: 'list', items: ['Tarea 1', 'Tarea 2'] }
+            ],
+            'investigacion': [
+                { type: 'heading', content: 'Título de la investigación' },
+                { type: 'text', content: 'Pregunta de investigación...' },
+                { type: 'heading', content: 'Hipótesis' },
+                { type: 'text', content: 'Hipótesis principal...' },
+                { type: 'heading', content: 'Fuentes' },
+                { type: 'list', items: ['Fuente 1', 'Fuente 2'] }
+            ],
+            'resumen': [
+                { type: 'heading', content: 'Título del material' },
+                { type: 'text', content: 'Autor y contexto...' },
+                { type: 'heading', content: 'Ideas principales' },
+                { type: 'list', items: ['Idea 1', 'Idea 2'] },
+                { type: 'heading', content: 'Conclusiones' },
+                { type: 'text', content: 'Síntesis personal...' }
+            ]
+        };
+
+        if (templates[templateType]) {
+            noteData.blocks = templates[templateType];
+            loadBlocks();
+        }
+    }
+
+    function debounceAutoSave() {
+        document.getElementById('saveIndicator').textContent = 'Guardando...';
+        clearTimeout(autoSaveTimeout);
+        autoSaveTimeout = setTimeout(saveNote, 2000);
+    }
+
+    function saveNote() {
+        fetch(`/espacio-personal/api/blocks/{{ block.id }}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({
+                title: noteData.title,
+                metadata: {
+                    icon: noteData.icon,
+                    template_type: noteData.template_type,
+                    blocks: noteData.blocks,
+                    tags: noteData.tags
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSaveIndicator();
             }
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showSaveIndicator();
-        }
-    })
-    .catch(error => console.error('Error saving note:', error));
-}
+        .catch(error => console.error('Error saving note:', error));
+    }
 
-function showSaveIndicator() {
-    const indicator = document.getElementById('saveIndicator');
-    indicator.classList.add('show');
-    setTimeout(() => indicator.classList.remove('show'), 2000);
-}
+    function showSaveIndicator() {
+        document.getElementById('saveIndicator').textContent = 'Guardado';
+    }
 
-function exportNote() {
-    const content = noteData.blocks.map(block => {
-        switch (block.type) {
-            case 'heading': return `# ${block.content}`;
-            case 'text': return block.content;
-            case 'list': return block.items.map(item => `- ${item}`).join('\n');
-            case 'code': return `\`\`\`\n${block.content}\n\`\`\``;
-            case 'quote': return `> ${block.content}`;
-            default: return block.content;
-        }
-    }).join('\n\n');
-    
-    const blob = new Blob([content], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${noteData.title || 'nota'}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
-function getCsrfToken() {
-    return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
-}
+    function getCsrfToken() {
+        return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+    }
 </script>
 {% endblock %}
+
