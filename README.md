@@ -4,6 +4,51 @@ This repository contains the Crunevo2 Flask application. The project is configur
 
 The administration panel is served from the dedicated subdomain `https://burrito.crunevo.com`.
 
+## Desarrollo Local
+
+### Ejecutar sin problemas de SSL
+
+Para ejecutar Crunevo localmente sin errores de SSL/HTTPS, usa uno de estos scripts:
+
+**Opción 1: Script Python (multiplataforma)**
+```bash
+python run_dev.py
+```
+
+**Opción 2: Script PowerShell (Windows)**
+```powershell
+.\run_dev.ps1
+```
+
+**Opción 3: Configuración manual**
+```bash
+# Windows PowerShell
+$env:ENABLE_TALISMAN="0"
+$env:FORCE_HTTPS="0"
+python -m flask run --host=0.0.0.0 --port=5000 --debug
+
+# Linux/macOS
+export ENABLE_TALISMAN=0
+export FORCE_HTTPS=0
+python -m flask run --host=0.0.0.0 --port=5000 --debug
+```
+
+### Variables de Entorno para Desarrollo
+
+- `ENABLE_TALISMAN=0`: Deshabilita Flask-Talisman (enforcement de HTTPS)
+- `FORCE_HTTPS=0`: Deshabilita redirección automática a HTTPS
+- `FLASK_ENV=development`: Modo desarrollo
+- `FLASK_DEBUG=1`: Habilita debug mode
+
+⚠️ **Nota**: Estas configuraciones son solo para desarrollo local. En producción, Talisman y HTTPS siguen activos para mantener la seguridad.
+
+### Acceso Local
+
+Una vez iniciado el servidor, accede a:
+- **Dashboard Principal**: http://localhost:5000/espacio-personal/
+- **Feed**: http://localhost:5000/
+- **API**: http://localhost:5000/api/
+
 ## Deploying to Fly.io
 
 If you encounter the error below when attempting to deploy:
