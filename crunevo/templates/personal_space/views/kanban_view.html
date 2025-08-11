@@ -4,109 +4,142 @@
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
 <style>
-/* Modern Kanban Board Styles */
-.kanban-board {
+/* Trello-like Kanban Board Styles */
+.kanban-container {
     display: flex;
-    gap: 1.5rem;
-    min-height: 75vh;
-    padding: 2rem;
-    padding-bottom: 2rem;
-    overflow-x: auto;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.02), rgba(139, 92, 246, 0.01));
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
-    border: 1px solid rgba(139, 92, 246, 0.1);
+    height: 100vh;
+    background: linear-gradient(135deg, #0079bf 0%, #026aa7 100%);
+    overflow: hidden;
 }
 
-.kanban-column {
-    background: white;
-    border-radius: 20px;
-    padding: 1.5rem;
-    min-width: 320px;
-    max-width: 380px;
-    flex-shrink: 0;
-    border: 2px solid rgba(139, 92, 246, 0.1);
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.1);
+.kanban-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-.kanban-column:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 35px rgba(139, 92, 246, 0.15);
-}
-
-.kanban-column.drag-over {
-    border-color: #8b5cf6;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(139, 92, 246, 0.02));
-    transform: scale(1.02) translateY(-4px);
-    box-shadow: 0 16px 40px rgba(139, 92, 246, 0.25);
-}
-
-.column-header {
+.kanban-header {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 1rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid rgba(139, 92, 246, 0.1);
 }
 
-.column-title {
+.kanban-title {
+    color: white;
+    font-size: 1.5rem;
     font-weight: 700;
-    font-size: 1.2rem;
-    color: #374151;
+    margin: 0;
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.column-count {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-    min-width: 24px;
-    text-align: center;
+.kanban-title i {
+    font-size: 1.8rem;
 }
 
-.column-actions {
+.kanban-actions {
     display: flex;
-    gap: 8px;
+    gap: 12px;
+    align-items: center;
 }
 
-.column-action-btn {
-    background: white;
-    border: 2px solid rgba(139, 92, 246, 0.2);
-    color: #8b5cf6;
-    width: 36px;
-    height: 36px;
-    border-radius: 12px;
+.header-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
-.column-action-btn:hover {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    color: white;
-    border-color: #8b5cf6;
-    transform: scale(1.1) translateY(-2px);
-    box-shadow: 0 6px 15px rgba(139, 92, 246, 0.3);
+.header-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.kanban-board {
+    flex: 1;
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.kanban-column {
+    background: #ebecf0;
+    border-radius: 12px;
+    min-width: 280px;
+    max-width: 280px;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 140px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.column-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f4f5f7;
+    border-radius: 12px 12px 0 0;
+}
+
+.column-title {
+    font-weight: 600;
+    color: #172b4d;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.column-count {
+    background: #ddd;
+    color: #5e6c84;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+}
+
+.column-menu {
+    background: none;
+    border: none;
+    color: #5e6c84;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.column-menu:hover {
+    background: #ddd;
+    color: #172b4d;
 }
 
 .tasks-container {
-    min-height: 250px;
-    max-height: 65vh;
+    flex: 1;
+    padding: 8px;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: #8b5cf6 transparent;
-    padding-right: 4px;
+    scrollbar-color: #c1c7d0 transparent;
 }
 
 .tasks-container::-webkit-scrollbar {
@@ -118,110 +151,36 @@
 }
 
 .tasks-container::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #6f42c1, #8b5cf6);
-    border-radius: 3px;
-}
-
-.tasks-container::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #5a2d91, #7c3aed);
+    background: #c1c7d0;
+    border-radius: 4px;
 }
 
 .task-card {
     background: white;
-    border: 1px solid var(--bs-border-color);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 15px;
-    cursor: grab;
-    transition: all 0.3s ease;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
     position: relative;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    border-left: 4px solid transparent;
 }
 
 .task-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(111, 66, 193, 0.15);
-    border-color: #6f42c1;
-    border-left-color: #6f42c1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.task-card.selected {
+    border-color: #0079bf;
+    box-shadow: 0 0 0 1px #0079bf;
 }
 
 .task-card.dragging {
-    opacity: 0.7;
-    transform: rotate(3deg) scale(1.02);
-    box-shadow: 0 10px 30px rgba(111, 66, 193, 0.3);
-}
-
-.task-priority {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.task-priority.alta {
-    background: linear-gradient(135deg, #dc3545, #e74c3c);
-}
-
-.task-priority.media {
-    background: linear-gradient(135deg, #ffc107, #f39c12);
-}
-
-.task-priority.baja {
-    background: linear-gradient(135deg, #28a745, #27ae60);
-}
-
-.task-title {
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: var(--bs-dark);
-    line-height: 1.4;
-    padding-right: 25px;
-    font-size: 1rem;
-}
-
-.task-description {
-    color: var(--bs-secondary);
-    font-size: 0.85rem;
-    margin-bottom: 12px;
-    line-height: 1.5;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.task-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.75rem;
-    color: var(--bs-secondary);
-    margin-top: 8px;
-}
-
-.task-due-date {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 6px;
-    border-radius: 6px;
-    background: var(--bs-gray-100);
-}
-
-.task-due-date.overdue {
-    background: rgba(220, 53, 69, 0.1);
-    color: var(--bs-danger);
-    font-weight: 600;
-}
-
-.task-due-date.today {
-    background: rgba(255, 193, 7, 0.1);
-    color: var(--bs-warning);
-    font-weight: 600;
+    opacity: 0.8;
+    transform: rotate(2deg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .task-labels {
@@ -232,636 +191,530 @@
 }
 
 .task-label {
-    background: linear-gradient(135deg, rgba(111, 66, 193, 0.1), rgba(139, 92, 246, 0.1));
-    color: #6f42c1;
-    padding: 3px 8px;
-    border-radius: 10px;
-    font-size: 0.7rem;
+    background: #61bd4f;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
     font-weight: 500;
-    border: 1px solid rgba(111, 66, 193, 0.2);
+}
+
+.task-label.priority-alta { background: #eb5a46; }
+.task-label.priority-media { background: #f2d600; color: #172b4d; }
+.task-label.priority-baja { background: #61bd4f; }
+
+.task-title {
+    font-weight: 500;
+    color: #172b4d;
+    margin-bottom: 8px;
+    line-height: 1.3;
+    font-size: 0.9rem;
+}
+
+.task-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #5e6c84;
+}
+
+.task-due-date {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #f4f5f7;
+}
+
+.task-due-date.overdue {
+    background: #ffeceb;
+    color: #eb5a46;
+}
+
+.task-due-date.today {
+    background: #fff2cc;
+    color: #bf8f00;
 }
 
 .task-attachments {
     display: flex;
     align-items: center;
     gap: 4px;
-    color: var(--bs-secondary);
-    font-size: 0.75rem;
 }
 
 .add-task-btn {
-    width: 100%;
-    padding: 14px;
+    margin: 8px;
+    padding: 8px 12px;
     background: none;
-    border: 2px dashed rgba(111, 66, 193, 0.3);
-    color: #6f42c1;
-    border-radius: 10px;
+    border: none;
+    color: #5e6c84;
     cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-weight: 500;
-}
-
-.add-task-btn:hover {
-    border-color: #6f42c1;
-    color: white;
-    background: linear-gradient(135deg, #6f42c1, #8b5cf6);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
-}
-
-.kanban-tools {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.tool-btn {
-    background: white;
-    border: 1px solid rgba(111, 66, 193, 0.2);
-    color: #6f42c1;
-    padding: 10px 16px;
     border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 0.9rem;
-    font-weight: 500;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.tool-btn:hover {
-    background: linear-gradient(135deg, #6f42c1, #8b5cf6);
-    color: white;
-    border-color: #6f42c1;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.25);
+.add-task-btn:hover {
+    background: #e4e6ea;
+    color: #172b4d;
 }
 
-.filter-dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.filter-content {
-    display: none;
-    position: absolute;
+/* Right Panel Styles */
+.kanban-sidebar {
+    width: 350px;
     background: white;
-    min-width: 200px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    border: 1px solid var(--bs-border-color);
+    border-left: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    position: relative;
     z-index: 1000;
-    padding: 10px;
-    top: 100%;
-    left: 0;
 }
 
-.filter-dropdown.show .filter-content {
-    display: block;
+.kanban-sidebar.open {
+    transform: translateX(0);
 }
 
-.filter-option {
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+    background: #f8f9fa;
+}
+
+.sidebar-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #172b4d;
+    margin: 0;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px;
+    justify-content: space-between;
+}
+
+.close-sidebar {
+    background: none;
+    border: none;
+    color: #5e6c84;
     cursor: pointer;
+    padding: 4px;
     border-radius: 4px;
-    transition: background 0.3s;
+    transition: all 0.2s ease;
 }
 
-.filter-option:hover {
-    background: var(--bs-gray-100);
+.close-sidebar:hover {
+    background: #e4e6ea;
+    color: #172b4d;
 }
 
-.progress-bar-container {
-    background: var(--bs-gray-200);
-    height: 6px;
-    border-radius: 3px;
-    overflow: hidden;
-    margin-top: 10px;
+.sidebar-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.sidebar-section {
+    margin-bottom: 24px;
+}
+
+.sidebar-section h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #5e6c84;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #e4e6ea;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #172b4d;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #5e6c84;
+    font-weight: 500;
 }
 
 .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e4e6ea;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.progress-fill {
     height: 100%;
-    background: var(--bs-success);
-    transition: width 0.3s;
-    border-radius: 3px;
+    background: linear-gradient(90deg, #61bd4f, #51a83f);
+    transition: width 0.3s ease;
+    border-radius: 4px;
 }
 
-.empty-column {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--bs-secondary);
-    opacity: 0.7;
-}
-
-.empty-column i {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    opacity: 0.5;
-}
-
-.btn-floating {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #6f42c1, #8b5cf6);
+.action-btn {
+    width: 100%;
+    padding: 12px;
+    background: #0079bf;
     color: white;
     border: none;
-    font-size: 1.5rem;
-    box-shadow: 0 8px 25px rgba(111, 66, 193, 0.4);
+    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 1000;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+    margin-bottom: 8px;
 }
 
-.btn-floating:hover {
-    transform: scale(1.15) rotate(90deg);
-    background: linear-gradient(135deg, #5a2d91, #7c3aed);
-    box-shadow: 0 12px 35px rgba(111, 66, 193, 0.5);
+.action-btn:hover {
+    background: #026aa7;
+    transform: translateY(-1px);
 }
 
-.empty-column {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--bs-secondary);
-    opacity: 0.7;
+.action-btn.secondary {
+    background: #f4f5f7;
+    color: #172b4d;
+    border: 1px solid #ddd;
 }
 
-.empty-column i {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
-    opacity: 0.5;
-    color: #6f42c1;
+.action-btn.secondary:hover {
+    background: #e4e6ea;
 }
 
+.filter-section {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e4e6ea;
+}
+
+.filter-group {
+    margin-bottom: 16px;
+}
+
+.filter-group:last-child {
+    margin-bottom: 0;
+}
+
+.filter-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #172b4d;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    color: #172b4d;
+    font-size: 0.9rem;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #0079bf;
+    box-shadow: 0 0 0 2px rgba(0, 121, 191, 0.2);
+}
+
+/* Task Detail Panel */
+.task-detail {
+    display: none;
+}
+
+.task-detail.active {
+    display: block;
+}
+
+.task-detail-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.task-detail-title {
+    flex: 1;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #172b4d;
+    line-height: 1.3;
+}
+
+.task-detail-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.task-action-btn {
+    background: none;
+    border: 1px solid #ddd;
+    color: #5e6c84;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.task-action-btn:hover {
+    background: #f4f5f7;
+    color: #172b4d;
+}
+
+.task-field {
+    margin-bottom: 16px;
+}
+
+.task-field-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #5e6c84;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.task-field-value {
+    color: #172b4d;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.task-description {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #e4e6ea;
+    min-height: 80px;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .kanban-container {
-        padding: 10px;
+        flex-direction: column;
+    }
+    
+    .kanban-sidebar {
+        width: 100%;
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        z-index: 1001;
     }
     
     .kanban-board {
         flex-direction: column;
-        gap: 15px;
+        gap: 12px;
     }
     
     .kanban-column {
         min-width: 100%;
         max-width: 100%;
+        max-height: 400px;
     }
-    
-    .kanban-tools {
-        justify-content: center;
-    }
+}
+
+/* Drag and Drop Styles */
+.kanban-column.drag-over {
+    background: #e4f3ff;
+    border: 2px dashed #0079bf;
+}
+
+.task-card.drag-placeholder {
+    background: #e4f3ff;
+    border: 2px dashed #0079bf;
+    opacity: 0.5;
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="modern-block-container">
-    <!-- Modern Hero Header -->
-    <div class="modern-hero">
-        <div class="hero-content">
-            <div class="hero-header">
-                <div class="hero-icon">
-                    <i class="bi bi-kanban"></i>
-                </div>
-                <div>
-                    <h1 class="hero-title">{{ block.title or 'Tablero Kanban' }}</h1>
-                    <p class="hero-subtitle">{{ block.content or 'Gestión visual de tareas tipo Trello' }}</p>
-                </div>
-            </div>
-            
-            <!-- Stats Grid -->
-            <div class="modern-grid modern-grid-4 mt-4">
-                <div class="modern-card text-center">
-                    <div class="card-body">
-                        <div class="fs-2 fw-bold text-primary" id="totalTareas">0</div>
-                        <div class="content-text">Total</div>
-                    </div>
-                </div>
-                <div class="modern-card text-center">
-                    <div class="card-body">
-                        <div class="fs-2 fw-bold text-warning" id="tareasEnProceso">0</div>
-                        <div class="content-text">En proceso</div>
-                    </div>
-                </div>
-                <div class="modern-card text-center">
-                    <div class="card-body">
-                        <div class="fs-2 fw-bold text-success" id="tareasCompletadas">0</div>
-                        <div class="content-text">Completadas</div>
-                    </div>
-                </div>
-                <div class="modern-card text-center">
-                    <div class="card-body">
-                        <div class="fs-2 fw-bold text-info" id="progresoGeneral">0%</div>
-                        <div class="content-text">Progreso</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Progress Bar -->
-            <div class="modern-progress mt-3">
-                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+<div class="kanban-container">
+    <!-- Main Kanban Board -->
+    <div class="kanban-main">
+        <!-- Header -->
+        <div class="kanban-header">
+            <h1 class="kanban-title">
+                <i class="bi bi-kanban"></i>
+                <span id="boardTitle">{{ block.title or 'Tablero Kanban' }}</span>
+            </h1>
+            <div class="kanban-actions">
+                <button class="header-btn" onclick="toggleSidebar()">
+                    <i class="bi bi-layout-sidebar-inset-reverse"></i>
+                    Panel
+                </button>
+                <button class="header-btn" onclick="addColumn()">
+                    <i class="bi bi-plus"></i>
+                    Columna
+                </button>
+                <button class="header-btn" onclick="configureBoard()">
+                    <i class="bi bi-gear"></i>
+                    Configurar
+                </button>
             </div>
         </div>
         
-        <!-- Action Footer -->
-        <div class="action-footer">
-            <div class="action-group">
-                <button class="modern-btn modern-btn-outline" onclick="exportKanban()">
-                    <i class="bi bi-download"></i> Exportar
-                </button>
-                <button class="modern-btn modern-btn-primary" onclick="configureKanban()">
-                    <i class="bi bi-gear"></i> Configurar
-                </button>
-                <a href="{{ url_for('personal_space.index') }}" class="modern-btn modern-btn-outline">
-                    <i class="bi bi-arrow-left"></i> Volver
-                </a>
-            </div>
+        <!-- Kanban Board -->
+        <div class="kanban-board" id="kanbanBoard">
+            <!-- Columns will be dynamically generated -->
         </div>
     </div>
     
-    <!-- Herramientas -->
-    <div class="modern-card mb-4">
-        <div class="card-body">
-            <div class="section-header">
-                <h5 class="mb-0">Herramientas del tablero</h5>
-            </div>
-            
-            <div class="action-footer mt-3">
-                <div class="action-group">
-                    <button class="modern-btn modern-btn-primary" onclick="addColumn()">
-                        <i class="bi bi-plus"></i> Agregar columna
-                    </button>
-                    
-                    <div class="filter-dropdown">
-                        <button class="modern-btn modern-btn-outline" onclick="toggleFilter()">
-                            <i class="bi bi-funnel"></i> Filtros
-                        </button>
-                        <div class="filter-content">
-                            <div class="filter-option" onclick="filterByPriority('todas')">
-                                <input type="radio" name="priority" value="todas" checked>
-                                <span>Todas las prioridades</span>
-                            </div>
-                            <div class="filter-option" onclick="filterByPriority('alta')">
-                                <input type="radio" name="priority" value="alta">
-                                <span>Alta prioridad</span>
-                            </div>
-                            <div class="filter-option" onclick="filterByPriority('media')">
-                                <input type="radio" name="priority" value="media">
-                                <span>Media prioridad</span>
-                            </div>
-                            <div class="filter-option" onclick="filterByPriority('baja')">
-                                <input type="radio" name="priority" value="baja">
-                                <span>Baja prioridad</span>
-                            </div>
-                            <hr>
-                            <div class="filter-option" onclick="filterByDueDate('todas')">
-                                <input type="radio" name="duedate" value="todas" checked>
-                                <span>Todas las fechas</span>
-                            </div>
-                            <div class="filter-option" onclick="filterByDueDate('vencidas')">
-                                <input type="radio" name="duedate" value="vencidas">
-                                <span>Vencidas</span>
-                            </div>
-                            <div class="filter-option" onclick="filterByDueDate('hoy')">
-                                <input type="radio" name="duedate" value="hoy">
-                                <span>Vencen hoy</span>
-                            </div>
-                            <div class="filter-option" onclick="filterByDueDate('semana')">
-                                <input type="radio" name="duedate" value="semana">
-                                <span>Esta semana</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button class="modern-btn modern-btn-outline" onclick="clearFilters()">
-                        <i class="bi bi-x-circle"></i> Limpiar filtros
-                    </button>
-                    
-                    <button class="modern-btn modern-btn-outline" onclick="autoOrganize()">
-                        <i class="bi bi-magic"></i> Auto-organizar
-                    </button>
-                    
-                    <button class="modern-btn modern-btn-outline" onclick="archiveCompleted()">
-                        <i class="bi bi-archive"></i> Archivar completadas
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Tablero Kanban -->
-    <div class="kanban-board" id="kanbanBoard">
-        <!-- Columna: Por Hacer -->
-        <div class="kanban-column">
-            <div class="column-header">
-                <div class="column-title">
-                    <i class="bi bi-list-task"></i>
-                    Por Hacer
-                </div>
-                <div class="column-count">3</div>
-                <div class="column-actions">
-                    <button class="column-action-btn" title="Configurar columna">
-                        <i class="bi bi-gear"></i>
-                    </button>
-                    <button class="column-action-btn" title="Eliminar columna">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="tasks-container">
-                <!-- Tarea 1 -->
-                <div class="task-card" draggable="true">
-                    <div class="task-priority alta"></div>
-                    <div class="task-labels">
-                        <span class="task-label">Frontend</span>
-                        <span class="task-label">Urgente</span>
-                    </div>
-                    <div class="task-title">Diseñar interfaz de usuario</div>
-                    <div class="task-description">Crear mockups y prototipos para la nueva interfaz de usuario del dashboard principal.</div>
-                    <div class="task-meta">
-                        <div class="task-due-date today">
-                            <i class="bi bi-calendar"></i>
-                            Hoy
-                        </div>
-                        <div class="task-attachments">
-                            <i class="bi bi-paperclip"></i>
-                            2
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Tarea 2 -->
-                <div class="task-card" draggable="true">
-                    <div class="task-priority media"></div>
-                    <div class="task-labels">
-                        <span class="task-label">Backend</span>
-                    </div>
-                    <div class="task-title">Configurar base de datos</div>
-                    <div class="task-description">Establecer la estructura de la base de datos y las relaciones entre tablas.</div>
-                    <div class="task-meta">
-                        <div class="task-due-date">
-                            <i class="bi bi-calendar"></i>
-                            15 May
-                        </div>
-                        <div class="task-attachments">
-                            <i class="bi bi-paperclip"></i>
-                            1
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Tarea 3 -->
-                <div class="task-card" draggable="true">
-                    <div class="task-priority baja"></div>
-                    <div class="task-labels">
-                        <span class="task-label">Documentación</span>
-                    </div>
-                    <div class="task-title">Escribir documentación técnica</div>
-                    <div class="task-description">Documentar las APIs y los procesos de desarrollo para el equipo.</div>
-                    <div class="task-meta">
-                        <div class="task-due-date">
-                            <i class="bi bi-calendar"></i>
-                            20 May
-                        </div>
-                        <div class="task-attachments">
-                            <i class="bi bi-paperclip"></i>
-                            0
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <button class="add-task-btn" onclick="addTask('todo')">
-                <i class="bi bi-plus"></i>
-                Agregar tarea
-            </button>
+    <!-- Right Sidebar Panel -->
+    <div class="kanban-sidebar" id="kanbanSidebar">
+        <div class="sidebar-header">
+            <h3 class="sidebar-title">
+                Panel de Control
+                <button class="close-sidebar" onclick="toggleSidebar()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </h3>
         </div>
         
-        <!-- Columna: En Progreso -->
-        <div class="kanban-column">
-            <div class="column-header">
-                <div class="column-title">
-                    <i class="bi bi-play-circle"></i>
-                    En Progreso
-                </div>
-                <div class="column-count">2</div>
-                <div class="column-actions">
-                    <button class="column-action-btn" title="Configurar columna">
-                        <i class="bi bi-gear"></i>
-                    </button>
-                    <button class="column-action-btn" title="Eliminar columna">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="tasks-container">
-                <!-- Tarea en progreso 1 -->
-                <div class="task-card" draggable="true">
-                    <div class="task-priority alta"></div>
-                    <div class="task-labels">
-                        <span class="task-label">Frontend</span>
-                        <span class="task-label">React</span>
+        <div class="sidebar-content">
+            <!-- Statistics Section -->
+            <div class="sidebar-section">
+                <h4>Estadísticas</h4>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalTasks">0</div>
+                        <div class="stat-label">Total</div>
                     </div>
-                    <div class="task-title">Implementar componentes React</div>
-                    <div class="task-description">Desarrollar los componentes principales de la aplicación usando React y TypeScript.</div>
-                    <div class="task-meta">
-                        <div class="task-due-date">
-                            <i class="bi bi-calendar"></i>
-                            18 May
-                        </div>
-                        <div class="task-attachments">
-                            <i class="bi bi-paperclip"></i>
-                            3
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="completedTasks">0</div>
+                        <div class="stat-label">Completadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="inProgressTasks">0</div>
+                        <div class="stat-label">En Progreso</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="overdueTasks">0</div>
+                        <div class="stat-label">Vencidas</div>
                     </div>
                 </div>
-                
-                <!-- Tarea en progreso 2 -->
-                <div class="task-card" draggable="true">
-                    <div class="task-priority media"></div>
-                    <div class="task-labels">
-                        <span class="task-label">Testing</span>
-                    </div>
-                    <div class="task-title">Pruebas unitarias</div>
-                    <div class="task-description">Escribir y ejecutar pruebas unitarias para los módulos principales.</div>
-                    <div class="task-meta">
-                        <div class="task-due-date">
-                            <i class="bi bi-calendar"></i>
-                            22 May
-                        </div>
-                        <div class="task-attachments">
-                            <i class="bi bi-paperclip"></i>
-                            1
-                        </div>
-                    </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                 </div>
             </div>
             
-            <button class="add-task-btn" onclick="addTask('progress')">
-                <i class="bi bi-plus"></i>
-                Agregar tarea
-            </button>
-        </div>
-        
-        <!-- Columna: Completado -->
-        <div class="kanban-column">
-            <div class="column-header">
-                <div class="column-title">
-                    <i class="bi bi-check-circle"></i>
-                    Completado
-                </div>
-                <div class="column-count">4</div>
-                <div class="column-actions">
-                    <button class="column-action-btn" title="Configurar columna">
-                        <i class="bi bi-gear"></i>
-                    </button>
-                    <button class="column-action-btn" title="Eliminar columna">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
+            <!-- Quick Actions -->
+            <div class="sidebar-section">
+                <h4>Acciones Rápidas</h4>
+                <button class="action-btn" onclick="addTask()">
+                    <i class="bi bi-plus"></i>
+                    Nueva Tarea
+                </button>
+                <button class="action-btn secondary" onclick="autoOrganize()">
+                    <i class="bi bi-arrow-down-up"></i>
+                    Auto Organizar
+                </button>
+                <button class="action-btn secondary" onclick="archiveCompleted()">
+                    <i class="bi bi-archive"></i>
+                    Archivar Completadas
+                </button>
+                <button class="action-btn secondary" onclick="exportBoard()">
+                    <i class="bi bi-download"></i>
+                    Exportar Datos
+                </button>
             </div>
             
-            <div class="tasks-container">
-                <!-- Tarea completada 1 -->
-                <div class="task-card" draggable="true" style="opacity: 0.8;">
-                    <div class="task-priority baja"></div>
-                    <div class="task-labels">
-                        <span class="task-label">Setup</span>
-                    </div>
-                    <div class="task-title">Configurar entorno de desarrollo</div>
-                    <div class="task-description">Instalar y configurar todas las herramientas necesarias para el desarrollo.</div>
-                    <div class="task-meta">
-                        <div class="task-due-date">
-                            <i class="bi bi-calendar"></i>
-                            10 May
-                        </div>
-                        <div class="task-attachments">
-                            <i class="bi bi-paperclip"></i>
-                            2
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Tarea completada 2 -->
-                <div class="task-card" draggable="true" style="opacity: 0.8;">
-                    <div class="task-priority media"></div>
-                    <div class="task-labels">
-                        <span class="task-label">Planning</span>
-                    </div>
-                    <div class="task-title">Planificación del proyecto</div>
-                    <div class="task-description">Definir alcance, cronograma y recursos necesarios para el proyecto.</div>
-                    <div class="task-meta">
-                        <div class="task-due-date">
-                            <i class="bi bi-calendar"></i>
-                            12 May
-                        </div>
-                        <div class="task-attachments">
-                            <i class="bi bi-paperclip"></i>
-                            5
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <button class="add-task-btn" onclick="addTask('done')">
-                <i class="bi bi-plus"></i>
-                Agregar tarea
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Floating Action Button -->
-<button class="btn-floating" onclick="addTask()" title="Agregar tarea">
-    <i class="bi bi-plus"></i>
-</button>
-
-<!-- Modal para configurar Kanban -->
-<div class="modal fade" id="kanbanConfigModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Configurar Tablero Kanban</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="kanbanConfigForm">
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="kanbanTituloInput" required>
-                        <label for="kanbanTituloInput">Título del tablero</label>
-                    </div>
-                    
-                    <div class="form-floating mb-3">
-                        <textarea class="form-control" id="kanbanDescripcionInput" style="height: 100px"></textarea>
-                        <label for="kanbanDescripcionInput">Descripción</label>
-                    </div>
-                    
-                    <div class="form-floating mb-3">
-                        <select class="form-select" id="kanbanTemaInput">
-                            <option value="default">Tema por defecto</option>
-                            <option value="dark">Tema oscuro</option>
-                            <option value="colorful">Tema colorido</option>
-                            <option value="minimal">Tema minimalista</option>
+            <!-- Filters -->
+            <div class="sidebar-section">
+                <h4>Filtros</h4>
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <label class="filter-label">Prioridad</label>
+                        <select class="filter-select" id="priorityFilter" onchange="applyFilters()">
+                            <option value="all">Todas las prioridades</option>
+                            <option value="alta">Alta</option>
+                            <option value="media">Media</option>
+                            <option value="baja">Baja</option>
                         </select>
-                        <label for="kanbanTemaInput">Tema visual</label>
                     </div>
-                    
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="kanbanAutoArchive">
-                        <label class="form-check-label" for="kanbanAutoArchive">
-                            Auto-archivar tareas completadas después de 7 días
-                        </label>
+                    <div class="filter-group">
+                        <label class="filter-label">Fecha Límite</label>
+                        <select class="filter-select" id="dueDateFilter" onchange="applyFilters()">
+                            <option value="all">Todas las fechas</option>
+                            <option value="overdue">Vencidas</option>
+                            <option value="today">Hoy</option>
+                            <option value="week">Esta semana</option>
+                            <option value="month">Este mes</option>
+                        </select>
                     </div>
-                    
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="kanbanShowStats">
-                        <label class="form-check-label" for="kanbanShowStats">
-                            Mostrar estadísticas en el dashboard
-                        </label>
-                    </div>
-                    
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="kanbanNotifications">
-                        <label class="form-check-label" for="kanbanNotifications">
-                            Notificaciones de fechas límite
-                        </label>
-                    </div>
-                </form>
+                    <button class="action-btn secondary" onclick="clearFilters()">
+                        <i class="bi bi-x-circle"></i>
+                        Limpiar Filtros
+                    </button>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="saveKanbanConfig()">Guardar</button>
+            
+            <!-- Task Detail Panel -->
+            <div class="sidebar-section task-detail" id="taskDetail">
+                <h4>Detalles de Tarea</h4>
+                <div class="task-detail-content">
+                    <!-- Task details will be populated here -->
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal para agregar/editar tarea -->
+<!-- Modals -->
+<!-- Task Modal -->
 <div class="modal fade" id="taskModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="taskModalTitle">Agregar Tarea</h5>
+                <h5 class="modal-title" id="taskModalTitle">Nueva Tarea</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -869,52 +722,52 @@
                     <div class="row">
                         <div class="col-md-8">
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="taskTituloInput" required>
-                                <label for="taskTituloInput">Título de la tarea</label>
+                                <input type="text" class="form-control" id="taskTitle" required>
+                                <label for="taskTitle">Título de la tarea</label>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-floating mb-3">
-                                <select class="form-select" id="taskPrioridadInput">
+                                <select class="form-select" id="taskPriority">
                                     <option value="baja">Baja</option>
                                     <option value="media" selected>Media</option>
                                     <option value="alta">Alta</option>
                                 </select>
-                                <label for="taskPrioridadInput">Prioridad</label>
+                                <label for="taskPriority">Prioridad</label>
                             </div>
                         </div>
                     </div>
                     
                     <div class="form-floating mb-3">
-                        <textarea class="form-control" id="taskDescripcionInput" style="height: 100px"></textarea>
-                        <label for="taskDescripcionInput">Descripción</label>
+                        <textarea class="form-control" id="taskDescription" style="height: 100px"></textarea>
+                        <label for="taskDescription">Descripción</label>
                     </div>
                     
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-floating mb-3">
-                                <input type="date" class="form-control" id="taskFechaLimiteInput">
-                                <label for="taskFechaLimiteInput">Fecha límite</label>
+                                <input type="date" class="form-control" id="taskDueDate">
+                                <label for="taskDueDate">Fecha límite</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating mb-3">
-                                <select class="form-select" id="taskColumnaInput">
-                                    <!-- Se llenarán dinámicamente -->
+                                <select class="form-select" id="taskColumn">
+                                    <!-- Options will be populated dynamically -->
                                 </select>
-                                <label for="taskColumnaInput">Columna</label>
+                                <label for="taskColumn">Columna</label>
                             </div>
                         </div>
                     </div>
                     
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="taskEtiquetasInput" placeholder="Separar con comas">
-                        <label for="taskEtiquetasInput">Etiquetas (separar con comas)</label>
+                        <input type="text" class="form-control" id="taskLabels" placeholder="Separar con comas">
+                        <label for="taskLabels">Etiquetas (separar con comas)</label>
                     </div>
                     
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="taskAsignadoInput">
-                        <label for="taskAsignadoInput">Asignado a</label>
+                        <input type="text" class="form-control" id="taskAssignee">
+                        <label for="taskAssignee">Asignado a</label>
                     </div>
                 </form>
             </div>
@@ -926,23 +779,23 @@
     </div>
 </div>
 
-<!-- Modal para agregar/editar columna -->
+<!-- Column Modal -->
 <div class="modal fade" id="columnModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="columnModalTitle">Agregar Columna</h5>
+                <h5 class="modal-title" id="columnModalTitle">Nueva Columna</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="columnForm">
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="columnTituloInput" required>
-                        <label for="columnTituloInput">Título de la columna</label>
+                        <input type="text" class="form-control" id="columnTitle" required>
+                        <label for="columnTitle">Título de la columna</label>
                     </div>
                     
                     <div class="form-floating mb-3">
-                        <select class="form-select" id="columnColorInput">
+                        <select class="form-select" id="columnColor">
                             <option value="primary">Azul</option>
                             <option value="success">Verde</option>
                             <option value="warning">Amarillo</option>
@@ -950,12 +803,12 @@
                             <option value="info">Cian</option>
                             <option value="secondary">Gris</option>
                         </select>
-                        <label for="columnColorInput">Color</label>
+                        <label for="columnColor">Color</label>
                     </div>
                     
                     <div class="form-floating mb-3">
-                        <input type="number" class="form-control" id="columnLimiteInput" min="0">
-                        <label for="columnLimiteInput">Límite de tareas (0 = sin límite)</label>
+                        <input type="number" class="form-control" id="columnLimit" min="0" value="0">
+                        <label for="columnLimit">Límite de tareas (0 = sin límite)</label>
                     </div>
                     
                     <div class="form-check mb-3">
@@ -974,214 +827,708 @@
     </div>
 </div>
 
+<!-- Board Config Modal -->
+<div class="modal fade" id="boardConfigModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Configurar Tablero</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="boardConfigForm">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="boardTitleInput" required>
+                        <label for="boardTitleInput">Título del tablero</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="boardDescriptionInput" style="height: 100px"></textarea>
+                        <label for="boardDescriptionInput">Descripción</label>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="boardAutoArchive">
+                        <label class="form-check-label" for="boardAutoArchive">
+                            Auto-archivar tareas completadas después de 7 días
+                        </label>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="boardNotifications">
+                        <label class="form-check-label" for="boardNotifications">
+                            Notificaciones de fechas límite
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveBoardConfig()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+// Global variables
 let kanbanData = {
-    titulo: '{{ block.title }}',
-    descripcion: '{{ block.content }}',
-    tema: '{{ block.get_metadata().get("theme", "default") }}',
+    title: '{{ block.title }}',
+    description: '{{ block.content }}',
     autoArchive: {{ block.get_metadata().get('auto_archive', false)|tojson }},
-    showStats: {{ block.get_metadata().get('show_stats', true)|tojson }},
     notifications: {{ block.get_metadata().get('notifications', true)|tojson }},
-    columnas: {{ block.get_metadata().get('columns', [])|tojson }},
-    tareas: {{ block.get_metadata().get('tasks', [])|tojson }}
+    columns: {{ block.get_metadata().get('columns', [])|tojson }},
+    tasks: {{ block.get_metadata().get('tasks', [])|tojson }}
 };
 
 let currentTaskId = null;
 let currentColumnId = null;
-let filtros = {
-    prioridad: 'todas',
-    fechaLimite: 'todas'
+let selectedTaskId = null;
+let filters = {
+    priority: 'all',
+    dueDate: 'all'
 };
 
-// Columnas por defecto si no existen
-if (kanbanData.columnas.length === 0) {
-    kanbanData.columnas = [
-        { id: 1, titulo: 'Por hacer', color: 'secondary', limite: 0, autoComplete: false },
-        { id: 2, titulo: 'En progreso', color: 'primary', limite: 5, autoComplete: false },
-        { id: 3, titulo: 'En revisión', color: 'warning', limite: 3, autoComplete: false },
-        { id: 4, titulo: 'Completado', color: 'success', limite: 0, autoComplete: true }
+// Initialize default columns if none exist
+if (kanbanData.columns.length === 0) {
+    kanbanData.columns = [
+        { id: 1, title: 'Por Hacer', color: 'secondary', limit: 0, autoComplete: false },
+        { id: 2, title: 'En Progreso', color: 'primary', limit: 5, autoComplete: false },
+        { id: 3, title: 'En Revisión', color: 'warning', limit: 3, autoComplete: false },
+        { id: 4, title: 'Completado', color: 'success', limit: 0, autoComplete: true }
     ];
 }
 
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     loadKanbanBoard();
-    updateEstadisticas();
+    updateStatistics();
+    setupDragAndDrop();
     
-    // Auto-save cada 30 segundos
+    // Auto-save every 30 seconds
     setInterval(saveData, 30000);
 });
 
+// Main Functions
 function loadKanbanBoard() {
     const board = document.getElementById('kanbanBoard');
     board.innerHTML = '';
     
-    kanbanData.columnas.forEach(columna => {
-        const columnDiv = createColumnElement(columna);
-        board.appendChild(columnDiv);
+    kanbanData.columns.forEach(column => {
+        const columnElement = createColumnElement(column);
+        board.appendChild(columnElement);
     });
     
-    // Configurar drag and drop
-    setupDragAndDrop();
+    updateStatistics();
 }
 
-function createColumnElement(columna) {
+function createColumnElement(column) {
     const div = document.createElement('div');
     div.className = 'kanban-column';
-    div.dataset.columnId = columna.id;
+    div.dataset.columnId = column.id;
     
-    const tareasFiltradas = getTareasFiltradas(columna.id);
-    const tareasCount = tareasFiltradas.length;
+    const filteredTasks = getFilteredTasks(column.id);
+    const taskCount = filteredTasks.length;
     
     div.innerHTML = `
         <div class="column-header">
             <div class="column-title">
-                <i class="bi bi-circle-fill text-${columna.color}"></i>
-                ${columna.titulo}
-                <span class="column-count">${tareasCount}</span>
-                ${columna.limite > 0 && tareasCount >= columna.limite ? '<i class="bi bi-exclamation-triangle text-warning" title="Límite alcanzado"></i>' : ''}
+                <i class="bi bi-circle-fill text-${column.color}"></i>
+                ${column.title}
             </div>
-            <div class="column-actions">
-                <button class="column-action-btn" onclick="editColumn(${columna.id})" title="Editar columna">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="column-action-btn" onclick="deleteColumn(${columna.id})" title="Eliminar columna">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
+            <div class="column-count">${taskCount}</div>
+            <button class="column-menu" onclick="showColumnMenu(${column.id})">
+                <i class="bi bi-three-dots"></i>
+            </button>
         </div>
         
-        <div class="tasks-container" id="tasks-${columna.id}">
-            ${tareasFiltradas.length === 0 ? `
-                <div class="empty-column">
-                    <i class="bi bi-inbox"></i>
-                    <p>No hay tareas</p>
-                </div>
-            ` : ''}
+        <div class="tasks-container" id="tasks-${column.id}">
+            <!-- Tasks will be added here -->
         </div>
         
-        <button class="add-task-btn" onclick="addTask(${columna.id})">
+        <button class="add-task-btn" onclick="addTask(${column.id})">
             <i class="bi bi-plus"></i>
-            Agregar tarea
+            Agregar una tarjeta
         </button>
     `;
     
-    // Agregar tareas a la columna
-    const tasksContainer = div.querySelector(`#tasks-${columna.id}`);
-    tareasFiltradas.forEach(tarea => {
-        const taskElement = createTaskElement(tarea);
+    // Add tasks to column
+    const tasksContainer = div.querySelector(`#tasks-${column.id}`);
+    filteredTasks.forEach(task => {
+        const taskElement = createTaskElement(task);
         tasksContainer.appendChild(taskElement);
     });
     
     return div;
 }
 
-function createTaskElement(tarea) {
+function createTaskElement(task) {
     const div = document.createElement('div');
     div.className = 'task-card';
-    div.dataset.taskId = tarea.id;
+    div.dataset.taskId = task.id;
     div.draggable = true;
     
-    const fechaLimite = tarea.fechaLimite ? new Date(tarea.fechaLimite) : null;
-    const hoy = new Date();
-    let fechaClass = '';
-    let fechaTexto = '';
+    // Calculate due date status
+    const dueDate = task.dueDate ? new Date(task.dueDate) : null;
+    const today = new Date();
+    let dueDateClass = '';
+    let dueDateText = '';
     
-    if (fechaLimite) {
-        const diffTime = fechaLimite - hoy;
+    if (dueDate) {
+        const diffTime = dueDate - today;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         
         if (diffDays < 0) {
-            fechaClass = 'overdue';
-            fechaTexto = `Vencida hace ${Math.abs(diffDays)} días`;
+            dueDateClass = 'overdue';
+            dueDateText = `Vencida hace ${Math.abs(diffDays)} días`;
         } else if (diffDays === 0) {
-            fechaClass = 'today';
-            fechaTexto = 'Vence hoy';
+            dueDateClass = 'today';
+            dueDateText = 'Vence hoy';
         } else {
-            fechaTexto = `${diffDays} días restantes`;
+            dueDateText = `${diffDays} días restantes`;
         }
     }
     
-    const etiquetas = tarea.etiquetas || [];
-    const etiquetasHtml = etiquetas.map(etiqueta => 
-        `<span class="task-label">${etiqueta}</span>`
+    const labels = task.labels || [];
+    const labelsHtml = labels.map(label => 
+        `<span class="task-label">${label}</span>`
     ).join('');
     
+    // Add priority label
+    const priorityLabel = `<span class="task-label priority-${task.priority}">${task.priority.toUpperCase()}</span>`;
+    
     div.innerHTML = `
-        <div class="task-priority ${tarea.prioridad}"></div>
-        <div class="task-title">${tarea.titulo}</div>
-        ${tarea.descripcion ? `<div class="task-description">${tarea.descripcion}</div>` : ''}
-        ${etiquetas.length > 0 ? `<div class="task-labels">${etiquetasHtml}</div>` : ''}
+        ${labels.length > 0 || task.priority ? `<div class="task-labels">${priorityLabel}${labelsHtml}</div>` : ''}
+        <div class="task-title">${task.title}</div>
         <div class="task-meta">
-            ${fechaLimite ? `
-                <div class="task-due-date ${fechaClass}">
+            ${dueDate ? `
+                <div class="task-due-date ${dueDateClass}">
                     <i class="bi bi-calendar"></i>
-                    ${fechaTexto}
+                    ${dueDateText}
                 </div>
             ` : '<div></div>'}
             <div class="task-attachments">
-                ${tarea.adjuntos ? `<i class="bi bi-paperclip"></i> ${tarea.adjuntos}` : ''}
+                ${task.attachments ? `<i class="bi bi-paperclip"></i> ${task.attachments}` : ''}
             </div>
         </div>
     `;
     
-    div.onclick = () => editTask(tarea.id);
+    div.onclick = () => selectTask(task.id);
     
     return div;
 }
 
-function getTareasFiltradas(columnaId) {
-    let tareas = kanbanData.tareas.filter(t => t.columnaId === columnaId);
+function getFilteredTasks(columnId) {
+    let tasks = kanbanData.tasks.filter(t => t.columnId === columnId);
     
-    // Aplicar filtros
-    if (filtros.prioridad !== 'todas') {
-        tareas = tareas.filter(t => t.prioridad === filtros.prioridad);
+    // Apply filters
+    if (filters.priority !== 'all') {
+        tasks = tasks.filter(t => t.priority === filters.priority);
     }
     
-    if (filtros.fechaLimite !== 'todas') {
-        const hoy = new Date();
-        const inicioSemana = new Date(hoy);
-        inicioSemana.setDate(hoy.getDate() - hoy.getDay());
-        const finSemana = new Date(inicioSemana);
-        finSemana.setDate(inicioSemana.getDate() + 6);
+    if (filters.dueDate !== 'all') {
+        const today = new Date();
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay());
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
         
-        tareas = tareas.filter(t => {
-            if (!t.fechaLimite) return filtros.fechaLimite === 'todas';
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        
+        tasks = tasks.filter(t => {
+            if (!t.dueDate) return filters.dueDate === 'all';
             
-            const fechaLimite = new Date(t.fechaLimite);
+            const dueDate = new Date(t.dueDate);
             
-            switch (filtros.fechaLimite) {
-                case 'vencidas':
-                    return fechaLimite < hoy;
-                case 'hoy':
-                    return fechaLimite.toDateString() === hoy.toDateString();
-                case 'semana':
-                    return fechaLimite >= inicioSemana && fechaLimite <= finSemana;
+            switch (filters.dueDate) {
+                case 'overdue':
+                    return dueDate < today;
+                case 'today':
+                    return dueDate.toDateString() === today.toDateString();
+                case 'week':
+                    return dueDate >= startOfWeek && dueDate <= endOfWeek;
+                case 'month':
+                    return dueDate >= startOfMonth && dueDate <= endOfMonth;
                 default:
                     return true;
             }
         });
     }
     
-    return tareas;
+    return tasks;
 }
 
-function updateEstadisticas() {
-    const totalTareas = kanbanData.tareas.length;
-    const tareasCompletadas = kanbanData.tareas.filter(t => {
-        const columna = kanbanData.columnas.find(c => c.id === t.columnaId);
-        return columna && columna.autoComplete;
+function updateStatistics() {
+    const totalTasks = kanbanData.tasks.length;
+    const completedTasks = kanbanData.tasks.filter(t => {
+        const column = kanbanData.columns.find(c => c.id === t.columnId);
+        return column && column.autoComplete;
     }).length;
-    const tareasEnProceso = totalTareas - tareasCompletadas;
-    const progreso = totalTareas > 0 ? Math.round((tareasCompletadas / totalTareas) * 100) : 0;
+    const inProgressTasks = totalTasks - completedTasks;
     
-    document.getElementById('totalTareas').textContent = totalTareas;
-    document.getElementById('tareasEnProceso').textContent = tareasEnProceso;
-    document.getElementById('tareasCompletadas').textContent = tareasCompletadas;
-    document.getElementById('progresoGeneral').textContent = `${progreso}%`;
-    document.getElementById('progressBar').style.width = `${progreso}%`;
+    // Calculate overdue tasks
+    const today = new Date();
+    const overdueTasks = kanbanData.tasks.filter(t => {
+        if (!t.dueDate) return false;
+        return new Date(t.dueDate) < today;
+    }).length;
+    
+    const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    
+    document.getElementById('totalTasks').textContent = totalTasks;
+    document.getElementById('completedTasks').textContent = completedTasks;
+    document.getElementById('inProgressTasks').textContent = inProgressTasks;
+    document.getElementById('overdueTasks').textContent = overdueTasks;
+    document.getElementById('progressFill').style.width = `${progress}%`;
 }
 
+// Sidebar Functions
+function toggleSidebar() {
+    const sidebar = document.getElementById('kanbanSidebar');
+    sidebar.classList.toggle('open');
+}
+
+function selectTask(taskId) {
+    // Remove previous selection
+    document.querySelectorAll('.task-card.selected').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Select new task
+    const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+    if (taskCard) {
+        taskCard.classList.add('selected');
+        selectedTaskId = taskId;
+        showTaskDetail(taskId);
+    }
+}
+
+function showTaskDetail(taskId) {
+    const task = kanbanData.tasks.find(t => t.id === taskId);
+    if (!task) return;
+    
+    const column = kanbanData.columns.find(c => c.id === task.columnId);
+    const taskDetail = document.getElementById('taskDetail');
+    const content = taskDetail.querySelector('.task-detail-content');
+    
+    content.innerHTML = `
+        <div class="task-detail-header">
+            <div class="task-detail-title">${task.title}</div>
+            <div class="task-detail-actions">
+                <button class="task-action-btn" onclick="editTask(${task.id})" title="Editar">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="task-action-btn" onclick="deleteTask(${task.id})" title="Eliminar">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="task-field">
+            <span class="task-field-label">Columna</span>
+            <div class="task-field-value">${column ? column.title : 'Sin columna'}</div>
+        </div>
+        
+        <div class="task-field">
+            <span class="task-field-label">Prioridad</span>
+            <div class="task-field-value">
+                <span class="task-label priority-${task.priority}">${task.priority.toUpperCase()}</span>
+            </div>
+        </div>
+        
+        ${task.description ? `
+            <div class="task-field">
+                <span class="task-field-label">Descripción</span>
+                <div class="task-description">${task.description}</div>
+            </div>
+        ` : ''}
+        
+        ${task.dueDate ? `
+            <div class="task-field">
+                <span class="task-field-label">Fecha Límite</span>
+                <div class="task-field-value">${new Date(task.dueDate).toLocaleDateString()}</div>
+            </div>
+        ` : ''}
+        
+        ${task.labels && task.labels.length > 0 ? `
+            <div class="task-field">
+                <span class="task-field-label">Etiquetas</span>
+                <div class="task-field-value">
+                    ${task.labels.map(label => `<span class="task-label">${label}</span>`).join(' ')}
+                </div>
+            </div>
+        ` : ''}
+        
+        ${task.assignee ? `
+            <div class="task-field">
+                <span class="task-field-label">Asignado a</span>
+                <div class="task-field-value">${task.assignee}</div>
+            </div>
+        ` : ''}
+    `;
+    
+    taskDetail.classList.add('active');
+    
+    // Open sidebar if not already open
+    const sidebar = document.getElementById('kanbanSidebar');
+    if (!sidebar.classList.contains('open')) {
+        sidebar.classList.add('open');
+    }
+}
+
+// Filter Functions
+function applyFilters() {
+    filters.priority = document.getElementById('priorityFilter').value;
+    filters.dueDate = document.getElementById('dueDateFilter').value;
+    loadKanbanBoard();
+}
+
+function clearFilters() {
+    filters.priority = 'all';
+    filters.dueDate = 'all';
+    document.getElementById('priorityFilter').value = 'all';
+    document.getElementById('dueDateFilter').value = 'all';
+    loadKanbanBoard();
+}
+
+// Task Functions
+function addTask(columnId = null) {
+    currentTaskId = null;
+    
+    document.getElementById('taskModalTitle').textContent = 'Nueva Tarea';
+    document.getElementById('taskForm').reset();
+    
+    // Populate column options
+    const columnSelect = document.getElementById('taskColumn');
+    columnSelect.innerHTML = '';
+    kanbanData.columns.forEach(column => {
+        const option = document.createElement('option');
+        option.value = column.id;
+        option.textContent = column.title;
+        if (columnId && column.id === columnId) {
+            option.selected = true;
+        }
+        columnSelect.appendChild(option);
+    });
+    
+    const modal = new bootstrap.Modal(document.getElementById('taskModal'));
+    modal.show();
+}
+
+function editTask(taskId) {
+    const task = kanbanData.tasks.find(t => t.id === taskId);
+    if (!task) return;
+    
+    currentTaskId = taskId;
+    
+    document.getElementById('taskModalTitle').textContent = 'Editar Tarea';
+    document.getElementById('taskTitle').value = task.title;
+    document.getElementById('taskDescription').value = task.description || '';
+    document.getElementById('taskPriority').value = task.priority;
+    document.getElementById('taskDueDate').value = task.dueDate || '';
+    document.getElementById('taskLabels').value = task.labels ? task.labels.join(', ') : '';
+    document.getElementById('taskAssignee').value = task.assignee || '';
+    
+    // Populate column options
+    const columnSelect = document.getElementById('taskColumn');
+    columnSelect.innerHTML = '';
+    kanbanData.columns.forEach(column => {
+        const option = document.createElement('option');
+        option.value = column.id;
+        option.textContent = column.title;
+        if (column.id === task.columnId) {
+            option.selected = true;
+        }
+        columnSelect.appendChild(option);
+    });
+    
+    const modal = new bootstrap.Modal(document.getElementById('taskModal'));
+    modal.show();
+}
+
+function saveTask() {
+    const form = document.getElementById('taskForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const title = document.getElementById('taskTitle').value;
+    const description = document.getElementById('taskDescription').value;
+    const priority = document.getElementById('taskPriority').value;
+    const dueDate = document.getElementById('taskDueDate').value;
+    const columnId = parseInt(document.getElementById('taskColumn').value);
+    const labels = document.getElementById('taskLabels').value
+        .split(',')
+        .map(label => label.trim())
+        .filter(label => label.length > 0);
+    const assignee = document.getElementById('taskAssignee').value;
+    
+    if (currentTaskId) {
+        // Update existing task
+        const task = kanbanData.tasks.find(t => t.id === currentTaskId);
+        if (task) {
+            task.title = title;
+            task.description = description;
+            task.priority = priority;
+            task.dueDate = dueDate;
+            task.columnId = columnId;
+            task.labels = labels;
+            task.assignee = assignee;
+        }
+    } else {
+        // Create new task
+        const newId = Math.max(...kanbanData.tasks.map(t => t.id), 0) + 1;
+        const newTask = {
+            id: newId,
+            title: title,
+            description: description,
+            priority: priority,
+            dueDate: dueDate,
+            columnId: columnId,
+            labels: labels,
+            assignee: assignee,
+            createdAt: new Date().toISOString()
+        };
+        
+        kanbanData.tasks.push(newTask);
+    }
+    
+    loadKanbanBoard();
+    updateStatistics();
+    saveData();
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
+    modal.hide();
+}
+
+function deleteTask(taskId) {
+    if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+        kanbanData.tasks = kanbanData.tasks.filter(t => t.id !== taskId);
+        loadKanbanBoard();
+        updateStatistics();
+        saveData();
+        
+        // Hide task detail if this task was selected
+        if (selectedTaskId === taskId) {
+            document.getElementById('taskDetail').classList.remove('active');
+            selectedTaskId = null;
+        }
+    }
+}
+
+// Column Functions
+function addColumn() {
+    currentColumnId = null;
+    
+    document.getElementById('columnModalTitle').textContent = 'Nueva Columna';
+    document.getElementById('columnForm').reset();
+    
+    const modal = new bootstrap.Modal(document.getElementById('columnModal'));
+    modal.show();
+}
+
+function editColumn(columnId) {
+    const column = kanbanData.columns.find(c => c.id === columnId);
+    if (!column) return;
+    
+    currentColumnId = columnId;
+    
+    document.getElementById('columnModalTitle').textContent = 'Editar Columna';
+    document.getElementById('columnTitle').value = column.title;
+    document.getElementById('columnColor').value = column.color;
+    document.getElementById('columnLimit').value = column.limit;
+    document.getElementById('columnAutoComplete').checked = column.autoComplete;
+    
+    const modal = new bootstrap.Modal(document.getElementById('columnModal'));
+    modal.show();
+}
+
+function saveColumn() {
+    const form = document.getElementById('columnForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const title = document.getElementById('columnTitle').value;
+    const color = document.getElementById('columnColor').value;
+    const limit = parseInt(document.getElementById('columnLimit').value);
+    const autoComplete = document.getElementById('columnAutoComplete').checked;
+    
+    if (currentColumnId) {
+        // Update existing column
+        const column = kanbanData.columns.find(c => c.id === currentColumnId);
+        if (column) {
+            column.title = title;
+            column.color = color;
+            column.limit = limit;
+            column.autoComplete = autoComplete;
+        }
+    } else {
+        // Create new column
+        const newId = Math.max(...kanbanData.columns.map(c => c.id), 0) + 1;
+        const newColumn = {
+            id: newId,
+            title: title,
+            color: color,
+            limit: limit,
+            autoComplete: autoComplete
+        };
+        
+        kanbanData.columns.push(newColumn);
+    }
+    
+    loadKanbanBoard();
+    saveData();
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('columnModal'));
+    modal.hide();
+}
+
+function showColumnMenu(columnId) {
+    // Simple implementation - could be enhanced with a proper dropdown menu
+    const actions = [
+        { text: 'Editar', action: () => editColumn(columnId) },
+        { text: 'Eliminar', action: () => deleteColumn(columnId) }
+    ];
+    
+    const action = prompt('Selecciona una acción:\n1. Editar\n2. Eliminar');
+    
+    if (action === '1') {
+        editColumn(columnId);
+    } else if (action === '2') {
+        deleteColumn(columnId);
+    }
+}
+
+function deleteColumn(columnId) {
+    const column = kanbanData.columns.find(c => c.id === columnId);
+    const tasksInColumn = kanbanData.tasks.filter(t => t.columnId === columnId).length;
+    
+    if (tasksInColumn > 0) {
+        if (!confirm(`La columna "${column.title}" tiene ${tasksInColumn} tareas. ¿Estás seguro de eliminarla? Las tareas se moverán a la primera columna.`)) {
+            return;
+        }
+        
+        // Move tasks to first column
+        const firstColumn = kanbanData.columns.find(c => c.id !== columnId);
+        if (firstColumn) {
+            kanbanData.tasks.forEach(t => {
+                if (t.columnId === columnId) {
+                    t.columnId = firstColumn.id;
+                }
+            });
+        }
+    }
+    
+    kanbanData.columns = kanbanData.columns.filter(c => c.id !== columnId);
+    loadKanbanBoard();
+    updateStatistics();
+    saveData();
+}
+
+// Board Configuration
+function configureBoard() {
+    document.getElementById('boardTitleInput').value = kanbanData.title;
+    document.getElementById('boardDescriptionInput').value = kanbanData.description;
+    document.getElementById('boardAutoArchive').checked = kanbanData.autoArchive;
+    document.getElementById('boardNotifications').checked = kanbanData.notifications;
+    
+    const modal = new bootstrap.Modal(document.getElementById('boardConfigModal'));
+    modal.show();
+}
+
+function saveBoardConfig() {
+    const form = document.getElementById('boardConfigForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    kanbanData.title = document.getElementById('boardTitleInput').value;
+    kanbanData.description = document.getElementById('boardDescriptionInput').value;
+    kanbanData.autoArchive = document.getElementById('boardAutoArchive').checked;
+    kanbanData.notifications = document.getElementById('boardNotifications').checked;
+    
+    // Update UI
+    document.getElementById('boardTitle').textContent = kanbanData.title;
+    
+    saveData();
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('boardConfigModal'));
+    modal.hide();
+}
+
+// Utility Functions
+function autoOrganize() {
+    // Sort tasks by priority and due date
+    kanbanData.tasks.sort((a, b) => {
+        const priorityOrder = { 'alta': 3, 'media': 2, 'baja': 1 };
+        const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
+        
+        if (priorityDiff !== 0) return priorityDiff;
+        
+        if (a.dueDate && b.dueDate) {
+            return new Date(a.dueDate) - new Date(b.dueDate);
+        }
+        
+        return 0;
+    });
+    
+    loadKanbanBoard();
+    saveData();
+}
+
+function archiveCompleted() {
+    const completedTasks = kanbanData.tasks.filter(t => {
+        const column = kanbanData.columns.find(c => c.id === t.columnId);
+        return column && column.autoComplete;
+    });
+    
+    if (completedTasks.length === 0) {
+        alert('No hay tareas completadas para archivar.');
+        return;
+    }
+    
+    if (confirm(`¿Archivar ${completedTasks.length} tareas completadas?`)) {
+        kanbanData.tasks = kanbanData.tasks.filter(t => {
+            const column = kanbanData.columns.find(c => c.id === t.columnId);
+            return !(column && column.autoComplete);
+        });
+        
+        loadKanbanBoard();
+        updateStatistics();
+        saveData();
+    }
+}
+
+function exportBoard() {
+    const data = {
+        board: {
+            title: kanbanData.title,
+            description: kanbanData.description,
+            autoArchive: kanbanData.autoArchive,
+            notifications: kanbanData.notifications
+        },
+        columns: kanbanData.columns,
+        tasks: kanbanData.tasks,
+        exportedAt: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${kanbanData.title || 'kanban'}_export.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// Drag and Drop
 function setupDragAndDrop() {
+    // This will be called after each board reload
     const taskCards = document.querySelectorAll('.task-card');
     const columns = document.querySelectorAll('.kanban-column');
     
@@ -1219,369 +1566,32 @@ function setupDragAndDrop() {
 }
 
 function moveTask(taskId, newColumnId) {
-    const tarea = kanbanData.tareas.find(t => t.id === taskId);
-    if (tarea && tarea.columnaId !== newColumnId) {
-        // Verificar límite de la columna
-        const columna = kanbanData.columnas.find(c => c.id === newColumnId);
-        const tareasEnColumna = kanbanData.tareas.filter(t => t.columnaId === newColumnId).length;
-        
-        if (columna.limite > 0 && tareasEnColumna >= columna.limite) {
-            alert(`La columna "${columna.titulo}" ha alcanzado su límite de ${columna.limite} tareas.`);
+    const task = kanbanData.tasks.find(t => t.id === taskId);
+    if (!task || task.columnId === newColumnId) return;
+    
+    // Check column limit
+    const newColumn = kanbanData.columns.find(c => c.id === newColumnId);
+    if (newColumn && newColumn.limit > 0) {
+        const tasksInColumn = kanbanData.tasks.filter(t => t.columnId === newColumnId).length;
+        if (tasksInColumn >= newColumn.limit) {
+            alert(`La columna "${newColumn.title}" ha alcanzado su límite de ${newColumn.limit} tareas.`);
             return;
         }
-        
-        tarea.columnaId = newColumnId;
-        
-        // Auto-completar si la columna lo requiere
-        if (columna.autoComplete) {
-            tarea.completada = true;
-            tarea.fechaCompletada = new Date().toISOString();
-        }
-        
-        loadKanbanBoard();
-        updateEstadisticas();
-        saveData();
-    }
-}
-
-function addTask(columnaId = null) {
-    currentTaskId = null;
-    currentColumnId = columnaId;
-    
-    document.getElementById('taskModalTitle').textContent = 'Agregar Tarea';
-    document.getElementById('taskForm').reset();
-    
-    // Llenar selector de columnas
-    const columnSelect = document.getElementById('taskColumnaInput');
-    columnSelect.innerHTML = '';
-    kanbanData.columnas.forEach(columna => {
-        const option = document.createElement('option');
-        option.value = columna.id;
-        option.textContent = columna.titulo;
-        option.selected = columna.id === columnaId;
-        columnSelect.appendChild(option);
-    });
-    
-    const modal = new bootstrap.Modal(document.getElementById('taskModal'));
-    modal.show();
-}
-
-function editTask(taskId) {
-    const tarea = kanbanData.tareas.find(t => t.id === taskId);
-    if (!tarea) return;
-    
-    currentTaskId = taskId;
-    currentColumnId = null;
-    
-    document.getElementById('taskModalTitle').textContent = 'Editar Tarea';
-    document.getElementById('taskTituloInput').value = tarea.titulo;
-    document.getElementById('taskDescripcionInput').value = tarea.descripcion || '';
-    document.getElementById('taskPrioridadInput').value = tarea.prioridad;
-    document.getElementById('taskFechaLimiteInput').value = tarea.fechaLimite || '';
-    document.getElementById('taskEtiquetasInput').value = (tarea.etiquetas || []).join(', ');
-    document.getElementById('taskAsignadoInput').value = tarea.asignadoA || '';
-    
-    // Llenar selector de columnas
-    const columnSelect = document.getElementById('taskColumnaInput');
-    columnSelect.innerHTML = '';
-    kanbanData.columnas.forEach(columna => {
-        const option = document.createElement('option');
-        option.value = columna.id;
-        option.textContent = columna.titulo;
-        option.selected = columna.id === tarea.columnaId;
-        columnSelect.appendChild(option);
-    });
-    
-    const modal = new bootstrap.Modal(document.getElementById('taskModal'));
-    modal.show();
-}
-
-function saveTask() {
-    const form = document.getElementById('taskForm');
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
     }
     
-    const titulo = document.getElementById('taskTituloInput').value;
-    const descripcion = document.getElementById('taskDescripcionInput').value;
-    const prioridad = document.getElementById('taskPrioridadInput').value;
-    const fechaLimite = document.getElementById('taskFechaLimiteInput').value;
-    const columnaId = parseInt(document.getElementById('taskColumnaInput').value);
-    const etiquetasText = document.getElementById('taskEtiquetasInput').value;
-    const asignadoA = document.getElementById('taskAsignadoInput').value;
+    task.columnId = newColumnId;
     
-    const etiquetas = etiquetasText ? etiquetasText.split(',').map(e => e.trim()).filter(e => e) : [];
-    
-    if (currentTaskId) {
-        // Editar tarea existente
-        const tarea = kanbanData.tareas.find(t => t.id === currentTaskId);
-        if (tarea) {
-            tarea.titulo = titulo;
-            tarea.descripcion = descripcion;
-            tarea.prioridad = prioridad;
-            tarea.fechaLimite = fechaLimite;
-            tarea.columnaId = columnaId;
-            tarea.etiquetas = etiquetas;
-            tarea.asignadoA = asignadoA;
-            tarea.fechaModificacion = new Date().toISOString();
-        }
-    } else {
-        // Crear nueva tarea
-        const newId = Math.max(...kanbanData.tareas.map(t => t.id), 0) + 1;
-        const newTask = {
-            id: newId,
-            titulo: titulo,
-            descripcion: descripcion,
-            prioridad: prioridad,
-            fechaLimite: fechaLimite,
-            columnaId: currentColumnId || columnaId,
-            etiquetas: etiquetas,
-            asignadoA: asignadoA,
-            completada: false,
-            fechaCreacion: new Date().toISOString(),
-            fechaModificacion: new Date().toISOString()
-        };
-        
-        kanbanData.tareas.push(newTask);
+    // Auto-complete if column has autoComplete enabled
+    if (newColumn && newColumn.autoComplete) {
+        task.completedAt = new Date().toISOString();
     }
     
     loadKanbanBoard();
-    updateEstadisticas();
-    saveData();
-    
-    const modal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
-    modal.hide();
-}
-
-function addColumn() {
-    currentColumnId = null;
-    
-    document.getElementById('columnModalTitle').textContent = 'Agregar Columna';
-    document.getElementById('columnForm').reset();
-    
-    const modal = new bootstrap.Modal(document.getElementById('columnModal'));
-    modal.show();
-}
-
-function editColumn(columnId) {
-    const columna = kanbanData.columnas.find(c => c.id === columnId);
-    if (!columna) return;
-    
-    currentColumnId = columnId;
-    
-    document.getElementById('columnModalTitle').textContent = 'Editar Columna';
-    document.getElementById('columnTituloInput').value = columna.titulo;
-    document.getElementById('columnColorInput').value = columna.color;
-    document.getElementById('columnLimiteInput').value = columna.limite;
-    document.getElementById('columnAutoComplete').checked = columna.autoComplete;
-    
-    const modal = new bootstrap.Modal(document.getElementById('columnModal'));
-    modal.show();
-}
-
-function saveColumn() {
-    const form = document.getElementById('columnForm');
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-    }
-    
-    const titulo = document.getElementById('columnTituloInput').value;
-    const color = document.getElementById('columnColorInput').value;
-    const limite = parseInt(document.getElementById('columnLimiteInput').value) || 0;
-    const autoComplete = document.getElementById('columnAutoComplete').checked;
-    
-    if (currentColumnId) {
-        // Editar columna existente
-        const columna = kanbanData.columnas.find(c => c.id === currentColumnId);
-        if (columna) {
-            columna.titulo = titulo;
-            columna.color = color;
-            columna.limite = limite;
-            columna.autoComplete = autoComplete;
-        }
-    } else {
-        // Crear nueva columna
-        const newId = Math.max(...kanbanData.columnas.map(c => c.id), 0) + 1;
-        const newColumn = {
-            id: newId,
-            titulo: titulo,
-            color: color,
-            limite: limite,
-            autoComplete: autoComplete
-        };
-        
-        kanbanData.columnas.push(newColumn);
-    }
-    
-    loadKanbanBoard();
-    saveData();
-    
-    const modal = bootstrap.Modal.getInstance(document.getElementById('columnModal'));
-    modal.hide();
-}
-
-function deleteColumn(columnId) {
-    const columna = kanbanData.columnas.find(c => c.id === columnId);
-    const tareasEnColumna = kanbanData.tareas.filter(t => t.columnaId === columnId).length;
-    
-    if (tareasEnColumna > 0) {
-        if (!confirm(`La columna "${columna.titulo}" tiene ${tareasEnColumna} tareas. ¿Estás seguro de eliminarla? Las tareas se moverán a la primera columna.`)) {
-            return;
-        }
-        
-        // Mover tareas a la primera columna
-        const primeraColumna = kanbanData.columnas.find(c => c.id !== columnId);
-        if (primeraColumna) {
-            kanbanData.tareas.forEach(t => {
-                if (t.columnaId === columnId) {
-                    t.columnaId = primeraColumna.id;
-                }
-            });
-        }
-    }
-    
-    kanbanData.columnas = kanbanData.columnas.filter(c => c.id !== columnId);
-    loadKanbanBoard();
-    updateEstadisticas();
+    updateStatistics();
     saveData();
 }
 
-function toggleFilter() {
-    const dropdown = document.querySelector('.filter-dropdown');
-    dropdown.classList.toggle('show');
-}
-
-function filterByPriority(prioridad) {
-    filtros.prioridad = prioridad;
-    loadKanbanBoard();
-    document.querySelector('.filter-dropdown').classList.remove('show');
-}
-
-function filterByDueDate(fechaLimite) {
-    filtros.fechaLimite = fechaLimite;
-    loadKanbanBoard();
-    document.querySelector('.filter-dropdown').classList.remove('show');
-}
-
-function clearFilters() {
-    filtros.prioridad = 'todas';
-    filtros.fechaLimite = 'todas';
-    
-    // Reset radio buttons
-    document.querySelectorAll('input[name="priority"]').forEach(radio => {
-        radio.checked = radio.value === 'todas';
-    });
-    document.querySelectorAll('input[name="duedate"]').forEach(radio => {
-        radio.checked = radio.value === 'todas';
-    });
-    
-    loadKanbanBoard();
-}
-
-function autoOrganize() {
-    // Organizar por prioridad y fecha límite
-    kanbanData.tareas.sort((a, b) => {
-        const prioridadOrder = { 'alta': 3, 'media': 2, 'baja': 1 };
-        const prioridadDiff = prioridadOrder[b.prioridad] - prioridadOrder[a.prioridad];
-        
-        if (prioridadDiff !== 0) return prioridadDiff;
-        
-        if (a.fechaLimite && b.fechaLimite) {
-            return new Date(a.fechaLimite) - new Date(b.fechaLimite);
-        }
-        
-        return 0;
-    });
-    
-    loadKanbanBoard();
-    saveData();
-}
-
-function archiveCompleted() {
-    const tareasCompletadas = kanbanData.tareas.filter(t => {
-        const columna = kanbanData.columnas.find(c => c.id === t.columnaId);
-        return columna && columna.autoComplete;
-    });
-    
-    if (tareasCompletadas.length === 0) {
-        alert('No hay tareas completadas para archivar.');
-        return;
-    }
-    
-    if (confirm(`¿Archivar ${tareasCompletadas.length} tareas completadas?`)) {
-        kanbanData.tareas = kanbanData.tareas.filter(t => {
-            const columna = kanbanData.columnas.find(c => c.id === t.columnaId);
-            return !(columna && columna.autoComplete);
-        });
-        
-        loadKanbanBoard();
-        updateEstadisticas();
-        saveData();
-    }
-}
-
-function configureKanban() {
-    document.getElementById('kanbanTituloInput').value = kanbanData.titulo;
-    document.getElementById('kanbanDescripcionInput').value = kanbanData.descripcion;
-    document.getElementById('kanbanTemaInput').value = kanbanData.tema;
-    document.getElementById('kanbanAutoArchive').checked = kanbanData.autoArchive;
-    document.getElementById('kanbanShowStats').checked = kanbanData.showStats;
-    document.getElementById('kanbanNotifications').checked = kanbanData.notifications;
-    
-    const modal = new bootstrap.Modal(document.getElementById('kanbanConfigModal'));
-    modal.show();
-}
-
-function saveKanbanConfig() {
-    const form = document.getElementById('kanbanConfigForm');
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-    }
-    
-    kanbanData.titulo = document.getElementById('kanbanTituloInput').value;
-    kanbanData.descripcion = document.getElementById('kanbanDescripcionInput').value;
-    kanbanData.tema = document.getElementById('kanbanTemaInput').value;
-    kanbanData.autoArchive = document.getElementById('kanbanAutoArchive').checked;
-    kanbanData.showStats = document.getElementById('kanbanShowStats').checked;
-    kanbanData.notifications = document.getElementById('kanbanNotifications').checked;
-    
-    // Actualizar UI
-    document.querySelector('.kanban-header h3').textContent = kanbanData.titulo;
-    document.querySelector('.kanban-header p').textContent = kanbanData.descripcion;
-    
-    saveData();
-    
-    const modal = bootstrap.Modal.getInstance(document.getElementById('kanbanConfigModal'));
-    modal.hide();
-}
-
-function exportKanban() {
-    const data = {
-        kanban: {
-            titulo: kanbanData.titulo,
-            descripcion: kanbanData.descripcion,
-            tema: kanbanData.tema,
-            autoArchive: kanbanData.autoArchive,
-            showStats: kanbanData.showStats,
-            notifications: kanbanData.notifications
-        },
-        columnas: kanbanData.columnas,
-        tareas: kanbanData.tareas,
-        exportadoEn: new Date().toISOString()
-    };
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${kanbanData.titulo || 'kanban'}_datos.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
+// Data Persistence
 function saveData() {
     fetch(`/espacio-personal/api/blocks/{{ block.id }}`, {
         method: 'PUT',
@@ -1590,15 +1600,13 @@ function saveData() {
             'X-CSRFToken': getCsrfToken()
         },
         body: JSON.stringify({
-            title: kanbanData.titulo,
-            content: kanbanData.descripcion,
+            title: kanbanData.title,
+            content: kanbanData.description,
             metadata: {
-                theme: kanbanData.tema,
                 auto_archive: kanbanData.autoArchive,
-                show_stats: kanbanData.showStats,
                 notifications: kanbanData.notifications,
-                columns: kanbanData.columnas,
-                tasks: kanbanData.tareas
+                columns: kanbanData.columns,
+                tasks: kanbanData.tasks
             }
         })
     })
@@ -1614,12 +1622,5 @@ function saveData() {
 function getCsrfToken() {
     return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
 }
-
-// Cerrar dropdown al hacer clic fuera
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.filter-dropdown')) {
-        document.querySelector('.filter-dropdown').classList.remove('show');
-    }
-});
 </script>
 {% endblock %}
