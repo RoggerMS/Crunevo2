@@ -29,7 +29,7 @@ Flask-Talisman==1.1.0
 Flask-Limiter==3.5.0
 Flask-SocketIO==5.5.1
 zxcvbn==4.5.0
-freezegun==1.5.0
+freezegun==1.5.5
 beautifulsoup4==4.13.4
 reportlab==4.4.2
 pytest
