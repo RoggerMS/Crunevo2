@@ -1,5 +1,7 @@
 <!-- Block Card Component simplified for Block model -->
-<div class="block-card {{ color }}-block" data-block-id="{{ block.id }}" data-order="{{ block.order_index }}" data-block-type="{{ block.type }}">
+{% set block_url = url_for('personal_space.view_bitacora', _anchor='block-' ~ block.id) if block.type == 'nota_enriquecida' else 'javascript:void(0);' %}
+<a href="{{ block_url }}" class="block-card-link">
+<div class="block-card {{ color }}-block" id="block-{{ block.id }}" data-block-id="{{ block.id }}" data-order="{{ block.order_index }}" data-block-type="{{ block.type }}">
     <div class="block-header">
         <div class="block-info">
             <div class="block-icon">
@@ -11,10 +13,10 @@
             </div>
         </div>
         <div class="block-actions">
-            <button class="btn-ghost" onclick="editBlock({{ block.id }})" aria-label="Editar bloque">
+            <button class="btn-ghost" onclick="event.stopPropagation(); editBlock({{ block.id }})" aria-label="Editar bloque">
                 <i class="bi bi-pencil"></i>
             </button>
-            <button class="btn-ghost" onclick="deleteBlock({{ block.id }})" aria-label="Eliminar bloque">
+            <button class="btn-ghost" onclick="event.stopPropagation(); deleteBlock({{ block.id }})" aria-label="Eliminar bloque">
                 <i class="bi bi-trash"></i>
             </button>
         </div>
@@ -22,6 +24,8 @@
     <div class="block-content">
         {% if block.type == 'nota' %}
             {% include 'personal_space/blocks/nota_block.html' %}
+        {% elif block.type == 'nota_enriquecida' %}
+            {% include 'personal_space/blocks/nota_enriquecida_block.html' %}
         {% elif block.type == 'kanban' %}
             {% include 'personal_space/blocks/kanban_block.html' %}
         {% elif block.type == 'objetivo' %}
@@ -29,3 +33,4 @@
         {% endif %}
     </div>
 </div>
+</a>
