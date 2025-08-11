@@ -51,6 +51,51 @@
     box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
 }
 
+.icon-selector-menu {
+    position: absolute;
+    top: 70px;
+    left: 0;
+    z-index: 20;
+    background: #fff;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 12px 30px rgba(139, 92, 246, 0.2);
+    width: 320px;
+    display: none;
+}
+
+.icon-selector-header {
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+.icon-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+}
+
+.icon-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 10px;
+    cursor: pointer;
+    color: #8b5cf6;
+    background: linear-gradient(135deg, rgba(139,92,246,0.06), rgba(139,92,246,0.03));
+    transition: all 0.2s ease;
+}
+
+.icon-option:hover {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
 .nota-title-input {
     border: none;
     font-size: 2.2rem;
@@ -151,29 +196,6 @@
     transform: translateY(-2px);
 }
 
-.block-control-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    background: white;
-    color: #8b5cf6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.8rem;
-    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.1);
-}
-
-.block-control-btn:hover {
-    background: #8b5cf6;
-    color: white;
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-}
-
 .block-type-selector {
     display: flex;
     gap: 8px;
@@ -207,25 +229,6 @@
     box-shadow: 0 6px 15px rgba(139, 92, 246, 0.3);
 }
 
-.block-input {
-    width: 100%;
-    border: none;
-    background: transparent;
-    resize: vertical;
-    min-height: 50px;
-    font-family: inherit;
-    line-height: 1.6;
-    padding: 8px 0;
-    font-size: 1rem;
-}
-
-.block-input:focus {
-    outline: none;
-    background: rgba(139, 92, 246, 0.02);
-    border-radius: 8px;
-    padding: 8px 12px;
-}
-
 .block-heading {
     font-size: 1.5rem;
     font-weight: 700;
@@ -236,7 +239,7 @@
     background-clip: text;
 }
 
-.block-text {
+.block-text, .block-code, .block-quote {
     font-size: 1.05rem;
     line-height: 1.7;
     margin: 0;
@@ -256,65 +259,24 @@
     margin-bottom: 5px;
 }
 
-.block-code {
-    background: var(--bs-gray-100);
-    padding: 12px;
-    border-radius: 6px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    border-left: 3px solid var(--bs-primary);
-}
-
-.block-quote {
-    border-left: 4px solid var(--bs-primary);
-    padding-left: 16px;
-    margin: 0;
-    font-style: italic;
-    color: var(--bs-secondary);
-}
-
-.add-block-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px;
-    border: 2px dashed var(--bs-border-color);
-    background: transparent;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-    color: var(--bs-secondary);
-    transition: all 0.2s;
-}
-
-.add-block-btn:hover {
-    border-color: var(--bs-primary);
-    color: var(--bs-primary);
-    background: var(--bs-primary-bg);
-}
-
-.tags-input {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid var(--bs-border-color);
-}
-
 .tags-display {
     display: flex;
-    gap: 5px;
+    gap: 8px;
     flex-wrap: wrap;
     margin-top: 10px;
 }
 
 .tag-item {
-    background: var(--bs-primary-bg);
-    color: var(--bs-primary);
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
+    color: #8b5cf6;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid rgba(139, 92, 246, 0.2);
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
 }
 
 .tag-remove {
@@ -326,7 +288,7 @@
     position: fixed;
     top: 20px;
     right: 20px;
-    background: var(--bs-success);
+    background: #10b981;
     color: white;
     padding: 8px 16px;
     border-radius: 20px;
@@ -372,6 +334,35 @@
                     <div class="icon-display" onclick="toggleIconSelector()">
                         <i class="{{ block.get_metadata().get('icon', 'bi bi-file-text') }}" id="currentIcon"></i>
                     </div>
+                    <div class="icon-selector-menu" id="iconSelectorMenu">
+                        <div class="icon-selector-header">Elige un icono</div>
+                        <div class="icon-grid">
+                            <div class="icon-option" onclick="selectIcon('bi bi-file-text')"><i class="bi bi-file-text"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-journal-text')"><i class="bi bi-journal-text"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-lightbulb')"><i class="bi bi-lightbulb"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-book')"><i class="bi bi-book"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-code-slash')"><i class="bi bi-code-slash"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-bookmark-star')"><i class="bi bi-bookmark-star"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-check2-circle')"><i class="bi bi-check2-circle"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-star')"><i class="bi bi-star"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-calendar-event')"><i class="bi bi-calendar-event"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-clipboard-data')"><i class="bi bi-clipboard-data"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-collection')"><i class="bi bi-collection"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-diagram-3')"><i class="bi bi-diagram-3"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-emoji-smile')"><i class="bi bi-emoji-smile"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-gear')"><i class="bi bi-gear"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-graph-up')"><i class="bi bi-graph-up"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-heart')"><i class="bi bi-heart"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-link-45deg')"><i class="bi bi-link-45deg"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-list-check')"><i class="bi bi-list-check"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-pen')"><i class="bi bi-pen"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-quote')"><i class="bi bi-quote"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-search')"><i class="bi bi-search"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-shield-check')"><i class="bi bi-shield-check"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-stickies')"><i class="bi bi-stickies"></i></div>
+                            <div class="icon-option" onclick="selectIcon('bi bi-translate')"><i class="bi bi-translate"></i></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="flex-grow-1">
                     <input type="text" class="nota-title-input" id="notaTitle" 
@@ -383,11 +374,11 @@
             <div class="template-selector">
                 <h5 class="section-header">Plantilla</h5>
                 <div class="template-options d-flex gap-2 flex-wrap">
-                    <div class="template-option chip" data-template="">Libre</div>
-                    <div class="template-option chip" data-template="apuntes">Apuntes de Clase</div>
-                    <div class="template-option chip" data-template="proyecto">Proyecto</div>
-                    <div class="template-option chip" data-template="investigacion">Investigación</div>
-                    <div class="template-option chip" data-template="resumen">Resumen</div>
+                    <div class="template-option" data-template="">Libre</div>
+                    <div class="template-option" data-template="apuntes">Apuntes de Clase</div>
+                    <div class="template-option" data-template="proyecto">Proyecto</div>
+                    <div class="template-option" data-template="investigacion">Investigación</div>
+                    <div class="template-option" data-template="resumen">Resumen</div>
                 </div>
             </div>
         </div>
@@ -441,9 +432,32 @@ document.addEventListener('DOMContentLoaded', function() {
     loadTags();
     setupEventListeners();
     
+    // Close icon menu on outside click
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('iconSelectorMenu');
+        const selector = document.querySelector('.nota-icon-selector');
+        if (!selector.contains(e.target)) {
+            menu.style.display = 'none';
+        }
+    });
+    
     // Auto-save every 30 seconds
     setInterval(saveNote, 30000);
 });
+
+function toggleIconSelector() {
+    const menu = document.getElementById('iconSelectorMenu');
+    menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
+}
+
+function selectIcon(iconClass) {
+    noteData.icon = iconClass;
+    const current = document.getElementById('currentIcon');
+    current.className = iconClass;
+    debounceAutoSave();
+    const menu = document.getElementById('iconSelectorMenu');
+    menu.style.display = 'none';
+}
 
 function setupEventListeners() {
     // Title input

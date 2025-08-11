@@ -196,6 +196,13 @@
     font-weight: 500;
     margin-top: 5px;
 }
+
+/* Entry actions */
+.entry-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
 </style>
 {% endblock %}
 
@@ -276,14 +283,22 @@
             <div class="entry-item">
                 <div class="entry-header">
                     <span class="entry-date">{{ entry.date }}</span>
-                    <span class="entry-mood">
-                        {% if entry.mood == 'happy' %}😊
-                        {% elif entry.mood == 'neutral' %}😐
-                        {% elif entry.mood == 'sad' %}😢
-                        {% elif entry.mood == 'excited' %}🤩
-                        {% elif entry.mood == 'stressed' %}😰
-                        {% else %}😐{% endif %}
-                    </span>
+                    <div class="entry-actions">
+                        <button type="button" class="btn btn-sm btn-outline-primary me-2 js-edit-entry">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger js-delete-entry">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                        <span class="entry-mood">
+                            {% if entry.mood == 'happy' %}😊
+                            {% elif entry.mood == 'neutral' %}😐
+                            {% elif entry.mood == 'sad' %}😢
+                            {% elif entry.mood == 'excited' %}🤩
+                            {% elif entry.mood == 'stressed' %}😰
+                            {% else %}😐{% endif %}
+                        </span>
+                    </div>
                 </div>
                 <div class="entry-content">
                     {{ entry.content }}
@@ -321,6 +336,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Existing entries from server
+    const allEntries = [...{{ metadata.get('entries', [])|tojson }}];
+
+    // Map DOM items to entry indices (since DOM is reversed)
+    const entryItems = Array.from(document.querySelectorAll('.entry-item'));
+    entryItems.forEach((item, idxFromTop) => {
+        const mappedIndex = allEntries.length - 1 - idxFromTop;
+        item.dataset.entryIndex = mappedIndex;
+    });
+
+    // Attach actions
+    document.querySelectorAll('.js-edit-entry').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const item = this.closest('.entry-item');
+            const index = parseInt(item.dataset.entryIndex, 10);
+            editEntry(index);
+        });
+    });
+    document.querySelectorAll('.js-delete-entry').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const item = this.closest('.entry-item');
+            const index = parseInt(item.dataset.entryIndex, 10);
+            deleteEntry(index);
+        });
+    });
+    
     // Form submission
     document.getElementById('entryForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -339,6 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const newEntry = {
+            id: Date.now(),
             date: new Date().toLocaleDateString('es-ES'),
             mood: selectedMood,
             content: content,
@@ -346,6 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         // Save entry via API
+        const updatedEntries = [...allEntries, newEntry];
         fetch(`/espacio-personal/api/blocks/{{ block.id }}`, {
             method: 'PUT',
             headers: {
@@ -355,8 +398,8 @@ document.addEventListener('DOMContentLoaded', function() {
             body: JSON.stringify({
                 metadata: {
                     ...{{ block.get_metadata()|tojson }},
-                    entries: [...{{ metadata.get('entries', [])|tojson }}, newEntry],
-                    streak: calculateStreak([...{{ metadata.get('entries', [])|tojson }}, newEntry])
+                    entries: updatedEntries,
+                    streak: calculateStreak(updatedEntries)
                 }
             })
         })
@@ -373,6 +416,53 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Error al guardar la entrada');
         });
     });
+
+    function editEntry(index) {
+        const entry = allEntries[index];
+        if (!entry) return;
+        const newContent = prompt('Editar contenido de la entrada:', entry.content || '');
+        if (newContent === null) return; // canceled
+        const newTagsStr = prompt('Editar etiquetas (separadas por comas):', (entry.tags || []).join(', '));
+        const newMood = prompt('Editar estado (happy, neutral, sad, excited, stressed):', entry.mood || 'neutral');
+        const updated = { ...entry, content: newContent.trim(), mood: (newMood || 'neutral').trim(), tags: (newTagsStr || '').split(',').map(t => t.trim()).filter(Boolean) };
+        const updatedEntries = allEntries.map((e, i) => i === index ? updated : e);
+        saveEntries(updatedEntries);
+    }
+
+    function deleteEntry(index) {
+        if (!confirm('¿Eliminar esta entrada?')) return;
+        const updatedEntries = allEntries.filter((_, i) => i !== index);
+        saveEntries(updatedEntries);
+    }
+
+    function saveEntries(updatedEntries) {
+        fetch(`/espacio-personal/api/blocks/{{ block.id }}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({
+                metadata: {
+                    ...{{ block.get_metadata()|tojson }},
+                    entries: updatedEntries,
+                    streak: calculateStreak(updatedEntries)
+                }
+            })
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                location.reload();
+            } else {
+                alert('No se pudo guardar los cambios');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Error de red al guardar cambios');
+        });
+    }
     
     function calculateStreak(entries) {
         if (entries.length === 0) return 0;
@@ -380,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const today = new Date();
         let streak = 0;
         
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 60; i++) {
             const checkDate = new Date(today);
             checkDate.setDate(today.getDate() - i);
             const dateStr = checkDate.toLocaleDateString('es-ES');
