@@ -171,6 +171,12 @@
 }
 
 /* Block Card Styles - Unified Modern Design */
+a.block-card-link,
+a.block-card-link:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
 .block-card {
     display: flex;
     flex-direction: column;
