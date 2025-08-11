@@ -901,9 +901,18 @@ if (kanbanData.columns.length === 0) {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    loadKanbanBoard();
-    updateStatistics();
-    setupDragAndDrop();
+    // Load data from server first, then initialize board
+    loadKanbanData().then(() => {
+        loadKanbanBoard();
+        updateStatistics();
+        setupDragAndDrop();
+    }).catch(error => {
+        console.error('Failed to load Kanban data:', error);
+        // Fallback to existing data if API fails
+        loadKanbanBoard();
+        updateStatistics();
+        setupDragAndDrop();
+    });
     
     // Auto-save every 30 seconds
     setInterval(saveData, 30000);

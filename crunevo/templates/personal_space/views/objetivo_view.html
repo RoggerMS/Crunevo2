@@ -816,13 +816,26 @@ const frases = [
 ];
 
 document.addEventListener('DOMContentLoaded', function() {
-    loadHitos();
-    loadRecursos();
-    updateStats();
-    updateMotivacion();
+    // Cargar datos desde el servidor primero
+    loadObjetivoData().then(() => {
+        loadHitos();
+        loadRecursos();
+        updateStats();
+        updateMotivacion();
+    }).catch(error => {
+        console.error('Error loading objetivo data:', error);
+        // Fallback a datos existentes
+        loadHitos();
+        loadRecursos();
+        updateStats();
+        updateMotivacion();
+    });
     
     // Cambiar frase motivacional cada 30 segundos
     setInterval(updateMotivacion, 30000);
+    
+    // Auto-guardar cada 2 minutos
+    setInterval(autoSave, 120000);
 });
 
 function loadHitos() {
@@ -1017,25 +1030,18 @@ function saveHito() {
     }
     
     const hitoData = {
-        id: editingHitoId || Date.now().toString(),
-        titulo: document.getElementById('hitoTitulo').value,
-        descripcion: document.getElementById('hitoDescripcion').value,
-        fecha: document.getElementById('hitoFecha').value,
-        completado: false
+        title: document.getElementById('hitoTitulo').value,
+        description: document.getElementById('hitoDescripcion').value,
+        target_date: document.getElementById('hitoFecha').value
     };
     
     if (editingHitoId) {
-        const index = objetivoData.hitos.findIndex(h => h.id === editingHitoId);
-        if (index !== -1) {
-            objetivoData.hitos[index] = { ...objetivoData.hitos[index], ...hitoData };
-        }
+        // Actualizar hito existente
+        updateHitoViaAPI(editingHitoId, hitoData);
     } else {
-        objetivoData.hitos.push(hitoData);
+        // Crear nuevo hito
+        addHitoViaAPI(hitoData);
     }
-    
-    saveData();
-    loadHitos();
-    updateStats();
     
     const modal = bootstrap.Modal.getInstance(document.getElementById('hitoModal'));
     modal.hide();
@@ -1043,20 +1049,20 @@ function saveHito() {
 
 function deleteHito(id) {
     if (confirm('¿Estás seguro de que quieres eliminar este hito?')) {
-        objetivoData.hitos = objetivoData.hitos.filter(h => h.id !== id);
-        saveData();
-        loadHitos();
-        updateStats();
+        deleteHitoViaAPI(id);
     }
 }
 
 function toggleHitoCompletado(id) {
     const hito = objetivoData.hitos.find(h => h.id === id);
     if (hito) {
-        hito.completado = !hito.completado;
-        saveData();
-        loadHitos();
-        updateStats();
+        const hitoData = {
+            title: hito.titulo,
+            description: hito.descripcion,
+            target_date: hito.fecha,
+            completed: !hito.completado
+        };
+        updateHitoViaAPI(id, hitoData);
     }
 }
 
@@ -1092,24 +1098,19 @@ function saveRecurso() {
     }
     
     const recursoData = {
-        id: editingRecursoId || Date.now().toString(),
-        tipo: document.getElementById('recursoTipo').value,
-        titulo: document.getElementById('recursoTitulo').value,
-        descripcion: document.getElementById('recursoDescripcion').value,
+        type: document.getElementById('recursoTipo').value,
+        title: document.getElementById('recursoTitulo').value,
+        description: document.getElementById('recursoDescripcion').value,
         url: document.getElementById('recursoUrl').value
     };
     
     if (editingRecursoId) {
-        const index = objetivoData.recursos.findIndex(r => r.id === editingRecursoId);
-        if (index !== -1) {
-            objetivoData.recursos[index] = recursoData;
-        }
+        // Actualizar recurso existente
+        updateRecursoViaAPI(editingRecursoId, recursoData);
     } else {
-        objetivoData.recursos.push(recursoData);
+        // Crear nuevo recurso
+        addRecursoViaAPI(recursoData);
     }
-    
-    saveData();
-    loadRecursos();
     
     const modal = bootstrap.Modal.getInstance(document.getElementById('recursoModal'));
     modal.hide();
@@ -1117,9 +1118,7 @@ function saveRecurso() {
 
 function deleteRecurso(id) {
     if (confirm('¿Estás seguro de que quieres eliminar este recurso?')) {
-        objetivoData.recursos = objetivoData.recursos.filter(r => r.id !== id);
-        saveData();
-        loadRecursos();
+        deleteRecursoViaAPI(id);
     }
 }
 
@@ -1215,5 +1214,305 @@ function exportObjetivo() {
 function getCsrfToken() {
     return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
 }
+
+// ============================================================================
+// NUEVAS FUNCIONES API PARA OBJETIVO ACADÉMICO
+// ============================================================================
+
+// Cargar datos del objetivo desde el servidor
+function loadObjetivoData() {
+    return Promise.all([
+        loadMilestonesFromAPI(),
+        loadResourcesFromAPI()
+    ]);
+}
+
+// Cargar hitos desde la API
+function loadMilestonesFromAPI() {
+    return fetch(`/espacio-personal/api/objetivo/{{ block.id }}/milestones`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            objetivoData.hitos = data.milestones.map(milestone => ({
+                id: milestone.id,
+                titulo: milestone.title,
+                descripcion: milestone.description,
+                fecha: milestone.target_date,
+                completado: milestone.completed
+            }));
+        }
+        return data;
+    })
+    .catch(error => {
+        console.error('Error loading milestones:', error);
+        throw error;
+    });
+}
+
+// Cargar recursos desde la API
+function loadResourcesFromAPI() {
+    return fetch(`/espacio-personal/api/objetivo/{{ block.id }}/resources`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            objetivoData.recursos = data.resources.map(resource => ({
+                id: resource.id,
+                tipo: resource.type,
+                titulo: resource.title,
+                descripcion: resource.description,
+                url: resource.url
+            }));
+        }
+        return data;
+    })
+    .catch(error => {
+        console.error('Error loading resources:', error);
+        throw error;
+    });
+}
+
+// Agregar hito vía API
+function addHitoViaAPI(hitoData) {
+    fetch(`/espacio-personal/api/objetivo/{{ block.id }}/milestones`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify(hitoData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Recargar datos desde el servidor
+            loadMilestonesFromAPI().then(() => {
+                loadHitos();
+                updateStats();
+            });
+            showNotification('Hito agregado exitosamente', 'success');
+        } else {
+            showNotification('Error al agregar hito: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error adding milestone:', error);
+        showNotification('Error al agregar hito', 'error');
+    });
+}
+
+// Actualizar hito vía API
+function updateHitoViaAPI(hitoId, hitoData) {
+    fetch(`/espacio-personal/api/objetivo/{{ block.id }}/milestones/${hitoId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify(hitoData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Recargar datos desde el servidor
+            loadMilestonesFromAPI().then(() => {
+                loadHitos();
+                updateStats();
+            });
+            showNotification('Hito actualizado exitosamente', 'success');
+        } else {
+            showNotification('Error al actualizar hito: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating milestone:', error);
+        showNotification('Error al actualizar hito', 'error');
+    });
+}
+
+// Eliminar hito vía API
+function deleteHitoViaAPI(hitoId) {
+    fetch(`/espacio-personal/api/objetivo/{{ block.id }}/milestones/${hitoId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Recargar datos desde el servidor
+            loadMilestonesFromAPI().then(() => {
+                loadHitos();
+                updateStats();
+            });
+            showNotification('Hito eliminado exitosamente', 'success');
+        } else {
+            showNotification('Error al eliminar hito: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting milestone:', error);
+        showNotification('Error al eliminar hito', 'error');
+    });
+}
+
+// Agregar recurso vía API
+function addRecursoViaAPI(recursoData) {
+    fetch(`/espacio-personal/api/objetivo/{{ block.id }}/resources`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify(recursoData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Recargar datos desde el servidor
+            loadResourcesFromAPI().then(() => {
+                loadRecursos();
+            });
+            showNotification('Recurso agregado exitosamente', 'success');
+        } else {
+            showNotification('Error al agregar recurso: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error adding resource:', error);
+        showNotification('Error al agregar recurso', 'error');
+    });
+}
+
+// Actualizar recurso vía API
+function updateRecursoViaAPI(recursoId, recursoData) {
+    fetch(`/espacio-personal/api/objetivo/{{ block.id }}/resources/${recursoId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify(recursoData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Recargar datos desde el servidor
+            loadResourcesFromAPI().then(() => {
+                loadRecursos();
+            });
+            showNotification('Recurso actualizado exitosamente', 'success');
+        } else {
+            showNotification('Error al actualizar recurso: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating resource:', error);
+        showNotification('Error al actualizar recurso', 'error');
+    });
+}
+
+// Eliminar recurso vía API
+function deleteRecursoViaAPI(recursoId) {
+    fetch(`/espacio-personal/api/objetivo/{{ block.id }}/resources/${recursoId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Recargar datos desde el servidor
+            loadResourcesFromAPI().then(() => {
+                loadRecursos();
+            });
+            showNotification('Recurso eliminado exitosamente', 'success');
+        } else {
+            showNotification('Error al eliminar recurso: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting resource:', error);
+        showNotification('Error al eliminar recurso', 'error');
+    });
+}
+
+// Función de auto-guardado
+function autoSave() {
+    saveData();
+    console.log('Auto-guardado realizado');
+}
+
+// Mostrar notificaciones
+function showNotification(message, type = 'info') {
+    // Crear elemento de notificación
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info'} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remover después de 5 segundos
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 5000);
+}
+
+// Mejorar seguimiento de deadlines con alertas
+function checkDeadlineAlerts() {
+    if (!objetivoData.fechaLimite) return;
+    
+    const fechaLimite = new Date(objetivoData.fechaLimite);
+    const hoy = new Date();
+    const diasRestantes = Math.ceil((fechaLimite - hoy) / (1000 * 60 * 60 * 24));
+    
+    // Alertas de deadline
+    if (diasRestantes === 7) {
+        showNotification('⚠️ Tu objetivo vence en 7 días. ¡Es hora de acelerar!', 'warning');
+    } else if (diasRestantes === 3) {
+        showNotification('🚨 Tu objetivo vence en 3 días. ¡Último esfuerzo!', 'error');
+    } else if (diasRestantes === 1) {
+        showNotification('⏰ Tu objetivo vence mañana. ¡Dale el toque final!', 'error');
+    } else if (diasRestantes === 0) {
+        showNotification('🎯 ¡Hoy es el día! Tu objetivo vence hoy.', 'error');
+    }
+    
+    // Verificar hitos próximos a vencer
+    objetivoData.hitos.forEach(hito => {
+        if (hito.fecha && !hito.completado) {
+            const fechaHito = new Date(hito.fecha);
+            const diasHito = Math.ceil((fechaHito - hoy) / (1000 * 60 * 60 * 24));
+            
+            if (diasHito === 2) {
+                showNotification(`📌 El hito "${hito.titulo}" vence en 2 días`, 'warning');
+            }
+        }
+    });
+}
+
+// Verificar alertas al cargar la página
+setTimeout(checkDeadlineAlerts, 2000);
+
 </script>
 {% endblock %}
