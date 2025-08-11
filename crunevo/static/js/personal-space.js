@@ -13,6 +13,8 @@ let isFocusMode = localStorage.getItem('focus_mode') === 'on';
 
 const DEFAULT_ICONS = {
     'nota': 'bi-journal-text',
+    'nota_enriquecida': 'bi-file-richtext',
+    'bitacora': 'bi-journal-text',
     'lista': 'bi-check2-square',
     'meta': 'bi-target',
     'recordatorio': 'bi-alarm',
@@ -223,6 +225,7 @@ function createBlockElement(block) {
 function generateBlockHTML(block) {
     const typeLabels = {
         'nota': 'Nota Rápida',
+        'nota_enriquecida': 'Bitácora Inteligente',
         'lista': 'Lista de Tareas',
         'meta': 'Meta',
         'recordatorio': 'Recordatorio',
@@ -272,6 +275,9 @@ function generateBlockHTML(block) {
 function generateBlockContent(block) {
     switch (block.type) {
         case 'nota':
+        case 'nota_enriquecida':
+        case 'nota_enriquecida':
+        case 'nota_enriquecida':
             return `
                 <div class="note-content">
                     ${block.content ?
@@ -451,6 +457,7 @@ function createNewBlock(type) {
 function getDefaultTitle(type) {
     const titles = {
         'nota': 'Nueva nota',
+        'nota_enriquecida': 'Nueva nota',
         'lista': 'Lista de tareas',
         'meta': 'Nueva meta',
         'recordatorio': 'Recordatorio',
@@ -472,13 +479,17 @@ function getDefaultMetadata(type) {
             return { author: '', category: 'motivacional' };
         case 'enlace':
             return { url: '', description: '' };
+        case 'nota_enriquecida':
+            return { blocks: [], template_type: '', tags: [] };
+        case 'bitacora':
+            return { entries: [], streak: 0, mood_tracking: true };
         default:
             return {};
     }
 }
 
 function startPersonalSpace() {
-    const requests = ['nota', 'kanban', 'objetivo'].map(type =>
+    const requests = ['nota_enriquecida', 'kanban', 'objetivo'].map(type =>
         fetch('/espacio-personal/api/create-block', {
             method: 'POST',
             headers: {
@@ -1130,7 +1141,7 @@ function handleSuggestionClick(e) {
                 }
                 break;
             case 'create_nota_block':
-                if (!blockTypeExists('nota')) {
+                if (!blockTypeExists('nota_enriquecida')) {
                     fetch('/espacio-personal/api/create-block', {
                         method: 'POST',
                         headers: {
@@ -1138,8 +1149,8 @@ function handleSuggestionClick(e) {
                             'X-CSRFToken': getCsrfToken()
                         },
                         body: JSON.stringify({
-                            type: 'nota',
-                            metadata: { color: 'indigo', icon: DEFAULT_ICONS['nota'] }
+                            type: 'nota_enriquecida',
+                            metadata: Object.assign({ color: 'indigo', icon: DEFAULT_ICONS['nota_enriquecida'] }, getDefaultMetadata('nota_enriquecida'))
                         })
                     })
                     .then(res => res.json())
@@ -1390,6 +1401,7 @@ function updateDashboardMetrics() {
 
         switch(type) {
             case 'nota':
+            case 'nota_enriquecida':
                 metrics.notas++;
                 break;
             case 'tarea':

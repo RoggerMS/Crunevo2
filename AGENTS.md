@@ -1287,3 +1287,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Unified personal space block cards layout with responsive grid, restored single/double click interactions and fixed edit modal backdrop cleanup. (PR personal-space-blocks-layout)
 - Linked shared stylesheet and added Tailwind typography classes in Bloque Personalizado and Nota Enriquecida views for consistent block design. (PR personal-space-block-styles)
 - Added test covering creation and view rendering for all personal space block types and fixed 'bloque_personalizado' metadata to use structured subject data. (PR personal-space-block-tests)
+- Fixed personal space note creation by switching the Bitácora Inteligente card to use `nota_enriquecida` blocks and updating related JS, routes and styles. (PR personal-space-nota-enriquecida)
