@@ -146,7 +146,10 @@ def create_block():
         metadata.setdefault("template_type", "")
         metadata.setdefault("tags", [])
     elif data["type"] == "bloque_personalizado":
-        metadata.setdefault("subject", {"name": "", "code": "", "profesor": "", "color": "", "icon": "bi bi-book"})
+        metadata.setdefault(
+            "subject",
+            {"name": "", "code": "", "profesor": "", "color": "", "icon": "bi bi-book"},
+        )
         metadata.setdefault("subject_code", "")
         metadata.setdefault("professor", "")
         metadata.setdefault("elementos", [])
@@ -322,7 +325,11 @@ def get_smart_suggestions():
         )
 
     # Check if user has no notes
-    notes_count = Block.query.filter_by(user_id=current_user.id, type="nota").count()
+    notes_count = (
+        Block.query.filter_by(user_id=current_user.id)
+        .filter(Block.type.in_(["nota", "nota_enriquecida"]))
+        .count()
+    )
 
     if notes_count == 0:
         suggestions.append(
