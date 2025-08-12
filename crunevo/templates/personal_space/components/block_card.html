@@ -1,5 +1,9 @@
 <!-- Block Card Component simplified for Block model -->
-{% set block_url = url_for('personal_space.view_bitacora', _anchor='block-' ~ block.id) if block.type == 'nota_enriquecida' else 'javascript:void(0);' %}
+{% if block.type == 'nota_enriquecida' %}
+{% set block_url = url_for('personal_space.view_bitacora', _anchor='block-' ~ block.id) %}
+{% else %}
+{% set block_url = url_for('personal_space.view_block', block_id=block.id) %}
+{% endif %}
 <a href="{{ block_url }}" class="block-card-link">
 <div class="block-card {{ color }}-block" id="block-{{ block.id }}" data-block-id="{{ block.id }}" data-order="{{ block.order_index }}" data-block-type="{{ block.type }}">
     <div class="block-header">
