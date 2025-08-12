@@ -57,7 +57,9 @@ def index():
 @activated_required
 def view_bitacora():
     sort_order = request.args.get("sort", "newest")
-    order_by = Block.updated_at.desc() if sort_order == "newest" else Block.updated_at.asc()
+    order_by = (
+        Block.updated_at.desc() if sort_order == "newest" else Block.updated_at.asc()
+    )
 
     logbook_blocks = (
         Block.query.filter_by(user_id=current_user.id, type="nota_enriquecida")
@@ -510,18 +512,20 @@ def view_block(block_id):
 
     if block.type in ("objetivo", "objective"):
         meta = block.get_metadata() or {}
+        obj_json = meta.get("objective", {})
         objective = SimpleNamespace(
             id=block.id,
-            title=block.title or "Objetivo sin título",
-            desc=meta.get("desc", ""),
-            due_at=meta.get("due_at", ""),
-            status=meta.get("status", "en-curso"),
-            priority=meta.get("priority", "media"),
+            title=block.title or obj_json.get("title", "Objetivo sin título"),
+            desc=obj_json.get("desc", ""),
+            due_at=obj_json.get("due_at", ""),
+            status=obj_json.get("status", "en-curso"),
+            priority=obj_json.get("priority", "media"),
         )
         return render_template(
             "personal_space/views/objective_detail.html",
             block=block,
             objective=objective,
+            objective_json=obj_json,
         )
 
     template_name = f"personal_space/views/{block.type}_view.html"
@@ -1261,10 +1265,10 @@ def get_kanban_tasks(block_id):
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
     if not block or block.type != "kanban":
         return jsonify({"success": False, "message": "Tablero no encontrado"}), 404
-    
+
     metadata = block.get_metadata()
     columns = metadata.get("columns", {})
-    
+
     return jsonify({"success": True, "columns": columns})
 
 
@@ -1276,40 +1280,42 @@ def add_kanban_task(block_id):
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
     if not block or block.type != "kanban":
         return jsonify({"success": False, "message": "Tablero no encontrado"}), 404
-    
+
     data = request.get_json() or {}
     column_name = data.get("column", "Por hacer")
     task_title = data.get("title", "Nueva tarea")
     task_description = data.get("description", "")
     task_priority = data.get("priority", "medium")
     task_due_date = data.get("due_date", "")
-    
+
     metadata = block.get_metadata()
     columns = metadata.get("columns", {})
-    
+
     if column_name not in columns:
         columns[column_name] = []
-    
+
     new_task = {
         "id": len([task for col_tasks in columns.values() for task in col_tasks]) + 1,
         "title": task_title,
         "description": task_description,
         "priority": task_priority,
         "due_date": task_due_date,
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.utcnow().isoformat(),
     }
-    
+
     columns[column_name].append(new_task)
     metadata["columns"] = columns
     block.set_metadata(metadata)
     block.updated_at = datetime.utcnow()
-    
+
     db.session.commit()
-    
+
     return jsonify({"success": True, "task": new_task, "message": "Tarea agregada"})
 
 
-@personal_space_bp.route("/api/kanban/<int:block_id>/tasks/<int:task_id>", methods=["PUT"])
+@personal_space_bp.route(
+    "/api/kanban/<int:block_id>/tasks/<int:task_id>", methods=["PUT"]
+)
 @login_required
 @activated_required
 def update_kanban_task(block_id, task_id):
@@ -1317,11 +1323,11 @@ def update_kanban_task(block_id, task_id):
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
     if not block or block.type != "kanban":
         return jsonify({"success": False, "message": "Tablero no encontrado"}), 404
-    
+
     data = request.get_json() or {}
     metadata = block.get_metadata()
     columns = metadata.get("columns", {})
-    
+
     # Find and update the task
     task_found = False
     for column_name, tasks in columns.items():
@@ -1336,26 +1342,28 @@ def update_kanban_task(block_id, task_id):
                     task["priority"] = data["priority"]
                 if "due_date" in data:
                     task["due_date"] = data["due_date"]
-                
+
                 task["updated_at"] = datetime.utcnow().isoformat()
                 task_found = True
                 break
         if task_found:
             break
-    
+
     if not task_found:
         return jsonify({"success": False, "message": "Tarea no encontrada"}), 404
-    
+
     metadata["columns"] = columns
     block.set_metadata(metadata)
     block.updated_at = datetime.utcnow()
-    
+
     db.session.commit()
-    
+
     return jsonify({"success": True, "message": "Tarea actualizada"})
 
 
-@personal_space_bp.route("/api/kanban/<int:block_id>/tasks/<int:task_id>", methods=["DELETE"])
+@personal_space_bp.route(
+    "/api/kanban/<int:block_id>/tasks/<int:task_id>", methods=["DELETE"]
+)
 @login_required
 @activated_required
 def delete_kanban_task(block_id, task_id):
@@ -1363,10 +1371,10 @@ def delete_kanban_task(block_id, task_id):
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
     if not block or block.type != "kanban":
         return jsonify({"success": False, "message": "Tablero no encontrado"}), 404
-    
+
     metadata = block.get_metadata()
     columns = metadata.get("columns", {})
-    
+
     # Find and remove the task
     task_found = False
     for column_name, tasks in columns.items():
@@ -1377,20 +1385,22 @@ def delete_kanban_task(block_id, task_id):
                 break
         if task_found:
             break
-    
+
     if not task_found:
         return jsonify({"success": False, "message": "Tarea no encontrada"}), 404
-    
+
     metadata["columns"] = columns
     block.set_metadata(metadata)
     block.updated_at = datetime.utcnow()
-    
+
     db.session.commit()
-    
+
     return jsonify({"success": True, "message": "Tarea eliminada"})
 
 
-@personal_space_bp.route("/api/kanban/<int:block_id>/tasks/<int:task_id>/move", methods=["POST"])
+@personal_space_bp.route(
+    "/api/kanban/<int:block_id>/tasks/<int:task_id>/move", methods=["POST"]
+)
 @login_required
 @activated_required
 def move_kanban_task(block_id, task_id):
@@ -1398,23 +1408,23 @@ def move_kanban_task(block_id, task_id):
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
     if not block or block.type != "kanban":
         return jsonify({"success": False, "message": "Tablero no encontrado"}), 404
-    
+
     data = request.get_json() or {}
     target_column = data.get("target_column")
-    
+
     if not target_column:
         return jsonify({"success": False, "message": "Columna destino requerida"}), 400
-    
+
     metadata = block.get_metadata()
     columns = metadata.get("columns", {})
-    
+
     if target_column not in columns:
         columns[target_column] = []
-    
+
     # Find and move the task
     task_to_move = None
     source_column = None
-    
+
     for column_name, tasks in columns.items():
         for i, task in enumerate(tasks):
             if task.get("id") == task_id:
@@ -1423,24 +1433,26 @@ def move_kanban_task(block_id, task_id):
                 break
         if task_to_move:
             break
-    
+
     if not task_to_move:
         return jsonify({"success": False, "message": "Tarea no encontrada"}), 404
-    
+
     # Add to target column
     task_to_move["updated_at"] = datetime.utcnow().isoformat()
     columns[target_column].append(task_to_move)
-    
+
     metadata["columns"] = columns
     block.set_metadata(metadata)
     block.updated_at = datetime.utcnow()
-    
+
     db.session.commit()
-    
-    return jsonify({
-        "success": True, 
-        "message": f"Tarea movida de '{source_column}' a '{target_column}'"
-    })
+
+    return jsonify(
+        {
+            "success": True,
+            "message": f"Tarea movida de '{source_column}' a '{target_column}'",
+        }
+    )
 
 
 @personal_space_bp.route("/api/kanban/<int:block_id>/columns", methods=["POST"])
@@ -1451,27 +1463,29 @@ def add_kanban_column(block_id):
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
     if not block or block.type != "kanban":
         return jsonify({"success": False, "message": "Tablero no encontrado"}), 404
-    
+
     data = request.get_json() or {}
     column_name = data.get("name", "Nueva columna")
-    
+
     metadata = block.get_metadata()
     columns = metadata.get("columns", {})
-    
+
     if column_name in columns:
         return jsonify({"success": False, "message": "La columna ya existe"}), 400
-    
+
     columns[column_name] = []
     metadata["columns"] = columns
     block.set_metadata(metadata)
     block.updated_at = datetime.utcnow()
-    
+
     db.session.commit()
-    
+
     return jsonify({"success": True, "message": "Columna agregada"})
 
 
-@personal_space_bp.route("/api/kanban/<int:block_id>/columns/<column_name>", methods=["DELETE"])
+@personal_space_bp.route(
+    "/api/kanban/<int:block_id>/columns/<column_name>", methods=["DELETE"]
+)
 @login_required
 @activated_required
 def delete_kanban_column(block_id, column_name):
@@ -1479,27 +1493,32 @@ def delete_kanban_column(block_id, column_name):
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
     if not block or block.type != "kanban":
         return jsonify({"success": False, "message": "Tablero no encontrado"}), 404
-    
+
     metadata = block.get_metadata()
     columns = metadata.get("columns", {})
-    
+
     if column_name not in columns:
         return jsonify({"success": False, "message": "Columna no encontrada"}), 404
-    
+
     # Check if column has tasks
     if columns[column_name]:
-        return jsonify({
-            "success": False, 
-            "message": "No se puede eliminar una columna con tareas"
-        }), 400
-    
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "No se puede eliminar una columna con tareas",
+                }
+            ),
+            400,
+        )
+
     del columns[column_name]
     metadata["columns"] = columns
     block.set_metadata(metadata)
     block.updated_at = datetime.utcnow()
-    
+
     db.session.commit()
-    
+
     return jsonify({"success": True, "message": "Columna eliminada"})
 
 
@@ -1516,10 +1535,10 @@ def get_objetivo_milestones(block_id):
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
     if not block or block.type != "objetivo":
         return jsonify({"success": False, "message": "Objetivo no encontrado"}), 404
-    
+
     metadata = block.get_metadata()
     milestones = metadata.get("milestones", [])
-    
+
     return jsonify({"success": True, "milestones": milestones})
 
 
@@ -1531,32 +1550,36 @@ def add_objetivo_milestone(block_id):
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
     if not block or block.type != "objetivo":
         return jsonify({"success": False, "message": "Objetivo no encontrado"}), 404
-    
+
     data = request.get_json() or {}
-    
+
     metadata = block.get_metadata()
     milestones = metadata.get("milestones", [])
-    
+
     new_milestone = {
         "id": len(milestones) + 1,
         "title": data.get("title", "Nuevo hito"),
         "description": data.get("description", ""),
         "target_date": data.get("target_date", ""),
         "completed": False,
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.utcnow().isoformat(),
     }
-    
+
     milestones.append(new_milestone)
     metadata["milestones"] = milestones
     block.set_metadata(metadata)
     block.updated_at = datetime.utcnow()
-    
+
     db.session.commit()
-    
-    return jsonify({"success": True, "milestone": new_milestone, "message": "Hito agregado"})
+
+    return jsonify(
+        {"success": True, "milestone": new_milestone, "message": "Hito agregado"}
+    )
 
 
-@personal_space_bp.route("/api/objetivo/<int:block_id>/milestones/<int:milestone_id>", methods=["PUT"])
+@personal_space_bp.route(
+    "/api/objetivo/<int:block_id>/milestones/<int:milestone_id>", methods=["PUT"]
+)
 @login_required
 @activated_required
 def update_objetivo_milestone(block_id, milestone_id):
@@ -1564,11 +1587,11 @@ def update_objetivo_milestone(block_id, milestone_id):
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
     if not block or block.type != "objetivo":
         return jsonify({"success": False, "message": "Objetivo no encontrado"}), 404
-    
+
     data = request.get_json() or {}
     metadata = block.get_metadata()
     milestones = metadata.get("milestones", [])
-    
+
     # Find and update milestone
     milestone_found = False
     for milestone in milestones:
@@ -1581,24 +1604,26 @@ def update_objetivo_milestone(block_id, milestone_id):
                 milestone["target_date"] = data["target_date"]
             if "completed" in data:
                 milestone["completed"] = data["completed"]
-            
+
             milestone["updated_at"] = datetime.utcnow().isoformat()
             milestone_found = True
             break
-    
+
     if not milestone_found:
         return jsonify({"success": False, "message": "Hito no encontrado"}), 404
-    
+
     metadata["milestones"] = milestones
     block.set_metadata(metadata)
     block.updated_at = datetime.utcnow()
-    
+
     db.session.commit()
-    
+
     return jsonify({"success": True, "message": "Hito actualizado"})
 
 
-@personal_space_bp.route("/api/objetivo/<int:block_id>/milestones/<int:milestone_id>", methods=["DELETE"])
+@personal_space_bp.route(
+    "/api/objetivo/<int:block_id>/milestones/<int:milestone_id>", methods=["DELETE"]
+)
 @login_required
 @activated_required
 def delete_objetivo_milestone(block_id, milestone_id):
@@ -1606,10 +1631,10 @@ def delete_objetivo_milestone(block_id, milestone_id):
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
     if not block or block.type != "objetivo":
         return jsonify({"success": False, "message": "Objetivo no encontrado"}), 404
-    
+
     metadata = block.get_metadata()
     milestones = metadata.get("milestones", [])
-    
+
     # Find and remove milestone
     milestone_found = False
     for i, milestone in enumerate(milestones):
@@ -1617,16 +1642,16 @@ def delete_objetivo_milestone(block_id, milestone_id):
             milestones.pop(i)
             milestone_found = True
             break
-    
+
     if not milestone_found:
         return jsonify({"success": False, "message": "Hito no encontrado"}), 404
-    
+
     metadata["milestones"] = milestones
     block.set_metadata(metadata)
     block.updated_at = datetime.utcnow()
-    
+
     db.session.commit()
-    
+
     return jsonify({"success": True, "message": "Hito eliminado"})
 
 
@@ -1638,10 +1663,10 @@ def get_objetivo_resources(block_id):
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
     if not block or block.type != "objetivo":
         return jsonify({"success": False, "message": "Objetivo no encontrado"}), 404
-    
+
     metadata = block.get_metadata()
     resources = metadata.get("resources", [])
-    
+
     return jsonify({"success": True, "resources": resources})
 
 
@@ -1653,32 +1678,36 @@ def add_objetivo_resource(block_id):
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
     if not block or block.type != "objetivo":
         return jsonify({"success": False, "message": "Objetivo no encontrado"}), 404
-    
+
     data = request.get_json() or {}
-    
+
     metadata = block.get_metadata()
     resources = metadata.get("resources", [])
-    
+
     new_resource = {
         "id": len(resources) + 1,
         "type": data.get("type", "link"),
         "title": data.get("title", "Nuevo recurso"),
         "description": data.get("description", ""),
         "url": data.get("url", ""),
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.utcnow().isoformat(),
     }
-    
+
     resources.append(new_resource)
     metadata["resources"] = resources
     block.set_metadata(metadata)
     block.updated_at = datetime.utcnow()
-    
+
     db.session.commit()
-    
-    return jsonify({"success": True, "resource": new_resource, "message": "Recurso agregado"})
+
+    return jsonify(
+        {"success": True, "resource": new_resource, "message": "Recurso agregado"}
+    )
 
 
-@personal_space_bp.route("/api/objetivo/<int:block_id>/resources/<int:resource_id>", methods=["DELETE"])
+@personal_space_bp.route(
+    "/api/objetivo/<int:block_id>/resources/<int:resource_id>", methods=["DELETE"]
+)
 @login_required
 @activated_required
 def delete_objetivo_resource(block_id, resource_id):
@@ -1686,10 +1715,10 @@ def delete_objetivo_resource(block_id, resource_id):
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
     if not block or block.type != "objetivo":
         return jsonify({"success": False, "message": "Objetivo no encontrado"}), 404
-    
+
     metadata = block.get_metadata()
     resources = metadata.get("resources", [])
-    
+
     # Find and remove resource
     resource_found = False
     for i, resource in enumerate(resources):
@@ -1697,14 +1726,59 @@ def delete_objetivo_resource(block_id, resource_id):
             resources.pop(i)
             resource_found = True
             break
-    
+
     if not resource_found:
         return jsonify({"success": False, "message": "Recurso no encontrado"}), 404
-    
+
     metadata["resources"] = resources
     block.set_metadata(metadata)
     block.updated_at = datetime.utcnow()
-    
+
     db.session.commit()
-    
+
     return jsonify({"success": True, "message": "Recurso eliminado"})
+
+
+@personal_space_bp.route("/api/objectives/<int:block_id>", methods=["GET"])
+@login_required
+@activated_required
+def api_get_objective(block_id):
+    """Return full objective metadata"""
+    block = Block.query.filter_by(id=block_id, user_id=current_user.id).first_or_404()
+    meta = block.get_metadata() or {}
+    return jsonify({"ok": True, "objective": meta.get("objective", {})})
+
+
+@personal_space_bp.route("/api/objectives/<int:block_id>", methods=["PATCH"])
+@login_required
+@activated_required
+def api_update_objective(block_id):
+    """Upsert objective fields in block metadata"""
+    block = Block.query.filter_by(id=block_id, user_id=current_user.id).first_or_404()
+    data = request.get_json(force=True, silent=True) or {}
+    meta = block.get_metadata() or {}
+    obj = meta.get("objective", {})
+
+    def _txt(val, max_len):
+        return (val or "").strip()[:max_len]
+
+    if "title" in data:
+        obj["title"] = _txt(data.get("title"), 280)
+    if "desc" in data:
+        obj["desc"] = _txt(data.get("desc"), 8000)
+    for key in ["due_at", "status", "priority"]:
+        if key in data and isinstance(data[key], str):
+            obj[key] = data[key]
+    if "milestones" in data and isinstance(data["milestones"], list):
+        if len(data["milestones"]) <= 200:
+            obj["milestones"] = data["milestones"]
+    if "resources" in data and isinstance(data["resources"], list):
+        if len(data["resources"]) <= 200:
+            obj["resources"] = data["resources"]
+    if "timeline" in data and isinstance(data["timeline"], list):
+        obj["timeline"] = data["timeline"]
+
+    meta["objective"] = obj
+    block.set_metadata(meta)
+    db.session.commit()
+    return jsonify({"ok": True, "objective": obj})

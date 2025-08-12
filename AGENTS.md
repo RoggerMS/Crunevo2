@@ -1296,3 +1296,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Routed 'objetivo' blocks to objective_detail, updated block card links, and hardened objective.js with selector guards, ARIA synced progress and keyboard-accessible drag handles. (PR objective-routing-assets)
 
 - Hid mobile search modal and backdrop on desktop with CSS/JS hardening, removing pointer events and orphaned overlays. Added back navigation fallback, config modal stubs, JSON export and focus mode scroll lock with overlay fixes on objective detail. (PR objective-modal-focus)
+- Added objective metadata persistence with GET/PATCH API endpoints, template hydration and debounced front-end saves with error rollback. (PR objective-persistence)
