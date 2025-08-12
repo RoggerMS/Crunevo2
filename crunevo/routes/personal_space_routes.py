@@ -526,7 +526,15 @@ def view_block(block_id):
 
     template_name = f"personal_space/views/{block.type}_view.html"
     try:
-        return render_template(template_name, block=block)
+        context = {"block": block}
+        if block.type == "tarea":
+            context.update(
+                subtasks=[],
+                linked_notes=[],
+                linked_forum_posts=[],
+                stats={"total": 0, "done": 0, "pending": 0, "progress_pct": 0},
+            )
+        return render_template(template_name, **context)
     except TemplateNotFound:
         return render_template(
             "personal_space/views/under_construction.html", block=block
