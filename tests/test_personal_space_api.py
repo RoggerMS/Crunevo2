@@ -110,3 +110,19 @@ def test_reorder_blocks(client, db_session, test_user):
         json={},
     )
     assert resp2.status_code == 200
+
+
+def test_objective_patch_persists(client, db_session, test_user):
+    block = Block(user_id=test_user.id, type="objetivo", title="Goal")
+    block.set_metadata({"objective": {"title": "Goal", "milestones": [], "resources": []}})
+    db_session.add(block)
+    db_session.commit()
+
+    login(client, test_user.username)
+    resp = client.patch(
+        f"/espacio-personal/api/objectives/{block.id}",
+        json={"title": "Nuevo", "milestones": []},
+    )
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["objective"]["title"] == "Nuevo"

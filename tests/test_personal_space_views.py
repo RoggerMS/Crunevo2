@@ -1,3 +1,6 @@
+from crunevo.models.block import Block
+
+
 def login(client, username, password="secret"):
     return client.post("/login", data={"username": username, "password": password})
 
@@ -27,3 +30,15 @@ def test_apply_template_by_slug(client, test_user):
     assert resp.status_code == 200
     data = resp.get_json()
     assert data["success"]
+
+
+def test_view_objective_detail(client, db_session, test_user):
+    block = Block(user_id=test_user.id, type="objetivo", title="Goal")
+    block.set_metadata({"objective": {"title": "Goal", "milestones": [], "resources": []}})
+    db_session.add(block)
+    db_session.commit()
+
+    login(client, test_user.username)
+    resp = client.get(f"/espacio-personal/bloque/{block.id}")
+    assert resp.status_code == 200
+    assert b"objective-page" in resp.data
