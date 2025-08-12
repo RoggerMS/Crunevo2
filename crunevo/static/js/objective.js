@@ -1,3 +1,6 @@
+if (window.__CRUNEVO_OBJECTIVE_INIT__) return;
+window.__CRUNEVO_OBJECTIVE_INIT__ = true;
+
 document.addEventListener('DOMContentLoaded', () => {
   const main = document.querySelector('.objective-page');
   if (!main) return;
@@ -26,6 +29,63 @@ document.addEventListener('DOMContentLoaded', () => {
     lastProgressUpdate: null,
     velocity: 0
   };
+
+  const backBtn = document.querySelector('.btn-back');
+  if (backBtn) {
+    backBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = '/espacio-personal/';
+      }
+    });
+  }
+
+  document.querySelector('.btn-export')?.addEventListener('click', () => {
+    const data = JSON.stringify(state.objective, null, 2);
+    const blob = new Blob([data], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = (state.objective.title || 'objetivo') + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.querySelector('.btn-config')?.addEventListener('click', () => {
+    const m = document.querySelector('[data-config-modal]');
+    if (!m) return;
+    m.hidden = false; m.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+  });
+  document.querySelectorAll('[data-config-modal] [data-modal-close]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const m = document.querySelector('[data-config-modal]');
+      if (!m) return;
+      m.hidden = true; m.setAttribute('aria-hidden','true'); document.body.style.overflow='';
+    });
+  });
+
+  document.querySelector('[data-config-modal]')?.addEventListener('click',(e)=>{
+    const t = e.target;
+    if (t.matches('[data-action="rename-obj"]')) {
+      const name = prompt('Nuevo título', state.objective.title || '');
+      if (name) {
+        state.objective.title = name;
+        const el = document.querySelector('[data-field="title"]');
+        if (el) el.textContent = name;
+        saveField('title', name);
+      }
+    }
+    if (t.matches('[data-action="archive-obj"]')) {
+      alert('Función “Archivar” pendiente de back-end (stub).');
+    }
+    if (t.matches('[data-action="delete-obj"]')) {
+      if (confirm('¿Eliminar este objetivo? Esta acción no se puede deshacer.')) {
+        // TODO: POST a /api/objetivo/:id/delete y redirigir
+        window.location.href = '/espacio-personal/';
+      }
+    }
+  });
 
   function debounce(fn, delay = 500) {
     let t;
@@ -445,93 +505,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const prog =
       arr.reduce((sum, m) => sum + (m.weight || 1) * m.progress, 0) / totalWeight;
     state.objective.progress = prog;
-    const bar = safeQuerySelector('[data-progress-bar]');
-    if (bar) {
-      bar.style.width = `${prog}%`;
-      bar.setAttribute('aria-valuenow', Math.round(prog));
+    const fill = safeQuerySelector('[data-progress-bar]');
+    if (fill) {
+      fill.style.width = `${prog}%`;
     }
+    const pb = safeQuerySelector('.progress-bar');
+    if (pb) pb.setAttribute('aria-valuenow', Math.round(prog));
     const num = safeQuerySelector('[data-progress-number]');
     if (num) num.textContent = `${Math.round(prog)}%`;
     renderStats();
   }
 
-  // Focus mode
-  const overlay = document.querySelector('[data-focus-overlay]');
-  let focusTimer = null;
-  let focusStartTime = null;
-  
-  document.querySelector('.btn-focus')?.addEventListener('click', () => {
-    const active = main.classList.toggle('focus-mode');
-    if (overlay) overlay.hidden = !active;
-    document.querySelector('[data-left]')?.setAttribute('aria-hidden', active ? 'true' : 'false');
-    document.querySelector('[data-right]')?.setAttribute('aria-hidden', active ? 'true' : 'false');
-    
-    if (active) {
-      focusStartTime = new Date();
-      startFocusTimer();
-      addTimelineEvent('Modo enfoque activado', 'focus');
-    } else {
-      if (focusStartTime) {
-        const focusTime = Math.round((new Date() - focusStartTime) / 60000); // minutes
-        addTimelineEvent(`Sesión de enfoque completada: ${focusTime} minutos`, 'focus');
-      }
-      stopFocusTimer();
-    }
-  });
-  
-  function startFocusTimer() {
-    const timerEl = document.querySelector('[data-focus-timer]');
-    if (!timerEl) return;
-    
-    focusTimer = setInterval(() => {
-      if (focusStartTime) {
-        const elapsed = Math.floor((new Date() - focusStartTime) / 1000);
-        const minutes = Math.floor(elapsed / 60);
-        const seconds = elapsed % 60;
-        timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-      }
-    }, 1000);
-  }
-  
-  function stopFocusTimer() {
-    if (focusTimer) {
-      clearInterval(focusTimer);
-      focusTimer = null;
-    }
-    const timerEl = document.querySelector('[data-focus-timer]');
-    if (timerEl) timerEl.textContent = '00:00';
-  }
-
-  function updateMotivacion(value) {
-    const el = document.querySelector('[data-motivacion]');
-    if (el) el.textContent = value;
-  }
-  
-  // Modal management
-  function openModal(modalId) {
-    const modal = document.querySelector(`[data-modal="${modalId}"]`);
-    if (modal) {
-      modal.classList.add('modal--active');
-      document.body.classList.add('modal-open');
-    }
-  }
-  
-  function closeModal(modalId) {
-    const modal = document.querySelector(`[data-modal="${modalId}"]`);
-    if (modal) {
-      modal.classList.remove('modal--active');
-      document.body.classList.remove('modal-open');
-    }
-  }
-  
-  // Close modals on backdrop click
-  document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('modal')) {
-      e.target.classList.remove('modal--active');
-      document.body.classList.remove('modal-open');
-    }
-  });
-  
   // Evidence management
   function addEvidence(milestoneId, evidence) {
     const milestone = state.objective.milestones.find(m => m.id === milestoneId);
@@ -1060,16 +1044,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function toggleFocusMode() {
       const isActive = main.classList.toggle('focus-mode');
       overlay.hidden = !isActive;
-      
+      overlay.setAttribute('aria-hidden', (!isActive).toString());
+
       const leftPanel = safeQuerySelector('[data-left]');
       const rightPanel = safeQuerySelector('[data-right]');
-      
+
       if (leftPanel) leftPanel.setAttribute('aria-hidden', isActive.toString());
       if (rightPanel) rightPanel.setAttribute('aria-hidden', isActive.toString());
-      
+
       if (isActive) {
         addTimelineEvent('Modo enfoque activado', 'focus');
         document.body.style.overflow = 'hidden';
+        window.hideMobileSearchHard?.();
       } else {
         addTimelineEvent('Modo enfoque desactivado', 'focus');
         document.body.style.overflow = '';

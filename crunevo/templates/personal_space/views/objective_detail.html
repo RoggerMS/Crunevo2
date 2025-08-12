@@ -16,11 +16,11 @@
         <span class="sr-only">Volver</span>
       </button>
       <div class="objective-header__actions">
-        <button type="button" class="btn btn--secondary btn--sm" aria-label="Exportar objetivo">
+        <button type="button" class="btn btn--secondary btn--sm btn-export" aria-label="Exportar objetivo">
           <i class="bi bi-download" aria-hidden="true"></i>
           <span>Exportar</span>
         </button>
-        <button type="button" class="btn btn--secondary btn--sm" aria-label="Configurar objetivo">
+        <button type="button" class="btn btn--secondary btn--sm btn-config" aria-label="Configurar objetivo">
           <i class="bi bi-gear" aria-hidden="true"></i>
           <span>Configurar</span>
         </button>
@@ -191,6 +191,33 @@
     <i class="bi bi-x-lg" aria-hidden="true"></i>
     <span>Salir de Enfoque</span>
   </button>
+</div>
+
+<!-- Configurar objetivo -->
+<div class="modal" data-config-modal hidden role="dialog" aria-labelledby="config-modal-title" aria-hidden="true">
+  <div class="modal__backdrop" data-modal-backdrop></div>
+  <div class="modal__content">
+    <div class="modal__header">
+      <h3 id="config-modal-title" class="modal__title">Configurar objetivo</h3>
+      <button type="button" class="modal__close" data-modal-close aria-label="Cerrar modal">
+        <i class="bi bi-x" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="modal__body">
+      <div class="form-group">
+        <label class="form-label">Acciones</label>
+        <div class="btn-row">
+          <button type="button" class="btn btn--secondary" data-action="rename-obj">Renombrar</button>
+          <button type="button" class="btn btn--secondary" data-action="archive-obj">Archivar</button>
+          <button type="button" class="btn btn--secondary" data-action="delete-obj">Eliminar</button>
+        </div>
+      </div>
+      <p class="form-help">Estas acciones operarán sobre este objetivo solamente.</p>
+    </div>
+    <div class="modal__actions">
+      <button type="button" class="btn btn--secondary" data-modal-close>Cerrar</button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal para agregar/editar recursos -->

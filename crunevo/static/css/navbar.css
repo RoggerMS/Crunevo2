@@ -28,6 +28,20 @@
   #mobileSearchResults{ max-height: calc(100vh - 180px); overflow:auto; }
 }
 
+/* El modal móvil y su backdrop no existen visualmente en escritorio */
+@media (min-width: 992px) {
+  #mobileSearchModal,
+  #mobileSearchModal.show,
+  #mobileSearchModal + .modal-backdrop {
+    display: none !important;
+  }
+}
+
+/* Garantía extra: cuando esté oculto, que no capture eventos */
+#mobileSearchModal[aria-hidden="true"] {
+  pointer-events: none;
+}
+
 /* Enhanced Modern Responsive Navbar with Glassmorphism */
 .navbar-crunevo {
   background: rgba(102, 126, 234, 0.9);

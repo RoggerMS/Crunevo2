@@ -1294,3 +1294,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Rebuilt Nota Enriquecida editor blocks with drag handles, SortableJS reordering, hover controls, improved icon popover styles and ARIA labels. (PR nota-enriquecida-dnd-ui)
 - Renamed objetivo_view.html to objective_detail_old.html and added objective_detail.html with accompanying objective.css and objective.js implementing focus mode and milestone/resource CRUD.
 - Routed 'objetivo' blocks to objective_detail, updated block card links, and hardened objective.js with selector guards, ARIA synced progress and keyboard-accessible drag handles. (PR objective-routing-assets)
+
+- Hid mobile search modal and backdrop on desktop with CSS/JS hardening, removing pointer events and orphaned overlays. Added back navigation fallback, config modal stubs, JSON export and focus mode scroll lock with overlay fixes on objective detail. (PR objective-modal-focus)
