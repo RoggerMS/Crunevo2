@@ -10,61 +10,217 @@
 {% block content %}
 <main class="objective-page" id="objective" data-objective-id="{{ objective.id }}">
   <header class="objective-header">
-    <button type="button" class="btn-back" aria-label="Volver">Volver</button>
-    <h1 class="objective-title" contenteditable="true" data-field="title">{{ objective.title }}</h1>
-    <p class="objective-desc" contenteditable="true" data-field="desc">{{ objective.desc }}</p>
-    <div class="objective-badges">
-      <span class="status-badge" data-status="{{ objective.status }}">{{ objective.status }}</span>
-      <span class="priority-badge" data-priority="{{ objective.priority }}">{{ objective.priority }}</span>
+    <div class="objective-header__top">
+      <button type="button" class="btn-back" aria-label="Volver al espacio personal">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+        <span class="sr-only">Volver</span>
+      </button>
+      <div class="objective-header__actions">
+        <button type="button" class="btn btn--secondary btn--sm" aria-label="Exportar objetivo">
+          <i class="bi bi-download" aria-hidden="true"></i>
+          <span>Exportar</span>
+        </button>
+        <button type="button" class="btn btn--secondary btn--sm" aria-label="Configurar objetivo">
+          <i class="bi bi-gear" aria-hidden="true"></i>
+          <span>Configurar</span>
+        </button>
+        <button type="button" class="btn btn--primary btn--sm btn-focus" aria-label="Activar modo enfoque">
+          <i class="bi bi-eye" aria-hidden="true"></i>
+          <span>Modo Enfoque</span>
+        </button>
+      </div>
     </div>
-    <div class="objective-progress">
-      <span class="progress-number" data-progress-number>0%</span>
-      <div class="progress-bar"><div class="progress-fill" data-progress-bar></div></div>
-    </div>
-    <div class="objective-actions">
-      <button type="button" class="btn-export">Exportar</button>
-      <button type="button" class="btn-config">Configurar</button>
-      <button type="button" class="btn-focus">Modo Enfoque</button>
+    
+    <div class="objective-header__content">
+      <div class="objective-header__main">
+        <h1 class="objective-title" contenteditable="true" data-field="title" aria-label="Título del objetivo (editable)">{{ objective.title }}</h1>
+        <p class="objective-desc" contenteditable="true" data-field="desc" aria-label="Descripción del objetivo (editable)">{{ objective.desc }}</p>
+        
+        <div class="objective-badges">
+          <span class="badge badge--status" data-status="{{ objective.status }}" aria-label="Estado: {{ objective.status }}">{{ objective.status }}</span>
+          <span class="badge badge--priority" data-priority="{{ objective.priority }}" aria-label="Prioridad: {{ objective.priority }}">{{ objective.priority }}</span>
+        </div>
+      </div>
+      
+      <div class="objective-header__progress">
+        <div class="progress-display">
+          <span class="progress-number" data-progress-number aria-label="Progreso actual">0%</span>
+          <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Barra de progreso">
+            <div class="progress-fill" data-progress-bar></div>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
   <section class="objective-grid">
     <aside class="objective-left" aria-label="Información del objetivo" data-left>
-      <div class="quick-summary"></div>
-      <div class="meta-info">
-        <label>Fecha límite
-          <input type="date" class="objective-due" data-field="due_at" value="{{ objective.due_at }}">
-        </label>
-        <label>Estado
-          <select class="objective-status" data-field="status">
-            <option value="en-curso" {% if objective.status=='en-curso' %}selected{% endif %}>En curso</option>
-            <option value="pausado" {% if objective.status=='pausado' %}selected{% endif %}>Pausado</option>
-            <option value="completado" {% if objective.status=='completado' %}selected{% endif %}>Completado</option>
-          </select>
-        </label>
-        <label>Prioridad
-          <select class="objective-priority" data-field="priority">
-            <option value="alta" {% if objective.priority=='alta' %}selected{% endif %}>Alta</option>
-            <option value="media" {% if objective.priority=='media' %}selected{% endif %}>Media</option>
-            <option value="baja" {% if objective.priority=='baja' %}selected{% endif %}>Baja</option>
-          </select>
-        </label>
+      <div class="card">
+        <h2 class="card__title">Información</h2>
+        <div class="meta-info">
+          <div class="form-group">
+            <label for="objective-due" class="form-label">Fecha límite</label>
+            <input type="date" id="objective-due" class="form-input" data-field="due_at" value="{{ objective.due_at }}" aria-describedby="due-help">
+            <div id="due-help" class="form-help">Fecha objetivo para completar</div>
+            <div class="countdown" data-countdown aria-live="polite"></div>
+          </div>
+          
+          <div class="form-group">
+            <label for="objective-status" class="form-label">Estado</label>
+            <select id="objective-status" class="form-select" data-field="status" aria-describedby="status-help">
+              <option value="en-curso" {% if objective.status=='en-curso' %}selected{% endif %}>En curso</option>
+              <option value="pausado" {% if objective.status=='pausado' %}selected{% endif %}>Pausado</option>
+              <option value="completado" {% if objective.status=='completado' %}selected{% endif %}>Completado</option>
+            </select>
+            <div id="status-help" class="form-help">Estado actual del objetivo</div>
+          </div>
+          
+          <div class="form-group">
+            <label for="objective-priority" class="form-label">Prioridad</label>
+            <select id="objective-priority" class="form-select" data-field="priority" aria-describedby="priority-help">
+              <option value="alta" {% if objective.priority=='alta' %}selected{% endif %}>Alta</option>
+              <option value="media" {% if objective.priority=='media' %}selected{% endif %}>Media</option>
+              <option value="baja" {% if objective.priority=='baja' %}selected{% endif %}>Baja</option>
+            </select>
+            <div id="priority-help" class="form-help">Nivel de importancia</div>
+          </div>
+        </div>
       </div>
-      <div class="tags"></div>
-      <div class="reminders"></div>
+      
+      <div class="card">
+        <h2 class="card__title">Actividad Reciente</h2>
+        <div class="timeline" data-timeline>
+          <div class="timeline__empty">
+            <i class="bi bi-clock-history" aria-hidden="true"></i>
+            <p>No hay actividad reciente</p>
+          </div>
+        </div>
+      </div>
     </aside>
 
     <section class="objective-center" aria-label="Metas" data-center>
-      <ul class="milestone-list" data-milestone-list></ul>
-      <button type="button" class="add-milestone">Agregar Meta</button>
+      <div class="milestones-header">
+        <h2 class="milestones-title">Metas</h2>
+        <button type="button" class="btn btn--primary add-milestone" aria-label="Agregar nueva meta">
+          <i class="bi bi-plus" aria-hidden="true"></i>
+          <span>Agregar Meta</span>
+        </button>
+      </div>
+      
+      <div class="milestones-content">
+        <ul class="milestone-list" data-milestone-list role="list" aria-label="Lista de metas">
+          <li class="milestone-skeleton" data-skeleton aria-hidden="true">
+            <div class="skeleton-line skeleton-line--short"></div>
+            <div class="skeleton-line skeleton-line--long"></div>
+          </li>
+        </ul>
+        
+        <div class="milestones-empty" data-milestones-empty hidden>
+          <div class="empty-state">
+            <i class="bi bi-flag" aria-hidden="true"></i>
+            <h3>No hay metas definidas</h3>
+            <p>Comienza agregando tu primera meta para este objetivo</p>
+            <button type="button" class="btn btn--primary add-milestone-cta">
+              <i class="bi bi-plus" aria-hidden="true"></i>
+              <span>Crear Primera Meta</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <aside class="objective-right" aria-label="Estadísticas y recursos" data-right>
-      <div class="stat-cards" data-stats></div>
-      <ul class="resource-list" data-resource-list></ul>
-      <button type="button" class="add-resource">Agregar Recurso</button>
+      <div class="card">
+        <h2 class="card__title">Estadísticas</h2>
+        <div class="stat-cards" data-stats>
+          <div class="stat-card">
+            <div class="stat-card__value" data-stat-total>0</div>
+            <div class="stat-card__label">Metas Totales</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__value" data-stat-completed>0</div>
+            <div class="stat-card__label">Completadas</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__value" data-stat-days>0</div>
+            <div class="stat-card__label">Días Restantes</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__value" data-stat-velocity>0%</div>
+            <div class="stat-card__label">Velocidad Semanal</div>
+          </div>
+          <div class="stat-card stat-card--highlight">
+            <div class="stat-card__value" data-stat-eta>--</div>
+            <div class="stat-card__label">ETA</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card__header">
+          <h2 class="card__title">Recursos</h2>
+          <button type="button" class="btn btn--secondary btn--sm add-resource" aria-label="Agregar nuevo recurso">
+            <i class="bi bi-plus" aria-hidden="true"></i>
+            <span>Agregar</span>
+          </button>
+        </div>
+        
+        <div class="resources-content">
+          <ul class="resource-list" data-resource-list role="list" aria-label="Lista de recursos"></ul>
+          
+          <div class="resources-empty" data-resources-empty hidden>
+            <div class="empty-state empty-state--small">
+              <i class="bi bi-collection" aria-hidden="true"></i>
+              <p>No hay recursos agregados</p>
+              <button type="button" class="btn btn--secondary btn--sm add-resource-cta">
+                <i class="bi bi-plus" aria-hidden="true"></i>
+                <span>Agregar Recurso</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </aside>
   </section>
 </main>
-<div class="focus-overlay" data-focus-overlay hidden></div>
+
+<!-- Focus Mode Overlay -->
+<div class="focus-overlay" data-focus-overlay hidden>
+  <button type="button" class="focus-exit" data-focus-exit aria-label="Salir del modo enfoque">
+    <i class="bi bi-x-lg" aria-hidden="true"></i>
+    <span>Salir de Enfoque</span>
+  </button>
+</div>
+
+<!-- Modal para agregar/editar recursos -->
+<div class="modal" data-resource-modal hidden role="dialog" aria-labelledby="resource-modal-title" aria-hidden="true">
+  <div class="modal__backdrop" data-modal-backdrop></div>
+  <div class="modal__content">
+    <div class="modal__header">
+      <h3 id="resource-modal-title" class="modal__title">Agregar Recurso</h3>
+      <button type="button" class="modal__close" data-modal-close aria-label="Cerrar modal">
+        <i class="bi bi-x" aria-hidden="true"></i>
+      </button>
+    </div>
+    
+    <form class="modal__body" data-resource-form>
+      <div class="form-group">
+        <label for="resource-label" class="form-label">Etiqueta *</label>
+        <input type="text" id="resource-label" class="form-input" required aria-describedby="label-error">
+        <div id="label-error" class="form-error" hidden></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="resource-url" class="form-label">URL *</label>
+        <input type="url" id="resource-url" class="form-input" required aria-describedby="url-error">
+        <div id="url-error" class="form-error" hidden></div>
+      </div>
+      
+      <div class="modal__actions">
+        <button type="button" class="btn btn--secondary" data-modal-close>Cancelar</button>
+        <button type="submit" class="btn btn--primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}
