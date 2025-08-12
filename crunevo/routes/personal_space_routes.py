@@ -259,6 +259,61 @@ def reorder_blocks():
     return jsonify({"success": True, "message": "Orden actualizado"})
 
 
+@personal_space_bp.route("/api/objectives/<int:block_id>", methods=["GET"])
+@login_required
+@activated_required
+def api_get_objective(block_id):
+    """Return full objective metadata"""
+    block = Block.query.filter_by(
+        id=block_id, user_id=current_user.id, type="objetivo"
+    ).first_or_404()
+    meta = block.get_metadata() or {}
+    obj = meta.get("objective", {})
+    return jsonify({"ok": True, "objective": obj})
+
+
+@personal_space_bp.route("/api/objectives/<int:block_id>", methods=["PATCH"])
+@login_required
+@activated_required
+def api_update_objective(block_id):
+    """Merge objective fields into metadata"""
+    block = Block.query.filter_by(
+        id=block_id, user_id=current_user.id, type="objetivo"
+    ).first_or_404()
+    data = request.get_json(force=True, silent=True) or {}
+    meta = block.get_metadata() or {}
+    obj = meta.get("objective", {})
+
+    for field in [
+        "title",
+        "desc",
+        "due_at",
+        "status",
+        "priority",
+        "milestones",
+        "resources",
+        "timeline",
+    ]:
+        if field in data:
+            value = data[field]
+            if field == "title":
+                value = (value or "").strip()[:280]
+                block.title = value
+            elif field == "desc":
+                value = (value or "").strip()[:8000]
+            elif field == "milestones" and len(value) > 200:
+                return jsonify({"ok": False, "error": "too_many_milestones"}), 400
+            elif field == "resources" and len(value) > 200:
+                return jsonify({"ok": False, "error": "too_many_resources"}), 400
+            obj[field] = value
+
+    new_meta = dict(meta)
+    new_meta["objective"] = obj
+    block.set_metadata(new_meta)
+    db.session.commit()
+    return jsonify({"ok": True, "objective": obj})
+
+
 @personal_space_bp.route("/api/create-block", methods=["POST"])
 @login_required
 @activated_required
@@ -510,18 +565,20 @@ def view_block(block_id):
 
     if block.type in ("objetivo", "objective"):
         meta = block.get_metadata() or {}
+        obj_data = meta.get("objective", {})
         objective = SimpleNamespace(
             id=block.id,
-            title=block.title or "Objetivo sin título",
-            desc=meta.get("desc", ""),
-            due_at=meta.get("due_at", ""),
-            status=meta.get("status", "en-curso"),
-            priority=meta.get("priority", "media"),
+            title=obj_data.get("title") or block.title or "Objetivo sin título",
+            desc=obj_data.get("desc", ""),
+            due_at=obj_data.get("due_at", ""),
+            status=obj_data.get("status", "en-curso"),
+            priority=obj_data.get("priority", "media"),
         )
         return render_template(
             "personal_space/views/objective_detail.html",
             block=block,
             objective=objective,
+            objective_json=obj_data,
         )
 
     template_name = f"personal_space/views/{block.type}_view.html"

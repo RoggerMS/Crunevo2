@@ -21,6 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  if (window.__OBJECTIVE_PRELOADED__) {
+    Object.assign(state.objective, window.__OBJECTIVE_PRELOADED__);
+  }
+
   let announcer;
 
   // Performance tracking
@@ -87,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  function debounce(fn, delay = 500) {
+  function debounce(fn, delay = 400) {
     let t;
     return (...args) => {
       clearTimeout(t);
@@ -95,9 +99,48 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  const saveField = debounce((field, value) => {
-    console.log('Saving', field, value);
-    addTimelineEvent(`Campo ${field} actualizado`, 'edit');
+  function restoreState() {
+    const titleEl = document.querySelector('[data-field="title"]');
+    if (titleEl) titleEl.textContent = state.objective.title || '';
+    const descEl = document.querySelector('[data-field="desc"]');
+    if (descEl) descEl.textContent = state.objective.desc || '';
+    const dueEl = document.querySelector('input[data-field="due_at"]');
+    if (dueEl) dueEl.value = state.objective.due_at || '';
+    const statusEl = document.querySelector('select[data-field="status"]');
+    if (statusEl) statusEl.value = state.objective.status || '';
+    const priorityEl = document.querySelector('select[data-field="priority"]');
+    if (priorityEl) priorityEl.value = state.objective.priority || '';
+    renderMilestones();
+    renderResources();
+    renderStats();
+    updateBadges();
+    updateProgress();
+    updateCountdown();
+    renderTimeline();
+  }
+
+  const saveField = debounce(async (field, value) => {
+    try {
+      const resp = await csrfFetch(`/espacio-personal/api/objectives/${state.objective.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [field]: value })
+      });
+      if (!resp.ok) throw new Error('bad status');
+      const data = await resp.json();
+      if (!data.ok) throw new Error('bad payload');
+      addTimelineEvent(`Campo ${field} actualizado`, 'edit');
+    } catch (err) {
+      try {
+        const r = await csrfFetch(`/espacio-personal/api/objectives/${state.objective.id}`);
+        const j = await r.json();
+        if (j.ok) {
+          state.objective = j.objective;
+        }
+      } catch {}
+      restoreState();
+      showToast('No se pudo guardar', { delay: 4000 });
+    }
   });
 
   // Utility functions
