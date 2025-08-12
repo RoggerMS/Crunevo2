@@ -87,27 +87,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Editable fields
-  ['title', 'desc'].forEach(field => {
-    const el = document.querySelector(`[data-field="${field}"]`);
-    if (el) {
-      el.addEventListener('input', () => {
-        state.objective[field] = el.textContent.trim();
-        saveField(field, state.objective[field]);
-      });
-    }
-  });
+  function initializeEditableFields() {
+    ['title', 'desc'].forEach(field => {
+      const el = document.querySelector(`[data-field="${field}"]`);
+      if (el) {
+        el.addEventListener('input', () => {
+          state.objective[field] = el.textContent.trim();
+          saveField(field, state.objective[field]);
+        });
+      }
+    });
 
-  ['due_at', 'status', 'priority'].forEach(field => {
-    const el = document.querySelector(`[data-field="${field}"]`);
-    if (el) {
-      el.addEventListener('change', () => {
+    ['due_at', 'status', 'priority'].forEach(field => {
+      const el = document.querySelector(`[data-field="${field}"]`);
+      if (el) {
+        el.addEventListener('change', () => {
+          state.objective[field] = el.value;
+          saveField(field, state.objective[field]);
+          if (field === 'status' || field === 'priority') updateBadges();
+          if (field === 'due_at') updateCountdown();
+        });
         state.objective[field] = el.value;
-        saveField(field, state.objective[field]);
-      });
-      state.objective[field] = el.value;
-    }
-  });
+      }
+    });
+  }
 
   // Milestones
   const milestoneList = document.querySelector('[data-milestone-list]');
@@ -119,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       m.progress = m.done ? 100 : 0;
     }
-    updateObjectiveProgress();
+    updateProgress();
     addTimelineEvent(`Meta "${m.title}" actualizada`, 'milestone');
   }
 
@@ -183,11 +186,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderMilestones() {
+    if (!milestoneList) return;
     milestoneList.innerHTML = '';
     state.objective.milestones.forEach((m, idx) => {
       const li = document.createElement('li');
       li.className = 'milestone-item';
-      li.draggable = true;
       li.dataset.id = m.id;
 
       const header = document.createElement('div');
@@ -218,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
       weightInput.className = 'milestone-weight';
       weightInput.addEventListener('change', () => {
         m.weight = Number(weightInput.value) || 1;
-        updateObjectiveProgress();
+        updateProgress();
         saveField('milestones', state.objective.milestones);
       });
 
@@ -235,16 +238,24 @@ document.addEventListener('DOMContentLoaded', () => {
         saveField('milestones', state.objective.milestones);
       });
 
+      const handle = document.createElement('span');
+      handle.className = 'milestone-handle';
+      handle.innerHTML = '<i class="bi bi-grip-vertical" aria-hidden="true"></i>';
+      handle.draggable = true;
+      handle.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', idx);
+        li.classList.add('dragging');
+      });
+      handle.addEventListener('dragend', () => li.classList.remove('dragging'));
+
+      header.prepend(handle);
       header.append(checkbox, span, weightInput, progressBar, deleteBtn);
       li.appendChild(header);
-      
+
       // Add subtasks
       const subtaskContainer = renderSubtasks(m);
       li.appendChild(subtaskContainer);
 
-      li.addEventListener('dragstart', e => {
-        e.dataTransfer.setData('text/plain', idx);
-      });
       li.addEventListener('dragover', e => e.preventDefault());
       li.addEventListener('drop', e => {
         e.preventDefault();
@@ -256,9 +267,27 @@ document.addEventListener('DOMContentLoaded', () => {
         saveField('milestones', arr);
       });
 
+      li.tabIndex = 0;
+      li.addEventListener('keydown', e => {
+        if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+          e.preventDefault();
+          const arr = state.objective.milestones;
+          const from = idx;
+          const to = e.key === 'ArrowUp' ? idx - 1 : idx + 1;
+          if (to < 0 || to >= arr.length) return;
+          arr.splice(to, 0, arr.splice(from, 1)[0]);
+          renderMilestones();
+          saveField('milestones', arr);
+          const announcer = document.querySelector('[data-order-announcer]');
+          if (announcer) announcer.textContent = `Meta movida a posición ${to + 1}`;
+          const items = document.querySelectorAll('.milestone-item');
+          items[to]?.focus();
+        }
+      });
+
       milestoneList.appendChild(li);
     });
-    updateObjectiveProgress();
+    updateProgress();
   }
 
   document.querySelector('.add-milestone')?.addEventListener('click', () => {
@@ -280,6 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Resources
   const resourceList = document.querySelector('[data-resource-list]');
   function renderResources() {
+    if (!resourceList) return;
     resourceList.innerHTML = '';
     state.objective.resources.forEach((r, idx) => {
       const li = document.createElement('li');
@@ -388,16 +418,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function updateObjectiveProgress() {
+  function updateProgress() {
     const arr = state.objective.milestones;
     const totalWeight = arr.reduce((sum, m) => sum + (m.weight || 1), 0) || 1;
     const prog = arr.reduce((sum, m) => sum + (m.weight || 1) * m.progress, 0) / totalWeight;
     state.objective.progress = prog;
     const bar = document.querySelector('[data-progress-bar]');
-    if (bar) bar.style.width = `${prog}%`;
+    if (bar) {
+      bar.style.width = `${prog}%`;
+      bar.setAttribute('aria-valuenow', Math.round(prog));
+    }
     const num = document.querySelector('[data-progress-number]');
     if (num) num.textContent = `${Math.round(prog)}%`;
     renderStats();
+  }
+
+  function updateBadges() {
+    const statusBadge = document.querySelector('.badge--status');
+    if (statusBadge) {
+      statusBadge.dataset.status = state.objective.status;
+      statusBadge.textContent = state.objective.status;
+      statusBadge.setAttribute('aria-label', `Estado: ${state.objective.status}`);
+    }
+    const priorityBadge = document.querySelector('.badge--priority');
+    if (priorityBadge) {
+      priorityBadge.dataset.priority = state.objective.priority;
+      priorityBadge.textContent = state.objective.priority;
+      priorityBadge.setAttribute('aria-label', `Prioridad: ${state.objective.priority}`);
+    }
+  }
+
+  function updateCountdown() {
+    const el = document.querySelector('[data-countdown]');
+    if (!el) return;
+    const due = state.objective.due_at;
+    if (!due) {
+      el.textContent = '';
+      el.className = 'countdown';
+      return;
+    }
+    const dueDate = new Date(due);
+    const now = new Date();
+    const diff = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
+    let cls = 'countdown--normal';
+    if (diff <= 3) cls = 'countdown--danger';
+    else if (diff <= 7) cls = 'countdown--warning';
+    el.className = `countdown ${cls}`;
+    el.textContent = diff >= 0 ? `${diff} días` : 'Vencido';
   }
 
   // Focus mode
@@ -734,7 +801,7 @@ document.addEventListener('DOMContentLoaded', () => {
       checkbox.addEventListener('change', () => {
         milestone.done = checkbox.checked;
         updateMilestoneProgress(milestone);
-        updateObjectiveProgress();
+        updateProgress();
         renderStats();
         addTimelineEvent(`Meta "${milestone.title}" ${milestone.done ? 'completada' : 'marcada como pendiente'}`, 'milestone');
         saveField('milestones', state.objective.milestones);
@@ -769,7 +836,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (confirm('¿Estás seguro de que quieres eliminar esta meta?')) {
           state.objective.milestones.splice(index, 1);
           renderMilestones();
-          updateObjectiveProgress();
+          updateProgress();
           renderStats();
           addTimelineEvent(`Meta "${milestone.title}" eliminada`, 'milestone');
           saveField('milestones', state.objective.milestones);
@@ -803,7 +870,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const weightInput = weightControl.querySelector('input');
       weightInput.addEventListener('change', () => {
         milestone.weight = parseInt(weightInput.value) || 1;
-        updateObjectiveProgress();
+        updateProgress();
         renderStats();
         saveField('milestones', state.objective.milestones);
       });
@@ -828,7 +895,7 @@ document.addEventListener('DOMContentLoaded', () => {
           subtaskCheckbox.addEventListener('change', () => {
             subtask.done = subtaskCheckbox.checked;
             updateMilestoneProgress(milestone);
-            updateObjectiveProgress();
+            updateProgress();
             renderStats();
             saveField('milestones', state.objective.milestones);
           });
@@ -1054,7 +1121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         state.objective.milestones.push(milestone);
         renderMilestones();
-        updateObjectiveProgress();
+        updateProgress();
         renderStats();
         addTimelineEvent('Nueva meta agregada', 'milestone');
         saveField('milestones', state.objective.milestones);
