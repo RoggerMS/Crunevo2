@@ -1292,3 +1292,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Created dedicated /espacio-personal/bitacora page listing Nota Enriquecida blocks with sorting, linked block cards and styles. (PR personal-space-logbook-view)
 - Refactored Nota Enriquecida editor into a two-panel workspace with sidebar metadata, popover icon picker and responsive layout. (PR personal-space-note-editor-workspace)
 - Rebuilt Nota Enriquecida editor blocks with drag handles, SortableJS reordering, hover controls, improved icon popover styles and ARIA labels. (PR nota-enriquecida-dnd-ui)
+- Renamed objetivo_view.html to objective_detail_old.html and added objective_detail.html with accompanying objective.css and objective.js implementing focus mode and milestone/resource CRUD.
