@@ -1,0 +1,90 @@
+.objective-page {
+  padding: 1rem;
+}
+
+.objective-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.objective-title {
+  flex: 1;
+  margin: 0;
+}
+
+.objective-badges span {
+  margin-right: 0.5rem;
+}
+
+.objective-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progress-bar {
+  width: 100px;
+  height: 8px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0;
+  background: #8b5cf6;
+}
+
+.objective-actions button {
+  margin-right: 0.5rem;
+}
+
+.objective-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.milestone-list,
+.resource-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.milestone-item {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  background: #fff;
+}
+
+.focus-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 5;
+}
+
+.focus-mode .objective-left,
+.focus-mode .objective-right {
+  display: none;
+}
+
+.focus-mode .objective-center {
+  grid-column: 1 / -1;
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .objective-grid {
+    grid-template-columns: 1fr;
+  }
+}

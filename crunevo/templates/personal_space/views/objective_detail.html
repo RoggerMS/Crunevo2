@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Objetivo{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/objective.css') }}">
+<script defer src="{{ url_for('static', filename='js/objective.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="objective-page" id="objective" data-objective-id="{{ objective.id }}">
+  <header class="objective-header">
+    <button type="button" class="btn-back" aria-label="Volver">Volver</button>
+    <h1 class="objective-title" contenteditable="true" data-field="title">{{ objective.title }}</h1>
+    <p class="objective-desc" contenteditable="true" data-field="desc">{{ objective.desc }}</p>
+    <div class="objective-badges">
+      <span class="status-badge" data-status="{{ objective.status }}">{{ objective.status }}</span>
+      <span class="priority-badge" data-priority="{{ objective.priority }}">{{ objective.priority }}</span>
+    </div>
+    <div class="objective-progress">
+      <span class="progress-number" data-progress-number>0%</span>
+      <div class="progress-bar"><div class="progress-fill" data-progress-bar></div></div>
+    </div>
+    <div class="objective-actions">
+      <button type="button" class="btn-export">Exportar</button>
+      <button type="button" class="btn-config">Configurar</button>
+      <button type="button" class="btn-focus">Modo Enfoque</button>
+    </div>
+  </header>
+
+  <section class="objective-grid">
+    <aside class="objective-left" aria-label="Información del objetivo" data-left>
+      <div class="quick-summary"></div>
+      <div class="meta-info">
+        <label>Fecha límite
+          <input type="date" class="objective-due" data-field="due_at" value="{{ objective.due_at }}">
+        </label>
+        <label>Estado
+          <select class="objective-status" data-field="status">
+            <option value="en-curso" {% if objective.status=='en-curso' %}selected{% endif %}>En curso</option>
+            <option value="pausado" {% if objective.status=='pausado' %}selected{% endif %}>Pausado</option>
+            <option value="completado" {% if objective.status=='completado' %}selected{% endif %}>Completado</option>
+          </select>
+        </label>
+        <label>Prioridad
+          <select class="objective-priority" data-field="priority">
+            <option value="alta" {% if objective.priority=='alta' %}selected{% endif %}>Alta</option>
+            <option value="media" {% if objective.priority=='media' %}selected{% endif %}>Media</option>
+            <option value="baja" {% if objective.priority=='baja' %}selected{% endif %}>Baja</option>
+          </select>
+        </label>
+      </div>
+      <div class="tags"></div>
+      <div class="reminders"></div>
+    </aside>
+
+    <section class="objective-center" aria-label="Metas" data-center>
+      <ul class="milestone-list" data-milestone-list></ul>
+      <button type="button" class="add-milestone">Agregar Meta</button>
+    </section>
+
+    <aside class="objective-right" aria-label="Estadísticas y recursos" data-right>
+      <div class="stat-cards" data-stats></div>
+      <ul class="resource-list" data-resource-list></ul>
+      <button type="button" class="add-resource">Agregar Recurso</button>
+    </aside>
+  </section>
+</main>
+<div class="focus-overlay" data-focus-overlay hidden></div>
+{% endblock %}
