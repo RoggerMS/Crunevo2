@@ -12,6 +12,44 @@ window.CRUNEVO.debounce = window.CRUNEVO.debounce || ((fn, ms = 250) => {
 });
 const debounce = window.CRUNEVO.debounce;
 
+(function () {
+  const modal = document.getElementById('mobileSearchModal');
+
+  function hideMobileSearchHard() {
+    if (!modal) return;
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+    modal.style.display = 'none';
+
+    document.querySelectorAll('.modal-backdrop').forEach(b => {
+      if (!document.body.classList.contains('modal-open')) {
+        b.remove();
+      }
+    });
+    document.body.classList.remove('modal-open');
+  }
+
+  function enforceModalPerViewport() {
+    if (!modal) return;
+    const isDesktop = window.matchMedia('(min-width: 992px)').matches;
+    if (isDesktop) hideMobileSearchHard();
+  }
+
+  enforceModalPerViewport();
+  window.addEventListener('resize', enforceModalPerViewport);
+
+  document.addEventListener('click', (e) => {
+    if (!modal) return;
+    const isDesktop = window.matchMedia('(min-width: 992px)').matches;
+    if (isDesktop && e.target.closest('[data-action="open-search"]')) {
+      e.preventDefault();
+      hideMobileSearchHard();
+    }
+  });
+
+  window.hideMobileSearchHard = hideMobileSearchHard;
+})();
+
 // Fallback for legacy templates still using data-action="open-search"
 document.addEventListener('click', (e) => {
   const trigger = e.target.closest('[data-action="open-search"]');
@@ -120,13 +158,6 @@ document.addEventListener('click', (e) => {
   if (!modalEl || !input || !list || !submit) return;
 
   const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    const hideOnDesktop = () => {
-      if (window.innerWidth >= 768) {
-        modal.hide();
-      }
-    };
-    window.addEventListener('resize', hideOnDesktop);
-    hideOnDesktop();
   const goToFullSearch = (q) => {
     modal.hide();
     window.location.href = `/search?q=${encodeURIComponent(q)}`;
@@ -183,7 +214,6 @@ document.addEventListener('click', (e) => {
   });
 
     modalEl.addEventListener('shown.bs.modal', () => {
-      hideOnDesktop();
       input.focus();
     });
 })();

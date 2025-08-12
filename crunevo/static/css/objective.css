@@ -388,11 +388,13 @@
   box-shadow: var(--shadow-sm);
 }
 
+.focus-overlay[hidden] { display: none !important; }
 .focus-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.8);
   z-index: 1000;
+  pointer-events: auto;
 }
 
 .focus-mode .objective-left,
@@ -861,6 +863,11 @@
   align-items: center;
   justify-content: center;
   padding: var(--gap);
+}
+
+.modal-backdrop,
+.modal__backdrop {
+  z-index: 1990;
 }
 
 .modal__backdrop {
