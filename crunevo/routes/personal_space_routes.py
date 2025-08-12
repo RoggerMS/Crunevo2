@@ -512,18 +512,20 @@ def view_block(block_id):
 
     if block.type in ("objetivo", "objective"):
         meta = block.get_metadata() or {}
+        obj_json = meta.get("objective", {})
         objective = SimpleNamespace(
             id=block.id,
-            title=block.title or "Objetivo sin título",
-            desc=meta.get("desc", ""),
-            due_at=meta.get("due_at", ""),
-            status=meta.get("status", "en-curso"),
-            priority=meta.get("priority", "media"),
+            title=block.title or obj_json.get("title", "Objetivo sin título"),
+            desc=obj_json.get("desc", ""),
+            due_at=obj_json.get("due_at", ""),
+            status=obj_json.get("status", "en-curso"),
+            priority=obj_json.get("priority", "media"),
         )
         return render_template(
             "personal_space/views/objective_detail.html",
             block=block,
             objective=objective,
+            objective_json=obj_json,
         )
 
     template_name = f"personal_space/views/{block.type}_view.html"
@@ -1745,3 +1747,48 @@ def delete_objetivo_resource(block_id, resource_id):
     db.session.commit()
 
     return jsonify({"success": True, "message": "Recurso eliminado"})
+
+
+@personal_space_bp.route("/api/objectives/<int:block_id>", methods=["GET"])
+@login_required
+@activated_required
+def api_get_objective(block_id):
+    """Return full objective metadata"""
+    block = Block.query.filter_by(id=block_id, user_id=current_user.id).first_or_404()
+    meta = block.get_metadata() or {}
+    return jsonify({"ok": True, "objective": meta.get("objective", {})})
+
+
+@personal_space_bp.route("/api/objectives/<int:block_id>", methods=["PATCH"])
+@login_required
+@activated_required
+def api_update_objective(block_id):
+    """Upsert objective fields in block metadata"""
+    block = Block.query.filter_by(id=block_id, user_id=current_user.id).first_or_404()
+    data = request.get_json(force=True, silent=True) or {}
+    meta = block.get_metadata() or {}
+    obj = meta.get("objective", {})
+
+    def _txt(val, max_len):
+        return (val or "").strip()[:max_len]
+
+    if "title" in data:
+        obj["title"] = _txt(data.get("title"), 280)
+    if "desc" in data:
+        obj["desc"] = _txt(data.get("desc"), 8000)
+    for key in ["due_at", "status", "priority"]:
+        if key in data and isinstance(data[key], str):
+            obj[key] = data[key]
+    if "milestones" in data and isinstance(data["milestones"], list):
+        if len(data["milestones"]) <= 200:
+            obj["milestones"] = data["milestones"]
+    if "resources" in data and isinstance(data["resources"], list):
+        if len(data["resources"]) <= 200:
+            obj["resources"] = data["resources"]
+    if "timeline" in data and isinstance(data["timeline"], list):
+        obj["timeline"] = data["timeline"]
+
+    meta["objective"] = obj
+    block.set_metadata(meta)
+    db.session.commit()
+    return jsonify({"ok": True, "objective": obj})

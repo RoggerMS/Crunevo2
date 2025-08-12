@@ -1297,3 +1297,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 
 - Hid mobile search modal and backdrop on desktop with CSS/JS hardening, removing pointer events and orphaned overlays. Added back navigation fallback, config modal stubs, JSON export and focus mode scroll lock with overlay fixes on objective detail. (PR objective-modal-focus)
 - Simplified tarea_view.html with semantic-only markup, removing comments/attachments and keeping forms, lists and resource links. (PR tarea-template-simplify)
+- Added objective metadata persistence with GET/PATCH API endpoints, template hydration and debounced front-end saves with error rollback. (PR objective-persistence)

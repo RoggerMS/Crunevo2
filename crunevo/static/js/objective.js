@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  function debounce(fn, delay = 500) {
+  function debounce(fn, delay = 400) {
     let t;
     return (...args) => {
       clearTimeout(t);
@@ -95,9 +95,39 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  function revertDom(field, value) {
+    const el = safeQuerySelector(`[data-field="${field}"]`);
+    if (el) {
+      if (el.tagName === 'INPUT' || el.tagName === 'SELECT') {
+        el.value = value;
+      } else {
+        el.textContent = value;
+      }
+    }
+    if (field === 'milestones') renderMilestones();
+    if (field === 'resources') renderResources();
+    if (field === 'status' || field === 'priority') updateBadges();
+    if (field === 'due_at') updateCountdown();
+  }
+
   const saveField = debounce((field, value) => {
-    console.log('Saving', field, value);
-    addTimelineEvent(`Campo ${field} actualizado`, 'edit');
+    const oldValue = JSON.parse(JSON.stringify(state.objective[field]));
+    csrfFetch(`/espacio-personal/api/objectives/${state.objective.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ [field]: value })
+    })
+      .then(r => r.json().then(data => ({ ok: r.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok || !data?.ok) throw new Error('save failed');
+        Object.assign(state.objective, data.objective || {});
+        addTimelineEvent(`Campo ${field} actualizado`, 'edit');
+      })
+      .catch(() => {
+        showErrorToast?.('No se pudo guardar');
+        state.objective[field] = oldValue;
+        revertDom(field, oldValue);
+      });
   });
 
   // Utility functions
@@ -1103,22 +1133,24 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     
-    // Initial render
-    renderMilestones();
-    renderResources();
-    renderStats();
-    renderTimeline();
-    updateBadges();
-    updateProgress();
-    updateCountdown();
-    
     // Hide skeleton after initial load
     setTimeout(() => {
       const skeleton = safeQuerySelector('[data-skeleton]');
       if (skeleton) skeleton.hidden = true;
     }, 500);
   }
-  
+
+  if (window.__OBJECTIVE_PRELOADED__) {
+    Object.assign(state.objective, window.__OBJECTIVE_PRELOADED__);
+    renderMilestones();
+    renderResources();
+    renderStats();
+    renderTimeline();
+    updateProgress();
+    updateBadges();
+    updateCountdown();
+  }
+
   // Start the application
   initialize();
 });
