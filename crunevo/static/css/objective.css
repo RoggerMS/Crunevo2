@@ -480,6 +480,17 @@
   color: var(--text-secondary);
 }
 
+.milestone-handle {
+  cursor: grab;
+  margin-right: var(--gap-xs);
+  display: inline-flex;
+  align-items: center;
+}
+
+.milestone-item.dragging {
+  opacity: 0.5;
+}
+
 /* Timeline Styles */
 .timeline {
   padding: var(--gap-sm);
