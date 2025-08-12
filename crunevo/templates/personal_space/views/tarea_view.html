@@ -1,1211 +1,158 @@
 {% extends 'base.html' %}
+{% from 'components/csrf.html' import csrf_field %}
+{% set app = url_for.__globals__.get('current_app') %}
+
 {% block title %}Tarea - {{ block.title }}{% endblock %}
 
-{% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
-<style>
-/* Modern Tarea Individual Styles */
-.tarea-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 2rem;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.02), rgba(139, 92, 246, 0.01));
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
-    border: 1px solid rgba(139, 92, 246, 0.1);
-}
-
-.task-status-chip {
-    padding: 0.75rem 1.25rem;
-    border-radius: 25px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.task-status-chip:hover {
-    transform: translateY(-2px) scale(1.05);
-}
-
-.task-status-chip.pending {
-    background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 193, 7, 0.1));
-    color: #f59e0b;
-    border: 2px solid rgba(255, 193, 7, 0.3);
-}
-
-.task-status-chip.completed {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.1));
-    color: #22c55e;
-    border: 2px solid rgba(34, 197, 94, 0.3);
-}
-
-.task-status-chip.overdue {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.1));
-    color: #ef4444;
-    border: 2px solid rgba(239, 68, 68, 0.3);
-}
-
-.task-checkbox {
-    width: 3rem;
-    height: 3rem;
-    border: 3px solid rgba(139, 92, 246, 0.3);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: white;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
-}
-
-.task-checkbox:hover {
-    border-color: #8b5cf6;
-    background: rgba(139, 92, 246, 0.05);
-    transform: scale(1.1) translateY(-2px);
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
-}
-
-.task-checkbox.completed {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    border-color: #8b5cf6;
-    color: white;
-    transform: scale(1.05);
-    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
-}
-
-.modern-progress {
-    height: 12px;
-    background: rgba(139, 92, 246, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    box-shadow: inset 0 2px 4px rgba(139, 92, 246, 0.1);
-}
-
-.modern-progress .progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #8b5cf6, #7c3aed);
-    border-radius: 8px;
-    transition: width 0.5s ease;
-    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
-}
-
-/* Subtask Styles */
-.subtask-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    border: 2px solid rgba(139, 92, 246, 0.1);
-    border-radius: 12px;
-    margin-bottom: 0.75rem;
-    background: white;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.05);
-}
-
-.subtask-item:hover {
-    background: rgba(139, 92, 246, 0.02);
-    border-color: rgba(139, 92, 246, 0.2);
-    transform: translateX(0.5rem) translateY(-2px);
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.1);
-}
-
-.subtask-item.completed {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(34, 197, 94, 0.02));
-    border-color: rgba(34, 197, 94, 0.3);
-    box-shadow: 0 6px 15px rgba(34, 197, 94, 0.1);
-}
-
-.subtask-checkbox {
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 2px solid #d1d5db;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-}
-
-.subtask-checkbox.completed {
-    background: #22c55e;
-    border-color: #22c55e;
-    color: white;
-}
-
-.subtask-text {
-    flex-grow: 1;
-    font-weight: 500;
-    color: #374151;
-}
-
-.subtask-text.completed {
-    text-decoration: line-through;
-    color: #9ca3af;
-}
-
-.subtask-actions {
-    display: flex;
-    gap: 0.25rem;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.subtask-item:hover .subtask-actions {
-    opacity: 1;
-}
-
-/* File Upload Styles */
-.upload-zone {
-    border: 2px dashed #d1d5db;
-    border-radius: 0.5rem;
-    padding: 2rem 1rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background: #f9fafb;
-}
-
-.upload-zone:hover {
-    border-color: #8b5cf6;
-    background: rgba(139, 92, 246, 0.05);
-}
-
-.upload-zone.dragover {
-    border-color: #22c55e;
-    background: rgba(34, 197, 94, 0.05);
-}
-
-.upload-icon {
-    font-size: 3rem;
-    color: #9ca3af;
-    margin-bottom: 1rem;
-}
-
-/* File Card Styles */
-.file-card {
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    text-align: center;
-    transition: all 0.2s ease;
-    background: white;
-}
-
-.file-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-    border-color: #8b5cf6;
-}
-
-.file-icon {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-    color: #8b5cf6;
-}
-
-.file-name {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-    word-break: break-word;
-    color: #374151;
-}
-
-.file-info {
-    font-size: 0.875rem;
-    color: #6b7280;
-    margin-bottom: 0.5rem;
-}
-
-.file-actions {
-    display: flex;
-    gap: 0.25rem;
-    justify-content: center;
-}
-
-/* Comment Styles */
-.comment-item {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    padding: 0.75rem;
-    background: #f9fafb;
-    border-radius: 0.5rem;
-    border: 1px solid #f3f4f6;
-}
-
-.comment-avatar {
-    width: 2.5rem;
-    height: 2.5rem;
-    background: #8b5cf6;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    flex-shrink: 0;
-    font-size: 0.875rem;
-}
-
-.comment-content {
-    flex-grow: 1;
-}
-
-.comment-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.25rem;
-}
-
-.comment-author {
-    font-weight: 600;
-    font-size: 0.875rem;
-    color: #374151;
-}
-
-.comment-date {
-    font-size: 0.75rem;
-    color: #6b7280;
-}
-
-.comment-text {
-    font-size: 0.875rem;
-    line-height: 1.4;
-    color: #4b5563;
-}
-
-.comment-timeline {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-/* Floating Button */
-.btn-floating {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 50%;
-    background: #8b5cf6;
-    color: white;
-    border: none;
-    font-size: 1.25rem;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-floating:hover {
-    transform: scale(1.1);
-    background: #7c3aed;
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
-}
-
-/* Progress Indicator */
-.progress-indicator {
-    padding: 1rem;
-    background: rgba(139, 92, 246, 0.05);
-    border-radius: 0.5rem;
-    border-left: 4px solid #8b5cf6;
-}
-
-.progress-text {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #374151;
-}
-
-/* Modal Styles */
-.modal-content {
-    border-radius: 0.75rem;
-    border: none;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.modal-header {
-    border-bottom: 1px solid #f3f4f6;
-    padding: 1.5rem;
-}
-
-.modal-body {
-    padding: 1.5rem;
-}
-
-.modal-footer {
-    border-top: 1px solid #f3f4f6;
-    padding: 1.5rem;
-}
-
-.form-floating {
-    margin-bottom: 1rem;
-}
-
-/* Priority Chip Styles */
-.priority-high {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.priority-medium {
-    background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
-    border: 1px solid rgba(245, 158, 11, 0.2);
-}
-
-.priority-low {
-    background: rgba(34, 197, 94, 0.1);
-    color: #22c55e;
-    border: 1px solid rgba(34, 197, 94, 0.2);
-}
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="modern-block-container">
-    <!-- Modern Hero Header -->
-    <div class="modern-hero">
-        <div class="hero-content">
-            <div class="hero-header">
-                <div class="hero-icon">
-                    <i class="bi bi-clipboard-check"></i>
-                </div>
-                <div>
-                    <h1 class="hero-title">Gestión de Tarea</h1>
-                    <p class="hero-subtitle">Organiza tu tarea con subtareas, archivos y seguimiento</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Action Footer -->
-        <div class="action-footer">
-            <div class="action-group">
-                <button class="modern-btn modern-btn-outline" onclick="exportTarea()">
-                    <i class="bi bi-download"></i> Exportar
-                </button>
-                <button class="modern-btn modern-btn-primary" onclick="editTarea()">
-                    <i class="bi bi-gear"></i> Configurar
-                </button>
-                <a href="{{ url_for('personal_space.index') }}" class="modern-btn modern-btn-outline">
-                    <i class="bi bi-arrow-left"></i> Volver
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Tarea Card -->
-    <div class="modern-card mb-4">
-        <div class="card-body">
-            <div class="d-flex align-items-start gap-3">
-                <div class="task-checkbox" id="tareaCheckbox" onclick="toggleTareaCompletada()">
-                    <i class="bi bi-check"></i>
-                </div>
-                <div class="flex-grow-1">
-                    <h3 class="card-title mb-3" id="tareaTitulo">Completar Proyecto Final</h3>
-                    
-                    <!-- Meta Information -->
-                    <div class="d-flex flex-wrap gap-2 mb-3">
-                        <span class="chip priority-high" id="prioridadBadge">
-                            <i class="bi bi-flag-fill"></i>
-                            <span id="prioridadText">Alta</span>
-                        </span>
-                        <span class="chip" id="categoriaBadge">
-                            <i class="bi bi-tag-fill"></i>
-                            <span id="categoriaText">Académico</span>
-                        </span>
-                        <span class="chip" id="fechaBadge">
-                            <i class="bi bi-calendar-event"></i>
-                            <span id="fechaText">15 Mayo 2024</span>
-                        </span>
-                        <span class="task-status-chip pending" id="statusBadge">
-                            <i class="bi bi-clock"></i>
-                            <span id="statusText">En progreso</span>
-                        </span>
-                    </div>
-                    
-                    <!-- Progress Indicator -->
-                    <div class="progress-indicator" id="progressIndicator">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="progress-text">Progreso de la tarea</span>
-                            <span class="fw-bold text-primary" id="progressPercentage">65%</span>
-                        </div>
-                        <div class="modern-progress">
-                            <div class="progress-bar" id="progressFill" style="width: 65%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Descripción -->
-    <div class="modern-card mb-4">
-        <div class="card-body">
-            <div class="section-header">
-                <h5 class="mb-0"><i class="bi bi-file-text me-2"></i>Descripción</h5>
-            </div>
-            <textarea class="form-control mt-3" id="descripcionEditor" rows="4"
-                      placeholder="Describe los detalles de tu tarea...">Desarrollar la aplicación web completa para el proyecto final del curso. Incluye frontend con React, backend con Node.js, base de datos MongoDB y documentación técnica.</textarea>
-        </div>
-    </div>
-    
-    <!-- Subtareas -->
-    <div class="modern-card mb-4">
-        <div class="card-body">
-            <div class="section-header">
-                <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Subtareas</h5>
-            </div>
-            
-            <div class="mt-3" id="subtareasList">
-                <!-- Subtarea completada -->
-                <div class="subtask-item completed">
-                    <div class="subtask-checkbox completed">
-                        <i class="bi bi-check"></i>
-                    </div>
-                    <span class="subtask-text completed">Diseñar la arquitectura del sistema</span>
-                    <div class="subtask-actions">
-                        <button class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Subtarea completada -->
-                <div class="subtask-item completed">
-                    <div class="subtask-checkbox completed">
-                        <i class="bi bi-check"></i>
-                    </div>
-                    <span class="subtask-text completed">Configurar base de datos MongoDB</span>
-                    <div class="subtask-actions">
-                        <button class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Subtarea pendiente -->
-                <div class="subtask-item">
-                    <div class="subtask-checkbox">
-                    </div>
-                    <span class="subtask-text">Desarrollar API REST con Node.js</span>
-                    <div class="subtask-actions">
-                        <button class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Subtarea pendiente -->
-                <div class="subtask-item">
-                    <div class="subtask-checkbox">
-                    </div>
-                    <span class="subtask-text">Crear interfaz de usuario con React</span>
-                    <div class="subtask-actions">
-                        <button class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Subtarea pendiente -->
-                <div class="subtask-item">
-                    <div class="subtask-checkbox">
-                    </div>
-                    <span class="subtask-text">Escribir documentación técnica</span>
-                    <div class="subtask-actions">
-                        <button class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="action-footer mt-3">
-                <button class="modern-btn modern-btn-primary" onclick="addSubtarea()">
-                    <i class="bi bi-plus-circle me-2"></i>Agregar Subtarea
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Archivos Adjuntos -->
-    <div class="modern-card mb-4">
-        <div class="card-body">
-            <div class="section-header">
-                <h5 class="mb-0"><i class="bi bi-paperclip me-2"></i>Archivos Adjuntos</h5>
-            </div>
-            
-            <div class="upload-zone mt-3" id="uploadZone" onclick="document.getElementById('fileInput').click()">
-                <div class="upload-icon">
-                    <i class="bi bi-cloud-upload"></i>
-                </div>
-                <h5>Arrastra archivos aquí o haz clic para seleccionar</h5>
-                <p class="text-muted">Soporta documentos, imágenes y archivos de hasta 10MB</p>
-            </div>
-            
-            <input type="file" id="fileInput" multiple style="display: none" onchange="handleFileSelect(event)">
-            
-            <div class="modern-grid modern-grid-3 mt-3" id="archivosGrid">
-                <!-- Archivo PDF -->
-                <div class="file-card">
-                    <div class="file-icon">
-                        <i class="bi bi-file-earmark-pdf text-danger"></i>
-                    </div>
-                    <div class="file-name">Requerimientos.pdf</div>
-                    <div class="file-info">2.3 MB • PDF</div>
-                    <div class="file-actions">
-                        <button class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-secondary">
-                            <i class="bi bi-download"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Archivo de imagen -->
-                <div class="file-card">
-                    <div class="file-icon">
-                        <i class="bi bi-file-earmark-image text-success"></i>
-                    </div>
-                    <div class="file-name">Mockup-UI.png</div>
-                    <div class="file-info">1.8 MB • PNG</div>
-                    <div class="file-actions">
-                        <button class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-secondary">
-                            <i class="bi bi-download"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Archivo de código -->
-                <div class="file-card">
-                    <div class="file-icon">
-                        <i class="bi bi-file-earmark-code text-primary"></i>
-                    </div>
-                    <div class="file-name">database-schema.sql</div>
-                    <div class="file-info">0.5 MB • SQL</div>
-                    <div class="file-actions">
-                        <button class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-secondary">
-                            <i class="bi bi-download"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Comentarios y Notas -->
-    <div class="modern-card mb-4">
-        <div class="card-body">
-            <div class="section-header">
-                <h5 class="mb-0"><i class="bi bi-chat-dots me-2"></i>Comentarios y Notas</h5>
-            </div>
-            
-            <div class="comment-timeline mt-3" id="comentariosTimeline">
-                <!-- Comentario 1 -->
-                <div class="comment-item">
-                    <div class="comment-avatar">MG</div>
-                    <div class="comment-content">
-                        <div class="comment-header">
-                            <span class="comment-author">María González</span>
-                            <span class="comment-date">Hace 2 horas</span>
-                        </div>
-                        <div class="comment-text">
-                            He revisado los requerimientos y creo que deberíamos agregar una sección sobre la seguridad de datos. ¿Qué opinas?
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Comentario 2 -->
-                <div class="comment-item">
-                    <div class="comment-avatar">CR</div>
-                    <div class="comment-content">
-                        <div class="comment-header">
-                            <span class="comment-author">Carlos Ruiz</span>
-                            <span class="comment-date">Hace 1 día</span>
-                        </div>
-                        <div class="comment-text">
-                            Excelente progreso en el proyecto. El mockup de la UI se ve muy profesional. ¡Sigamos así!
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Comentario 3 -->
-                <div class="comment-item">
-                    <div class="comment-avatar">AL</div>
-                    <div class="comment-content">
-                        <div class="comment-header">
-                            <span class="comment-author">Ana López</span>
-                            <span class="comment-date">Hace 2 días</span>
-                        </div>
-                        <div class="comment-text">
-                            ¿Podríamos programar una reunión para revisar el esquema de la base de datos? Tengo algunas sugerencias.
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="d-flex gap-2 mt-3">
-                <input type="text" class="form-control" id="comentarioInput" 
-                       placeholder="Agregar un comentario o nota..." 
-                       onkeypress="handleComentarioKeypress(event)">
-                <button class="modern-btn modern-btn-primary" onclick="addComentario()">
-                    <i class="bi bi-send"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+<header id="task-header" data-section="header">
+  <nav>
+    <a href="{{ request.referrer or (url_for('personal_space.index') if app and 'personal_space.index' in app.view_functions else '#') }}" data-action="back">Volver</a>
+    <a href="{{ url_for('personal_space.settings_view') if app and 'personal_space.settings_view' in app.view_functions else '#' }}" data-action="settings">Configurar</a>
+    <a href="{{ url_for('personal_space.link_note', block_id=block.id) if app and 'personal_space.link_note' in app.view_functions else '#' }}" data-action="link-note">Añadir desde Apuntes</a>
+    <a href="{{ url_for('personal_space.link_forum', block_id=block.id) if app and 'personal_space.link_forum' in app.view_functions else '#' }}" data-action="link-forum">Añadir desde Foro</a>
+  </nav>
+  <h1 id="task-title">{{ block.title }}</h1>
+  <form method="post" action="{{ url_for('personal_space.update_block', block_id=block.id) if app and 'personal_space.update_block' in app.view_functions else '' }}">
+    {{ csrf_field() }}
+    <label for="title">Título</label>
+    <input id="title" name="title" type="text" value="{{ block.title }}">
+    <label for="type">Tipo</label>
+    <select id="type" name="type">
+      <option value="tarea"{% if block.type == 'tarea' %} selected{% endif %}>tarea</option>
+      <option value="objetivo"{% if block.type == 'objetivo' %} selected{% endif %}>objetivo</option>
+      <option value="estudio"{% if block.type == 'estudio' %} selected{% endif %}>estudio</option>
+    </select>
+    <label for="priority">Prioridad</label>
+    <select id="priority" name="priority">
+      <option value="alta"{% if block.priority == 'alta' %} selected{% endif %}>alta</option>
+      <option value="media"{% if block.priority == 'media' %} selected{% endif %}>media</option>
+      <option value="baja"{% if block.priority == 'baja' %} selected{% endif %}>baja</option>
+    </select>
+    <label for="due_date">Fecha límite</label>
+    <input id="due_date" name="due_date" type="date" value="{{ block.due_date }}">
+    <button type="submit" data-action="save-block">Guardar</button>
+  </form>
+</header>
 
-<!-- Floating Action Button -->
-<button class="btn-floating" onclick="toggleTareaCompletada()" title="Marcar como completada">
-    <i class="bi bi-check" id="floatingIcon"></i>
-</button>
+<section id="task-progress" data-section="progress" aria-live="polite">
+  Progreso: {{ stats.progress_pct }}% — {{ stats.done }} / {{ stats.total }} completadas
+</section>
 
-<!-- Modal para configurar tarea -->
-<div class="modal fade" id="tareaModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Configurar Tarea</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="tareaForm">
-                    <div class="form-floating">
-                        <input type="text" class="form-control" id="tareaTituloInput" required>
-                        <label for="tareaTituloInput">Título de la tarea</label>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-floating">
-                                <select class="form-select" id="tareaPrioridad">
-                                    <option value="baja">Baja</option>
-                                    <option value="media" selected>Media</option>
-                                    <option value="alta">Alta</option>
-                                </select>
-                                <label for="tareaPrioridad">Prioridad</label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-floating">
-                                <input type="text" class="form-control" id="tareaCategoria">
-                                <label for="tareaCategoria">Categoría</label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-floating">
-                        <input type="datetime-local" class="form-control" id="tareaFechaLimite">
-                        <label for="tareaFechaLimite">Fecha límite</label>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="saveTarea()">Guardar</button>
-            </div>
-        </div>
-    </div>
-</div>
+<main id="task-main" data-section="main">
+  <section id="left" data-section="work">
+    <section id="description" data-block="description">
+      <form method="post" action="{{ url_for('personal_space.update_block', block_id=block.id) if app and 'personal_space.update_block' in app.view_functions else '' }}">
+        {{ csrf_field() }}
+        <label for="description-text">Descripción</label>
+        <textarea id="description-text" name="description">{{ block.description }}</textarea>
+        <button type="submit" data-action="save-description">Guardar</button>
+      </form>
+    </section>
 
-<script>
-let tareaData = {
-    titulo: '{{ block.title }}',
-    descripcion: '{{ block.content }}',
-    completada: {{ block.get_metadata().get('completed', false)|tojson }},
-    prioridad: '{{ block.get_metadata().get("priority", "media") }}',
-    categoria: '{{ block.get_metadata().get("category", "General") }}',
-    fechaLimite: '{{ block.get_metadata().get("due_date", "") }}',
-    subtareas: {{ block.get_metadata().get('subtasks', [])|tojson }},
-    archivos: {{ block.get_metadata().get('attachments', [])|tojson }},
-    comentarios: {{ block.get_metadata().get('comments', [])|tojson }}
-};
+    <section id="subtasks" data-block="subtasks">
+      <form method="get" action="">
+        <fieldset>
+          <legend>Filtrar</legend>
+          <label for="filter-all"><input id="filter-all" type="radio" name="filter" value="all"{% if request.args.get('filter','all') == 'all' %} checked{% endif %}> Todas</label>
+          <label for="filter-pending"><input id="filter-pending" type="radio" name="filter" value="pending"{% if request.args.get('filter') == 'pending' %} checked{% endif %}> Pendientes</label>
+          <label for="filter-done"><input id="filter-done" type="radio" name="filter" value="done"{% if request.args.get('filter') == 'done' %} checked{% endif %}> Completadas</label>
+        </fieldset>
+        <button type="submit" data-action="apply-filter">Aplicar</button>
+      </form>
 
-document.addEventListener('DOMContentLoaded', function() {
-    updateTareaHeader();
-    loadSubtareas();
-    loadArchivos();
-    loadComentarios();
-    setupEventListeners();
-    updateProgress();
-    
-    // Auto-save cada 30 segundos
-    setInterval(saveData, 30000);
-});
+      <ul>
+        {% for subtask in subtasks %}
+        <li data-subtask-id="{{ subtask.id }}">
+          <form method="post" action="{{ url_for('personal_space.toggle_subtask', subtask_id=subtask.id) if app and 'personal_space.toggle_subtask' in app.view_functions else '' }}">
+            {{ csrf_field() }}
+            <input type="checkbox" id="subtask-{{ subtask.id }}" name="done"{% if subtask.done %} checked{% endif %} onchange="this.form.submit()">
+            <input type="hidden" name="next" value="{{ request.full_path }}">
+            <label for="subtask-{{ subtask.id }}">{{ subtask.title }}</label>
+          </form>
+          <small>Prioridad: {{ subtask.priority }}{% if subtask.due_date %} | Vence: {{ subtask.due_date }}{% endif %}</small>
+          <a href="{{ url_for('personal_space.delete_subtask', subtask_id=subtask.id) if app and 'personal_space.delete_subtask' in app.view_functions else '#' }}" data-action="delete-subtask">Eliminar</a>
+        </li>
+        {% else %}
+        <li>No hay subtareas</li>
+        {% endfor %}
+      </ul>
 
-function setupEventListeners() {
-    // Descripción editor
-    document.getElementById('descripcionEditor').addEventListener('input', function() {
-        tareaData.descripcion = this.value;
-        debounceAutoSave();
-    });
-    
-    // Drag and drop para archivos
-    const uploadZone = document.getElementById('uploadZone');
-    
-    uploadZone.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        this.classList.add('dragover');
-    });
-    
-    uploadZone.addEventListener('dragleave', function(e) {
-        e.preventDefault();
-        this.classList.remove('dragover');
-    });
-    
-    uploadZone.addEventListener('drop', function(e) {
-        e.preventDefault();
-        this.classList.remove('dragover');
-        handleFileSelect({ target: { files: e.dataTransfer.files } });
-    });
-}
+      <form method="post" action="{{ url_for('personal_space.add_subtask', block_id=block.id) if app and 'personal_space.add_subtask' in app.view_functions else '' }}">
+        {{ csrf_field() }}
+        <label for="new-title">Título</label>
+        <input id="new-title" name="title" type="text" required>
+        <label for="new-priority">Prioridad</label>
+        <select id="new-priority" name="priority">
+          <option value="alta">alta</option>
+          <option value="media">media</option>
+          <option value="baja">baja</option>
+        </select>
+        <label for="new-due-date">Fecha límite</label>
+        <input id="new-due-date" name="due_date" type="date">
+        <button type="submit" data-action="add-subtask">Añadir</button>
+      </form>
 
-function updateTareaHeader() {
-    const header = document.getElementById('tareaHeader');
-    const checkbox = document.getElementById('tareaCheckbox');
-    const titulo = document.getElementById('tareaTitulo');
-    const prioridadBadge = document.getElementById('prioridadBadge');
-    const prioridadText = document.getElementById('prioridadText');
-    
-    titulo.textContent = tareaData.titulo;
-    prioridadText.textContent = tareaData.prioridad.charAt(0).toUpperCase() + tareaData.prioridad.slice(1);
-    
-    // Actualizar clases de prioridad
-    prioridadBadge.className = `meta-item prioridad-${tareaData.prioridad}`;
-    
-    // Estado de completada
-    if (tareaData.completada) {
-        header.classList.add('completada');
-        checkbox.classList.add('completada');
-    } else {
-        header.classList.remove('completada');
-        checkbox.classList.remove('completada');
-        
-        // Verificar si está vencida
-        if (tareaData.fechaLimite && new Date(tareaData.fechaLimite) < new Date()) {
-            header.classList.add('vencida');
-        }
-    }
-    
-    // Actualizar fecha
-    const fechaText = document.getElementById('fechaText');
-    if (tareaData.fechaLimite) {
-        const fecha = new Date(tareaData.fechaLimite);
-        fechaText.textContent = fecha.toLocaleDateString() + ' ' + fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    } else {
-        fechaText.textContent = 'Sin fecha';
-    }
-    
-    // Actualizar categoría
-    document.getElementById('categoriaText').textContent = tareaData.categoria || 'General';
-}
+      <form method="post" action="{{ url_for('personal_space.reorder_subtasks', block_id=block.id) if app and 'personal_space.reorder_subtasks' in app.view_functions else '' }}">
+        {{ csrf_field() }}
+        <label for="order-json">Nuevo orden</label>
+        <input id="order-json" name="order_json" type="text">
+        <button type="submit" data-action="reorder-subtasks">Reordenar</button>
+      </form>
+    </section>
+  </section>
 
-function loadSubtareas() {
-    const container = document.getElementById('subtareasList');
-    container.innerHTML = '';
-    
-    if (tareaData.subtareas.length === 0) {
-        container.innerHTML = `
-            <li class="text-center text-muted py-3">
-                <i class="bi bi-list-check" style="font-size: 2rem; opacity: 0.5;"></i>
-                <p class="mt-2">No hay subtareas agregadas</p>
-            </li>
-        `;
-        return;
-    }
-    
-    tareaData.subtareas.forEach((subtarea, index) => {
-        const li = document.createElement('li');
-        li.className = `subtarea-item ${subtarea.completada ? 'completada' : ''}`;
-        
-        li.innerHTML = `
-            <div class="subtarea-checkbox ${subtarea.completada ? 'completada' : ''}" 
-                 onclick="toggleSubtarea(${index})">
-                ${subtarea.completada ? '<i class="bi bi-check"></i>' : ''}
-            </div>
-            <span class="subtarea-text ${subtarea.completada ? 'completada' : ''}">${subtarea.texto}</span>
-            <div class="subtarea-actions">
-                <button class="btn btn-sm btn-outline-primary" onclick="editSubtarea(${index})">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteSubtarea(${index})">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-        `;
-        
-        container.appendChild(li);
-    });
-}
+  <aside id="right" data-section="side">
+    <section id="linked-resources" data-block="resources">
+      <section>
+        <h2>Apuntes</h2>
+        <ul>
+          {% for note in linked_notes %}
+          <li>
+            <a href="{{ note.url }}" target="_blank">{{ note.title }}</a>
+            <a href="{{ url_for('personal_space.unlink_resource', kind='note', resource_id=note.id) if app and 'personal_space.unlink_resource' in app.view_functions else '#' }}" data-action="unlink-note">Quitar</a>
+          </li>
+          {% else %}
+          <li>No hay apuntes vinculados</li>
+          {% endfor %}
+        </ul>
+      </section>
+      <section>
+        <h2>Foro</h2>
+        <ul>
+          {% for post in linked_forum_posts %}
+          <li>
+            <a href="{{ post.url }}" target="_blank">{{ post.title }}</a>
+            <a href="{{ url_for('personal_space.unlink_resource', kind='forum', resource_id=post.id) if app and 'personal_space.unlink_resource' in app.view_functions else '#' }}" data-action="unlink-forum">Quitar</a>
+          </li>
+          {% else %}
+          <li>No hay publicaciones vinculadas</li>
+          {% endfor %}
+        </ul>
+      </section>
+    </section>
 
-function loadArchivos() {
-    const container = document.getElementById('archivosGrid');
-    container.innerHTML = '';
-    
-    if (tareaData.archivos.length === 0) {
-        container.innerHTML = `
-            <div class="text-center text-muted py-4" style="grid-column: 1 / -1;">
-                <i class="bi bi-paperclip" style="font-size: 2rem; opacity: 0.5;"></i>
-                <p class="mt-2">No hay archivos adjuntos</p>
-            </div>
-        `;
-        return;
-    }
-    
-    tareaData.archivos.forEach((archivo, index) => {
-        const div = document.createElement('div');
-        div.className = 'archivo-card';
-        
-        const icon = getFileIcon(archivo.tipo);
-        const size = formatFileSize(archivo.tamaño);
-        
-        div.innerHTML = `
-            <div class="archivo-icon">
-                <i class="${icon}"></i>
-            </div>
-            <div class="archivo-nombre">${archivo.nombre}</div>
-            <div class="archivo-info">${size} • ${archivo.tipo}</div>
-            <div class="archivo-actions">
-                <button class="btn btn-sm btn-outline-primary" onclick="downloadArchivo(${index})">
-                    <i class="bi bi-download"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteArchivo(${index})">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-        `;
-        
-        container.appendChild(div);
-    });
-}
+    <section id="dates" data-block="dates">
+      <p>Fecha límite del bloque: {{ block.due_date }}</p>
+      <p>Estado: {{ block.status }}</p>
+    </section>
 
-function loadComentarios() {
-    const container = document.getElementById('comentariosTimeline');
-    container.innerHTML = '';
-    
-    if (tareaData.comentarios.length === 0) {
-        container.innerHTML = `
-            <div class="text-center text-muted py-3">
-                <i class="bi bi-chat-dots" style="font-size: 2rem; opacity: 0.5;"></i>
-                <p class="mt-2">No hay comentarios agregados</p>
-            </div>
-        `;
-        return;
-    }
-    
-    tareaData.comentarios.forEach(comentario => {
-        const div = document.createElement('div');
-        div.className = 'comentario-item';
-        
-        const fecha = new Date(comentario.fecha).toLocaleString();
-        const inicial = comentario.autor.charAt(0).toUpperCase();
-        
-        div.innerHTML = `
-            <div class="comentario-avatar">${inicial}</div>
-            <div class="comentario-content">
-                <div class="comentario-header">
-                    <span class="comentario-autor">${comentario.autor}</span>
-                    <span class="comentario-fecha">${fecha}</span>
-                </div>
-                <div class="comentario-texto">${comentario.texto}</div>
-            </div>
-        `;
-        
-        container.appendChild(div);
-    });
-    
-    // Scroll al final
-    container.scrollTop = container.scrollHeight;
-}
+    <section id="stats" data-block="stats">
+      <ul>
+        <li>Total: {{ stats.total }}</li>
+        <li>Completadas: {{ stats.done }}</li>
+        <li>Pendientes: {{ stats.pending }}</li>
+        <li>Progreso %: {{ stats.progress_pct }}</li>
+      </ul>
+    </section>
+  </aside>
+</main>
 
-function updateProgress() {
-    const totalSubtareas = tareaData.subtareas.length;
-    const completadas = tareaData.subtareas.filter(s => s.completada).length;
-    const progreso = totalSubtareas > 0 ? (completadas / totalSubtareas) * 100 : (tareaData.completada ? 100 : 0);
-    
-    document.getElementById('progressPercentage').textContent = `${Math.round(progreso)}%`;
-    document.getElementById('progressFill').style.width = `${progreso}%`;
-}
-
-function toggleTareaCompletada() {
-    tareaData.completada = !tareaData.completada;
-    updateTareaHeader();
-    updateProgress();
-    saveData();
-}
-
-function addSubtarea() {
-    const texto = prompt('Ingresa el texto de la subtarea:');
-    if (texto && texto.trim()) {
-        tareaData.subtareas.push({
-            id: Date.now().toString(),
-            texto: texto.trim(),
-            completada: false
-        });
-        loadSubtareas();
-        updateProgress();
-        saveData();
-    }
-}
-
-function toggleSubtarea(index) {
-    tareaData.subtareas[index].completada = !tareaData.subtareas[index].completada;
-    loadSubtareas();
-    updateProgress();
-    saveData();
-}
-
-function editSubtarea(index) {
-    const nuevoTexto = prompt('Editar subtarea:', tareaData.subtareas[index].texto);
-    if (nuevoTexto && nuevoTexto.trim()) {
-        tareaData.subtareas[index].texto = nuevoTexto.trim();
-        loadSubtareas();
-        saveData();
-    }
-}
-
-function deleteSubtarea(index) {
-    if (confirm('¿Estás seguro de que quieres eliminar esta subtarea?')) {
-        tareaData.subtareas.splice(index, 1);
-        loadSubtareas();
-        updateProgress();
-        saveData();
-    }
-}
-
-function handleFileSelect(event) {
-    const files = Array.from(event.target.files);
-    
-    files.forEach(file => {
-        if (file.size > 10 * 1024 * 1024) { // 10MB limit
-            alert(`El archivo ${file.name} es demasiado grande. Máximo 10MB.`);
-            return;
-        }
-        
-        const archivo = {
-            id: Date.now().toString() + Math.random(),
-            nombre: file.name,
-            tipo: file.type || 'application/octet-stream',
-            tamaño: file.size,
-            fechaSubida: new Date().toISOString(),
-            // En una implementación real, aquí se subiría el archivo al servidor
-            url: URL.createObjectURL(file)
-        };
-        
-        tareaData.archivos.push(archivo);
-    });
-    
-    loadArchivos();
-    saveData();
-    
-    // Limpiar input
-    event.target.value = '';
-}
-
-function deleteArchivo(index) {
-    if (confirm('¿Estás seguro de que quieres eliminar este archivo?')) {
-        tareaData.archivos.splice(index, 1);
-        loadArchivos();
-        saveData();
-    }
-}
-
-function downloadArchivo(index) {
-    const archivo = tareaData.archivos[index];
-    if (archivo.url) {
-        const a = document.createElement('a');
-        a.href = archivo.url;
-        a.download = archivo.nombre;
-        a.click();
-    }
-}
-
-function addComentario() {
-    const input = document.getElementById('comentarioInput');
-    const texto = input.value.trim();
-    
-    if (texto) {
-        const comentario = {
-            id: Date.now().toString(),
-            autor: '{{ current_user.username }}',
-            texto: texto,
-            fecha: new Date().toISOString()
-        };
-        
-        tareaData.comentarios.push(comentario);
-        input.value = '';
-        loadComentarios();
-        saveData();
-    }
-}
-
-function handleComentarioKeypress(event) {
-    if (event.key === 'Enter') {
-        addComentario();
-    }
-}
-
-function editTarea() {
-    document.getElementById('tareaTituloInput').value = tareaData.titulo;
-    document.getElementById('tareaPrioridad').value = tareaData.prioridad;
-    document.getElementById('tareaCategoria').value = tareaData.categoria;
-    document.getElementById('tareaFechaLimite').value = tareaData.fechaLimite;
-    
-    const modal = new bootstrap.Modal(document.getElementById('tareaModal'));
-    modal.show();
-}
-
-function saveTarea() {
-    const form = document.getElementById('tareaForm');
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-    }
-    
-    tareaData.titulo = document.getElementById('tareaTituloInput').value;
-    tareaData.prioridad = document.getElementById('tareaPrioridad').value;
-    tareaData.categoria = document.getElementById('tareaCategoria').value;
-    tareaData.fechaLimite = document.getElementById('tareaFechaLimite').value;
-    
-    updateTareaHeader();
-    saveData();
-    
-    const modal = bootstrap.Modal.getInstance(document.getElementById('tareaModal'));
-    modal.hide();
-}
-
-function getFileIcon(tipo) {
-    if (tipo.startsWith('image/')) return 'bi bi-file-image';
-    if (tipo.includes('pdf')) return 'bi bi-file-pdf';
-    if (tipo.includes('word')) return 'bi bi-file-word';
-    if (tipo.includes('excel') || tipo.includes('spreadsheet')) return 'bi bi-file-excel';
-    if (tipo.includes('powerpoint') || tipo.includes('presentation')) return 'bi bi-file-ppt';
-    if (tipo.includes('zip') || tipo.includes('rar')) return 'bi bi-file-zip';
-    return 'bi bi-file-earmark';
-}
-
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-let autoSaveTimeout;
-function debounceAutoSave() {
-    clearTimeout(autoSaveTimeout);
-    autoSaveTimeout = setTimeout(saveData, 2000);
-}
-
-function saveData() {
-    fetch(`/espacio-personal/api/blocks/{{ block.id }}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken()
-        },
-        body: JSON.stringify({
-            title: tareaData.titulo,
-            content: tareaData.descripcion,
-            metadata: {
-                completed: tareaData.completada,
-                priority: tareaData.prioridad,
-                category: tareaData.categoria,
-                due_date: tareaData.fechaLimite,
-                subtasks: tareaData.subtareas,
-                attachments: tareaData.archivos,
-                comments: tareaData.comentarios
-            }
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            console.log('Tarea guardada correctamente');
-        }
-    })
-    .catch(error => console.error('Error saving tarea:', error));
-}
-
-function exportTarea() {
-    const data = {
-        tarea: {
-            titulo: tareaData.titulo,
-            descripcion: tareaData.descripcion,
-            completada: tareaData.completada,
-            prioridad: tareaData.prioridad,
-            categoria: tareaData.categoria,
-            fechaLimite: tareaData.fechaLimite
-        },
-        subtareas: tareaData.subtareas,
-        archivos: tareaData.archivos.map(a => ({ nombre: a.nombre, tipo: a.tipo, tamaño: a.tamaño })),
-        comentarios: tareaData.comentarios,
-        estadisticas: {
-            totalSubtareas: tareaData.subtareas.length,
-            subtareasCompletadas: tareaData.subtareas.filter(s => s.completada).length,
-            progreso: tareaData.subtareas.length > 0 ? (tareaData.subtareas.filter(s => s.completada).length / tareaData.subtareas.length) * 100 : 0
-        }
-    };
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${tareaData.titulo || 'tarea'}_datos.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
-function getCsrfToken() {
-    return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
-}
-</script>
+<footer id="task-footer" data-section="footer">
+  <p>Última actualización: {{ block.updated_at }}</p>
+  <nav>
+    <a href="{{ url_for('personal_space.duplicate_block', block_id=block.id) if app and 'personal_space.duplicate_block' in app.view_functions else '#' }}" data-action="duplicate-block">Duplicar bloque</a>
+    <a href="{{ url_for('personal_space.complete_block', block_id=block.id) if app and 'personal_space.complete_block' in app.view_functions else '#' }}" data-action="complete-block">Marcar como completado</a>
+  </nav>
+</footer>
 {% endblock %}
