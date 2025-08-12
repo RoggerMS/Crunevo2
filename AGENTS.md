@@ -1291,3 +1291,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Simplified Nota Enriquecida block and view with Notion-like neutral styling using Tailwind utilities for improved readability. (PR personal-space-nota-notion-style)
 - Created dedicated /espacio-personal/bitacora page listing Nota Enriquecida blocks with sorting, linked block cards and styles. (PR personal-space-logbook-view)
 - Refactored Nota Enriquecida editor into a two-panel workspace with sidebar metadata, popover icon picker and responsive layout. (PR personal-space-note-editor-workspace)
+- Rebuilt Nota Enriquecida editor blocks with drag handles, SortableJS reordering, hover controls, improved icon popover styles and ARIA labels. (PR nota-enriquecida-dnd-ui)

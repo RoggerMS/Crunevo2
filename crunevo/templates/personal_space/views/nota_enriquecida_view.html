@@ -17,7 +17,7 @@
 
         <div class="sidebar-section">
             <label class="form-label">Icono</label>
-            <button class="icon-display-btn" id="iconDisplayBtn" data-bs-toggle="popover" data-bs-placement="bottom" title="Elige un icono">
+            <button class="icon-display-btn" id="iconDisplayBtn" aria-label="Elegir icono" data-bs-toggle="popover" data-bs-placement="bottom" title="Elige un icono">
                 <i id="currentIcon" class="{{ metadata.get('icon', 'bi bi-file-text') }}"></i>
             </button>
         </div>
@@ -41,7 +41,7 @@
 
         <div class="sidebar-footer">
             <span id="saveIndicator" class="text-muted small">Guardado</span>
-            <button class="btn btn-sm btn-outline-danger" id="deleteNoteBtn">Eliminar</button>
+            <button class="btn btn-sm btn-outline-danger" id="deleteNoteBtn" aria-label="Eliminar Nota">Eliminar</button>
         </div>
     </aside>
 
@@ -123,6 +123,18 @@
         });
 
         initIconPopover();
+
+        const container = document.getElementById('noteContent');
+        Sortable.create(container, {
+            animation: 150,
+            handle: '.drag-handle',
+            onEnd: function (evt) {
+                const movedItem = noteData.blocks.splice(evt.oldIndex, 1)[0];
+                noteData.blocks.splice(evt.newIndex, 0, movedItem);
+                loadBlocks();
+                debounceAutoSave();
+            }
+        });
     }
 
     function initIconPopover() {
@@ -158,59 +170,52 @@
     }
 
     function createBlockElement(block, index) {
-        const div = document.createElement('div');
-        div.className = 'content-block';
-        div.dataset.index = index;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'content-block-wrapper';
+        wrapper.dataset.index = index;
 
-        let content = '';
+        const dragHandle = document.createElement('div');
+        dragHandle.className = 'drag-handle';
+        dragHandle.innerHTML = '<i class="bi bi-grip-vertical"></i>';
+
+        const contentArea = document.createElement('div');
+        contentArea.className = 'block-content';
+        let contentHtml = '';
         switch (block.type) {
             case 'heading':
-                content = `<h3 class="block-heading" contenteditable="true" data-field="content">${block.content || ''}</h3>`;
-                break;
-            case 'text':
-                content = `<p class="block-text" contenteditable="true" data-field="content">${block.content || ''}</p>`;
+                contentHtml = `<h3 contenteditable="true" data-field="content" class="block-heading">${block.content || ''}</h3>`;
                 break;
             case 'list':
-                const listItems = (block.items || []).map(item =>
-                    `<div class="block-list-item">
-                        <span>•</span>
-                        <span contenteditable="true" data-field="item">${item}</span>
-                    </div>`
-                ).join('');
-                content = `<div class="block-list" data-field="items">${listItems}</div>`;
-                break;
-            case 'code':
-                content = `<pre class="block-code" contenteditable="true" data-field="content">${block.content || ''}</pre>`;
+                const itemsHtml = (block.items || ['']).map(item => `<li><span contenteditable="true" data-field="item">${item}</span></li>`).join('');
+                contentHtml = `<ul class="block-list" data-field="items">${itemsHtml}</ul>`;
                 break;
             case 'quote':
-                content = `<blockquote class="block-quote" contenteditable="true" data-field="content">${block.content || ''}</blockquote>`;
+                contentHtml = `<blockquote contenteditable="true" data-field="content" class="block-quote">${block.content || ''}</blockquote>`;
                 break;
+            default:
+                contentHtml = `<p contenteditable="true" data-field="content" class="block-text">${block.content || ''}</p>`;
         }
+        contentArea.innerHTML = contentHtml;
 
-        div.innerHTML = `
-            <div class="block-controls">
-                <button class="btn btn-sm btn-outline-danger" onclick="removeBlock(${index})">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-            <div class="block-type-selector">
-                <button class="block-type-btn ${block.type === 'heading' ? 'active' : ''}" onclick="changeBlockType(${index}, 'heading')">H</button>
-                <button class="block-type-btn ${block.type === 'text' ? 'active' : ''}" onclick="changeBlockType(${index}, 'text')">T</button>
-                <button class="block-type-btn ${block.type === 'list' ? 'active' : ''}" onclick="changeBlockType(${index}, 'list')">L</button>
-                <button class="block-type-btn ${block.type === 'code' ? 'active' : ''}" onclick="changeBlockType(${index}, 'code')">C</button>
-                <button class="block-type-btn ${block.type === 'quote' ? 'active' : ''}" onclick="changeBlockType(${index}, 'quote')">Q</button>
-            </div>
-            ${content}
-        `;
+        const controls = document.createElement('div');
+        controls.className = 'block-controls';
+        controls.innerHTML = `
+        <button class="btn btn-sm btn-light" onclick="changeBlockType(${index})" aria-label="Cambiar tipo de bloque"><i class="bi bi-shuffle"></i></button>
+        <button class="btn btn-sm btn-danger" onclick="removeBlock(${index})" aria-label="Eliminar bloque"><i class="bi bi-trash"></i></button>
+    `;
 
-        div.querySelectorAll('[contenteditable]').forEach(element => {
-            element.addEventListener('input', function () {
-                updateBlockContent(index, this);
+        wrapper.appendChild(dragHandle);
+        wrapper.appendChild(contentArea);
+        wrapper.appendChild(controls);
+
+        wrapper.querySelectorAll('[contenteditable]').forEach(el => {
+            el.addEventListener('input', () => {
+                updateBlockContent(index, el);
                 debounceAutoSave();
             });
         });
 
-        return div;
+        return wrapper;
     }
 
     function addNewBlock() {
@@ -223,16 +228,21 @@
         loadBlocks();
     }
 
-    function changeBlockType(index, newType) {
+    function changeBlockType(index) {
         const block = noteData.blocks[index];
-        block.type = newType;
-        if (newType === 'list') {
+        const types = ['text', 'heading', 'list', 'quote'];
+        const currentIndex = types.indexOf(block.type);
+        const nextType = types[(currentIndex + 1) % types.length];
+        block.type = nextType;
+        if (nextType === 'list') {
             block.items = block.items || [''];
+            delete block.content;
         } else {
+            block.content = block.content || '';
             delete block.items;
-            block.content = '';
         }
         loadBlocks();
+        debounceAutoSave();
     }
 
     function updateBlockContent(index, element) {
@@ -240,7 +250,8 @@
         const field = element.getAttribute('data-field');
 
         if (block.type === 'list') {
-            const items = Array.from(element.querySelectorAll('[data-field="item"]')).map(el => el.textContent.trim());
+            const listContainer = element.closest('[data-field="items"]');
+            const items = Array.from(listContainer.querySelectorAll('[data-field="item"]')).map(el => el.textContent.trim());
             block.items = items;
         } else if (field === 'content') {
             block.content = element.textContent.trim();
@@ -354,5 +365,9 @@
         return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
     }
 </script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 {% endblock %}
 
