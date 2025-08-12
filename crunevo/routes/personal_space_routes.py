@@ -8,6 +8,7 @@ from flask import (
     url_for,
     flash,
     send_file,
+    abort,
 )
 # fmt: on
 from flask_login import login_required, current_user
@@ -192,38 +193,66 @@ def create_block():
     )
 
 
-@personal_space_bp.route("/api/blocks/<int:block_id>", methods=["PUT"])
-@login_required
-@activated_required
-def update_block(block_id):
-    """Update an existing block"""
-    block = Block.query.filter_by(id=block_id, user_id=current_user.id).first()
-
-    if not block:
-        return jsonify({"success": False, "message": "Bloque no encontrado"}), 404
-
-    data = request.get_json()
-
-    # Update basic fields
+def _apply_block_updates(block, data):
+    """Internal helper to apply updates to a block."""
     if "title" in data:
         block.title = data["title"]
     if "content" in data:
         block.content = data["content"]
-    if "is_featured" in data:
-        block.is_featured = data["is_featured"]
 
-    # Update metadata
+    metadata = block.get_metadata()
+    for key in ["priority", "due_date", "status"]:
+        if key in data:
+            metadata[key] = data[key]
     if "metadata" in data:
-        metadata = block.get_metadata()
         metadata.update(data["metadata"])
-        block.set_metadata(metadata)
-
+    block.set_metadata(metadata)
     block.updated_at = datetime.utcnow()
     db.session.commit()
 
+
+@personal_space_bp.route(
+    "/api/blocks/<int:block_id>", methods=["PUT"], endpoint="update_block_api"
+)
+@login_required
+@activated_required
+def update_block_api(block_id):
+    """Update an existing block via API"""
+    block = Block.query.filter_by(id=block_id, user_id=current_user.id).first_or_404()
+    data = request.get_json() or {}
+    _apply_block_updates(block, data)
     return jsonify(
         {"success": True, "block": block.to_dict(), "message": "Bloque actualizado"}
     )
+
+
+@personal_space_bp.route(
+    "/blocks/<int:block_id>", methods=["POST"], endpoint="update_block"
+)
+@login_required
+@activated_required
+def update_block(block_id):
+    """Update block fields via form or JSON"""
+    block = Block.query.filter_by(id=block_id, user_id=current_user.id).first_or_404()
+    data = request.get_json(silent=True) or request.form.to_dict()
+
+    title = data.get("title", "").strip()
+    if "title" in data and not title:
+        return jsonify({"success": False, "message": "Título requerido"}), 400
+
+    priority = data.get("priority")
+    if priority and priority not in {"alta", "media", "baja"}:
+        return jsonify({"success": False, "message": "Prioridad inválida"}), 400
+
+    due_date = data.get("due_date")
+    if due_date:
+        try:
+            datetime.strptime(due_date, "%Y-%m-%d")
+        except ValueError:
+            return jsonify({"success": False, "message": "Fecha inválida"}), 400
+
+    _apply_block_updates(block, data)
+    return jsonify({"success": True, "block": block.to_dict()})
 
 
 @personal_space_bp.route("/api/blocks/<int:block_id>", methods=["DELETE"])
@@ -532,12 +561,29 @@ def view_block(block_id):
     try:
         context = {"block": block}
         if block.type == "tarea":
+            meta = block.get_metadata() or {}
+            subtasks = meta.get("subtasks", [])
+            linked_notes = meta.get("linked_notes", [])
+            linked_forum_posts = meta.get("linked_forum_posts", [])
+            total = len(subtasks)
+            done = sum(1 for s in subtasks if s.get("done"))
+            pending = total - done
+            progress_pct = round((done / total) * 100) if total else 0
+            block.priority = meta.get("priority")
+            due_str = meta.get("due_date")
+            block.due_date = datetime.fromisoformat(due_str).date() if due_str else None
+            block.status = meta.get("status")
             context.update(
                 {
-                    "subtasks": [],
-                    "linked_notes": [],
-                    "linked_forum_posts": [],
-                    "stats": {"total": 0, "done": 0, "pending": 0, "progress_pct": 0},
+                    "subtasks": subtasks,
+                    "linked_notes": linked_notes,
+                    "linked_forum_posts": linked_forum_posts,
+                    "stats": {
+                        "total": total,
+                        "done": done,
+                        "pending": pending,
+                        "progress_pct": progress_pct,
+                    },
                 }
             )
         return render_template(template_name, **context)
@@ -545,6 +591,190 @@ def view_block(block_id):
         return render_template(
             "personal_space/views/under_construction.html", block=block
         )
+
+
+# ---------------------------------------------------------------------------
+# Subtask and link management
+# ---------------------------------------------------------------------------
+
+
+def _get_task_block(block_id):
+    return Block.query.filter_by(
+        id=block_id, user_id=current_user.id, type="tarea"
+    ).first_or_404()
+
+
+@personal_space_bp.route(
+    "/blocks/<int:block_id>/subtasks/add",
+    methods=["POST"],
+    endpoint="add_subtask",
+)
+@login_required
+@activated_required
+def add_subtask(block_id):
+    block = _get_task_block(block_id)
+    title = request.form.get("title", "").strip()
+    if not title:
+        abort(400)
+    priority = request.form.get("priority", "media")
+    if priority not in {"alta", "media", "baja"}:
+        abort(400)
+    due_date = request.form.get("due_date") or None
+    if due_date:
+        try:
+            datetime.strptime(due_date, "%Y-%m-%d")
+        except ValueError:
+            abort(400)
+    meta = block.get_metadata() or {}
+    subtasks = meta.get("subtasks", [])
+    new_id = max([s.get("id", 0) for s in subtasks], default=0) + 1
+    subtasks.append(
+        {
+            "id": new_id,
+            "title": title,
+            "done": False,
+            "priority": priority,
+            "due_date": due_date,
+        }
+    )
+    meta["subtasks"] = subtasks
+    block.set_metadata(meta)
+    db.session.commit()
+    return redirect(url_for("personal_space.view_block", block_id=block.id))
+
+
+@personal_space_bp.route(
+    "/blocks/<int:block_id>/subtasks/<int:subtask_id>/toggle",
+    methods=["POST"],
+    endpoint="toggle_subtask",
+)
+@login_required
+@activated_required
+def toggle_subtask(block_id, subtask_id):
+    block = _get_task_block(block_id)
+    done = bool(request.form.get("done"))
+    meta = block.get_metadata() or {}
+    for st in meta.get("subtasks", []):
+        if st.get("id") == subtask_id:
+            st["done"] = done
+            break
+    block.set_metadata(meta)
+    db.session.commit()
+    next_url = request.form.get("next") or url_for(
+        "personal_space.view_block", block_id=block.id
+    )
+    return redirect(next_url)
+
+
+@personal_space_bp.route(
+    "/blocks/<int:block_id>/subtasks/<int:subtask_id>/delete",
+    methods=["POST", "GET"],
+    endpoint="delete_subtask",
+)
+@login_required
+@activated_required
+def delete_subtask(block_id, subtask_id):
+    block = _get_task_block(block_id)
+    meta = block.get_metadata() or {}
+    meta["subtasks"] = [
+        s for s in meta.get("subtasks", []) if s.get("id") != subtask_id
+    ]
+    block.set_metadata(meta)
+    db.session.commit()
+    return redirect(url_for("personal_space.view_block", block_id=block.id))
+
+
+@personal_space_bp.route(
+    "/blocks/<int:block_id>/subtasks/reorder",
+    methods=["POST"],
+    endpoint="reorder_subtasks",
+)
+@login_required
+@activated_required
+def reorder_subtasks(block_id):
+    block = _get_task_block(block_id)
+    order_json = request.form.get("order_json", "[]")
+    try:
+        new_order = json.loads(order_json)
+    except json.JSONDecodeError:
+        abort(400)
+    meta = block.get_metadata() or {}
+    subtasks = {s["id"]: s for s in meta.get("subtasks", [])}
+    reordered = [subtasks[i] for i in new_order if i in subtasks]
+    meta["subtasks"] = reordered
+    block.set_metadata(meta)
+    db.session.commit()
+    return redirect(url_for("personal_space.view_block", block_id=block.id))
+
+
+@personal_space_bp.route(
+    "/link-note/<int:block_id>", methods=["GET", "POST"], endpoint="link_note"
+)
+@login_required
+@activated_required
+def link_note(block_id):
+    _get_task_block(block_id)
+    return jsonify({"ok": True})
+
+
+@personal_space_bp.route(
+    "/link-forum/<int:block_id>", methods=["GET", "POST"], endpoint="link_forum"
+)
+@login_required
+@activated_required
+def link_forum(block_id):
+    _get_task_block(block_id)
+    return jsonify({"ok": True})
+
+
+@personal_space_bp.route(
+    "/unlink/<kind>/<int:resource_id>", methods=["POST"], endpoint="unlink_resource"
+)
+@login_required
+@activated_required
+def unlink_resource(kind, resource_id):
+    block_id = request.args.get("block_id", type=int)
+    block = _get_task_block(block_id)
+    meta = block.get_metadata() or {}
+    if kind == "note":
+        meta["linked_notes"] = [
+            n for n in meta.get("linked_notes", []) if n.get("id") != resource_id
+        ]
+    elif kind == "forum":
+        meta["linked_forum_posts"] = [
+            f for f in meta.get("linked_forum_posts", []) if f.get("id") != resource_id
+        ]
+    block.set_metadata(meta)
+    db.session.commit()
+    return redirect(url_for("personal_space.view_block", block_id=block.id))
+
+
+@personal_space_bp.route(
+    "/blocks/<int:block_id>/duplicate",
+    methods=["GET", "POST"],
+    endpoint="duplicate_block",
+)
+@login_required
+@activated_required
+def duplicate_block(block_id):
+    _get_task_block(block_id)
+    return jsonify({"ok": True})
+
+
+@personal_space_bp.route(
+    "/blocks/<int:block_id>/complete",
+    methods=["GET", "POST"],
+    endpoint="complete_block",
+)
+@login_required
+@activated_required
+def complete_block(block_id):
+    block = _get_task_block(block_id)
+    meta = block.get_metadata() or {}
+    meta["status"] = "completado"
+    block.set_metadata(meta)
+    db.session.commit()
+    return jsonify({"ok": True})
 
 
 # ============================================================================
