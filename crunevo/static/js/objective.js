@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  let announcer;
+
   // Performance tracking
   let performanceData = {
     weeklyProgress: [],
@@ -87,30 +89,57 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Editable fields
-  ['title', 'desc'].forEach(field => {
-    const el = document.querySelector(`[data-field="${field}"]`);
-    if (el) {
+  function updateBadges() {
+    const statusBadge = safeQuerySelector('.badge--status');
+    if (statusBadge) {
+      statusBadge.dataset.status = state.objective.status;
+      statusBadge.textContent = state.objective.status;
+      statusBadge.setAttribute('aria-label', `Estado: ${state.objective.status}`);
+    }
+    const priorityBadge = safeQuerySelector('.badge--priority');
+    if (priorityBadge) {
+      priorityBadge.dataset.priority = state.objective.priority;
+      priorityBadge.textContent = state.objective.priority;
+      priorityBadge.setAttribute('aria-label', `Prioridad: ${state.objective.priority}`);
+    }
+  }
+
+  function updateCountdown() {
+    const el = safeQuerySelector('[data-countdown]');
+    if (!el || !state.objective.due_at) return;
+    const diffDays = Math.ceil((new Date(state.objective.due_at) - new Date()) / (1000 * 60 * 60 * 24));
+    let cls = 'countdown--normal';
+    if (diffDays <= 3) cls = 'countdown--danger';
+    else if (diffDays <= 7) cls = 'countdown--warning';
+    el.className = `countdown ${cls}`;
+    el.textContent = diffDays > 0 ? `${diffDays} días restantes` : 'Vencido';
+  }
+
+  function initializeEditableFields() {
+    ['title', 'desc'].forEach(field => {
+      const el = safeQuerySelector(`[data-field="${field}"]`);
+      if (!el) return;
       el.addEventListener('input', () => {
         state.objective[field] = el.textContent.trim();
         saveField(field, state.objective[field]);
       });
-    }
-  });
+    });
 
-  ['due_at', 'status', 'priority'].forEach(field => {
-    const el = document.querySelector(`[data-field="${field}"]`);
-    if (el) {
+    ['due_at', 'status', 'priority'].forEach(field => {
+      const el = safeQuerySelector(`[data-field="${field}"]`);
+      if (!el) return;
       el.addEventListener('change', () => {
         state.objective[field] = el.value;
         saveField(field, state.objective[field]);
+        if (field === 'status' || field === 'priority') updateBadges();
+        if (field === 'due_at') updateCountdown();
       });
       state.objective[field] = el.value;
-    }
-  });
+    });
+  }
 
   // Milestones
-  const milestoneList = document.querySelector('[data-milestone-list]');
+  const milestoneList = safeQuerySelector('[data-milestone-list]');
   function updateMilestoneProgress(m) {
     if (m.subtasks && m.subtasks.length) {
       const done = m.subtasks.filter(s => s.done).length;
@@ -119,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       m.progress = m.done ? 100 : 0;
     }
-    updateObjectiveProgress();
+    updateProgress();
     addTimelineEvent(`Meta "${m.title}" actualizada`, 'milestone');
   }
 
@@ -183,15 +212,26 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderMilestones() {
+    if (!milestoneList) return;
     milestoneList.innerHTML = '';
     state.objective.milestones.forEach((m, idx) => {
       const li = document.createElement('li');
       li.className = 'milestone-item';
-      li.draggable = true;
       li.dataset.id = m.id;
+      li.tabIndex = 0;
 
       const header = document.createElement('div');
       header.className = 'milestone-header';
+
+      const handle = document.createElement('span');
+      handle.className = 'milestone-handle';
+      handle.innerHTML = '<i class="bi bi-grip-vertical" aria-hidden="true"></i>';
+      handle.draggable = true;
+      handle.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', idx);
+        li.classList.add('dragging');
+      });
+      handle.addEventListener('dragend', () => li.classList.remove('dragging'));
 
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
@@ -218,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
       weightInput.className = 'milestone-weight';
       weightInput.addEventListener('change', () => {
         m.weight = Number(weightInput.value) || 1;
-        updateObjectiveProgress();
+        updateProgress();
         saveField('milestones', state.objective.milestones);
       });
 
@@ -235,16 +275,13 @@ document.addEventListener('DOMContentLoaded', () => {
         saveField('milestones', state.objective.milestones);
       });
 
-      header.append(checkbox, span, weightInput, progressBar, deleteBtn);
+      header.append(handle, checkbox, span, weightInput, progressBar, deleteBtn);
       li.appendChild(header);
       
       // Add subtasks
       const subtaskContainer = renderSubtasks(m);
       li.appendChild(subtaskContainer);
 
-      li.addEventListener('dragstart', e => {
-        e.dataTransfer.setData('text/plain', idx);
-      });
       li.addEventListener('dragover', e => e.preventDefault());
       li.addEventListener('drop', e => {
         e.preventDefault();
@@ -256,9 +293,23 @@ document.addEventListener('DOMContentLoaded', () => {
         saveField('milestones', arr);
       });
 
+      li.addEventListener('keydown', e => {
+        if (!e.altKey) return;
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          const from = idx;
+          const to = e.key === 'ArrowUp' ? Math.max(0, from - 1) : Math.min(state.objective.milestones.length - 1, from + 1);
+          const arr = state.objective.milestones;
+          arr.splice(to, 0, arr.splice(from, 1)[0]);
+          renderMilestones();
+          saveField('milestones', arr);
+          if (announcer) announcer.textContent = `Meta movida a posición ${to + 1}`;
+        }
+      });
+
       milestoneList.appendChild(li);
     });
-    updateObjectiveProgress();
+    updateProgress();
   }
 
   document.querySelector('.add-milestone')?.addEventListener('click', () => {
@@ -388,14 +439,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function updateObjectiveProgress() {
+  function updateProgress() {
     const arr = state.objective.milestones;
     const totalWeight = arr.reduce((sum, m) => sum + (m.weight || 1), 0) || 1;
-    const prog = arr.reduce((sum, m) => sum + (m.weight || 1) * m.progress, 0) / totalWeight;
+    const prog =
+      arr.reduce((sum, m) => sum + (m.weight || 1) * m.progress, 0) / totalWeight;
     state.objective.progress = prog;
-    const bar = document.querySelector('[data-progress-bar]');
-    if (bar) bar.style.width = `${prog}%`;
-    const num = document.querySelector('[data-progress-number]');
+    const bar = safeQuerySelector('[data-progress-bar]');
+    if (bar) {
+      bar.style.width = `${prog}%`;
+      bar.setAttribute('aria-valuenow', Math.round(prog));
+    }
+    const num = safeQuerySelector('[data-progress-number]');
     if (num) num.textContent = `${Math.round(prog)}%`;
     renderStats();
   }
@@ -734,7 +789,7 @@ document.addEventListener('DOMContentLoaded', () => {
       checkbox.addEventListener('change', () => {
         milestone.done = checkbox.checked;
         updateMilestoneProgress(milestone);
-        updateObjectiveProgress();
+        updateProgress();
         renderStats();
         addTimelineEvent(`Meta "${milestone.title}" ${milestone.done ? 'completada' : 'marcada como pendiente'}`, 'milestone');
         saveField('milestones', state.objective.milestones);
@@ -769,7 +824,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (confirm('¿Estás seguro de que quieres eliminar esta meta?')) {
           state.objective.milestones.splice(index, 1);
           renderMilestones();
-          updateObjectiveProgress();
+          updateProgress();
           renderStats();
           addTimelineEvent(`Meta "${milestone.title}" eliminada`, 'milestone');
           saveField('milestones', state.objective.milestones);
@@ -803,7 +858,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const weightInput = weightControl.querySelector('input');
       weightInput.addEventListener('change', () => {
         milestone.weight = parseInt(weightInput.value) || 1;
-        updateObjectiveProgress();
+        updateProgress();
         renderStats();
         saveField('milestones', state.objective.milestones);
       });
@@ -828,7 +883,7 @@ document.addEventListener('DOMContentLoaded', () => {
           subtaskCheckbox.addEventListener('change', () => {
             subtask.done = subtaskCheckbox.checked;
             updateMilestoneProgress(milestone);
-            updateObjectiveProgress();
+            updateProgress();
             renderStats();
             saveField('milestones', state.objective.milestones);
           });
@@ -1034,6 +1089,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Initialize all components
   function initialize() {
+    announcer = safeQuerySelector('[data-reorder-announcement]');
     initializeEditableFields();
     initializeResourceModal();
     initializeFocusMode();
@@ -1054,7 +1110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         state.objective.milestones.push(milestone);
         renderMilestones();
-        updateObjectiveProgress();
+        updateProgress();
         renderStats();
         addTimelineEvent('Nueva meta agregada', 'milestone');
         saveField('milestones', state.objective.milestones);

@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}Objetivo{% endblock %}
 
-{% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/objective.css') }}">
-<script defer src="{{ url_for('static', filename='js/objective.js') }}"></script>
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}?v=20240603">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/objective.css') }}?v=20240603">
+<script defer src="{{ url_for('static', filename='js/objective.js') }}?v=20240603"></script>
 {% endblock %}
 
 {% block content %}
@@ -114,7 +114,8 @@
             <div class="skeleton-line skeleton-line--long"></div>
           </li>
         </ul>
-        
+        <span class="sr-only" data-reorder-announcement aria-live="polite"></span>
+
         <div class="milestones-empty" data-milestones-empty hidden>
           <div class="empty-state">
             <i class="bi bi-flag" aria-hidden="true"></i>

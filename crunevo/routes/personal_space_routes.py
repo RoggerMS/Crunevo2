@@ -17,6 +17,7 @@ from crunevo.utils.helpers import activated_required
 from jinja2 import TemplateNotFound
 from datetime import datetime, timedelta
 from sqlalchemy import or_, func, desc
+from types import SimpleNamespace
 import json
 import csv
 import io
@@ -504,8 +505,25 @@ def view_kanban(block_id):
 @login_required
 @activated_required
 def view_block(block_id):
-    """Generic viewer for personal blocks"""
+    """Display a block detail view"""
     block = Block.query.filter_by(id=block_id, user_id=current_user.id).first_or_404()
+
+    if block.type in ("objetivo", "objective"):
+        meta = block.get_metadata() or {}
+        objective = SimpleNamespace(
+            id=block.id,
+            title=block.title or "Objetivo sin título",
+            desc=meta.get("desc", ""),
+            due_at=meta.get("due_at", ""),
+            status=meta.get("status", "en-curso"),
+            priority=meta.get("priority", "media"),
+        )
+        return render_template(
+            "personal_space/views/objective_detail.html",
+            block=block,
+            objective=objective,
+        )
+
     template_name = f"personal_space/views/{block.type}_view.html"
     try:
         return render_template(template_name, block=block)
