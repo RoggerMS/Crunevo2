@@ -1307,3 +1307,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added table existence checks and error handling in personal space routes to avoid 500 errors when tables are missing. (PR personal-space-table-check)
 - Fixed /personal-space/ 500 by correcting template links, removing invalid macros and adding dashboard view test. (PR personal-space-dashboard-fix)
 - Fixed Personal Space dashboard loading unstyled by linking personal-space-optimized.css and adding aria labels to icon buttons. (PR personal-space-dashboard-style-fix)
+- Enabled Personal Space dashboard interactions by rendering modals and wiring quick notes to blocks API. (PR personal-space-dashboard-js)

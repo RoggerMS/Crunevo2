@@ -221,16 +221,16 @@
                                       placeholder="Escribe una nota rápida..." 
                                       rows="4" 
                                       id="quick-note-text"></textarea>
-                            <div class="quick-note-actions">
-                                <small class="text-muted">Ctrl+Enter para guardar</small>
-                                <button type="button" 
-                                        class="note-save-btn" 
-                                        onclick="saveQuickNote()">
-                                    <i class="bi bi-save me-1"></i>
-                                    Guardar
-                                </button>
-                            </div>
-                        </div>
+                    <div class="quick-note-actions">
+                        <small class="text-muted">Ctrl+Enter para guardar</small>
+                        <button type="button"
+                                class="note-save-btn"
+                                onclick="window.PersonalSpaceDashboard.saveQuickNote()">
+                            <i class="bi bi-save me-1"></i>
+                            Guardar
+                        </button>
+                    </div>
+                </div>
                         
                         <!-- Recent Quick Notes -->
                         <div class="mt-3" id="recent-quick-notes">
@@ -263,22 +263,24 @@
                 </div>
             </div>
             <div class="section-body">
-                <!-- Analytics dashboard placeholder -->
+                {{ render_analytics_dashboard() }}
             </div>
         </div>
     </div>
 </div>
 
 <!-- Floating Action Button -->
-<button type="button" 
-        class="floating-action-btn" 
-        data-bs-toggle="modal" 
-        data-bs-target="#block-factory-modal" 
+<button type="button"
+        class="floating-action-btn"
+        data-bs-toggle="modal"
+        data-bs-target="#block-factory-modal"
         title="Crear nuevo bloque">
     <i class="bi bi-plus"></i>
 </button>
 
 <!-- Modals placeholders -->
+{{ render_block_factory_modal() }}
+{{ render_template_gallery_modal() }}
 {% endblock %}
 
 {% block extra_js %}
@@ -300,7 +302,7 @@ window.PersonalSpaceDashboard = {
                 this.saveQuickNote();
             }
         });
-        
+
         // Auto-save quick notes
         let saveTimeout;
         document.getElementById('quick-note-text')?.addEventListener('input', () => {
@@ -308,6 +310,20 @@ window.PersonalSpaceDashboard = {
             saveTimeout = setTimeout(() => {
                 this.autoSaveQuickNote();
             }, 2000);
+        });
+
+        // Ensure Bootstrap modals open when buttons are clicked
+        document.querySelectorAll('[data-bs-toggle="modal"]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const target = btn.getAttribute('data-bs-target');
+                if (target) {
+                    const el = document.querySelector(target);
+                    if (el) {
+                        const modal = new bootstrap.Modal(el);
+                        modal.show();
+                    }
+                }
+            });
         });
     },
     
@@ -376,19 +392,19 @@ window.PersonalSpaceDashboard = {
     saveQuickNote: async function() {
         const textarea = document.getElementById('quick-note-text');
         const content = textarea?.value.trim();
-        
+
         if (!content) return;
-        
+
         try {
-            const response = await fetch('/api/personal-space/quick_notes', {
+            const response = await fetch('/api/personal-space/blocks', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': this.getCSRFToken()
                 },
-                body: JSON.stringify({ content })
+                body: JSON.stringify({ type: 'nota', content })
             });
-            
+
             if (response.ok) {
                 textarea.value = '';
                 this.showSuccessMessage('Nota guardada');
@@ -411,10 +427,10 @@ window.PersonalSpaceDashboard = {
     // Load recent quick notes
     loadRecentQuickNotes: async function() {
         try {
-            const response = await fetch('/api/personal-space/quick_notes/recent');
+            const response = await fetch('/api/personal-space/blocks?type=nota');
             if (response.ok) {
-                const notes = await response.json();
-                this.renderRecentQuickNotes(notes);
+                const data = await response.json();
+                this.renderRecentQuickNotes(data.blocks || []);
             }
         } catch (error) {
             console.error('Error loading recent quick notes:', error);
@@ -479,10 +495,6 @@ window.PersonalSpaceDashboard = {
 };
 
 // Global functions
-window.saveQuickNote = function() {
-    window.PersonalSpaceDashboard.saveQuickNote();
-};
-
 window.refreshTodaysFocus = function() {
     window.PersonalSpaceDashboard.loadDashboardData();
 };
