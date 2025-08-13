@@ -10,6 +10,10 @@ from crunevo.models import (
     PersonalSpaceTemplate,
 )
 from crunevo.utils.helpers import activated_required
+from crunevo.services.block_service import BlockService
+from crunevo.services.analytics_service import AnalyticsService
+from crunevo.services.template_service import TemplateService
+from crunevo.services.validation_service import ValidationService
 
 
 personal_space_bp = Blueprint(
@@ -111,35 +115,35 @@ def analytics_dashboard():
 @login_required
 @activated_required
 def calendario():
-    return render_template("personal_space/views/calendar_view.html")
+    return render_template("personal_space/analytics_dashboard.html")
 
 
 @personal_space_bp.route("/estadisticas")
 @login_required
 @activated_required
 def estadisticas():
-    return render_template("personal_space/views/statistics_view.html")
+    return render_template("personal_space/analytics_dashboard.html")
 
 
 @personal_space_bp.route("/configuracion")
 @login_required
 @activated_required
 def configuracion():
-    return render_template("personal_space/views/settings_view.html")
+    return render_template("personal_space/dashboard.html")
 
 
 @personal_space_bp.route("/buscar")
 @login_required
 @activated_required
 def buscar():
-    return render_template("personal_space/views/search_view.html")
+    return render_template("personal_space/workspace.html")
 
 
 @personal_space_bp.route("/papelera")
 @login_required
 @activated_required
 def papelera():
-    return render_template("personal_space/views/trash_view.html")
+    return render_template("personal_space/workspace.html")
 
 
 # ---------------------------------------------------------------------------
@@ -151,155 +155,521 @@ def papelera():
 @login_required
 @activated_required
 def list_blocks():
-    blocks = (
-        PersonalSpaceBlock.query.filter_by(user_id=current_user.id)
-        .order_by(PersonalSpaceBlock.order_index.asc())
-        .all()
-    )
-    return jsonify({"success": True, "blocks": [b.to_dict() for b in blocks]})
+    try:
+        block_type = request.args.get('type')
+        status = request.args.get('status', 'active')
+        search = request.args.get('search')
+        
+        blocks = BlockService.get_user_blocks(
+            user_id=current_user.id,
+            block_type=block_type,
+            status=status
+        )
+        
+        if search:
+            blocks = BlockService.search_blocks(current_user.id, search)
+        
+        return jsonify({
+            'success': True,
+            'blocks': [block.to_dict() for block in blocks]
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
 @personal_space_api_bp.route("/blocks", methods=["POST"])
 @login_required
 @activated_required
 def create_block():
-    data = request.get_json() or {}
-    block_type = data.get("type")
-    if not block_type:
-        return jsonify({"success": False, "message": "Tipo requerido"}), 400
-
-    max_order = (
-        db.session.query(db.func.max(PersonalSpaceBlock.order_index))
-        .filter_by(user_id=current_user.id)
-        .scalar()
-        or 0
-    )
-
-    block = PersonalSpaceBlock(
-        user_id=current_user.id,
-        type=block_type,
-        title=data.get("title", ""),
-        content=data.get("content"),
-        metadata=data.get("metadata", {}),
-        order_index=max_order + 1,
-    )
-    db.session.add(block)
-    db.session.commit()
-    return jsonify({"success": True, "block": block.to_dict()}), 201
+    try:
+        data = request.get_json() or {}
+        
+        if not data or not data.get('type'):
+            return jsonify({
+                'success': False,
+                'error': 'Block type is required'
+            }), 400
+        
+        block = BlockService.create_block(current_user.id, data)
+        
+        return jsonify({
+            'success': True,
+            'block': block.to_dict()
+        })
+    except ValueError as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
 @personal_space_api_bp.route("/blocks/<string:block_id>", methods=["PUT"])
 @login_required
 @activated_required
 def update_block(block_id):
-    block = PersonalSpaceBlock.query.filter_by(
-        id=block_id, user_id=current_user.id
-    ).first_or_404()
-    data = request.get_json() or {}
-
-    if "title" in data:
-        block.title = data["title"]
-    if "content" in data:
-        block.content = data["content"]
-    if "metadata" in data:
-        meta = block.metadata or {}
-        meta.update(data["metadata"])
-        block.metadata = meta
-    block.updated_at = datetime.utcnow()
-    db.session.commit()
-    return jsonify({"success": True, "block": block.to_dict()})
+    try:
+        data = request.get_json() or {}
+        
+        block = BlockService.update_block(block_id, current_user.id, data)
+        
+        if not block:
+            return jsonify({
+                'success': False,
+                'error': 'Block not found'
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'block': block.to_dict()
+        })
+    except ValueError as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
 @personal_space_api_bp.route("/blocks/<string:block_id>", methods=["DELETE"])
 @login_required
 @activated_required
 def delete_block(block_id):
-    block = PersonalSpaceBlock.query.filter_by(
-        id=block_id, user_id=current_user.id
-    ).first_or_404()
-    db.session.delete(block)
-    db.session.commit()
-    return jsonify({"success": True})
+    """Delete a block (soft delete)."""
+    try:
+        success = BlockService.delete_block(block_id, current_user.id)
+        
+        if not success:
+            return jsonify({
+                'success': False,
+                'error': 'Block not found'
+            }), 404
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
 @personal_space_api_bp.route("/blocks/reorder", methods=["POST"])
 @login_required
 @activated_required
 def reorder_blocks():
-    data = request.get_json() or {}
-    for item in data.get("blocks", []):
-        block = PersonalSpaceBlock.query.filter_by(
-            id=item.get("id"), user_id=current_user.id
-        ).first()
-        if block and isinstance(item.get("order_index"), int):
-            block.order_index = item["order_index"]
-    db.session.commit()
-    return jsonify({"success": True})
+    """Reorder multiple blocks."""
+    try:
+        data = request.get_json() or {}
+        block_orders = data.get('blocks', [])
+        
+        if not block_orders:
+            return jsonify({
+                'success': False,
+                'error': 'Block orders required'
+            }), 400
+        
+        BlockService.reorder_blocks(current_user.id, block_orders)
+        
+        return jsonify({'success': True})
+    except ValueError as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
 @personal_space_api_bp.route("/blocks/<string:block_id>/position", methods=["POST"])
 @login_required
 @activated_required
 def update_block_position(block_id):
-    block = PersonalSpaceBlock.query.filter_by(
-        id=block_id, user_id=current_user.id
-    ).first_or_404()
-    data = request.get_json() or {}
-    if isinstance(data.get("order_index"), int):
-        block.order_index = data["order_index"]
-        db.session.commit()
-    return jsonify({"success": True})
+    """Update a single block's position."""
+    try:
+        data = request.get_json() or {}
+        new_position = data.get('order_index')
+        
+        if new_position is None:
+            return jsonify({
+                'success': False,
+                'error': 'Position required'
+            }), 400
+        
+        block_orders = [{'id': block_id, 'order_index': new_position}]
+        BlockService.reorder_blocks(current_user.id, block_orders)
+        
+        return jsonify({'success': True})
+    except ValueError as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
-@personal_space_api_bp.route("/templates", methods=["GET"])
+@personal_space_api_bp.route('/templates', methods=['GET'])
 @login_required
 @activated_required
 def list_templates():
-    templates = PersonalSpaceTemplate.query.filter(
-        (PersonalSpaceTemplate.is_public == True)
-        | (PersonalSpaceTemplate.user_id == current_user.id)
-    ).all()
-    return jsonify(
-        {"success": True, "templates": [template.to_dict() for template in templates]}
-    )
+    """List available templates for user."""
+    try:
+        category = request.args.get('category')
+        include_public = request.args.get('include_public', 'true').lower() == 'true'
+        
+        templates = TemplateService.get_templates(
+            user_id=current_user.id,
+            category=category,
+            include_public=include_public
+        )
+        
+        # Include default templates
+        default_templates = TemplateService.get_default_templates()
+        
+        return jsonify({
+            'success': True,
+            'templates': [t.to_dict() for t in templates],
+            'default_templates': default_templates
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
-@personal_space_api_bp.route("/templates", methods=["POST"])
+@personal_space_api_bp.route('/templates', methods=['POST'])
 @login_required
 @activated_required
 def create_template():
-    data = request.get_json() or {}
-    if not data.get("name") or not data.get("template_data"):
-        return jsonify({"success": False, "message": "Datos inválidos"}), 400
-    template = PersonalSpaceTemplate(
-        user_id=current_user.id,
-        name=data["name"],
-        description=data.get("description"),
-        template_data=data["template_data"],
-        category=data.get("category"),
-    )
-    db.session.add(template)
-    db.session.commit()
-    return jsonify({"success": True, "template": template.to_dict()})
+    """Create a new template."""
+    try:
+        data = request.get_json() or {}
+        
+        if not data.get('name'):
+            return jsonify({
+                'success': False,
+                'error': 'Template name is required'
+            }), 400
+        
+        # Check if creating from workspace or custom data
+        if data.get('from_workspace', True):
+            template = TemplateService.create_template_from_workspace(
+                user_id=current_user.id,
+                name=data['name'],
+                description=data.get('description', ''),
+                category=data.get('category', 'personal'),
+                is_public=data.get('is_public', False)
+            )
+        else:
+            template = TemplateService.create_template(current_user.id, data)
+        
+        return jsonify({
+            'success': True,
+            'template': template.to_dict()
+        }), 201
+    except ValueError as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
-@personal_space_api_bp.route("/analytics/productivity")
+@personal_space_api_bp.route('/analytics/productivity', methods=['GET'])
 @login_required
 @activated_required
 def productivity_metrics():
-    blocks = PersonalSpaceBlock.query.filter_by(user_id=current_user.id).all()
-    completed_tasks = sum(
-        1 for b in blocks if b.type == "tarea" and (b.metadata or {}).get("completed")
-    )
-    total_tasks = sum(1 for b in blocks if b.type == "tarea")
-    productivity = (
-        int((completed_tasks / total_tasks) * 100) if total_tasks else 0
-    )
-    return jsonify(
-        {
-            "success": True,
-            "completed_tasks": completed_tasks,
-            "total_tasks": total_tasks,
-            "productivity": productivity,
-        }
-    )
+    """Get productivity metrics for user."""
+    try:
+        metrics = AnalyticsService.get_productivity_metrics(current_user.id)
+        
+        return jsonify({
+            'success': True,
+            'metrics': metrics
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@personal_space_api_bp.route('/analytics/dashboard', methods=['GET'])
+@login_required
+@activated_required
+def dashboard_metrics():
+    """Get dashboard analytics and metrics."""
+    try:
+        metrics = AnalyticsService.get_dashboard_metrics(current_user.id)
+        
+        return jsonify({
+            'success': True,
+            'metrics': metrics
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@personal_space_api_bp.route('/analytics/goals', methods=['GET'])
+@login_required
+@activated_required
+def goal_tracking():
+    """Get goal tracking analytics."""
+    try:
+        goals = AnalyticsService.get_goal_tracking(current_user.id)
+        
+        return jsonify({
+            'success': True,
+            'goals': goals
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@personal_space_api_bp.route('/templates/<string:template_id>/apply', methods=['POST'])
+@login_required
+@activated_required
+def apply_template(template_id):
+    """Apply a template to user's workspace."""
+    try:
+        data = request.get_json() or {}
+        replace_existing = data.get('replace_existing', False)
+        
+        # Handle default templates
+        if template_id.startswith('default_'):
+            default_templates = TemplateService.get_default_templates()
+            template_data = next(
+                (t for t in default_templates if t['id'] == template_id), None
+            )
+            if not template_data:
+                return jsonify({
+                    'success': False,
+                    'error': 'Default template not found'
+                }), 404
+            
+            # Create blocks from default template
+            created_blocks = []
+            for block_data in template_data['template_data']['blocks']:
+                block = BlockService.create_block(current_user.id, block_data)
+                created_blocks.append(block)
+        else:
+            created_blocks = TemplateService.apply_template(
+                template_id, current_user.id, replace_existing
+            )
+        
+        return jsonify({
+            'success': True,
+            'blocks_created': len(created_blocks),
+            'blocks': [block.to_dict() for block in created_blocks]
+        })
+    except ValueError as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@personal_space_api_bp.route('/templates/<string:template_id>', methods=['PUT'])
+@login_required
+@activated_required
+def update_template(template_id):
+    """Update a template."""
+    try:
+        data = request.get_json() or {}
+        
+        template = TemplateService.update_template(
+            template_id, current_user.id, data
+        )
+        
+        return jsonify({
+            'success': True,
+            'template': template.to_dict()
+        })
+    except ValueError as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@personal_space_api_bp.route('/templates/<string:template_id>', methods=['DELETE'])
+@login_required
+@activated_required
+def delete_template(template_id):
+    """Delete a template."""
+    try:
+        success = TemplateService.delete_template(template_id, current_user.id)
+        
+        if not success:
+            return jsonify({
+                'success': False,
+                'error': 'Template not found'
+            }), 404
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@personal_space_api_bp.route('/templates/categories', methods=['GET'])
+@login_required
+@activated_required
+def template_categories():
+    """Get template categories."""
+    try:
+        categories = TemplateService.get_template_categories()
+        
+        return jsonify({
+            'success': True,
+            'categories': categories
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@personal_space_api_bp.route('/templates/search', methods=['GET'])
+@login_required
+@activated_required
+def search_templates():
+    """Search templates."""
+    try:
+        query = request.args.get('q', '')
+        
+        # Validate search query
+        validation_result = ValidationService.validate_search_query(query)
+        if not validation_result['valid']:
+            return jsonify({
+                'success': False,
+                'error': validation_result['errors'][0]
+            }), 400
+        
+        cleaned_query = validation_result['cleaned_data']
+        templates = TemplateService.search_templates(cleaned_query, current_user.id)
+        
+        return jsonify({
+            'success': True,
+            'templates': [t.to_dict() for t in templates]
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@personal_space_api_bp.route('/blocks/<string:block_id>/duplicate', methods=['POST'])
+@login_required
+@activated_required
+def duplicate_block(block_id):
+    """Duplicate a block."""
+    try:
+        duplicated_block = BlockService.duplicate_block(block_id, current_user.id)
+        
+        if not duplicated_block:
+            return jsonify({
+                'success': False,
+                'error': 'Block not found'
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'block': duplicated_block.to_dict()
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@personal_space_api_bp.route('/blocks/search', methods=['GET'])
+@login_required
+@activated_required
+def search_blocks():
+    """Search blocks."""
+    try:
+        query = request.args.get('q', '')
+        
+        # Validate search query
+        validation_result = ValidationService.validate_search_query(query)
+        if not validation_result['valid']:
+            return jsonify({
+                'success': False,
+                'error': validation_result['errors'][0]
+            }), 400
+        
+        cleaned_query = validation_result['cleaned_data']
+        blocks = BlockService.search_blocks(current_user.id, cleaned_query)
+        
+        return jsonify({
+            'success': True,
+            'blocks': [block.to_dict() for block in blocks]
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@personal_space_api_bp.route('/blocks/analytics', methods=['GET'])
+@login_required
+@activated_required
+def block_analytics():
+    """Get block analytics."""
+    try:
+        analytics = BlockService.get_block_analytics(current_user.id)
+        
+        return jsonify({
+            'success': True,
+            'analytics': analytics
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500

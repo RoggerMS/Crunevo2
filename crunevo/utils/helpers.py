@@ -5,8 +5,14 @@ from flask_login import current_user, login_required
 from crunevo.models import User, Note
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import inspect
+import uuid
 
 from crunevo.extensions import db
+
+
+def generate_uuid():
+    """Generate a unique UUID string."""
+    return str(uuid.uuid4())
 
 
 def table_exists(table_name: str) -> bool:
