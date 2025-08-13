@@ -1299,3 +1299,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Simplified tarea_view.html with semantic-only markup, removing comments/attachments and keeping forms, lists and resource links. (PR tarea-template-simplify)
 - Added objective metadata persistence with GET/PATCH API endpoints, template hydration and debounced front-end saves with error rollback. (PR objective-persistence)
 - Rebuilt tarea_view.html with semantic markup, inline save toasts and backend subtasks/links CRUD stubs. (PR tarea-view-rebuild)
+
+- Added component-based personal space routes with new `/personal-space` dashboard, workspace, block detail view and API aliases for block CRUD operations. (PR personal-space-component-routes)

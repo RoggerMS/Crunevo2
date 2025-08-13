@@ -31,6 +31,65 @@ personal_space_bp = Blueprint(
     "personal_space", __name__, url_prefix="/espacio-personal"
 )
 
+# New blueprint for component-based personal space architecture
+personal_space_new_bp = Blueprint(
+    "personal_space_new", __name__, url_prefix="/personal-space"
+)
+
+
+@personal_space_new_bp.route("/")
+@login_required
+@activated_required
+def dashboard_view():
+    """Render the redesigned personal space dashboard"""
+    blocks = (
+        Block.query.filter_by(user_id=current_user.id)
+        .order_by(Block.order_index.asc(), Block.created_at.asc())
+        .all()
+    )
+    metrics = {"total_blocks": len(blocks)}
+    recent_blocks = (
+        Block.query.filter_by(user_id=current_user.id)
+        .order_by(Block.updated_at.desc())
+        .limit(5)
+        .all()
+    )
+    return render_template(
+        "personal_space/dashboard.html",
+        blocks=blocks,
+        metrics=metrics,
+        recent_blocks=recent_blocks,
+    )
+
+
+@personal_space_new_bp.route("/workspace")
+@login_required
+@activated_required
+def workspace_view():
+    """Render the workspace grid with all blocks"""
+    blocks = (
+        Block.query.filter_by(user_id=current_user.id)
+        .order_by(Block.order_index.asc())
+        .all()
+    )
+    return render_template("personal_space/workspace.html", blocks=blocks)
+
+
+@personal_space_new_bp.route("/block/<int:block_id>")
+@login_required
+@activated_required
+def block_detail(block_id):
+    """Render detail view for a specific block"""
+    block = (
+        Block.query.filter_by(id=block_id, user_id=current_user.id).first_or_404()
+    )
+    component_template = f"personal_space/blocks/{block.type}_block.html"
+    return render_template(
+        "personal_space/block_detail.html",
+        block=block,
+        component_template=component_template,
+    )
+
 
 @personal_space_bp.route("/")
 @login_required
@@ -2022,3 +2081,44 @@ def api_update_objective(block_id):
     block.set_metadata(meta)
     db.session.commit()
     return jsonify({"ok": True, "objective": obj})
+
+
+# ---------------------------------------------------------------------------
+# API blueprint exposing component endpoints
+# ---------------------------------------------------------------------------
+
+personal_space_api_bp = Blueprint(
+    "personal_space_api", __name__, url_prefix="/api/personal-space"
+)
+
+
+@personal_space_api_bp.route("/blocks", methods=["POST"])
+@login_required
+@activated_required
+def api_create_block():
+    """Alias for creating blocks from component factory"""
+    return create_block()
+
+
+@personal_space_api_bp.route("/blocks/<int:block_id>", methods=["PUT"])
+@login_required
+@activated_required
+def api_update_block(block_id):
+    """Alias for updating blocks via API"""
+    return update_block_api(block_id)
+
+
+@personal_space_api_bp.route("/blocks/<int:block_id>", methods=["DELETE"])
+@login_required
+@activated_required
+def api_delete_block(block_id):
+    """Alias for deleting blocks"""
+    return delete_block(block_id)
+
+
+@personal_space_api_bp.route("/blocks/reorder", methods=["POST"])
+@login_required
+@activated_required
+def api_reorder_blocks():
+    """Alias for persisting block order"""
+    return reorder_blocks()
