@@ -1,0 +1,873 @@
+{% extends "base.html" %}
+
+{% block title %}Herramientas de Aprendizaje - Crunevo{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-lg-4 py-3">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="learning-header">
+        <h1 class="learning-title">🎓 Herramientas de Aprendizaje</h1>
+        <p class="learning-subtitle">Mejora tus habilidades con herramientas personalizadas</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Overview -->
+  <div class="row mb-4">
+    <div class="col-lg-8">
+      <div class="progress-card">
+        <div class="progress-header">
+          <h3>📊 Tu Progreso</h3>
+          <div class="level-badge">
+            Nivel {{ learning_stats.current_level }}
+          </div>
+        </div>
+        
+        <div class="progress-stats">
+          <div class="stat-item">
+            <div class="stat-number">{{ learning_stats.questions_asked }}</div>
+            <div class="stat-label">Preguntas realizadas</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ learning_stats.answers_given }}</div>
+            <div class="stat-label">Respuestas dadas</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ learning_stats.solved_questions }}</div>
+            <div class="stat-label">Problemas resueltos</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ learning_stats.success_rate }}%</div>
+            <div class="stat-label">Tasa de éxito</div>
+          </div>
+        </div>
+        
+        <div class="xp-progress">
+          <div class="xp-info">
+            <span>{{ learning_stats.current_xp }} XP</span>
+            <span>Siguiente nivel: {{ learning_stats.next_level_xp }} XP</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar" style="width: {{ learning_stats.progress_to_next }}%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4">
+      <div class="weekly-activity">
+        <h4>📅 Actividad Semanal</h4>
+        <div class="activity-item">
+          <span class="activity-icon">❓</span>
+          <span class="activity-text">{{ learning_stats.weekly_activity.questions }} preguntas</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-icon">💬</span>
+          <span class="activity-text">{{ learning_stats.weekly_activity.answers }} respuestas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Tabs -->
+  <div class="row">
+    <div class="col-12">
+      <div class="learning-tabs">
+        <ul class="nav nav-tabs" id="learningTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="recommendations-tab" data-bs-toggle="tab" data-bs-target="#recommendations" type="button" role="tab">
+              🎯 Recomendaciones
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">
+              📈 Análisis
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="learning-path-tab" data-bs-toggle="tab" data-bs-target="#learning-path" type="button" role="tab">
+              🛤️ Ruta de Aprendizaje
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="study-timer-tab" data-bs-toggle="tab" data-bs-target="#study-timer" type="button" role="tab">
+              ⏱️ Cronómetro de Estudio
+            </button>
+          </li>
+        </ul>
+        
+        <div class="tab-content" id="learningTabContent">
+          <!-- Recommendations Tab -->
+          <div class="tab-pane fade show active" id="recommendations" role="tabpanel">
+            <div class="recommendations-section">
+              <h4>🎯 Recomendaciones Personalizadas</h4>
+              <p class="section-description">Basadas en tu actividad y áreas de mejora</p>
+              
+              <div class="recommendations-grid">
+                {% for recommendation in study_recommendations %}
+                <div class="recommendation-card {{ recommendation.type }}">
+                  <div class="recommendation-header">
+                    <h5>{{ recommendation.title }}</h5>
+                    <span class="points-badge">+{{ recommendation.points }} pts</span>
+                  </div>
+                  <p class="recommendation-description">{{ recommendation.description }}</p>
+                  <div class="recommendation-meta">
+                    <span class="category">{{ recommendation.category|title }}</span>
+                    <span class="difficulty difficulty-{{ recommendation.difficulty }}">{{ recommendation.difficulty|title }}</span>
+                  </div>
+                  <a href="{{ recommendation.url }}" class="btn btn-primary btn-sm">Comenzar</a>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Analytics Tab -->
+          <div class="tab-pane fade" id="analytics" role="tabpanel">
+            <div class="analytics-section">
+              <h4>📈 Análisis de Rendimiento</h4>
+              <p class="section-description">Últimos 30 días</p>
+              
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="analytics-card">
+                    <h5>📊 Actividad por Categoría</h5>
+                    <div class="category-chart">
+                      {% for category_stat in learning_stats.category_stats %}
+                      <div class="category-bar">
+                        <div class="category-label">{{ category_stat.category }}</div>
+                        <div class="category-progress">
+                          <div class="category-fill" style="width: {{ (category_stat.count / learning_stats.category_stats|map(attribute='count')|max * 100)|round }}%"></div>
+                        </div>
+                        <div class="category-count">{{ category_stat.count }}</div>
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-lg-6">
+                  <div class="analytics-card">
+                    <h5>🎯 Métricas de Calidad</h5>
+                    <div class="quality-metrics">
+                      <div class="metric-item">
+                        <div class="metric-label">Calidad promedio de preguntas</div>
+                        <div class="metric-value">{{ performance_analytics.avg_question_quality }}%</div>
+                      </div>
+                      <div class="metric-item">
+                        <div class="metric-label">Calidad promedio de respuestas</div>
+                        <div class="metric-value">{{ performance_analytics.avg_answer_quality }}%</div>
+                      </div>
+                      <div class="metric-item">
+                        <div class="metric-label">Tendencia de actividad</div>
+                        <div class="metric-value trend-{{ performance_analytics.activity_trend }}">
+                          {{ performance_analytics.activity_trend|title }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Learning Path Tab -->
+          <div class="tab-pane fade" id="learning-path" role="tabpanel">
+            <div class="learning-path-section">
+              <h4>🛤️ Ruta de Aprendizaje</h4>
+              <p class="section-description">Progreso estructurado en tus materias favoritas</p>
+              
+              <div class="subject-selector">
+                <label for="subjectSelect">Selecciona una materia:</label>
+                <select id="subjectSelect" class="form-select" onchange="loadLearningPath(this.value)">
+                  <option value="">Seleccionar materia...</option>
+                  <option value="matematicas">Matemáticas</option>
+                  <option value="fisica">Física</option>
+                  <option value="quimica">Química</option>
+                  <option value="biologia">Biología</option>
+                  <option value="historia">Historia</option>
+                  <option value="literatura">Literatura</option>
+                </select>
+              </div>
+              
+              <div id="learningPathContent" class="learning-path-content">
+                <div class="empty-state">
+                  <div class="empty-icon">🎯</div>
+                  <h5>Selecciona una materia para ver tu ruta de aprendizaje</h5>
+                  <p>Te mostraremos un plan personalizado basado en tu nivel actual</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Study Timer Tab -->
+          <div class="tab-pane fade" id="study-timer" role="tabpanel">
+            <div class="study-timer-section">
+              <h4>⏱️ Cronómetro de Estudio</h4>
+              <p class="section-description">Registra tus sesiones de estudio y gana XP</p>
+              
+              <div class="timer-container">
+                <div class="timer-display">
+                  <div id="timerDisplay" class="timer-time">00:00:00</div>
+                  <div class="timer-controls">
+                    <button id="startTimer" class="btn btn-success">▶️ Iniciar</button>
+                    <button id="pauseTimer" class="btn btn-warning" disabled>⏸️ Pausar</button>
+                    <button id="stopTimer" class="btn btn-danger" disabled>⏹️ Detener</button>
+                  </div>
+                </div>
+                
+                <div class="study-session-form">
+                  <h5>📝 Detalles de la Sesión</h5>
+                  <form id="studySessionForm">
+                    <div class="mb-3">
+                      <label for="activityType" class="form-label">Tipo de actividad</label>
+                      <select id="activityType" class="form-select">
+                        <option value="reading">Lectura</option>
+                        <option value="practice">Práctica</option>
+                        <option value="research">Investigación</option>
+                        <option value="review">Repaso</option>
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="studyTopics" class="form-label">Temas estudiados</label>
+                      <input type="text" id="studyTopics" class="form-control" placeholder="Ej: álgebra, ecuaciones lineales">
+                    </div>
+                    <button type="submit" class="btn btn-primary" disabled id="saveSession">💾 Guardar Sesión</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Learning Tools Styles */
+.learning-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 20px;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.learning-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.learning-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* Progress Card */
+.progress-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  border: 1px solid #f1f5f9;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.progress-header h3 {
+  color: #1f2937;
+  margin: 0;
+}
+
+.level-badge {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.progress-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3b82f6;
+  display: block;
+}
+
+.stat-label {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.xp-progress {
+  margin-top: 1.5rem;
+}
+
+.xp-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.progress-bar-container {
+  background: #e5e7eb;
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, #3b82f6, #1e40af);
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+/* Weekly Activity */
+.weekly-activity {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  border: 1px solid #f1f5f9;
+  height: fit-content;
+}
+
+.weekly-activity h4 {
+  color: #1f2937;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.activity-icon {
+  font-size: 1.2rem;
+}
+
+.activity-text {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Tabs */
+.learning-tabs {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.nav-tabs {
+  border-bottom: 2px solid #e5e7eb;
+  padding: 0 1.5rem;
+}
+
+.nav-tabs .nav-link {
+  border: none;
+  color: #6b7280;
+  font-weight: 600;
+  padding: 1rem 1.5rem;
+  border-radius: 0;
+}
+
+.nav-tabs .nav-link.active {
+  color: #3b82f6;
+  background: none;
+  border-bottom: 3px solid #3b82f6;
+}
+
+/* Recommendations */
+.recommendations-section {
+  padding: 2rem;
+}
+
+.section-description {
+  color: #6b7280;
+  margin-bottom: 2rem;
+}
+
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.recommendation-card {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.recommendation-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.recommendation-card.practice {
+  border-left: 4px solid #10b981;
+}
+
+.recommendation-card.explore {
+  border-left: 4px solid #3b82f6;
+}
+
+.recommendation-card.achievement {
+  border-left: 4px solid #f59e0b;
+}
+
+.recommendation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.recommendation-header h5 {
+  color: #1f2937;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.points-badge {
+  background: #3b82f6;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.recommendation-description {
+  color: #6b7280;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.recommendation-meta {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.category {
+  background: #e5e7eb;
+  color: #374151;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+}
+
+.difficulty {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.difficulty-easy {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.difficulty-medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.difficulty-hard {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Analytics */
+.analytics-section {
+  padding: 2rem;
+}
+
+.analytics-card {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.analytics-card h5 {
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+}
+
+.category-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.category-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.category-label {
+  min-width: 100px;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.category-progress {
+  flex: 1;
+  background: #e5e7eb;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.category-fill {
+  background: linear-gradient(90deg, #3b82f6, #1e40af);
+  height: 100%;
+  border-radius: 4px;
+}
+
+.category-count {
+  min-width: 30px;
+  text-align: right;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.quality-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.metric-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.metric-label {
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.metric-value {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.trend-increasing {
+  color: #059669 !important;
+}
+
+.trend-decreasing {
+  color: #dc2626 !important;
+}
+
+.trend-stable {
+  color: #6b7280 !important;
+}
+
+/* Learning Path */
+.learning-path-section {
+  padding: 2rem;
+}
+
+.subject-selector {
+  margin-bottom: 2rem;
+}
+
+.subject-selector label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #374151;
+  font-weight: 600;
+}
+
+.learning-path-content {
+  min-height: 300px;
+}
+
+/* Study Timer */
+.study-timer-section {
+  padding: 2rem;
+}
+
+.timer-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.timer-display {
+  text-align: center;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+.timer-time {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 2rem;
+  font-family: 'Courier New', monospace;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.study-session-form {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.study-session-form h5 {
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h5 {
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .progress-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .recommendations-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .timer-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .recommendation-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+</style>
+
+<script>
+// Study Timer functionality
+let timerInterval;
+let seconds = 0;
+let isRunning = false;
+
+function updateTimerDisplay() {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  
+  document.getElementById('timerDisplay').textContent = 
+    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+document.getElementById('startTimer').addEventListener('click', function() {
+  if (!isRunning) {
+    isRunning = true;
+    timerInterval = setInterval(() => {
+      seconds++;
+      updateTimerDisplay();
+    }, 1000);
+    
+    this.disabled = true;
+    document.getElementById('pauseTimer').disabled = false;
+    document.getElementById('stopTimer').disabled = false;
+  }
+});
+
+document.getElementById('pauseTimer').addEventListener('click', function() {
+  if (isRunning) {
+    isRunning = false;
+    clearInterval(timerInterval);
+    
+    document.getElementById('startTimer').disabled = false;
+    this.disabled = true;
+  }
+});
+
+document.getElementById('stopTimer').addEventListener('click', function() {
+  isRunning = false;
+  clearInterval(timerInterval);
+  
+  if (seconds > 0) {
+    document.getElementById('saveSession').disabled = false;
+  }
+  
+  document.getElementById('startTimer').disabled = false;
+  document.getElementById('pauseTimer').disabled = true;
+  this.disabled = true;
+});
+
+document.getElementById('studySessionForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const activityType = document.getElementById('activityType').value;
+  const topics = document.getElementById('studyTopics').value;
+  const durationMinutes = Math.floor(seconds / 60);
+  
+  if (durationMinutes > 0) {
+    // Send study session data to server
+    fetch('/foro/herramientas/guardar-sesion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        activity_type: activityType,
+        duration_minutes: durationMinutes,
+        topics: topics.split(',').map(t => t.trim()).filter(t => t)
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert(`¡Sesión guardada! Has ganado ${data.xp_gained} XP`);
+        // Reset timer
+        seconds = 0;
+        updateTimerDisplay();
+        document.getElementById('saveSession').disabled = true;
+        document.getElementById('studyTopics').value = '';
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error al guardar la sesión');
+    });
+  }
+});
+
+// Learning Path functionality
+function loadLearningPath(subject) {
+  if (!subject) {
+    document.getElementById('learningPathContent').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🎯</div>
+        <h5>Selecciona una materia para ver tu ruta de aprendizaje</h5>
+        <p>Te mostraremos un plan personalizado basado en tu nivel actual</p>
+      </div>
+    `;
+    return;
+  }
+  
+  fetch(`/foro/herramientas/ruta-aprendizaje/${subject}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.steps) {
+        let pathHTML = `
+          <div class="learning-path-info">
+            <h5>📚 ${data.subject} - Nivel ${data.current_level}/5</h5>
+            <div class="path-progress">
+              <div class="path-progress-bar" style="width: ${data.progress_percentage}%"></div>
+            </div>
+            <p>Tiempo estimado para completar: ${data.estimated_completion}</p>
+          </div>
+          <div class="learning-steps">
+        `;
+        
+        data.steps.forEach(step => {
+          pathHTML += `
+            <div class="learning-step ${step.completed ? 'completed' : ''}">
+              <div class="step-header">
+                <div class="step-number">${step.step}</div>
+                <div class="step-info">
+                  <h6>${step.title}</h6>
+                  <p>${step.description}</p>
+                  <div class="step-meta">
+                    <span class="difficulty difficulty-${step.difficulty}">${step.difficulty}</span>
+                    <span class="time-estimate">${step.estimated_time}</span>
+                  </div>
+                </div>
+                <div class="step-status">
+                  ${step.completed ? '✅' : '⏳'}
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        
+        pathHTML += '</div>';
+        document.getElementById('learningPathContent').innerHTML = pathHTML;
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      document.getElementById('learningPathContent').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">❌</div>
+          <h5>Error al cargar la ruta de aprendizaje</h5>
+          <p>Inténtalo de nuevo más tarde</p>
+        </div>
+      `;
+    });
+}
+</script>
+{% endblock %}

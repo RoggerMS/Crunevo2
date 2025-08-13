@@ -353,9 +353,10 @@ def create_app():
         response.headers.pop("Expires", None)
         return response
 
-    # Initialize database if needed (skip during tests)
+    # Initialize database if needed (skip during tests and serverless)
+    is_serverless = os.environ.get('VERCEL') or os.environ.get('AWS_LAMBDA_FUNCTION_NAME')
     with app.app_context():
-        if not testing_env:
+        if not testing_env and not is_serverless:
             try:
                 from .utils.db_init import ensure_database_ready
                 from sqlalchemy import inspect, text
@@ -373,6 +374,8 @@ def create_app():
                     db.session.commit()
             except Exception as e:
                 app.logger.error(f"Database initialization error: {e}")
+        elif is_serverless:
+            app.logger.info("Skipping database initialization in serverless environment")
 
         try:
             from .models import SiteConfig
@@ -446,6 +449,7 @@ def create_app():
     from .routes.developer_routes import developer_bp
     from .routes.backpack_routes import backpack_bp
     from .routes.personal_space_routes import personal_space_bp, personal_space_api_bp
+    from .routes.social_routes import social_bp
 
     from .api import init_api as init_api_blueprints
 
@@ -583,6 +587,7 @@ def create_app():
         app.register_blueprint(ranking_bp)
         app.register_blueprint(club_bp)
         app.register_blueprint(forum_bp)
+        app.register_blueprint(social_bp)
         app.register_blueprint(event_bp)
         app.register_blueprint(internship_bp)
         app.add_url_rule(
@@ -678,11 +683,12 @@ def create_app():
         scheduler.start()
         app.scheduler = scheduler
 
-    # Initialize database tables
-    with app.app_context():
-        from .utils.db_init import ensure_database_ready
+    # Initialize database tables (skip in serverless)
+    if not is_serverless:
+        with app.app_context():
+            from .utils.db_init import ensure_database_ready
 
-        ensure_database_ready()
+            ensure_database_ready()
 
     if not app.debug:
         if not os.path.exists("logs"):

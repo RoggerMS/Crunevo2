@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}Estadísticas de Crolars - Foro{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Header -->
+        <div class="col-12 mb-4">
+            <div class="card bg-gradient-primary text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h1 class="h3 mb-0">
+                                <i class="bi bi-coin me-2"></i>
+                                Mis Estadísticas de Crolars
+                            </h1>
+                            <p class="mb-0 opacity-75">Ganancias y progreso en el foro</p>
+                        </div>
+                        <div class="col-auto">
+                            <div class="text-center">
+                                <h2 class="h1 mb-0">{{ current_user.credits }}</h2>
+                                <small>Crolars totales</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings Summary -->
+        <div class="col-lg-8 mb-4">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="text-success mb-2">
+                                <i class="bi bi-calendar-week" style="font-size: 2rem;"></i>
+                            </div>
+                            <h3 class="h4 mb-1">{{ earnings_7_days }}</h3>
+                            <p class="text-muted mb-0">Últimos 7 días</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="text-info mb-2">
+                                <i class="bi bi-calendar-month" style="font-size: 2rem;"></i>
+                            </div>
+                            <h3 class="h4 mb-1">{{ earnings_30_days }}</h3>
+                            <p class="text-muted mb-0">Últimos 30 días</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- General Statistics -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up me-2"></i>
+                        Estadísticas Generales
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="text-primary mb-1">
+                                <i class="bi bi-question-circle" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <h6 class="mb-0">{{ general_stats.total_questions }}</h6>
+                            <small class="text-muted">Preguntas</small>
+                        </div>
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="text-success mb-1">
+                                <i class="bi bi-chat-dots" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <h6 class="mb-0">{{ general_stats.total_answers }}</h6>
+                            <small class="text-muted">Respuestas</small>
+                        </div>
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="text-warning mb-1">
+                                <i class="bi bi-star" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <h6 class="mb-0">{{ general_stats.best_answers }}</h6>
+                            <small class="text-muted">Mejores respuestas</small>
+                        </div>
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="text-danger mb-1">
+                                <i class="bi bi-heart" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <h6 class="mb-0">{{ general_stats.helpful_votes }}</h6>
+                            <small class="text-muted">Votos útiles</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboard & Position -->
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-trophy me-2"></i>
+                        Top 10 Ganadores
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if user_position %}
+                    <div class="alert alert-info mb-3">
+                        <i class="bi bi-award me-2"></i>
+                        <strong>Tu posición: #{{ user_position }}</strong>
+                    </div>
+                    {% endif %}
+
+                    <div class="list-group list-group-flush">
+                        {% for user in leaderboard %}
+                        <div class="list-group-item d-flex align-items-center px-0 {% if user.id == current_user.id %}bg-light{% endif %}">
+                            <div class="me-3">
+                                {% if loop.index <= 3 %}
+                                    <span class="badge bg-warning text-dark">#{{ loop.index }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">#{{ loop.index }}</span>
+                                {% endif %}
+                            </div>
+                            <img src="{{ user.avatar_url }}" alt="{{ user.username }}" 
+                                 class="rounded-circle me-3" width="32" height="32">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">{{ user.username }}</h6>
+                                <small class="text-muted">Nivel {{ user.forum_level }}</small>
+                            </div>
+                            <div class="text-end">
+                                <strong class="text-success">{{ user.total_earnings }}</strong>
+                                <br>
+                                <small class="text-muted">Crolars</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium Features -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-star me-2"></i>
+                        Funcionalidades Premium
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-primary">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-arrow-up-circle text-primary mb-2" style="font-size: 2rem;"></i>
+                                    <h6>Destacar Pregunta</h6>
+                                    <p class="text-muted small">Haz que tu pregunta aparezca en la parte superior por 24 horas</p>
+                                    <span class="badge bg-primary">50 Crolars</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-success">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-lightbulb text-success mb-2" style="font-size: 2rem;"></i>
+                                    <h6>Destacar Respuesta</h6>
+                                    <p class="text-muted small">Resalta tu respuesta con un borde especial por 12 horas</p>
+                                    <span class="badge bg-success">30 Crolars</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-warning">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-person-badge text-warning mb-2" style="font-size: 2rem;"></i>
+                                    <h6>Título Personalizado</h6>
+                                    <p class="text-muted small">Crea un título único que aparezca junto a tu nombre</p>
+                                    <span class="badge bg-warning text-dark">100 Crolars</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

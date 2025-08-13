@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% block title %}Dashboard del Foro - Crunevo{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Mi Dashboard del Foro</h1>
+            <p class="text-gray-600">Sigue tu progreso y logros en la comunidad</p>
+        </div>
+
+        <!-- User Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Level Card -->
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Nivel del Foro</p>
+                        <p class="text-2xl font-bold text-blue-600">{{ current_user.forum_level }}</p>
+                        <p class="text-xs text-gray-500">{{ current_user.get_forum_rank() }}</p>
+                    </div>
+                    <div class="p-3 bg-blue-100 rounded-full">
+                        <i class="fas fa-trophy text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+                <!-- Progress Bar -->
+                <div class="mt-4">
+                    <div class="flex justify-between text-xs text-gray-600 mb-1">
+                        <span>Progreso</span>
+                        <span>{{ "%.0f"|format(level_progress) }}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                             style="width: {{ level_progress }}%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Experience Points -->
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Experiencia</p>
+                        <p class="text-2xl font-bold text-green-600">{{ current_user.forum_experience }}</p>
+                        <p class="text-xs text-gray-500">XP Total</p>
+                    </div>
+                    <div class="p-3 bg-green-100 rounded-full">
+                        <i class="fas fa-star text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reputation -->
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Reputación</p>
+                        <p class="text-2xl font-bold text-purple-600">{{ current_user.reputation_score }}</p>
+                        {% if user_rank %}
+                        <p class="text-xs text-gray-500">Puesto #{{ user_rank }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="p-3 bg-purple-100 rounded-full">
+                        <i class="fas fa-medal text-purple-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Streak -->
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Racha</p>
+                        <p class="text-2xl font-bold text-orange-600">{{ current_user.forum_streak }}</p>
+                        <p class="text-xs text-gray-500">días consecutivos</p>
+                    </div>
+                    <div class="p-3 bg-orange-100 rounded-full">
+                        <i class="fas fa-fire text-orange-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Activity Stats -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Activity Overview -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Estadísticas de Actividad</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center p-4 bg-blue-50 rounded-lg">
+                            <i class="fas fa-question-circle text-blue-600 text-2xl mb-2"></i>
+                            <p class="text-2xl font-bold text-blue-600">{{ current_user.questions_asked }}</p>
+                            <p class="text-sm text-gray-600">Preguntas</p>
+                        </div>
+                        <div class="text-center p-4 bg-green-50 rounded-lg">
+                            <i class="fas fa-reply text-green-600 text-2xl mb-2"></i>
+                            <p class="text-2xl font-bold text-green-600">{{ current_user.answers_given }}</p>
+                            <p class="text-sm text-gray-600">Respuestas</p>
+                        </div>
+                        <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                            <i class="fas fa-star text-yellow-600 text-2xl mb-2"></i>
+                            <p class="text-2xl font-bold text-yellow-600">{{ current_user.best_answers }}</p>
+                            <p class="text-sm text-gray-600">Mejores</p>
+                        </div>
+                        <div class="text-center p-4 bg-purple-50 rounded-lg">
+                            <i class="fas fa-thumbs-up text-purple-600 text-2xl mb-2"></i>
+                            <p class="text-2xl font-bold text-purple-600">{{ current_user.helpful_votes }}</p>
+                            <p class="text-sm text-gray-600">Votos +</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Actividad Reciente</h3>
+                    <div class="space-y-4">
+                        {% for question in recent_questions[:3] %}
+                        <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                            <i class="fas fa-question-circle text-blue-500 mt-1"></i>
+                            <div class="flex-1">
+                                <a href="{{ url_for('forum.view_question', question_id=question.id) }}" 
+                                   class="text-sm font-medium text-gray-900 hover:text-blue-600">
+                                    {{ question.title[:60] }}{% if question.title|length > 60 %}...{% endif %}
+                                </a>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    {{ question.created_at.strftime('%d/%m/%Y %H:%M') }}
+                                </p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        {% for answer in recent_answers[:2] %}
+                        <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                            <i class="fas fa-reply text-green-500 mt-1"></i>
+                            <div class="flex-1">
+                                <a href="{{ url_for('forum.view_question', question_id=answer.question_id) }}" 
+                                   class="text-sm font-medium text-gray-900 hover:text-blue-600">
+                                    Respondiste: {{ answer.question.title[:50] }}{% if answer.question.title|length > 50 %}...{% endif %}
+                                </a>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    {{ answer.created_at.strftime('%d/%m/%Y %H:%M') }}
+                                </p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Badges and Leaderboard -->
+            <div class="space-y-6">
+                <!-- User Badges -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Mis Insignias</h3>
+                        <a href="{{ url_for('forum.badges_list') }}" 
+                           class="text-sm text-blue-600 hover:text-blue-800">Ver todas</a>
+                    </div>
+                    {% if user_badges %}
+                    <div class="grid grid-cols-3 gap-3">
+                        {% for user_badge in user_badges[:6] %}
+                        <div class="text-center p-3 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200">
+                            <i class="{{ user_badge.badge.icon }} text-yellow-600 text-xl mb-1"></i>
+                            <p class="text-xs font-medium text-gray-700">{{ user_badge.badge.name }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-gray-500 text-sm text-center py-4">¡Participa en el foro para ganar insignias!</p>
+                    {% endif %}
+                </div>
+
+                <!-- Next Badges to Earn -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Próximas Insignias</h3>
+                    {% if available_badges %}
+                    <div class="space-y-3">
+                        {% for badge in available_badges[:3] %}
+                        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                            <i class="{{ badge.icon }} text-gray-400 text-lg"></i>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">{{ badge.name }}</p>
+                                <p class="text-xs text-gray-500">{{ badge.description }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-gray-500 text-sm text-center py-4">¡Has desbloqueado todas las insignias!</p>
+                    {% endif %}
+                </div>
+
+                <!-- Mini Leaderboard -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Top Usuarios</h3>
+                        <a href="{{ url_for('forum.leaderboard') }}" 
+                           class="text-sm text-blue-600 hover:text-blue-800">Ver ranking</a>
+                    </div>
+                    <div class="space-y-3">
+                        {% for user in leaderboard[:5] %}
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
+                                {{ loop.index }}
+                            </div>
+                            <img src="{{ user.avatar_url }}" alt="{{ user.username }}" 
+                                 class="w-8 h-8 rounded-full object-cover">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">{{ user.username }}</p>
+                                <p class="text-xs text-gray-500">{{ user.reputation_score }} pts</p>
+                            </div>
+                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                                Nv.{{ user.forum_level }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="{{ url_for('forum.ask_question') }}" 
+                   class="flex items-center justify-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-plus"></i>
+                    <span>Hacer Pregunta</span>
+                </a>
+                <a href="{{ url_for('forum.list_questions') }}" 
+                   class="flex items-center justify-center space-x-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                    <i class="fas fa-search"></i>
+                    <span>Explorar Preguntas</span>
+                </a>
+                <a href="{{ url_for('forum.badges_list') }}" 
+                   class="flex items-center justify-center space-x-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
+                    <i class="fas fa-award"></i>
+                    <span>Ver Insignias</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Add any dashboard-specific JavaScript here
+console.log('Dashboard loaded');
+</script>
+{% endblock %}

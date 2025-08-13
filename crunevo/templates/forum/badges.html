@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% block title %}Insignias del Foro - Crunevo{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Sistema de Insignias</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Gana insignias participando activamente en el foro. Cada insignia representa un logro especial en tu camino de aprendizaje.
+            </p>
+        </div>
+
+        <!-- Badge Categories -->
+        {% for category, badges in badges_by_category.items() %}
+        <div class="mb-12">
+            <!-- Category Header -->
+            <div class="flex items-center mb-6">
+                {% if category == 'participation' %}
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Participación</h2>
+                        <p class="text-gray-600">Insignias por participar activamente en la comunidad</p>
+                    </div>
+                {% elif category == 'quality' %}
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-star text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Calidad</h2>
+                        <p class="text-gray-600">Insignias por proporcionar contenido de alta calidad</p>
+                    </div>
+                {% elif category == 'expertise' %}
+                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-graduation-cap text-purple-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Experiencia</h2>
+                        <p class="text-gray-600">Insignias por alcanzar niveles altos de experiencia</p>
+                    </div>
+                {% else %}
+                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-award text-gray-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">{{ category.title() }}</h2>
+                        <p class="text-gray-600">Insignias especiales</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Badges Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {% for badge in badges %}
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl
+                            {% if badge.id in user_badge_ids %}border-2 border-yellow-400{% endif %}">
+                    <!-- Badge Header -->
+                    <div class="p-6 text-center
+                                {% if badge.rarity == 'common' %}bg-gradient-to-br from-gray-100 to-gray-200
+                                {% elif badge.rarity == 'rare' %}bg-gradient-to-br from-blue-100 to-blue-200
+                                {% elif badge.rarity == 'epic' %}bg-gradient-to-br from-purple-100 to-purple-200
+                                {% elif badge.rarity == 'legendary' %}bg-gradient-to-br from-yellow-100 to-yellow-200
+                                {% endif %}">
+                        
+                        <!-- Badge Icon -->
+                        <div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center
+                                    {% if badge.id in user_badge_ids %}
+                                        {% if badge.rarity == 'common' %}bg-gradient-to-br from-gray-400 to-gray-600
+                                        {% elif badge.rarity == 'rare' %}bg-gradient-to-br from-blue-500 to-blue-700
+                                        {% elif badge.rarity == 'epic' %}bg-gradient-to-br from-purple-500 to-purple-700
+                                        {% elif badge.rarity == 'legendary' %}bg-gradient-to-br from-yellow-500 to-yellow-700
+                                        {% endif %}
+                                    {% else %}
+                                        bg-gray-300
+                                    {% endif %}">
+                            <i class="{{ badge.icon }} text-white text-2xl
+                                      {% if badge.id not in user_badge_ids %}opacity-50{% endif %}"></i>
+                        </div>
+                        
+                        <!-- Rarity Badge -->
+                        <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full
+                                     {% if badge.rarity == 'common' %}bg-gray-200 text-gray-800
+                                     {% elif badge.rarity == 'rare' %}bg-blue-200 text-blue-800
+                                     {% elif badge.rarity == 'epic' %}bg-purple-200 text-purple-800
+                                     {% elif badge.rarity == 'legendary' %}bg-yellow-200 text-yellow-800
+                                     {% endif %}">
+                            {% if badge.rarity == 'common' %}Común
+                            {% elif badge.rarity == 'rare' %}Rara
+                            {% elif badge.rarity == 'epic' %}Épica
+                            {% elif badge.rarity == 'legendary' %}Legendaria
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <!-- Badge Info -->
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2 text-center">{{ badge.name }}</h3>
+                        <p class="text-sm text-gray-600 text-center mb-4">{{ badge.description }}</p>
+                        
+                        <!-- Requirements -->
+                        {% if badge.requirements %}
+                        <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                            <h4 class="text-xs font-semibold text-gray-700 mb-2">Requisitos:</h4>
+                            <div class="space-y-1">
+                                {% for req_key, req_value in badge.requirements.items() %}
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-gray-600">
+                                        {% if req_key == 'questions_asked' %}Preguntas realizadas
+                                        {% elif req_key == 'answers_given' %}Respuestas dadas
+                                        {% elif req_key == 'best_answers' %}Mejores respuestas
+                                        {% elif req_key == 'helpful_votes' %}Votos útiles
+                                        {% elif req_key == 'forum_level' %}Nivel del foro
+                                        {% elif req_key == 'forum_streak' %}Días consecutivos
+                                        {% else %}{{ req_key }}
+                                        {% endif %}
+                                    </span>
+                                    <span class="font-medium
+                                                {% if badge.id in user_badge_ids %}text-green-600
+                                                {% else %}text-gray-900
+                                                {% endif %}">{{ req_value }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Points Reward -->
+                        {% if badge.points_reward > 0 %}
+                        <div class="flex items-center justify-center space-x-2 text-sm">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-gray-600">+{{ badge.points_reward }} XP</span>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Earned Status -->
+                        {% if badge.id in user_badge_ids %}
+                        <div class="mt-4 text-center">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-check mr-1"></i>
+                                ¡Desbloqueada!
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Call to Action -->
+        <div class="text-center mt-12 bg-white rounded-xl shadow-lg p-8">
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">¿Listo para ganar más insignias?</h3>
+            <p class="text-gray-600 mb-6">Participa activamente en el foro para desbloquear todas las insignias disponibles.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{{ url_for('forum.ask_question') }}" 
+                   class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>
+                    Hacer una Pregunta
+                </a>
+                <a href="{{ url_for('forum.list_questions') }}" 
+                   class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                    <i class="fas fa-search mr-2"></i>
+                    Responder Preguntas
+                </a>
+                <a href="{{ url_for('forum.gamification_dashboard') }}" 
+                   class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
+                    <i class="fas fa-chart-line mr-2"></i>
+                    Ver Mi Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Add badge hover effects
+document.addEventListener('DOMContentLoaded', function() {
+    const badgeCards = document.querySelectorAll('.transform');
+    
+    badgeCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.classList.add('rotate-1');
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.classList.remove('rotate-1');
+        });
+    });
+});
+</script>
+{% endblock %}

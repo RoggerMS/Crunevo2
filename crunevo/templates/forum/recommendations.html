@@ -1,0 +1,452 @@
+<!-- Componente de Recomendaciones Personalizadas -->
+<div class="recommendations-container bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <div class="recommendations-header mb-4">
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">
+            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+            Recomendaciones Personalizadas
+        </h3>
+        <p class="text-sm text-gray-600">Contenido sugerido basado en tu actividad y preferencias</p>
+    </div>
+
+    <!-- Tabs de Recomendaciones -->
+    <div class="recommendations-tabs mb-4">
+        <div class="flex border-b border-gray-200">
+            <button class="tab-btn active px-4 py-2 text-sm font-medium text-blue-600 border-b-2 border-blue-600" 
+                    data-tab="personalized">
+                Para Ti
+            </button>
+            <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700" 
+                    data-tab="trending">
+                Trending
+            </button>
+            <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700" 
+                    data-tab="study">
+                Estudio
+            </button>
+        </div>
+    </div>
+
+    <!-- Contenido de Recomendaciones -->
+    <div class="recommendations-content">
+        <!-- Recomendaciones Personalizadas -->
+        <div id="personalized-tab" class="tab-content active">
+            <div class="loading-spinner text-center py-4">
+                <i class="fas fa-spinner fa-spin text-blue-500"></i>
+                <span class="ml-2 text-gray-600">Cargando recomendaciones...</span>
+            </div>
+            <div class="recommendations-list hidden"></div>
+        </div>
+
+        <!-- Temas Trending -->
+        <div id="trending-tab" class="tab-content hidden">
+            <div class="loading-spinner text-center py-4">
+                <i class="fas fa-spinner fa-spin text-blue-500"></i>
+                <span class="ml-2 text-gray-600">Cargando trending...</span>
+            </div>
+            <div class="trending-list hidden"></div>
+        </div>
+
+        <!-- Recomendaciones de Estudio -->
+        <div id="study-tab" class="tab-content hidden">
+            <div class="subject-selector mb-4">
+                <select id="study-subject" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Selecciona una materia</option>
+                    <option value="matematicas">Matemáticas</option>
+                    <option value="fisica">Física</option>
+                    <option value="quimica">Química</option>
+                    <option value="biologia">Biología</option>
+                    <option value="historia">Historia</option>
+                    <option value="geografia">Geografía</option>
+                    <option value="literatura">Literatura</option>
+                    <option value="ingles">Inglés</option>
+                    <option value="programacion">Programación</option>
+                </select>
+            </div>
+            <div class="loading-spinner text-center py-4 hidden">
+                <i class="fas fa-spinner fa-spin text-blue-500"></i>
+                <span class="ml-2 text-gray-600">Cargando recomendaciones de estudio...</span>
+            </div>
+            <div class="study-list"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+.recommendations-container {
+    max-width: 100%;
+}
+
+.tab-btn {
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-btn.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+}
+
+.tab-btn:hover:not(.active) {
+    color: #374151;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.recommendation-item {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.recommendation-item:hover {
+    background-color: #f9fafb;
+    transform: translateY(-1px);
+}
+
+.recommendation-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+}
+
+.quality-high {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.quality-medium {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.quality-low {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.trending-item {
+    transition: all 0.2s ease;
+}
+
+.trending-item:hover {
+    background-color: #f3f4f6;
+}
+
+/* Mobile Responsive Optimizations */
+@media (max-width: 576px) {
+    .recommendations-container {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+        border-radius: 16px;
+    }
+    
+    .recommendations-header h3 {
+        font-size: 1rem;
+    }
+    
+    .recommendations-header p {
+        font-size: 0.8rem;
+    }
+    
+    .recommendations-tabs {
+        margin-bottom: 0.75rem;
+    }
+    
+    .tab-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+        flex: 1;
+        text-align: center;
+    }
+    
+    .recommendations-tabs .flex {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0;
+    }
+    
+    .recommendation-item {
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        border-radius: 12px;
+    }
+    
+    .recommendation-item h4 {
+        font-size: 0.9rem;
+        line-height: 1.3;
+    }
+    
+    .recommendation-item p {
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .recommendation-badge {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.4rem;
+    }
+    
+    .trending-item {
+        padding: 0.75rem;
+    }
+    
+    .trending-item .font-medium {
+        font-size: 0.85rem;
+    }
+    
+    .trending-item .text-sm {
+        font-size: 0.75rem;
+    }
+    
+    .subject-selector select {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .grid-cols-1.md\:grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+    
+    .loading-spinner {
+        padding: 1rem 0;
+    }
+    
+    .loading-spinner span {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 768px) and (min-width: 577px) {
+    .recommendations-container {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .tab-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .recommendation-item {
+        padding: 1rem;
+    }
+}
+
+/* Touch-friendly improvements for recommendations */
+@media (hover: none) and (pointer: coarse) {
+    .tab-btn {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .recommendation-item {
+        min-height: 44px;
+    }
+    
+    .subject-selector select {
+        min-height: 44px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const studySubject = document.getElementById('study-subject');
+    
+    // Manejar cambio de tabs
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabName = this.dataset.tab;
+            
+            // Actualizar botones
+            tabBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Actualizar contenido
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                content.classList.add('hidden');
+            });
+            
+            const targetTab = document.getElementById(tabName + '-tab');
+            if (targetTab) {
+                targetTab.classList.add('active');
+                targetTab.classList.remove('hidden');
+                
+                // Cargar contenido según el tab
+                if (tabName === 'personalized') {
+                    loadPersonalizedRecommendations();
+                } else if (tabName === 'trending') {
+                    loadTrendingTopics();
+                }
+            }
+        });
+    });
+    
+    // Manejar cambio de materia en recomendaciones de estudio
+    if (studySubject) {
+        studySubject.addEventListener('change', function() {
+            if (this.value) {
+                loadStudyRecommendations(this.value);
+            } else {
+                document.querySelector('#study-tab .study-list').innerHTML = '';
+            }
+        });
+    }
+    
+    // Cargar recomendaciones personalizadas por defecto
+    loadPersonalizedRecommendations();
+    
+    function loadPersonalizedRecommendations() {
+        const container = document.querySelector('#personalized-tab');
+        const spinner = container.querySelector('.loading-spinner');
+        const list = container.querySelector('.recommendations-list');
+        
+        spinner.classList.remove('hidden');
+        list.classList.add('hidden');
+        
+        fetch('/foro/api/recomendaciones/personalizadas?limit=5')
+            .then(response => response.json())
+            .then(data => {
+                spinner.classList.add('hidden');
+                list.classList.remove('hidden');
+                
+                if (data.length === 0) {
+                    list.innerHTML = '<p class="text-gray-500 text-center py-4">No hay recomendaciones disponibles</p>';
+                    return;
+                }
+                
+                list.innerHTML = data.map(item => `
+                    <div class="recommendation-item border border-gray-200 rounded-lg p-4 mb-3">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-medium text-gray-800 hover:text-blue-600">
+                                <a href="/foro/pregunta/${item.id}">${item.title}</a>
+                            </h4>
+                            <span class="recommendation-badge ${getQualityClass(item.quality_score)}">
+                                ${item.quality_score}% calidad
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">${item.content.substring(0, 100)}...</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-tags mr-1"></i>${item.category}</span>
+                            <span><i class="fas fa-comments mr-1"></i>${item.answer_count} respuestas</span>
+                            <span class="text-blue-600">${item.reason}</span>
+                        </div>
+                    </div>
+                `).join('');
+            })
+            .catch(error => {
+                console.error('Error loading recommendations:', error);
+                spinner.classList.add('hidden');
+                list.innerHTML = '<p class="text-red-500 text-center py-4">Error al cargar recomendaciones</p>';
+                list.classList.remove('hidden');
+            });
+    }
+    
+    function loadTrendingTopics() {
+        const container = document.querySelector('#trending-tab');
+        const spinner = container.querySelector('.loading-spinner');
+        const list = container.querySelector('.trending-list');
+        
+        spinner.classList.remove('hidden');
+        list.classList.add('hidden');
+        
+        fetch('/foro/api/recomendaciones/trending?limit=8')
+            .then(response => response.json())
+            .then(data => {
+                spinner.classList.add('hidden');
+                list.classList.remove('hidden');
+                
+                if (data.length === 0) {
+                    list.innerHTML = '<p class="text-gray-500 text-center py-4">No hay temas trending</p>';
+                    return;
+                }
+                
+                list.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        ${data.map(topic => `
+                            <div class="trending-item border border-gray-200 rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-gray-800">#${topic.tag}</span>
+                                    <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">
+                                        <i class="fas fa-fire mr-1"></i>Trending
+                                    </span>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    <span><i class="fas fa-question-circle mr-1"></i>${topic.question_count} preguntas</span>
+                                    <span class="ml-3"><i class="fas fa-chart-line mr-1"></i>+${topic.growth}%</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            })
+            .catch(error => {
+                console.error('Error loading trending topics:', error);
+                spinner.classList.add('hidden');
+                list.innerHTML = '<p class="text-red-500 text-center py-4">Error al cargar temas trending</p>';
+                list.classList.remove('hidden');
+            });
+    }
+    
+    function loadStudyRecommendations(subject) {
+        const container = document.querySelector('#study-tab');
+        const spinner = container.querySelector('.loading-spinner');
+        const list = container.querySelector('.study-list');
+        
+        spinner.classList.remove('hidden');
+        list.innerHTML = '';
+        
+        fetch(`/foro/api/recomendaciones/estudio?subject=${subject}&limit=5`)
+            .then(response => response.json())
+            .then(data => {
+                spinner.classList.add('hidden');
+                
+                if (data.length === 0) {
+                    list.innerHTML = '<p class="text-gray-500 text-center py-4">No hay recomendaciones para esta materia</p>';
+                    return;
+                }
+                
+                list.innerHTML = data.map(item => `
+                    <div class="recommendation-item border border-gray-200 rounded-lg p-4 mb-3">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-medium text-gray-800 hover:text-blue-600">
+                                <a href="/foro/pregunta/${item.id}">${item.title}</a>
+                            </h4>
+                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                                ${item.difficulty}
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">${item.content.substring(0, 100)}...</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-graduation-cap mr-1"></i>${subject}</span>
+                            <span><i class="fas fa-star mr-1"></i>${item.quality_score}% calidad</span>
+                            <span class="text-green-600">${item.reason}</span>
+                        </div>
+                    </div>
+                `).join('');
+            })
+            .catch(error => {
+                console.error('Error loading study recommendations:', error);
+                spinner.classList.add('hidden');
+                list.innerHTML = '<p class="text-red-500 text-center py-4">Error al cargar recomendaciones</p>';
+            });
+    }
+    
+    function getQualityClass(score) {
+        if (score >= 80) return 'quality-high';
+        if (score >= 60) return 'quality-medium';
+        return 'quality-low';
+    }
+});
+</script>

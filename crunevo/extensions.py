@@ -51,11 +51,16 @@ except Exception:
     redis_client = MockRedis()
 # BEGIN: make eventlet optional for local dev compatibility
 USE_EVENTLET = False
-try:
-    from eventlet import websocket  # type: ignore
-    from eventlet.greenio.base import shutdown_safe  # type: ignore
-    USE_EVENTLET = True
-except Exception:
+# Check if eventlet is disabled via environment variable (for serverless)
+if not os.environ.get('DISABLE_EVENTLET'):
+    try:
+        from eventlet import websocket  # type: ignore
+        from eventlet.greenio.base import shutdown_safe  # type: ignore
+        USE_EVENTLET = True
+    except Exception:
+        websocket = None  # type: ignore
+        shutdown_safe = None  # type: ignore
+else:
     websocket = None  # type: ignore
     shutdown_safe = None  # type: ignore
 # END: make eventlet optional for local dev compatibility

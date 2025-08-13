@@ -65,6 +65,7 @@ class ForumQuestion(db.Model):
     is_urgent = db.Column(db.Boolean, default=False)  # For urgent homework help
     is_featured = db.Column(db.Boolean, default=False)  # Featured questions
     quality_score = db.Column(db.Float, default=0.0)  # Auto-calculated quality score
+    requires_review = db.Column(db.Boolean, default=False)  # Flagged for moderation review
 
     # New: Study context
     homework_deadline = db.Column(db.DateTime)  # When homework is due
@@ -72,6 +73,10 @@ class ForumQuestion(db.Model):
     context_type = db.Column(
         db.String(50), default="general"
     )  # homework, exam, curiosity, project
+
+    # Premium features
+    is_boosted = db.Column(db.Boolean, default=False)  # Boosted with Crolars
+    boost_expires = db.Column(db.DateTime)  # When boost expires
 
     # Relationships
     author = db.relationship("User", backref="forum_questions")
@@ -151,6 +156,12 @@ class ForumAnswer(db.Model):
     estimated_reading_time = db.Column(db.Integer, default=1)  # minutes
     contains_formulas = db.Column(db.Boolean, default=False)
     contains_code = db.Column(db.Boolean, default=False)
+    quality_score = db.Column(db.Float, default=0.0)  # Auto-calculated quality score
+    requires_review = db.Column(db.Boolean, default=False)  # Flagged for moderation review
+
+    # Premium features
+    is_highlighted = db.Column(db.Boolean, default=False)  # Highlighted with Crolars
+    highlight_expires = db.Column(db.DateTime)  # When highlight expires
 
     # Relationships
     author = db.relationship("User", backref="forum_answers")
@@ -214,27 +225,5 @@ class ForumReport(db.Model):
     answer = db.relationship("ForumAnswer", backref="reports")
 
 
-class ForumBadge(db.Model):
-    """Gamification badges for users"""
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(200))
-    icon = db.Column(db.String(50), default="bi-award")
-    color = db.Column(db.String(7), default="#ffd700")
-    category = db.Column(db.String(50))  # helper, solver, contributor, etc.
-    requirement_type = db.Column(db.String(50))  # answers_count, votes_received, etc.
-    requirement_value = db.Column(db.Integer)
-    is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-
-# Association table for user badges
-user_badges = db.Table(
-    "user_badges",
-    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
-    db.Column(
-        "badge_id", db.Integer, db.ForeignKey("forum_badge.id"), primary_key=True
-    ),
-    db.Column("earned_at", db.DateTime, default=datetime.utcnow),
-)
+# Note: ForumBadge model is defined in badge.py
+# Note: user_badges table is defined in badge.py as UserBadge model

@@ -26,3 +26,4 @@ htmlcov/
 
 # Fly.io CLI state
 .fly/
+.vercel

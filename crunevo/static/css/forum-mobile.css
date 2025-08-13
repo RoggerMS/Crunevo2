@@ -1,0 +1,434 @@
+/* Forum Mobile Optimizations - Mobile First CSS */
+
+/* Base mobile styles */
+@media (max-width: 576px) {
+  /* Global container adjustments */
+  .container-fluid {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  .page-edge {
+    padding: 0;
+  }
+  
+  /* Typography mobile */
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  h3 { font-size: 1.1rem; }
+  h4 { font-size: 1rem; }
+  h5 { font-size: 0.9rem; }
+  h6 { font-size: 0.85rem; }
+  
+  /* Button optimizations */
+  .btn {
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .btn-sm {
+    min-height: 36px;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .btn-lg {
+    min-height: 48px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+  
+  /* Form controls mobile */
+  .form-control,
+  .form-select {
+    min-height: 44px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  .form-control-sm,
+  .form-select-sm {
+    min-height: 36px;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  /* Input groups mobile */
+  .input-group {
+    flex-wrap: nowrap;
+  }
+  
+  .input-group .btn {
+    white-space: nowrap;
+  }
+  
+  /* Card optimizations */
+  .card {
+    border-radius: 16px;
+    margin-bottom: 0.75rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .card-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .card-footer {
+    padding: 0.75rem 1rem;
+  }
+  
+  /* Modal mobile optimizations */
+  .modal-dialog {
+    margin: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+  
+  .modal-content {
+    border-radius: 16px;
+  }
+  
+  .modal-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .modal-body {
+    padding: 1rem;
+  }
+  
+  .modal-footer {
+    padding: 1rem;
+    border-top: 1px solid #e9ecef;
+  }
+  
+  /* Navigation mobile */
+  .navbar {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .navbar-brand {
+    font-size: 1.1rem;
+  }
+  
+  .navbar-nav .nav-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Dropdown mobile */
+  .dropdown-menu {
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  
+  .dropdown-item {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Badge mobile */
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  /* Alert mobile */
+  .alert {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+  }
+  
+  /* Breadcrumb mobile */
+  .breadcrumb {
+    padding: 0.5rem 0;
+    margin-bottom: 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  /* Pagination mobile */
+  .pagination {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  
+  .page-link {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Table mobile */
+  .table-responsive {
+    border-radius: 12px;
+  }
+  
+  .table {
+    font-size: 0.875rem;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.5rem;
+    vertical-align: middle;
+  }
+  
+  /* List group mobile */
+  .list-group {
+    border-radius: 12px;
+  }
+  
+  .list-group-item {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Progress mobile */
+  .progress {
+    height: 8px;
+    border-radius: 4px;
+  }
+  
+  /* Tooltip mobile */
+  .tooltip {
+    font-size: 0.75rem;
+  }
+  
+  /* Popover mobile */
+  .popover {
+    font-size: 0.8rem;
+    border-radius: 12px;
+  }
+  
+  /* Accordion mobile */
+  .accordion-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .accordion-body {
+    padding: 1rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Offcanvas mobile */
+  .offcanvas {
+    border-radius: 16px 16px 0 0;
+  }
+  
+  .offcanvas-header {
+    padding: 1rem;
+  }
+  
+  .offcanvas-body {
+    padding: 1rem;
+  }
+}
+
+/* Tablet optimizations */
+@media (max-width: 768px) and (min-width: 577px) {
+  .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .card-body {
+    padding: 1.25rem;
+  }
+  
+  .modal-dialog {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
+  }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+  /* Ensure all interactive elements are touch-friendly */
+  a, button, .btn, .form-control, .form-select,
+  .dropdown-toggle, .nav-link, .page-link,
+  .list-group-item-action, .accordion-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Remove hover effects on touch devices */
+  .btn:hover,
+  .card:hover,
+  .list-group-item:hover {
+    transform: none;
+  }
+  
+  /* Improve tap targets */
+  .close, .btn-close {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-width: 896px) and (orientation: landscape) {
+  .modal-dialog {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .navbar {
+    padding: 0.25rem 0.75rem;
+  }
+  
+  .card {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Optimize for retina displays */
+  .border {
+    border-width: 0.5px;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Dark mode mobile optimizations */
+@media (prefers-color-scheme: dark) {
+  @media (max-width: 576px) {
+    .card {
+      background-color: #1f2937;
+      border-color: #374151;
+    }
+    
+    .modal-content {
+      background-color: #1f2937;
+      border-color: #374151;
+    }
+    
+    .dropdown-menu {
+      background-color: #1f2937;
+      border-color: #374151;
+    }
+    
+    .form-control,
+    .form-select {
+      background-color: #374151;
+      border-color: #4b5563;
+      color: #f9fafb;
+    }
+    
+    .btn-outline-primary {
+      color: #60a5fa;
+      border-color: #60a5fa;
+    }
+    
+    .btn-outline-primary:hover {
+      background-color: #60a5fa;
+      color: #1f2937;
+    }
+  }
+}
+
+/* Print styles for mobile */
+@media print {
+  .d-print-none {
+    display: none !important;
+  }
+  
+  .card {
+    border: 1px solid #000;
+    break-inside: avoid;
+  }
+  
+  .btn {
+    display: none;
+  }
+}
+
+/* Accessibility improvements for mobile */
+@media (max-width: 576px) {
+  /* Focus indicators */
+  .btn:focus,
+  .form-control:focus,
+  .form-select:focus {
+    outline: 2px solid #0d6efd;
+    outline-offset: 2px;
+  }
+  
+  /* Skip links */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #0d6efd;
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 1000;
+  }
+  
+  .skip-link:focus {
+    top: 6px;
+  }
+  
+  /* Screen reader improvements */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+/* Performance optimizations */
+@media (max-width: 576px) {
+  /* Reduce animations on mobile for better performance */
+  .fade {
+    transition: opacity 0.15s linear;
+  }
+  
+  .collapse {
+    transition: height 0.15s ease;
+  }
+  
+  /* Optimize images */
+  img {
+    height: auto;
+    max-width: 100%;
+  }
+  
+  /* Optimize videos */
+  video {
+    width: 100%;
+    height: auto;
+  }
+}

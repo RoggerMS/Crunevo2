@@ -1,0 +1,490 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de Moderación - Crunevo{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-lg-4 py-3">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="moderation-header">
+        <h1 class="moderation-title">🛡️ Panel de Moderación</h1>
+        <p class="moderation-subtitle">Gestiona el contenido que requiere revisión</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="stat-card high-quality">
+        <div class="stat-icon">✅</div>
+        <div class="stat-info">
+          <div class="stat-number">{{ stats.high_quality_content }}</div>
+          <div class="stat-label">Contenido de alta calidad</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card medium-quality">
+        <div class="stat-icon">⚠️</div>
+        <div class="stat-info">
+          <div class="stat-number">{{ stats.medium_quality_content }}</div>
+          <div class="stat-label">Calidad media</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card low-quality">
+        <div class="stat-icon">❌</div>
+        <div class="stat-info">
+          <div class="stat-number">{{ stats.low_quality_content }}</div>
+          <div class="stat-label">Baja calidad</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card pending-review">
+        <div class="stat-icon">🔍</div>
+        <div class="stat-info">
+          <div class="stat-number">{{ stats.pending_reports }}</div>
+          <div class="stat-label">Reportes pendientes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Tabs -->
+  <div class="row">
+    <div class="col-12">
+      <div class="moderation-tabs">
+        <ul class="nav nav-tabs" id="moderationTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="questions-tab" data-bs-toggle="tab" data-bs-target="#questions" type="button" role="tab">
+              📝 Preguntas ({{ questions_to_review|length }})
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="answers-tab" data-bs-toggle="tab" data-bs-target="#answers" type="button" role="tab">
+              💬 Respuestas ({{ answers_to_review|length }})
+            </button>
+          </li>
+        </ul>
+        
+        <div class="tab-content" id="moderationTabContent">
+          <!-- Questions Tab -->
+          <div class="tab-pane fade show active" id="questions" role="tabpanel">
+            <div class="content-review-section">
+              {% if questions_to_review %}
+                {% for question in questions_to_review %}
+                <div class="review-item question-review">
+                  <div class="review-header">
+                    <div class="review-meta">
+                      <h5 class="review-title">{{ question.title }}</h5>
+                      <div class="review-info">
+                        <span class="author">Por: {{ question.author.username }}</span>
+                        <span class="date">{{ question.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                        <span class="quality-score score-{{ 'high' if question.quality_score >= 70 else 'medium' if question.quality_score >= 40 else 'low' }}">
+                          Calidad: {{ question.quality_score|round|int }}%
+                        </span>
+                      </div>
+                    </div>
+                    <div class="review-actions">
+                      <form method="POST" action="{{ url_for('forum.approve_content', content_type='question', content_id=question.id) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-success btn-sm">
+                          <i class="bi bi-check-circle"></i> Aprobar
+                        </button>
+                      </form>
+                      <form method="POST" action="{{ url_for('forum.reject_content', content_type='question', content_id=question.id) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que quieres eliminar esta pregunta?')">
+                          <i class="bi bi-x-circle"></i> Rechazar
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                  
+                  <div class="review-content">
+                    <div class="content-preview">
+                      {{ question.content|striptags|truncate(300) }}
+                    </div>
+                    
+                    <div class="content-details">
+                      <div class="detail-item">
+                        <strong>Categoría:</strong> {{ question.category }}
+                      </div>
+                      <div class="detail-item">
+                        <strong>Dificultad:</strong> {{ question.difficulty_level|title }}
+                      </div>
+                      {% if question.is_urgent %}
+                      <div class="detail-item urgent">
+                        <strong>🚨 Marcada como urgente</strong>
+                      </div>
+                      {% endif %}
+                      {% if question.bounty_points > 0 %}
+                      <div class="detail-item bounty">
+                        <strong>💰 Recompensa:</strong> {{ question.bounty_points }} puntos
+                      </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  
+                  <div class="review-footer">
+                    <a href="{{ url_for('forum.view_question', question_id=question.id) }}" class="btn btn-outline-primary btn-sm" target="_blank">
+                      <i class="bi bi-eye"></i> Ver completa
+                    </a>
+                  </div>
+                </div>
+                {% endfor %}
+              {% else %}
+                <div class="empty-state">
+                  <div class="empty-icon">✨</div>
+                  <h4>No hay preguntas pendientes de revisión</h4>
+                  <p>¡Excelente! Todo el contenido está moderado.</p>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+          
+          <!-- Answers Tab -->
+          <div class="tab-pane fade" id="answers" role="tabpanel">
+            <div class="content-review-section">
+              {% if answers_to_review %}
+                {% for answer in answers_to_review %}
+                <div class="review-item answer-review">
+                  <div class="review-header">
+                    <div class="review-meta">
+                      <h6 class="review-title">Respuesta a: {{ answer.question.title }}</h6>
+                      <div class="review-info">
+                        <span class="author">Por: {{ answer.author.username }}</span>
+                        <span class="date">{{ answer.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                        <span class="quality-score score-{{ 'high' if answer.quality_score >= 70 else 'medium' if answer.quality_score >= 40 else 'low' }}">
+                          Calidad: {{ answer.quality_score|round|int }}%
+                        </span>
+                      </div>
+                    </div>
+                    <div class="review-actions">
+                      <form method="POST" action="{{ url_for('forum.approve_content', content_type='answer', content_id=answer.id) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-success btn-sm">
+                          <i class="bi bi-check-circle"></i> Aprobar
+                        </button>
+                      </form>
+                      <form method="POST" action="{{ url_for('forum.reject_content', content_type='answer', content_id=answer.id) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que quieres eliminar esta respuesta?')">
+                          <i class="bi bi-x-circle"></i> Rechazar
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                  
+                  <div class="review-content">
+                    <div class="content-preview">
+                      {{ answer.content|striptags|truncate(300) }}
+                    </div>
+                    
+                    <div class="content-details">
+                      <div class="detail-item">
+                        <strong>Palabras:</strong> {{ answer.word_count }}
+                      </div>
+                      <div class="detail-item">
+                        <strong>Confianza:</strong> {{ answer.confidence_level|title }}
+                      </div>
+                      {% if answer.has_step_by_step %}
+                      <div class="detail-item positive">
+                        <strong>✅ Explicación paso a paso</strong>
+                      </div>
+                      {% endif %}
+                      {% if answer.has_visual_aids %}
+                      <div class="detail-item positive">
+                        <strong>🖼️ Incluye ayudas visuales</strong>
+                      </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  
+                  <div class="review-footer">
+                    <a href="{{ url_for('forum.view_question', question_id=answer.question_id) }}#answer-{{ answer.id }}" class="btn btn-outline-primary btn-sm" target="_blank">
+                      <i class="bi bi-eye"></i> Ver completa
+                    </a>
+                  </div>
+                </div>
+                {% endfor %}
+              {% else %}
+                <div class="empty-state">
+                  <div class="empty-icon">✨</div>
+                  <h4>No hay respuestas pendientes de revisión</h4>
+                  <p>¡Excelente! Todo el contenido está moderado.</p>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Moderation Panel Styles */
+.moderation-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 20px;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.moderation-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.moderation-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* Statistics Cards */
+.stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  border: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  font-size: 2rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.high-quality .stat-icon {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.medium-quality .stat-icon {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.low-quality .stat-icon {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.pending-review .stat-icon {
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.stat-label {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Tabs */
+.moderation-tabs {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.nav-tabs {
+  border-bottom: 2px solid #e5e7eb;
+  padding: 0 1.5rem;
+}
+
+.nav-tabs .nav-link {
+  border: none;
+  color: #6b7280;
+  font-weight: 600;
+  padding: 1rem 1.5rem;
+  border-radius: 0;
+}
+
+.nav-tabs .nav-link.active {
+  color: #3b82f6;
+  background: none;
+  border-bottom: 3px solid #3b82f6;
+}
+
+/* Review Items */
+.content-review-section {
+  padding: 2rem;
+}
+
+.review-item {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.review-item:hover {
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  border-color: #cbd5e1;
+}
+
+.review-header {
+  display: flex;
+  justify-content: between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.review-meta {
+  flex: 1;
+}
+
+.review-title {
+  color: #1f2937;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.review-info {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+}
+
+.review-info span {
+  color: #6b7280;
+}
+
+.quality-score {
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.score-high {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.score-medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.score-low {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.review-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.content-preview {
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.content-details {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.detail-item {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.detail-item.urgent {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.detail-item.bounty {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.detail-item.positive {
+  color: #059669;
+  font-weight: 600;
+}
+
+.review-footer {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h4 {
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .review-header {
+    flex-direction: column;
+  }
+  
+  .review-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .content-details {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .stat-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+</style>
+{% endblock %}

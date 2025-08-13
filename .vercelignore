@@ -1,0 +1,75 @@
+# Dependencies
+node_modules
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build outputs
+build
+dist
+
+# Version control
+.git
+
+# IDE and tools
+.trae
+.vscode/
+.idea/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Database files
+*.sqlite
+*.db
+*.sqlite3
+
+# Environment files
+.env*
+!.env.example
+
+# Development and testing
+tests/
+migrations/
+docs/
+frontend/
+attached_assets/
+scripts/
+
+# Debug and utility scripts
+debug_*
+test_*
+create_*
+check_*
+update_*
+init_*
+run_dev.*
+
+# Documentation
+*.md
+!README.md
+
+# Configuration files not needed in production
+Dockerfile
+fly.toml
+fly-admin.toml
+Makefile
+alembic.ini
+pytest.ini
+.pre-commit-config.yaml
+.replit
+
+# Shell scripts
+*.sh
+*.ps1
+
+# Python cache
+.pytest_cache/
+.coverage
+
+# Other
+-f

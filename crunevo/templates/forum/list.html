@@ -226,11 +226,26 @@
               <div class="d-flex align-items-center justify-content-between">
                 <div class="author-info d-flex align-items-center">
                   {% set author = question.author %}
-                  <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}"
-                       class="author-avatar me-2" alt="Avatar">
+                  <div class="author-avatar-container me-2">
+                    <img src="{{ author.avatar_url if author else url_for('static', filename='img/default.png') }}"
+                         class="author-avatar" alt="Avatar">
+                    {% if author and author.forum_level %}
+                    <div class="level-badge">{{ author.forum_level }}</div>
+                    {% endif %}
+                  </div>
                   <div class="author-details">
-                    <div class="author-name">{{ author.username if author else 'Usuario eliminado' }}</div>
-                    <div class="question-time">{{ question.created_at.strftime('%d/%m/%Y %H:%M') }}</div>
+                    <div class="author-name-container">
+                      <span class="author-name">{{ author.username if author else 'Usuario eliminado' }}</span>
+                      {% if author %}
+                      <span class="author-rank">{{ author.get_forum_rank() }}</span>
+                      {% endif %}
+                    </div>
+                    <div class="author-stats">
+                      <span class="question-time">{{ question.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                      {% if author and author.reputation_score %}
+                      <span class="reputation-score">• {{ author.reputation_score }} pts</span>
+                      {% endif %}
+                    </div>
                   </div>
                 </div>
                 
@@ -347,6 +362,11 @@
         </div>
       </div>
 
+      <!-- Recomendaciones Personalizadas -->
+      {% if current_user.is_authenticated %}
+      {% include 'forum/recommendations.html' %}
+      {% endif %}
+
       <!-- Popular Tags -->
       {% if popular_tags %}
       <div class="sidebar-card tags-card mb-4">
@@ -396,6 +416,50 @@
           </div>
         </div>
       </div>
+
+      <!-- Top Contributors -->
+      <div class="sidebar-card leaderboard-card mb-4">
+        <div class="sidebar-header">
+          <h6 class="sidebar-title">🏆 Top Contribuidores</h6>
+          <a href="{{ url_for('forum.leaderboard') }}" class="view-all-link">Ver todos</a>
+        </div>
+        <div class="sidebar-body">
+          <div class="mini-leaderboard">
+            {% for user in top_contributors[:5] if top_contributors %}
+            <div class="contributor-item">
+              <div class="contributor-rank">#{{ loop.index }}</div>
+              <div class="contributor-avatar">
+                <img src="{{ user.avatar_url or url_for('static', filename='img/default.png') }}" alt="{{ user.username }}">
+                <div class="level-mini-badge">{{ user.forum_level or 1 }}</div>
+              </div>
+              <div class="contributor-info">
+                <div class="contributor-name">{{ user.username }}</div>
+                <div class="contributor-stats">
+                  <span class="reputation">{{ user.reputation_score or 0 }} pts</span>
+                  <span class="rank-title">{{ user.get_forum_rank() if user.get_forum_rank else 'Novato' }}</span>
+                </div>
+              </div>
+            </div>
+            {% else %}
+            <div class="empty-leaderboard">
+              <p class="text-muted small">¡Sé el primero en aparecer aquí!</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Gamification CTA -->
+      {% if current_user.is_authenticated %}
+      <div class="sidebar-card gamification-cta mb-4">
+        <div class="sidebar-body text-center">
+          <div class="cta-icon">🎮</div>
+          <h6 class="cta-title">¡Sube de nivel!</h6>
+          <p class="cta-description">Responde preguntas, gana puntos y desbloquea insignias</p>
+          <a href="{{ url_for('forum.dashboard') }}" class="btn btn-primary btn-sm modern-btn">Ver mi progreso</a>
+        </div>
+      </div>
+      {% endif %}
 
       <!-- Study Tips -->
       <div class="sidebar-card tips-card">
@@ -740,6 +804,200 @@
   border-radius: 16px;
 }
 
+/* Gamification Styles */
+.author-avatar-container {
+  position: relative;
+  display: inline-block;
+}
+
+.level-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 2px solid white;
+  min-width: 18px;
+  text-align: center;
+}
+
+.author-name-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.author-rank {
+  font-size: 0.7rem;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.author-stats {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.reputation-score {
+  font-size: 0.75rem;
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+/* Leaderboard Styles */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.view-all-link {
+  font-size: 0.8rem;
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.view-all-link:hover {
+  color: #1e40af;
+}
+
+.mini-leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contributor-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 12px;
+  transition: background 0.3s ease;
+}
+
+.contributor-item:hover {
+  background: #f8fafc;
+}
+
+.contributor-rank {
+  font-weight: 700;
+  color: #3b82f6;
+  font-size: 0.9rem;
+  min-width: 24px;
+}
+
+.contributor-avatar {
+  position: relative;
+}
+
+.contributor-avatar img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #e5e7eb;
+}
+
+.level-mini-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 8px;
+  border: 1px solid white;
+  min-width: 14px;
+  text-align: center;
+}
+
+.contributor-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.contributor-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contributor-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.reputation {
+  font-size: 0.7rem;
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.rank-title {
+  font-size: 0.65rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.empty-leaderboard {
+  text-align: center;
+  padding: 1rem;
+}
+
+/* Gamification CTA */
+.gamification-cta {
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  color: white;
+}
+
+.gamification-cta .sidebar-body {
+  padding: 1.5rem;
+}
+
+.cta-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.cta-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.cta-description {
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  opacity: 0.9;
+}
+
+.gamification-cta .modern-btn {
+  background: white;
+  color: #3b82f6;
+  border: none;
+}
+
+.gamification-cta .modern-btn:hover {
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
@@ -1012,8 +1270,241 @@
   }
 }
 
-/* Mobile Responsive */
-@media (max-width: 768px) {
+/* Mobile Responsive - Mobile First Approach */
+@media (max-width: 576px) {
+  /* Header optimizations */
+  .modern-header {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .modern-title {
+    font-size: 1.25rem;
+    text-align: center;
+  }
+  
+  .modern-subtitle {
+    text-align: center;
+    font-size: 0.85rem;
+  }
+  
+  /* Search optimizations */
+  .search-container .input-group {
+    border-radius: 16px;
+  }
+  
+  .search-container .form-control {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+  
+  .modern-btn {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+  }
+  
+  /* Filters panel mobile */
+  .filters-panel {
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .filter-form .row {
+    gap: 0.5rem;
+  }
+  
+  .filter-form .col-md-3 {
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Quick actions mobile */
+  .quick-actions {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.75rem 1rem;
+  }
+  
+  .quick-filters {
+    justify-content: center;
+    margin-bottom: 0.75rem;
+    gap: 0.5rem;
+  }
+  
+  .badge-filter {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+  
+  /* Question cards mobile */
+  .question-card-modern {
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border-radius: 16px;
+  }
+  
+  .question-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .question-title-modern {
+    font-size: 1.1rem;
+    line-height: 1.3;
+  }
+  
+  .question-badges {
+    gap: 6px;
+    margin-top: 0.5rem;
+  }
+  
+  .badge {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+  
+  .question-stats {
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+  }
+  
+  .stat-number {
+    font-size: 1.1rem;
+  }
+  
+  .stat-label {
+    font-size: 0.7rem;
+  }
+  
+  /* Question footer mobile */
+  .question-footer {
+    margin-top: 0.75rem;
+  }
+  
+  .author-info {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .author-avatar {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .author-name {
+    font-size: 0.8rem;
+  }
+  
+  .question-time {
+    font-size: 0.7rem;
+  }
+  
+  .question-actions {
+    gap: 0.25rem;
+  }
+  
+  .action-btn {
+    padding: 6px;
+    font-size: 0.875rem;
+  }
+  
+  /* Sidebar mobile */
+  .sidebar-card {
+    margin-bottom: 0.75rem;
+    border-radius: 16px;
+  }
+  
+  .sidebar-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .sidebar-body {
+    padding: 1rem;
+  }
+  
+  .sidebar-title {
+    font-size: 0.9rem;
+  }
+  
+  /* Stats grid mobile */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  
+  .stat-box {
+    padding: 0.75rem 0.5rem;
+    border-radius: 12px;
+  }
+  
+  .stat-value {
+    font-size: 1.1rem;
+  }
+  
+  .stat-description {
+    font-size: 0.7rem;
+  }
+  
+  /* Leaderboard mobile */
+  .contributor-item {
+    padding: 6px;
+    gap: 8px;
+  }
+  
+  .contributor-avatar img {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .contributor-name {
+    font-size: 0.8rem;
+  }
+  
+  .reputation {
+    font-size: 0.65rem;
+  }
+  
+  .rank-title {
+    font-size: 0.6rem;
+  }
+  
+  /* Pagination mobile */
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+  
+  .page-link {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Empty state mobile */
+  .empty-state-modern {
+    padding: 2rem 1rem;
+    border-radius: 16px;
+  }
+  
+  .empty-state-icon {
+    font-size: 3rem;
+  }
+  
+  .empty-state-title {
+    font-size: 1.25rem;
+  }
+  
+  .empty-state-text {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) and (min-width: 577px) {
+  /* Tablet optimizations */
   .modern-header {
     padding: 1.5rem;
   }
@@ -1023,7 +1514,7 @@
   }
   
   .question-card-modern {
-    padding: 1rem;
+    padding: 1.25rem;
   }
   
   .question-header {
@@ -1038,7 +1529,7 @@
   }
   
   .stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
   
   .quick-actions {
@@ -1049,6 +1540,47 @@
   .quick-filters {
     justify-content: center;
     margin-bottom: 1rem;
+  }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+  .action-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .badge-filter {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .modern-btn {
+    min-height: 44px;
+  }
+  
+  .page-link {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-width: 896px) and (orientation: landscape) {
+  .modern-header {
+    padding: 1rem 1.5rem;
+  }
+  
+  .question-card-modern {
+    padding: 1rem 1.25rem;
+  }
+  
+  .sidebar-card {
+    margin-bottom: 0.5rem;
   }
 }
 

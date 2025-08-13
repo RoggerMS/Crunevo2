@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% block title %}Ranking del Foro - Crunevo{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">🏆 Ranking del Foro</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Descubre a los usuarios más activos y destacados de nuestra comunidad de aprendizaje.
+            </p>
+        </div>
+
+        <!-- Leaderboard Tabs -->
+        <div class="mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8 justify-center" aria-label="Tabs">
+                    <button onclick="showLeaderboard('reputation')" 
+                            class="leaderboard-tab active border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm"
+                            id="reputation-tab">
+                        <i class="fas fa-medal mr-2"></i>
+                        Por Reputación
+                    </button>
+                    <button onclick="showLeaderboard('questions')" 
+                            class="leaderboard-tab border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm"
+                            id="questions-tab">
+                        <i class="fas fa-question-circle mr-2"></i>
+                        Más Preguntas
+                    </button>
+                    <button onclick="showLeaderboard('answers')" 
+                            class="leaderboard-tab border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm"
+                            id="answers-tab">
+                        <i class="fas fa-reply mr-2"></i>
+                        Más Respuestas
+                    </button>
+                    <button onclick="showLeaderboard('best-answers')" 
+                            class="leaderboard-tab border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm"
+                            id="best-answers-tab">
+                        <i class="fas fa-star mr-2"></i>
+                        Mejores Respuestas
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Reputation Leaderboard -->
+        <div id="reputation-leaderboard" class="leaderboard-content">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <i class="fas fa-trophy mr-3"></i>
+                        Top Usuarios por Reputación
+                    </h2>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    {% for user in top_reputation %}
+                    <div class="p-6 flex items-center space-x-4 hover:bg-gray-50 transition-colors">
+                        <!-- Rank -->
+                        <div class="flex-shrink-0">
+                            {% if loop.index <= 3 %}
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg
+                                            {% if loop.index == 1 %}bg-gradient-to-br from-yellow-400 to-yellow-600
+                                            {% elif loop.index == 2 %}bg-gradient-to-br from-gray-400 to-gray-600
+                                            {% elif loop.index == 3 %}bg-gradient-to-br from-orange-400 to-orange-600
+                                            {% endif %}">
+                                    {% if loop.index == 1 %}🥇
+                                    {% elif loop.index == 2 %}🥈
+                                    {% elif loop.index == 3 %}🥉
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold">
+                                    {{ loop.index }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- User Info -->
+                        <div class="flex-1 flex items-center space-x-4">
+                            <img src="{{ user.avatar_url }}" alt="{{ user.username }}" 
+                                 class="w-12 h-12 rounded-full object-cover border-2 border-gray-200">
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-gray-900">{{ user.username }}</h3>
+                                <p class="text-sm text-gray-600">{{ user.get_forum_rank() }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Stats -->
+                        <div class="flex items-center space-x-6 text-sm">
+                            <div class="text-center">
+                                <p class="font-bold text-purple-600 text-lg">{{ user.reputation_score }}</p>
+                                <p class="text-gray-500">Reputación</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="font-bold text-blue-600">Nv.{{ user.forum_level }}</p>
+                                <p class="text-gray-500">Nivel</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="font-bold text-green-600">{{ user.best_answers }}</p>
+                                <p class="text-gray-500">Mejores</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions Leaderboard -->
+        <div id="questions-leaderboard" class="leaderboard-content hidden">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <i class="fas fa-question-circle mr-3"></i>
+                        Top Usuarios por Preguntas
+                    </h2>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    {% for user in top_questions %}
+                    <div class="p-6 flex items-center space-x-4 hover:bg-gray-50 transition-colors">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                            {{ loop.index }}
+                        </div>
+                        <div class="flex-1 flex items-center space-x-4">
+                            <img src="{{ user.avatar_url }}" alt="{{ user.username }}" 
+                                 class="w-12 h-12 rounded-full object-cover border-2 border-gray-200">
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-gray-900">{{ user.username }}</h3>
+                                <p class="text-sm text-gray-600">{{ user.get_forum_rank() }}</p>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="font-bold text-blue-600 text-xl">{{ user.questions_asked }}</p>
+                            <p class="text-gray-500 text-sm">Preguntas</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Answers Leaderboard -->
+        <div id="answers-leaderboard" class="leaderboard-content hidden">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-green-600 to-teal-600 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <i class="fas fa-reply mr-3"></i>
+                        Top Usuarios por Respuestas
+                    </h2>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    {% for user in top_answers %}
+                    <div class="p-6 flex items-center space-x-4 hover:bg-gray-50 transition-colors">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">
+                            {{ loop.index }}
+                        </div>
+                        <div class="flex-1 flex items-center space-x-4">
+                            <img src="{{ user.avatar_url }}" alt="{{ user.username }}" 
+                                 class="w-12 h-12 rounded-full object-cover border-2 border-gray-200">
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-gray-900">{{ user.username }}</h3>
+                                <p class="text-sm text-gray-600">{{ user.get_forum_rank() }}</p>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="font-bold text-green-600 text-xl">{{ user.answers_given }}</p>
+                            <p class="text-gray-500 text-sm">Respuestas</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Best Answers Leaderboard -->
+        <div id="best-answers-leaderboard" class="leaderboard-content hidden">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-yellow-500 to-orange-500 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <i class="fas fa-star mr-3"></i>
+                        Top Usuarios por Mejores Respuestas
+                    </h2>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    {% for user in top_best_answers %}
+                    <div class="p-6 flex items-center space-x-4 hover:bg-gray-50 transition-colors">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 font-bold">
+                            {{ loop.index }}
+                        </div>
+                        <div class="flex-1 flex items-center space-x-4">
+                            <img src="{{ user.avatar_url }}" alt="{{ user.username }}" 
+                                 class="w-12 h-12 rounded-full object-cover border-2 border-gray-200">
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-gray-900">{{ user.username }}</h3>
+                                <p class="text-sm text-gray-600">{{ user.get_forum_rank() }}</p>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="font-bold text-yellow-600 text-xl">{{ user.best_answers }}</p>
+                            <p class="text-gray-500 text-sm">Mejores Respuestas</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="mt-12 text-center bg-white rounded-xl shadow-lg p-8">
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">¿Quieres aparecer en el ranking?</h3>
+            <p class="text-gray-600 mb-6">Participa activamente en el foro para escalar posiciones y ganar reconocimiento.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{{ url_for('forum.ask_question') }}" 
+                   class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>
+                    Hacer una Pregunta
+                </a>
+                <a href="{{ url_for('forum.list_questions') }}" 
+                   class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                    <i class="fas fa-search mr-2"></i>
+                    Responder Preguntas
+                </a>
+                <a href="{{ url_for('forum.gamification_dashboard') }}" 
+                   class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
+                    <i class="fas fa-chart-line mr-2"></i>
+                    Ver Mi Progreso
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showLeaderboard(type) {
+    // Hide all leaderboards
+    document.querySelectorAll('.leaderboard-content').forEach(el => {
+        el.classList.add('hidden');
+    });
+    
+    // Remove active class from all tabs
+    document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+        tab.classList.remove('active', 'border-blue-500', 'text-blue-600');
+        tab.classList.add('border-transparent', 'text-gray-500');
+    });
+    
+    // Show selected leaderboard
+    document.getElementById(type + '-leaderboard').classList.remove('hidden');
+    
+    // Add active class to selected tab
+    const activeTab = document.getElementById(type + '-tab');
+    activeTab.classList.add('active', 'border-blue-500', 'text-blue-600');
+    activeTab.classList.remove('border-transparent', 'text-gray-500');
+}
+
+// Initialize with reputation leaderboard
+document.addEventListener('DOMContentLoaded', function() {
+    showLeaderboard('reputation');
+});
+</script>
+{% endblock %}

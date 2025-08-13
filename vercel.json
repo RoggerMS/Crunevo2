@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.py"
+    }
+  ],
+  "env": {
+    "FLASK_ENV": "production",
+    "ENABLE_TALISMAN": "False",
+    "SCHEDULER": "0",
+    "DISABLE_EVENTLET": "1",
+    "REDIS_URL": "memory://",
+    "RATELIMIT_STORAGE_URI": "memory://",
+    "FORCE_HTTPS": "False",
+    "EXEMPT_HEALTH_FROM_HTTPS": "True"
+  }
+}

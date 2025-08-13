@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+{% block title %}Clasificaciones - Crunevo{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Clasificaciones del Foro</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Descubre quiénes son los mejores estudiantes y mentores de nuestra comunidad
+            </p>
+        </div>
+
+        <!-- Leaderboard Tabs -->
+        <div class="bg-white rounded-lg shadow-md mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
+                    <button onclick="showLeaderboard('level')" 
+                            class="leaderboard-tab active border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" 
+                            data-tab="level">
+                        <i class="fas fa-trophy mr-2"></i>
+                        Por Nivel
+                    </button>
+                    <button onclick="showLeaderboard('reputation')" 
+                            class="leaderboard-tab border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" 
+                            data-tab="reputation">
+                        <i class="fas fa-star mr-2"></i>
+                        Por Reputación
+                    </button>
+                    <button onclick="showLeaderboard('helpful')" 
+                            class="leaderboard-tab border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" 
+                            data-tab="helpful">
+                        <i class="fas fa-heart mr-2"></i>
+                        Más Útiles
+                    </button>
+                    <button onclick="showLeaderboard('crolars')" 
+                            class="leaderboard-tab border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" 
+                            data-tab="crolars">
+                        <i class="fas fa-coins mr-2"></i>
+                        Crolars
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Level Leaderboard -->
+        <div id="level-leaderboard" class="leaderboard-content">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-yellow-400 to-orange-500">
+                    <h2 class="text-2xl font-bold text-white">🏆 Top por Nivel del Foro</h2>
+                    <p class="text-yellow-100">Los usuarios con mayor nivel de experiencia</p>
+                </div>
+                
+                <div class="divide-y divide-gray-200">
+                    {% for user in level_leaders %}
+                    <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 mr-4">
+                                {% if loop.index <= 3 %}
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold
+                                        {% if loop.index == 1 %}bg-yellow-500
+                                        {% elif loop.index == 2 %}bg-gray-400
+                                        {% else %}bg-orange-600{% endif %}">
+                                        {{ loop.index }}
+                                    </div>
+                                {% else %}
+                                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold">
+                                        {{ loop.index }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <img src="{{ user.avatar_url or '/static/images/default-avatar.png' }}" 
+                                 alt="{{ user.username }}" 
+                                 class="w-12 h-12 rounded-full mr-4">
+                            
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">{{ user.username }}</h3>
+                                <p class="text-sm text-gray-600">{{ user.custom_forum_title or 'Estudiante' }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-blue-600">Nivel {{ user.forum_level or 0 }}</div>
+                            <div class="text-sm text-gray-500">{{ user.forum_experience or 0 }} XP</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Reputation Leaderboard -->
+        <div id="reputation-leaderboard" class="leaderboard-content hidden">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-purple-500 to-indigo-600">
+                    <h2 class="text-2xl font-bold text-white">⭐ Top por Reputación</h2>
+                    <p class="text-purple-100">Los usuarios más respetados de la comunidad</p>
+                </div>
+                
+                <div class="divide-y divide-gray-200">
+                    {% for user in reputation_leaders %}
+                    <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 mr-4">
+                                {% if loop.index <= 3 %}
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold
+                                        {% if loop.index == 1 %}bg-yellow-500
+                                        {% elif loop.index == 2 %}bg-gray-400
+                                        {% else %}bg-orange-600{% endif %}">
+                                        {{ loop.index }}
+                                    </div>
+                                {% else %}
+                                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold">
+                                        {{ loop.index }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <img src="{{ user.avatar_url or '/static/images/default-avatar.png' }}" 
+                                 alt="{{ user.username }}" 
+                                 class="w-12 h-12 rounded-full mr-4">
+                            
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">{{ user.username }}</h3>
+                                <p class="text-sm text-gray-600">{{ user.custom_forum_title or 'Estudiante' }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-purple-600">{{ user.reputation_score or 0 }}</div>
+                            <div class="text-sm text-gray-500">puntos de reputación</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Helpful Answers Leaderboard -->
+        <div id="helpful-leaderboard" class="leaderboard-content hidden">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-green-500 to-teal-600">
+                    <h2 class="text-2xl font-bold text-white">💚 Respuestas Más Útiles</h2>
+                    <p class="text-green-100">Los usuarios que más ayudan a la comunidad</p>
+                </div>
+                
+                <div class="divide-y divide-gray-200">
+                    {% for user in helpful_leaders %}
+                    <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 mr-4">
+                                {% if loop.index <= 3 %}
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold
+                                        {% if loop.index == 1 %}bg-yellow-500
+                                        {% elif loop.index == 2 %}bg-gray-400
+                                        {% else %}bg-orange-600{% endif %}">
+                                        {{ loop.index }}
+                                    </div>
+                                {% else %}
+                                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold">
+                                        {{ loop.index }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <img src="{{ user.avatar_url or '/static/images/default-avatar.png' }}" 
+                                 alt="{{ user.username }}" 
+                                 class="w-12 h-12 rounded-full mr-4">
+                            
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">{{ user.username }}</h3>
+                                <p class="text-sm text-gray-600">{{ user.custom_forum_title or 'Estudiante' }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-green-600">{{ user.helpful_answers_count or 0 }}</div>
+                            <div class="text-sm text-gray-500">respuestas útiles</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Crolars Leaderboard -->
+        <div id="crolars-leaderboard" class="leaderboard-content hidden">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-yellow-500 to-orange-600">
+                    <h2 class="text-2xl font-bold text-white">🪙 Top Crolars</h2>
+                    <p class="text-yellow-100">Los usuarios con más Crolars ganados</p>
+                </div>
+                
+                <div class="divide-y divide-gray-200">
+                    {% for user in crolars_leaders %}
+                    <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 mr-4">
+                                {% if loop.index <= 3 %}
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold
+                                        {% if loop.index == 1 %}bg-yellow-500
+                                        {% elif loop.index == 2 %}bg-gray-400
+                                        {% else %}bg-orange-600{% endif %}">
+                                        {{ loop.index }}
+                                    </div>
+                                {% else %}
+                                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold">
+                                        {{ loop.index }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <img src="{{ user.avatar_url or '/static/images/default-avatar.png' }}" 
+                                 alt="{{ user.username }}" 
+                                 class="w-12 h-12 rounded-full mr-4">
+                            
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">{{ user.username }}</h3>
+                                <p class="text-sm text-gray-600">{{ user.custom_forum_title or 'Estudiante' }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-yellow-600">{{ user.total_crolars_earned or 0 }}</div>
+                            <div class="text-sm text-gray-500">Crolars ganados</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- My Position -->
+        {% if current_user.is_authenticated %}
+        <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Mi Posición</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600">{{ my_level_rank or 'N/A' }}</div>
+                    <div class="text-sm text-gray-600">Posición por Nivel</div>
+                </div>
+                <div class="text-center p-4 bg-purple-50 rounded-lg">
+                    <div class="text-2xl font-bold text-purple-600">{{ my_reputation_rank or 'N/A' }}</div>
+                    <div class="text-sm text-gray-600">Posición por Reputación</div>
+                </div>
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600">{{ my_helpful_rank or 'N/A' }}</div>
+                    <div class="text-sm text-gray-600">Posición por Utilidad</div>
+                </div>
+                <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                    <div class="text-2xl font-bold text-yellow-600">{{ my_crolars_rank or 'N/A' }}</div>
+                    <div class="text-sm text-gray-600">Posición por Crolars</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function showLeaderboard(type) {
+    // Hide all leaderboards
+    document.querySelectorAll('.leaderboard-content').forEach(el => {
+        el.classList.add('hidden');
+    });
+    
+    // Remove active class from all tabs
+    document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+        tab.classList.remove('active', 'border-blue-500', 'text-blue-600');
+        tab.classList.add('border-transparent', 'text-gray-500');
+    });
+    
+    // Show selected leaderboard
+    document.getElementById(type + '-leaderboard').classList.remove('hidden');
+    
+    // Add active class to selected tab
+    const activeTab = document.querySelector(`[data-tab="${type}"]`);
+    activeTab.classList.add('active', 'border-blue-500', 'text-blue-600');
+    activeTab.classList.remove('border-transparent', 'text-gray-500');
+}
+</script>
+
+<style>
+.leaderboard-tab.active {
+    border-color: #3B82F6;
+    color: #2563EB;
+}
+</style>
+{% endblock %}
