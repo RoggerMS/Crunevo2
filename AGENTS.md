@@ -1306,4 +1306,3 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Merged Alembic heads e1e5b8d0853a and migrate_personal_space_data into 5007130f0224 to resolve multiple head revisions.
 - Added table existence checks and error handling in personal space routes to avoid 500 errors when tables are missing. (PR personal-space-table-check)
 - Fixed /personal-space/ 500 by correcting template links, removing invalid macros and adding dashboard view test. (PR personal-space-dashboard-fix)
-- Restored Personal Space dashboard styling by linking the stylesheet through the correct head block and adding ARIA labels to icon-only buttons. (PR personal-space-dashboard-style-fix)
