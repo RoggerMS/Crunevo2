@@ -75,10 +75,10 @@
                 {{ render_stat_card(
                     title='Tareas Completadas',
                     value=analytics_data.tasks_completed if analytics_data else 24,
-                    icon='bi-check-circle',
+                    icon='check-circle',
                     color='success',
-                    trend='+12%',
-                    trend_positive=true
+                    trend='up',
+                    trend_value='+12%'
                 ) }}
             </div>
             
@@ -86,10 +86,10 @@
                 {{ render_stat_card(
                     title='Objetivos Alcanzados',
                     value=analytics_data.goals_achieved if analytics_data else 3,
-                    icon='bi-target',
+                    icon='target',
                     color='primary',
-                    trend='+25%',
-                    trend_positive=true
+                    trend='up',
+                    trend_value='+25%'
                 ) }}
             </div>
             
@@ -97,10 +97,10 @@
                 {{ render_stat_card(
                     title='Tiempo Productivo',
                     value=(analytics_data.productive_hours if analytics_data else 32) ~ 'h',
-                    icon='bi-clock',
+                    icon='clock',
                     color='info',
-                    trend='+8%',
-                    trend_positive=true
+                    trend='up',
+                    trend_value='+8%'
                 ) }}
             </div>
             
@@ -108,10 +108,10 @@
                 {{ render_stat_card(
                     title='Puntuación de Foco',
                     value=(analytics_data.focus_score if analytics_data else 85) ~ '%',
-                    icon='bi-bullseye',
+                    icon='bullseye',
                     color='warning',
-                    trend='-3%',
-                    trend_positive=false
+                    trend='down',
+                    trend_value='-3%'
                 ) }}
             </div>
         </div>

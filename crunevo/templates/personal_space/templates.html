@@ -622,35 +622,34 @@
                 {{ render_stat_card(
                     icon='collection',
                     value=total_templates or 0,
-                    label='Plantillas disponibles',
-                    trend='+' + (template_growth or '0') + '%',
-                    trend_positive=true,
+                    title='Plantillas disponibles',
+                    trend='up',
+                    trend_value='+' + (template_growth or '0') + '%',
                     color='primary'
                 ) }}
                 
                 {{ render_stat_card(
                     icon='heart',
                     value=user_favorites or 0,
-                    label='Mis favoritas',
-                    trend='',
+                    title='Mis favoritas',
                     color='success'
                 ) }}
                 
                 {{ render_stat_card(
                     icon='person-plus',
                     value=user_templates or 0,
-                    label='Mis plantillas',
-                    trend='+' + (user_template_growth or '0') + '%',
-                    trend_positive=true,
+                    title='Mis plantillas',
+                    trend='up',
+                    trend_value='+' + (user_template_growth or '0') + '%',
                     color='warning'
                 ) }}
                 
                 {{ render_stat_card(
                     icon='download',
                     value=template_downloads or 0,
-                    label='Descargas totales',
-                    trend='+' + (download_growth or '0') + '%',
-                    trend_positive=true,
+                    title='Descargas totales',
+                    trend='up',
+                    trend_value='+' + (download_growth or '0') + '%',
                     color='info'
                 ) }}
             </div>

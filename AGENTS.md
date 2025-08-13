@@ -1308,3 +1308,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Fixed /personal-space/ 500 by correcting template links, removing invalid macros and adding dashboard view test. (PR personal-space-dashboard-fix)
 - Fixed Personal Space dashboard loading unstyled by linking personal-space-optimized.css and adding aria labels to icon buttons. (PR personal-space-dashboard-style-fix)
 - Enabled Personal Space dashboard interactions by rendering modals and wiring quick notes to blocks API. (PR personal-space-dashboard-js)
+- Replaced deprecated `trend_positive` argument with `trend`/`trend_value` in personal space stat cards to fix 500 error on `/personal-space/`. (PR personal-space-trend-arg-fix)
