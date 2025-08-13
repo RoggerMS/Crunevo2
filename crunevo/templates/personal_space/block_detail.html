@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Block Detail{% endblock %}
+
+{% block content %}
+<div id="block-detail" data-block-id="{{ block.id }}" data-block-type="{{ block.type }}">
+    <!-- The appropriate editor component will be loaded via JavaScript -->
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Block detail loaded for', '{{ block.id }}');
+});
+</script>
+{% endblock %}

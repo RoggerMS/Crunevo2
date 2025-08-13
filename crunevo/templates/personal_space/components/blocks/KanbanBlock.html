@@ -935,7 +935,7 @@ window.KanbanBlock = {
     
     // Update card position on server
     updateCardPosition: async function(cardId, columnId, boardId) {
-        const response = await fetch(`/personal_space/kanban/${boardId}/cards/${cardId}/move`, {
+        const response = await fetch(`/api/personal-space/kanban/${boardId}/cards/${cardId}/move`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -961,7 +961,7 @@ window.KanbanBlock = {
 
 // Global functions for template usage
 window.openKanbanBoard = function(boardId) {
-    window.location.href = `/personal_space/kanban/${boardId}`;
+    window.location.href = `/personal-space/kanban/${boardId}`;
 };
 
 window.editKanban = function(boardId) {

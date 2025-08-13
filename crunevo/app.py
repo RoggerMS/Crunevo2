@@ -445,7 +445,7 @@ def create_app():
     from .routes.story_routes import stories_bp
     from .routes.developer_routes import developer_bp
     from .routes.backpack_routes import backpack_bp
-    from .routes.personal_space_routes import personal_space_bp
+    from .routes.personal_space_routes import personal_space_bp, personal_space_api_bp
 
     from .api import init_api as init_api_blueprints
 
@@ -596,6 +596,7 @@ def create_app():
         app.register_blueprint(dashboard_bp)
         app.register_blueprint(settings_bp)
         app.register_blueprint(personal_space_bp)
+        app.register_blueprint(personal_space_api_bp)
         init_api_blueprints(app)
 
         from .routes.carrera_routes import carrera_bp

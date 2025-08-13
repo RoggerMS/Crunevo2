@@ -880,7 +880,7 @@ window.PersonalSpaceWorkspace = {
     // Create new block
     createBlock: async function(blockData) {
         try {
-            const response = await fetch('/personal_space/blocks', {
+            const response = await fetch('/api/personal-space/blocks', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -976,7 +976,7 @@ window.PersonalSpaceWorkspace = {
     // Load workspace data
     loadWorkspaceData: async function() {
         try {
-            const response = await fetch('/personal_space/workspace/data');
+            const response = await fetch('/api/personal-space/blocks');
             if (response.ok) {
                 const data = await response.json();
                 this.renderWorkspaceBlocks(data.blocks);
@@ -1073,7 +1073,7 @@ window.PersonalSpaceWorkspace = {
         this.setSaveStatus('saving');
         
         try {
-            const response = await fetch('/personal_space/workspace/save', {
+            const response = await fetch('/api/personal-space/blocks/reorder', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

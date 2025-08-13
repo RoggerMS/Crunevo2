@@ -766,7 +766,7 @@ window.ObjectiveBlock = {
     // Update objective progress
     updateObjectiveProgress: async function(objectiveId, progress) {
         try {
-            const response = await fetch(`/personal_space/objectives/${objectiveId}/progress`, {
+            const response = await fetch(`/api/personal-space/objectives/${objectiveId}/progress`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -845,11 +845,11 @@ window.ObjectiveBlock = {
 
 // Global functions for template usage
 window.openObjectiveDetails = function(objectiveId) {
-    window.location.href = `/personal_space/objectives/${objectiveId}`;
+    window.location.href = `/personal-space/objectives/${objectiveId}`;
 };
 
 window.editObjective = function(objectiveId) {
-    window.location.href = `/personal_space/objectives/${objectiveId}/edit`;
+    window.location.href = `/personal-space/objectives/${objectiveId}/edit`;
 };
 
 window.updateProgress = function(objectiveId) {
@@ -864,7 +864,7 @@ window.addObjective = async function(event) {
     const data = Object.fromEntries(formData.entries());
     
     try {
-        const response = await fetch('/personal_space/objectives', {
+        const response = await fetch('/api/personal-space/objectives', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

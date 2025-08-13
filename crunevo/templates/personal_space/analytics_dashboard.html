@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% from 'personal_space/components/widgets/AnalyticsDashboard.html' import render_analytics_dashboard %}
+{% block title %}Personal Space Analytics{% endblock %}
+
+{% block content %}
+{{ render_analytics_dashboard() }}
+{% endblock %}

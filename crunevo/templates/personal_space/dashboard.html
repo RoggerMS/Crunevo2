@@ -737,7 +737,7 @@ window.PersonalSpaceDashboard = {
     // Load dashboard data
     loadDashboardData: async function() {
         try {
-            const response = await fetch('/personal_space/dashboard/data');
+            const response = await fetch('/api/personal-space/analytics/productivity');
             if (response.ok) {
                 const data = await response.json();
                 this.updateDashboardStats(data.stats);
@@ -803,7 +803,7 @@ window.PersonalSpaceDashboard = {
         if (!content) return;
         
         try {
-            const response = await fetch('/personal_space/quick_notes', {
+            const response = await fetch('/api/personal-space/quick_notes', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -834,7 +834,7 @@ window.PersonalSpaceDashboard = {
     // Load recent quick notes
     loadRecentQuickNotes: async function() {
         try {
-            const response = await fetch('/personal_space/quick_notes/recent');
+            const response = await fetch('/api/personal-space/quick_notes/recent');
             if (response.ok) {
                 const notes = await response.json();
                 this.renderRecentQuickNotes(notes);
@@ -911,7 +911,7 @@ window.refreshTodaysFocus = function() {
 };
 
 window.viewWeeklyDetails = function() {
-    window.location.href = '/personal_space/analytics?period=week';
+    window.location.href = '/personal-space/analytics?period=week';
 };
 
 window.toggleAnalytics = function() {

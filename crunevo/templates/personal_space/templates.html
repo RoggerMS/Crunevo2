@@ -943,7 +943,7 @@ window.PersonalSpaceTemplates = {
                 ...this.currentFilters
             });
             
-            const response = await fetch(`/personal_space/templates/data?${params}`);
+            const response = await fetch(`/api/personal-space/templates?${params}`);
             if (response.ok) {
                 const data = await response.json();
                 this.renderTemplates(data.templates);
@@ -1126,7 +1126,7 @@ window.PersonalSpaceTemplates = {
     // Use template
     useTemplate: async function(templateId) {
         try {
-            const response = await fetch(`/personal_space/templates/${templateId}/use`, {
+            const response = await fetch(`/api/personal-space/templates/${templateId}/use`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1140,7 +1140,7 @@ window.PersonalSpaceTemplates = {
                 
                 // Redirect to workspace or dashboard
                 setTimeout(() => {
-                    window.location.href = result.redirect_url || '/personal_space/workspace';
+                    window.location.href = result.redirect_url || '/personal-space/workspace';
                 }, 1000);
             } else {
                 throw new Error('Failed to use template');
@@ -1154,7 +1154,7 @@ window.PersonalSpaceTemplates = {
     // Preview template
     previewTemplate: async function(templateId) {
         try {
-            const response = await fetch(`/personal_space/templates/${templateId}`);
+            const response = await fetch(`/api/personal-space/templates/${templateId}`);
             if (response.ok) {
                 const template = await response.json();
                 this.showTemplatePreview(template);
@@ -1174,7 +1174,7 @@ window.PersonalSpaceTemplates = {
     // Toggle favorite
     toggleFavorite: async function(templateId) {
         try {
-            const response = await fetch(`/personal_space/templates/${templateId}/favorite`, {
+            const response = await fetch(`/api/personal-space/templates/${templateId}/favorite`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

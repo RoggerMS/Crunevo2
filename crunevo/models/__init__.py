@@ -45,6 +45,9 @@ from .group_mission import GroupMission, GroupMissionParticipant  # noqa: F401
 from .user_block import UserBlock  # noqa: F401
 from .personal_block import PersonalBlock  # noqa: F401
 from .block import Block  # noqa: F401
+from .personal_space_block import PersonalSpaceBlock  # noqa: F401
+from .personal_space_template import PersonalSpaceTemplate  # noqa: F401
+from .personal_space_analytics_event import PersonalSpaceAnalyticsEvent  # noqa: F401
 from .league import AcademicTeam, TeamMember, LeagueMonth, TeamAction  # noqa: F401
 from .knowledge_backpack import KnowledgeBackpack  # noqa: F401
 from .knowledge_backpack import LearningEntry  # noqa: F401
