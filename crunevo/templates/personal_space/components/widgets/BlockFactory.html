@@ -167,7 +167,7 @@
                     name='description',
                     label='Descripción (opcional)',
                     placeholder='Describe el propósito de este bloque...',
-                    rows=3
+                    attrs={'rows': 3}
                 ) }}
                 
                 <div class="row">
@@ -232,22 +232,22 @@
                         ) }}
                     </div>
                     <div class="col-md-4">
-                        {{ render_form_field(
-                            type='number',
-                            name='position_x',
-                            label='Posición X',
-                            value=0,
-                            min=0
-                        ) }}
+                          {{ render_form_field(
+                              type='number',
+                              name='position_x',
+                              label='Posición X',
+                              value=0,
+                              attrs={'min': 0}
+                          ) }}
                     </div>
                     <div class="col-md-4">
-                        {{ render_form_field(
-                            type='number',
-                            name='position_y',
-                            label='Posición Y',
-                            value=0,
-                            min=0
-                        ) }}
+                          {{ render_form_field(
+                              type='number',
+                              name='position_y',
+                              label='Posición Y',
+                              value=0,
+                              attrs={'min': 0}
+                          ) }}
                     </div>
                 </div>
             </div>

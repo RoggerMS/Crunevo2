@@ -1317,3 +1317,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Corrected forum gamification link to use existing endpoint and added sample insights template global to prevent Personal Space dashboard errors. (PR forum-personal-space-fixes)
 - Updated forum gamification CTA to point to dashboard instead of init API to avoid 405 errors on `/api/gamification/init`.
 - Enhanced `render_form_field` macro to accept `name` and extra attributes, fixing Personal Space form rendering.
+- Replaced unsupported `**attrs` with an `attrs` dict in `render_form_field` and updated BlockFactory calls to resolve Jinja syntax errors on `/personal-space/`. (PR personal-space-form-attrs-fix)

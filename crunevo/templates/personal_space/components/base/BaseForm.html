@@ -1,5 +1,5 @@
 <!-- BaseForm Component - Reusable form foundation -->
-{% macro render_form_field(name, label, type='text', placeholder='', required=false, help_text='', icon='', validation_rules={}, value='', options=None, **attrs) %}
+{% macro render_form_field(name, label, type='text', placeholder='', required=false, help_text='', icon='', validation_rules=None, value='', options=None, attrs=None) %}
 <div class="form-group mb-3">
     {% if label %}
     <label for="{{ name }}" class="form-label fw-medium">
@@ -22,10 +22,10 @@
             name="{{ name }}"
             placeholder="{{ placeholder }}"
             {{ 'required' if required else '' }}
-            {% for rule, val in validation_rules.items() %}
+            {% for rule, val in (validation_rules or {}).items() %}
             {{ rule }}="{{ val }}"
             {% endfor %}
-            {% for attr, val in attrs.items() %}
+            {% for attr, val in (attrs or {}).items() %}
             {{ attr }}="{{ val }}"
             {% endfor %}
         >{{ value }}</textarea>
@@ -35,7 +35,7 @@
             id="{{ name }}"
             name="{{ name }}"
             {{ 'required' if required else '' }}
-            {% for attr, val in attrs.items() %}
+            {% for attr, val in (attrs or {}).items() %}
             {{ attr }}="{{ val }}"
             {% endfor %}
         >
@@ -54,10 +54,10 @@
             id="{{ name }}"
             name="{{ name }}"
             {{ 'required' if required else '' }}
-            {% for rule, val in validation_rules.items() %}
+            {% for rule, val in (validation_rules or {}).items() %}
             {{ rule }}="{{ val }}"
             {% endfor %}
-            {% for attr, val in attrs.items() %}
+            {% for attr, val in (attrs or {}).items() %}
             {{ attr }}="{{ val }}"
             {% endfor %}
         >
@@ -69,7 +69,7 @@
                 id="{{ name }}"
                 name="{{ name }}"
                 {{ 'required' if required else '' }}
-                {% for attr, val in attrs.items() %}
+                {% for attr, val in (attrs or {}).items() %}
                 {{ attr }}="{{ val }}"
                 {% endfor %}
             >
@@ -90,10 +90,10 @@
             placeholder="{{ placeholder }}"
             value="{{ value }}"
             {{ 'required' if required else '' }}
-            {% for rule, val in validation_rules.items() %}
+            {% for rule, val in (validation_rules or {}).items() %}
             {{ rule }}="{{ val }}"
             {% endfor %}
-            {% for attr, val in attrs.items() %}
+            {% for attr, val in (attrs or {}).items() %}
             {{ attr }}="{{ val }}"
             {% endfor %}
         >
