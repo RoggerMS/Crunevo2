@@ -33,7 +33,7 @@ def upgrade():
         sa.Column("content", sa.Text(), nullable=True),
         sa.Column(
             "metadata",
-            postgresql.JSONB(astext_type=sa.Text()),
+            sa.JSON(),
             nullable=True,
             server_default=sa.text("'{}'"),
         ),
@@ -112,7 +112,7 @@ def upgrade():
         sa.Column("name", sa.String(length=255), nullable=False),
         sa.Column("description", sa.Text(), nullable=True),
         sa.Column(
-            "template_data", postgresql.JSONB(astext_type=sa.Text()), nullable=False
+            "template_data", sa.JSON(), nullable=False
         ),
         sa.Column("category", sa.String(length=100), nullable=True),
         sa.Column(
@@ -170,7 +170,7 @@ def upgrade():
         sa.Column("event_type", sa.String(length=100), nullable=False),
         sa.Column(
             "event_data",
-            postgresql.JSONB(astext_type=sa.Text()),
+            sa.JSON(),
             nullable=True,
             server_default=sa.text("'{}'"),
         ),
