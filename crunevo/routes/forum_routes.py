@@ -790,7 +790,7 @@ def forum_stats():
 
 @forum_bp.route("/foro/dashboard")
 @login_required
-def gamification_dashboard():
+def dashboard():
     """User gamification dashboard"""
     # Update user's reputation score
     GamificationService.calculate_reputation(current_user)
