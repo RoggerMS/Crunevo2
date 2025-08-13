@@ -78,6 +78,12 @@ def dashboard():
         stats=stats,
         recent_blocks=recent_blocks,
         moment=moment_stub,
+        completed_tasks_today=0,
+        task_completion_trend=stats.tasks_trend,
+        productivity_score=stats.productivity_score,
+        productivity_trend=stats.productivity_trend,
+        focus_score=0,
+        focus_trend=0,
     )
 
 
