@@ -1,0 +1,1447 @@
+<!-- WorkspaceLayout Component - Dynamic drag-and-drop workspace with grid system -->
+{% from 'personal_space/components/base/BaseCard.html' import render_base_card %}
+
+<!-- Main Workspace Layout -->
+{% macro render_workspace_layout(workspace, blocks=none, editable=true) %}
+<div class="workspace-layout" 
+     id="workspace-{{ workspace.id }}" 
+     data-workspace-id="{{ workspace.id }}"
+     data-editable="{{ editable|lower }}">
+    
+    <!-- Workspace Header -->
+    <div class="workspace-header mb-4">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="workspace-info">
+                <h2 class="workspace-title mb-1">{{ workspace.title or 'Mi Workspace' }}</h2>
+                {% if workspace.description %}
+                <p class="workspace-description text-muted mb-0">{{ workspace.description }}</p>
+                {% endif %}
+            </div>
+            
+            {% if editable %}
+            <div class="workspace-actions">
+                <div class="btn-group" role="group">
+                    <button type="button" 
+                            class="btn btn-outline-primary" 
+                            onclick="toggleEditMode()" 
+                            id="edit-mode-toggle">
+                        <i class="bi bi-pencil me-1"></i>
+                        <span>Editar</span>
+                    </button>
+                    
+                    <button type="button" 
+                            class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" 
+                            data-bs-toggle="dropdown">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="addNewBlock()">Agregar bloque</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="changeGridSize()">Cambiar cuadrícula</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="resetLayout()">Restablecer diseño</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="saveAsTemplate()">Guardar como plantilla</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="exportWorkspace()">Exportar workspace</a></li>
+                    </ul>
+                </div>
+                
+                <button type="button" 
+                        class="btn btn-outline-success ms-2" 
+                        onclick="saveWorkspace()" 
+                        id="save-workspace-btn" 
+                        style="display: none;">
+                    <i class="bi bi-check-lg me-1"></i>
+                    Guardar
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Grid Controls -->
+    {% if editable %}
+    <div class="grid-controls mb-3" id="grid-controls" style="display: none;">
+        <div class="d-flex align-items-center gap-3">
+            <div class="grid-size-control">
+                <label class="form-label mb-0 me-2">Tamaño de cuadrícula:</label>
+                <select class="form-select form-select-sm" 
+                        id="grid-size-select" 
+                        onchange="changeGridSize(this.value)" 
+                        style="width: auto;">
+                    <option value="small">Pequeña (12 columnas)</option>
+                    <option value="medium" selected>Mediana (8 columnas)</option>
+                    <option value="large">Grande (6 columnas)</option>
+                    <option value="xlarge">Extra grande (4 columnas)</option>
+                </select>
+            </div>
+            
+            <div class="snap-control">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" 
+                           type="checkbox" 
+                           id="snap-to-grid" 
+                           checked 
+                           onchange="toggleSnapToGrid(this.checked)">
+                    <label class="form-check-label" for="snap-to-grid">
+                        Ajustar a cuadrícula
+                    </label>
+                </div>
+            </div>
+            
+            <div class="show-grid-control">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" 
+                           type="checkbox" 
+                           id="show-grid" 
+                           checked 
+                           onchange="toggleGridVisibility(this.checked)">
+                    <label class="form-check-label" for="show-grid">
+                        Mostrar cuadrícula
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Workspace Grid -->
+    <div class="workspace-grid" 
+         id="workspace-grid" 
+         data-grid-size="medium" 
+         data-snap-enabled="true" 
+         data-grid-visible="true">
+        
+        <!-- Grid Background -->
+        <div class="grid-background" id="grid-background"></div>
+        
+        <!-- Blocks Container -->
+        <div class="blocks-container" id="blocks-container">
+            {% if blocks %}
+                {% for block in blocks %}
+                {{ render_workspace_block(block, editable) }}
+                {% endfor %}
+            {% endif %}
+        </div>
+        
+        <!-- Drop Zones (visible during drag) -->
+        <div class="drop-zones" id="drop-zones" style="display: none;"></div>
+    </div>
+    
+    <!-- Empty State -->
+    {% if not blocks %}
+    <div class="workspace-empty-state" id="workspace-empty-state">
+        <div class="empty-state-content">
+            <div class="empty-icon">
+                <i class="bi bi-grid-3x3-gap"></i>
+            </div>
+            <h4 class="empty-title">Tu workspace está vacío</h4>
+            <p class="empty-description">
+                Arrastra bloques aquí desde la barra lateral o crea nuevos bloques para comenzar a organizar tu espacio de trabajo.
+            </p>
+            {% if editable %}
+            <button type="button" 
+                    class="btn btn-primary" 
+                    onclick="addNewBlock()">
+                <i class="bi bi-plus-lg me-1"></i>
+                Agregar primer bloque
+            </button>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+<!-- Workspace Block Wrapper -->
+{% macro render_workspace_block(block, editable=true) %}
+<div class="workspace-block" 
+     id="workspace-block-{{ block.id }}"
+     data-block-id="{{ block.id }}"
+     data-block-type="{{ block.type }}"
+     data-grid-x="{{ block.metadata.get('grid_position', {}).get('x', 0) }}"
+     data-grid-y="{{ block.metadata.get('grid_position', {}).get('y', 0) }}"
+     data-grid-width="{{ block.metadata.get('grid_position', {}).get('width', 2) }}"
+     data-grid-height="{{ block.metadata.get('grid_position', {}).get('height', 2) }}"
+     style="
+         grid-column: {{ block.metadata.get('grid_position', {}).get('x', 1) }} / span {{ block.metadata.get('grid_position', {}).get('width', 2) }};
+         grid-row: {{ block.metadata.get('grid_position', {}).get('y', 1) }} / span {{ block.metadata.get('grid_position', {}).get('height', 2) }};
+     ">
+    
+    <!-- Block Controls (visible in edit mode) -->
+    {% if editable %}
+    <div class="block-controls" style="display: none;">
+        <div class="control-handle drag-handle" title="Mover">
+            <i class="bi bi-arrows-move"></i>
+        </div>
+        <div class="control-handle resize-handle" title="Redimensionar">
+            <i class="bi bi-arrows-angle-expand"></i>
+        </div>
+        <div class="control-actions">
+            <button type="button" 
+                    class="btn btn-sm btn-outline-primary" 
+                    onclick="editBlockSettings('{{ block.id }}')" 
+                    title="Configurar">
+                <i class="bi bi-gear"></i>
+            </button>
+            <button type="button" 
+                    class="btn btn-sm btn-outline-danger" 
+                    onclick="removeBlockFromWorkspace('{{ block.id }}')" 
+                    title="Quitar">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Block Content -->
+    <div class="block-content">
+        {% if block.type == 'nota' %}
+            {% from 'personal_space/components/blocks/NoteBlock.html' import render_note_block %}
+            {{ render_note_block(block, editable=false, draggable=false) }}
+        {% elif block.type == 'tarea' %}
+            {% from 'personal_space/components/blocks/TaskBlock.html' import render_task_block %}
+            {{ render_task_block(block, editable=false, draggable=false) }}
+        {% elif block.type == 'objetivo' %}
+            {% from 'personal_space/components/blocks/ObjectiveBlock.html' import render_objective_block %}
+            {{ render_objective_block(block, editable=false, draggable=false) }}
+        {% elif block.type == 'kanban' %}
+            {% from 'personal_space/components/blocks/KanbanBlock.html' import render_kanban_block %}
+            {{ render_kanban_block(block, editable=false, draggable=false) }}
+        {% else %}
+            {% from 'personal_space/components/base/BaseBlock.html' import render_base_block %}
+            {% call render_base_block(
+                block_id='workspace-content-' + block.id|string,
+                block_type=block.type,
+                title=block.title,
+                editable=false,
+                draggable=false,
+                status=block.status
+            ) %}
+                <p>{{ block.content or 'Sin contenido' }}</p>
+            {% endcall %}
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
+
+<!-- Block Sidebar for adding blocks -->
+{% macro render_block_sidebar(available_blocks=none) %}
+<div class="block-sidebar" id="block-sidebar">
+    <div class="sidebar-header">
+        <h5 class="sidebar-title">
+            <i class="bi bi-collection me-2"></i>
+            Bloques Disponibles
+        </h5>
+        <button type="button" 
+                class="btn-close" 
+                onclick="toggleBlockSidebar()" 
+                aria-label="Close"></button>
+    </div>
+    
+    <div class="sidebar-content">
+        <!-- Search -->
+        <div class="sidebar-search mb-3">
+            <input type="text" 
+                   class="form-control" 
+                   placeholder="Buscar bloques..." 
+                   id="block-search" 
+                   oninput="filterBlocks(this.value)">
+        </div>
+        
+        <!-- Block Categories -->
+        <div class="block-categories">
+            <!-- Recent Blocks -->
+            {% if available_blocks %}
+            <div class="category-section">
+                <h6 class="category-title">
+                    <i class="bi bi-clock-history me-1"></i>
+                    Bloques Recientes
+                </h6>
+                <div class="blocks-list">
+                    {% for block in available_blocks[:5] %}
+                    <div class="sidebar-block" 
+                         draggable="true" 
+                         data-block-id="{{ block.id }}"
+                         data-block-type="{{ block.type }}"
+                         ondragstart="startBlockDrag(event)">
+                        <div class="block-icon">
+                            <i class="{{ {
+                                'nota': 'bi-file-text',
+                                'tarea': 'bi-check-square',
+                                'objetivo': 'bi-target',
+                                'kanban': 'bi-kanban'
+                            }.get(block.type, 'bi-square') }}"></i>
+                        </div>
+                        <div class="block-info">
+                            <div class="block-title">{{ block.title }}</div>
+                            <div class="block-type">{{ block.type.title() }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Create New -->
+            <div class="category-section">
+                <h6 class="category-title">
+                    <i class="bi bi-plus-circle me-1"></i>
+                    Crear Nuevo
+                </h6>
+                <div class="blocks-list">
+                    <div class="sidebar-block create-block" onclick="createNewBlock('nota')">
+                        <div class="block-icon">
+                            <i class="bi bi-file-text"></i>
+                        </div>
+                        <div class="block-info">
+                            <div class="block-title">Nueva Nota</div>
+                            <div class="block-type">Nota</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-block create-block" onclick="createNewBlock('tarea')">
+                        <div class="block-icon">
+                            <i class="bi bi-check-square"></i>
+                        </div>
+                        <div class="block-info">
+                            <div class="block-title">Nueva Tarea</div>
+                            <div class="block-type">Tarea</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-block create-block" onclick="createNewBlock('objetivo')">
+                        <div class="block-icon">
+                            <i class="bi bi-target"></i>
+                        </div>
+                        <div class="block-info">
+                            <div class="block-title">Nuevo Objetivo</div>
+                            <div class="block-type">Objetivo</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-block create-block" onclick="createNewBlock('kanban')">
+                        <div class="block-icon">
+                            <i class="bi bi-kanban"></i>
+                        </div>
+                        <div class="block-info">
+                            <div class="block-title">Nuevo Kanban</div>
+                            <div class="block-type">Kanban</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleBlockSidebar()"></div>
+{% endmacro %}
+
+<style>
+/* Workspace Layout Styles */
+.workspace-layout {
+    min-height: 100vh;
+    background: #f8fafc;
+    padding: 1.5rem;
+}
+
+/* Workspace Header */
+.workspace-header {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.workspace-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a202c;
+}
+
+.workspace-description {
+    font-size: 1rem;
+    color: #718096;
+}
+
+/* Grid Controls */
+.grid-controls {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.grid-controls .form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.grid-controls .form-select {
+    font-size: 0.875rem;
+}
+
+.grid-controls .form-check-label {
+    font-size: 0.875rem;
+    color: #4a5568;
+}
+
+/* Workspace Grid */
+.workspace-grid {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    min-height: 600px;
+    overflow: hidden;
+}
+
+/* Grid Background */
+.grid-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.workspace-grid[data-grid-visible="true"] .grid-background {
+    background-image: 
+        linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+        linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+}
+
+.workspace-grid[data-grid-size="small"] .grid-background {
+    background-size: calc(100% / 12) calc(100% / 12);
+}
+
+.workspace-grid[data-grid-size="medium"] .grid-background {
+    background-size: calc(100% / 8) calc(100% / 8);
+}
+
+.workspace-grid[data-grid-size="large"] .grid-background {
+    background-size: calc(100% / 6) calc(100% / 6);
+}
+
+.workspace-grid[data-grid-size="xlarge"] .grid-background {
+    background-size: calc(100% / 4) calc(100% / 4);
+}
+
+/* Blocks Container */
+.blocks-container {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+    min-height: 580px;
+}
+
+.workspace-grid[data-grid-size="small"] .blocks-container {
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+}
+
+.workspace-grid[data-grid-size="medium"] .blocks-container {
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+}
+
+.workspace-grid[data-grid-size="large"] .blocks-container {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+}
+
+.workspace-grid[data-grid-size="xlarge"] .blocks-container {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+}
+
+/* Workspace Blocks */
+.workspace-block {
+    position: relative;
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.workspace-block:hover {
+    border-color: #3182ce;
+    box-shadow: 0 4px 20px rgba(49, 130, 206, 0.15);
+    transform: translateY(-2px);
+}
+
+.workspace-block.edit-mode {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.workspace-block.dragging {
+    opacity: 0.7;
+    transform: rotate(2deg) scale(1.05);
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Block Controls */
+.block-controls {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    background: linear-gradient(135deg, #3182ce 0%, #2c5aa0 100%);
+    color: white;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: between;
+    z-index: 10;
+    border-radius: 10px 10px 0 0;
+}
+
+.control-handle {
+    cursor: move;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    margin-right: 0.5rem;
+}
+
+.control-handle:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.resize-handle {
+    cursor: nw-resize;
+}
+
+.control-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 0.25rem;
+}
+
+.control-actions .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.control-actions .btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Block Content */
+.block-content {
+    height: 100%;
+    overflow: hidden;
+}
+
+.edit-mode .block-content {
+    margin-top: 2.5rem;
+    height: calc(100% - 2.5rem);
+}
+
+/* Drop Zones */
+.drop-zones {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.drop-zone {
+    position: absolute;
+    background: rgba(49, 130, 206, 0.1);
+    border: 2px dashed #3182ce;
+    border-radius: 8px;
+    pointer-events: all;
+}
+
+.drop-zone.active {
+    background: rgba(49, 130, 206, 0.2);
+    border-color: #2c5aa0;
+}
+
+/* Empty State */
+.workspace-empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    background: #ffffff;
+    border: 2px dashed #e2e8f0;
+    border-radius: 12px;
+    margin: 1rem;
+}
+
+.empty-state-content {
+    text-align: center;
+    max-width: 400px;
+    padding: 2rem;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+.empty-description {
+    font-size: 1rem;
+    color: #718096;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* Block Sidebar */
+.block-sidebar {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100vh;
+    background: #ffffff;
+    border-left: 1px solid #e2e8f0;
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
+    z-index: 1050;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+}
+
+.block-sidebar.open {
+    right: 0;
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: between;
+}
+
+.sidebar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+}
+
+.sidebar-content {
+    padding: 1.5rem;
+}
+
+.sidebar-search input {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.875rem;
+}
+
+.sidebar-search input:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+/* Block Categories */
+.category-section {
+    margin-bottom: 2rem;
+}
+
+.category-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.blocks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Sidebar Blocks */
+.sidebar-block {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: grab;
+    transition: all 0.2s ease;
+}
+
+.sidebar-block:hover {
+    background: #ffffff;
+    border-color: #3182ce;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(49, 130, 206, 0.15);
+}
+
+.sidebar-block:active {
+    cursor: grabbing;
+}
+
+.sidebar-block.create-block {
+    cursor: pointer;
+    border-style: dashed;
+}
+
+.sidebar-block.create-block:hover {
+    border-style: solid;
+}
+
+.block-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.block-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.block-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.block-type {
+    font-size: 0.75rem;
+    color: #718096;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .workspace-layout {
+        padding: 1rem;
+    }
+    
+    .workspace-header {
+        padding: 1rem;
+    }
+    
+    .workspace-title {
+        font-size: 1.5rem;
+    }
+    
+    .workspace-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .workspace-actions {
+        align-self: flex-start;
+    }
+    
+    .grid-controls .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .blocks-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+    
+    .workspace-block {
+        grid-column: 1 !important;
+        grid-row: auto !important;
+    }
+    
+    .block-sidebar {
+        width: 100vw;
+        right: -100vw;
+    }
+}
+
+/* Animation */
+@keyframes blockAdded {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.block-added {
+    animation: blockAdded 0.5s ease;
+}
+
+@keyframes gridResize {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.grid-resizing {
+    animation: gridResize 0.3s ease;
+}
+</style>
+
+<script>
+// Workspace Layout JavaScript
+window.WorkspaceLayout = {
+    isEditMode: false,
+    draggedBlock: null,
+    currentWorkspaceId: null,
+    gridSize: 'medium',
+    snapToGrid: true,
+    gridVisible: true,
+    
+    // Initialize workspace
+    init: function() {
+        this.currentWorkspaceId = document.querySelector('.workspace-layout')?.dataset.workspaceId;
+        this.bindEvents();
+        this.initDragAndDrop();
+        this.loadWorkspaceState();
+    },
+    
+    // Bind event listeners
+    bindEvents: function() {
+        // Edit mode toggle
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('[onclick*="toggleEditMode"]')) {
+                e.preventDefault();
+                this.toggleEditMode();
+            }
+        });
+        
+        // Auto-save on changes
+        document.addEventListener('input', this.debounce(() => {
+            if (this.isEditMode) {
+                this.autoSaveWorkspace();
+            }
+        }, 2000));
+    },
+    
+    // Initialize drag and drop
+    initDragAndDrop: function() {
+        // Block drag from sidebar
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.matches('.sidebar-block[draggable="true"]')) {
+                this.startBlockDrag(e);
+            } else if (e.target.closest('.workspace-block')) {
+                this.startWorkspaceBlockDrag(e);
+            }
+        });
+        
+        // Workspace drop events
+        const workspace = document.getElementById('workspace-grid');
+        if (workspace) {
+            workspace.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                this.onWorkspaceDragOver(e);
+            });
+            
+            workspace.addEventListener('drop', (e) => {
+                e.preventDefault();
+                this.onWorkspaceDrop(e);
+            });
+            
+            workspace.addEventListener('dragleave', (e) => {
+                this.onWorkspaceDragLeave(e);
+            });
+        }
+    },
+    
+    // Toggle edit mode
+    toggleEditMode: function() {
+        this.isEditMode = !this.isEditMode;
+        
+        const toggleBtn = document.getElementById('edit-mode-toggle');
+        const saveBtn = document.getElementById('save-workspace-btn');
+        const gridControls = document.getElementById('grid-controls');
+        const blocks = document.querySelectorAll('.workspace-block');
+        
+        if (this.isEditMode) {
+            // Enter edit mode
+            toggleBtn.innerHTML = '<i class="bi bi-eye me-1"></i><span>Vista previa</span>';
+            toggleBtn.className = 'btn btn-outline-success';
+            saveBtn.style.display = 'inline-block';
+            gridControls.style.display = 'block';
+            
+            blocks.forEach(block => {
+                block.classList.add('edit-mode');
+                const controls = block.querySelector('.block-controls');
+                if (controls) controls.style.display = 'flex';
+            });
+            
+            // Show sidebar
+            this.toggleBlockSidebar(true);
+        } else {
+            // Exit edit mode
+            toggleBtn.innerHTML = '<i class="bi bi-pencil me-1"></i><span>Editar</span>';
+            toggleBtn.className = 'btn btn-outline-primary';
+            saveBtn.style.display = 'none';
+            gridControls.style.display = 'none';
+            
+            blocks.forEach(block => {
+                block.classList.remove('edit-mode');
+                const controls = block.querySelector('.block-controls');
+                if (controls) controls.style.display = 'none';
+            });
+            
+            // Hide sidebar
+            this.toggleBlockSidebar(false);
+            
+            // Auto-save
+            this.saveWorkspace();
+        }
+    },
+    
+    // Toggle block sidebar
+    toggleBlockSidebar: function(show) {
+        const sidebar = document.getElementById('block-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        
+        if (show === undefined) {
+            show = !sidebar.classList.contains('open');
+        }
+        
+        if (show) {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+        } else {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+    },
+    
+    // Change grid size
+    changeGridSize: function(size) {
+        if (size) {
+            this.gridSize = size;
+        }
+        
+        const workspace = document.getElementById('workspace-grid');
+        workspace.dataset.gridSize = this.gridSize;
+        workspace.classList.add('grid-resizing');
+        
+        setTimeout(() => {
+            workspace.classList.remove('grid-resizing');
+        }, 300);
+        
+        this.saveWorkspaceState();
+    },
+    
+    // Toggle snap to grid
+    toggleSnapToGrid: function(enabled) {
+        this.snapToGrid = enabled;
+        const workspace = document.getElementById('workspace-grid');
+        workspace.dataset.snapEnabled = enabled;
+        this.saveWorkspaceState();
+    },
+    
+    // Toggle grid visibility
+    toggleGridVisibility: function(visible) {
+        this.gridVisible = visible;
+        const workspace = document.getElementById('workspace-grid');
+        workspace.dataset.gridVisible = visible;
+        this.saveWorkspaceState();
+    },
+    
+    // Start block drag from sidebar
+    startBlockDrag: function(e) {
+        const block = e.target.closest('.sidebar-block');
+        this.draggedBlock = {
+            id: block.dataset.blockId,
+            type: block.dataset.blockType,
+            isNew: !block.dataset.blockId
+        };
+        
+        e.dataTransfer.setData('text/plain', JSON.stringify(this.draggedBlock));
+        e.dataTransfer.effectAllowed = 'copy';
+    },
+    
+    // Start workspace block drag
+    startWorkspaceBlockDrag: function(e) {
+        if (!this.isEditMode) {
+            e.preventDefault();
+            return;
+        }
+        
+        const block = e.target.closest('.workspace-block');
+        block.classList.add('dragging');
+        
+        this.draggedBlock = {
+            id: block.dataset.blockId,
+            type: block.dataset.blockType,
+            isNew: false,
+            element: block
+        };
+        
+        e.dataTransfer.setData('text/plain', JSON.stringify({
+            id: this.draggedBlock.id,
+            type: this.draggedBlock.type
+        }));
+    },
+    
+    // Workspace drag over
+    onWorkspaceDragOver: function(e) {
+        if (!this.draggedBlock) return;
+        
+        // Calculate grid position
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Show drop zones
+        this.showDropZones(x, y);
+    },
+    
+    // Workspace drop
+    onWorkspaceDrop: function(e) {
+        if (!this.draggedBlock) return;
+        
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Calculate grid position
+        const gridPos = this.calculateGridPosition(x, y);
+        
+        if (this.draggedBlock.isNew) {
+            // Create new block
+            this.createBlockInWorkspace(this.draggedBlock.type, gridPos);
+        } else {
+            // Move existing block
+            this.moveBlockInWorkspace(this.draggedBlock.id, gridPos);
+        }
+        
+        this.cleanupDrag();
+    },
+    
+    // Workspace drag leave
+    onWorkspaceDragLeave: function(e) {
+        // Hide drop zones if leaving workspace
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+            this.hideDropZones();
+        }
+    },
+    
+    // Calculate grid position
+    calculateGridPosition: function(x, y) {
+        const workspace = document.getElementById('workspace-grid');
+        const rect = workspace.getBoundingClientRect();
+        const padding = 16; // 1rem padding
+        
+        const gridSizes = {
+            small: 12,
+            medium: 8,
+            large: 6,
+            xlarge: 4
+        };
+        
+        const cols = gridSizes[this.gridSize];
+        const cellWidth = (rect.width - padding * 2) / cols;
+        const cellHeight = (rect.height - padding * 2) / cols;
+        
+        let gridX = Math.floor((x - padding) / cellWidth) + 1;
+        let gridY = Math.floor((y - padding) / cellHeight) + 1;
+        
+        // Ensure within bounds
+        gridX = Math.max(1, Math.min(gridX, cols - 1));
+        gridY = Math.max(1, Math.min(gridY, cols - 1));
+        
+        return { x: gridX, y: gridY, width: 2, height: 2 };
+    },
+    
+    // Show drop zones
+    showDropZones: function(x, y) {
+        const dropZones = document.getElementById('drop-zones');
+        dropZones.style.display = 'block';
+        
+        // Create or update drop zone indicator
+        let indicator = dropZones.querySelector('.drop-zone');
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.className = 'drop-zone';
+            dropZones.appendChild(indicator);
+        }
+        
+        const gridPos = this.calculateGridPosition(x, y);
+        const workspace = document.getElementById('workspace-grid');
+        const rect = workspace.getBoundingClientRect();
+        const padding = 16;
+        
+        const gridSizes = {
+            small: 12,
+            medium: 8,
+            large: 6,
+            xlarge: 4
+        };
+        
+        const cols = gridSizes[this.gridSize];
+        const cellWidth = (rect.width - padding * 2) / cols;
+        const cellHeight = (rect.height - padding * 2) / cols;
+        
+        indicator.style.left = padding + (gridPos.x - 1) * cellWidth + 'px';
+        indicator.style.top = padding + (gridPos.y - 1) * cellHeight + 'px';
+        indicator.style.width = gridPos.width * cellWidth - 8 + 'px';
+        indicator.style.height = gridPos.height * cellHeight - 8 + 'px';
+        indicator.classList.add('active');
+    },
+    
+    // Hide drop zones
+    hideDropZones: function() {
+        const dropZones = document.getElementById('drop-zones');
+        dropZones.style.display = 'none';
+        
+        const indicators = dropZones.querySelectorAll('.drop-zone');
+        indicators.forEach(indicator => {
+            indicator.classList.remove('active');
+        });
+    },
+    
+    // Create block in workspace
+    createBlockInWorkspace: async function(blockType, gridPos) {
+        try {
+            const response = await fetch('/personal_space/blocks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify({
+                    type: blockType,
+                    title: `Nuevo ${blockType}`,
+                    workspace_id: this.currentWorkspaceId,
+                    grid_position: gridPos
+                })
+            });
+            
+            if (response.ok) {
+                const block = await response.json();
+                this.addBlockToDOM(block, gridPos);
+            } else {
+                throw new Error('Failed to create block');
+            }
+        } catch (error) {
+            console.error('Error creating block:', error);
+            alert('Error al crear el bloque. Inténtalo de nuevo.');
+        }
+    },
+    
+    // Move block in workspace
+    moveBlockInWorkspace: function(blockId, gridPos) {
+        const block = document.querySelector(`[data-block-id="${blockId}"]`);
+        if (!block) return;
+        
+        // Update DOM immediately
+        block.style.gridColumn = `${gridPos.x} / span ${gridPos.width}`;
+        block.style.gridRow = `${gridPos.y} / span ${gridPos.height}`;
+        
+        block.dataset.gridX = gridPos.x;
+        block.dataset.gridY = gridPos.y;
+        block.dataset.gridWidth = gridPos.width;
+        block.dataset.gridHeight = gridPos.height;
+        
+        // Save to server
+        this.updateBlockPosition(blockId, gridPos);
+    },
+    
+    // Add block to DOM
+    addBlockToDOM: function(block, gridPos) {
+        // This would create the actual block element
+        // For now, just reload the page
+        location.reload();
+    },
+    
+    // Update block position on server
+    updateBlockPosition: async function(blockId, gridPos) {
+        try {
+            await fetch(`/personal_space/blocks/${blockId}/position`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify({ grid_position: gridPos })
+            });
+        } catch (error) {
+            console.error('Error updating block position:', error);
+        }
+    },
+    
+    // Cleanup drag
+    cleanupDrag: function() {
+        this.hideDropZones();
+        
+        if (this.draggedBlock?.element) {
+            this.draggedBlock.element.classList.remove('dragging');
+        }
+        
+        this.draggedBlock = null;
+    },
+    
+    // Save workspace
+    saveWorkspace: async function() {
+        const blocks = Array.from(document.querySelectorAll('.workspace-block')).map(block => ({
+            id: block.dataset.blockId,
+            grid_position: {
+                x: parseInt(block.dataset.gridX),
+                y: parseInt(block.dataset.gridY),
+                width: parseInt(block.dataset.gridWidth),
+                height: parseInt(block.dataset.gridHeight)
+            }
+        }));
+        
+        try {
+            await fetch(`/personal_space/workspaces/${this.currentWorkspaceId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify({ blocks })
+            });
+            
+            // Show success feedback
+            this.showSaveSuccess();
+        } catch (error) {
+            console.error('Error saving workspace:', error);
+            alert('Error al guardar el workspace. Inténtalo de nuevo.');
+        }
+    },
+    
+    // Auto-save workspace
+    autoSaveWorkspace: function() {
+        if (this.isEditMode) {
+            this.saveWorkspace();
+        }
+    },
+    
+    // Show save success
+    showSaveSuccess: function() {
+        const saveBtn = document.getElementById('save-workspace-btn');
+        const originalText = saveBtn.innerHTML;
+        
+        saveBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Guardado';
+        saveBtn.classList.remove('btn-outline-success');
+        saveBtn.classList.add('btn-success');
+        
+        setTimeout(() => {
+            saveBtn.innerHTML = originalText;
+            saveBtn.classList.remove('btn-success');
+            saveBtn.classList.add('btn-outline-success');
+        }, 2000);
+    },
+    
+    // Save workspace state
+    saveWorkspaceState: function() {
+        const state = {
+            gridSize: this.gridSize,
+            snapToGrid: this.snapToGrid,
+            gridVisible: this.gridVisible
+        };
+        
+        localStorage.setItem(`workspace_${this.currentWorkspaceId}_state`, JSON.stringify(state));
+    },
+    
+    // Load workspace state
+    loadWorkspaceState: function() {
+        const saved = localStorage.getItem(`workspace_${this.currentWorkspaceId}_state`);
+        if (saved) {
+            const state = JSON.parse(saved);
+            
+            this.gridSize = state.gridSize || 'medium';
+            this.snapToGrid = state.snapToGrid !== false;
+            this.gridVisible = state.gridVisible !== false;
+            
+            // Apply state to UI
+            const gridSelect = document.getElementById('grid-size-select');
+            const snapCheck = document.getElementById('snap-to-grid');
+            const gridCheck = document.getElementById('show-grid');
+            
+            if (gridSelect) gridSelect.value = this.gridSize;
+            if (snapCheck) snapCheck.checked = this.snapToGrid;
+            if (gridCheck) gridCheck.checked = this.gridVisible;
+            
+            this.changeGridSize();
+            this.toggleSnapToGrid(this.snapToGrid);
+            this.toggleGridVisibility(this.gridVisible);
+        }
+    },
+    
+    // Utility functions
+    getCSRFToken: function() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    },
+    
+    debounce: function(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+};
+
+// Global functions for template usage
+window.toggleEditMode = function() {
+    window.WorkspaceLayout.toggleEditMode();
+};
+
+window.toggleBlockSidebar = function() {
+    window.WorkspaceLayout.toggleBlockSidebar();
+};
+
+window.changeGridSize = function(size) {
+    window.WorkspaceLayout.changeGridSize(size);
+};
+
+window.toggleSnapToGrid = function(enabled) {
+    window.WorkspaceLayout.toggleSnapToGrid(enabled);
+};
+
+window.toggleGridVisibility = function(visible) {
+    window.WorkspaceLayout.toggleGridVisibility(visible);
+};
+
+window.addNewBlock = function() {
+    window.WorkspaceLayout.toggleBlockSidebar(true);
+};
+
+window.saveWorkspace = function() {
+    window.WorkspaceLayout.saveWorkspace();
+};
+
+window.startBlockDrag = function(event) {
+    window.WorkspaceLayout.startBlockDrag(event);
+};
+
+window.createNewBlock = function(type) {
+    console.log('Create new block:', type);
+};
+
+window.editBlockSettings = function(blockId) {
+    console.log('Edit block settings:', blockId);
+};
+
+window.removeBlockFromWorkspace = function(blockId) {
+    if (confirm('¿Estás seguro de que quieres quitar este bloque del workspace?')) {
+        const block = document.querySelector(`[data-block-id="${blockId}"]`);
+        if (block) {
+            block.remove();
+            window.WorkspaceLayout.saveWorkspace();
+        }
+    }
+};
+
+window.resetLayout = function() {
+    if (confirm('¿Estás seguro de que quieres restablecer el diseño? Se perderán todas las posiciones actuales.')) {
+        location.reload();
+    }
+};
+
+window.saveAsTemplate = function() {
+    console.log('Save as template');
+};
+
+window.exportWorkspace = function() {
+    console.log('Export workspace');
+};
+
+window.filterBlocks = function(query) {
+    const blocks = document.querySelectorAll('.sidebar-block');
+    const searchTerm = query.toLowerCase();
+    
+    blocks.forEach(block => {
+        const title = block.querySelector('.block-title')?.textContent.toLowerCase() || '';
+        const type = block.querySelector('.block-type')?.textContent.toLowerCase() || '';
+        
+        if (title.includes(searchTerm) || type.includes(searchTerm)) {
+            block.style.display = 'flex';
+        } else {
+            block.style.display = 'none';
+        }
+    });
+};
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    window.WorkspaceLayout.init();
+});
+</script>

@@ -1,0 +1,751 @@
+<!-- NoteBlock Component - Enhanced note block with rich preview -->
+{% from 'personal_space/components/base/BaseBlock.html' import render_base_block, render_block_header, render_block_content, render_block_footer %}
+
+<!-- Note Block Card -->
+{% macro render_note_block(block, editable=true, draggable=true) %}
+{% call render_base_block(
+    block_id='note-block-' + block.id|string,
+    block_type='note',
+    title=block.title,
+    editable=editable,
+    draggable=draggable,
+    status=block.status,
+    class='note-block'
+) %}
+    <!-- Note Header -->
+    {% call render_block_header() %}
+        <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="note-header-content">
+                <h6 class="note-title mb-1">{{ block.title }}</h6>
+                
+                <!-- Note Tags -->
+                {% if block.metadata.get('tags') %}
+                <div class="note-tags">
+                    {% for tag in block.metadata.tags[:3] %}
+                    <span class="badge bg-primary-subtle text-primary-emphasis badge-sm me-1">
+                        #{{ tag }}
+                    </span>
+                    {% endfor %}
+                    {% if block.metadata.tags|length > 3 %}
+                    <span class="badge bg-secondary-subtle text-secondary-emphasis badge-sm">
+                        +{{ block.metadata.tags|length - 3 }}
+                    </span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Note Type Indicator -->
+            <div class="note-type">
+                {% set note_type = block.metadata.get('note_type', 'text') %}
+                {% if note_type == 'markdown' %}
+                <i class="bi bi-markdown text-info" title="Markdown"></i>
+                {% elif note_type == 'code' %}
+                <i class="bi bi-code-slash text-success" title="Código"></i>
+                {% elif note_type == 'checklist' %}
+                <i class="bi bi-list-check text-warning" title="Lista de verificación"></i>
+                {% else %}
+                <i class="bi bi-file-text text-muted" title="Texto"></i>
+                {% endif %}
+            </div>
+        </div>
+    {% endcall %}
+    
+    <!-- Note Content -->
+    {% call render_block_content() %}
+        <!-- Note Preview -->
+        <div class="note-preview">
+            {% if block.content %}
+                {% set preview_length = 150 %}
+                {% if block.metadata.get('note_type') == 'markdown' %}
+                    <!-- Markdown Preview -->
+                    <div class="markdown-preview">
+                        {{ (block.content | markdown)[:preview_length] | safe }}
+                        {% if block.content|length > preview_length %}
+                        <span class="text-muted">...</span>
+                        {% endif %}
+                    </div>
+                {% elif block.metadata.get('note_type') == 'code' %}
+                    <!-- Code Preview -->
+                    <div class="code-preview">
+                        <pre class="mb-0"><code>{{ block.content[:preview_length] }}{% if block.content|length > preview_length %}...{% endif %}</code></pre>
+                    </div>
+                {% elif block.metadata.get('note_type') == 'checklist' %}
+                    <!-- Checklist Preview -->
+                    <div class="checklist-preview">
+                        {% set lines = block.content.split('\n')[:3] %}
+                        {% for line in lines %}
+                        {% if line.strip() %}
+                        <div class="checklist-item">
+                            <i class="bi bi-{{ 'check-square' if line.strip().startswith('[x]') else 'square' }} me-2"></i>
+                            {{ line.strip().replace('[x]', '').replace('[ ]', '').strip() }}
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        {% if block.content.split('\n')|length > 3 %}
+                        <div class="text-muted">...</div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <!-- Plain Text Preview -->
+                    <div class="text-preview">
+                        <p class="mb-0 text-muted">{{ block.content[:preview_length] }}{% if block.content|length > preview_length %}...{% endif %}</p>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="empty-note text-center py-3">
+                    <i class="bi bi-file-text text-muted fs-3 mb-2"></i>
+                    <p class="text-muted mb-0">Nota vacía</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Note Metadata -->
+        <div class="note-metadata mt-3">
+            <div class="row g-2">
+                <!-- Word Count -->
+                {% if block.content %}
+                <div class="col-auto">
+                    <div class="metadata-item">
+                        <i class="bi bi-type text-muted me-1"></i>
+                        <span class="metadata-text">{{ block.content.split()|length }} palabras</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Attachments Count -->
+                {% if block.metadata.get('attachments_count', 0) > 0 %}
+                <div class="col-auto">
+                    <div class="metadata-item">
+                        <i class="bi bi-paperclip text-muted me-1"></i>
+                        <span class="metadata-text">{{ block.metadata.attachments_count }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Category -->
+                {% if block.metadata.get('category') %}
+                <div class="col-auto">
+                    <div class="metadata-item">
+                        <i class="bi bi-folder text-muted me-1"></i>
+                        <span class="metadata-text">{{ block.metadata.category }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Reading Time -->
+                {% if block.content %}
+                {% set reading_time = (block.content.split()|length / 200) | round(0, 'ceil') %}
+                <div class="col-auto">
+                    <div class="metadata-item">
+                        <i class="bi bi-clock text-muted me-1"></i>
+                        <span class="metadata-text">{{ reading_time }} min</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endcall %}
+    
+    <!-- Note Footer -->
+    {% call render_block_footer() %}
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="note-timestamps">
+                <small class="text-muted">
+                    {% if block.updated_at %}
+                    Editada {{ block.updated_at.strftime('%d/%m/%Y %H:%M') }}
+                    {% else %}
+                    Creada {{ block.created_at.strftime('%d/%m/%Y %H:%M') }}
+                    {% endif %}
+                </small>
+            </div>
+            
+            <div class="note-actions">
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" 
+                            class="btn btn-outline-primary" 
+                            onclick="openNoteDetails('{{ block.id }}')">
+                        <i class="bi bi-eye me-1"></i>
+                        Ver
+                    </button>
+                    <button type="button" 
+                            class="btn btn-outline-secondary" 
+                            onclick="editNote('{{ block.id }}')">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    {% endcall %}
+{% endcall %}
+{% endmacro %}
+
+<!-- Note List View -->
+{% macro render_note_list_item(block) %}
+<div class="note-list-item" data-note-id="{{ block.id }}">
+    <div class="d-flex gap-3 p-3">
+        <!-- Note Icon -->
+        <div class="note-icon">
+            {% set note_type = block.metadata.get('note_type', 'text') %}
+            {% if note_type == 'markdown' %}
+            <i class="bi bi-markdown text-info"></i>
+            {% elif note_type == 'code' %}
+            <i class="bi bi-code-slash text-success"></i>
+            {% elif note_type == 'checklist' %}
+            <i class="bi bi-list-check text-warning"></i>
+            {% else %}
+            <i class="bi bi-file-text text-muted"></i>
+            {% endif %}
+        </div>
+        
+        <!-- Note Content -->
+        <div class="note-content flex-grow-1">
+            <div class="d-flex align-items-start justify-content-between mb-2">
+                <h6 class="note-title mb-0">{{ block.title }}</h6>
+                <small class="text-muted">{{ block.updated_at.strftime('%d/%m') if block.updated_at else block.created_at.strftime('%d/%m') }}</small>
+            </div>
+            
+            <!-- Note Preview -->
+            {% if block.content %}
+            <p class="note-preview-text text-muted mb-2">{{ block.content[:100] }}{% if block.content|length > 100 %}...{% endif %}</p>
+            {% endif %}
+            
+            <!-- Tags and Metadata -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                {% if block.metadata.get('tags') %}
+                    {% for tag in block.metadata.tags[:2] %}
+                    <span class="badge bg-primary-subtle text-primary-emphasis badge-sm">
+                        #{{ tag }}
+                    </span>
+                    {% endfor %}
+                    {% if block.metadata.tags|length > 2 %}
+                    <span class="badge bg-secondary-subtle text-secondary-emphasis badge-sm">
+                        +{{ block.metadata.tags|length - 2 }}
+                    </span>
+                    {% endif %}
+                {% endif %}
+                
+                {% if block.metadata.get('category') %}
+                <span class="badge bg-info-subtle text-info-emphasis badge-sm">
+                    {{ block.metadata.category }}
+                </span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Note Actions -->
+        <div class="note-actions">
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                        type="button" 
+                        data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="openNoteDetails('{{ block.id }}')">Ver nota</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="editNote('{{ block.id }}')">Editar</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="duplicateNote('{{ block.id }}')">Duplicar</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#" onclick="deleteNote('{{ block.id }}')">Eliminar</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+<!-- Note Quick Add Form -->
+{% macro render_note_quick_add() %}
+<div class="note-quick-add">
+    <form id="noteQuickAddForm" class="needs-validation" novalidate>
+        <div class="mb-3">
+            <input type="text" 
+                   class="form-control" 
+                   id="quickNoteTitle" 
+                   name="title" 
+                   placeholder="Título de la nota..." 
+                   required>
+        </div>
+        <div class="mb-3">
+            <textarea class="form-control" 
+                      id="quickNoteContent" 
+                      name="content" 
+                      rows="3" 
+                      placeholder="Contenido de la nota..."></textarea>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="note-type-selector">
+                <select class="form-select form-select-sm" id="quickNoteType" name="note_type">
+                    <option value="text">Texto</option>
+                    <option value="markdown">Markdown</option>
+                    <option value="code">Código</option>
+                    <option value="checklist">Lista</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-plus me-1"></i>
+                Crear Nota
+            </button>
+        </div>
+    </form>
+</div>
+{% endmacro %}
+
+<!-- Note Search and Filter -->
+{% macro render_note_filters() %}
+<div class="note-filters mb-3">
+    <div class="row g-2">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" 
+                       class="form-control" 
+                       id="noteSearch" 
+                       placeholder="Buscar notas...">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="noteTypeFilter">
+                <option value="">Todos los tipos</option>
+                <option value="text">Texto</option>
+                <option value="markdown">Markdown</option>
+                <option value="code">Código</option>
+                <option value="checklist">Lista</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="noteSortBy">
+                <option value="updated_desc">Más recientes</option>
+                <option value="updated_asc">Más antiguos</option>
+                <option value="title_asc">Título A-Z</option>
+                <option value="title_desc">Título Z-A</option>
+            </select>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+<style>
+/* Note Block Styles */
+.note-block {
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+}
+
+.note-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Note Header */
+.note-title {
+    font-weight: 600;
+    color: #1f2937;
+    line-height: 1.4;
+}
+
+.note-tags .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    font-weight: 500;
+}
+
+.note-type {
+    font-size: 1.1rem;
+    opacity: 0.7;
+}
+
+/* Note Preview Styles */
+.note-preview {
+    min-height: 80px;
+}
+
+.markdown-preview {
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.markdown-preview h1, .markdown-preview h2, .markdown-preview h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+}
+
+.markdown-preview p {
+    margin: 0.5rem 0;
+}
+
+.markdown-preview code {
+    background: #f3f4f6;
+    padding: 0.125rem 0.25rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+}
+
+.code-preview {
+    background: #1f2937;
+    border-radius: 6px;
+    padding: 0.75rem;
+    overflow: hidden;
+}
+
+.code-preview code {
+    color: #e5e7eb;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.checklist-preview {
+    font-size: 0.875rem;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.25rem;
+    color: #6b7280;
+}
+
+.checklist-item i {
+    color: #3b82f6;
+}
+
+.text-preview {
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.empty-note {
+    background: #f9fafb;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+}
+
+/* Note Metadata */
+.metadata-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+}
+
+.metadata-text {
+    font-weight: 500;
+}
+
+/* Note List Item */
+.note-list-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+    background: #ffffff;
+}
+
+.note-list-item:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.note-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.note-preview-text {
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+/* Note Quick Add */
+.note-quick-add {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.note-type-selector .form-select {
+    width: auto;
+    min-width: 120px;
+}
+
+/* Note Filters */
+.note-filters {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .note-metadata .row {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .metadata-item {
+        justify-content: center;
+    }
+    
+    .note-list-item .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .note-actions {
+        align-self: flex-end;
+    }
+    
+    .note-quick-add .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .note-type-selector {
+        order: 1;
+    }
+}
+
+/* Animation for note creation */
+@keyframes noteCreated {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.note-created {
+    animation: noteCreated 0.5s ease;
+}
+</style>
+
+<script>
+// Note Block JavaScript
+window.NoteBlock = {
+    // Initialize note blocks
+    init: function() {
+        this.bindEvents();
+        this.initQuickAdd();
+        this.initFilters();
+    },
+    
+    // Bind event listeners
+    bindEvents: function() {
+        // Note block hover effects
+        document.addEventListener('mouseenter', (e) => {
+            if (e.target.matches('.note-block')) {
+                this.onNoteHover(e.target, true);
+            }
+        }, true);
+        
+        document.addEventListener('mouseleave', (e) => {
+            if (e.target.matches('.note-block')) {
+                this.onNoteHover(e.target, false);
+            }
+        }, true);
+    },
+    
+    // Note hover effects
+    onNoteHover: function(noteBlock, isHovering) {
+        const actions = noteBlock.querySelector('.note-actions');
+        if (actions) {
+            actions.style.opacity = isHovering ? '1' : '0.8';
+        }
+    },
+    
+    // Initialize quick add form
+    initQuickAdd: function() {
+        const form = document.getElementById('noteQuickAddForm');
+        if (!form) return;
+        
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleQuickAdd(form);
+        });
+    },
+    
+    // Handle quick add
+    handleQuickAdd: function(form) {
+        const formData = new FormData(form);
+        const title = formData.get('title');
+        const content = formData.get('content');
+        const noteType = formData.get('note_type');
+        
+        if (!title.trim()) {
+            this.showError('El título es requerido');
+            return;
+        }
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalContent = submitBtn.innerHTML;
+        
+        // Show loading
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Creando...';
+        submitBtn.disabled = true;
+        
+        this.createNote({
+            title: title.trim(),
+            content: content.trim(),
+            note_type: noteType
+        })
+        .then(response => {
+            if (response.success) {
+                form.reset();
+                this.addNoteToUI(response.note);
+                this.showSuccess('Nota creada exitosamente');
+            } else {
+                this.showError(response.message || 'Error al crear la nota');
+            }
+        })
+        .catch(error => {
+            this.showError('Error de conexión');
+        })
+        .finally(() => {
+            submitBtn.innerHTML = originalContent;
+            submitBtn.disabled = false;
+        });
+    },
+    
+    // Create note on server
+    createNote: async function(noteData) {
+        const response = await fetch('/personal_space/blocks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.getCSRFToken()
+            },
+            body: JSON.stringify({
+                type: 'note',
+                title: noteData.title,
+                content: noteData.content,
+                metadata: {
+                    note_type: noteData.note_type
+                }
+            })
+        });
+        
+        return await response.json();
+    },
+    
+    // Add note to UI
+    addNoteToUI: function(note) {
+        // This would be implemented based on the specific UI structure
+        if (typeof window.PersonalSpace !== 'undefined') {
+            window.PersonalSpace.refreshBlocks();
+        }
+    },
+    
+    // Initialize filters
+    initFilters: function() {
+        const searchInput = document.getElementById('noteSearch');
+        const typeFilter = document.getElementById('noteTypeFilter');
+        const sortBy = document.getElementById('noteSortBy');
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', this.debounce(() => {
+                this.filterNotes();
+            }, 300));
+        }
+        
+        if (typeFilter) {
+            typeFilter.addEventListener('change', () => {
+                this.filterNotes();
+            });
+        }
+        
+        if (sortBy) {
+            sortBy.addEventListener('change', () => {
+                this.filterNotes();
+            });
+        }
+    },
+    
+    // Filter notes
+    filterNotes: function() {
+        const searchTerm = document.getElementById('noteSearch')?.value.toLowerCase() || '';
+        const typeFilter = document.getElementById('noteTypeFilter')?.value || '';
+        const sortBy = document.getElementById('noteSortBy')?.value || 'updated_desc';
+        
+        // This would implement the actual filtering logic
+        console.log('Filtering notes:', { searchTerm, typeFilter, sortBy });
+    },
+    
+    // Utility functions
+    debounce: function(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    },
+    
+    getCSRFToken: function() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    },
+    
+    showError: function(message) {
+        if (typeof window.showToast !== 'undefined') {
+            window.showToast(message, 'error');
+        } else {
+            alert(message);
+        }
+    },
+    
+    showSuccess: function(message) {
+        if (typeof window.showToast !== 'undefined') {
+            window.showToast(message, 'success');
+        }
+    }
+};
+
+// Global functions for template usage
+window.openNoteDetails = function(noteId) {
+    window.location.href = `/personal_space/blocks/${noteId}`;
+};
+
+window.editNote = function(noteId) {
+    // Open edit modal or navigate to edit page
+    console.log('Edit note:', noteId);
+};
+
+window.duplicateNote = function(noteId) {
+    // Duplicate note logic
+    console.log('Duplicate note:', noteId);
+};
+
+window.deleteNote = function(noteId) {
+    if (confirm('¿Estás seguro de que quieres eliminar esta nota?')) {
+        // Delete note logic
+        console.log('Delete note:', noteId);
+    }
+};
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    window.NoteBlock.init();
+});
+</script>

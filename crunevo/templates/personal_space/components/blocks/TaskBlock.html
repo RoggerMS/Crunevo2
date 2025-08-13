@@ -1,0 +1,680 @@
+<!-- TaskBlock Component - Enhanced task block with modern design -->
+{% from 'personal_space/components/base/BaseBlock.html' import render_base_block, render_block_header, render_block_content, render_block_footer %}
+{% from 'personal_space/components/base/BaseCard.html' import render_progress_card %}
+
+<!-- Task Block Card -->
+{% macro render_task_block(block, editable=true, draggable=true) %}
+{% call render_base_block(
+    block_id='task-block-' + block.id|string,
+    block_type='task',
+    title=block.title,
+    editable=editable,
+    draggable=draggable,
+    status=block.status,
+    priority=block.metadata.get('priority', 'medium'),
+    class='task-block'
+) %}
+    <!-- Task Header -->
+    {% call render_block_header() %}
+        <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="d-flex align-items-center gap-3">
+                <!-- Completion Checkbox -->
+                <div class="task-checkbox">
+                    <input type="checkbox" 
+                           class="form-check-input task-complete-checkbox" 
+                           id="task-{{ block.id }}-complete"
+                           data-task-id="{{ block.id }}"
+                           {{ 'checked' if block.status == 'completed' else '' }}>
+                    <label for="task-{{ block.id }}-complete" class="visually-hidden">Marcar como completada</label>
+                </div>
+                
+                <!-- Task Title -->
+                <div class="task-title-container">
+                    <h6 class="task-title mb-0 {{ 'text-decoration-line-through text-muted' if block.status == 'completed' else '' }}">
+                        {{ block.title }}
+                    </h6>
+                    {% if block.metadata.get('category') %}
+                    <span class="badge bg-secondary-subtle text-secondary-emphasis badge-sm mt-1">
+                        {{ block.metadata.category }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Priority Indicator -->
+            <div class="task-priority">
+                {% set priority_config = {
+                    'high': {'color': 'danger', 'icon': 'exclamation-circle-fill'},
+                    'medium': {'color': 'warning', 'icon': 'dash-circle-fill'},
+                    'low': {'color': 'success', 'icon': 'circle-fill'}
+                } %}
+                {% set priority = block.metadata.get('priority', 'medium') %}
+                {% set config = priority_config.get(priority, priority_config['medium']) %}
+                
+                <span class="priority-indicator text-{{ config.color }}" 
+                      title="Prioridad {{ priority }}">
+                    <i class="bi bi-{{ config.icon }}"></i>
+                </span>
+            </div>
+        </div>
+    {% endcall %}
+    
+    <!-- Task Content -->
+    {% call render_block_content() %}
+        <!-- Task Description -->
+        {% if block.content %}
+        <div class="task-description mb-3">
+            <p class="text-muted mb-0">{{ block.content[:100] }}{% if block.content|length > 100 %}...{% endif %}</p>
+        </div>
+        {% endif %}
+        
+        <!-- Task Metadata -->
+        <div class="task-metadata">
+            <div class="row g-2">
+                <!-- Due Date -->
+                {% if block.metadata.get('due_date') %}
+                <div class="col-auto">
+                    <div class="metadata-item">
+                        <i class="bi bi-calendar-event text-muted me-1"></i>
+                        <span class="metadata-text">{{ block.metadata.due_date }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Attachments Count -->
+                {% if block.metadata.get('attachments_count', 0) > 0 %}
+                <div class="col-auto">
+                    <div class="metadata-item">
+                        <i class="bi bi-paperclip text-muted me-1"></i>
+                        <span class="metadata-text">{{ block.metadata.attachments_count }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Subtasks Progress -->
+                {% if block.metadata.get('subtasks_total', 0) > 0 %}
+                <div class="col-auto">
+                    <div class="metadata-item">
+                        <i class="bi bi-list-check text-muted me-1"></i>
+                        <span class="metadata-text">
+                            {{ block.metadata.get('subtasks_completed', 0) }}/{{ block.metadata.subtasks_total }}
+                        </span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Assigned Users -->
+                {% if block.metadata.get('assigned_users') %}
+                <div class="col-auto">
+                    <div class="metadata-item">
+                        <div class="user-avatars">
+                            {% for user in block.metadata.assigned_users[:3] %}
+                            <div class="user-avatar" title="{{ user.name }}">
+                                {% if user.avatar %}
+                                <img src="{{ user.avatar }}" alt="{{ user.name }}" class="avatar-img">
+                                {% else %}
+                                <div class="avatar-placeholder">{{ user.name[0] }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                            {% if block.metadata.assigned_users|length > 3 %}
+                            <div class="user-avatar more-users">
+                                <span>+{{ block.metadata.assigned_users|length - 3 }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Progress Bar for Subtasks -->
+        {% if block.metadata.get('subtasks_total', 0) > 0 %}
+        <div class="task-progress mt-3">
+            {% set completed = block.metadata.get('subtasks_completed', 0) %}
+            {% set total = block.metadata.subtasks_total %}
+            {% set percentage = (completed / total * 100) if total > 0 else 0 %}
+            
+            <div class="progress" style="height: 6px;">
+                <div class="progress-bar bg-primary" 
+                     role="progressbar" 
+                     style="width: {{ percentage }}%" 
+                     aria-valuenow="{{ completed }}" 
+                     aria-valuemin="0" 
+                     aria-valuemax="{{ total }}">
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endcall %}
+    
+    <!-- Task Footer -->
+    {% call render_block_footer() %}
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="task-timestamps">
+                <small class="text-muted">
+                    {% if block.updated_at %}
+                    Actualizada {{ block.updated_at.strftime('%d/%m/%Y') }}
+                    {% else %}
+                    Creada {{ block.created_at.strftime('%d/%m/%Y') }}
+                    {% endif %}
+                </small>
+            </div>
+            
+            <div class="task-actions">
+                <button type="button" 
+                        class="btn btn-sm btn-outline-primary" 
+                        onclick="openTaskDetails('{{ block.id }}')">
+                    <i class="bi bi-eye me-1"></i>
+                    Ver
+                </button>
+            </div>
+        </div>
+    {% endcall %}
+{% endcall %}
+{% endmacro %}
+
+<!-- Task List View -->
+{% macro render_task_list_item(block, show_checkbox=true) %}
+<div class="task-list-item {{ 'completed' if block.status == 'completed' else '' }}" 
+     data-task-id="{{ block.id }}">
+    <div class="d-flex align-items-center gap-3 p-3">
+        {% if show_checkbox %}
+        <div class="task-checkbox">
+            <input type="checkbox" 
+                   class="form-check-input task-complete-checkbox" 
+                   id="task-list-{{ block.id }}-complete"
+                   data-task-id="{{ block.id }}"
+                   {{ 'checked' if block.status == 'completed' else '' }}>
+        </div>
+        {% endif %}
+        
+        <div class="task-content flex-grow-1">
+            <div class="d-flex align-items-center justify-content-between">
+                <h6 class="task-title mb-1 {{ 'text-decoration-line-through text-muted' if block.status == 'completed' else '' }}">
+                    {{ block.title }}
+                </h6>
+                
+                <!-- Priority Badge -->
+                {% set priority = block.metadata.get('priority', 'medium') %}
+                {% if priority == 'high' %}
+                <span class="badge bg-danger-subtle text-danger-emphasis">Alta</span>
+                {% elif priority == 'low' %}
+                <span class="badge bg-success-subtle text-success-emphasis">Baja</span>
+                {% endif %}
+            </div>
+            
+            {% if block.content %}
+            <p class="task-description text-muted mb-2">{{ block.content[:80] }}{% if block.content|length > 80 %}...{% endif %}</p>
+            {% endif %}
+            
+            <div class="task-meta d-flex align-items-center gap-3">
+                {% if block.metadata.get('due_date') %}
+                <small class="text-muted">
+                    <i class="bi bi-calendar-event me-1"></i>
+                    {{ block.metadata.due_date }}
+                </small>
+                {% endif %}
+                
+                {% if block.metadata.get('subtasks_total', 0) > 0 %}
+                <small class="text-muted">
+                    <i class="bi bi-list-check me-1"></i>
+                    {{ block.metadata.get('subtasks_completed', 0) }}/{{ block.metadata.subtasks_total }}
+                </small>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="task-actions">
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                        type="button" 
+                        data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="openTaskDetails('{{ block.id }}')">Ver detalles</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="editTask('{{ block.id }}')">Editar</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#" onclick="deleteTask('{{ block.id }}')">Eliminar</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+<!-- Task Quick Add Form -->
+{% macro render_task_quick_add() %}
+<div class="task-quick-add">
+    <form id="taskQuickAddForm" class="needs-validation" novalidate>
+        <div class="input-group">
+            <input type="text" 
+                   class="form-control" 
+                   id="quickTaskTitle" 
+                   name="title" 
+                   placeholder="Agregar nueva tarea..." 
+                   required>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-plus"></i>
+            </button>
+        </div>
+    </form>
+</div>
+{% endmacro %}
+
+<style>
+/* Task Block Styles */
+.task-block {
+    transition: all 0.3s ease;
+}
+
+.task-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.task-block.completed {
+    opacity: 0.7;
+}
+
+/* Task Checkbox */
+.task-checkbox .form-check-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.task-checkbox .form-check-input:checked {
+    background-color: #10b981;
+    border-color: #10b981;
+}
+
+.task-checkbox .form-check-input:focus {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Task Title */
+.task-title {
+    font-weight: 600;
+    color: #1f2937;
+    line-height: 1.4;
+}
+
+.task-title-container .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Priority Indicator */
+.priority-indicator {
+    font-size: 1.1rem;
+    opacity: 0.8;
+}
+
+/* Task Description */
+.task-description {
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* Task Metadata */
+.metadata-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+}
+
+.metadata-text {
+    font-weight: 500;
+}
+
+/* User Avatars */
+.user-avatars {
+    display: flex;
+    align-items: center;
+    gap: -0.5rem;
+}
+
+.user-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.user-avatar:not(:first-child) {
+    margin-left: -8px;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #3b82f6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.more-users {
+    background: #6b7280;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-weight: 600;
+}
+
+/* Task Progress */
+.task-progress .progress {
+    border-radius: 3px;
+    background: #f3f4f6;
+}
+
+.task-progress .progress-bar {
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
+
+/* Task List Item */
+.task-list-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+    background: #ffffff;
+}
+
+.task-list-item:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.task-list-item.completed {
+    background: #f9fafb;
+    opacity: 0.8;
+}
+
+/* Task Quick Add */
+.task-quick-add {
+    margin-bottom: 1rem;
+}
+
+.task-quick-add .form-control {
+    border-radius: 8px 0 0 8px;
+    border-right: none;
+}
+
+.task-quick-add .btn {
+    border-radius: 0 8px 8px 0;
+    padding: 0.75rem 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .task-metadata .row {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .metadata-item {
+        justify-content: center;
+    }
+    
+    .task-list-item .d-flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .task-actions {
+        align-self: flex-end;
+    }
+}
+
+/* Animation for task completion */
+@keyframes taskComplete {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+}
+
+.task-completing {
+    animation: taskComplete 0.5s ease;
+}
+</style>
+
+<script>
+// Task Block JavaScript
+window.TaskBlock = {
+    // Initialize task blocks
+    init: function() {
+        this.bindEvents();
+        this.initQuickAdd();
+    },
+    
+    // Bind event listeners
+    bindEvents: function() {
+        // Task completion checkboxes
+        document.addEventListener('change', (e) => {
+            if (e.target.matches('.task-complete-checkbox')) {
+                this.toggleTaskCompletion(e.target);
+            }
+        });
+        
+        // Task block hover effects
+        document.addEventListener('mouseenter', (e) => {
+            if (e.target.matches('.task-block')) {
+                this.onTaskHover(e.target, true);
+            }
+        }, true);
+        
+        document.addEventListener('mouseleave', (e) => {
+            if (e.target.matches('.task-block')) {
+                this.onTaskHover(e.target, false);
+            }
+        }, true);
+    },
+    
+    // Toggle task completion
+    toggleTaskCompletion: function(checkbox) {
+        const taskId = checkbox.dataset.taskId;
+        const isCompleted = checkbox.checked;
+        const taskBlock = checkbox.closest('.task-block, .task-list-item');
+        
+        // Add animation
+        if (isCompleted) {
+            taskBlock.classList.add('task-completing');
+        }
+        
+        // Update UI immediately
+        this.updateTaskUI(taskBlock, isCompleted);
+        
+        // Send to server
+        this.updateTaskStatus(taskId, isCompleted ? 'completed' : 'pending')
+            .then(response => {
+                if (!response.success) {
+                    // Revert on error
+                    checkbox.checked = !isCompleted;
+                    this.updateTaskUI(taskBlock, !isCompleted);
+                    this.showError('Error al actualizar la tarea');
+                }
+            })
+            .catch(error => {
+                // Revert on error
+                checkbox.checked = !isCompleted;
+                this.updateTaskUI(taskBlock, !isCompleted);
+                this.showError('Error de conexión');
+            });
+    },
+    
+    // Update task UI
+    updateTaskUI: function(taskBlock, isCompleted) {
+        const title = taskBlock.querySelector('.task-title');
+        
+        if (isCompleted) {
+            taskBlock.classList.add('completed');
+            title?.classList.add('text-decoration-line-through', 'text-muted');
+        } else {
+            taskBlock.classList.remove('completed', 'task-completing');
+            title?.classList.remove('text-decoration-line-through', 'text-muted');
+        }
+    },
+    
+    // Update task status on server
+    updateTaskStatus: async function(taskId, status) {
+        const response = await fetch(`/personal_space/blocks/${taskId}/status`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.getCSRFToken()
+            },
+            body: JSON.stringify({ status: status })
+        });
+        
+        return await response.json();
+    },
+    
+    // Task hover effects
+    onTaskHover: function(taskBlock, isHovering) {
+        const actions = taskBlock.querySelector('.task-actions');
+        if (actions) {
+            actions.style.opacity = isHovering ? '1' : '0.7';
+        }
+    },
+    
+    // Initialize quick add form
+    initQuickAdd: function() {
+        const form = document.getElementById('taskQuickAddForm');
+        if (!form) return;
+        
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleQuickAdd(form);
+        });
+    },
+    
+    // Handle quick add
+    handleQuickAdd: function(form) {
+        const formData = new FormData(form);
+        const title = formData.get('title');
+        
+        if (!title.trim()) return;
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalContent = submitBtn.innerHTML;
+        
+        // Show loading
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        submitBtn.disabled = true;
+        
+        this.createTask({ title: title.trim() })
+            .then(response => {
+                if (response.success) {
+                    form.reset();
+                    this.addTaskToUI(response.task);
+                } else {
+                    this.showError(response.message || 'Error al crear la tarea');
+                }
+            })
+            .catch(error => {
+                this.showError('Error de conexión');
+            })
+            .finally(() => {
+                submitBtn.innerHTML = originalContent;
+                submitBtn.disabled = false;
+            });
+    },
+    
+    // Create task on server
+    createTask: async function(taskData) {
+        const response = await fetch('/personal_space/blocks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.getCSRFToken()
+            },
+            body: JSON.stringify({
+                type: 'task',
+                title: taskData.title,
+                content: taskData.content || '',
+                metadata: taskData.metadata || {}
+            })
+        });
+        
+        return await response.json();
+    },
+    
+    // Add task to UI
+    addTaskToUI: function(task) {
+        // This would be implemented based on the specific UI structure
+        // For now, just reload the page or trigger a refresh
+        if (typeof window.PersonalSpace !== 'undefined') {
+            window.PersonalSpace.refreshBlocks();
+        }
+    },
+    
+    // Utility functions
+    getCSRFToken: function() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    },
+    
+    showError: function(message) {
+        // Use toast notification or alert
+        if (typeof window.showToast !== 'undefined') {
+            window.showToast(message, 'error');
+        } else {
+            alert(message);
+        }
+    }
+};
+
+// Global functions for template usage
+window.openTaskDetails = function(taskId) {
+    window.location.href = `/personal_space/blocks/${taskId}`;
+};
+
+window.editTask = function(taskId) {
+    // Open edit modal or navigate to edit page
+    console.log('Edit task:', taskId);
+};
+
+window.deleteTask = function(taskId) {
+    if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+        // Delete task logic
+        console.log('Delete task:', taskId);
+    }
+};
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    window.TaskBlock.init();
+});
+</script>

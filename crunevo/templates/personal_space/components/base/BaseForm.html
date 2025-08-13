@@ -1,0 +1,518 @@
+<!-- BaseForm Component - Reusable form foundation -->
+{% macro render_form_field(field, label, type='text', placeholder='', required=false, help_text='', icon='', validation_rules={}) %}
+<div class="form-group mb-3">
+    {% if label %}
+    <label for="{{ field }}" class="form-label fw-medium">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    {% endif %}
+    
+    <div class="input-group">
+        {% if icon %}
+        <span class="input-group-text bg-light border-end-0">
+            <i class="bi bi-{{ icon }} text-muted"></i>
+        </span>
+        {% endif %}
+        
+        {% if type == 'textarea' %}
+        <textarea 
+            class="form-control {{ 'border-start-0' if icon else '' }}" 
+            id="{{ field }}" 
+            name="{{ field }}"
+            placeholder="{{ placeholder }}"
+            {{ 'required' if required else '' }}
+            {% for rule, value in validation_rules.items() %}
+            {{ rule }}="{{ value }}"
+            {% endfor %}
+        >{{ caller() if caller else '' }}</textarea>
+        {% elif type == 'select' %}
+        <select 
+            class="form-select {{ 'border-start-0' if icon else '' }}" 
+            id="{{ field }}" 
+            name="{{ field }}"
+            {{ 'required' if required else '' }}
+        >
+            {{ caller() if caller else '' }}
+        </select>
+        {% elif type == 'file' %}
+        <input 
+            type="file" 
+            class="form-control {{ 'border-start-0' if icon else '' }}" 
+            id="{{ field }}" 
+            name="{{ field }}"
+            {{ 'required' if required else '' }}
+            {% for rule, value in validation_rules.items() %}
+            {{ rule }}="{{ value }}"
+            {% endfor %}
+        >
+        {% elif type == 'checkbox' %}
+        <div class="form-check">
+            <input 
+                type="checkbox" 
+                class="form-check-input" 
+                id="{{ field }}" 
+                name="{{ field }}"
+                {{ 'required' if required else '' }}
+            >
+            <label class="form-check-label" for="{{ field }}">
+                {{ label }}
+            </label>
+        </div>
+        {% elif type == 'radio' %}
+        <div class="form-check">
+            {{ caller() if caller else '' }}
+        </div>
+        {% else %}
+        <input 
+            type="{{ type }}" 
+            class="form-control {{ 'border-start-0' if icon else '' }}" 
+            id="{{ field }}" 
+            name="{{ field }}"
+            placeholder="{{ placeholder }}"
+            {{ 'required' if required else '' }}
+            {% for rule, value in validation_rules.items() %}
+            {{ rule }}="{{ value }}"
+            {% endfor %}
+        >
+        {% endif %}
+    </div>
+    
+    {% if help_text %}
+    <div class="form-text text-muted">{{ help_text }}</div>
+    {% endif %}
+    
+    <div class="invalid-feedback"></div>
+    <div class="valid-feedback"></div>
+</div>
+{% endmacro %}
+
+<!-- Form Container -->
+{% macro render_form_container(form_id, action='', method='POST', enctype='', class='', novalidate=true) %}
+<form 
+    id="{{ form_id }}" 
+    action="{{ action }}" 
+    method="{{ method }}"
+    {% if enctype %}enctype="{{ enctype }}"{% endif %}
+    class="needs-validation {{ class }}"
+    {% if novalidate %}novalidate{% endif %}
+>
+    {{ caller() if caller else '' }}
+</form>
+{% endmacro %}
+
+<!-- Form Actions -->
+{% macro render_form_actions(submit_text='Guardar', cancel_text='Cancelar', submit_class='btn-primary', cancel_class='btn-secondary', show_cancel=true, loading_text='Guardando...') %}
+<div class="form-actions d-flex gap-2 justify-content-end mt-4">
+    {% if show_cancel %}
+    <button type="button" class="btn {{ cancel_class }}" data-action="cancel">
+        {{ cancel_text }}
+    </button>
+    {% endif %}
+    <button type="submit" class="btn {{ submit_class }}" data-loading-text="{{ loading_text }}">
+        <span class="btn-text">{{ submit_text }}</span>
+        <span class="btn-spinner d-none">
+            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            {{ loading_text }}
+        </span>
+    </button>
+</div>
+{% endmacro %}
+
+<!-- Field Group -->
+{% macro render_field_group(title, description='', collapsible=false, collapsed=false) %}
+<div class="field-group mb-4">
+    {% if collapsible %}
+    <div class="field-group-header d-flex align-items-center justify-content-between mb-3" 
+         data-bs-toggle="collapse" 
+         data-bs-target="#fieldGroup{{ loop.index if loop else '1' }}" 
+         style="cursor: pointer;">
+        <div>
+            <h6 class="mb-0 fw-semibold">{{ title }}</h6>
+            {% if description %}
+            <small class="text-muted">{{ description }}</small>
+            {% endif %}
+        </div>
+        <i class="bi bi-chevron-down transition-transform"></i>
+    </div>
+    <div class="collapse {{ 'show' if not collapsed else '' }}" id="fieldGroup{{ loop.index if loop else '1' }}">
+        {{ caller() if caller else '' }}
+    </div>
+    {% else %}
+    <div class="field-group-header mb-3">
+        <h6 class="mb-0 fw-semibold">{{ title }}</h6>
+        {% if description %}
+        <small class="text-muted">{{ description }}</small>
+        {% endif %}
+    </div>
+    <div class="field-group-content">
+        {{ caller() if caller else '' }}
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+<!-- Dynamic Field Template -->
+{% macro render_dynamic_field_template(field_name, field_type='text') %}
+<template id="{{ field_name }}Template">
+    <div class="dynamic-field mb-3" data-field-index="__INDEX__">
+        <div class="input-group">
+            <input 
+                type="{{ field_type }}" 
+                class="form-control" 
+                name="{{ field_name }}[__INDEX__]" 
+                placeholder="Nuevo {{ field_name }}"
+            >
+            <button type="button" class="btn btn-outline-danger" data-action="remove-field">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </div>
+</template>
+{% endmacro %}
+
+<!-- Add Field Button -->
+{% macro render_add_field_button(field_name, button_text='Agregar campo') %}
+<button type="button" class="btn btn-outline-primary btn-sm" data-action="add-field" data-field="{{ field_name }}">
+    <i class="bi bi-plus me-1"></i>
+    {{ button_text }}
+</button>
+{% endmacro %}
+
+<style>
+/* Form Styling */
+.form-group {
+    position: relative;
+}
+
+.form-label {
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input-group-text {
+    border: 1px solid #d1d5db;
+    border-radius: 8px 0 0 8px;
+    background: #f9fafb;
+}
+
+.form-control.border-start-0 {
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+}
+
+.form-control.border-start-0:focus {
+    box-shadow: none;
+}
+
+.input-group:focus-within .input-group-text {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.input-group:focus-within .form-control.border-start-0 {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Validation States */
+.was-validated .form-control:valid,
+.form-control.is-valid {
+    border-color: #10b981;
+    background-image: none;
+}
+
+.was-validated .form-control:invalid,
+.form-control.is-invalid {
+    border-color: #ef4444;
+    background-image: none;
+}
+
+.valid-feedback {
+    color: #10b981;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.invalid-feedback {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Form Actions */
+.form-actions {
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.btn[data-loading-text] .btn-spinner {
+    display: none;
+}
+
+.btn[data-loading-text].loading .btn-text {
+    display: none;
+}
+
+.btn[data-loading-text].loading .btn-spinner {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Field Groups */
+.field-group {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: #fafbfc;
+}
+
+.field-group-header[data-bs-toggle="collapse"] {
+    padding: 0.5rem;
+    margin: -0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.field-group-header[data-bs-toggle="collapse"]:hover {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.field-group-header .bi-chevron-down {
+    transition: transform 0.3s ease;
+}
+
+.field-group-header[aria-expanded="true"] .bi-chevron-down {
+    transform: rotate(180deg);
+}
+
+/* Dynamic Fields */
+.dynamic-field {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* File Input Styling */
+.form-control[type="file"] {
+    padding: 0.5rem 1rem;
+}
+
+.form-control[type="file"]::-webkit-file-upload-button {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 0.375rem 0.75rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.form-control[type="file"]::-webkit-file-upload-button:hover {
+    background: #e5e7eb;
+}
+
+/* Checkbox and Radio Styling */
+.form-check-input {
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+}
+
+.form-check-input:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+    
+    .field-group {
+        padding: 1rem;
+    }
+}
+</style>
+
+<script>
+// Form Validation and Utilities
+window.FormUtils = {
+    // Initialize form validation
+    initValidation: function(formId) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+        
+        form.addEventListener('submit', (e) => {
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        });
+        
+        // Real-time validation
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('blur', () => {
+                this.validateField(input);
+            });
+            
+            input.addEventListener('input', () => {
+                if (input.classList.contains('is-invalid')) {
+                    this.validateField(input);
+                }
+            });
+        });
+    },
+    
+    // Validate individual field
+    validateField: function(field) {
+        const isValid = field.checkValidity();
+        field.classList.remove('is-valid', 'is-invalid');
+        field.classList.add(isValid ? 'is-valid' : 'is-invalid');
+        
+        const feedback = field.parentNode.querySelector('.invalid-feedback');
+        if (feedback && !isValid) {
+            feedback.textContent = field.validationMessage;
+        }
+        
+        return isValid;
+    },
+    
+    // Set loading state
+    setLoading: function(button, loading = true) {
+        if (loading) {
+            button.classList.add('loading');
+            button.disabled = true;
+        } else {
+            button.classList.remove('loading');
+            button.disabled = false;
+        }
+    },
+    
+    // Dynamic field management
+    initDynamicFields: function(container) {
+        container.addEventListener('click', (e) => {
+            if (e.target.matches('[data-action="add-field"]') || e.target.closest('[data-action="add-field"]')) {
+                const button = e.target.closest('[data-action="add-field"]');
+                const fieldName = button.dataset.field;
+                this.addDynamicField(fieldName);
+            }
+            
+            if (e.target.matches('[data-action="remove-field"]') || e.target.closest('[data-action="remove-field"]')) {
+                const field = e.target.closest('.dynamic-field');
+                this.removeDynamicField(field);
+            }
+        });
+    },
+    
+    // Add dynamic field
+    addDynamicField: function(fieldName) {
+        const template = document.getElementById(fieldName + 'Template');
+        if (!template) return;
+        
+        const container = document.querySelector(`[data-dynamic-container="${fieldName}"]`);
+        if (!container) return;
+        
+        const index = container.children.length;
+        const clone = template.content.cloneNode(true);
+        
+        // Replace placeholders
+        clone.innerHTML = clone.innerHTML.replace(/__INDEX__/g, index);
+        
+        container.appendChild(clone);
+    },
+    
+    // Remove dynamic field
+    removeDynamicField: function(field) {
+        field.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            field.remove();
+        }, 300);
+    },
+    
+    // Serialize form data
+    serialize: function(form) {
+        const formData = new FormData(form);
+        const data = {};
+        
+        for (let [key, value] of formData.entries()) {
+            if (data[key]) {
+                if (Array.isArray(data[key])) {
+                    data[key].push(value);
+                } else {
+                    data[key] = [data[key], value];
+                }
+            } else {
+                data[key] = value;
+            }
+        }
+        
+        return data;
+    }
+};
+
+// Auto-initialize forms
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize validation for all forms
+    document.querySelectorAll('form.needs-validation').forEach(form => {
+        FormUtils.initValidation(form.id);
+    });
+    
+    // Initialize dynamic fields
+    document.querySelectorAll('[data-dynamic-fields]').forEach(container => {
+        FormUtils.initDynamicFields(container);
+    });
+});
+
+// CSS for slide out animation
+const style = document.createElement('style');
+style.textContent = `
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 100px;
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+        max-height: 0;
+        margin: 0;
+        padding: 0;
+    }
+}
+`;
+document.head.appendChild(style);
+</script>

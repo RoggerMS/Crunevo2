@@ -1,0 +1,902 @@
+<!-- ObjectiveBlock Component - Enhanced goal tracking with progress and milestones -->
+{% from 'personal_space/components/base/BaseBlock.html' import render_base_block, render_block_header, render_block_content, render_block_footer %}
+
+<!-- Objective Block Card -->
+{% macro render_objective_block(block, editable=true, draggable=true) %}
+{% call render_base_block(
+    block_id='objective-block-' + block.id|string,
+    block_type='objective',
+    title=block.title,
+    editable=editable,
+    draggable=draggable,
+    status=block.status,
+    class='objective-block'
+) %}
+    <!-- Objective Header -->
+    {% call render_block_header() %}
+        <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="objective-header-content">
+                <h6 class="objective-title mb-1">{{ block.title }}</h6>
+                
+                <!-- Objective Type & Category -->
+                <div class="objective-meta">
+                    {% set obj_type = block.metadata.get('type', 'personal') %}
+                    <span class="badge bg-{{ 'primary' if obj_type == 'professional' else 'success' if obj_type == 'personal' else 'info' }}-subtle text-{{ 'primary' if obj_type == 'professional' else 'success' if obj_type == 'personal' else 'info' }}-emphasis badge-sm">
+                        {{ obj_type.title() }}
+                    </span>
+                    
+                    {% if block.metadata.get('category') %}
+                    <span class="text-muted ms-2">
+                        <i class="bi bi-tag me-1"></i>
+                        {{ block.metadata.category }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Progress Circle -->
+            <div class="progress-circle">
+                {% set progress = block.metadata.get('progress', 0) %}
+                <div class="circle-progress" data-progress="{{ progress }}">
+                    <svg class="progress-ring" width="50" height="50">
+                        <circle class="progress-ring-circle" 
+                                cx="25" cy="25" r="20" 
+                                fill="transparent" 
+                                stroke="#e5e7eb" 
+                                stroke-width="4"/>
+                        <circle class="progress-ring-progress" 
+                                cx="25" cy="25" r="20" 
+                                fill="transparent" 
+                                stroke="#3b82f6" 
+                                stroke-width="4"
+                                stroke-dasharray="{{ 2 * 3.14159 * 20 }}"
+                                stroke-dashoffset="{{ 2 * 3.14159 * 20 * (1 - progress / 100) }}"/>
+                    </svg>
+                    <div class="progress-text">{{ progress }}%</div>
+                </div>
+            </div>
+        </div>
+    {% endcall %}
+    
+    <!-- Objective Content -->
+    {% call render_block_content() %}
+        <!-- Objective Description -->
+        {% if block.content %}
+        <div class="objective-description mb-3">
+            <p class="text-muted mb-0">{{ block.content[:120] }}{% if block.content|length > 120 %}...{% endif %}</p>
+        </div>
+        {% endif %}
+        
+        <!-- Key Metrics -->
+        {% set metrics = block.metadata.get('key_metrics', []) %}
+        {% if metrics %}
+        <div class="key-metrics mb-3">
+            <div class="row g-2">
+                {% for metric in metrics[:2] %}
+                <div class="col-6">
+                    <div class="metric-card">
+                        <div class="metric-value">{{ metric.current_value }}/{{ metric.target_value }}</div>
+                        <div class="metric-label">{{ metric.name }}</div>
+                        <div class="metric-progress">
+                            {% set metric_progress = (metric.current_value / metric.target_value * 100) if metric.target_value > 0 else 0 %}
+                            <div class="progress" style="height: 3px;">
+                                <div class="progress-bar bg-primary" 
+                                     style="width: {{ metric_progress }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Milestones Preview -->
+        {% set milestones = block.metadata.get('milestones', []) %}
+        {% if milestones %}
+        <div class="milestones-preview mb-3">
+            <h6 class="milestones-title mb-2">
+                <i class="bi bi-flag text-primary me-1"></i>
+                Hitos ({{ milestones | selectattr('completed', 'equalto', true) | list | length }}/{{ milestones|length }})
+            </h6>
+            
+            <div class="milestone-list">
+                {% for milestone in milestones[:3] %}
+                <div class="milestone-item {{ 'completed' if milestone.completed else '' }}">
+                    <div class="milestone-indicator">
+                        {% if milestone.completed %}
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        {% else %}
+                        <i class="bi bi-circle text-muted"></i>
+                        {% endif %}
+                    </div>
+                    <div class="milestone-content">
+                        <div class="milestone-name">{{ milestone.name }}</div>
+                        {% if milestone.due_date %}
+                        <div class="milestone-date">
+                            <i class="bi bi-calendar-event me-1"></i>
+                            {{ milestone.due_date }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                
+                {% if milestones|length > 3 %}
+                <div class="more-milestones text-center">
+                    <small class="text-muted">+{{ milestones|length - 3 }} hitos más</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Timeline Info -->
+        <div class="timeline-info">
+            <div class="row g-2">
+                <!-- Start Date -->
+                {% if block.metadata.get('start_date') %}
+                <div class="col-6">
+                    <div class="timeline-item">
+                        <i class="bi bi-play-circle text-success me-1"></i>
+                        <span class="timeline-label">Inicio:</span>
+                        <span class="timeline-value">{{ block.metadata.start_date }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Target Date -->
+                {% if block.metadata.get('target_date') %}
+                <div class="col-6">
+                    <div class="timeline-item">
+                        <i class="bi bi-flag-fill text-primary me-1"></i>
+                        <span class="timeline-label">Meta:</span>
+                        <span class="timeline-value">{{ block.metadata.target_date }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Priority -->
+                {% if block.metadata.get('priority') %}
+                <div class="col-6">
+                    <div class="timeline-item">
+                        {% set priority = block.metadata.priority %}
+                        <i class="bi bi-exclamation-triangle-fill text-{{ 'danger' if priority == 'high' else 'warning' if priority == 'medium' else 'info' }} me-1"></i>
+                        <span class="timeline-label">Prioridad:</span>
+                        <span class="timeline-value">{{ priority.title() }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Status -->
+                <div class="col-6">
+                    <div class="timeline-item">
+                        {% set obj_status = block.metadata.get('status', 'in_progress') %}
+                        <i class="bi bi-{{ 'check-circle-fill text-success' if obj_status == 'completed' else 'pause-circle-fill text-warning' if obj_status == 'paused' else 'play-circle-fill text-primary' }} me-1"></i>
+                        <span class="timeline-label">Estado:</span>
+                        <span class="timeline-value">{{ {'in_progress': 'En progreso', 'completed': 'Completado', 'paused': 'Pausado', 'not_started': 'No iniciado'}.get(obj_status, obj_status.title()) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endcall %}
+    
+    <!-- Objective Footer -->
+    {% call render_block_footer() %}
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="objective-timestamps">
+                <small class="text-muted">
+                    {% if block.updated_at %}
+                    Actualizado {{ block.updated_at.strftime('%d/%m/%Y') }}
+                    {% else %}
+                    Creado {{ block.created_at.strftime('%d/%m/%Y') }}
+                    {% endif %}
+                </small>
+            </div>
+            
+            <div class="objective-actions">
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" 
+                            class="btn btn-outline-primary" 
+                            onclick="openObjectiveDetails('{{ block.id }}')">
+                        <i class="bi bi-eye me-1"></i>
+                        Ver
+                    </button>
+                    <button type="button" 
+                            class="btn btn-outline-success" 
+                            onclick="updateProgress('{{ block.id }}')">
+                        <i class="bi bi-arrow-up-circle"></i>
+                    </button>
+                    <button type="button" 
+                            class="btn btn-outline-secondary" 
+                            onclick="editObjective('{{ block.id }}')">
+                        <i class="bi bi-gear"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    {% endcall %}
+{% endcall %}
+{% endmacro %}
+
+<!-- Objective List Item -->
+{% macro render_objective_list_item(objective, show_progress=true) %}
+<div class="objective-list-item" data-objective-id="{{ objective.id }}">
+    <div class="d-flex align-items-center">
+        <!-- Progress Indicator -->
+        {% if show_progress %}
+        <div class="progress-indicator me-3">
+            {% set progress = objective.metadata.get('progress', 0) %}
+            <div class="mini-progress-circle" data-progress="{{ progress }}">
+                <svg width="32" height="32">
+                    <circle cx="16" cy="16" r="12" 
+                            fill="transparent" 
+                            stroke="#e5e7eb" 
+                            stroke-width="3"/>
+                    <circle cx="16" cy="16" r="12" 
+                            fill="transparent" 
+                            stroke="#3b82f6" 
+                            stroke-width="3"
+                            stroke-dasharray="{{ 2 * 3.14159 * 12 }}"
+                            stroke-dashoffset="{{ 2 * 3.14159 * 12 * (1 - progress / 100) }}"/>
+                </svg>
+                <div class="mini-progress-text">{{ progress }}%</div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Objective Info -->
+        <div class="objective-info flex-grow-1">
+            <h6 class="objective-name mb-1">{{ objective.title }}</h6>
+            
+            <div class="objective-details">
+                <!-- Type & Category -->
+                <span class="badge bg-primary-subtle text-primary-emphasis badge-sm me-2">
+                    {{ objective.metadata.get('type', 'personal').title() }}
+                </span>
+                
+                <!-- Target Date -->
+                {% if objective.metadata.get('target_date') %}
+                <span class="text-muted">
+                    <i class="bi bi-calendar-event me-1"></i>
+                    {{ objective.metadata.target_date }}
+                </span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="objective-actions">
+            <div class="btn-group btn-group-sm" role="group">
+                <button type="button" 
+                        class="btn btn-outline-primary" 
+                        onclick="openObjectiveDetails('{{ objective.id }}')">
+                    <i class="bi bi-eye"></i>
+                </button>
+                <button type="button" 
+                        class="btn btn-outline-success" 
+                        onclick="updateProgress('{{ objective.id }}')">
+                    <i class="bi bi-arrow-up-circle"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+<!-- Quick Add Objective Form -->
+{% macro render_quick_add_objective() %}
+<div class="quick-add-objective" id="quick-add-objective">
+    <form class="quick-add-form" onsubmit="addObjective(event)">
+        <div class="mb-3">
+            <label for="objective-title" class="form-label">Título del objetivo</label>
+            <input type="text" 
+                   class="form-control" 
+                   id="objective-title" 
+                   name="title" 
+                   placeholder="Ej: Aprender Python en 3 meses"
+                   required>
+        </div>
+        
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label for="objective-type" class="form-label">Tipo</label>
+                <select class="form-select" id="objective-type" name="type">
+                    <option value="personal">Personal</option>
+                    <option value="professional">Profesional</option>
+                    <option value="health">Salud</option>
+                    <option value="learning">Aprendizaje</option>
+                    <option value="financial">Financiero</option>
+                </select>
+            </div>
+            
+            <div class="col-md-6">
+                <label for="objective-priority" class="form-label">Prioridad</label>
+                <select class="form-select" id="objective-priority" name="priority">
+                    <option value="low">Baja</option>
+                    <option value="medium" selected>Media</option>
+                    <option value="high">Alta</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label for="objective-start-date" class="form-label">Fecha de inicio</label>
+                <input type="date" 
+                       class="form-control" 
+                       id="objective-start-date" 
+                       name="start_date">
+            </div>
+            
+            <div class="col-md-6">
+                <label for="objective-target-date" class="form-label">Fecha objetivo</label>
+                <input type="date" 
+                       class="form-control" 
+                       id="objective-target-date" 
+                       name="target_date">
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <label for="objective-description" class="form-label">Descripción</label>
+            <textarea class="form-control" 
+                      id="objective-description" 
+                      name="description" 
+                      rows="3" 
+                      placeholder="Describe tu objetivo y cómo planeas alcanzarlo..."></textarea>
+        </div>
+        
+        <div class="d-flex justify-content-end gap-2">
+            <button type="button" 
+                    class="btn btn-outline-secondary" 
+                    onclick="cancelAddObjective()">
+                Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-plus me-1"></i>
+                Crear Objetivo
+            </button>
+        </div>
+    </form>
+</div>
+{% endmacro %}
+
+<style>
+/* Objective Block Styles */
+.objective-block {
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-left: 4px solid #3b82f6;
+}
+
+.objective-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+    border-left-color: #2563eb;
+}
+
+/* Objective Header */
+.objective-title {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.objective-meta .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Progress Circle */
+.progress-circle {
+    position: relative;
+}
+
+.circle-progress {
+    position: relative;
+    display: inline-block;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+    transition: stroke-dashoffset 0.6s ease;
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #3b82f6;
+}
+
+/* Mini Progress Circle */
+.mini-progress-circle {
+    position: relative;
+    display: inline-block;
+}
+
+.mini-progress-circle svg {
+    transform: rotate(-90deg);
+}
+
+.mini-progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: #3b82f6;
+}
+
+/* Objective Description */
+.objective-description {
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* Key Metrics */
+.key-metrics .metric-card {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.metric-label {
+    font-size: 0.7rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.metric-progress .progress {
+    border-radius: 2px;
+    background: #e5e7eb;
+}
+
+/* Milestones */
+.milestones-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.milestone-list {
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.milestone-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.milestone-item:last-child {
+    border-bottom: none;
+}
+
+.milestone-item.completed {
+    opacity: 0.7;
+}
+
+.milestone-item.completed .milestone-name {
+    text-decoration: line-through;
+}
+
+.milestone-indicator {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+.milestone-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.milestone-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+    line-height: 1.3;
+}
+
+.milestone-date {
+    font-size: 0.7rem;
+    color: #6b7280;
+}
+
+.more-milestones {
+    padding: 0.5rem 0;
+    border-top: 1px solid #f3f4f6;
+}
+
+/* Timeline Info */
+.timeline-info {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.75rem;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-label {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.timeline-value {
+    color: #374151;
+    font-weight: 600;
+}
+
+/* Objective List Item */
+.objective-list-item {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.objective-list-item:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.objective-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.objective-details {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* Quick Add Form */
+.quick-add-objective {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.quick-add-form .form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.quick-add-form .form-control,
+.quick-add-form .form-select {
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    transition: border-color 0.2s ease;
+}
+
+.quick-add-form .form-control:focus,
+.quick-add-form .form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .progress-circle {
+        display: none;
+    }
+    
+    .objective-header-content {
+        width: 100%;
+    }
+    
+    .key-metrics .row {
+        flex-direction: column;
+    }
+    
+    .timeline-info .row {
+        flex-direction: column;
+    }
+    
+    .objective-list-item .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .objective-actions {
+        align-self: flex-start;
+    }
+}
+
+/* Animation */
+@keyframes progressUpdate {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.progress-updated {
+    animation: progressUpdate 0.6s ease;
+}
+
+@keyframes milestoneCompleted {
+    0% {
+        background: transparent;
+    }
+    50% {
+        background: rgba(34, 197, 94, 0.1);
+    }
+    100% {
+        background: transparent;
+    }
+}
+
+.milestone-completed {
+    animation: milestoneCompleted 1s ease;
+}
+</style>
+
+<script>
+// Objective Block JavaScript
+window.ObjectiveBlock = {
+    // Initialize objective functionality
+    init: function() {
+        this.bindEvents();
+        this.initProgressCircles();
+    },
+    
+    // Bind event listeners
+    bindEvents: function() {
+        // Progress update events
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('[onclick*="updateProgress"]')) {
+                e.preventDefault();
+                const button = e.target.closest('button');
+                const objectiveId = this.extractIdFromOnclick(button.getAttribute('onclick'));
+                this.showProgressUpdateModal(objectiveId);
+            }
+        });
+    },
+    
+    // Initialize progress circles
+    initProgressCircles: function() {
+        document.querySelectorAll('.circle-progress, .mini-progress-circle').forEach(circle => {
+            const progress = parseInt(circle.dataset.progress) || 0;
+            this.animateProgress(circle, progress);
+        });
+    },
+    
+    // Animate progress circle
+    animateProgress: function(circle, targetProgress) {
+        const progressRing = circle.querySelector('.progress-ring-progress');
+        const progressText = circle.querySelector('.progress-text, .mini-progress-text');
+        
+        if (!progressRing) return;
+        
+        const radius = parseFloat(progressRing.getAttribute('r'));
+        const circumference = 2 * Math.PI * radius;
+        
+        // Set initial state
+        progressRing.style.strokeDasharray = circumference;
+        progressRing.style.strokeDashoffset = circumference;
+        
+        // Animate to target
+        let currentProgress = 0;
+        const increment = targetProgress / 60; // 60 frames for smooth animation
+        
+        const animate = () => {
+            if (currentProgress < targetProgress) {
+                currentProgress += increment;
+                const offset = circumference - (currentProgress / 100) * circumference;
+                progressRing.style.strokeDashoffset = offset;
+                
+                if (progressText) {
+                    progressText.textContent = Math.round(currentProgress) + '%';
+                }
+                
+                requestAnimationFrame(animate);
+            } else {
+                // Ensure final values
+                const finalOffset = circumference - (targetProgress / 100) * circumference;
+                progressRing.style.strokeDashoffset = finalOffset;
+                
+                if (progressText) {
+                    progressText.textContent = targetProgress + '%';
+                }
+            }
+        };
+        
+        requestAnimationFrame(animate);
+    },
+    
+    // Show progress update modal
+    showProgressUpdateModal: function(objectiveId) {
+        // This would show a modal for updating progress
+        const newProgress = prompt('Ingresa el nuevo progreso (0-100):');
+        
+        if (newProgress !== null && !isNaN(newProgress)) {
+            const progress = Math.max(0, Math.min(100, parseInt(newProgress)));
+            this.updateObjectiveProgress(objectiveId, progress);
+        }
+    },
+    
+    // Update objective progress
+    updateObjectiveProgress: async function(objectiveId, progress) {
+        try {
+            const response = await fetch(`/personal_space/objectives/${objectiveId}/progress`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify({ progress })
+            });
+            
+            if (response.ok) {
+                // Update UI
+                this.updateProgressInUI(objectiveId, progress);
+                
+                // Show success feedback
+                this.showProgressUpdateFeedback(objectiveId, progress);
+            } else {
+                throw new Error('Failed to update progress');
+            }
+        } catch (error) {
+            console.error('Error updating progress:', error);
+            alert('Error al actualizar el progreso. Inténtalo de nuevo.');
+        }
+    },
+    
+    // Update progress in UI
+    updateProgressInUI: function(objectiveId, progress) {
+        // Update progress circles
+        document.querySelectorAll(`[data-objective-id="${objectiveId}"] .circle-progress, [data-objective-id="${objectiveId}"] .mini-progress-circle`).forEach(circle => {
+            circle.dataset.progress = progress;
+            this.animateProgress(circle, progress);
+            circle.classList.add('progress-updated');
+            
+            setTimeout(() => {
+                circle.classList.remove('progress-updated');
+            }, 600);
+        });
+        
+        // Update progress text
+        document.querySelectorAll(`[data-objective-id="${objectiveId}"] .progress-text`).forEach(text => {
+            text.textContent = progress + '%';
+        });
+    },
+    
+    // Show progress update feedback
+    showProgressUpdateFeedback: function(objectiveId, progress) {
+        // Create temporary feedback element
+        const feedback = document.createElement('div');
+        feedback.className = 'progress-feedback';
+        feedback.innerHTML = `
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle me-2"></i>
+                Progreso actualizado a ${progress}%
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        // Add to page
+        document.body.appendChild(feedback);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            feedback.remove();
+        }, 3000);
+    },
+    
+    // Extract ID from onclick attribute
+    extractIdFromOnclick: function(onclickStr) {
+        const match = onclickStr.match(/'([^']+)'/);
+        return match ? match[1] : null;
+    },
+    
+    // Utility functions
+    getCSRFToken: function() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    }
+};
+
+// Global functions for template usage
+window.openObjectiveDetails = function(objectiveId) {
+    window.location.href = `/personal_space/objectives/${objectiveId}`;
+};
+
+window.editObjective = function(objectiveId) {
+    window.location.href = `/personal_space/objectives/${objectiveId}/edit`;
+};
+
+window.updateProgress = function(objectiveId) {
+    window.ObjectiveBlock.showProgressUpdateModal(objectiveId);
+};
+
+window.addObjective = async function(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    
+    try {
+        const response = await fetch('/personal_space/objectives', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': window.ObjectiveBlock.getCSRFToken()
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            // Reset form
+            form.reset();
+            
+            // Hide form
+            document.getElementById('quick-add-objective').style.display = 'none';
+            
+            // Reload page or update UI
+            location.reload();
+        } else {
+            throw new Error('Failed to create objective');
+        }
+    } catch (error) {
+        console.error('Error creating objective:', error);
+        alert('Error al crear el objetivo. Inténtalo de nuevo.');
+    }
+};
+
+window.cancelAddObjective = function() {
+    document.getElementById('quick-add-objective').style.display = 'none';
+};
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    window.ObjectiveBlock.init();
+});
+</script>

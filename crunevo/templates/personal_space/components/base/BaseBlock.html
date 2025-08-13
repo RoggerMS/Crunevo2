@@ -1,0 +1,222 @@
+<!-- BaseBlock Component - Universal foundation for all block types -->
+{% macro render_base_block(block, block_class='', block_icon='bi bi-square', content_template=None) %}
+<div class="base-block {{ block_class }} block-type-{{ block.type }}" 
+     data-block-id="{{ block.id }}" 
+     data-block-type="{{ block.type }}"
+     data-order="{{ block.order_index or 0 }}">
+    
+    <!-- Universal Header -->
+    <div class="block-header d-flex justify-content-between align-items-start p-3 border-bottom">
+        <div class="block-info d-flex align-items-start flex-grow-1">
+            <div class="block-icon me-3">
+                <i class="{{ block_icon }} text-primary fs-5"></i>
+            </div>
+            <div class="block-meta flex-grow-1">
+                <h6 class="block-title mb-1 fw-semibold">{{ block.title or 'Sin título' }}</h6>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="block-type-badge badge bg-light text-dark">{{ block.type|title }}</span>
+                    {% if block.metadata and block.metadata.get('tags') %}
+                    <div class="block-tags d-flex gap-1">
+                        {% for tag in block.metadata.get('tags', [])[:3] %}
+                        <span class="tag-pill badge bg-secondary bg-opacity-10 text-secondary">{{ tag }}</span>
+                        {% endfor %}
+                        {% if block.metadata.get('tags')|length > 3 %}
+                        <span class="tag-pill badge bg-secondary bg-opacity-10 text-secondary">+{{ block.metadata.get('tags')|length - 3 }}</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Universal Actions -->
+        <div class="block-actions d-flex gap-1">
+            <button class="btn btn-ghost btn-sm" 
+                    onclick="editBlock('{{ block.id }}')"
+                    aria-label="Editar bloque" 
+                    title="Editar">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <div class="dropdown">
+                <button class="btn btn-ghost btn-sm" 
+                        type="button" 
+                        data-bs-toggle="dropdown" 
+                        aria-expanded="false"
+                        aria-label="Más opciones">
+                    <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#" onclick="duplicateBlock('{{ block.id }}')"><i class="bi bi-files me-2"></i>Duplicar</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="shareBlock('{{ block.id }}')"><i class="bi bi-share me-2"></i>Compartir</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportBlock('{{ block.id }}')"><i class="bi bi-download me-2"></i>Exportar</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#" onclick="deleteBlock('{{ block.id }}')"><i class="bi bi-trash me-2"></i>Eliminar</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Content Slot -->
+    <div class="block-content p-3">
+        {% if content_template %}
+            {% include content_template %}
+        {% else %}
+            {% block block_content %}
+            <div class="default-content text-muted">
+                <p>{{ block.content[:200] }}{% if block.content and block.content|length > 200 %}...{% endif %}</p>
+            </div>
+            {% endblock %}
+        {% endif %}
+    </div>
+    
+    <!-- Universal Footer -->
+    <div class="block-footer d-flex justify-content-between align-items-center p-3 pt-0">
+        <div class="block-metadata d-flex align-items-center gap-3">
+            {% if block.metadata and block.metadata.get('priority') %}
+            <span class="priority-indicator d-flex align-items-center gap-1 priority-{{ block.metadata.get('priority') }}">
+                <i class="bi bi-flag-fill"></i>
+                <small>{{ block.metadata.get('priority')|title }}</small>
+            </span>
+            {% endif %}
+            
+            {% if block.metadata and block.metadata.get('due_date') %}
+            {% set due_date = block.metadata.get('due_date') %}
+            {% set is_overdue = due_date and due_date < moment().format('YYYY-MM-DD') %}
+            <span class="due-date d-flex align-items-center gap-1 {{ 'text-danger' if is_overdue else 'text-warning' }}">
+                <i class="bi bi-calendar"></i>
+                <small>{{ due_date }}</small>
+            </span>
+            {% endif %}
+            
+            {% if block.metadata and block.metadata.get('attachments') %}
+            <span class="attachments-count d-flex align-items-center gap-1 text-muted">
+                <i class="bi bi-paperclip"></i>
+                <small>{{ block.metadata.get('attachments')|length }}</small>
+            </span>
+            {% endif %}
+        </div>
+        
+        <div class="block-stats d-flex align-items-center gap-2">
+            {% if block.metadata and block.metadata.get('progress') %}
+            <div class="progress-indicator" style="width: 60px; height: 4px;">
+                <div class="progress" style="height: 100%;">
+                    <div class="progress-bar bg-success" 
+                         role="progressbar" 
+                         style="width: {{ block.metadata.get('progress', 0) }}%"
+                         aria-valuenow="{{ block.metadata.get('progress', 0) }}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100"></div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <small class="text-muted d-flex align-items-center gap-1">
+                <i class="bi bi-clock"></i>
+                <span title="{{ block.updated_at.strftime('%d/%m/%Y %H:%M') if block.updated_at else '' }}">
+                    {{ moment(block.updated_at).fromNow() if block.updated_at else 'Hace un momento' }}
+                </span>
+            </small>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+<!-- Drag Handle Component -->
+{% macro render_drag_handle() %}
+<div class="drag-handle position-absolute top-0 start-0 p-2 opacity-0 transition-opacity" 
+     style="cursor: grab;"
+     title="Arrastrar para reordenar">
+    <i class="bi bi-grip-vertical text-muted"></i>
+</div>
+{% endmacro %}
+
+<!-- Block Status Indicator -->
+{% macro render_status_indicator(status) %}
+{% set status_config = {
+    'active': {'icon': 'bi-circle', 'color': 'text-primary', 'label': 'Activo'},
+    'completed': {'icon': 'bi-check-circle-fill', 'color': 'text-success', 'label': 'Completado'},
+    'archived': {'icon': 'bi-archive', 'color': 'text-secondary', 'label': 'Archivado'},
+    'deleted': {'icon': 'bi-trash', 'color': 'text-danger', 'label': 'Eliminado'}
+} %}
+{% set config = status_config.get(status, status_config['active']) %}
+<span class="status-indicator {{ config.color }}" title="{{ config.label }}">
+    <i class="{{ config.icon }}"></i>
+</span>
+{% endmacro %}
+
+<style>
+.base-block {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.base-block:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.base-block:hover .drag-handle {
+    opacity: 1;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    padding: 0.375rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-ghost:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.tag-pill {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+}
+
+.priority-alta {
+    color: #dc2626;
+}
+
+.priority-media {
+    color: #f59e0b;
+}
+
+.priority-baja {
+    color: #10b981;
+}
+
+.block-type-tarea {
+    border-left: 4px solid #3b82f6;
+}
+
+.block-type-nota {
+    border-left: 4px solid #10b981;
+}
+
+.block-type-objetivo {
+    border-left: 4px solid #f59e0b;
+}
+
+.block-type-kanban {
+    border-left: 4px solid #8b5cf6;
+}
+
+.block-type-lista {
+    border-left: 4px solid #06b6d4;
+}
+
+.transition-opacity {
+    transition: opacity 0.2s ease;
+}
+</style>

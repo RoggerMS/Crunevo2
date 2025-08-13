@@ -1,0 +1,997 @@
+<!-- KanbanBlock Component - Enhanced kanban board with drag-and-drop -->
+{% from 'personal_space/components/base/BaseBlock.html' import render_base_block, render_block_header, render_block_content, render_block_footer %}
+
+<!-- Kanban Block Card -->
+{% macro render_kanban_block(block, editable=true, draggable=true) %}
+{% call render_base_block(
+    block_id='kanban-block-' + block.id|string,
+    block_type='kanban',
+    title=block.title,
+    editable=editable,
+    draggable=draggable,
+    status=block.status,
+    class='kanban-block'
+) %}
+    <!-- Kanban Header -->
+    {% call render_block_header() %}
+        <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="kanban-header-content">
+                <h6 class="kanban-title mb-1">{{ block.title }}</h6>
+                
+                <!-- Project Info -->
+                {% if block.metadata.get('project_info') %}
+                <div class="project-info">
+                    <span class="badge bg-info-subtle text-info-emphasis badge-sm">
+                        {{ block.metadata.project_info.get('type', 'Proyecto') }}
+                    </span>
+                    {% if block.metadata.project_info.get('deadline') %}
+                    <span class="text-muted ms-2">
+                        <i class="bi bi-calendar-event me-1"></i>
+                        {{ block.metadata.project_info.deadline }}
+                    </span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Board Stats -->
+            <div class="board-stats">
+                {% set columns = block.metadata.get('columns', []) %}
+                {% set total_cards = columns | sum(attribute='cards') | length if columns else 0 %}
+                <span class="stat-badge">
+                    <i class="bi bi-kanban text-primary me-1"></i>
+                    {{ total_cards }} tarjetas
+                </span>
+            </div>
+        </div>
+    {% endcall %}
+    
+    <!-- Kanban Content -->
+    {% call render_block_content() %}
+        <!-- Kanban Board Preview -->
+        <div class="kanban-preview">
+            {% set columns = block.metadata.get('columns', []) %}
+            {% if columns %}
+            <div class="kanban-columns-preview">
+                {% for column in columns[:3] %}
+                <div class="column-preview">
+                    <div class="column-header">
+                        <h6 class="column-title">{{ column.name }}</h6>
+                        <span class="card-count">{{ column.cards|length if column.cards else 0 }}</span>
+                    </div>
+                    
+                    <!-- Column Cards Preview -->
+                    <div class="column-cards">
+                        {% for card in (column.cards or [])[:2] %}
+                        <div class="card-preview">
+                            <div class="card-title">{{ card.title }}</div>
+                            {% if card.priority %}
+                            <div class="card-priority priority-{{ card.priority }}"></div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        {% if (column.cards or [])|length > 2 %}
+                        <div class="more-cards">+{{ (column.cards|length) - 2 }} más</div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                
+                {% if columns|length > 3 %}
+                <div class="more-columns">
+                    <div class="more-indicator">
+                        <i class="bi bi-three-dots"></i>
+                        <span>+{{ columns|length - 3 }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="empty-kanban text-center py-4">
+                <i class="bi bi-kanban text-muted fs-3 mb-2"></i>
+                <p class="text-muted mb-0">Tablero Kanban vacío</p>
+                <small class="text-muted">Agrega columnas para comenzar</small>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Progress Overview -->
+        {% if columns %}
+        <div class="progress-overview mt-3">
+            {% set total_cards = columns | sum(attribute='cards') | length if columns else 0 %}
+            {% set completed_cards = columns | selectattr('name', 'equalto', 'Completado') | first %}
+            {% set completed_count = completed_cards.cards|length if completed_cards and completed_cards.cards else 0 %}
+            
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <small class="text-muted fw-medium">Progreso del proyecto</small>
+                <small class="text-primary fw-semibold">
+                    {{ "%.0f"|format((completed_count / total_cards * 100) if total_cards > 0 else 0) }}%
+                </small>
+            </div>
+            
+            <div class="progress" style="height: 6px;">
+                <div class="progress-bar bg-primary" 
+                     style="width: {{ (completed_count / total_cards * 100) if total_cards > 0 else 0 }}%">
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Kanban Metadata -->
+        <div class="kanban-metadata mt-3">
+            <div class="row g-2">
+                <!-- Team Members -->
+                {% if block.metadata.get('team_members') %}
+                <div class="col-auto">
+                    <div class="metadata-item">
+                        <i class="bi bi-people text-muted me-1"></i>
+                        <span class="metadata-text">{{ block.metadata.team_members|length }} miembros</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Columns Count -->
+                <div class="col-auto">
+                    <div class="metadata-item">
+                        <i class="bi bi-columns text-muted me-1"></i>
+                        <span class="metadata-text">{{ columns|length }} columnas</span>
+                    </div>
+                </div>
+                
+                <!-- Last Activity -->
+                {% if block.metadata.get('last_activity') %}
+                <div class="col-auto">
+                    <div class="metadata-item">
+                        <i class="bi bi-clock text-muted me-1"></i>
+                        <span class="metadata-text">{{ block.metadata.last_activity }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endcall %}
+    
+    <!-- Kanban Footer -->
+    {% call render_block_footer() %}
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="kanban-timestamps">
+                <small class="text-muted">
+                    {% if block.updated_at %}
+                    Actualizado {{ block.updated_at.strftime('%d/%m/%Y') }}
+                    {% else %}
+                    Creado {{ block.created_at.strftime('%d/%m/%Y') }}
+                    {% endif %}
+                </small>
+            </div>
+            
+            <div class="kanban-actions">
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" 
+                            class="btn btn-outline-primary" 
+                            onclick="openKanbanBoard('{{ block.id }}')">
+                        <i class="bi bi-kanban me-1"></i>
+                        Abrir
+                    </button>
+                    <button type="button" 
+                            class="btn btn-outline-secondary" 
+                            onclick="editKanban('{{ block.id }}')">
+                        <i class="bi bi-gear"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    {% endcall %}
+{% endcall %}
+{% endmacro %}
+
+<!-- Full Kanban Board View -->
+{% macro render_kanban_board(block) %}
+<div class="kanban-board" id="kanban-{{ block.id }}" data-kanban-id="{{ block.id }}">
+    <!-- Board Header -->
+    <div class="board-header mb-4">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <h4 class="board-title mb-1">{{ block.title }}</h4>
+                {% if block.content %}
+                <p class="board-description text-muted mb-0">{{ block.content }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="board-actions">
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="addColumn('{{ block.id }}')">
+                    <i class="bi bi-plus me-1"></i>
+                    Agregar Columna
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="boardSettings('{{ block.id }}')">
+                    <i class="bi bi-gear"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Kanban Columns -->
+    <div class="kanban-columns" id="kanban-columns-{{ block.id }}">
+        {% set columns = block.metadata.get('columns', []) %}
+        {% for column in columns %}
+        {{ render_kanban_column(column, loop.index0, block.id) }}
+        {% endfor %}
+    </div>
+</div>
+{% endmacro %}
+
+<!-- Kanban Column -->
+{% macro render_kanban_column(column, column_index, board_id) %}
+<div class="kanban-column" 
+     data-column-id="{{ column.id or column_index }}" 
+     data-board-id="{{ board_id }}">
+    
+    <!-- Column Header -->
+    <div class="column-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="column-info">
+                <h6 class="column-title mb-0">{{ column.name }}</h6>
+                <span class="card-count">{{ (column.cards or [])|length }}</span>
+            </div>
+            
+            <div class="column-actions">
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                            type="button" 
+                            data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="addCard('{{ board_id }}', '{{ column.id or column_index }}')">Agregar tarjeta</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="editColumn('{{ board_id }}', '{{ column.id or column_index }}')">Editar columna</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteColumn('{{ board_id }}', '{{ column.id or column_index }}')">Eliminar</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Column Cards -->
+    <div class="column-cards" 
+         data-column-id="{{ column.id or column_index }}"
+         data-sortable="true">
+        {% for card in (column.cards or []) %}
+        {{ render_kanban_card(card, loop.index0, column.id or column_index, board_id) }}
+        {% endfor %}
+    </div>
+    
+    <!-- Add Card Button -->
+    <div class="add-card-area">
+        <button type="button" 
+                class="btn btn-outline-primary btn-sm w-100" 
+                onclick="addCard('{{ board_id }}', '{{ column.id or column_index }}')">
+            <i class="bi bi-plus me-1"></i>
+            Agregar tarjeta
+        </button>
+    </div>
+</div>
+{% endmacro %}
+
+<!-- Kanban Card -->
+{% macro render_kanban_card(card, card_index, column_id, board_id) %}
+<div class="kanban-card" 
+     data-card-id="{{ card.id or card_index }}"
+     data-column-id="{{ column_id }}"
+     data-board-id="{{ board_id }}"
+     draggable="true">
+    
+    <!-- Card Header -->
+    <div class="card-header">
+        <div class="d-flex align-items-start justify-content-between">
+            <h6 class="card-title mb-1">{{ card.title }}</h6>
+            
+            {% if card.priority %}
+            <div class="priority-indicator priority-{{ card.priority }}" 
+                 title="Prioridad {{ card.priority }}">
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Card Content -->
+    {% if card.description %}
+    <div class="card-content">
+        <p class="card-description mb-2">{{ card.description[:80] }}{% if card.description|length > 80 %}...{% endif %}</p>
+    </div>
+    {% endif %}
+    
+    <!-- Card Labels -->
+    {% if card.labels %}
+    <div class="card-labels mb-2">
+        {% for label in card.labels[:3] %}
+        <span class="label" style="background-color: {{ label.color or '#6b7280' }}">
+            {{ label.name }}
+        </span>
+        {% endfor %}
+        {% if card.labels|length > 3 %}
+        <span class="label-more">+{{ card.labels|length - 3 }}</span>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Card Footer -->
+    <div class="card-footer">
+        <div class="d-flex align-items-center justify-content-between">
+            <!-- Card Meta -->
+            <div class="card-meta">
+                {% if card.due_date %}
+                <span class="meta-item {{ 'overdue' if card.due_date < now().strftime('%Y-%m-%d') else '' }}">
+                    <i class="bi bi-calendar-event"></i>
+                    {{ card.due_date }}
+                </span>
+                {% endif %}
+                
+                {% if card.attachments_count %}
+                <span class="meta-item">
+                    <i class="bi bi-paperclip"></i>
+                    {{ card.attachments_count }}
+                </span>
+                {% endif %}
+                
+                {% if card.comments_count %}
+                <span class="meta-item">
+                    <i class="bi bi-chat"></i>
+                    {{ card.comments_count }}
+                </span>
+                {% endif %}
+            </div>
+            
+            <!-- Assigned Users -->
+            {% if card.assigned_users %}
+            <div class="assigned-users">
+                {% for user in card.assigned_users[:2] %}
+                <div class="user-avatar" title="{{ user.name }}">
+                    {% if user.avatar %}
+                    <img src="{{ user.avatar }}" alt="{{ user.name }}">
+                    {% else %}
+                    <div class="avatar-placeholder">{{ user.name[0] }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% if card.assigned_users|length > 2 %}
+                <div class="user-avatar more-users">
+                    <span>+{{ card.assigned_users|length - 2 }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+<style>
+/* Kanban Block Styles */
+.kanban-block {
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.kanban-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Kanban Header */
+.kanban-title {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.project-info .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.stat-badge {
+    background: #f3f4f6;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+/* Kanban Preview */
+.kanban-columns-preview {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+}
+
+.column-preview {
+    min-width: 120px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.75rem;
+    flex-shrink: 0;
+}
+
+.column-header {
+    display: flex;
+    align-items: center;
+    justify-content: between;
+    margin-bottom: 0.5rem;
+}
+
+.column-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+    flex: 1;
+}
+
+.card-count {
+    background: #e5e7eb;
+    color: #6b7280;
+    font-size: 0.7rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.card-preview {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 0.5rem;
+    margin-bottom: 0.25rem;
+    position: relative;
+}
+
+.card-preview .card-title {
+    font-size: 0.7rem;
+    color: #374151;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.card-priority {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.priority-high { background: #ef4444; }
+.priority-medium { background: #f59e0b; }
+.priority-low { background: #10b981; }
+
+.more-cards {
+    text-align: center;
+    font-size: 0.7rem;
+    color: #6b7280;
+    padding: 0.25rem;
+}
+
+.more-columns {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+    background: #f3f4f6;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.more-indicator {
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.75rem;
+}
+
+.empty-kanban {
+    background: #f9fafb;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+/* Progress Overview */
+.progress-overview .progress {
+    border-radius: 3px;
+    background: #f3f4f6;
+}
+
+.progress-overview .progress-bar {
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
+
+/* Full Kanban Board */
+.kanban-board {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1.5rem;
+    min-height: 600px;
+}
+
+.board-header {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1rem;
+}
+
+.board-title {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.board-description {
+    font-size: 0.875rem;
+}
+
+/* Kanban Columns */
+.kanban-columns {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 1rem 0;
+    min-height: 500px;
+}
+
+.kanban-column {
+    min-width: 280px;
+    max-width: 280px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.kanban-column .column-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.kanban-column .column-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.kanban-column .card-count {
+    background: #f3f4f6;
+    color: #6b7280;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+/* Column Cards */
+.column-cards {
+    flex: 1;
+    min-height: 200px;
+    margin-bottom: 1rem;
+}
+
+.add-card-area {
+    margin-top: auto;
+}
+
+/* Kanban Cards */
+.kanban-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    cursor: grab;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.kanban-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    transform: translateY(-1px);
+}
+
+.kanban-card:active {
+    cursor: grabbing;
+}
+
+.kanban-card.dragging {
+    opacity: 0.5;
+    transform: rotate(5deg);
+}
+
+.kanban-card .card-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1f2937;
+    line-height: 1.4;
+}
+
+.kanban-card .card-description {
+    font-size: 0.8rem;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+/* Card Labels */
+.card-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.label {
+    font-size: 0.7rem;
+    color: white;
+    padding: 0.125rem 0.375rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.label-more {
+    font-size: 0.7rem;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 0.125rem 0.375rem;
+    border-radius: 12px;
+}
+
+/* Card Footer */
+.card-footer {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.card-meta {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.7rem;
+    color: #6b7280;
+}
+
+.meta-item.overdue {
+    color: #ef4444;
+}
+
+.meta-item i {
+    font-size: 0.75rem;
+}
+
+/* Assigned Users */
+.assigned-users {
+    display: flex;
+    gap: -0.25rem;
+}
+
+.user-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    overflow: hidden;
+    position: relative;
+}
+
+.user-avatar:not(:first-child) {
+    margin-left: -6px;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #3b82f6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-weight: 600;
+}
+
+.more-users {
+    background: #6b7280;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.5rem;
+    font-weight: 600;
+}
+
+/* Drag and Drop */
+.column-cards.drag-over {
+    background: rgba(59, 130, 246, 0.1);
+    border: 2px dashed #3b82f6;
+    border-radius: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .kanban-columns-preview {
+        flex-direction: column;
+    }
+    
+    .column-preview {
+        min-width: auto;
+    }
+    
+    .kanban-columns {
+        flex-direction: column;
+    }
+    
+    .kanban-column {
+        min-width: auto;
+        max-width: none;
+    }
+    
+    .board-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+/* Animation */
+@keyframes cardAdded {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.card-added {
+    animation: cardAdded 0.3s ease;
+}
+</style>
+
+<script>
+// Kanban Block JavaScript
+window.KanbanBlock = {
+    // Initialize kanban functionality
+    init: function() {
+        this.bindEvents();
+        this.initDragAndDrop();
+    },
+    
+    // Bind event listeners
+    bindEvents: function() {
+        // Card click events
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.kanban-card')) {
+                const card = e.target.closest('.kanban-card');
+                this.onCardClick(card, e);
+            }
+        });
+    },
+    
+    // Initialize drag and drop
+    initDragAndDrop: function() {
+        // Card drag events
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.matches('.kanban-card')) {
+                this.onDragStart(e);
+            }
+        });
+        
+        document.addEventListener('dragend', (e) => {
+            if (e.target.matches('.kanban-card')) {
+                this.onDragEnd(e);
+            }
+        });
+        
+        // Column drop events
+        document.addEventListener('dragover', (e) => {
+            const columnCards = e.target.closest('.column-cards');
+            if (columnCards) {
+                e.preventDefault();
+                this.onDragOver(e, columnCards);
+            }
+        });
+        
+        document.addEventListener('drop', (e) => {
+            const columnCards = e.target.closest('.column-cards');
+            if (columnCards) {
+                e.preventDefault();
+                this.onDrop(e, columnCards);
+            }
+        });
+        
+        document.addEventListener('dragleave', (e) => {
+            const columnCards = e.target.closest('.column-cards');
+            if (columnCards) {
+                this.onDragLeave(e, columnCards);
+            }
+        });
+    },
+    
+    // Drag start
+    onDragStart: function(e) {
+        const card = e.target;
+        card.classList.add('dragging');
+        
+        e.dataTransfer.setData('text/plain', JSON.stringify({
+            cardId: card.dataset.cardId,
+            columnId: card.dataset.columnId,
+            boardId: card.dataset.boardId
+        }));
+    },
+    
+    // Drag end
+    onDragEnd: function(e) {
+        const card = e.target;
+        card.classList.remove('dragging');
+        
+        // Remove drag over effects
+        document.querySelectorAll('.column-cards.drag-over').forEach(col => {
+            col.classList.remove('drag-over');
+        });
+    },
+    
+    // Drag over
+    onDragOver: function(e, columnCards) {
+        columnCards.classList.add('drag-over');
+    },
+    
+    // Drag leave
+    onDragLeave: function(e, columnCards) {
+        if (!columnCards.contains(e.relatedTarget)) {
+            columnCards.classList.remove('drag-over');
+        }
+    },
+    
+    // Drop
+    onDrop: function(e, columnCards) {
+        columnCards.classList.remove('drag-over');
+        
+        const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
+        const targetColumnId = columnCards.dataset.columnId;
+        
+        if (dragData.columnId !== targetColumnId) {
+            this.moveCard(dragData.cardId, dragData.columnId, targetColumnId, dragData.boardId);
+        }
+    },
+    
+    // Move card between columns
+    moveCard: function(cardId, fromColumnId, toColumnId, boardId) {
+        // Update UI immediately
+        const card = document.querySelector(`[data-card-id="${cardId}"]`);
+        const targetColumn = document.querySelector(`[data-column-id="${toColumnId}"] .column-cards`);
+        
+        if (card && targetColumn) {
+            targetColumn.appendChild(card);
+            card.dataset.columnId = toColumnId;
+            
+            // Update card counts
+            this.updateColumnCounts(fromColumnId, toColumnId);
+        }
+        
+        // Send to server
+        this.updateCardPosition(cardId, toColumnId, boardId)
+            .catch(error => {
+                console.error('Error moving card:', error);
+                // Revert on error
+                location.reload();
+            });
+    },
+    
+    // Update column card counts
+    updateColumnCounts: function(fromColumnId, toColumnId) {
+        [fromColumnId, toColumnId].forEach(columnId => {
+            const column = document.querySelector(`[data-column-id="${columnId}"]`);
+            const cardCount = column?.querySelector('.card-count');
+            const cards = column?.querySelectorAll('.kanban-card');
+            
+            if (cardCount && cards) {
+                cardCount.textContent = cards.length;
+            }
+        });
+    },
+    
+    // Card click handler
+    onCardClick: function(card, event) {
+        // Don't trigger if clicking on interactive elements
+        if (event.target.closest('button, a, .dropdown')) {
+            return;
+        }
+        
+        const cardId = card.dataset.cardId;
+        const boardId = card.dataset.boardId;
+        
+        this.openCardDetails(cardId, boardId);
+    },
+    
+    // Open card details
+    openCardDetails: function(cardId, boardId) {
+        // This would open a modal or navigate to card details
+        console.log('Open card details:', cardId, boardId);
+    },
+    
+    // Update card position on server
+    updateCardPosition: async function(cardId, columnId, boardId) {
+        const response = await fetch(`/personal_space/kanban/${boardId}/cards/${cardId}/move`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.getCSRFToken()
+            },
+            body: JSON.stringify({
+                column_id: columnId
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to update card position');
+        }
+        
+        return await response.json();
+    },
+    
+    // Utility functions
+    getCSRFToken: function() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    }
+};
+
+// Global functions for template usage
+window.openKanbanBoard = function(boardId) {
+    window.location.href = `/personal_space/kanban/${boardId}`;
+};
+
+window.editKanban = function(boardId) {
+    console.log('Edit kanban:', boardId);
+};
+
+window.addColumn = function(boardId) {
+    console.log('Add column to board:', boardId);
+};
+
+window.addCard = function(boardId, columnId) {
+    console.log('Add card to column:', boardId, columnId);
+};
+
+window.editColumn = function(boardId, columnId) {
+    console.log('Edit column:', boardId, columnId);
+};
+
+window.deleteColumn = function(boardId, columnId) {
+    if (confirm('¿Estás seguro de que quieres eliminar esta columna?')) {
+        console.log('Delete column:', boardId, columnId);
+    }
+};
+
+window.boardSettings = function(boardId) {
+    console.log('Board settings:', boardId);
+};
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    window.KanbanBlock.init();
+});
+</script>

@@ -1,0 +1,998 @@
+<!-- DashboardLayout Component - Main layout for personal space dashboard -->
+{% from 'personal_space/components/base/BaseCard.html' import render_base_card, render_stat_card, render_info_card %}
+
+<!-- Main Dashboard Layout -->
+{% macro render_dashboard_layout(user, stats=none, recent_blocks=none, quick_actions=none) %}
+<div class="dashboard-layout" id="personal-space-dashboard">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="welcome-section">
+                    <h2 class="dashboard-title mb-1">
+                        {% set hour = moment().hour %}
+                        {% if hour < 12 %}
+                        Buenos días, {{ user.first_name or user.username }}
+                        {% elif hour < 18 %}
+                        Buenas tardes, {{ user.first_name or user.username }}
+                        {% else %}
+                        Buenas noches, {{ user.first_name or user.username }}
+                        {% endif %}
+                    </h2>
+                    <p class="dashboard-subtitle text-muted mb-0">
+                        {% set today = moment().format('dddd, D [de] MMMM [de] YYYY') %}
+                        Hoy es {{ today }}. ¿Qué quieres lograr?
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 text-md-end">
+                <div class="dashboard-actions">
+                    <div class="btn-group" role="group">
+                        <button type="button" 
+                                class="btn btn-primary" 
+                                onclick="openBlockFactory()">
+                            <i class="bi bi-plus-lg me-1"></i>
+                            Crear
+                        </button>
+                        <button type="button" 
+                                class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" 
+                                data-bs-toggle="dropdown">
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="createQuickNote()">Nota rápida</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="createQuickTask()">Tarea rápida</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="createQuickObjective()">Objetivo</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="openTemplateGallery()">Desde plantilla</a></li>
+                        </ul>
+                    </div>
+                    
+                    <button type="button" 
+                            class="btn btn-outline-secondary ms-2" 
+                            onclick="toggleDashboardView()" 
+                            title="Cambiar vista">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dashboard Stats -->
+    {% if stats %}
+    <div class="dashboard-stats mb-4">
+        <div class="row g-3">
+            <div class="col-md-3 col-sm-6">
+                {% call render_stat_card(
+                    title='Bloques Activos',
+                    value=stats.active_blocks,
+                    icon='bi-grid-3x3-gap',
+                    color='primary',
+                    trend=stats.blocks_trend
+                ) %}{% endcall %}
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                {% call render_stat_card(
+                    title='Tareas Completadas',
+                    value=stats.completed_tasks,
+                    icon='bi-check-circle',
+                    color='success',
+                    trend=stats.tasks_trend
+                ) %}{% endcall %}
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                {% call render_stat_card(
+                    title='Objetivos en Progreso',
+                    value=stats.active_objectives,
+                    icon='bi-target',
+                    color='info',
+                    trend=stats.objectives_trend
+                ) %}{% endcall %}
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                {% call render_stat_card(
+                    title='Productividad',
+                    value=stats.productivity_score + '%',
+                    icon='bi-graph-up',
+                    color='warning',
+                    trend=stats.productivity_trend
+                ) %}{% endcall %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Main Content Area -->
+    <div class="dashboard-content">
+        <div class="row g-4">
+            <!-- Left Column - Main Content -->
+            <div class="col-lg-8">
+                <!-- Quick Actions Panel -->
+                {% if quick_actions %}
+                <div class="quick-actions-panel mb-4">
+                    {% call render_info_card(
+                        title='Acciones Rápidas',
+                        icon='bi-lightning',
+                        class='quick-actions-card'
+                    ) %}
+                        <div class="quick-actions-grid">
+                            {% for action in quick_actions %}
+                            <div class="quick-action-item" onclick="{{ action.onclick }}">
+                                <div class="action-icon">
+                                    <i class="{{ action.icon }}"></i>
+                                </div>
+                                <div class="action-content">
+                                    <h6 class="action-title">{{ action.title }}</h6>
+                                    <p class="action-description">{{ action.description }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endcall %}
+                </div>
+                {% endif %}
+                
+                <!-- Recent Activity -->
+                {% if recent_blocks %}
+                <div class="recent-activity mb-4">
+                    {% call render_info_card(
+                        title='Actividad Reciente',
+                        icon='bi-clock-history',
+                        class='recent-activity-card'
+                    ) %}
+                        <div class="activity-timeline">
+                            {% for block in recent_blocks[:5] %}
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="{{ {
+                                        'nota': 'bi-file-text',
+                                        'tarea': 'bi-check-square',
+                                        'objetivo': 'bi-target',
+                                        'kanban': 'bi-kanban'
+                                    }.get(block.type, 'bi-square') }}"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-header">
+                                        <h6 class="activity-title">{{ block.title }}</h6>
+                                        <span class="activity-time">{{ block.updated_at.strftime('%H:%M') }}</span>
+                                    </div>
+                                    <p class="activity-description">
+                                        {% if block.type == 'nota' %}
+                                        Nota actualizada
+                                        {% elif block.type == 'tarea' %}
+                                        Tarea {{ 'completada' if block.metadata.get('completed') else 'actualizada' }}
+                                        {% elif block.type == 'objetivo' %}
+                                        Objetivo al {{ block.metadata.get('progress', 0) }}%
+                                        {% elif block.type == 'kanban' %}
+                                        Tablero actualizado
+                                        {% else %}
+                                        Bloque actualizado
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="activity-actions">
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-primary" 
+                                            onclick="openBlock('{{ block.id }}')">
+                                        <i class="bi bi-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        {% if recent_blocks|length > 5 %}
+                        <div class="text-center mt-3">
+                            <button type="button" 
+                                    class="btn btn-outline-primary btn-sm" 
+                                    onclick="viewAllActivity()">
+                                Ver toda la actividad
+                            </button>
+                        </div>
+                        {% endif %}
+                    {% endcall %}
+                </div>
+                {% endif %}
+                
+                <!-- Content Slot -->
+                <div class="dashboard-main-content">
+                    {{ caller() if caller else '' }}
+                </div>
+            </div>
+            
+            <!-- Right Column - Sidebar -->
+            <div class="col-lg-4">
+                <!-- Today's Focus -->
+                <div class="todays-focus mb-4">
+                    {% call render_info_card(
+                        title='Enfoque de Hoy',
+                        icon='bi-bullseye',
+                        class='focus-card'
+                    ) %}
+                        <div class="focus-content">
+                            <!-- Priority Tasks -->
+                            <div class="focus-section mb-3">
+                                <h6 class="focus-section-title">
+                                    <i class="bi bi-exclamation-triangle text-warning me-1"></i>
+                                    Tareas Prioritarias
+                                </h6>
+                                <div class="focus-items">
+                                    <!-- This would be populated with priority tasks -->
+                                    <div class="focus-item">
+                                        <div class="focus-item-content">
+                                            <span class="focus-item-title">Revisar propuesta de proyecto</span>
+                                            <span class="focus-item-time">10:00 AM</span>
+                                        </div>
+                                    </div>
+                                    <div class="focus-item">
+                                        <div class="focus-item-content">
+                                            <span class="focus-item-title">Llamada con cliente</span>
+                                            <span class="focus-item-time">2:00 PM</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Upcoming Deadlines -->
+                            <div class="focus-section">
+                                <h6 class="focus-section-title">
+                                    <i class="bi bi-calendar-event text-danger me-1"></i>
+                                    Próximos Vencimientos
+                                </h6>
+                                <div class="focus-items">
+                                    <div class="focus-item">
+                                        <div class="focus-item-content">
+                                            <span class="focus-item-title">Entrega de informe</span>
+                                            <span class="focus-item-time">Mañana</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endcall %}
+                </div>
+                
+                <!-- Progress Overview -->
+                <div class="progress-overview mb-4">
+                    {% call render_info_card(
+                        title='Progreso Semanal',
+                        icon='bi-graph-up',
+                        class='progress-card'
+                    ) %}
+                        <div class="progress-content">
+                            <!-- Weekly Progress -->
+                            <div class="weekly-progress mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="progress-label">Tareas Completadas</span>
+                                    <span class="progress-value">12/20</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 60%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="weekly-progress mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="progress-label">Objetivos</span>
+                                    <span class="progress-value">3/5</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" style="width: 60%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="weekly-progress">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="progress-label">Productividad</span>
+                                    <span class="progress-value">85%</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-warning" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endcall %}
+                </div>
+                
+                <!-- Quick Notes -->
+                <div class="quick-notes">
+                    {% call render_info_card(
+                        title='Notas Rápidas',
+                        icon='bi-sticky',
+                        class='notes-card'
+                    ) %}
+                        <div class="notes-content">
+                            <div class="quick-note-input mb-3">
+                                <textarea class="form-control" 
+                                          placeholder="Escribe una nota rápida..." 
+                                          rows="3"
+                                          id="quick-note-text"></textarea>
+                                <button type="button" 
+                                        class="btn btn-primary btn-sm mt-2 w-100" 
+                                        onclick="saveQuickNote()">
+                                    <i class="bi bi-plus me-1"></i>
+                                    Guardar Nota
+                                </button>
+                            </div>
+                            
+                            <!-- Recent Notes -->
+                            <div class="recent-notes">
+                                <div class="note-item">
+                                    <p class="note-text">Recordar revisar el documento de especificaciones...</p>
+                                    <small class="note-time text-muted">Hace 2 horas</small>
+                                </div>
+                                <div class="note-item">
+                                    <p class="note-text">Ideas para la presentación del viernes</p>
+                                    <small class="note-time text-muted">Ayer</small>
+                                </div>
+                            </div>
+                        </div>
+                    {% endcall %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+<!-- Dashboard Grid Layout -->
+{% macro render_dashboard_grid(blocks, view_mode='grid') %}
+<div class="dashboard-grid {{ 'list-view' if view_mode == 'list' else 'grid-view' }}" 
+     id="dashboard-grid" 
+     data-view-mode="{{ view_mode }}">
+    
+    {% if blocks %}
+    <div class="blocks-container">
+        {% for block in blocks %}
+        <div class="block-wrapper" data-block-id="{{ block.id }}" data-block-type="{{ block.type }}">
+            {% if block.type == 'nota' %}
+                {% from 'personal_space/components/blocks/NoteBlock.html' import render_note_block %}
+                {{ render_note_block(block) }}
+            {% elif block.type == 'tarea' %}
+                {% from 'personal_space/components/blocks/TaskBlock.html' import render_task_block %}
+                {{ render_task_block(block) }}
+            {% elif block.type == 'objetivo' %}
+                {% from 'personal_space/components/blocks/ObjectiveBlock.html' import render_objective_block %}
+                {{ render_objective_block(block) }}
+            {% elif block.type == 'kanban' %}
+                {% from 'personal_space/components/blocks/KanbanBlock.html' import render_kanban_block %}
+                {{ render_kanban_block(block) }}
+            {% else %}
+                {% from 'personal_space/components/base/BaseBlock.html' import render_base_block %}
+                {% call render_base_block(
+                    block_id='block-' + block.id|string,
+                    block_type=block.type,
+                    title=block.title,
+                    editable=true,
+                    draggable=true,
+                    status=block.status
+                ) %}
+                    <p>{{ block.content or 'Sin contenido' }}</p>
+                {% endcall %}
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-dashboard">
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="bi bi-grid-3x3-gap"></i>
+            </div>
+            <h4 class="empty-title">Tu espacio personal está vacío</h4>
+            <p class="empty-description">
+                Comienza creando tu primer bloque. Puedes agregar notas, tareas, objetivos o tableros Kanban.
+            </p>
+            <button type="button" 
+                    class="btn btn-primary" 
+                    onclick="openBlockFactory()">
+                <i class="bi bi-plus-lg me-1"></i>
+                Crear tu primer bloque
+            </button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+<style>
+/* Dashboard Layout Styles */
+.dashboard-layout {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 2rem 0;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+.dashboard-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a202c;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.dashboard-subtitle {
+    font-size: 1.1rem;
+    color: #718096;
+}
+
+.dashboard-actions .btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+}
+
+/* Dashboard Stats */
+.dashboard-stats {
+    margin-bottom: 2rem;
+}
+
+/* Quick Actions */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.quick-action-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quick-action-item:hover {
+    background: #ffffff;
+    border-color: #3182ce;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(49, 130, 206, 0.15);
+}
+
+.action-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.action-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.25rem;
+}
+
+.action-description {
+    font-size: 0.75rem;
+    color: #718096;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Activity Timeline */
+.activity-timeline {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    background: #f7fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a5568;
+    flex-shrink: 0;
+}
+
+.activity-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-header {
+    display: flex;
+    align-items: center;
+    justify-content: between;
+    margin-bottom: 0.25rem;
+}
+
+.activity-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+    flex: 1;
+}
+
+.activity-time {
+    font-size: 0.75rem;
+    color: #a0aec0;
+    font-weight: 500;
+}
+
+.activity-description {
+    font-size: 0.8rem;
+    color: #718096;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.activity-actions {
+    flex-shrink: 0;
+}
+
+/* Focus Card */
+.focus-section {
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 1rem;
+}
+
+.focus-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.focus-section-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.75rem;
+}
+
+.focus-item {
+    padding: 0.75rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.focus-item:last-child {
+    margin-bottom: 0;
+}
+
+.focus-item-content {
+    display: flex;
+    align-items: center;
+    justify-content: between;
+}
+
+.focus-item-title {
+    font-size: 0.8rem;
+    color: #2d3748;
+    font-weight: 500;
+    flex: 1;
+}
+
+.focus-item-time {
+    font-size: 0.75rem;
+    color: #718096;
+    font-weight: 600;
+}
+
+/* Progress Card */
+.weekly-progress {
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 1rem;
+}
+
+.weekly-progress:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.progress-label {
+    font-size: 0.8rem;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.progress-value {
+    font-size: 0.8rem;
+    color: #2d3748;
+    font-weight: 600;
+}
+
+/* Notes Card */
+.quick-note-input textarea {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    resize: none;
+}
+
+.quick-note-input textarea:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.note-item {
+    padding: 0.75rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.note-item:last-child {
+    margin-bottom: 0;
+}
+
+.note-text {
+    font-size: 0.8rem;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.note-time {
+    font-size: 0.7rem;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    transition: all 0.3s ease;
+}
+
+.dashboard-grid.grid-view .blocks-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.dashboard-grid.list-view .blocks-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.block-wrapper {
+    transition: all 0.3s ease;
+}
+
+.block-wrapper:hover {
+    transform: translateY(-2px);
+}
+
+/* Empty State */
+.empty-dashboard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    background: #ffffff;
+    border: 2px dashed #e2e8f0;
+    border-radius: 16px;
+    margin: 2rem 0;
+}
+
+.empty-state {
+    text-align: center;
+    max-width: 400px;
+    padding: 2rem;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+.empty-description {
+    font-size: 1rem;
+    color: #718096;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-layout {
+        padding: 1rem 0;
+    }
+    
+    .dashboard-header {
+        padding: 1.5rem;
+    }
+    
+    .dashboard-title {
+        font-size: 1.5rem;
+    }
+    
+    .dashboard-subtitle {
+        font-size: 1rem;
+    }
+    
+    .dashboard-header .row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .dashboard-actions {
+        text-align: left;
+    }
+    
+    .quick-actions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-grid.grid-view .blocks-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .activity-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+    
+    .focus-item-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dashboard-layout > * {
+    animation: fadeInUp 0.6s ease;
+}
+
+.dashboard-layout > *:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.dashboard-layout > *:nth-child(3) {
+    animation-delay: 0.2s;
+}
+</style>
+
+<script>
+// Dashboard Layout JavaScript
+window.DashboardLayout = {
+    currentView: 'grid',
+    
+    // Initialize dashboard
+    init: function() {
+        this.bindEvents();
+        this.loadUserPreferences();
+    },
+    
+    // Bind event listeners
+    bindEvents: function() {
+        // View toggle
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('[onclick*="toggleDashboardView"]')) {
+                e.preventDefault();
+                this.toggleView();
+            }
+        });
+        
+        // Auto-save quick notes
+        const quickNoteText = document.getElementById('quick-note-text');
+        if (quickNoteText) {
+            quickNoteText.addEventListener('input', this.debounce(() => {
+                this.autoSaveNote(quickNoteText.value);
+            }, 1000));
+        }
+    },
+    
+    // Toggle dashboard view
+    toggleView: function() {
+        const grid = document.getElementById('dashboard-grid');
+        if (!grid) return;
+        
+        this.currentView = this.currentView === 'grid' ? 'list' : 'grid';
+        
+        grid.className = grid.className.replace(/\b(grid|list)-view\b/g, '');
+        grid.classList.add(this.currentView + '-view');
+        grid.dataset.viewMode = this.currentView;
+        
+        // Update toggle button icon
+        const toggleBtn = document.querySelector('[onclick*="toggleDashboardView"] i');
+        if (toggleBtn) {
+            toggleBtn.className = this.currentView === 'grid' ? 'bi bi-list' : 'bi bi-grid-3x3-gap';
+        }
+        
+        // Save preference
+        this.saveUserPreference('dashboardView', this.currentView);
+    },
+    
+    // Auto-save note
+    autoSaveNote: function(content) {
+        if (!content.trim()) return;
+        
+        localStorage.setItem('quickNoteContent', content);
+    },
+    
+    // Load user preferences
+    loadUserPreferences: function() {
+        const savedView = this.getUserPreference('dashboardView');
+        if (savedView && savedView !== this.currentView) {
+            this.toggleView();
+        }
+        
+        // Load saved quick note
+        const savedNote = localStorage.getItem('quickNoteContent');
+        const quickNoteText = document.getElementById('quick-note-text');
+        if (savedNote && quickNoteText) {
+            quickNoteText.value = savedNote;
+        }
+    },
+    
+    // Save user preference
+    saveUserPreference: function(key, value) {
+        localStorage.setItem('dashboard_' + key, value);
+    },
+    
+    // Get user preference
+    getUserPreference: function(key) {
+        return localStorage.getItem('dashboard_' + key);
+    },
+    
+    // Debounce utility
+    debounce: function(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+};
+
+// Global functions for template usage
+window.openBlockFactory = function() {
+    console.log('Open block factory');
+};
+
+window.createQuickNote = function() {
+    console.log('Create quick note');
+};
+
+window.createQuickTask = function() {
+    console.log('Create quick task');
+};
+
+window.createQuickObjective = function() {
+    console.log('Create quick objective');
+};
+
+window.openTemplateGallery = function() {
+    console.log('Open template gallery');
+};
+
+window.toggleDashboardView = function() {
+    window.DashboardLayout.toggleView();
+};
+
+window.openBlock = function(blockId) {
+    window.location.href = `/personal_space/blocks/${blockId}`;
+};
+
+window.viewAllActivity = function() {
+    window.location.href = '/personal_space/activity';
+};
+
+window.saveQuickNote = async function() {
+    const textarea = document.getElementById('quick-note-text');
+    const content = textarea.value.trim();
+    
+    if (!content) {
+        alert('Por favor escribe algo en la nota.');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/personal_space/notes/quick', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            },
+            body: JSON.stringify({ content })
+        });
+        
+        if (response.ok) {
+            textarea.value = '';
+            localStorage.removeItem('quickNoteContent');
+            
+            // Show success feedback
+            const feedback = document.createElement('div');
+            feedback.className = 'alert alert-success alert-dismissible fade show';
+            feedback.innerHTML = `
+                <i class="bi bi-check-circle me-2"></i>
+                Nota guardada exitosamente
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            textarea.parentNode.appendChild(feedback);
+            
+            setTimeout(() => {
+                feedback.remove();
+            }, 3000);
+        } else {
+            throw new Error('Failed to save note');
+        }
+    } catch (error) {
+        console.error('Error saving note:', error);
+        alert('Error al guardar la nota. Inténtalo de nuevo.');
+    }
+};
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    window.DashboardLayout.init();
+});
+</script>
