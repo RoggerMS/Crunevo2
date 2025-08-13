@@ -938,11 +938,11 @@ window.toggleDashboardView = function() {
 };
 
 window.openBlock = function(blockId) {
-    window.location.href = `/personal_space/blocks/${blockId}`;
+    window.location.href = `/personal-space/block/${blockId}`;
 };
 
 window.viewAllActivity = function() {
-    window.location.href = '/personal_space/activity';
+    window.location.href = '/personal-space/activity';
 };
 
 window.saveQuickNote = async function() {
@@ -955,7 +955,7 @@ window.saveQuickNote = async function() {
     }
     
     try {
-        const response = await fetch('/personal_space/notes/quick', {
+        const response = await fetch('/api/personal-space/notes/quick', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

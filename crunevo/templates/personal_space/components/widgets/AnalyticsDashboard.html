@@ -852,7 +852,7 @@ window.AnalyticsDashboard = {
     // Load analytics data
     loadAnalyticsData: async function() {
         try {
-            const response = await fetch(`/personal_space/analytics?period=${this.currentPeriod}`);
+            const response = await fetch(`/api/personal-space/analytics/productivity?period=${this.currentPeriod}`);
             if (response.ok) {
                 const data = await response.json();
                 this.updateMetrics(data);
@@ -1044,7 +1044,7 @@ window.AnalyticsDashboard = {
     // Export analytics
     exportAnalytics: async function() {
         try {
-            const response = await fetch(`/personal_space/analytics/export?period=${this.currentPeriod}`);
+            const response = await fetch(`/api/personal-space/analytics/export?period=${this.currentPeriod}`);
             if (response.ok) {
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);

@@ -796,7 +796,7 @@ window.PersonalSpaceIndex = {
     // Load user statistics
     loadUserStats: async function() {
         try {
-            const response = await fetch('/personal_space/stats');
+            const response = await fetch('/api/personal-space/stats');
             if (response.ok) {
                 const stats = await response.json();
                 this.updateUserStats(stats);
@@ -912,7 +912,7 @@ window.PersonalSpaceIndex = {
                 
             case 'explore-workspace':
                 // Navigate to workspace
-                window.location.href = '/personal_space/workspace';
+                window.location.href = '/personal-space/workspace';
                 break;
                 
             default:

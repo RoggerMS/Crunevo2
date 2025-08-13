@@ -7,7 +7,7 @@
 {% block content %}
 <header id="task-header">
   <nav aria-label="Navegación">
-    <a href="{{ request.referrer or (url_for('personal_space.index') if app and 'personal_space.index' in app.view_functions else '#') }}">Volver</a>
+    <a href="{{ request.referrer or (url_for('personal_space.dashboard') if app and 'personal_space.dashboard' in app.view_functions else '#') }}">Volver</a>
     <a href="{{ url_for('personal_space.settings_view') if app and 'personal_space.settings_view' in app.view_functions else '#' }}">Configurar</a>
     <a href="{{ url_for('personal_space.link_note', block_id=block.id) if app and 'personal_space.link_note' in app.view_functions else '#' }}">Vincular Apunte</a>
     <a href="{{ url_for('personal_space.link_forum', block_id=block.id) if app and 'personal_space.link_forum' in app.view_functions else '#' }}">Vincular Foro</a>

@@ -1174,7 +1174,7 @@ window.WorkspaceLayout = {
     // Create block in workspace
     createBlockInWorkspace: async function(blockType, gridPos) {
         try {
-            const response = await fetch('/personal_space/blocks', {
+            const response = await fetch('/api/personal-space/blocks', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1228,7 +1228,7 @@ window.WorkspaceLayout = {
     // Update block position on server
     updateBlockPosition: async function(blockId, gridPos) {
         try {
-            await fetch(`/personal_space/blocks/${blockId}/position`, {
+            await fetch(`/api/personal-space/blocks/${blockId}/position`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1265,7 +1265,7 @@ window.WorkspaceLayout = {
         }));
         
         try {
-            await fetch(`/personal_space/workspaces/${this.currentWorkspaceId}`, {
+            await fetch(`/api/personal-space/workspaces/${this.currentWorkspaceId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

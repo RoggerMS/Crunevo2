@@ -550,7 +550,7 @@ window.TaskBlock = {
     
     // Update task status on server
     updateTaskStatus: async function(taskId, status) {
-        const response = await fetch(`/personal_space/blocks/${taskId}/status`, {
+        const response = await fetch(`/api/personal-space/blocks/${taskId}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -615,7 +615,7 @@ window.TaskBlock = {
     
     // Create task on server
     createTask: async function(taskData) {
-        const response = await fetch('/personal_space/blocks', {
+        const response = await fetch('/api/personal-space/blocks', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -658,7 +658,7 @@ window.TaskBlock = {
 
 // Global functions for template usage
 window.openTaskDetails = function(taskId) {
-    window.location.href = `/personal_space/blocks/${taskId}`;
+    window.location.href = `/personal-space/block/${taskId}`;
 };
 
 window.editTask = function(taskId) {

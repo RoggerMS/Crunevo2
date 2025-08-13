@@ -1412,7 +1412,7 @@ Completado</textarea>
             }
             
             // Send to server
-            const response = await fetch('/personal_space/blocks/create', {
+            const response = await fetch('/api/personal-space/blocks', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

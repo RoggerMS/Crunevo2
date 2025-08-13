@@ -628,7 +628,7 @@ window.NoteBlock = {
     
     // Create note on server
     createNote: async function(noteData) {
-        const response = await fetch('/personal_space/blocks', {
+        const response = await fetch('/api/personal-space/blocks', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -724,7 +724,7 @@ window.NoteBlock = {
 
 // Global functions for template usage
 window.openNoteDetails = function(noteId) {
-    window.location.href = `/personal_space/blocks/${noteId}`;
+    window.location.href = `/personal-space/block/${noteId}`;
 };
 
 window.editNote = function(noteId) {
