@@ -5,8 +5,7 @@ from crunevo.extensions import db
 from crunevo.models import PersonalSpaceTemplate, PersonalSpaceBlock
 from crunevo.services.block_service import BlockService
 from crunevo.services.validation_service import ValidationService
-from crunevo.services.cache_service import CacheService, CacheInvalidator
-import uuid
+from crunevo.services.cache_service import CacheInvalidator
 
 
 class TemplateService:
@@ -89,7 +88,7 @@ class TemplateService:
             and_(
                 PersonalSpaceTemplate.id == template_id,
                 or_(
-                    PersonalSpaceTemplate.is_public == True,
+                    PersonalSpaceTemplate.is_public.is_(True),
                     PersonalSpaceTemplate.user_id == user_id
                 )
             )
@@ -132,7 +131,7 @@ class TemplateService:
             query = query.filter(
                 or_(
                     PersonalSpaceTemplate.user_id == user_id,
-                    PersonalSpaceTemplate.is_public == True
+                      PersonalSpaceTemplate.is_public.is_(True)
                 )
             )
         else:
@@ -150,7 +149,7 @@ class TemplateService:
             PersonalSpaceTemplate.category,
             db.func.count(PersonalSpaceTemplate.id).label('count')
         ).filter(
-            PersonalSpaceTemplate.is_public == True
+            PersonalSpaceTemplate.is_public.is_(True)
         ).group_by(PersonalSpaceTemplate.category).all()
         
         return [
@@ -263,7 +262,7 @@ class TemplateService:
             and_(
                 or_(
                     PersonalSpaceTemplate.user_id == user_id,
-                    PersonalSpaceTemplate.is_public == True
+                    PersonalSpaceTemplate.is_public.is_(True)
                 ),
                 or_(
                     PersonalSpaceTemplate.name.ilike(search_pattern),

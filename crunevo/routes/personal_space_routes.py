@@ -4,7 +4,6 @@ from types import SimpleNamespace
 from flask import Blueprint, jsonify, render_template, request
 from flask_login import current_user, login_required
 
-from crunevo.extensions import db
 from crunevo.models import (
     PersonalSpaceBlock,
     PersonalSpaceTemplate,
@@ -53,10 +52,15 @@ def dashboard():
         productivity_trend=0,
     )
     recent_blocks = blocks[:5]
-    moment_stub = lambda: SimpleNamespace(
-        hour=datetime.utcnow().hour,
-        format=lambda fmt=None: datetime.utcnow().strftime("%Y-%m-%d"),
-    )
+    def moment_stub():
+        def _format(fmt: str | None = None) -> str:
+            return datetime.utcnow().strftime("%Y-%m-%d")
+
+        return SimpleNamespace(
+            hour=datetime.utcnow().hour,
+            format=_format,
+        )
+
     return render_template(
         "personal_space/dashboard.html",
         user=current_user,

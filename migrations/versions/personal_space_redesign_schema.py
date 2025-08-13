@@ -100,7 +100,19 @@ def upgrade():
 
 def downgrade():
     # Drop tables in reverse order
+    op.drop_index('idx_personal_space_analytics_created_at', table_name='personal_space_analytics_events')
+    op.drop_index('idx_personal_space_analytics_event_type', table_name='personal_space_analytics_events')
+    op.drop_index('idx_personal_space_analytics_user_id', table_name='personal_space_analytics_events')
     op.drop_table('personal_space_analytics_events')
+
     op.drop_table('personal_space_block_attachments')
+
     op.drop_table('personal_space_templates')
-    op.drop_table('
+
+    op.drop_index('idx_personal_space_blocks_metadata', table_name='personal_space_blocks')
+    op.drop_index('idx_personal_space_blocks_updated_at', table_name='personal_space_blocks')
+    op.drop_index('idx_personal_space_blocks_order', table_name='personal_space_blocks')
+    op.drop_index('idx_personal_space_blocks_status', table_name="personal_space_blocks")
+    op.drop_index('idx_personal_space_blocks_type', table_name='personal_space_blocks')
+    op.drop_index('idx_personal_space_blocks_user_id', table_name='personal_space_blocks')
+    op.drop_table('personal_space_blocks')
