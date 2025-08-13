@@ -1309,3 +1309,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Fixed Personal Space dashboard loading unstyled by linking personal-space-optimized.css and adding aria labels to icon buttons. (PR personal-space-dashboard-style-fix)
 - Enabled Personal Space dashboard interactions by rendering modals and wiring quick notes to blocks API. (PR personal-space-dashboard-js)
 - Replaced deprecated `trend_positive` argument with `trend`/`trend_value` in personal space stat cards to fix 500 error on `/personal-space/`. (PR personal-space-trend-arg-fix)
+- Guarded fix_jsonb_compatibility_for_sqlite migration to skip on PostgreSQL, preventing GIN index errors during Fly deploy. (PR personal-space-sqlite-migration-guard)
