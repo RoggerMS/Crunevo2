@@ -9,6 +9,7 @@ Create Date: 2024-01-15 10:00:00.000000
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+from sqlalchemy.engine.reflection import Inspector
 
 # revision identifiers, used by Alembic.
 revision = "personal_space_redesign_schema"
@@ -17,7 +18,16 @@ branch_labels = None
 depends_on = None
 
 
+def has_table(name: str, conn) -> bool:
+    inspector = Inspector.from_engine(conn)
+    return name in inspector.get_table_names()
+
+
 def upgrade():
+    conn = op.get_bind()
+    if has_table("personal_space_blocks", conn):
+        return
+
     # Create personal_space_blocks table with enhanced structure
     op.create_table(
         "personal_space_blocks",

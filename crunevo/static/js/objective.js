@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (window.history.length > 1) {
         window.history.back();
       } else {
-        window.location.href = '/espacio-personal/';
+        window.location.href = '/personal-space/';
       }
     });
   }
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (t.matches('[data-action="delete-obj"]')) {
       if (confirm('¿Eliminar este objetivo? Esta acción no se puede deshacer.')) {
         // TODO: POST a /api/objetivo/:id/delete y redirigir
-        window.location.href = '/espacio-personal/';
+        window.location.href = '/personal-space/';
       }
     }
   });
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const saveField = debounce((field, value) => {
     const oldValue = JSON.parse(JSON.stringify(state.objective[field]));
-    csrfFetch(`/espacio-personal/api/objectives/${state.objective.id}`, {
+    csrfFetch(`/api/personal-space/objectives/${state.objective.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ [field]: value })

@@ -91,11 +91,13 @@
                     </div>
                     <div class="review-actions">
                       <form method="POST" action="{{ url_for('forum.approve_content', content_type='question', content_id=question.id) }}" style="display: inline;">
+                        {{ csrf_field() }}
                         <button type="submit" class="btn btn-success btn-sm">
                           <i class="bi bi-check-circle"></i> Aprobar
                         </button>
                       </form>
                       <form method="POST" action="{{ url_for('forum.reject_content', content_type='question', content_id=question.id) }}" style="display: inline;">
+                        {{ csrf_field() }}
                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que quieres eliminar esta pregunta?')">
                           <i class="bi bi-x-circle"></i> Rechazar
                         </button>
@@ -164,11 +166,13 @@
                     </div>
                     <div class="review-actions">
                       <form method="POST" action="{{ url_for('forum.approve_content', content_type='answer', content_id=answer.id) }}" style="display: inline;">
+                        {{ csrf_field() }}
                         <button type="submit" class="btn btn-success btn-sm">
                           <i class="bi bi-check-circle"></i> Aprobar
                         </button>
                       </form>
                       <form method="POST" action="{{ url_for('forum.reject_content', content_type='answer', content_id=answer.id) }}" style="display: inline;">
+                        {{ csrf_field() }}
                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que quieres eliminar esta respuesta?')">
                           <i class="bi bi-x-circle"></i> Rechazar
                         </button>

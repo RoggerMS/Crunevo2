@@ -45,7 +45,7 @@ python -m flask run --host=0.0.0.0 --port=5000 --debug
 ### Acceso Local
 
 Una vez iniciado el servidor, accede a:
-- **Dashboard Principal**: http://localhost:5000/espacio-personal/
+- **Dashboard Principal**: http://localhost:5000/personal-space/
 - **Feed**: http://localhost:5000/
 - **API**: http://localhost:5000/api/
 
@@ -205,7 +205,7 @@ url_for('notes.view_note', id=42)   => /notes/42
 ## Mi Espacio Personal
 
 El panel "Mi Espacio Personal" te permite organizar tareas, metas y notas en un
-tablero privado. Actívalo visitando `/espacio-personal` y presionando el botón
+tablero privado. Actívalo visitando `/personal-space` y presionando el botón
 **Comenzar** para crear tu primer bloque. Puedes añadir distintos tipos de
 bloques y ordenarlos mediante *drag and drop*:
 

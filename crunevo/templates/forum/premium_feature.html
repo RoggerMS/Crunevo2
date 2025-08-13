@@ -21,6 +21,7 @@
                         </div>
                         
                         <form method="POST" action="{{ url_for('forum.confirm_premium_feature', feature=feature) }}">
+                            {{ csrf_field() }}
                             <div class="mb-3">
                                 <label for="question_id" class="form-label">Selecciona la pregunta a destacar:</label>
                                 <select class="form-select" id="question_id" name="question_id" required>
@@ -41,6 +42,7 @@
                         </div>
                         
                         <form method="POST" action="{{ url_for('forum.confirm_premium_feature', feature=feature) }}">
+                            {{ csrf_field() }}
                             <div class="mb-3">
                                 <label for="answer_id" class="form-label">Selecciona la respuesta a destacar:</label>
                                 <select class="form-select" id="answer_id" name="answer_id" required>
@@ -61,6 +63,7 @@
                         </div>
                         
                         <form method="POST" action="{{ url_for('forum.confirm_premium_feature', feature=feature) }}">
+                            {{ csrf_field() }}
                             <div class="mb-3">
                                 <label for="custom_title" class="form-label">Tu título personalizado:</label>
                                 <input type="text" class="form-control" id="custom_title" name="custom_title" 

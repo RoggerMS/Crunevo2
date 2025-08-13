@@ -63,6 +63,9 @@ def create_app():
     from .config import Config
 
     app.config.from_object(Config)
+    if os.getenv("FLASK_ENV") == "testing" or os.getenv("PYTEST_CURRENT_TEST"):
+        app.config["TESTING"] = True
+        app.testing = True
     # Re-apply environment overrides after Config class variables load.
     env_db = os.getenv("DATABASE_URL")
     if env_db:
@@ -701,7 +704,9 @@ def create_app():
         app.scheduler = scheduler
 
     # Initialize database tables (skip in serverless)
-    if not is_serverless:
+    if not is_serverless and not (
+        app.config.get("TESTING") and "test_migrations.py" in os.getenv("PYTEST_CURRENT_TEST", "")
+    ):
         with app.app_context():
             from .utils.db_init import ensure_database_ready
 

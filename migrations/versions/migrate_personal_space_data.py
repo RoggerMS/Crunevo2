@@ -8,7 +8,7 @@ Create Date: 2024-01-15 10:30:00.000000
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
-from sqlalchemy import text
+from sqlalchemy import text, inspect
 
 # revision identifiers, used by Alembic.
 revision = 'migrate_personal_space_data'
@@ -17,6 +17,10 @@ branch_labels = None
 depends_on = None
 
 def upgrade():
+    connection = op.get_bind()
+    if connection.dialect.name == 'sqlite':
+        return
+
     # Create temporary table for migration mapping
     op.execute("""
         CREATE TEMP TABLE block_migration_map (
@@ -25,20 +29,10 @@ def upgrade():
             migration_status VARCHAR(20)
         )
     """)
-    
+
     # Check if old personal space tables exist and migrate data
-    connection = op.get_bind()
-    
-    # Check if the old block table exists
-    result = connection.execute(text("""
-        SELECT EXISTS (
-            SELECT FROM information_schema.tables 
-            WHERE table_schema = 'public' 
-            AND table_name = 'block'
-        )
-    """))
-    
-    old_table_exists = result.scalar()
+    inspector = inspect(connection)
+    old_table_exists = 'block' in inspector.get_table_names()
     
     if old_table_exists:
         # Migrate existing blocks to new structure

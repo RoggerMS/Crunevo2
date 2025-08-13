@@ -99,6 +99,7 @@
                         
                         {% if group.members|length < group.max_members %}
                         <form method="POST" action="{{ url_for('social.join_study_group', group_id=group.id) }}" class="inline">
+                            {{ csrf_field() }}
                             <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm">
                                 Unirse
                             </button>
@@ -145,6 +146,7 @@
             </div>
             
             <form method="POST" action="{{ url_for('social.create_study_group') }}">
+                {{ csrf_field() }}
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Nombre del grupo</label>
                     <input type="text" name="name" required 

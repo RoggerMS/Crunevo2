@@ -138,7 +138,7 @@ function initializeAutoSave() {
 
 // Block Management Functions
 function loadBlocks() {
-    fetch('/espacio-personal/api/blocks')
+    fetch('/api/personal-space/blocks')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -266,7 +266,7 @@ function generateBlockHTML(block) {
             </small>
             <div class="d-flex align-items-center">
                 ${block.progress > 0 ? `<span class="progress-badge me-2">${block.progress}%</span>` : ''}
-                <a class="btn btn-link btn-sm btn-enter" href="/espacio-personal/bloque/${block.id}" data-id="${block.id}" aria-label="Entrar al bloque">Entrar</a>
+                <a class="btn btn-link btn-sm btn-enter" href="/personal-space/bloque/${block.id}" data-id="${block.id}" aria-label="Entrar al bloque">Entrar</a>
                 </div>
         </div>
     `;
@@ -401,7 +401,7 @@ function handleModalEvents(e) {
 }
 
 function apiCreateBlock(blockData) {
-    return fetch('/espacio-personal/api/create-block', {
+    return fetch('/api/personal-space/create-block', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -490,7 +490,7 @@ function getDefaultMetadata(type) {
 
 function startPersonalSpace() {
     const requests = ['nota_enriquecida', 'kanban', 'objetivo'].map(type =>
-        fetch('/espacio-personal/api/create-block', {
+        fetch('/api/personal-space/create-block', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -561,7 +561,7 @@ function showEditBlockModal(blockId) {
     document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
 
     // Prefer fetching only this block if endpoint exists
-    fetch(`/espacio-personal/api/blocks/${blockId}`)
+    fetch(`/api/personal-space/blocks/${blockId}`)
         .then(response => {
             if (!response.ok) throw new Error('single-endpoint-missing');
             return response.json();
@@ -575,7 +575,7 @@ function showEditBlockModal(blockId) {
         })
         .catch(() => {
             // Fallback to full list fetch
-            fetch(`/espacio-personal/api/blocks`)
+            fetch(`/api/personal-space/blocks`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -842,7 +842,7 @@ function saveCurrentBlock() {
     }
 
     // Save to server
-    fetch(`/espacio-personal/api/blocks/${currentEditingBlock}`, {
+    fetch(`/api/personal-space/blocks/${currentEditingBlock}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -900,7 +900,7 @@ function deleteBlock(blockId) {
         return;
     }
 
-    fetch(`/espacio-personal/api/blocks/${blockId}`, {
+    fetch(`/api/personal-space/blocks/${blockId}`, {
         method: 'DELETE',
         headers: {
             'X-CSRFToken': getCsrfToken()
@@ -953,7 +953,7 @@ function toggleBlockFeatured(blockId) {
     const blockCard = document.querySelector(`[data-block-id="${blockId}"]`);
     const isFeatured = blockCard.classList.contains('featured');
 
-    fetch(`/espacio-personal/api/blocks/${blockId}`, {
+    fetch(`/api/personal-space/blocks/${blockId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -1010,7 +1010,7 @@ function updateBlockOrder() {
         }
     });
 
-    fetch('/espacio-personal/api/blocks/reorder', {
+    fetch('/api/personal-space/blocks/reorder', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -1119,7 +1119,7 @@ function handleSuggestionClick(e) {
         switch (action) {
             case 'create_objetivo_block':
                 if (!blockTypeExists('objetivo')) {
-                    fetch('/espacio-personal/api/create-block', {
+                    fetch('/api/personal-space/create-block', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1142,7 +1142,7 @@ function handleSuggestionClick(e) {
                 break;
             case 'create_nota_block':
                 if (!blockTypeExists('nota_enriquecida')) {
-                    fetch('/espacio-personal/api/create-block', {
+                    fetch('/api/personal-space/create-block', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1165,7 +1165,7 @@ function handleSuggestionClick(e) {
                 break;
             case 'create_kanban_block':
                 if (!blockTypeExists('kanban')) {
-                    fetch('/espacio-personal/api/create-block', {
+                    fetch('/api/personal-space/create-block', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1479,7 +1479,7 @@ function saveKanbanState(kanbanId) {
     });
 
     // Save to backend
-    fetch(`/espacio-personal/api/blocks/${kanbanId}`, {
+    fetch(`/api/personal-space/blocks/${kanbanId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -1495,7 +1495,7 @@ function toggleTask(blockId) {
     const checkbox = event.target;
     const completed = checkbox.checked;
 
-    fetch(`/espacio-personal/api/blocks/${blockId}`, {
+    fetch(`/api/personal-space/blocks/${blockId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -1524,11 +1524,11 @@ function toggleTask(blockId) {
 
 function openKanban(blockId) {
     // Open kanban management modal
-    window.location.href = `/espacio-personal/kanban/${blockId}`;
+    window.location.href = `/personal-space/kanban/${blockId}`;
 }
 
 function openBlock(blockId) {
-    window.location.href = `/espacio-personal/bloque/${blockId}`;
+    window.location.href = `/personal-space/bloque/${blockId}`;
 }
 
 function manageBloque(blockId) {
@@ -1569,7 +1569,7 @@ function autoSaveBlock(blockId, element) {
         data.content = element.textContent;
     }
 
-    fetch(`/espacio-personal/api/blocks/${blockId}`, {
+    fetch(`/api/personal-space/blocks/${blockId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

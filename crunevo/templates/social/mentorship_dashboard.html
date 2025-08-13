@@ -168,6 +168,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" id="mentorshipForm">
+                {{ csrf_field() }}
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="subject_area" class="form-label">Área de estudio:</label>

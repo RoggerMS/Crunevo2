@@ -175,8 +175,13 @@
                         </h5>
                     </div>
                     <div class="card-body">
+                        {% set sample_goals = [
+                            {'title': 'Completar proyecto Q1', 'progress': 75, 'due_date': '2024-03-31'},
+                            {'title': 'Leer 12 libros este año', 'progress': 33, 'due_date': '2024-12-31'},
+                            {'title': 'Ejercicio 3x por semana', 'progress': 60, 'due_date': None}
+                        ] %}
                         <div class="goals-progress" id="goals-progress">
-                            {{ render_goals_progress(analytics_data.goals if analytics_data else get_sample_goals()) }}
+                            {{ render_goals_progress(analytics_data.goals if analytics_data else sample_goals) }}
                         </div>
                     </div>
                 </div>
