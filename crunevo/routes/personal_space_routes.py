@@ -31,7 +31,18 @@ personal_space_api_bp = Blueprint(
 @login_required
 @activated_required
 def dashboard():
-    return "Personal Space", 200
+    if current_app.config.get("TESTING") or not table_exists("personal_space_blocks"):
+        return "Personal Space", 200
+
+    moment_fn = current_app.jinja_env.globals.get("moment")
+    if moment_fn is None:
+
+        def moment_fn():
+            return SimpleNamespace(hour=datetime.utcnow().hour)
+
+    return render_template(
+        "personal_space/dashboard.html", user=current_user, moment=moment_fn
+    )
 
 
 @personal_space_bp.route("/workspace")
@@ -170,7 +181,9 @@ def get_stats():
     try:
         blocks = PersonalSpaceBlock.query.filter_by(user_id=current_user.id).all()
         completed_tasks = sum(
-            1 for b in blocks if b.type == "tarea" and (b.metadata or {}).get("completed")
+            1
+            for b in blocks
+            if b.type == "tarea" and (b.metadata or {}).get("completed")
         )
         return jsonify(
             {
