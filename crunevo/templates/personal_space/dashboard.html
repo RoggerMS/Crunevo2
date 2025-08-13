@@ -1,6 +1,6 @@
 <!-- Personal Space Dashboard - Main redesigned dashboard page -->
 {% extends "base.html" %}
-{% from 'personal_space/components/layout/DashboardLayout.html' import render_dashboard_layout %}
+{% from 'personal_space/components/layout/DashboardLayout.html' import render_dashboard_layout with context %}
 {% from 'personal_space/components/widgets/TemplateGallery.html' import render_template_gallery_modal %}
 {% from 'personal_space/components/widgets/BlockFactory.html' import render_block_factory_modal %}
 {% from 'personal_space/components/widgets/AnalyticsDashboard.html' import render_analytics_dashboard %}
@@ -488,7 +488,7 @@
                                 <i class="bi bi-graph-up me-2"></i>Analytics
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('personal_space.settings') }}">
+                            <li><a class="dropdown-item" href="{{ url_for('personal_space.configuracion') }}">
                                 <i class="bi bi-gear me-2"></i>Configuración
                             </a></li>
                         </ul>
@@ -564,7 +564,7 @@
                         </div>
                     </div>
                     <div class="section-body">
-                        {{ render_dashboard_layout(blocks=todays_focus_blocks, view_mode='focus') }}
+                        <!-- Focus blocks placeholder -->
                     </div>
                 </div>
                 
@@ -582,7 +582,7 @@
                         </div>
                     </div>
                     <div class="section-body">
-                        {{ render_dashboard_layout(blocks=weekly_progress_blocks, view_mode='progress') }}
+                        <!-- Weekly progress placeholder -->
                     </div>
                 </div>
             </div>
@@ -597,7 +597,7 @@
                             Actividad Reciente
                         </h3>
                         <div class="section-actions">
-                            <a href="{{ url_for('personal_space.activity') }}" class="btn btn-sm btn-outline-primary">
+                            <a href="#" class="btn btn-sm btn-outline-primary">
                                 Ver todo
                             </a>
                         </div>
@@ -684,7 +684,7 @@
                 </div>
             </div>
             <div class="section-body">
-                {{ render_analytics_dashboard(analytics_data=analytics_data) }}
+                <!-- Analytics dashboard placeholder -->
             </div>
         </div>
     </div>
@@ -699,9 +699,7 @@
     <i class="bi bi-plus"></i>
 </button>
 
-<!-- Modals -->
-{{ render_block_factory_modal() }}
-{{ render_template_gallery_modal() }}
+<!-- Modals placeholders -->
 {% endblock %}
 
 {% block extra_js %}
