@@ -1300,3 +1300,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added objective metadata persistence with GET/PATCH API endpoints, template hydration and debounced front-end saves with error rollback. (PR objective-persistence)
 - Rebuilt tarea_view.html with semantic markup, inline save toasts and backend subtasks/links CRUD stubs. (PR tarea-view-rebuild)
 - Introduced personal space API and routes under /personal-space with new models for blocks, templates and analytics; connected frontend components and tests. (PR personal-space-routing-api)
+- Fixed syntax error in personal_space_redesign_schema migration by completing downgrade and dropping related indexes to ensure Fly deployment succeeds. (PR personal-space-migration-fix)
