@@ -1,61 +1,79 @@
 <!-- BaseForm Component - Reusable form foundation -->
-{% macro render_form_field(field, label, type='text', placeholder='', required=false, help_text='', icon='', validation_rules={}) %}
+{% macro render_form_field(name, label, type='text', placeholder='', required=false, help_text='', icon='', validation_rules={}, value='', options=None, **attrs) %}
 <div class="form-group mb-3">
     {% if label %}
-    <label for="{{ field }}" class="form-label fw-medium">
+    <label for="{{ name }}" class="form-label fw-medium">
         {{ label }}
         {% if required %}<span class="text-danger">*</span>{% endif %}
     </label>
     {% endif %}
-    
+
     <div class="input-group">
         {% if icon %}
         <span class="input-group-text bg-light border-end-0">
             <i class="bi bi-{{ icon }} text-muted"></i>
         </span>
         {% endif %}
-        
+
         {% if type == 'textarea' %}
-        <textarea 
-            class="form-control {{ 'border-start-0' if icon else '' }}" 
-            id="{{ field }}" 
-            name="{{ field }}"
+        <textarea
+            class="form-control {{ 'border-start-0' if icon else '' }}"
+            id="{{ name }}"
+            name="{{ name }}"
             placeholder="{{ placeholder }}"
             {{ 'required' if required else '' }}
-            {% for rule, value in validation_rules.items() %}
-            {{ rule }}="{{ value }}"
+            {% for rule, val in validation_rules.items() %}
+            {{ rule }}="{{ val }}"
             {% endfor %}
-        >{{ caller() if caller else '' }}</textarea>
+            {% for attr, val in attrs.items() %}
+            {{ attr }}="{{ val }}"
+            {% endfor %}
+        >{{ value }}</textarea>
         {% elif type == 'select' %}
-        <select 
-            class="form-select {{ 'border-start-0' if icon else '' }}" 
-            id="{{ field }}" 
-            name="{{ field }}"
+        <select
+            class="form-select {{ 'border-start-0' if icon else '' }}"
+            id="{{ name }}"
+            name="{{ name }}"
             {{ 'required' if required else '' }}
+            {% for attr, val in attrs.items() %}
+            {{ attr }}="{{ val }}"
+            {% endfor %}
         >
+            {% if options %}
+                {% for option in options %}
+                <option value="{{ option.value }}" {{ 'selected' if option.value == value else '' }}>{{ option.text }}</option>
+                {% endfor %}
+            {% else %}
             {{ caller() if caller else '' }}
+            {% endif %}
         </select>
         {% elif type == 'file' %}
-        <input 
-            type="file" 
-            class="form-control {{ 'border-start-0' if icon else '' }}" 
-            id="{{ field }}" 
-            name="{{ field }}"
+        <input
+            type="file"
+            class="form-control {{ 'border-start-0' if icon else '' }}"
+            id="{{ name }}"
+            name="{{ name }}"
             {{ 'required' if required else '' }}
-            {% for rule, value in validation_rules.items() %}
-            {{ rule }}="{{ value }}"
+            {% for rule, val in validation_rules.items() %}
+            {{ rule }}="{{ val }}"
+            {% endfor %}
+            {% for attr, val in attrs.items() %}
+            {{ attr }}="{{ val }}"
             {% endfor %}
         >
         {% elif type == 'checkbox' %}
         <div class="form-check">
-            <input 
-                type="checkbox" 
-                class="form-check-input" 
-                id="{{ field }}" 
-                name="{{ field }}"
+            <input
+                type="checkbox"
+                class="form-check-input"
+                id="{{ name }}"
+                name="{{ name }}"
                 {{ 'required' if required else '' }}
+                {% for attr, val in attrs.items() %}
+                {{ attr }}="{{ val }}"
+                {% endfor %}
             >
-            <label class="form-check-label" for="{{ field }}">
+            <label class="form-check-label" for="{{ name }}">
                 {{ label }}
             </label>
         </div>
@@ -64,15 +82,19 @@
             {{ caller() if caller else '' }}
         </div>
         {% else %}
-        <input 
-            type="{{ type }}" 
-            class="form-control {{ 'border-start-0' if icon else '' }}" 
-            id="{{ field }}" 
-            name="{{ field }}"
+        <input
+            type="{{ type }}"
+            class="form-control {{ 'border-start-0' if icon else '' }}"
+            id="{{ name }}"
+            name="{{ name }}"
             placeholder="{{ placeholder }}"
+            value="{{ value }}"
             {{ 'required' if required else '' }}
-            {% for rule, value in validation_rules.items() %}
-            {{ rule }}="{{ value }}"
+            {% for rule, val in validation_rules.items() %}
+            {{ rule }}="{{ val }}"
+            {% endfor %}
+            {% for attr, val in attrs.items() %}
+            {{ attr }}="{{ val }}"
             {% endfor %}
         >
         {% endif %}

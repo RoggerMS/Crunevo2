@@ -1315,3 +1315,5 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Prevented undefined trend errors on personal space dashboard and fixed forum gamification link to avoid BuildError. (PR dashboard-trend-link-fix)
 - Fixed forum dashboard endpoint and updated template links; passed default analytics data to personal space dashboard to avoid undefined stats. (PR forum-dashboard-personal-space-fix)
 - Corrected forum gamification link to use existing endpoint and added sample insights template global to prevent Personal Space dashboard errors. (PR forum-personal-space-fixes)
+- Updated forum gamification CTA to point to dashboard instead of init API to avoid 405 errors on `/api/gamification/init`.
+- Enhanced `render_form_field` macro to accept `name` and extra attributes, fixing Personal Space form rendering.
