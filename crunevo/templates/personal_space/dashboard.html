@@ -105,9 +105,10 @@
                     </div>
                     <div class="stat-value">{{ productive_hours_today or 0 }}h</div>
                     <div class="stat-label">Horas productivas</div>
-                    <div class="stat-trend {{ 'positive' if productivity_trend >= 0 else 'negative' }}">
-                        <i class="bi bi-arrow-{{ 'up' if productivity_trend >= 0 else 'down' }}"></i> 
-                        {{ productivity_trend or 0 }}%
+                    {% set trend = productivity_trend | default(0) %}
+                    <div class="stat-trend {{ 'positive' if trend >= 0 else 'negative' }}">
+                        <i class="bi bi-arrow-{{ 'up' if trend >= 0 else 'down' }}"></i>
+                        {{ trend }}%
                     </div>
                 </div>
                 
@@ -117,9 +118,10 @@
                     </div>
                     <div class="stat-value">{{ focus_score or 0 }}%</div>
                     <div class="stat-label">Puntuación de foco</div>
-                    <div class="stat-trend {{ 'positive' if focus_trend >= 0 else 'negative' }}">
-                        <i class="bi bi-arrow-{{ 'up' if focus_trend >= 0 else 'down' }}"></i> 
-                        {{ focus_trend or 0 }}%
+                    {% set f_trend = focus_trend | default(0) %}
+                    <div class="stat-trend {{ 'positive' if f_trend >= 0 else 'negative' }}">
+                        <i class="bi bi-arrow-{{ 'up' if f_trend >= 0 else 'down' }}"></i>
+                        {{ f_trend }}%
                     </div>
                 </div>
             </div>

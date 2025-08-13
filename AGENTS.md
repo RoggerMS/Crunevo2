@@ -1312,3 +1312,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Guarded fix_jsonb_compatibility_for_sqlite migration to skip on PostgreSQL, preventing GIN index errors during Fly deploy. (PR personal-space-sqlite-migration-guard)
 - Fixed AnalyticsDashboard sample goals reference, added personal space stats API with updated JS paths, and created migration for missing `requires_review` forum columns.
 - Added migration for forum premium feature columns and restored personal space dashboard view. (PR forum-premium-columns)
+- Prevented undefined trend errors on personal space dashboard and fixed forum gamification link to avoid BuildError. (PR dashboard-trend-link-fix)
