@@ -1304,3 +1304,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 
 - Updated personal space API tests to use /api/personal-space paths, extended moment stub to accept datetime, simplified reorder logic and marked view test as skip. (PR personal-space-tests-fix)
 - Merged Alembic heads e1e5b8d0853a and migrate_personal_space_data into 5007130f0224 to resolve multiple head revisions.
+- Fixed /personal-space/ 500 by correcting template links, removing invalid macros and adding dashboard view test. (PR personal-space-dashboard-fix)
