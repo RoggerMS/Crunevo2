@@ -1,0 +1,210 @@
+/* Personal Space - Optimized CSS Architecture */
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  /* Colors */
+  --ps-primary: #667eea;
+  --ps-primary-dark: #764ba2;
+  --ps-secondary: #f8fafc;
+  --ps-accent: #48bb78;
+  --ps-warning: #ed8936;
+  --ps-danger: #e53e3e;
+  --ps-info: #4299e1;
+  
+  /* Gradients */
+  --ps-gradient-primary: linear-gradient(135deg, var(--ps-primary) 0%, var(--ps-primary-dark) 100%);
+  --ps-gradient-success: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  --ps-gradient-warning: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+  --ps-gradient-info: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  
+  /* Spacing */
+  --ps-spacing-xs: 0.25rem;
+  --ps-spacing-sm: 0.5rem;
+  --ps-spacing-md: 1rem;
+  --ps-spacing-lg: 1.5rem;
+  --ps-spacing-xl: 2rem;
+  --ps-spacing-2xl: 3rem;
+  
+  /* Border Radius */
+  --ps-radius-sm: 6px;
+  --ps-radius-md: 12px;
+  --ps-radius-lg: 16px;
+  --ps-radius-xl: 20px;
+  
+  /* Shadows */
+  --ps-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --ps-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --ps-shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.2);
+  --ps-shadow-primary: 0 4px 15px rgba(102, 126, 234, 0.3);
+  
+  /* Typography */
+  --ps-font-size-xs: 0.75rem;
+  --ps-font-size-sm: 0.875rem;
+  --ps-font-size-base: 1rem;
+  --ps-font-size-lg: 1.125rem;
+  --ps-font-size-xl: 1.25rem;
+  --ps-font-size-2xl: 1.5rem;
+  --ps-font-size-3xl: 2rem;
+  
+  /* Transitions */
+  --ps-transition-fast: 0.15s ease;
+  --ps-transition-base: 0.2s ease;
+  --ps-transition-slow: 0.3s ease;
+}
+
+/* ===== UTILITY CLASSES ===== */
+.ps-gradient-primary { background: var(--ps-gradient-primary); }
+.ps-gradient-success { background: var(--ps-gradient-success); }
+.ps-gradient-warning { background: var(--ps-gradient-warning); }
+.ps-gradient-info { background: var(--ps-gradient-info); }
+
+.ps-shadow-sm { box-shadow: var(--ps-shadow-sm); }
+.ps-shadow-md { box-shadow: var(--ps-shadow-md); }
+.ps-shadow-lg { box-shadow: var(--ps-shadow-lg); }
+.ps-shadow-primary { box-shadow: var(--ps-shadow-primary); }
+
+.ps-radius-sm { border-radius: var(--ps-radius-sm); }
+.ps-radius-md { border-radius: var(--ps-radius-md); }
+.ps-radius-lg { border-radius: var(--ps-radius-lg); }
+.ps-radius-xl { border-radius: var(--ps-radius-xl); }
+
+.ps-transition { transition: all var(--ps-transition-base); }
+.ps-transition-fast { transition: all var(--ps-transition-fast); }
+.ps-transition-slow { transition: all var(--ps-transition-slow); }
+
+/* ===== COMPONENT OPTIMIZATIONS ===== */
+
+/* Base Block Optimizations */
+.base-block {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: var(--ps-radius-md);
+  box-shadow: var(--ps-shadow-sm);
+  transition: all var(--ps-transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.base-block:hover {
+  box-shadow: var(--ps-shadow-md);
+  transform: translateY(-2px);
+}
+
+.base-block:hover .drag-handle {
+  opacity: 1;
+}
+
+/* Button Optimizations */
+.btn-ps-primary {
+  background: var(--ps-gradient-primary);
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--ps-radius-md);
+  font-weight: 600;
+  transition: all var(--ps-transition-slow);
+  box-shadow: var(--ps-shadow-primary);
+}
+
+.btn-ps-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  color: white;
+}
+
+.btn-ps-secondary {
+  background: white;
+  color: var(--ps-primary);
+  border: 2px solid var(--ps-primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--ps-radius-md);
+  font-weight: 600;
+  transition: all var(--ps-transition-slow);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+.btn-ps-secondary:hover {
+  background: var(--ps-primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  padding: 0.375rem;
+  border-radius: var(--ps-radius-sm);
+  transition: all var(--ps-transition-base);
+}
+
+.btn-ghost:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Card Optimizations */
+.ps-card {
+  background: white;
+  border-radius: var(--ps-radius-md);
+  border: 1px solid #e2e8f0;
+  box-shadow: var(--ps-shadow-sm);
+  transition: all var(--ps-transition-slow);
+  overflow: hidden;
+}
+
+.ps-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ps-shadow-md);
+}
+
+.ps-card-header {
+  padding: var(--ps-spacing-lg);
+  border-bottom: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.ps-card-body {
+  padding: var(--ps-spacing-lg);
+}
+
+.ps-card-footer {
+  padding: var(--ps-spacing-lg);
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+/* Tag and Badge Optimizations */
+.tag-pill {
+  font-size: var(--ps-font-size-xs);
+  padding: var(--ps-spacing-xs) var(--ps-spacing-sm);
+  border-radius: var(--ps-radius-md);
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--ps-primary);
+  border: none;
+  font-weight: 500;
+}
+
+.priority-alta { color: var(--ps-danger); }
+.priority-media { color: var(--ps-warning); }
+.priority-baja { color: var(--ps-accent); }
+
+/* Status Indicators */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ps-spacing-xs);
+  font-size: var(--ps-font-size-sm);
+  font-weight: 500;
+}
+
+/* Progress Indicators */
+.progress-indicator {
+  width: 60px;
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-indicator .progress-bar {
