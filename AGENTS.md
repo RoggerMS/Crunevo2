@@ -1314,3 +1314,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added migration for forum premium feature columns and restored personal space dashboard view. (PR forum-premium-columns)
 - Prevented undefined trend errors on personal space dashboard and fixed forum gamification link to avoid BuildError. (PR dashboard-trend-link-fix)
 - Fixed forum dashboard endpoint and updated template links; passed default analytics data to personal space dashboard to avoid undefined stats. (PR forum-dashboard-personal-space-fix)
+- Corrected forum gamification link to use existing endpoint and added sample insights template global to prevent Personal Space dashboard errors. (PR forum-personal-space-fixes)

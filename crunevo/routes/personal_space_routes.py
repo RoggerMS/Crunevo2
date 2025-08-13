@@ -22,6 +22,44 @@ personal_space_api_bp = Blueprint(
 )
 
 
+def get_sample_insights():
+    """Return sample insights for the analytics dashboard."""
+    return [
+        {
+            "title": "Pico de productividad",
+            "description": (
+                "Tus mejores horas son entre las 9:00 y 11:00 AM. "
+                "Considera programar tareas importantes en este horario."
+            ),
+            "icon": "bi-clock",
+            "action": "optimizeSchedule()",
+            "action_text": "Optimizar horario",
+        },
+        {
+            "title": "Objetivos en riesgo",
+            "description": (
+                "Tienes 2 objetivos que podrían no cumplirse a tiempo. "
+                "Revisa tus prioridades."
+            ),
+            "icon": "bi-exclamation-triangle",
+            "action": "reviewGoals()",
+            "action_text": "Revisar objetivos",
+        },
+        {
+            "title": "Racha de productividad",
+            "description": (
+                "¡Felicidades! Has completado tareas durante 7 días consecutivos."
+            ),
+            "icon": "bi-trophy",
+            "action": None,
+            "action_text": None,
+        },
+    ]
+
+
+personal_space_bp.add_app_template_global(get_sample_insights)
+
+
 # ---------------------------------------------------------------------------
 # Page routes
 # ---------------------------------------------------------------------------
