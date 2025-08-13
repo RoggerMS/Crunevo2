@@ -1,14 +1,14 @@
 from datetime import datetime
 from types import SimpleNamespace
 
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, abort, current_app, jsonify, render_template, request
 from flask_login import current_user, login_required
 
 from crunevo.models import (
     PersonalSpaceBlock,
     PersonalSpaceTemplate,
 )
-from crunevo.utils.helpers import activated_required
+from crunevo.utils.helpers import activated_required, table_exists
 from crunevo.services.block_service import BlockService
 from crunevo.services.analytics_service import AnalyticsService
 from crunevo.services.template_service import TemplateService
@@ -31,11 +31,19 @@ personal_space_api_bp = Blueprint(
 @activated_required
 def dashboard():
     """Render dashboard with basic stats."""
-    blocks = (
-        PersonalSpaceBlock.query.filter_by(user_id=current_user.id)
-        .order_by(PersonalSpaceBlock.order_index.asc())
-        .all()
-    )
+    blocks: list[PersonalSpaceBlock] = []
+    if table_exists("personal_space_blocks"):
+        try:
+            blocks = (
+                PersonalSpaceBlock.query.filter_by(user_id=current_user.id)
+                .order_by(PersonalSpaceBlock.order_index.asc())
+                .all()
+            )
+        except Exception as exc:  # pragma: no cover - log unexpected DB errors
+            current_app.logger.error("Failed to load personal space blocks: %s", exc)
+    else:  # pragma: no cover - table missing in environment
+        current_app.logger.warning("personal_space_blocks table does not exist")
+
     completed_tasks = sum(
         1 for b in blocks if b.type == "tarea" and (b.metadata or {}).get("completed")
     )
@@ -83,11 +91,18 @@ def dashboard():
 @login_required
 @activated_required
 def workspace():
-    blocks = (
-        PersonalSpaceBlock.query.filter_by(user_id=current_user.id)
-        .order_by(PersonalSpaceBlock.order_index.asc())
-        .all()
-    )
+    blocks: list[PersonalSpaceBlock] = []
+    if table_exists("personal_space_blocks"):
+        try:
+            blocks = (
+                PersonalSpaceBlock.query.filter_by(user_id=current_user.id)
+                .order_by(PersonalSpaceBlock.order_index.asc())
+                .all()
+            )
+        except Exception as exc:  # pragma: no cover
+            current_app.logger.error("Failed to load personal space blocks: %s", exc)
+    else:  # pragma: no cover
+        current_app.logger.warning("personal_space_blocks table does not exist")
     return render_template("personal_space/workspace.html", blocks=blocks)
 
 
@@ -95,9 +110,23 @@ def workspace():
 @login_required
 @activated_required
 def block_detail(block_id):
-    block = PersonalSpaceBlock.query.filter_by(
-        id=block_id, user_id=current_user.id
-    ).first_or_404()
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning(
+            "personal_space_blocks table does not exist; cannot display block %s",
+            block_id,
+        )
+        abort(404)
+
+    try:
+        block = PersonalSpaceBlock.query.filter_by(
+            id=block_id, user_id=current_user.id
+        ).first_or_404()
+    except Exception as exc:  # pragma: no cover
+        current_app.logger.error(
+            "Failed to load personal space block %s: %s", block_id, exc
+        )
+        abort(404)
+
     return render_template("personal_space/block_detail.html", block=block)
 
 
@@ -105,8 +134,15 @@ def block_detail(block_id):
 @login_required
 @activated_required
 def templates():
-    templates = PersonalSpaceTemplate.query.all()
-    return render_template("personal_space/templates.html", templates=templates)
+    template_list: list[PersonalSpaceTemplate] = []
+    if table_exists("personal_space_templates"):
+        try:
+            template_list = PersonalSpaceTemplate.query.all()
+        except Exception as exc:  # pragma: no cover
+            current_app.logger.error("Failed to load personal space templates: %s", exc)
+    else:  # pragma: no cover
+        current_app.logger.warning("personal_space_templates table does not exist")
+    return render_template("personal_space/templates.html", templates=template_list)
 
 
 @personal_space_bp.route("/templates/aplicar/<string:slug>", methods=["POST"])
@@ -168,6 +204,9 @@ def papelera():
 @login_required
 @activated_required
 def list_blocks():
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": True, "blocks": []})
     try:
         block_type = request.args.get("type")
         status = request.args.get("status", "active")
@@ -184,6 +223,7 @@ def list_blocks():
             {"success": True, "blocks": [block.to_dict() for block in blocks]}
         )
     except Exception as e:
+        current_app.logger.error("Error listing personal space blocks: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -191,6 +231,9 @@ def list_blocks():
 @login_required
 @activated_required
 def create_block():
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": False, "error": "Personal space unavailable"}), 503
     try:
         data = request.get_json() or {}
 
@@ -203,6 +246,7 @@ def create_block():
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 400
     except Exception as e:
+        current_app.logger.error("Error creating personal space block: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -210,6 +254,9 @@ def create_block():
 @login_required
 @activated_required
 def update_block(block_id):
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": False, "error": "Personal space unavailable"}), 503
     try:
         data = request.get_json() or {}
 
@@ -222,6 +269,7 @@ def update_block(block_id):
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 400
     except Exception as e:
+        current_app.logger.error("Error updating personal space block: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -230,6 +278,9 @@ def update_block(block_id):
 @activated_required
 def delete_block(block_id):
     """Delete a block (soft delete)."""
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": False, "error": "Personal space unavailable"}), 503
     try:
         success = BlockService.delete_block(block_id, current_user.id)
 
@@ -238,6 +289,7 @@ def delete_block(block_id):
 
         return jsonify({"success": True})
     except Exception as e:
+        current_app.logger.error("Error deleting personal space block: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -246,6 +298,9 @@ def delete_block(block_id):
 @activated_required
 def reorder_blocks():
     """Reorder multiple blocks."""
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": False, "error": "Personal space unavailable"}), 503
     try:
         data = request.get_json() or {}
         block_orders = data.get("blocks", [])
@@ -259,6 +314,7 @@ def reorder_blocks():
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 400
     except Exception as e:
+        current_app.logger.error("Error reordering personal space blocks: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -267,6 +323,9 @@ def reorder_blocks():
 @activated_required
 def update_block_position(block_id):
     """Update a single block's position."""
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": False, "error": "Personal space unavailable"}), 503
     try:
         data = request.get_json() or {}
         new_position = data.get("order_index")
@@ -281,6 +340,7 @@ def update_block_position(block_id):
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 400
     except Exception as e:
+        current_app.logger.error("Error updating block position: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -289,6 +349,9 @@ def update_block_position(block_id):
 @activated_required
 def list_templates():
     """List available templates for user."""
+    if not table_exists("personal_space_templates"):
+        current_app.logger.warning("personal_space_templates table does not exist")
+        return jsonify({"success": True, "templates": [], "default_templates": []})
     try:
         category = request.args.get("category")
         include_public = request.args.get("include_public", "true").lower() == "true"
@@ -308,6 +371,7 @@ def list_templates():
             }
         )
     except Exception as e:
+        current_app.logger.error("Error listing templates: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -316,6 +380,13 @@ def list_templates():
 @activated_required
 def create_template():
     """Create a new template."""
+    if not table_exists("personal_space_templates") or not table_exists(
+        "personal_space_blocks"
+    ):
+        current_app.logger.warning(
+            "personal_space tables do not exist; cannot create template"
+        )
+        return jsonify({"success": False, "error": "Personal space unavailable"}), 503
     try:
         data = request.get_json() or {}
 
@@ -341,6 +412,7 @@ def create_template():
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 400
     except Exception as e:
+        current_app.logger.error("Error creating template: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -349,11 +421,15 @@ def create_template():
 @activated_required
 def productivity_metrics():
     """Get productivity metrics for user."""
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": True, "metrics": {}})
     try:
         metrics = AnalyticsService.get_productivity_metrics(current_user.id)
 
         return jsonify({"success": True, "metrics": metrics})
     except Exception as e:
+        current_app.logger.error("Error getting productivity metrics: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -362,11 +438,15 @@ def productivity_metrics():
 @activated_required
 def dashboard_metrics():
     """Get dashboard analytics and metrics."""
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": True, "metrics": {}})
     try:
         metrics = AnalyticsService.get_dashboard_metrics(current_user.id)
 
         return jsonify({"success": True, "metrics": metrics})
     except Exception as e:
+        current_app.logger.error("Error getting dashboard metrics: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -375,11 +455,15 @@ def dashboard_metrics():
 @activated_required
 def goal_tracking():
     """Get goal tracking analytics."""
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": True, "goals": []})
     try:
         goals = AnalyticsService.get_goal_tracking(current_user.id)
 
         return jsonify({"success": True, "goals": goals})
     except Exception as e:
+        current_app.logger.error("Error getting goal tracking: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -388,6 +472,11 @@ def goal_tracking():
 @activated_required
 def apply_template(template_id):
     """Apply a template to user's workspace."""
+    if not table_exists("personal_space_templates") or not table_exists(
+        "personal_space_blocks"
+    ):
+        current_app.logger.warning("personal space tables do not exist")
+        return jsonify({"success": False, "error": "Personal space unavailable"}), 503
     try:
         data = request.get_json() or {}
         replace_existing = data.get("replace_existing", False)
@@ -424,6 +513,7 @@ def apply_template(template_id):
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 400
     except Exception as e:
+        current_app.logger.error("Error applying template: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -432,6 +522,9 @@ def apply_template(template_id):
 @activated_required
 def update_template(template_id):
     """Update a template."""
+    if not table_exists("personal_space_templates"):
+        current_app.logger.warning("personal_space_templates table does not exist")
+        return jsonify({"success": False, "error": "Personal space unavailable"}), 503
     try:
         data = request.get_json() or {}
 
@@ -441,6 +534,7 @@ def update_template(template_id):
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 400
     except Exception as e:
+        current_app.logger.error("Error updating template: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -449,6 +543,9 @@ def update_template(template_id):
 @activated_required
 def delete_template(template_id):
     """Delete a template."""
+    if not table_exists("personal_space_templates"):
+        current_app.logger.warning("personal_space_templates table does not exist")
+        return jsonify({"success": False, "error": "Personal space unavailable"}), 503
     try:
         success = TemplateService.delete_template(template_id, current_user.id)
 
@@ -457,6 +554,7 @@ def delete_template(template_id):
 
         return jsonify({"success": True})
     except Exception as e:
+        current_app.logger.error("Error deleting template: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -465,11 +563,15 @@ def delete_template(template_id):
 @activated_required
 def template_categories():
     """Get template categories."""
+    if not table_exists("personal_space_templates"):
+        current_app.logger.warning("personal_space_templates table does not exist")
+        return jsonify({"success": True, "categories": []})
     try:
         categories = TemplateService.get_template_categories()
 
         return jsonify({"success": True, "categories": categories})
     except Exception as e:
+        current_app.logger.error("Error getting template categories: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -478,6 +580,9 @@ def template_categories():
 @activated_required
 def search_templates():
     """Search templates."""
+    if not table_exists("personal_space_templates"):
+        current_app.logger.warning("personal_space_templates table does not exist")
+        return jsonify({"success": True, "templates": []})
     try:
         query = request.args.get("q", "")
 
@@ -494,6 +599,7 @@ def search_templates():
 
         return jsonify({"success": True, "templates": [t.to_dict() for t in templates]})
     except Exception as e:
+        current_app.logger.error("Error searching templates: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -502,6 +608,9 @@ def search_templates():
 @activated_required
 def duplicate_block(block_id):
     """Duplicate a block."""
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": False, "error": "Personal space unavailable"}), 503
     try:
         duplicated_block = BlockService.duplicate_block(block_id, current_user.id)
 
@@ -510,6 +619,7 @@ def duplicate_block(block_id):
 
         return jsonify({"success": True, "block": duplicated_block.to_dict()})
     except Exception as e:
+        current_app.logger.error("Error duplicating block: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -518,6 +628,9 @@ def duplicate_block(block_id):
 @activated_required
 def search_blocks():
     """Search blocks."""
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": True, "blocks": []})
     try:
         query = request.args.get("q", "")
 
@@ -536,6 +649,7 @@ def search_blocks():
             {"success": True, "blocks": [block.to_dict() for block in blocks]}
         )
     except Exception as e:
+        current_app.logger.error("Error searching blocks: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -544,9 +658,13 @@ def search_blocks():
 @activated_required
 def block_analytics():
     """Get block analytics."""
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": True, "analytics": {}})
     try:
         analytics = BlockService.get_block_analytics(current_user.id)
 
         return jsonify({"success": True, "analytics": analytics})
     except Exception as e:
+        current_app.logger.error("Error getting block analytics: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
