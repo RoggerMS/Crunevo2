@@ -7,12 +7,11 @@
 
 {% block title %}Personal Space - Dashboard{% endblock %}
 
-{% block head_extra %}
+{% block extra_head %}
 <!-- Chart.js for analytics -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Sortable.js for drag and drop -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space.css') }}">
 <!-- Custom CSS -->
 <style>
 /* Dashboard Specific Styles */
@@ -476,9 +475,9 @@
                     </button>
                     
                     <div class="dropdown">
-                        <button class="btn quick-action-btn secondary dropdown-toggle"
-                                type="button"
-                                data-bs-toggle="dropdown" title="Más opciones" aria-label="Más opciones">
+                        <button class="btn quick-action-btn secondary dropdown-toggle" 
+                                type="button" 
+                                data-bs-toggle="dropdown">
                             <i class="bi bi-three-dots"></i>
                         </button>
                         <ul class="dropdown-menu">
@@ -559,7 +558,7 @@
                             Enfoque de Hoy
                         </h3>
                         <div class="section-actions">
-                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshTodaysFocus()" title="Actualizar enfoque" aria-label="Actualizar enfoque">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshTodaysFocus()">
                                 <i class="bi bi-arrow-clockwise"></i>
                             </button>
                         </div>
@@ -692,11 +691,11 @@
 </div>
 
 <!-- Floating Action Button -->
-<button type="button"
-        class="floating-action-btn"
-        data-bs-toggle="modal"
-        data-bs-target="#block-factory-modal"
-        title="Crear nuevo bloque" aria-label="Crear nuevo bloque">
+<button type="button" 
+        class="floating-action-btn" 
+        data-bs-toggle="modal" 
+        data-bs-target="#block-factory-modal" 
+        title="Crear nuevo bloque">
     <i class="bi bi-plus"></i>
 </button>
 
