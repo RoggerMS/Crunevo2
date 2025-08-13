@@ -12,7 +12,14 @@ def favicon():
 
 @main_bp.route("/")
 def index():
-    if current_user.is_authenticated:
+    # Safely check if user is authenticated without triggering DB queries during errors
+    try:
+        user_authenticated = current_user.is_authenticated
+    except Exception:
+        # If there's a database error, treat as not authenticated
+        user_authenticated = False
+    
+    if user_authenticated:
         if current_app.config.get("ADMIN_INSTANCE"):
             return redirect(url_for("admin.dashboard"))
         return feed_home()

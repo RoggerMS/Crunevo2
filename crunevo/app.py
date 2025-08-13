@@ -633,23 +633,40 @@ def create_app():
 
     @app.errorhandler(Exception)
     def log_exception(e):
+        # Always rollback first to clear any failed transaction state
         try:
             db.session.rollback()
+        except Exception:
+            pass  # Ignore rollback errors
+        
+        try:
             code = getattr(e, "code", 500)
             try:
                 code = int(code)
             except (TypeError, ValueError):
                 code = 500
+            
+            # Safely get user_id without triggering database queries
+            user_id = None
+            try:
+                # Try to get user_id from session without accessing current_user
+                from flask import session
+                if '_user_id' in session:
+                    user_id = session['_user_id']
+            except Exception:
+                pass  # If we can't get user_id safely, just use None
+            
             err = SystemErrorLog(
                 ruta=request.path,
                 mensaje=str(e),
                 status_code=code,
-                user_id=current_user.id if current_user.is_authenticated else None,
+                user_id=user_id,
             )
             db.session.add(err)
             db.session.commit()
         except Exception:
-            app.logger.exception("Failed to log system error")
+            # If logging fails, don't access current_user or database
+            app.logger.exception("Failed to log system error - avoiding database access")
 
         if isinstance(e, HTTPException):
             code = e.code

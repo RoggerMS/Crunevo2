@@ -122,4 +122,9 @@ class User(UserMixin, db.Model):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    # Use SQLAlchemy 2.x API instead of legacy query.get
+    try:
+        return db.session.get(User, int(user_id))
+    except Exception:
+        # If there's a database error, return None to avoid cascading errors
+        return None

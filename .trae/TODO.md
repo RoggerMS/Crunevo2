@@ -1,8 +1,7 @@
 # TODO:
 
-- [x] check_vercel_config: Check vercel.json configuration for proper serverless function setup (priority: High)
-- [x] examine_api_entry: Examine api/index.py entry point and Flask app configuration (priority: High)
-- [x] deploy_fix: Deploy the fixed configuration to Vercel (priority: High)
-- [x] fix_serverless_compatibility: Fix serverless compatibility issues with eventlet and Redis dependencies (priority: High)
-- [x] test_local_app: Test if the Flask app starts correctly locally (priority: Medium)
-- [x] fix_dependencies: Ensure all dependencies are properly configured for serverless environment (priority: Medium)
+- [x] create_forum_migration: Crear migración para añadir columnas faltantes del foro en modelo User (forum_level, forum_experience, forum_streak, last_activity_date, questions_asked, answers_given, best_answers, helpful_votes, reputation_score, custom_forum_title) (priority: High)
+- [x] fix_error_handler: Corregir el manejador de errores en app.py para evitar consultas BD durante excepciones y hacer rollback automático (priority: High)
+- [x] protect_current_user: Proteger acceso a current_user en rutas principales para evitar cascada de errores (priority: High)
+- [x] update_user_loader: Actualizar user_loader para usar SQLAlchemy 2.x API (db.session.get en lugar de User.query.get) (priority: Medium)
+- [ ] test_fixes: Probar las correcciones localmente y verificar que no hay errores de BD (**IN PROGRESS**) (priority: Medium)
