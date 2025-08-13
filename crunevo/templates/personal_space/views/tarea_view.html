@@ -5,1336 +5,183 @@
 {% block title %}Tarea - {{ block.title }}{% endblock %}
 
 {% block content %}
-<style>
-/* CSS Variables */
-:root {
-  --task-primary: #7c3aed;
-  --task-secondary: #38bdf8;
-  --task-success: #10b981;
-  --task-warning: #f59e0b;
-  --task-danger: #ef4444;
-  --task-gray: #6b7280;
-  --task-light: #f8fafc;
-  --task-border: #e5e7eb;
-  --task-radius: 16px;
-  --task-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --task-transition: all 0.2s ease;
-}
-
-/* Header Styles */
-#task-header {
-  background: linear-gradient(135deg, rgba(124,58,237,.10), rgba(56,189,248,.10));
-  padding: 2rem;
-  border-radius: var(--task-radius);
-  margin-bottom: 1.5rem;
-  transition: filter 0.2s ease;
-  position: relative;
-}
-
-#task-header:hover {
-  filter: brightness(1.02);
-}
-
-.header-nav {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.header-nav .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: white;
-  border: 1px solid var(--task-border);
-  border-radius: 8px;
-  text-decoration: none;
-  color: var(--task-gray);
-  font-size: 0.875rem;
-  transition: var(--task-transition);
-}
-
-.header-nav .btn:hover {
-  background: var(--task-light);
-  border-color: var(--task-primary);
-  color: var(--task-primary);
-}
-
-.header-title-section {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.task-icon {
-  font-size: 2rem;
-  margin-top: 0.25rem;
-}
-
-#task-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1f2937;
-  border: none;
-  background: transparent;
-  outline: none;
-  flex: 1;
-  position: relative;
-}
-
-#task-title:hover::after {
-  content: '✏️';
-  position: absolute;
-  right: -2rem;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 1;
-  transition: opacity 0.2s ease;
-}
-
-#task-title::after {
-  opacity: 0;
-}
-
-.task-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.chip--category {
-  background: rgba(124,58,237,0.1);
-  color: var(--task-primary);
-}
-
-.chip--priority-alta {
-  background: rgba(239,68,68,0.1);
-  color: var(--task-danger);
-}
-
-.chip--priority-media {
-  background: rgba(245,158,11,0.1);
-  color: var(--task-warning);
-}
-
-.chip--priority-baja {
-  background: rgba(16,185,129,0.1);
-  color: var(--task-success);
-}
-
-.chip--date {
-  background: rgba(107,114,128,0.1);
-  color: var(--task-gray);
-}
-
-/* Progress Bar */
-#task-progress {
-  background: white;
-  border-radius: var(--task-radius);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: var(--task-shadow);
-  position: relative;
-}
-
-.progress-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.progress-text {
-  font-weight: 600;
-  color: #374151;
-}
-
-.focus-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: var(--task-primary);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: var(--task-transition);
-}
-
-.focus-btn:hover {
-  background: #6d28d9;
-}
-
-.progress-track {
-  width: 100%;
-  height: 12px;
-  background: #e5e7eb;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  transition: width 0.3s ease;
-  border-radius: 6px;
-}
-
-.progress-fill--low {
-  background: linear-gradient(90deg, #ef4444, #f87171);
-}
-
-.progress-fill--medium {
-  background: linear-gradient(90deg, #f59e0b, #fbbf24);
-}
-
-.progress-fill--high {
-  background: linear-gradient(90deg, #10b981, #34d399);
-}
-
-/* Main Layout */
-#task-main {
-  display: grid;
-  grid-template-columns: 70% 30%;
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
-.focus-mode {
-  grid-template-columns: 1fr !important;
-}
-
-.focus-mode .side-panel {
-  display: none !important;
-}
-
-/* Left Column */
-.work-zone {
-  background: white;
-  border-radius: var(--task-radius);
-  padding: 1.5rem;
-  box-shadow: var(--task-shadow);
-}
-
-.section-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-#description-text {
-  width: 100%;
-  min-height: 120px;
-  padding: 1rem;
-  border: 1px solid var(--task-border);
-  border-radius: 8px;
-  font-family: inherit;
-  resize: vertical;
-  transition: var(--task-transition);
-}
-
-#description-text:focus {
-  outline: none;
-  border-color: var(--task-primary);
-  box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
-}
-
-/* Subtasks */
-.subtasks-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 2rem 0 1rem 0;
-}
-
-.filter-tabs {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.filter-tab {
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--task-border);
-  background: white;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: var(--task-transition);
-  font-size: 0.875rem;
-}
-
-.filter-tab.active {
-  background: var(--task-primary);
-  color: white;
-  border-color: var(--task-primary);
-}
-
-.subtasks-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.subtask-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  border: 1px solid var(--task-border);
-  border-radius: 8px;
-  margin-bottom: 0.75rem;
-  background: white;
-  transition: var(--task-transition);
-  cursor: grab;
-}
-
-.subtask-item:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.subtask-item.dragging {
-  opacity: 0.5;
-  cursor: grabbing;
-}
-
-.subtask-checkbox {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-}
-
-.subtask-content {
-  flex: 1;
-}
-
-.subtask-title {
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 0.25rem;
-}
-
-.subtask-meta {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.subtask-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-icon {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--task-border);
-  background: white;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: var(--task-transition);
-  text-decoration: none;
-  color: var(--task-gray);
-}
-
-.btn-icon:hover {
-  background: var(--task-light);
-}
-
-.add-subtask {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 1rem;
-  border: 2px dashed var(--task-border);
-  background: transparent;
-  border-radius: 8px;
-  color: var(--task-gray);
-  cursor: pointer;
-  transition: var(--task-transition);
-  margin-top: 1rem;
-}
-
-.add-subtask:hover {
-  border-color: var(--task-primary);
-  color: var(--task-primary);
-  background: rgba(124,58,237,0.02);
-}
-
-/* Right Panel */
-.side-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.panel-card {
-  background: white;
-  border-radius: var(--task-radius);
-  padding: 1.5rem;
-  box-shadow: var(--task-shadow);
-}
-
-.panel-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.resource-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  border: 1px solid var(--task-border);
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
-  transition: var(--task-transition);
-}
-
-.resource-item:hover {
-  background: var(--task-light);
-}
-
-.resource-preview {
-  width: 40px;
-  height: 40px;
-  background: var(--task-light);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-}
-
-.resource-content {
-  flex: 1;
-}
-
-.resource-title {
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 0.25rem;
-}
-
-.resource-type {
-  font-size: 0.75rem;
-  color: var(--task-gray);
-}
-
-.add-resource-menu {
-  position: relative;
-  display: inline-block;
-}
-
-.add-resource-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: white;
-  border: 1px solid var(--task-border);
-  border-radius: 8px;
-  box-shadow: var(--task-shadow);
-  min-width: 200px;
-  z-index: 10;
-  display: none;
-}
-
-.add-resource-dropdown.show {
-  display: block;
-}
-
-.dropdown-item {
-  display: block;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  text-align: left;
-  border: none;
-  background: none;
-  color: #374151;
-  text-decoration: none;
-  transition: var(--task-transition);
-}
-
-.dropdown-item:hover {
-  background: var(--task-light);
-}
-
-/* Calendar */
-.mini-calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-  font-size: 0.75rem;
-}
-
-.calendar-day {
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: var(--task-transition);
-}
-
-.calendar-day.today {
-  background: var(--task-primary);
-  color: white;
-}
-
-.calendar-day.due-date {
-  background: var(--task-danger);
-  color: white;
-}
-
-/* Stats */
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.stat-item {
-  text-align: center;
-  padding: 1rem;
-  background: var(--task-light);
-  border-radius: 8px;
-}
-
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--task-primary);
-}
-
-.stat-label {
-  font-size: 0.75rem;
-  color: var(--task-gray);
-  margin-top: 0.25rem;
-}
-
-/* Quick Notes */
-#quick-notes {
-  width: 100%;
-  min-height: 80px;
-  padding: 0.75rem;
-  border: 1px solid var(--task-border);
-  border-radius: 8px;
-  font-family: inherit;
-  resize: vertical;
-  transition: var(--task-transition);
-}
-
-#quick-notes:focus {
-  outline: none;
-  border-color: var(--task-primary);
-  box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
-}
-
-/* Footer */
-#task-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
-  background: white;
-  border-radius: var(--task-radius);
-  box-shadow: var(--task-shadow);
-  border-top: 1px solid var(--task-border);
-}
-
-.footer-info {
-  color: var(--task-gray);
-  font-size: 0.875rem;
-}
-
-.footer-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.btn-complete {
-  background: var(--task-success);
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: var(--task-transition);
-}
-
-.btn-complete:hover {
-  background: #059669;
-  transform: translateY(-1px);
-}
-
-/* Mobile Styles */
-@media (max-width: 768px) {
-  #task-header {
-    padding: 1rem;
-  }
-  
-  .header-nav {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  
-  .header-nav .btn {
-    font-size: 0.75rem;
-    padding: 0.5rem 0.75rem;
-  }
-  
-  #task-title {
-    font-size: 1.5rem;
-  }
-  
-  #task-main {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .side-panel {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    border-top: 1px solid var(--task-border);
-    z-index: 20;
-    max-height: 50vh;
-    overflow-y: auto;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
-  }
-  
-  .side-panel.show {
-    transform: translateY(0);
-  }
-  
-  .mobile-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--task-border);
-  }
-  
-  .mobile-tab {
-    flex: 1;
-    padding: 1rem;
-    text-align: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: var(--task-transition);
-    min-height: 44px;
-  }
-  
-  .mobile-tab.active {
-    background: var(--task-primary);
-    color: white;
-  }
-  
-  .mobile-tab-content {
-    display: none;
-    padding: 1rem;
-  }
-  
-  .mobile-tab-content.active {
-    display: block;
-  }
-  
-  .subtask-item {
-    min-height: 44px;
-  }
-  
-  .btn-icon {
-    min-width: 44px;
-    min-height: 44px;
-  }
-}
-
-/* Toast */
-#toast {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  background: white;
-  border: 1px solid var(--task-border);
-  border-radius: 8px;
-  padding: 1rem 1.5rem;
-  box-shadow: var(--task-shadow);
-  z-index: 1000;
-  transform: translateX(100%);
-  transition: transform 0.3s ease;
-}
-
-#toast.show {
-  transform: translateX(0);
-}
-
-#toast.success {
-  border-color: var(--task-success);
-  background: rgba(16,185,129,0.05);
-}
-
-#toast.error {
-  border-color: var(--task-danger);
-  background: rgba(239,68,68,0.05);
-}
-
-/* Accessibility */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-*:focus-visible {
-  outline: 2px solid var(--task-primary);
-  outline-offset: 2px;
-}
-</style>
-
-<header id="task-header" data-section="header">
-  <nav class="header-nav" aria-label="Navegación">
-    <a href="{{ request.referrer or (url_for('personal_space.index') if app and 'personal_space.index' in app.view_functions else '#') }}" class="btn" data-action="back">
-      <span>↩</span> Volver
-    </a>
-    <a href="{{ url_for('personal_space.settings_view') if app and 'personal_space.settings_view' in app.view_functions else '#' }}" class="btn" data-action="settings">
-      <span>⚙</span> Configurar
-    </a>
-    <a href="{{ url_for('personal_space.link_note', block_id=block.id) if app and 'personal_space.link_note' in app.view_functions else '#' }}" class="btn" data-action="link-note">
-      <span>📂</span> Vincular Apunte
-    </a>
-    <a href="{{ url_for('personal_space.link_forum', block_id=block.id) if app and 'personal_space.link_forum' in app.view_functions else '#' }}" class="btn" data-action="link-forum">
-      <span>💬</span> Vincular Foro
-    </a>
+<header id="task-header">
+  <nav aria-label="Navegación">
+    <a href="{{ request.referrer or (url_for('personal_space.index') if app and 'personal_space.index' in app.view_functions else '#') }}">Volver</a>
+    <a href="{{ url_for('personal_space.settings_view') if app and 'personal_space.settings_view' in app.view_functions else '#' }}">Configurar</a>
+    <a href="{{ url_for('personal_space.link_note', block_id=block.id) if app and 'personal_space.link_note' in app.view_functions else '#' }}">Vincular Apunte</a>
+    <a href="{{ url_for('personal_space.link_forum', block_id=block.id) if app and 'personal_space.link_forum' in app.view_functions else '#' }}">Vincular Foro</a>
   </nav>
-  
-  <div class="header-title-section">
-    <span class="task-icon">{% if block.type == 'tarea' %}📋{% elif block.type == 'objetivo' %}🎯{% else %}📚{% endif %}</span>
-    <div style="flex: 1;">
-      <h1 id="task-title" contenteditable="true" data-field="title">{{ block.title }}</h1>
-      <div class="task-chips">
-        <span class="chip chip--category">Académico</span>
-        <span class="chip chip--priority-{{ block.priority or 'media' }}">{{ (block.priority or 'media').title() }} prioridad</span>
-        {% if block.due_date %}
-        <span class="chip chip--date">{{ block.due_date }}</span>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-  
-  <!-- Hidden form for updates -->
-  <form id="update-form" method="post" action="{{ url_for('personal_space.update_block', block_id=block.id) if app and 'personal_space.update_block' in app.view_functions else '' }}" style="display: none;">
-    {{ csrf_field() }}
-    <input id="title" name="title" type="hidden" value="{{ block.title }}">
-    <select id="type" name="type" style="display: none;">
-      <option value="tarea"{% if block.type == 'tarea' %} selected{% endif %}>tarea</option>
-      <option value="objetivo"{% if block.type == 'objetivo' %} selected{% endif %}>objetivo</option>
-      <option value="estudio"{% if block.type == 'estudio' %} selected{% endif %}>estudio</option>
-    </select>
-    <select id="priority" name="priority" style="display: none;">
-      <option value="alta"{% if block.priority == 'alta' %} selected{% endif %}>alta</option>
-      <option value="media"{% if block.priority == 'media' %} selected{% endif %}>media</option>
-      <option value="baja"{% if block.priority == 'baja' %} selected{% endif %}>baja</option>
-    </select>
-    <input id="due_date" name="due_date" type="hidden" value="{{ block.due_date }}">
-  </form>
+  <h1 id="task-title" contenteditable="true">{{ block.title }}</h1>
 </header>
 
-<section id="task-progress" data-section="progress" aria-live="polite">
-  <div class="progress-header">
-    <div class="progress-text">{{ stats.progress_pct|default(0) }}% — {{ stats.done|default(0) }} de {{ stats.total|default(0) }} completadas</div>
-    <button class="focus-btn" onclick="toggleFocusMode()">
-      <span>🎯</span> Modo Enfoque
-    </button>
-  </div>
-  <div class="progress-track">
-    <div class="progress-fill {% if stats.progress_pct|default(0) < 40 %}progress-fill--low{% elif stats.progress_pct|default(0) < 80 %}progress-fill--medium{% else %}progress-fill--high{% endif %}" 
-         style="width: {{ stats.progress_pct|default(0) }}%"></div>
-  </div>
+<section id="task-progress" aria-live="polite">
+  Progreso: {{ stats.progress_pct|default(0) }}%
 </section>
 
-<main id="task-main" data-section="main">
-  <section class="work-zone">
-    <div class="section-title">
-      <span>📝</span> Zona de trabajo
-    </div>
-    
-    <!-- Description -->
-    <div id="description" data-block="description">
-      <label for="description-text" class="sr-only">Descripción</label>
-      <textarea id="description-text" name="description" placeholder="Describe tu tarea aquí..." data-field="content">{{ block.description }}</textarea>
-    </div>
+<form id="meta-form" method="post" action="{{ url_for('personal_space.update_block', block_id=block.id) }}">
+  {{ csrf_field() }}
+  <label for="priority">Prioridad</label>
+  <select id="priority" name="priority">
+    <option value="alta"{% if block.priority == 'alta' %} selected{% endif %}>alta</option>
+    <option value="media"{% if block.priority == 'media' %} selected{% endif %}>media</option>
+    <option value="baja"{% if block.priority == 'baja' %} selected{% endif %}>baja</option>
+  </select>
+  <label for="due-date">Fecha límite</label>
+  <input id="due-date" name="due_date" type="date" value="{{ block.due_date.strftime('%Y-%m-%d') if block.due_date else '' }}">
+</form>
 
-    <!-- Subtasks -->
-    <div class="subtasks-header">
-      <h3 class="section-title">
-        <span>✅</span> Subtareas
-      </h3>
-      <div class="filter-tabs">
-        <button class="filter-tab active" data-filter="all">Todas</button>
-        <button class="filter-tab" data-filter="pending">Pendientes</button>
-        <button class="filter-tab" data-filter="done">Completadas</button>
-      </div>
-    </div>
+<form id="description-form" method="post" action="{{ url_for('personal_space.update_block', block_id=block.id) }}">
+  {{ csrf_field() }}
+  <label for="description-text">Descripción</label>
+  <textarea id="description-text" name="content">{{ block.content or '' }}</textarea>
+</form>
 
-    <ul class="subtasks-list" id="subtasks-list">
-      {% for subtask in subtasks %}
-      <li class="subtask-item" data-subtask-id="{{ subtask.id }}" data-status="{% if subtask.done %}done{% else %}pending{% endif %}" draggable="true">
-        <form method="post" action="{{ url_for('personal_space.toggle_subtask', subtask_id=subtask.id) if app and 'personal_space.toggle_subtask' in app.view_functions else '' }}" style="display: contents;">
-          {{ csrf_field() }}
-          <input type="checkbox" class="subtask-checkbox" id="subtask-{{ subtask.id }}" name="done"{% if subtask.done %} checked{% endif %} onchange="this.form.submit()">
-          <input type="hidden" name="next" value="{{ request.full_path }}">
-        </form>
-        
-        <div class="subtask-content">
-          <label for="subtask-{{ subtask.id }}" class="subtask-title">{{ subtask.title }}</label>
-          <div class="subtask-meta">
-            <span class="chip chip--priority-{{ subtask.priority or 'media' }}">{{ (subtask.priority or 'media').title() }}</span>
-            {% if subtask.due_date %}
-            <span class="chip chip--date">{{ subtask.due_date }}</span>
-            {% endif %}
-          </div>
-        </div>
-        
-        <div class="subtask-actions">
-          <span class="btn-icon" title="Mover" style="cursor: grab;">↕</span>
-          <a href="{{ url_for('personal_space.delete_subtask', subtask_id=subtask.id) if app and 'personal_space.delete_subtask' in app.view_functions else '#' }}" class="btn-icon" title="Eliminar" data-action="delete-subtask">🗑</a>
-        </div>
-      </li>
-      {% else %}
-      <li class="subtask-item" style="justify-content: center; color: var(--task-gray);">
-        No hay subtareas
-      </li>
-      {% endfor %}
-    </ul>
-
-    <button class="add-subtask" onclick="showAddSubtaskForm()">
-      <span>+</span> Añadir subtarea
-    </button>
-
-    <!-- Hidden Add Subtask Form -->
-    <form id="add-subtask-form" method="post" action="{{ url_for('personal_space.add_subtask', block_id=block.id) if app and 'personal_space.add_subtask' in app.view_functions else '' }}" style="display: none; margin-top: 1rem; padding: 1rem; border: 1px solid var(--task-border); border-radius: 8px; background: var(--task-light);">
-      {{ csrf_field() }}
-      <div style="margin-bottom: 1rem;">
-        <label for="new-title">Título</label>
-        <input id="new-title" name="title" type="text" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--task-border); border-radius: 4px; margin-top: 0.25rem;">
-      </div>
-      <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-        <div style="flex: 1;">
-          <label for="new-priority">Prioridad</label>
-          <select id="new-priority" name="priority" style="width: 100%; padding: 0.5rem; border: 1px solid var(--task-border); border-radius: 4px; margin-top: 0.25rem;">
-            <option value="alta">Alta</option>
-            <option value="media" selected>Media</option>
-            <option value="baja">Baja</option>
-          </select>
-        </div>
-        <div style="flex: 1;">
-          <label for="new-due-date">Fecha límite</label>
-          <input id="new-due-date" name="due_date" type="date" style="width: 100%; padding: 0.5rem; border: 1px solid var(--task-border); border-radius: 4px; margin-top: 0.25rem;">
-        </div>
-      </div>
-      <div style="display: flex; gap: 0.5rem;">
-        <button type="submit" style="padding: 0.5rem 1rem; background: var(--task-primary); color: white; border: none; border-radius: 4px; cursor: pointer;">Añadir</button>
-        <button type="button" onclick="hideAddSubtaskForm()" style="padding: 0.5rem 1rem; background: var(--task-gray); color: white; border: none; border-radius: 4px; cursor: pointer;">Cancelar</button>
-      </div>
-    </form>
-
-    <!-- Hidden Reorder Form -->
-    <form id="reorder-form" method="post" action="{{ url_for('personal_space.reorder_subtasks', block_id=block.id) if app and 'personal_space.reorder_subtasks' in app.view_functions else '' }}" style="display: none;">
-      {{ csrf_field() }}
-      <input id="order-json" name="order_json" type="hidden">
-    </form>
-  </section>
-
-  <aside class="side-panel">
-    <!-- Mobile Tabs -->
-    <div class="mobile-tabs" style="display: none;">
-      <button class="mobile-tab active" data-tab="resources">Recursos</button>
-      <button class="mobile-tab" data-tab="dates">Fechas</button>
-      <button class="mobile-tab" data-tab="stats">Stats</button>
-      <button class="mobile-tab" data-tab="notes">Notas</button>
-    </div>
-
-    <!-- Resources -->
-    <div class="panel-card mobile-tab-content active" data-content="resources">
-      <div class="panel-title">
-        <span>📂</span> Recursos vinculados
-        <div class="add-resource-menu" style="margin-left: auto;">
-          <button class="btn-icon" onclick="toggleResourceMenu()" title="Añadir recurso">+</button>
-          <div class="add-resource-dropdown" id="resource-dropdown">
-            <a href="{{ url_for('personal_space.link_note', block_id=block.id) if app and 'personal_space.link_note' in app.view_functions else '#' }}" class="dropdown-item">
-              <span>📝</span> Vincular Apunte
-            </a>
-            <a href="{{ url_for('personal_space.link_forum', block_id=block.id) if app and 'personal_space.link_forum' in app.view_functions else '#' }}" class="dropdown-item">
-              <span>💬</span> Vincular Foro
-            </a>
-          </div>
-        </div>
-      </div>
-      
-      <div>
-        {% for note in linked_notes %}
-        <div class="resource-item">
-          <div class="resource-preview">📝</div>
-          <div class="resource-content">
-            <div class="resource-title">{{ note.title }}</div>
-            <div class="resource-type">Apunte</div>
-          </div>
-          <a href="{{ note.url }}" target="_blank" class="btn-icon" title="Ver">👁</a>
-          <a href="{{ url_for('personal_space.unlink_resource', kind='note', resource_id=note.id) if app and 'personal_space.unlink_resource' in app.view_functions else '#' }}" class="btn-icon" title="Quitar" data-action="unlink-note">🗑</a>
-        </div>
-        {% endfor %}
-        
-        {% for post in linked_forum_posts %}
-        <div class="resource-item">
-          <div class="resource-preview">💬</div>
-          <div class="resource-content">
-            <div class="resource-title">{{ post.title }}</div>
-            <div class="resource-type">Foro</div>
-          </div>
-          <a href="{{ post.url }}" target="_blank" class="btn-icon" title="Ver">👁</a>
-          <a href="{{ url_for('personal_space.unlink_resource', kind='forum', resource_id=post.id) if app and 'personal_space.unlink_resource' in app.view_functions else '#' }}" class="btn-icon" title="Quitar" data-action="unlink-forum">🗑</a>
-        </div>
-        {% endfor %}
-        
-        {% if not linked_notes and not linked_forum_posts %}
-        <div style="text-align: center; color: var(--task-gray); padding: 2rem;">
-          <div style="font-size: 2rem; margin-bottom: 0.5rem;">📂</div>
-          <div>No hay recursos vinculados</div>
-        </div>
-        {% endif %}
-      </div>
-    </div>
-
-    <!-- Dates -->
-    <div class="panel-card mobile-tab-content" data-content="dates">
-      <div class="panel-title">
-        <span>📅</span> Fechas
-      </div>
-      
-      {% if block.due_date %}
-      <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(239,68,68,0.1); border-radius: 8px; color: var(--task-danger);">
-        <strong>Fecha límite:</strong> {{ block.due_date }}
-      </div>
+<section id="subtasks">
+  <h2>Subtareas</h2>
+  <ul>
+    {% for subtask in subtasks %}
+    <li data-subtask-id="{{ subtask.id }}">
+      <form method="post" action="{{ url_for('personal_space.toggle_subtask', block_id=block.id, subtask_id=subtask.id) }}">
+        {{ csrf_field() }}
+        <input type="checkbox" id="subtask-{{ subtask.id }}" name="done" {% if subtask.done %}checked{% endif %} onchange="this.form.submit()">
+        <input type="hidden" name="next" value="{{ request.full_path }}">
+        <label for="subtask-{{ subtask.id }}">{{ subtask.title }}</label>
+      </form>
+      {% if subtask.due_date %}
+      <span>{{ subtask.due_date }}</span>
       {% endif %}
-      
-      <div class="mini-calendar">
-        <!-- Simple calendar placeholder -->
-        {% for day in range(1, 32) %}
-        <div class="calendar-day {% if block.due_date and day|string in block.due_date %}due-date{% endif %}">{{ day }}</div>
-        {% endfor %}
-      </div>
-    </div>
+      <form method="post" action="{{ url_for('personal_space.delete_subtask', block_id=block.id, subtask_id=subtask.id) }}">
+        {{ csrf_field() }}
+        <button type="submit">Eliminar</button>
+      </form>
+    </li>
+    {% else %}
+    <li>No hay subtareas</li>
+    {% endfor %}
+  </ul>
 
-    <!-- Stats -->
-    <div class="panel-card mobile-tab-content" data-content="stats">
-      <div class="panel-title">
-        <span>📊</span> Estadísticas
-      </div>
-      
-      <div class="stats-grid">
-        <div class="stat-item">
-          <div class="stat-value">{{ stats.total|default(0) }}</div>
-          <div class="stat-label">Total</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value">{{ stats.done|default(0) }}</div>
-          <div class="stat-label">Completadas</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value">{{ stats.pending|default(0) }}</div>
-          <div class="stat-label">Pendientes</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value">{{ stats.progress_pct|default(0) }}%</div>
-          <div class="stat-label">Progreso</div>
-        </div>
-      </div>
-    </div>
+  <form method="post" action="{{ url_for('personal_space.add_subtask', block_id=block.id) }}">
+    {{ csrf_field() }}
+    <label for="new-title">Título</label>
+    <input id="new-title" name="title" required>
+    <label for="new-priority">Prioridad</label>
+    <select id="new-priority" name="priority">
+      <option value="alta">alta</option>
+      <option value="media">media</option>
+      <option value="baja">baja</option>
+    </select>
+    <label for="new-due-date">Fecha límite</label>
+    <input id="new-due-date" name="due_date" type="date">
+    <button type="submit">Añadir</button>
+  </form>
 
-    <!-- Quick Notes -->
-    <div class="panel-card mobile-tab-content" data-content="notes">
-      <div class="panel-title">
-        <span>📝</span> Notas rápidas
-      </div>
-      
-      <textarea id="quick-notes" placeholder="Escribe notas rápidas aquí..."></textarea>
-      <div style="font-size: 0.75rem; color: var(--task-gray); margin-top: 0.5rem;">
-        Se guardan automáticamente en tu dispositivo
-      </div>
-    </div>
-  </aside>
-</main>
+  <form method="post" action="{{ url_for('personal_space.reorder_subtasks', block_id=block.id) }}">
+    {{ csrf_field() }}
+    <label for="order-json">Nuevo orden</label>
+    <input id="order-json" name="order_json">
+    <button type="submit">Reordenar</button>
+  </form>
+</section>
 
-<footer id="task-footer" data-section="footer">
-  <div class="footer-info">
-    Última actualización: {{ block.updated_at }}
-  </div>
-  <div class="footer-actions">
-    <a href="{{ url_for('personal_space.duplicate_block', block_id=block.id) if app and 'personal_space.duplicate_block' in app.view_functions else '#' }}" class="btn" data-action="duplicate-block">Duplicar bloque</a>
-    <a href="{{ url_for('personal_space.complete_block', block_id=block.id) if app and 'personal_space.complete_block' in app.view_functions else '#' }}" class="btn-complete" data-action="complete-block">Marcar como completado</a>
-  </div>
+<section id="links">
+  <h2>Apuntes</h2>
+  <ul>
+    {% for note in linked_notes %}
+    <li>
+      <a href="{{ note.url }}" target="_blank">{{ note.title }}</a>
+      <form method="post" action="{{ url_for('personal_space.unlink_resource', kind='note', resource_id=note.id, block_id=block.id) }}">
+        {{ csrf_field() }}
+        <button type="submit">Quitar</button>
+      </form>
+    </li>
+    {% else %}
+    <li>No hay apuntes vinculados</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Foro</h2>
+  <ul>
+    {% for post in linked_forum_posts %}
+    <li>
+      <a href="{{ post.url }}" target="_blank">{{ post.title }}</a>
+      <form method="post" action="{{ url_for('personal_space.unlink_resource', kind='forum', resource_id=post.id, block_id=block.id) }}">
+        {{ csrf_field() }}
+        <button type="submit">Quitar</button>
+      </form>
+    </li>
+    {% else %}
+    <li>No hay publicaciones vinculadas</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<aside id="stats">
+  <p>Total: {{ stats.total|default(0) }}</p>
+  <p>Completadas: {{ stats.done|default(0) }}</p>
+  <p>Pendientes: {{ stats.pending|default(0) }}</p>
+  <p>Progreso: {{ stats.progress_pct|default(0) }}%</p>
+</aside>
+
+<footer id="task-footer">
+  <nav aria-label="Navegación">
+    <a href="{{ url_for('personal_space.duplicate_block', block_id=block.id) if app and 'personal_space.duplicate_block' in app.view_functions else '#' }}">Duplicar</a>
+    <a href="{{ url_for('personal_space.complete_block', block_id=block.id) if app and 'personal_space.complete_block' in app.view_functions else '#' }}">Completar</a>
+  </nav>
 </footer>
 
-<!-- Toast Notification -->
-<div id="toast" role="status" aria-live="polite"></div>
+<div id="toast" hidden></div>
 
 <script>
-// Debounce function
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
+const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.hidden=false;
+  setTimeout(()=>{t.hidden=true;},2000);
 }
-
-// Toast notification
-function showToast(message, type = 'success') {
-  const toast = document.getElementById('toast');
-  toast.textContent = message;
-  toast.className = `show ${type}`;
-  
-  setTimeout(() => {
-    toast.className = '';
-  }, 2000);
-}
-
-// Save field with rollback
-function saveField(fieldName, value, originalValue) {
-  const form = document.getElementById('update-form');
-  const input = form.querySelector(`[name="${fieldName}"]`);
-  
-  if (input) {
-    input.value = value;
-    
-    // Create FormData and submit
-    const formData = new FormData(form);
-    
-    fetch(form.action, {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => {
-      if (response.ok) {
-        showToast('Guardado ✓', 'success');
-      } else {
-        throw new Error('Save failed');
-      }
-    })
-    .catch(error => {
-      // Rollback on error
-      if (originalValue !== undefined) {
-        const element = document.querySelector(`[data-field="${fieldName}"]`);
-        if (element) {
-          element.textContent = originalValue;
-          element.value = originalValue;
-        }
-      }
-      showToast('No se pudo guardar', 'error');
+async function saveField(field,value){
+  try{
+    const res=await fetch("{{ url_for('personal_space.update_block', block_id=block.id) }}",{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-CSRFToken':csrfToken},
+      body:JSON.stringify({[field]:value})
     });
+    if(!res.ok) throw new Error();
+    showToast('Guardado ✓');
+    return true;
+  }catch(e){
+    showToast('No se pudo guardar');
+    return false;
   }
 }
-
-// Editable title
-const titleElement = document.getElementById('task-title');
-let originalTitle = titleElement.textContent;
-
-const debouncedSaveTitle = debounce((value) => {
-  saveField('title', value, originalTitle);
-}, 700);
-
-titleElement.addEventListener('input', (e) => {
-  debouncedSaveTitle(e.target.textContent);
+let prevTitle='{{ block.title }}';
+const titleEl=document.getElementById('task-title');
+let tTimer;
+titleEl.addEventListener('focus',()=>{prevTitle=titleEl.textContent;});
+titleEl.addEventListener('input',()=>{
+  clearTimeout(tTimer);
+  tTimer=setTimeout(()=>saveField('title',titleEl.textContent),700);
 });
-
-titleElement.addEventListener('focus', () => {
-  originalTitle = titleElement.textContent;
+titleEl.addEventListener('blur',async()=>{
+  const ok=await saveField('title',titleEl.textContent);
+  if(!ok){titleEl.textContent=prevTitle;}
 });
-
-// Editable description
-const descriptionElement = document.getElementById('description-text');
-let originalDescription = descriptionElement.value;
-
-const debouncedSaveDescription = debounce((value) => {
-  saveField('content', value, originalDescription);
-}, 700);
-
-descriptionElement.addEventListener('input', (e) => {
-  debouncedSaveDescription(e.target.value);
+let prevDesc='{{ block.content or '' }}';
+const descEl=document.getElementById('description-text');
+let dTimer;
+descEl.addEventListener('focus',()=>{prevDesc=descEl.value;});
+descEl.addEventListener('input',()=>{
+  clearTimeout(dTimer);
+  dTimer=setTimeout(()=>saveField('content',descEl.value),700);
 });
-
-descriptionElement.addEventListener('focus', () => {
-  originalDescription = descriptionElement.value;
+descEl.addEventListener('blur',async()=>{
+  const ok=await saveField('content',descEl.value);
+  if(!ok){descEl.value=prevDesc;}
 });
-
-// Focus mode
-function toggleFocusMode() {
-  const main = document.getElementById('task-main');
-  const subtasksList = document.getElementById('subtasks-list');
-  
-  main.classList.toggle('focus-mode');
-  
-  if (main.classList.contains('focus-mode')) {
-    subtasksList.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    showToast('Modo enfoque activado', 'success');
-  } else {
-    showToast('Modo enfoque desactivado', 'success');
-  }
-}
-
-// Filter subtasks
-function filterSubtasks(filter) {
-  const items = document.querySelectorAll('.subtask-item[data-subtask-id]');
-  const tabs = document.querySelectorAll('.filter-tab');
-  
-  // Update active tab
-  tabs.forEach(tab => {
-    tab.classList.toggle('active', tab.dataset.filter === filter);
-  });
-  
-  // Filter items
-  items.forEach(item => {
-    const status = item.dataset.status;
-    let show = false;
-    
-    switch(filter) {
-      case 'all':
-        show = true;
-        break;
-      case 'pending':
-        show = status === 'pending';
-        break;
-      case 'done':
-        show = status === 'done';
-        break;
-    }
-    
-    item.style.display = show ? 'flex' : 'none';
-  });
-}
-
-// Filter tab event listeners
-document.querySelectorAll('.filter-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    filterSubtasks(tab.dataset.filter);
-  });
-});
-
-// Add subtask form
-function showAddSubtaskForm() {
-  const form = document.getElementById('add-subtask-form');
-  const button = document.querySelector('.add-subtask');
-  
-  form.style.display = 'block';
-  button.style.display = 'none';
-  
-  // Focus first input
-  setTimeout(() => {
-    document.getElementById('new-title').focus();
-  }, 100);
-}
-
-function hideAddSubtaskForm() {
-  const form = document.getElementById('add-subtask-form');
-  const button = document.querySelector('.add-subtask');
-  
-  form.style.display = 'none';
-  button.style.display = 'flex';
-  
-  // Reset form
-  form.reset();
-}
-
-// Resource menu
-function toggleResourceMenu() {
-  const dropdown = document.getElementById('resource-dropdown');
-  dropdown.classList.toggle('show');
-}
-
-// Close dropdown when clicking outside
-document.addEventListener('click', (e) => {
-  const menu = document.querySelector('.add-resource-menu');
-  const dropdown = document.getElementById('resource-dropdown');
-  
-  if (menu && !menu.contains(e.target)) {
-    dropdown.classList.remove('show');
-  }
-});
-
-// Drag and drop for subtasks
-let draggedElement = null;
-
-document.addEventListener('dragstart', (e) => {
-  if (e.target.closest('.subtask-item[data-subtask-id]')) {
-    draggedElement = e.target.closest('.subtask-item');
-    draggedElement.classList.add('dragging');
-  }
-});
-
-document.addEventListener('dragend', (e) => {
-  if (draggedElement) {
-    draggedElement.classList.remove('dragging');
-    draggedElement = null;
-  }
-});
-
-document.addEventListener('dragover', (e) => {
-  e.preventDefault();
-});
-
-document.addEventListener('drop', (e) => {
-  e.preventDefault();
-  
-  const dropTarget = e.target.closest('.subtask-item[data-subtask-id]');
-  const list = document.getElementById('subtasks-list');
-  
-  if (draggedElement && dropTarget && draggedElement !== dropTarget) {
-    const allItems = Array.from(list.querySelectorAll('.subtask-item[data-subtask-id]'));
-    const draggedIndex = allItems.indexOf(draggedElement);
-    const dropIndex = allItems.indexOf(dropTarget);
-    
-    if (draggedIndex < dropIndex) {
-      dropTarget.parentNode.insertBefore(draggedElement, dropTarget.nextSibling);
-    } else {
-      dropTarget.parentNode.insertBefore(draggedElement, dropTarget);
-    }
-    
-    // Update order
-    const newOrder = Array.from(list.querySelectorAll('.subtask-item[data-subtask-id]'))
-      .map(item => item.dataset.subtaskId);
-    
-    document.getElementById('order-json').value = JSON.stringify(newOrder);
-    document.getElementById('reorder-form').submit();
-  }
-});
-
-// Quick notes localStorage
-const quickNotes = document.getElementById('quick-notes');
-const notesKey = `task-notes-${window.location.pathname}`;
-
-// Load saved notes
-if (quickNotes) {
-  quickNotes.value = localStorage.getItem(notesKey) || '';
-  
-  // Save on input
-  quickNotes.addEventListener('input', debounce(() => {
-    localStorage.setItem(notesKey, quickNotes.value);
-  }, 500));
-}
-
-// Mobile tabs
-function initMobileTabs() {
-  const tabs = document.querySelectorAll('.mobile-tab');
-  const contents = document.querySelectorAll('.mobile-tab-content');
-  
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const targetTab = tab.dataset.tab;
-      
-      // Update active tab
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      
-      // Update active content
-      contents.forEach(content => {
-        content.classList.toggle('active', content.dataset.content === targetTab);
-      });
-    });
-  });
-}
-
-// Mobile responsive
-function handleMobileLayout() {
-  const isMobile = window.innerWidth <= 768;
-  const mobileTabs = document.querySelector('.mobile-tabs');
-  const sidePanel = document.querySelector('.side-panel');
-  
-  if (isMobile) {
-    mobileTabs.style.display = 'flex';
-    
-    // Show side panel on scroll to bottom
-    let showPanel = false;
-    window.addEventListener('scroll', () => {
-      const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-      
-      if (scrollPercent > 80 && !showPanel) {
-        sidePanel.classList.add('show');
-        showPanel = true;
-      } else if (scrollPercent < 50 && showPanel) {
-        sidePanel.classList.remove('show');
-        showPanel = false;
-      }
-    });
-  } else {
-    mobileTabs.style.display = 'none';
-    sidePanel.classList.remove('show');
-  }
-}
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-  initMobileTabs();
-  handleMobileLayout();
-  
-  // Handle window resize
-  window.addEventListener('resize', handleMobileLayout);
-  
-  // Keyboard shortcuts
-  document.addEventListener('keydown', (e) => {
-    // Escape to exit focus mode
-    if (e.key === 'Escape') {
-      const main = document.getElementById('task-main');
-      if (main.classList.contains('focus-mode')) {
-        toggleFocusMode();
-      }
-    }
-    
-    // Ctrl/Cmd + Enter to add subtask
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      const form = document.getElementById('add-subtask-form');
-      if (form.style.display === 'none') {
-        showAddSubtaskForm();
-      }
-    }
-  });
-});
+const priorityEl=document.getElementById('priority');
+priorityEl.addEventListener('change',()=>saveField('priority',priorityEl.value));
+const dueEl=document.getElementById('due-date');
+dueEl.addEventListener('change',()=>saveField('due_date',dueEl.value));
 </script>
 {% endblock %}
