@@ -1,496 +1,981 @@
-{% extends 'base.html' %}
-{% import 'personal_space/components/macros.html' as ps_macros %}
-{% block title %}Mi Espacio Personal{% endblock %}
+<!-- Personal Space Index - Main entry point for redesigned personal space -->
+{% extends "base.html" %}
+{% from 'personal_space/components/base/BaseCard.html' import render_info_card, render_stat_card %}
+{% from 'personal_space/components/widgets/BlockFactory.html' import render_block_factory_modal %}
+{% from 'personal_space/components/widgets/TemplateGallery.html' import render_template_gallery_modal %}
 
-{% block head %}{% endblock %}
+{% block title %}Personal Space{% endblock %}
+
+{% block extra_head %}
+<!-- Custom CSS -->
+<style>
+/* Personal Space Index Styles */
+.personal-space-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.personal-space-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>') repeat;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.personal-space-content {
+    background: #f8fafc;
+    border-radius: 20px 20px 0 0;
+    margin-top: 3rem;
+    min-height: calc(100vh - 3rem);
+    position: relative;
+    z-index: 1;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    padding: 3rem 2rem;
+    border-radius: 20px 20px 0 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: #718096;
+    margin-bottom: 2rem;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+}
+
+.hero-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1.125rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.hero-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.hero-btn.secondary {
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.hero-btn.secondary:hover {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.hero-stat {
+    text-align: center;
+}
+
+.hero-stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.hero-stat-label {
+    font-size: 0.875rem;
+    color: #718096;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.features-section {
+    padding: 4rem 2rem;
+    background: #f8fafc;
+}
+
+.features-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.features-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.features-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+.features-subtitle {
+    font-size: 1.25rem;
+    color: #718096;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.feature-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.feature-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+.feature-description {
+    font-size: 1rem;
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.feature-link {
+    color: #667eea;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.feature-link:hover {
+    color: #5a67d8;
+    text-decoration: none;
+    transform: translateX(4px);
+}
+
+.quick-start-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 4rem 2rem;
+    color: white;
+    text-align: center;
+}
+
+.quick-start-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.quick-start-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.quick-start-subtitle {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    margin-bottom: 3rem;
+    line-height: 1.6;
+}
+
+.quick-start-actions {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.quick-start-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1.125rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    backdrop-filter: blur(10px);
+}
+
+.quick-start-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+}
+
+.quick-start-btn.primary {
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+    border-color: transparent;
+}
+
+.quick-start-btn.primary:hover {
+    background: white;
+    color: #5a67d8;
+}
+
+.footer-section {
+    background: #2d3748;
+    color: #e2e8f0;
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+}
+
+.footer-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.footer-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.footer-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    opacity: 0.8;
+}
+
+.footer-links {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.footer-link {
+    color: #cbd5e0;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+    color: white;
+    text-decoration: none;
+}
+
+.footer-copyright {
+    font-size: 0.875rem;
+    opacity: 0.6;
+    border-top: 1px solid #4a5568;
+    padding-top: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .features-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+    
+    .hero-title {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .personal-space-content {
+        margin-top: 2rem;
+        border-radius: 16px 16px 0 0;
+    }
+    
+    .hero-section {
+        padding: 2rem 1rem;
+        border-radius: 16px 16px 0 0;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+    }
+    
+    .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .hero-btn {
+        justify-content: center;
+    }
+    
+    .hero-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .features-section {
+        padding: 3rem 1rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .feature-card {
+        padding: 1.5rem;
+    }
+    
+    .quick-start-section {
+        padding: 3rem 1rem;
+    }
+    
+    .quick-start-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .quick-start-btn {
+        justify-content: center;
+    }
+    
+    .footer-section {
+        padding: 2rem 1rem 1rem;
+    }
+    
+    .footer-links {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .features-title {
+        font-size: 2rem;
+    }
+    
+    .quick-start-title {
+        font-size: 2rem;
+    }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feature-card {
+    animation: fadeInUp 0.6s ease;
+}
+
+.feature-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.feature-card:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.feature-card:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.feature-card:nth-child(5) {
+    animation-delay: 0.4s;
+}
+
+.feature-card:nth-child(6) {
+    animation-delay: 0.5s;
+}
+
+/* Loading animation */
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+.loading-shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200px 100%;
+    animation: shimmer 1.5s infinite;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="personal-space-container">
-    <!-- Header -->
-    <div class="ps-header">
-        <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-<h1 class="ps-title tw-text-indigo-600">
-                        <i class="bi bi-house-gear me-2"></i>
-                        Mi Espacio Personal
-                    </h1>
-                    <p class="ps-subtitle">Organiza tu vida académica de manera inteligente</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <div class="ps-controls tw-space-x-2">
-                        <!-- Quick Actions Dropdown -->
-                        <div class="dropdown me-2">
-                            <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-lightning"></i>
-                                Acciones Rápidas
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ url_for('personal_space.calendar_view') }}">
-                                    <i class="bi bi-calendar3 me-2"></i>Calendario
-                                </a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('personal_space.statistics_view') }}">
-                                    <i class="bi bi-graph-up me-2"></i>Estadísticas
-                                </a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('personal_space.search_view') }}">
-                                    <i class="bi bi-search me-2"></i>Búsqueda Avanzada
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ url_for('personal_space.templates_view') }}">
-                                    <i class="bi bi-collection me-2"></i>Plantillas
-                                </a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('personal_space.settings_view') }}">
-                                    <i class="bi bi-gear me-2"></i>Configuración
-                                </a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('personal_space.trash_view') }}">
-                                    <i class="bi bi-trash me-2"></i>Papelera
-                                </a></li>
-                            </ul>
-                        </div>
-                        
-                        <button class="btn btn-outline-primary me-2" id="focusModeBtn" aria-label="Activar modo enfoque" title="Modo Enfoque">
-                            <i class="bi bi-eye-slash"></i>
-                            Modo Enfoque
-                        </button>
-                        <button class="btn btn-outline-secondary me-2" id="darkModeToggle" aria-label="Activar modo oscuro" title="Modo Oscuro">
-                            <i class="bi bi-moon"></i>
-                            Modo Oscuro
-                        </button>
-                        <button class="btn btn-primary" id="addBlockBtn" aria-label="Añadir bloque" title="Añadir bloque">
-                            <i class="bi bi-plus-lg"></i>
-                            Añadir Bloque
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Smart Suggestions -->
-    {% if suggestions %}
-    <div class="ps-suggestions mb-4" id="smartSuggestions">
-        <div class="container-fluid">
-            <h5 class="suggestions-title">
-                <i class="bi bi-lightbulb text-warning"></i>
-                Sugerencias Inteligentes
-            </h5>
-            <div class="suggestions-list">
-                {% for suggestion in suggestions %}
-                <div class="suggestion-card" data-action="{{ suggestion.action }}">
-                    <div class="suggestion-content">
-                        <h6>{{ suggestion.title }}</h6>
-                        <p>{{ suggestion.message }}</p>
-                    </div>
-                    <button class="btn btn-sm btn-outline-primary apply-suggestion-btn" aria-label="Aplicar sugerencia" title="Aplicar sugerencia">
-                        Aplicar
+    <div class="personal-space-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Tu Espacio Personal</h1>
+                <p class="hero-subtitle">
+                    Organiza tu vida, alcanza tus objetivos y maximiza tu productividad con un sistema diseñado para ti.
+                </p>
+                
+                <div class="hero-actions">
+                    <a href="{{ url_for('personal_space.dashboard') }}" class="hero-btn">
+                        <i class="bi bi-speedometer2"></i>
+                        Ir al Dashboard
+                    </a>
+                    
+                    <a href="{{ url_for('personal_space.workspace') }}" class="hero-btn secondary">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                        Abrir Workspace
+                    </a>
+                    
+                    <button type="button" 
+                            class="hero-btn secondary" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#template-gallery-modal">
+                        <i class="bi bi-collection"></i>
+                        Explorar Plantillas
                     </button>
                 </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Enhanced Dashboard Overview -->
-    <div class="container-fluid mb-4">
-        <div class="row g-3">
-            <!-- Mochila Block -->
-            <div class="col-md-4">
-                <div class="mochila-block shadow-sm p-3 rounded bg-white tw-flex tw-flex-col tw-gap-2">
-                    <h6 class="mb-1">Mi Mochila</h6>
-                    <p class="mb-2">Accede a tus recursos guardados</p>
-                    <a href="/mochila" class="btn btn-primary btn-sm">Abrir Mochila</a>
-                </div>
-            </div>
-            
-            <!-- Quick Stats -->
-            <div class="col-md-4">
-                <div class="quick-stats shadow-sm p-3 rounded bg-white">
-                    <h6 class="mb-2">Resumen Semanal</h6>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-muted">Productividad:</span>
-                        <span class="fw-bold text-success" id="weeklyProductivity">85%</span>
+                
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">{{ user_stats.total_blocks or 0 }}</span>
+                        <span class="hero-stat-label">Bloques Creados</span>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-muted">Próximas fechas:</span>
-                        <span class="fw-bold text-warning" id="upcomingDeadlines">3</span>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">{{ user_stats.completed_tasks or 0 }}</span>
+                        <span class="hero-stat-label">Tareas Completadas</span>
                     </div>
-                    <div class="progress" style="height: 6px;">
-                        <div class="progress-bar bg-gradient" role="progressbar" style="width: 85%"></div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">{{ user_stats.active_objectives or 0 }}</span>
+                        <span class="hero-stat-label">Objetivos Activos</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">{{ user_stats.productivity_score or 0 }}%</span>
+                        <span class="hero-stat-label">Productividad</span>
                     </div>
                 </div>
             </div>
-            
-            <!-- Quick Actions -->
-            <div class="col-md-4">
-                <div class="quick-actions shadow-sm p-3 rounded bg-white">
-                    <h6 class="mb-2">Acciones Rápidas</h6>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-outline-primary btn-sm" onclick="quickAddTask()">
-                            <i class="bi bi-plus-circle me-1"></i>Tarea Rápida
-                        </button>
-                        <div class="row g-1">
-                            <div class="col-6">
-                                <a href="{{ url_for('personal_space.calendar_view') }}" class="btn btn-outline-info btn-sm w-100" aria-label="Calendario">
-                                    <i class="bi bi-calendar3"></i>
-                                </a>
-                            </div>
-                            <div class="col-6">
-                                <a href="{{ url_for('personal_space.statistics_view') }}" class="btn btn-outline-success btn-sm w-100" aria-label="Estadísticas">
-                                    <i class="bi bi-graph-up"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+        </section>
+        
+        <!-- Features Section -->
+        <section class="features-section">
+            <div class="features-container">
+                <div class="features-header">
+                    <h2 class="features-title">Potencia tu Productividad</h2>
+                    <p class="features-subtitle">
+                        Descubre todas las herramientas que tenemos para ayudarte a organizar tu vida y alcanzar tus metas de manera eficiente.
+                    </p>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Blocks Grid -->
-    <div class="ps-grid-container">
-        <div class="container-fluid">
-            <!-- Enhanced Dashboard Metrics -->
-            <div class="dashboard-metrics mb-4 {% if not blocks %}d-none{% endif %}" id="dashboardMetrics">
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-icon">
-                            <i class="bi bi-journal-text text-indigo-500"></i>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-speedometer2"></i>
                         </div>
-                        <div class="metric-info">
-                            <span class="metric-number" id="notasCount">0</span>
-                            <span class="metric-label">Notas</span>
-                        </div>
-                        <div class="metric-trend">
-                            <i class="bi bi-arrow-up text-success"></i>
-                            <span class="text-success">+12%</span>
-                        </div>
-                    </div>
-
-                    <div class="metric-card">
-                        <div class="metric-icon">
-                            <i class="bi bi-clipboard-check text-emerald-500"></i>
-                        </div>
-                        <div class="metric-info">
-                            <span class="metric-number" id="tareasCount">0</span>
-                            <span class="metric-label">Tareas</span>
-                        </div>
-                        <div class="metric-trend">
-                            <i class="bi bi-arrow-up text-success"></i>
-                            <span class="text-success">+8%</span>
-                        </div>
-                    </div>
-
-                    <div class="metric-card">
-                        <div class="metric-icon">
-                            <i class="bi bi-trophy text-amber-500"></i>
-                        </div>
-                        <div class="metric-info">
-                            <span class="metric-number" id="objetivosCount">0</span>
-                            <span class="metric-label">Objetivos</span>
-                        </div>
-                        <div class="metric-trend">
-                            <i class="bi bi-arrow-up text-success"></i>
-                            <span class="text-success">+25%</span>
-                        </div>
-                    </div>
-
-                    <div class="metric-card">
-                        <div class="metric-icon">
-                            <i class="bi bi-graph-up text-purple-500"></i>
-                        </div>
-                        <div class="metric-info">
-                            <span class="metric-number" id="progressAvg">0%</span>
-                            <span class="metric-label">Progreso</span>
-                        </div>
-                        <div class="metric-trend">
-                            <i class="bi bi-arrow-up text-success"></i>
-                            <span class="text-success">+15%</span>
-                        </div>
+                        <h3 class="feature-title">Dashboard Inteligente</h3>
+                        <p class="feature-description">
+                            Visualiza tu progreso, métricas clave y actividad reciente en un panel centralizado que se adapta a tus necesidades.
+                        </p>
+                        <a href="{{ url_for('personal_space.dashboard') }}" class="feature-link">
+                            Explorar Dashboard
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
                     </div>
                     
-                    <!-- New Advanced Metrics -->
-                    <div class="metric-card">
-                        <div class="metric-icon">
-                            <i class="bi bi-calendar-week text-blue-500"></i>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-grid-3x3-gap"></i>
                         </div>
-                        <div class="metric-info">
-                            <span class="metric-number" id="weeklyStreak">7</span>
-                            <span class="metric-label">Días Activos</span>
-                        </div>
-                        <div class="metric-trend">
-                            <i class="bi bi-fire text-orange-500"></i>
-                            <span class="text-orange-500">Racha</span>
-                        </div>
+                        <h3 class="feature-title">Workspace Dinámico</h3>
+                        <p class="feature-description">
+                            Crea y organiza bloques personalizables con drag & drop. Diseña tu espacio de trabajo perfecto.
+                        </p>
+                        <a href="{{ url_for('personal_space.workspace') }}" class="feature-link">
+                            Abrir Workspace
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
                     </div>
                     
-                    <div class="metric-card">
-                        <div class="metric-icon">
-                            <i class="bi bi-clock text-red-500"></i>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-check-square"></i>
                         </div>
-                        <div class="metric-info">
-                            <span class="metric-number" id="pendingDeadlines">3</span>
-                            <span class="metric-label">Próximas</span>
-                        </div>
-                        <div class="metric-trend">
-                            <i class="bi bi-exclamation-triangle text-warning"></i>
-                            <span class="text-warning">Urgente</span>
-                        </div>
+                        <h3 class="feature-title">Gestión de Tareas</h3>
+                        <p class="feature-description">
+                            Organiza tus tareas con listas inteligentes, recordatorios y seguimiento de progreso automático.
+                        </p>
+                        <a href="{{ url_for('personal_space.dashboard') }}#tasks" class="feature-link">
+                            Ver Tareas
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
                     </div>
-                </div>
-            </div>
-
-            <div class="blocks-grid" id="blocksGrid">
-                {% for block in blocks %}
-                {{ ps_macros.render_block_card(block, get_default_icon) }}
-                {% endfor %}
-
-                {% if not blocks %}
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="bi bi-plus-circle"></i>
-                    </div>
-                    <h3>¡Bienvenido a tu Espacio Personal!</h3>
-                    <p>Transforma tu experiencia académica con herramientas tipo Notion y Trello</p>
-                    <div class="empty-features">
-                        <div class="feature-item">
-                            <i class="bi bi-journal-text"></i>
-                            <span>Bitácora inteligente</span>
-                        </div>
-                        <div class="feature-item">
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
                             <i class="bi bi-kanban"></i>
-                            <span>Tableros Kanban</span>
                         </div>
-                        <div class="feature-item">
-                            <i class="bi bi-trophy"></i>
-                            <span>Metas académicas</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="bi bi-calendar3"></i>
-                            <span>Calendario integrado</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="bi bi-graph-up"></i>
-                            <span>Estadísticas avanzadas</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="bi bi-collection"></i>
-                            <span>Plantillas prediseñadas</span>
-                        </div>
+                        <h3 class="feature-title">Tableros Kanban</h3>
+                        <p class="feature-description">
+                            Visualiza tu flujo de trabajo con tableros Kanban personalizables y colaboración en tiempo real.
+                        </p>
+                        <a href="{{ url_for('personal_space.workspace') }}" class="feature-link">
+                            Crear Tablero
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
                     </div>
-                    <div class="empty-actions">
-                        <button class="btn btn-primary btn-lg me-3" id="createFirstBlock" aria-label="Comenzar mi espacio" title="Comenzar mi espacio">
-                            <i class="bi bi-plus-lg"></i>
-                            Comenzar mi espacio
-                        </button>
-                        <a href="{{ url_for('personal_space.templates_view') }}" class="btn btn-outline-primary btn-lg">
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-target"></i>
+                        </div>
+                        <h3 class="feature-title">Seguimiento de Objetivos</h3>
+                        <p class="feature-description">
+                            Define metas claras, establece hitos y monitorea tu progreso con métricas detalladas y visualizaciones.
+                        </p>
+                        <a href="{{ url_for('personal_space.dashboard') }}#objectives" class="feature-link">
+                            Gestionar Objetivos
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
                             <i class="bi bi-collection"></i>
-                            Ver Plantillas
+                        </div>
+                        <h3 class="feature-title">Sistema de Plantillas</h3>
+                        <p class="feature-description">
+                            Accede a plantillas prediseñadas o crea las tuyas propias. Comparte y descarga configuraciones optimizadas.
+                        </p>
+                        <a href="{{ url_for('personal_space.templates') }}" class="feature-link">
+                            Explorar Plantillas
+                            <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
                 </div>
-                {% endif %}
             </div>
-        </div>
-    </div>
-
-    <!-- Floating Add Button (Mobile) -->
-    <button class="floating-add-btn d-md-none" id="floatingAddBtn" aria-label="Añadir bloque">
-        <i class="bi bi-plus-lg"></i>
-    </button>
-    <button class="btn btn-warning exit-focus-btn d-none" id="exitFocusBtn" aria-label="Salir del modo enfoque" title="Salir del modo enfoque">
-        Salir del modo enfoque
-    </button>
-</div>
-
-<!-- Add Block Modal -->
-<div class="modal fade" id="addBlockModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Añadir Nuevo Bloque</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                <div class="block-types-grid">
-                    <!-- Academic Tools Section -->
-                    <div class="block-section">
-                        <h6 class="block-section-title">🎓 Herramientas Académicas</h6>
-
-                        <div class="block-type-card" data-type="nota_enriquecida">
-                            <div class="block-type-icon">
-                                <i class="bi bi-file-richtext"></i>
-                            </div>
-                            <h6>Bitácora Inteligente</h6>
-                            <p>Notas enriquecidas estilo Notion</p>
-                        </div>
-
-                        <div class="block-type-card" data-type="kanban">
-                            <div class="block-type-icon">
-                                <i class="bi bi-kanban"></i>
-                            </div>
-                            <h6>Tablero Kanban</h6>
-                            <p>Gestión visual de tareas tipo Trello</p>
-                        </div>
-
-                        <div class="block-type-card" data-type="objetivo">
-                            <div class="block-type-icon">
-                                <i class="bi bi-trophy"></i>
-                            </div>
-                            <h6>Objetivo Académico</h6>
-                            <p>Metas con seguimiento y deadlines</p>
-                        </div>
-
-                        <div class="block-type-card" data-type="tarea">
-                            <div class="block-type-icon">
-                                <i class="bi bi-clipboard-check"></i>
-                            </div>
-                            <h6>Tarea Individual</h6>
-                            <p>Tareas con prioridad y archivos</p>
-                        </div>
-                    </div>
-
-                    <!-- Organization Section -->
-                    <div class="block-section">
-                        <h6 class="block-section-title">🗂️ Organización</h6>
-
-                        <div class="block-type-card" data-type="bloque">
-                            <div class="block-type-icon">
-                                <i class="bi bi-grid-3x3"></i>
-                            </div>
-                            <h6>Bloque Personalizado</h6>
-                            <p>Agrupa elementos por materia</p>
-                        </div>
-
-                        <div class="block-type-card" data-type="lista">
-                            <div class="block-type-icon">
-                                <i class="bi bi-check2-square"></i>
-                            </div>
-                            <h6>Lista de Tareas</h6>
-                            <p>Checklist simple y rápido</p>
-                        </div>
-                    </div>
-
-                    <!-- Personal Tools Section -->
-                    <div class="block-section">
-                        <h6 class="block-section-title">⚡ Herramientas Personales</h6>
-
-                        <div class="block-type-card" data-type="recordatorio">
-                            <div class="block-type-icon">
-                                <i class="bi bi-alarm"></i>
-                            </div>
-                            <h6>Recordatorio</h6>
-                            <p>Avisos con fecha límite</p>
-                        </div>
-
-                        <div class="block-type-card" data-type="frase">
-                            <div class="block-type-icon">
-                                <i class="bi bi-quote"></i>
-                            </div>
-                            <h6>Frase Motivacional</h6>
-                            <p>Inspiración diaria</p>
-                        </div>
-
-                        <div class="block-type-card" data-type="enlace">
-                            <div class="block-type-icon">
-                                <i class="bi bi-link-45deg"></i>
-                            </div>
-                            <h6>Enlace Educativo</h6>
-                            <p>Enlaces a recursos útiles</p>
-                        </div>
-                    </div>
+        </section>
+        
+        <!-- Quick Start Section -->
+        <section class="quick-start-section">
+            <div class="quick-start-container">
+                <h2 class="quick-start-title">¿Listo para comenzar?</h2>
+                <p class="quick-start-subtitle">
+                    Configura tu espacio personal en minutos y comienza a ser más productivo hoy mismo.
+                </p>
+                
+                <div class="quick-start-actions">
+                    <button type="button" 
+                            class="quick-start-btn primary" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#block-factory-modal">
+                        <i class="bi bi-plus-circle"></i>
+                        Crear Primer Bloque
+                    </button>
+                    
+                    <button type="button" 
+                            class="quick-start-btn" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#template-gallery-modal">
+                        <i class="bi bi-collection"></i>
+                        Usar Plantilla
+                    </button>
+                    
+                    <a href="{{ url_for('personal_space.workspace') }}" class="quick-start-btn">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                        Explorar Workspace
+                    </a>
                 </div>
             </div>
-        </div>
+        </section>
+        
+        <!-- Footer Section -->
+        <section class="footer-section">
+            <div class="footer-content">
+                <h3 class="footer-title">Personal Space</h3>
+                <p class="footer-description">
+                    Tu centro de productividad personal. Organiza, planifica y alcanza tus objetivos con las herramientas más avanzadas.
+                </p>
+                
+                <div class="footer-links">
+                    <a href="{{ url_for('personal_space.dashboard') }}" class="footer-link">Dashboard</a>
+                    <a href="{{ url_for('personal_space.workspace') }}" class="footer-link">Workspace</a>
+                    <a href="{{ url_for('personal_space.templates') }}" class="footer-link">Plantillas</a>
+                    <a href="#" class="footer-link">Ayuda</a>
+                    <a href="#" class="footer-link">Configuración</a>
+                </div>
+                
+                <div class="footer-copyright">
+                    <p>&copy; {{ moment().year }} Crunevo. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </section>
     </div>
 </div>
 
-<!-- Edit Block Modal -->
-<div class="modal fade" id="editBlockModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Editar Bloque</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body" id="editBlockContent">
-                <!-- Content will be loaded dynamically -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="saveBlockBtn">Guardar Cambios</button>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- Modals -->
+{{ render_block_factory_modal() }}
+{{ render_template_gallery_modal() }}
 {% endblock %}
 
 {% block extra_js %}
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <script src="{{ url_for('static', filename='js/personal-space.js') }}?v=20240603"></script>
-    <script>
-        // Enhanced dashboard functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load enhanced metrics
-            loadEnhancedMetrics();
-            
-            // Update metrics every 30 seconds
-            setInterval(loadEnhancedMetrics, 30000);
+<script>
+// Personal Space Index JavaScript
+window.PersonalSpaceIndex = {
+    // Initialize index page
+    init: function() {
+        this.bindEvents();
+        this.loadUserStats();
+        this.setupAnimations();
+    },
+    
+    // Bind event listeners
+    bindEvents: function() {
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(anchor.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
         });
         
-        function loadEnhancedMetrics() {
-            fetch('/espacio-personal/api/statistics')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const stats = data.statistics;
-                        
-                        // Update weekly productivity
-                        const productivity = Math.round((stats.weekly_activity / 7) * 100);
-                        document.getElementById('weeklyProductivity').textContent = productivity + '%';
-                        
-                        // Update upcoming deadlines (simulated)
-                        document.getElementById('upcomingDeadlines').textContent = '3';
-                        
-                        // Update progress bar
-                        const progressBar = document.querySelector('.progress-bar');
-                        if (progressBar) {
-                            progressBar.style.width = productivity + '%';
-                        }
-                        
-                        // Update weekly streak (simulated)
-                        document.getElementById('weeklyStreak').textContent = '7';
-                        
-                        // Update pending deadlines (simulated)
-                        document.getElementById('pendingDeadlines').textContent = '3';
-                    }
-                })
-                .catch(error => console.error('Error loading enhanced metrics:', error));
+        // Feature card hover effects
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                this.animateFeatureCard(card, 'enter');
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                this.animateFeatureCard(card, 'leave');
+            });
+        });
+    },
+    
+    // Load user statistics
+    loadUserStats: async function() {
+        try {
+            const response = await fetch('/personal_space/stats');
+            if (response.ok) {
+                const stats = await response.json();
+                this.updateUserStats(stats);
+            }
+        } catch (error) {
+            console.error('Error loading user stats:', error);
         }
+    },
+    
+    // Update user statistics
+    updateUserStats: function(stats) {
+        const statElements = document.querySelectorAll('.hero-stat-value');
         
-        function quickAddTask() {
-            // Quick task creation modal or inline form
-            const title = prompt('Título de la tarea rápida:');
+        statElements.forEach((element, index) => {
+            const statKeys = ['total_blocks', 'completed_tasks', 'active_objectives', 'productivity_score'];
+            const statKey = statKeys[index];
+            
+            if (stats[statKey] !== undefined) {
+                this.animateNumber(element, parseInt(element.textContent) || 0, stats[statKey]);
+            }
+        });
+    },
+    
+    // Animate number changes
+    animateNumber: function(element, from, to) {
+        const duration = 2000;
+        const start = Date.now();
+        const isPercentage = element.textContent.includes('%');
+        
+        const animate = () => {
+            const elapsed = Date.now() - start;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function for smooth animation
+            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+            const current = Math.floor(from + (to - from) * easeOutQuart);
+            
+            element.textContent = current + (isPercentage ? '%' : '');
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        };
+        
+        animate();
+    },
+    
+    // Setup animations
+    setupAnimations: function() {
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                }
+            });
+        }, observerOptions);
+        
+        // Observe feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            observer.observe(card);
+        });
+    },
+    
+    // Animate feature card
+    animateFeatureCard: function(card, action) {
+        const icon = card.querySelector('.feature-icon');
+        const title = card.querySelector('.feature-title');
+        const link = card.querySelector('.feature-link');
+        
+        if (action === 'enter') {
+            if (icon) {
+                icon.style.transform = 'scale(1.1) rotate(5deg)';
+            }
             if (title) {
-                fetch('/espacio-personal/api/blocks', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        type: 'tarea',
-                        title: title,
-                        content: 'Tarea creada rápidamente'
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    }
-                })
-                .catch(error => console.error('Error creating quick task:', error));
+                title.style.color = '#667eea';
+            }
+            if (link) {
+                link.style.transform = 'translateX(8px)';
+            }
+        } else {
+            if (icon) {
+                icon.style.transform = 'scale(1) rotate(0deg)';
+            }
+            if (title) {
+                title.style.color = '#2d3748';
+            }
+            if (link) {
+                link.style.transform = 'translateX(0px)';
             }
         }
-    </script>
+    },
+    
+    // Quick start actions
+    quickStart: function(action) {
+        switch (action) {
+            case 'create-block':
+                // Open block factory modal
+                const blockModal = new bootstrap.Modal(document.getElementById('block-factory-modal'));
+                blockModal.show();
+                break;
+                
+            case 'use-template':
+                // Open template gallery modal
+                const templateModal = new bootstrap.Modal(document.getElementById('template-gallery-modal'));
+                templateModal.show();
+                break;
+                
+            case 'explore-workspace':
+                // Navigate to workspace
+                window.location.href = '/personal_space/workspace';
+                break;
+                
+            default:
+                console.log('Unknown quick start action:', action);
+        }
+    },
+    
+    // Track user interactions
+    trackInteraction: function(action, details = {}) {
+        // Analytics tracking
+        if (typeof gtag !== 'undefined') {
+            gtag('event', action, {
+                event_category: 'Personal Space',
+                event_label: details.label || '',
+                value: details.value || 0
+            });
+        }
+        
+        // Custom analytics
+        console.log('User interaction:', action, details);
+    }
+};
+
+// Global functions
+window.quickStart = function(action) {
+    window.PersonalSpaceIndex.quickStart(action);
+    window.PersonalSpaceIndex.trackInteraction('quick_start', { label: action });
+};
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    window.PersonalSpaceIndex.init();
+    
+    // Track page view
+    window.PersonalSpaceIndex.trackInteraction('page_view', { label: 'index' });
+});
+
+// Add CSS for scroll animations
+const style = document.createElement('style');
+style.textContent = `
+    .feature-card {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease;
+    }
+    
+    .feature-card.animate-in {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .feature-icon {
+        transition: all 0.3s ease;
+    }
+    
+    .feature-title {
+        transition: color 0.3s ease;
+    }
+    
+    .feature-link {
+        transition: all 0.3s ease;
+    }
+`;
+document.head.appendChild(style);
+</script>
 {% endblock %}

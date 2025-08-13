@@ -1,0 +1,1153 @@
+<!-- AnalyticsDashboard Component - Analytics dashboard with productivity metrics and goal tracking -->
+{% from 'personal_space/components/base/BaseCard.html' import render_stat_card, render_progress_card %}
+
+<!-- Analytics Dashboard Widget -->
+{% macro render_analytics_dashboard(analytics_data=none, time_period='week') %}
+<div class="analytics-dashboard" id="analytics-dashboard">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header mb-4">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="dashboard-info">
+                <h3 class="dashboard-title mb-1">
+                    <i class="bi bi-graph-up me-2"></i>
+                    Panel de Análisis
+                </h3>
+                <p class="dashboard-description text-muted mb-0">
+                    Métricas de productividad y seguimiento de objetivos
+                </p>
+            </div>
+            
+            <div class="dashboard-controls">
+                <div class="btn-group" role="group">
+                    <input type="radio" 
+                           class="btn-check" 
+                           name="time-period" 
+                           id="period-day" 
+                           value="day" 
+                           onchange="changeTimePeriod('day')">
+                    <label class="btn btn-outline-primary" for="period-day">Día</label>
+                    
+                    <input type="radio" 
+                           class="btn-check" 
+                           name="time-period" 
+                           id="period-week" 
+                           value="week" 
+                           checked 
+                           onchange="changeTimePeriod('week')">
+                    <label class="btn btn-outline-primary" for="period-week">Semana</label>
+                    
+                    <input type="radio" 
+                           class="btn-check" 
+                           name="time-period" 
+                           id="period-month" 
+                           value="month" 
+                           onchange="changeTimePeriod('month')">
+                    <label class="btn btn-outline-primary" for="period-month">Mes</label>
+                    
+                    <input type="radio" 
+                           class="btn-check" 
+                           name="time-period" 
+                           id="period-year" 
+                           value="year" 
+                           onchange="changeTimePeriod('year')">
+                    <label class="btn btn-outline-primary" for="period-year">Año</label>
+                </div>
+                
+                <button type="button" 
+                        class="btn btn-outline-secondary ms-2 dropdown-toggle" 
+                        data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="exportAnalytics()">Exportar datos</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="refreshAnalytics()">Actualizar</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="configureAnalytics()">Configurar métricas</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Key Metrics Row -->
+    <div class="metrics-row mb-4">
+        <div class="row g-3">
+            <div class="col-md-3">
+                {{ render_stat_card(
+                    title='Tareas Completadas',
+                    value=analytics_data.tasks_completed if analytics_data else 24,
+                    icon='bi-check-circle',
+                    color='success',
+                    trend='+12%',
+                    trend_positive=true
+                ) }}
+            </div>
+            
+            <div class="col-md-3">
+                {{ render_stat_card(
+                    title='Objetivos Alcanzados',
+                    value=analytics_data.goals_achieved if analytics_data else 3,
+                    icon='bi-target',
+                    color='primary',
+                    trend='+25%',
+                    trend_positive=true
+                ) }}
+            </div>
+            
+            <div class="col-md-3">
+                {{ render_stat_card(
+                    title='Tiempo Productivo',
+                    value=(analytics_data.productive_hours if analytics_data else 32) ~ 'h',
+                    icon='bi-clock',
+                    color='info',
+                    trend='+8%',
+                    trend_positive=true
+                ) }}
+            </div>
+            
+            <div class="col-md-3">
+                {{ render_stat_card(
+                    title='Puntuación de Foco',
+                    value=(analytics_data.focus_score if analytics_data else 85) ~ '%',
+                    icon='bi-bullseye',
+                    color='warning',
+                    trend='-3%',
+                    trend_positive=false
+                ) }}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts and Detailed Analytics -->
+    <div class="analytics-content">
+        <div class="row g-4">
+            <!-- Productivity Chart -->
+            <div class="col-lg-8">
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-graph-up me-2"></i>
+                            Tendencia de Productividad
+                        </h5>
+                        <div class="card-actions">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <input type="radio" 
+                                       class="btn-check" 
+                                       name="chart-type" 
+                                       id="chart-tasks" 
+                                       value="tasks" 
+                                       checked 
+                                       onchange="changeChartType('tasks')">
+                                <label class="btn btn-outline-secondary" for="chart-tasks">Tareas</label>
+                                
+                                <input type="radio" 
+                                       class="btn-check" 
+                                       name="chart-type" 
+                                       id="chart-time" 
+                                       value="time" 
+                                       onchange="changeChartType('time')">
+                                <label class="btn btn-outline-secondary" for="chart-time">Tiempo</label>
+                                
+                                <input type="radio" 
+                                       class="btn-check" 
+                                       name="chart-type" 
+                                       id="chart-focus" 
+                                       value="focus" 
+                                       onchange="changeChartType('focus')">
+                                <label class="btn btn-outline-secondary" for="chart-focus">Foco</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="productivity-chart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Goals Progress -->
+            <div class="col-lg-4">
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-target me-2"></i>
+                            Progreso de Objetivos
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="goals-progress" id="goals-progress">
+                            {{ render_goals_progress(analytics_data.goals if analytics_data else get_sample_goals()) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-4 mt-2">
+            <!-- Activity Heatmap -->
+            <div class="col-lg-6">
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-calendar-heat me-2"></i>
+                            Mapa de Actividad
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="heatmap-container" id="activity-heatmap">
+                            {{ render_activity_heatmap() }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Block Usage Stats -->
+            <div class="col-lg-6">
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-pie-chart me-2"></i>
+                            Uso de Bloques
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="block-usage-chart">
+                            <canvas id="block-usage-chart" width="300" height="300"></canvas>
+                        </div>
+                        <div class="block-usage-legend mt-3" id="block-usage-legend">
+                            {{ render_block_usage_legend() }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Detailed Insights -->
+        <div class="row g-4 mt-2">
+            <div class="col-12">
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-lightbulb me-2"></i>
+                            Insights y Recomendaciones
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="insights-container" id="insights-container">
+                            {{ render_insights(analytics_data.insights if analytics_data else get_sample_insights()) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+<!-- Goals Progress Component -->
+{% macro render_goals_progress(goals) %}
+{% if goals %}
+    {% for goal in goals %}
+    <div class="goal-progress-item mb-3">
+        <div class="goal-header d-flex justify-content-between align-items-center mb-2">
+            <h6 class="goal-title mb-0">{{ goal.title }}</h6>
+            <span class="goal-percentage">{{ goal.progress }}%</span>
+        </div>
+        <div class="progress" style="height: 8px;">
+            <div class="progress-bar" 
+                 role="progressbar" 
+                 style="width: {{ goal.progress }}%" 
+                 aria-valuenow="{{ goal.progress }}" 
+                 aria-valuemin="0" 
+                 aria-valuemax="100">
+            </div>
+        </div>
+        <div class="goal-meta mt-1">
+            <small class="text-muted">
+                <i class="bi bi-calendar me-1"></i>
+                {{ goal.due_date or 'Sin fecha límite' }}
+            </small>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-goals text-center py-4">
+        <i class="bi bi-target text-muted" style="font-size: 2rem;"></i>
+        <p class="text-muted mt-2 mb-0">No hay objetivos activos</p>
+        <button type="button" class="btn btn-sm btn-primary mt-2" onclick="createNewGoal()">
+            Crear objetivo
+        </button>
+    </div>
+{% endif %}
+{% endmacro %}
+
+<!-- Activity Heatmap Component -->
+{% macro render_activity_heatmap() %}
+<div class="heatmap-grid" id="heatmap-grid">
+    <!-- Heatmap will be generated by JavaScript -->
+</div>
+<div class="heatmap-legend mt-3">
+    <div class="d-flex align-items-center justify-content-between">
+        <span class="legend-label">Menos</span>
+        <div class="legend-scale d-flex gap-1">
+            <div class="legend-cell" data-level="0"></div>
+            <div class="legend-cell" data-level="1"></div>
+            <div class="legend-cell" data-level="2"></div>
+            <div class="legend-cell" data-level="3"></div>
+            <div class="legend-cell" data-level="4"></div>
+        </div>
+        <span class="legend-label">Más</span>
+    </div>
+</div>
+{% endmacro %}
+
+<!-- Block Usage Legend Component -->
+{% macro render_block_usage_legend() %}
+<div class="usage-legend">
+    <div class="legend-item">
+        <div class="legend-color" style="background: #3182ce;"></div>
+        <span class="legend-text">Tareas (45%)</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background: #38a169;"></div>
+        <span class="legend-text">Notas (30%)</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background: #d69e2e;"></div>
+        <span class="legend-text">Objetivos (15%)</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background: #9f7aea;"></div>
+        <span class="legend-text">Kanban (10%)</span>
+    </div>
+</div>
+{% endmacro %}
+
+<!-- Insights Component -->
+{% macro render_insights(insights) %}
+{% if insights %}
+    {% for insight in insights %}
+    <div class="insight-item mb-3">
+        <div class="insight-icon">
+            <i class="{{ insight.icon or 'bi-lightbulb' }}"></i>
+        </div>
+        <div class="insight-content">
+            <h6 class="insight-title">{{ insight.title }}</h6>
+            <p class="insight-description mb-2">{{ insight.description }}</p>
+            {% if insight.action %}
+            <button type="button" 
+                    class="btn btn-sm btn-outline-primary" 
+                    onclick="{{ insight.action }}">
+                {{ insight.action_text or 'Ver más' }}
+            </button>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-insights text-center py-4">
+        <i class="bi bi-lightbulb text-muted" style="font-size: 2rem;"></i>
+        <p class="text-muted mt-2 mb-0">No hay insights disponibles</p>
+        <small class="text-muted">Los insights aparecerán cuando tengas más actividad</small>
+    </div>
+{% endif %}
+{% endmacro %}
+
+<style>
+/* Analytics Dashboard Styles */
+.analytics-dashboard {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.dashboard-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a202c;
+}
+
+.dashboard-description {
+    font-size: 1rem;
+    color: #718096;
+}
+
+/* Dashboard Controls */
+.dashboard-controls .btn-group .btn {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+}
+
+.dashboard-controls .btn-check:checked + .btn {
+    background: linear-gradient(135deg, #3182ce 0%, #2c5aa0 100%);
+    border-color: #3182ce;
+    color: white;
+}
+
+/* Metrics Row */
+.metrics-row {
+    margin-bottom: 2rem;
+}
+
+/* Analytics Cards */
+.analytics-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.analytics-card .card-header {
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.analytics-card .card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.analytics-card .card-body {
+    padding: 1.5rem;
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.chart-container canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Goals Progress */
+.goal-progress-item {
+    padding: 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.goal-progress-item:hover {
+    background: #ffffff;
+    border-color: #3182ce;
+    box-shadow: 0 2px 8px rgba(49, 130, 206, 0.1);
+}
+
+.goal-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.goal-percentage {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #3182ce;
+}
+
+.goal-meta {
+    font-size: 0.75rem;
+}
+
+/* Activity Heatmap */
+.heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(53, 1fr);
+    gap: 2px;
+    margin-bottom: 1rem;
+}
+
+.heatmap-cell {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    background: #edf2f7;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.heatmap-cell:hover {
+    transform: scale(1.2);
+    border: 1px solid #3182ce;
+}
+
+.heatmap-cell[data-level="1"] {
+    background: #c6f6d5;
+}
+
+.heatmap-cell[data-level="2"] {
+    background: #9ae6b4;
+}
+
+.heatmap-cell[data-level="3"] {
+    background: #68d391;
+}
+
+.heatmap-cell[data-level="4"] {
+    background: #38a169;
+}
+
+/* Heatmap Legend */
+.heatmap-legend {
+    font-size: 0.75rem;
+    color: #718096;
+}
+
+.legend-scale {
+    display: flex;
+    gap: 2px;
+}
+
+.legend-cell {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    background: #edf2f7;
+}
+
+.legend-cell[data-level="1"] {
+    background: #c6f6d5;
+}
+
+.legend-cell[data-level="2"] {
+    background: #9ae6b4;
+}
+
+.legend-cell[data-level="3"] {
+    background: #68d391;
+}
+
+.legend-cell[data-level="4"] {
+    background: #38a169;
+}
+
+/* Block Usage Legend */
+.usage-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.legend-text {
+    font-size: 0.875rem;
+    color: #4a5568;
+}
+
+/* Insights */
+.insight-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.insight-item:hover {
+    background: #ffffff;
+    border-color: #3182ce;
+    box-shadow: 0 2px 8px rgba(49, 130, 206, 0.1);
+}
+
+.insight-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.insight-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.insight-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.insight-description {
+    font-size: 0.875rem;
+    color: #718096;
+    line-height: 1.5;
+}
+
+/* Empty States */
+.empty-goals,
+.empty-insights {
+    padding: 2rem;
+}
+
+.empty-goals i,
+.empty-insights i {
+    opacity: 0.5;
+}
+
+/* Card Actions */
+.card-actions .btn-group .btn {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.card-actions .btn-check:checked + .btn {
+    background: #3182ce;
+    border-color: #3182ce;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .analytics-dashboard {
+        padding: 1rem;
+    }
+    
+    .dashboard-header {
+        padding: 1rem;
+    }
+    
+    .dashboard-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .dashboard-controls {
+        align-self: flex-start;
+    }
+    
+    .dashboard-controls .btn-group {
+        flex-wrap: wrap;
+    }
+    
+    .analytics-card .card-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+    
+    .heatmap-grid {
+        grid-template-columns: repeat(26, 1fr);
+    }
+    
+    .heatmap-cell {
+        width: 8px;
+        height: 8px;
+    }
+    
+    .usage-legend {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .insight-item {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* Animation */
+@keyframes chartLoad {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.chart-loading {
+    animation: chartLoad 0.5s ease;
+}
+
+@keyframes metricUpdate {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.metric-updated {
+    animation: metricUpdate 0.3s ease;
+}
+</style>
+
+<script>
+// Analytics Dashboard JavaScript
+window.AnalyticsDashboard = {
+    currentPeriod: 'week',
+    currentChartType: 'tasks',
+    charts: {},
+    
+    // Initialize dashboard
+    init: function() {
+        this.bindEvents();
+        this.initCharts();
+        this.loadAnalyticsData();
+        this.generateHeatmap();
+    },
+    
+    // Bind event listeners
+    bindEvents: function() {
+        // Auto-refresh every 5 minutes
+        setInterval(() => {
+            this.refreshAnalytics();
+        }, 5 * 60 * 1000);
+    },
+    
+    // Initialize charts
+    initCharts: function() {
+        this.initProductivityChart();
+        this.initBlockUsageChart();
+    },
+    
+    // Initialize productivity chart
+    initProductivityChart: function() {
+        const ctx = document.getElementById('productivity-chart');
+        if (!ctx) return;
+        
+        this.charts.productivity = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: this.getChartLabels(),
+                datasets: [{
+                    label: 'Tareas Completadas',
+                    data: this.getProductivityData('tasks'),
+                    borderColor: '#3182ce',
+                    backgroundColor: 'rgba(49, 130, 206, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#e2e8f0'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: '#e2e8f0'
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        radius: 4,
+                        hoverRadius: 6
+                    }
+                }
+            }
+        });
+    },
+    
+    // Initialize block usage chart
+    initBlockUsageChart: function() {
+        const ctx = document.getElementById('block-usage-chart');
+        if (!ctx) return;
+        
+        this.charts.blockUsage = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Tareas', 'Notas', 'Objetivos', 'Kanban'],
+                datasets: [{
+                    data: [45, 30, 15, 10],
+                    backgroundColor: [
+                        '#3182ce',
+                        '#38a169',
+                        '#d69e2e',
+                        '#9f7aea'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+    },
+    
+    // Change time period
+    changeTimePeriod: function(period) {
+        this.currentPeriod = period;
+        this.loadAnalyticsData();
+        this.updateCharts();
+        this.generateHeatmap();
+    },
+    
+    // Change chart type
+    changeChartType: function(type) {
+        this.currentChartType = type;
+        this.updateProductivityChart();
+    },
+    
+    // Load analytics data
+    loadAnalyticsData: async function() {
+        try {
+            const response = await fetch(`/personal_space/analytics?period=${this.currentPeriod}`);
+            if (response.ok) {
+                const data = await response.json();
+                this.updateMetrics(data);
+                this.updateCharts(data);
+                this.updateInsights(data.insights);
+            }
+        } catch (error) {
+            console.error('Error loading analytics:', error);
+            // Use sample data as fallback
+            this.loadSampleData();
+        }
+    },
+    
+    // Load sample data
+    loadSampleData: function() {
+        const sampleData = {
+            tasks_completed: 24,
+            goals_achieved: 3,
+            productive_hours: 32,
+            focus_score: 85,
+            productivity_trend: [12, 15, 18, 22, 19, 24, 28],
+            time_trend: [4.5, 5.2, 6.1, 5.8, 6.3, 7.2, 6.8],
+            focus_trend: [78, 82, 85, 79, 88, 85, 90]
+        };
+        
+        this.updateMetrics(sampleData);
+        this.updateCharts(sampleData);
+    },
+    
+    // Update metrics
+    updateMetrics: function(data) {
+        const metrics = {
+            'tasks_completed': data.tasks_completed,
+            'goals_achieved': data.goals_achieved,
+            'productive_hours': data.productive_hours + 'h',
+            'focus_score': data.focus_score + '%'
+        };
+        
+        Object.entries(metrics).forEach(([key, value]) => {
+            const element = document.querySelector(`[data-metric="${key}"]`);
+            if (element) {
+                element.textContent = value;
+                element.classList.add('metric-updated');
+                setTimeout(() => {
+                    element.classList.remove('metric-updated');
+                }, 300);
+            }
+        });
+    },
+    
+    // Update charts
+    updateCharts: function(data) {
+        if (data) {
+            this.updateProductivityChart(data);
+            this.updateBlockUsageChart(data);
+        }
+    },
+    
+    // Update productivity chart
+    updateProductivityChart: function(data) {
+        if (!this.charts.productivity) return;
+        
+        const chart = this.charts.productivity;
+        chart.data.labels = this.getChartLabels();
+        chart.data.datasets[0].data = this.getProductivityData(this.currentChartType, data);
+        chart.data.datasets[0].label = this.getChartLabel(this.currentChartType);
+        
+        chart.update('active');
+    },
+    
+    // Update block usage chart
+    updateBlockUsageChart: function(data) {
+        if (!this.charts.blockUsage || !data?.block_usage) return;
+        
+        const chart = this.charts.blockUsage;
+        chart.data.datasets[0].data = [
+            data.block_usage.tasks || 45,
+            data.block_usage.notes || 30,
+            data.block_usage.objectives || 15,
+            data.block_usage.kanban || 10
+        ];
+        
+        chart.update('active');
+    },
+    
+    // Get chart labels
+    getChartLabels: function() {
+        const labels = {
+            day: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+            week: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+            month: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+            year: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+        };
+        
+        return labels[this.currentPeriod] || labels.week;
+    },
+    
+    // Get productivity data
+    getProductivityData: function(type, data) {
+        if (data) {
+            switch (type) {
+                case 'time':
+                    return data.time_trend || [4.5, 5.2, 6.1, 5.8, 6.3, 7.2, 6.8];
+                case 'focus':
+                    return data.focus_trend || [78, 82, 85, 79, 88, 85, 90];
+                case 'tasks':
+                default:
+                    return data.productivity_trend || [12, 15, 18, 22, 19, 24, 28];
+            }
+        }
+        
+        // Sample data
+        const sampleData = {
+            tasks: [12, 15, 18, 22, 19, 24, 28],
+            time: [4.5, 5.2, 6.1, 5.8, 6.3, 7.2, 6.8],
+            focus: [78, 82, 85, 79, 88, 85, 90]
+        };
+        
+        return sampleData[type] || sampleData.tasks;
+    },
+    
+    // Get chart label
+    getChartLabel: function(type) {
+        const labels = {
+            tasks: 'Tareas Completadas',
+            time: 'Horas Productivas',
+            focus: 'Puntuación de Foco'
+        };
+        
+        return labels[type] || labels.tasks;
+    },
+    
+    // Generate activity heatmap
+    generateHeatmap: function() {
+        const container = document.getElementById('heatmap-grid');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        // Generate 365 days (or appropriate period)
+        const days = this.currentPeriod === 'year' ? 365 : 91; // 3 months for other periods
+        
+        for (let i = 0; i < days; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'heatmap-cell';
+            
+            // Random activity level for demo
+            const level = Math.floor(Math.random() * 5);
+            if (level > 0) {
+                cell.dataset.level = level;
+            }
+            
+            // Add tooltip
+            const date = new Date();
+            date.setDate(date.getDate() - (days - i));
+            cell.title = `${date.toLocaleDateString()}: ${level} actividades`;
+            
+            container.appendChild(cell);
+        }
+    },
+    
+    // Update insights
+    updateInsights: function(insights) {
+        const container = document.getElementById('insights-container');
+        if (!container || !insights) return;
+        
+        // This would update insights dynamically
+        // For now, insights are rendered server-side
+    },
+    
+    // Refresh analytics
+    refreshAnalytics: function() {
+        this.loadAnalyticsData();
+        
+        // Show refresh feedback
+        const refreshBtn = document.querySelector('[onclick="refreshAnalytics()"]');
+        if (refreshBtn) {
+            const originalText = refreshBtn.textContent;
+            refreshBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Actualizando...';
+            refreshBtn.disabled = true;
+            
+            setTimeout(() => {
+                refreshBtn.textContent = originalText;
+                refreshBtn.disabled = false;
+            }, 2000);
+        }
+    },
+    
+    // Export analytics
+    exportAnalytics: async function() {
+        try {
+            const response = await fetch(`/personal_space/analytics/export?period=${this.currentPeriod}`);
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `analytics_${this.currentPeriod}_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }
+        } catch (error) {
+            console.error('Error exporting analytics:', error);
+            alert('Error al exportar los datos.');
+        }
+    },
+    
+    // Configure analytics
+    configureAnalytics: function() {
+        // Open configuration modal
+        console.log('Configure analytics');
+    }
+};
+
+// Global functions for template usage
+window.changeTimePeriod = function(period) {
+    window.AnalyticsDashboard.changeTimePeriod(period);
+};
+
+window.changeChartType = function(type) {
+    window.AnalyticsDashboard.changeChartType(type);
+};
+
+window.refreshAnalytics = function() {
+    window.AnalyticsDashboard.refreshAnalytics();
+};
+
+window.exportAnalytics = function() {
+    window.AnalyticsDashboard.exportAnalytics();
+};
+
+window.configureAnalytics = function() {
+    window.AnalyticsDashboard.configureAnalytics();
+};
+
+window.createNewGoal = function() {
+    console.log('Create new goal');
+};
+
+// Sample data functions
+window.get_sample_goals = function() {
+    return [
+        {
+            title: 'Completar proyecto Q1',
+            progress: 75,
+            due_date: '2024-03-31'
+        },
+        {
+            title: 'Leer 12 libros este año',
+            progress: 33,
+            due_date: '2024-12-31'
+        },
+        {
+            title: 'Ejercicio 3x por semana',
+            progress: 60,
+            due_date: null
+        }
+    ];
+};
+
+window.get_sample_insights = function() {
+    return [
+        {
+            title: 'Pico de productividad',
+            description: 'Tus mejores horas son entre las 9:00 y 11:00 AM. Considera programar tareas importantes en este horario.',
+            icon: 'bi-clock',
+            action: 'optimizeSchedule()',
+            action_text: 'Optimizar horario'
+        },
+        {
+            title: 'Objetivos en riesgo',
+            description: 'Tienes 2 objetivos que podrían no cumplirse a tiempo. Revisa tus prioridades.',
+            icon: 'bi-exclamation-triangle',
+            action: 'reviewGoals()',
+            action_text: 'Revisar objetivos'
+        },
+        {
+            title: 'Racha de productividad',
+            description: '¡Felicidades! Has completado tareas durante 7 días consecutivos.',
+            icon: 'bi-trophy',
+            action: null,
+            action_text: null
+        }
+    ];
+};
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if Chart.js is available
+    if (typeof Chart !== 'undefined') {
+        window.AnalyticsDashboard.init();
+    } else {
+        console.warn('Chart.js not loaded. Analytics charts will not be available.');
+    }
+});
+</script>

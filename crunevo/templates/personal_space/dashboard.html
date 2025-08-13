@@ -1,0 +1,943 @@
+<!-- Personal Space Dashboard - Main redesigned dashboard page -->
+{% extends "base.html" %}
+{% from 'personal_space/components/layout/DashboardLayout.html' import render_dashboard_layout %}
+{% from 'personal_space/components/widgets/TemplateGallery.html' import render_template_gallery_modal %}
+{% from 'personal_space/components/widgets/BlockFactory.html' import render_block_factory_modal %}
+{% from 'personal_space/components/widgets/AnalyticsDashboard.html' import render_analytics_dashboard %}
+
+{% block title %}Personal Space - Dashboard{% endblock %}
+
+{% block extra_head %}
+<!-- Chart.js for analytics -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Sortable.js for drag and drop -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<!-- Custom CSS -->
+<style>
+/* Dashboard Specific Styles */
+.dashboard-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 0;
+}
+
+.dashboard-content {
+    background: #f8fafc;
+    border-radius: 20px 20px 0 0;
+    margin-top: 2rem;
+    min-height: calc(100vh - 2rem);
+    padding: 2rem;
+    position: relative;
+}
+
+.dashboard-header {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+.welcome-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.welcome-text h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.welcome-subtitle {
+    font-size: 1.125rem;
+    color: #718096;
+    margin: 0;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.quick-action-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.quick-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+.quick-action-btn.secondary {
+    background: #ffffff;
+    color: #667eea;
+    border: 2px solid #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+.quick-action-btn.secondary:hover {
+    background: #667eea;
+    color: white;
+}
+
+.stats-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.stat-icon.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-icon.success {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.stat-icon.warning {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+}
+
+.stat-icon.info {
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #718096;
+    font-weight: 500;
+}
+
+.stat-trend {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.stat-trend.positive {
+    color: #38a169;
+}
+
+.stat-trend.negative {
+    color: #e53e3e;
+}
+
+.dashboard-sections {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.sidebar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.section-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.section-header {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.section-body {
+    padding: 1.5rem;
+}
+
+.recent-activity-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    margin-bottom: 0.75rem;
+}
+
+.recent-activity-item:hover {
+    background: #f8fafc;
+}
+
+.activity-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.activity-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.25rem;
+}
+
+.activity-description {
+    font-size: 0.75rem;
+    color: #718096;
+    margin: 0;
+}
+
+.activity-time {
+    font-size: 0.75rem;
+    color: #a0aec0;
+    flex-shrink: 0;
+}
+
+.quick-notes {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.quick-note-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    resize: none;
+    font-size: 0.875rem;
+    color: #2d3748;
+    placeholder-color: #a0aec0;
+}
+
+.quick-note-input:focus {
+    outline: none;
+}
+
+.quick-note-actions {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.note-save-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.note-save-btn:hover {
+    background: #5a67d8;
+}
+
+.floating-action-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.floating-action-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .dashboard-sections {
+        grid-template-columns: 1fr;
+    }
+    
+    .welcome-section {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .quick-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-content {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 16px 16px 0 0;
+    }
+    
+    .dashboard-header {
+        padding: 1.5rem;
+    }
+    
+    .welcome-text h1 {
+        font-size: 2rem;
+    }
+    
+    .stats-overview {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .quick-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .quick-action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-overview {
+        grid-template-columns: 1fr;
+    }
+    
+    .floating-action-btn {
+        bottom: 1rem;
+        right: 1rem;
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
+    }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dashboard-content > * {
+    animation: fadeInUp 0.6s ease;
+}
+
+.dashboard-content > *:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.dashboard-content > *:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.dashboard-content > *:nth-child(4) {
+    animation-delay: 0.3s;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-content">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="welcome-section">
+                <div class="welcome-text">
+                    <h1>¡Bienvenido de vuelta, {{ user.first_name or 'Usuario' }}!</h1>
+                    <p class="welcome-subtitle">
+                        {% set current_hour = moment().hour %}
+                        {% if current_hour < 12 %}
+                            Buenos días. Tienes {{ pending_tasks_count or 0 }} tareas pendientes para hoy.
+                        {% elif current_hour < 18 %}
+                            Buenas tardes. Vas por buen camino con tus objetivos de hoy.
+                        {% else %}
+                            Buenas noches. Es hora de revisar tu progreso del día.
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="quick-actions">
+                    <button type="button" 
+                            class="btn quick-action-btn" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#block-factory-modal">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Nuevo Bloque
+                    </button>
+                    
+                    <button type="button" 
+                            class="btn quick-action-btn secondary" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#template-gallery-modal">
+                        <i class="bi bi-collection me-2"></i>
+                        Plantillas
+                    </button>
+                    
+                    <div class="dropdown">
+                        <button class="btn quick-action-btn secondary dropdown-toggle" 
+                                type="button" 
+                                data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('personal_space.workspace') }}">
+                                <i class="bi bi-grid-3x3-gap me-2"></i>Workspace
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="toggleAnalytics()">
+                                <i class="bi bi-graph-up me-2"></i>Analytics
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('personal_space.settings') }}">
+                                <i class="bi bi-gear me-2"></i>Configuración
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Overview -->
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="stat-value">{{ completed_tasks_today or 0 }}</div>
+                    <div class="stat-label">Tareas completadas hoy</div>
+                    <div class="stat-trend positive">
+                        <i class="bi bi-arrow-up"></i> +{{ task_completion_trend or 0 }}%
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class="bi bi-target"></i>
+                    </div>
+                    <div class="stat-value">{{ active_objectives or 0 }}</div>
+                    <div class="stat-label">Objetivos activos</div>
+                    <div class="stat-trend positive">
+                        <i class="bi bi-arrow-up"></i> {{ objective_progress_avg or 0 }}% promedio
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <div class="stat-value">{{ productive_hours_today or 0 }}h</div>
+                    <div class="stat-label">Horas productivas</div>
+                    <div class="stat-trend {{ 'positive' if productivity_trend >= 0 else 'negative' }}">
+                        <i class="bi bi-arrow-{{ 'up' if productivity_trend >= 0 else 'down' }}"></i> 
+                        {{ productivity_trend or 0 }}%
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class="bi bi-lightning"></i>
+                    </div>
+                    <div class="stat-value">{{ focus_score or 0 }}%</div>
+                    <div class="stat-label">Puntuación de foco</div>
+                    <div class="stat-trend {{ 'positive' if focus_trend >= 0 else 'negative' }}">
+                        <i class="bi bi-arrow-{{ 'up' if focus_trend >= 0 else 'down' }}"></i> 
+                        {{ focus_trend or 0 }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Dashboard Sections -->
+        <div class="dashboard-sections">
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Today's Focus -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-sun"></i>
+                            Enfoque de Hoy
+                        </h3>
+                        <div class="section-actions">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshTodaysFocus()">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="section-body">
+                        {{ render_dashboard_layout(blocks=todays_focus_blocks, view_mode='focus') }}
+                    </div>
+                </div>
+                
+                <!-- Weekly Progress -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-calendar-week"></i>
+                            Progreso Semanal
+                        </h3>
+                        <div class="section-actions">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewWeeklyDetails()">
+                                Ver detalles
+                            </button>
+                        </div>
+                    </div>
+                    <div class="section-body">
+                        {{ render_dashboard_layout(blocks=weekly_progress_blocks, view_mode='progress') }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar Content -->
+            <div class="sidebar-content">
+                <!-- Recent Activity -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-activity"></i>
+                            Actividad Reciente
+                        </h3>
+                        <div class="section-actions">
+                            <a href="{{ url_for('personal_space.activity') }}" class="btn btn-sm btn-outline-primary">
+                                Ver todo
+                            </a>
+                        </div>
+                    </div>
+                    <div class="section-body">
+                        {% if recent_activities %}
+                            {% for activity in recent_activities[:5] %}
+                            <div class="recent-activity-item">
+                                <div class="activity-icon {{ activity.type }}">
+                                    <i class="bi bi-{{ activity.icon or 'circle' }}"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">{{ activity.title }}</div>
+                                    <p class="activity-description">{{ activity.description }}</p>
+                                </div>
+                                <div class="activity-time">
+                                    {{ moment(activity.created_at).fromNow() }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="bi bi-activity text-muted" style="font-size: 2rem;"></i>
+                                <p class="text-muted mt-2 mb-0">No hay actividad reciente</p>
+                                <small class="text-muted">Tu actividad aparecerá aquí</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Quick Notes -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-sticky"></i>
+                            Notas Rápidas
+                        </h3>
+                    </div>
+                    <div class="section-body">
+                        <div class="quick-notes">
+                            <textarea class="quick-note-input" 
+                                      placeholder="Escribe una nota rápida..." 
+                                      rows="4" 
+                                      id="quick-note-text"></textarea>
+                            <div class="quick-note-actions">
+                                <small class="text-muted">Ctrl+Enter para guardar</small>
+                                <button type="button" 
+                                        class="note-save-btn" 
+                                        onclick="saveQuickNote()">
+                                    <i class="bi bi-save me-1"></i>
+                                    Guardar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Quick Notes -->
+                        <div class="mt-3" id="recent-quick-notes">
+                            {% if recent_quick_notes %}
+                                {% for note in recent_quick_notes[:3] %}
+                                <div class="quick-note-item mb-2 p-2 bg-light rounded">
+                                    <small class="text-muted d-block">{{ moment(note.created_at).fromNow() }}</small>
+                                    <div class="mt-1">{{ note.content[:100] }}{% if note.content|length > 100 %}...{% endif %}</div>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analytics Dashboard (Hidden by default) -->
+        <div class="section-card d-none" id="analytics-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="bi bi-graph-up"></i>
+                    Panel de Análisis
+                </h3>
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAnalytics()">
+                        <i class="bi bi-x"></i>
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+            <div class="section-body">
+                {{ render_analytics_dashboard(analytics_data=analytics_data) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Button -->
+<button type="button" 
+        class="floating-action-btn" 
+        data-bs-toggle="modal" 
+        data-bs-target="#block-factory-modal" 
+        title="Crear nuevo bloque">
+    <i class="bi bi-plus"></i>
+</button>
+
+<!-- Modals -->
+{{ render_block_factory_modal() }}
+{{ render_template_gallery_modal() }}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Dashboard JavaScript
+window.PersonalSpaceDashboard = {
+    // Initialize dashboard
+    init: function() {
+        this.bindEvents();
+        this.loadDashboardData();
+        this.setupAutoRefresh();
+    },
+    
+    // Bind event listeners
+    bindEvents: function() {
+        // Quick note keyboard shortcut
+        document.getElementById('quick-note-text')?.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                this.saveQuickNote();
+            }
+        });
+        
+        // Auto-save quick notes
+        let saveTimeout;
+        document.getElementById('quick-note-text')?.addEventListener('input', () => {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                this.autoSaveQuickNote();
+            }, 2000);
+        });
+    },
+    
+    // Load dashboard data
+    loadDashboardData: async function() {
+        try {
+            const response = await fetch('/personal_space/dashboard/data');
+            if (response.ok) {
+                const data = await response.json();
+                this.updateDashboardStats(data.stats);
+                this.updateRecentActivity(data.recent_activities);
+                this.updateTodaysFocus(data.todays_focus);
+            }
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+        }
+    },
+    
+    // Update dashboard statistics
+    updateDashboardStats: function(stats) {
+        if (!stats) return;
+        
+        // Update stat values with animation
+        Object.entries(stats).forEach(([key, value]) => {
+            const element = document.querySelector(`[data-stat="${key}"]`);
+            if (element) {
+                this.animateNumber(element, parseInt(element.textContent) || 0, value);
+            }
+        });
+    },
+    
+    // Animate number changes
+    animateNumber: function(element, from, to) {
+        const duration = 1000;
+        const start = Date.now();
+        const step = (to - from) / duration;
+        
+        const animate = () => {
+            const elapsed = Date.now() - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const current = Math.floor(from + (to - from) * progress);
+            
+            element.textContent = current;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        };
+        
+        animate();
+    },
+    
+    // Update recent activity
+    updateRecentActivity: function(activities) {
+        // This would update the recent activity section
+        // Implementation depends on your specific needs
+    },
+    
+    // Update today's focus
+    updateTodaysFocus: function(focusData) {
+        // This would update the today's focus section
+        // Implementation depends on your specific needs
+    },
+    
+    // Save quick note
+    saveQuickNote: async function() {
+        const textarea = document.getElementById('quick-note-text');
+        const content = textarea?.value.trim();
+        
+        if (!content) return;
+        
+        try {
+            const response = await fetch('/personal_space/quick_notes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify({ content })
+            });
+            
+            if (response.ok) {
+                textarea.value = '';
+                this.showSuccessMessage('Nota guardada');
+                this.loadRecentQuickNotes();
+            }
+        } catch (error) {
+            console.error('Error saving quick note:', error);
+            this.showErrorMessage('Error al guardar la nota');
+        }
+    },
+    
+    // Auto-save quick note (draft)
+    autoSaveQuickNote: function() {
+        const content = document.getElementById('quick-note-text')?.value;
+        if (content) {
+            localStorage.setItem('quick_note_draft', content);
+        }
+    },
+    
+    // Load recent quick notes
+    loadRecentQuickNotes: async function() {
+        try {
+            const response = await fetch('/personal_space/quick_notes/recent');
+            if (response.ok) {
+                const notes = await response.json();
+                this.renderRecentQuickNotes(notes);
+            }
+        } catch (error) {
+            console.error('Error loading recent quick notes:', error);
+        }
+    },
+    
+    // Render recent quick notes
+    renderRecentQuickNotes: function(notes) {
+        const container = document.getElementById('recent-quick-notes');
+        if (!container) return;
+        
+        container.innerHTML = notes.map(note => `
+            <div class="quick-note-item mb-2 p-2 bg-light rounded">
+                <small class="text-muted d-block">${this.timeAgo(note.created_at)}</small>
+                <div class="mt-1">${this.truncateText(note.content, 100)}</div>
+            </div>
+        `).join('');
+    },
+    
+    // Setup auto-refresh
+    setupAutoRefresh: function() {
+        // Refresh dashboard data every 5 minutes
+        setInterval(() => {
+            this.loadDashboardData();
+        }, 5 * 60 * 1000);
+    },
+    
+    // Utility functions
+    getCSRFToken: function() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    },
+    
+    timeAgo: function(date) {
+        // Simple time ago implementation
+        const now = new Date();
+        const past = new Date(date);
+        const diff = now - past;
+        
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+        
+        if (days > 0) return `hace ${days} día${days > 1 ? 's' : ''}`;
+        if (hours > 0) return `hace ${hours} hora${hours > 1 ? 's' : ''}`;
+        if (minutes > 0) return `hace ${minutes} minuto${minutes > 1 ? 's' : ''}`;
+        return 'hace un momento';
+    },
+    
+    truncateText: function(text, length) {
+        return text.length > length ? text.substring(0, length) + '...' : text;
+    },
+    
+    showSuccessMessage: function(message) {
+        // Integration with your notification system
+        console.log('Success:', message);
+    },
+    
+    showErrorMessage: function(message) {
+        // Integration with your notification system
+        console.error('Error:', message);
+    }
+};
+
+// Global functions
+window.saveQuickNote = function() {
+    window.PersonalSpaceDashboard.saveQuickNote();
+};
+
+window.refreshTodaysFocus = function() {
+    window.PersonalSpaceDashboard.loadDashboardData();
+};
+
+window.viewWeeklyDetails = function() {
+    window.location.href = '/personal_space/analytics?period=week';
+};
+
+window.toggleAnalytics = function() {
+    const section = document.getElementById('analytics-section');
+    if (section) {
+        section.classList.toggle('d-none');
+        
+        // Initialize analytics if showing
+        if (!section.classList.contains('d-none') && window.AnalyticsDashboard) {
+            window.AnalyticsDashboard.init();
+        }
+    }
+};
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    window.PersonalSpaceDashboard.init();
+    
+    // Restore quick note draft
+    const draft = localStorage.getItem('quick_note_draft');
+    if (draft) {
+        const textarea = document.getElementById('quick-note-text');
+        if (textarea) {
+            textarea.value = draft;
+        }
+    }
+});
+</script>
+{% endblock %}

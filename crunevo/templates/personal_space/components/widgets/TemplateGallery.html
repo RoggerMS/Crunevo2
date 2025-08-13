@@ -1,0 +1,1581 @@
+<!-- TemplateGallery Component - Template system with gallery and custom templates -->
+{% from 'personal_space/components/base/BaseCard.html' import render_base_card, render_stat_card %}
+{% from 'personal_space/components/base/BaseModal.html' import render_base_modal %}
+
+<!-- Template Gallery Widget -->
+{% macro render_template_gallery(templates=none, user_templates=none, categories=none) %}
+<div class="template-gallery" id="template-gallery">
+    <!-- Gallery Header -->
+    <div class="gallery-header mb-4">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="gallery-info">
+                <h3 class="gallery-title mb-1">
+                    <i class="bi bi-collection me-2"></i>
+                    Galería de Plantillas
+                </h3>
+                <p class="gallery-description text-muted mb-0">
+                    Encuentra plantillas prediseñadas o crea las tuyas propias
+                </p>
+            </div>
+            
+            <div class="gallery-actions">
+                <button type="button" 
+                        class="btn btn-outline-primary" 
+                        onclick="openTemplateCreator()">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    Crear Plantilla
+                </button>
+                
+                <button type="button" 
+                        class="btn btn-primary ms-2" 
+                        onclick="importTemplate()">
+                    <i class="bi bi-upload me-1"></i>
+                    Importar
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search and Filters -->
+    <div class="gallery-filters mb-4">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="search-box">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" 
+                               class="form-control" 
+                               placeholder="Buscar plantillas..." 
+                               id="template-search" 
+                               oninput="filterTemplates(this.value)">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <select class="form-select" 
+                        id="category-filter" 
+                        onchange="filterByCategory(this.value)">
+                    <option value="">Todas las categorías</option>
+                    {% if categories %}
+                        {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    {% else %}
+                        <option value="productivity">Productividad</option>
+                        <option value="planning">Planificación</option>
+                        <option value="tracking">Seguimiento</option>
+                        <option value="creative">Creativo</option>
+                        <option value="personal">Personal</option>
+                    {% endif %}
+                </select>
+            </div>
+            
+            <div class="col-md-3">
+                <select class="form-select" 
+                        id="sort-filter" 
+                        onchange="sortTemplates(this.value)">
+                    <option value="popular">Más populares</option>
+                    <option value="recent">Más recientes</option>
+                    <option value="name">Por nombre</option>
+                    <option value="rating">Mejor valoradas</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Template Tabs -->
+    <div class="template-tabs mb-4">
+        <ul class="nav nav-pills" id="template-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" 
+                        id="featured-tab" 
+                        data-bs-toggle="pill" 
+                        data-bs-target="#featured-templates" 
+                        type="button" 
+                        role="tab">
+                    <i class="bi bi-star me-1"></i>
+                    Destacadas
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" 
+                        id="community-tab" 
+                        data-bs-toggle="pill" 
+                        data-bs-target="#community-templates" 
+                        type="button" 
+                        role="tab">
+                    <i class="bi bi-people me-1"></i>
+                    Comunidad
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" 
+                        id="my-templates-tab" 
+                        data-bs-toggle="pill" 
+                        data-bs-target="#my-templates" 
+                        type="button" 
+                        role="tab">
+                    <i class="bi bi-person me-1"></i>
+                    Mis Plantillas
+                </button>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- Template Content -->
+    <div class="tab-content" id="template-content">
+        <!-- Featured Templates -->
+        <div class="tab-pane fade show active" 
+             id="featured-templates" 
+             role="tabpanel">
+            <div class="templates-grid" id="featured-grid">
+                {{ render_template_grid(templates or get_featured_templates()) }}
+            </div>
+        </div>
+        
+        <!-- Community Templates -->
+        <div class="tab-pane fade" 
+             id="community-templates" 
+             role="tabpanel">
+            <div class="templates-grid" id="community-grid">
+                {{ render_template_grid(get_community_templates()) }}
+            </div>
+        </div>
+        
+        <!-- My Templates -->
+        <div class="tab-pane fade" 
+             id="my-templates" 
+             role="tabpanel">
+            <div class="templates-grid" id="my-templates-grid">
+                {% if user_templates %}
+                    {{ render_template_grid(user_templates) }}
+                {% else %}
+                    {{ render_empty_templates() }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Template Creator Modal -->
+{{ render_template_creator_modal() }}
+
+<!-- Template Preview Modal -->
+{{ render_template_preview_modal() }}
+{% endmacro %}
+
+<!-- Template Grid -->
+{% macro render_template_grid(templates) %}
+{% if templates %}
+    {% for template in templates %}
+    <div class="template-card" 
+         data-template-id="{{ template.id }}"
+         data-category="{{ template.category }}"
+         data-name="{{ template.name.lower() }}">
+        
+        <!-- Template Preview -->
+        <div class="template-preview" onclick="previewTemplate('{{ template.id }}')">
+            {% if template.preview_image %}
+                <img src="{{ template.preview_image }}" 
+                     alt="{{ template.name }}" 
+                     class="preview-image">
+            {% else %}
+                <div class="preview-placeholder">
+                    <i class="{{ template.icon or 'bi-grid-3x3-gap' }}"></i>
+                </div>
+            {% endif %}
+            
+            <!-- Template Overlay -->
+            <div class="template-overlay">
+                <div class="overlay-actions">
+                    <button type="button" 
+                            class="btn btn-light btn-sm" 
+                            onclick="event.stopPropagation(); previewTemplate('{{ template.id }}')" 
+                            title="Vista previa">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <button type="button" 
+                            class="btn btn-primary btn-sm" 
+                            onclick="event.stopPropagation(); useTemplate('{{ template.id }}')" 
+                            title="Usar plantilla">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Template Info -->
+        <div class="template-info">
+            <h5 class="template-name">{{ template.name }}</h5>
+            <p class="template-description">{{ template.description or 'Sin descripción' }}</p>
+            
+            <!-- Template Meta -->
+            <div class="template-meta">
+                <div class="meta-item">
+                    <i class="bi bi-tag me-1"></i>
+                    <span class="category-badge">{{ template.category.title() if template.category else 'General' }}</span>
+                </div>
+                
+                {% if template.rating %}
+                <div class="meta-item">
+                    <div class="rating">
+                        {% for i in range(5) %}
+                            <i class="bi bi-star{{ '-fill' if i < template.rating else '' }}"></i>
+                        {% endfor %}
+                    </div>
+                    <span class="rating-count">({{ template.rating_count or 0 }})</span>
+                </div>
+                {% endif %}
+                
+                <div class="meta-item">
+                    <i class="bi bi-download me-1"></i>
+                    <span>{{ template.usage_count or 0 }} usos</span>
+                </div>
+            </div>
+            
+            <!-- Template Actions -->
+            <div class="template-actions mt-3">
+                <button type="button" 
+                        class="btn btn-outline-primary btn-sm" 
+                        onclick="previewTemplate('{{ template.id }}')">
+                    <i class="bi bi-eye me-1"></i>
+                    Vista previa
+                </button>
+                
+                <button type="button" 
+                        class="btn btn-primary btn-sm" 
+                        onclick="useTemplate('{{ template.id }}')">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    Usar
+                </button>
+                
+                <div class="btn-group" role="group">
+                    <button type="button" 
+                            class="btn btn-outline-secondary btn-sm dropdown-toggle dropdown-toggle-split" 
+                            data-bs-toggle="dropdown">
+                        <span class="visually-hidden">Más opciones</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="favoriteTemplate('{{ template.id }}')">Marcar como favorita</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="shareTemplate('{{ template.id }}')">Compartir</a></li>
+                        {% if template.user_id == current_user.id %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="editTemplate('{{ template.id }}')">Editar</a></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteTemplate('{{ template.id }}')">Eliminar</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    {{ render_empty_templates() }}
+{% endif %}
+{% endmacro %}
+
+<!-- Empty Templates State -->
+{% macro render_empty_templates() %}
+<div class="empty-templates">
+    <div class="empty-content">
+        <div class="empty-icon">
+            <i class="bi bi-collection"></i>
+        </div>
+        <h4 class="empty-title">No hay plantillas disponibles</h4>
+        <p class="empty-description">
+            Crea tu primera plantilla personalizada o explora las plantillas de la comunidad.
+        </p>
+        <button type="button" 
+                class="btn btn-primary" 
+                onclick="openTemplateCreator()">
+            <i class="bi bi-plus-lg me-1"></i>
+            Crear Primera Plantilla
+        </button>
+    </div>
+</div>
+{% endmacro %}
+
+<!-- Template Creator Modal -->
+{% macro render_template_creator_modal() %}
+{% call render_base_modal(
+    modal_id='template-creator-modal',
+    title='Crear Nueva Plantilla',
+    size='lg'
+) %}
+    <form id="template-creator-form" onsubmit="createTemplate(event)">
+        <!-- Basic Info -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-8">
+                <label for="template-name" class="form-label">Nombre de la plantilla</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="template-name" 
+                       name="name" 
+                       required 
+                       placeholder="Ej: Dashboard de Productividad">
+            </div>
+            
+            <div class="col-md-4">
+                <label for="template-category" class="form-label">Categoría</label>
+                <select class="form-select" id="template-category" name="category" required>
+                    <option value="">Seleccionar categoría</option>
+                    <option value="productivity">Productividad</option>
+                    <option value="planning">Planificación</option>
+                    <option value="tracking">Seguimiento</option>
+                    <option value="creative">Creativo</option>
+                    <option value="personal">Personal</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="mb-4">
+            <label for="template-description" class="form-label">Descripción</label>
+            <textarea class="form-control" 
+                      id="template-description" 
+                      name="description" 
+                      rows="3" 
+                      placeholder="Describe qué incluye esta plantilla y para qué es útil..."></textarea>
+        </div>
+        
+        <!-- Template Configuration -->
+        <div class="template-config mb-4">
+            <h5 class="config-title mb-3">
+                <i class="bi bi-gear me-2"></i>
+                Configuración de la Plantilla
+            </h5>
+            
+            <!-- Blocks Selection -->
+            <div class="blocks-selection mb-3">
+                <label class="form-label">Bloques incluidos</label>
+                <div class="blocks-grid">
+                    <div class="block-option">
+                        <input type="checkbox" 
+                               class="form-check-input" 
+                               id="include-notes" 
+                               name="blocks[]" 
+                               value="nota">
+                        <label for="include-notes" class="block-label">
+                            <div class="block-icon">
+                                <i class="bi bi-file-text"></i>
+                            </div>
+                            <span>Notas</span>
+                        </label>
+                    </div>
+                    
+                    <div class="block-option">
+                        <input type="checkbox" 
+                               class="form-check-input" 
+                               id="include-tasks" 
+                               name="blocks[]" 
+                               value="tarea">
+                        <label for="include-tasks" class="block-label">
+                            <div class="block-icon">
+                                <i class="bi bi-check-square"></i>
+                            </div>
+                            <span>Tareas</span>
+                        </label>
+                    </div>
+                    
+                    <div class="block-option">
+                        <input type="checkbox" 
+                               class="form-check-input" 
+                               id="include-objectives" 
+                               name="blocks[]" 
+                               value="objetivo">
+                        <label for="include-objectives" class="block-label">
+                            <div class="block-icon">
+                                <i class="bi bi-target"></i>
+                            </div>
+                            <span>Objetivos</span>
+                        </label>
+                    </div>
+                    
+                    <div class="block-option">
+                        <input type="checkbox" 
+                               class="form-check-input" 
+                               id="include-kanban" 
+                               name="blocks[]" 
+                               value="kanban">
+                        <label for="include-kanban" class="block-label">
+                            <div class="block-icon">
+                                <i class="bi bi-kanban"></i>
+                            </div>
+                            <span>Kanban</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Layout Configuration -->
+            <div class="layout-config mb-3">
+                <label class="form-label">Diseño de cuadrícula</label>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <select class="form-select" id="grid-size" name="grid_size">
+                            <option value="small">Pequeña (12 columnas)</option>
+                            <option value="medium" selected>Mediana (8 columnas)</option>
+                            <option value="large">Grande (6 columnas)</option>
+                            <option value="xlarge">Extra grande (4 columnas)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="auto-arrange" 
+                                   name="auto_arrange" 
+                                   checked>
+                            <label class="form-check-label" for="auto-arrange">
+                                Organizar automáticamente
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sharing Options -->
+            <div class="sharing-options">
+                <label class="form-label">Opciones de compartir</label>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                   type="radio" 
+                                   name="visibility" 
+                                   id="private-template" 
+                                   value="private" 
+                                   checked>
+                            <label class="form-check-label" for="private-template">
+                                <strong>Privada</strong> - Solo yo puedo usarla
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                   type="radio" 
+                                   name="visibility" 
+                                   id="public-template" 
+                                   value="public">
+                            <label class="form-check-label" for="public-template">
+                                <strong>Pública</strong> - Compartir con la comunidad
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preview Area -->
+        <div class="template-preview-area mb-4">
+            <h5 class="preview-title mb-3">
+                <i class="bi bi-eye me-2"></i>
+                Vista Previa
+            </h5>
+            <div class="preview-container" id="template-preview-container">
+                <div class="preview-placeholder">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                    <p>Selecciona bloques para ver la vista previa</p>
+                </div>
+            </div>
+        </div>
+    </form>
+    
+    <!-- Modal Footer -->
+    <div slot="footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Cancelar
+        </button>
+        <button type="button" 
+                class="btn btn-outline-primary" 
+                onclick="previewTemplateCreation()">
+            <i class="bi bi-eye me-1"></i>
+            Vista Previa
+        </button>
+        <button type="submit" 
+                class="btn btn-primary" 
+                form="template-creator-form">
+            <i class="bi bi-check-lg me-1"></i>
+            Crear Plantilla
+        </button>
+    </div>
+{% endcall %}
+{% endmacro %}
+
+<!-- Template Preview Modal -->
+{% macro render_template_preview_modal() %}
+{% call render_base_modal(
+    modal_id='template-preview-modal',
+    title='Vista Previa de Plantilla',
+    size='xl'
+) %}
+    <div id="template-preview-content">
+        <!-- Content will be loaded dynamically -->
+    </div>
+    
+    <!-- Modal Footer -->
+    <div slot="footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Cerrar
+        </button>
+        <button type="button" 
+                class="btn btn-outline-primary" 
+                onclick="shareCurrentTemplate()" 
+                id="share-template-btn">
+            <i class="bi bi-share me-1"></i>
+            Compartir
+        </button>
+        <button type="button" 
+                class="btn btn-primary" 
+                onclick="useCurrentTemplate()" 
+                id="use-template-btn">
+            <i class="bi bi-plus-lg me-1"></i>
+            Usar Plantilla
+        </button>
+    </div>
+{% endcall %}
+{% endmacro %}
+
+<style>
+/* Template Gallery Styles */
+.template-gallery {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+/* Gallery Header */
+.gallery-header {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.gallery-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a202c;
+}
+
+.gallery-description {
+    font-size: 1rem;
+    color: #718096;
+}
+
+/* Gallery Filters */
+.gallery-filters {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.search-box .input-group-text {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #718096;
+}
+
+.search-box .form-control {
+    border-color: #e2e8f0;
+}
+
+.search-box .form-control:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+/* Template Tabs */
+.template-tabs .nav-pills .nav-link {
+    color: #4a5568;
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    margin-right: 0.5rem;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.template-tabs .nav-pills .nav-link:hover {
+    background: #f8fafc;
+    border-color: #cbd5e0;
+}
+
+.template-tabs .nav-pills .nav-link.active {
+    background: linear-gradient(135deg, #3182ce 0%, #2c5aa0 100%);
+    border-color: #3182ce;
+    color: white;
+}
+
+/* Templates Grid */
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Template Card */
+.template-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.template-card:hover {
+    border-color: #3182ce;
+    box-shadow: 0 8px 25px rgba(49, 130, 206, 0.15);
+    transform: translateY(-4px);
+}
+
+/* Template Preview */
+.template-preview {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: white;
+    font-size: 3rem;
+}
+
+/* Template Overlay */
+.template-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.template-card:hover .template-overlay {
+    opacity: 1;
+}
+
+.overlay-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.overlay-actions .btn {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+/* Template Info */
+.template-info {
+    padding: 1.5rem;
+}
+
+.template-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.template-description {
+    font-size: 0.875rem;
+    color: #718096;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+/* Template Meta */
+.template-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.75rem;
+    color: #718096;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.category-badge {
+    background: #e2e8f0;
+    color: #4a5568;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.rating {
+    display: flex;
+    gap: 0.125rem;
+    color: #f6ad55;
+}
+
+.rating-count {
+    margin-left: 0.25rem;
+    color: #718096;
+}
+
+/* Template Actions */
+.template-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.template-actions .btn {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+}
+
+/* Empty Templates */
+.empty-templates {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    background: #ffffff;
+    border: 2px dashed #e2e8f0;
+    border-radius: 12px;
+    margin: 1rem 0;
+}
+
+.empty-content {
+    text-align: center;
+    max-width: 400px;
+    padding: 2rem;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+.empty-description {
+    font-size: 1rem;
+    color: #718096;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* Template Creator Modal */
+.template-config {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.config-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+/* Blocks Selection */
+.blocks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.block-option {
+    position: relative;
+}
+
+.block-option input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.block-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.block-label:hover {
+    border-color: #3182ce;
+    background: #f8fafc;
+}
+
+.block-option input:checked + .block-label {
+    border-color: #3182ce;
+    background: #ebf8ff;
+    color: #3182ce;
+}
+
+.block-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+}
+
+.block-option input:checked + .block-label .block-icon {
+    background: linear-gradient(135deg, #3182ce 0%, #2c5aa0 100%);
+}
+
+/* Template Preview Area */
+.template-preview-area {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.preview-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.preview-container {
+    min-height: 200px;
+    background: #f8fafc;
+    border: 2px dashed #e2e8f0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #718096;
+}
+
+.preview-container .preview-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.preview-container .preview-placeholder i {
+    font-size: 3rem;
+    color: #cbd5e0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .template-gallery {
+        padding: 1rem;
+    }
+    
+    .gallery-header {
+        padding: 1rem;
+    }
+    
+    .gallery-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .gallery-actions {
+        align-self: flex-start;
+    }
+    
+    .gallery-filters .row {
+        flex-direction: column;
+    }
+    
+    .templates-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .template-actions {
+        flex-direction: column;
+    }
+    
+    .template-actions .btn {
+        width: 100%;
+    }
+    
+    .blocks-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Animation */
+@keyframes templateAdded {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.template-added {
+    animation: templateAdded 0.5s ease;
+}
+
+@keyframes filterChange {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.filter-changing {
+    animation: filterChange 0.3s ease;
+}
+</style>
+
+<script>
+// Template Gallery JavaScript
+window.TemplateGallery = {
+    currentTemplate: null,
+    selectedBlocks: [],
+    
+    // Initialize gallery
+    init: function() {
+        this.bindEvents();
+        this.loadTemplates();
+    },
+    
+    // Bind event listeners
+    bindEvents: function() {
+        // Block selection in creator
+        document.addEventListener('change', (e) => {
+            if (e.target.matches('input[name="blocks[]"]')) {
+                this.updateSelectedBlocks();
+                this.updatePreview();
+            }
+        });
+        
+        // Tab changes
+        document.addEventListener('shown.bs.tab', (e) => {
+            if (e.target.matches('#template-tabs button')) {
+                this.onTabChange(e.target.dataset.bsTarget);
+            }
+        });
+    },
+    
+    // Load templates
+    loadTemplates: async function() {
+        try {
+            const response = await fetch('/personal_space/templates');
+            if (response.ok) {
+                const data = await response.json();
+                this.renderTemplates(data);
+            }
+        } catch (error) {
+            console.error('Error loading templates:', error);
+        }
+    },
+    
+    // Render templates
+    renderTemplates: function(data) {
+        // This would update the template grids
+        // For now, templates are rendered server-side
+    },
+    
+    // Filter templates
+    filterTemplates: function(query) {
+        const templates = document.querySelectorAll('.template-card');
+        const searchTerm = query.toLowerCase();
+        
+        templates.forEach(template => {
+            const name = template.querySelector('.template-name')?.textContent.toLowerCase() || '';
+            const description = template.querySelector('.template-description')?.textContent.toLowerCase() || '';
+            
+            if (name.includes(searchTerm) || description.includes(searchTerm)) {
+                template.style.display = 'block';
+            } else {
+                template.style.display = 'none';
+            }
+        });
+    },
+    
+    // Filter by category
+    filterByCategory: function(category) {
+        const templates = document.querySelectorAll('.template-card');
+        
+        templates.forEach(template => {
+            const templateCategory = template.dataset.category;
+            
+            if (!category || templateCategory === category) {
+                template.style.display = 'block';
+            } else {
+                template.style.display = 'none';
+            }
+        });
+    },
+    
+    // Sort templates
+    sortTemplates: function(sortBy) {
+        const container = document.querySelector('.templates-grid');
+        const templates = Array.from(container.querySelectorAll('.template-card'));
+        
+        templates.sort((a, b) => {
+            switch (sortBy) {
+                case 'name':
+                    return a.querySelector('.template-name').textContent.localeCompare(
+                        b.querySelector('.template-name').textContent
+                    );
+                case 'recent':
+                    // Sort by data-created or similar attribute
+                    return new Date(b.dataset.created || 0) - new Date(a.dataset.created || 0);
+                case 'rating':
+                    return (parseFloat(b.dataset.rating) || 0) - (parseFloat(a.dataset.rating) || 0);
+                case 'popular':
+                default:
+                    return (parseInt(b.dataset.usageCount) || 0) - (parseInt(a.dataset.usageCount) || 0);
+            }
+        });
+        
+        // Re-append sorted templates
+        templates.forEach(template => container.appendChild(template));
+    },
+    
+    // Tab change handler
+    onTabChange: function(target) {
+        // Load different template sets based on tab
+        switch (target) {
+            case '#community-templates':
+                this.loadCommunityTemplates();
+                break;
+            case '#my-templates':
+                this.loadUserTemplates();
+                break;
+            default:
+                this.loadFeaturedTemplates();
+        }
+    },
+    
+    // Load community templates
+    loadCommunityTemplates: async function() {
+        // Implementation for loading community templates
+    },
+    
+    // Load user templates
+    loadUserTemplates: async function() {
+        // Implementation for loading user templates
+    },
+    
+    // Load featured templates
+    loadFeaturedTemplates: async function() {
+        // Implementation for loading featured templates
+    },
+    
+    // Open template creator
+    openTemplateCreator: function() {
+        const modal = new bootstrap.Modal(document.getElementById('template-creator-modal'));
+        modal.show();
+        
+        // Reset form
+        document.getElementById('template-creator-form').reset();
+        this.selectedBlocks = [];
+        this.updatePreview();
+    },
+    
+    // Update selected blocks
+    updateSelectedBlocks: function() {
+        const checkboxes = document.querySelectorAll('input[name="blocks[]"]');
+        this.selectedBlocks = Array.from(checkboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+    },
+    
+    // Update preview
+    updatePreview: function() {
+        const container = document.getElementById('template-preview-container');
+        
+        if (this.selectedBlocks.length === 0) {
+            container.innerHTML = `
+                <div class="preview-placeholder">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                    <p>Selecciona bloques para ver la vista previa</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Create preview grid
+        const previewGrid = document.createElement('div');
+        previewGrid.className = 'preview-grid';
+        previewGrid.style.cssText = `
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            padding: 1rem;
+            background: #ffffff;
+            border-radius: 8px;
+        `;
+        
+        this.selectedBlocks.forEach((blockType, index) => {
+            const blockPreview = document.createElement('div');
+            blockPreview.className = 'block-preview';
+            blockPreview.style.cssText = `
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 6px;
+                padding: 1rem;
+                color: white;
+                text-align: center;
+                font-size: 0.75rem;
+                min-height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                gap: 0.25rem;
+            `;
+            
+            const icons = {
+                nota: 'bi-file-text',
+                tarea: 'bi-check-square',
+                objetivo: 'bi-target',
+                kanban: 'bi-kanban'
+            };
+            
+            blockPreview.innerHTML = `
+                <i class="${icons[blockType] || 'bi-square'}"></i>
+                <span>${blockType.charAt(0).toUpperCase() + blockType.slice(1)}</span>
+            `;
+            
+            previewGrid.appendChild(blockPreview);
+        });
+        
+        container.innerHTML = '';
+        container.appendChild(previewGrid);
+    },
+    
+    // Create template
+    createTemplate: async function(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        const templateData = {
+            name: formData.get('name'),
+            description: formData.get('description'),
+            category: formData.get('category'),
+            blocks: this.selectedBlocks,
+            grid_size: formData.get('grid_size'),
+            auto_arrange: formData.has('auto_arrange'),
+            visibility: formData.get('visibility')
+        };
+        
+        try {
+            const response = await fetch('/personal_space/templates', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify(templateData)
+            });
+            
+            if (response.ok) {
+                const template = await response.json();
+                
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('template-creator-modal'));
+                modal.hide();
+                
+                // Refresh templates
+                this.loadTemplates();
+                
+                // Show success message
+                alert('Plantilla creada exitosamente!');
+            } else {
+                throw new Error('Failed to create template');
+            }
+        } catch (error) {
+            console.error('Error creating template:', error);
+            alert('Error al crear la plantilla. Inténtalo de nuevo.');
+        }
+    },
+    
+    // Preview template
+    previewTemplate: async function(templateId) {
+        try {
+            const response = await fetch(`/personal_space/templates/${templateId}`);
+            if (response.ok) {
+                const template = await response.json();
+                this.showTemplatePreview(template);
+            }
+        } catch (error) {
+            console.error('Error loading template:', error);
+        }
+    },
+    
+    // Show template preview
+    showTemplatePreview: function(template) {
+        this.currentTemplate = template;
+        
+        const modal = new bootstrap.Modal(document.getElementById('template-preview-modal'));
+        const content = document.getElementById('template-preview-content');
+        
+        // Update modal title
+        document.querySelector('#template-preview-modal .modal-title').textContent = template.name;
+        
+        // Render template preview
+        content.innerHTML = `
+            <div class="template-preview-full">
+                <div class="template-info mb-4">
+                    <h4>${template.name}</h4>
+                    <p class="text-muted">${template.description || 'Sin descripción'}</p>
+                    
+                    <div class="template-meta d-flex gap-3 mt-3">
+                        <span class="badge bg-primary">${template.category}</span>
+                        <span class="text-muted"><i class="bi bi-download me-1"></i>${template.usage_count || 0} usos</span>
+                        ${template.rating ? `<span class="text-muted"><i class="bi bi-star-fill me-1"></i>${template.rating}/5</span>` : ''}
+                    </div>
+                </div>
+                
+                <div class="template-blocks">
+                    <h5>Bloques incluidos:</h5>
+                    <div class="blocks-preview">
+                        ${template.blocks.map(block => `
+                            <div class="block-preview-item">
+                                <i class="${
+                                    {
+                                        nota: 'bi-file-text',
+                                        tarea: 'bi-check-square',
+                                        objetivo: 'bi-target',
+                                        kanban: 'bi-kanban'
+                                    }[block] || 'bi-square'
+                                }"></i>
+                                <span>${block.charAt(0).toUpperCase() + block.slice(1)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        modal.show();
+    },
+    
+    // Use template
+    useTemplate: async function(templateId) {
+        try {
+            const response = await fetch(`/personal_space/templates/${templateId}/use`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                }
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                
+                // Redirect to new workspace
+                window.location.href = `/personal_space/workspace/${result.workspace_id}`;
+            } else {
+                throw new Error('Failed to use template');
+            }
+        } catch (error) {
+            console.error('Error using template:', error);
+            alert('Error al usar la plantilla. Inténtalo de nuevo.');
+        }
+    },
+    
+    // Use current template (from preview modal)
+    useCurrentTemplate: function() {
+        if (this.currentTemplate) {
+            this.useTemplate(this.currentTemplate.id);
+        }
+    },
+    
+    // Share current template
+    shareCurrentTemplate: function() {
+        if (this.currentTemplate) {
+            this.shareTemplate(this.currentTemplate.id);
+        }
+    },
+    
+    // Share template
+    shareTemplate: function(templateId) {
+        const url = `${window.location.origin}/personal_space/templates/${templateId}`;
+        
+        if (navigator.share) {
+            navigator.share({
+                title: 'Plantilla de Personal Space',
+                url: url
+            });
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Enlace copiado al portapapeles');
+            });
+        }
+    },
+    
+    // Favorite template
+    favoriteTemplate: async function(templateId) {
+        try {
+            await fetch(`/personal_space/templates/${templateId}/favorite`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': this.getCSRFToken()
+                }
+            });
+        } catch (error) {
+            console.error('Error favoriting template:', error);
+        }
+    },
+    
+    // Edit template
+    editTemplate: function(templateId) {
+        // Load template data into creator modal
+        this.loadTemplateForEdit(templateId);
+    },
+    
+    // Delete template
+    deleteTemplate: async function(templateId) {
+        if (!confirm('¿Estás seguro de que quieres eliminar esta plantilla?')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/personal_space/templates/${templateId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': this.getCSRFToken()
+                }
+            });
+            
+            if (response.ok) {
+                // Remove from DOM
+                const templateCard = document.querySelector(`[data-template-id="${templateId}"]`);
+                if (templateCard) {
+                    templateCard.remove();
+                }
+            }
+        } catch (error) {
+            console.error('Error deleting template:', error);
+            alert('Error al eliminar la plantilla.');
+        }
+    },
+    
+    // Import template
+    importTemplate: function() {
+        // Create file input for template import
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                this.processTemplateImport(file);
+            }
+        };
+        input.click();
+    },
+    
+    // Process template import
+    processTemplateImport: function(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const templateData = JSON.parse(e.target.result);
+                this.createImportedTemplate(templateData);
+            } catch (error) {
+                alert('Error al leer el archivo de plantilla.');
+            }
+        };
+        reader.readAsText(file);
+    },
+    
+    // Create imported template
+    createImportedTemplate: async function(templateData) {
+        try {
+            const response = await fetch('/personal_space/templates/import', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify(templateData)
+            });
+            
+            if (response.ok) {
+                this.loadTemplates();
+                alert('Plantilla importada exitosamente!');
+            }
+        } catch (error) {
+            console.error('Error importing template:', error);
+            alert('Error al importar la plantilla.');
+        }
+    },
+    
+    // Utility functions
+    getCSRFToken: function() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    }
+};
+
+// Global functions for template usage
+window.filterTemplates = function(query) {
+    window.TemplateGallery.filterTemplates(query);
+};
+
+window.filterByCategory = function(category) {
+    window.TemplateGallery.filterByCategory(category);
+};
+
+window.sortTemplates = function(sortBy) {
+    window.TemplateGallery.sortTemplates(sortBy);
+};
+
+window.openTemplateCreator = function() {
+    window.TemplateGallery.openTemplateCreator();
+};
+
+window.createTemplate = function(event) {
+    window.TemplateGallery.createTemplate(event);
+};
+
+window.previewTemplate = function(templateId) {
+    window.TemplateGallery.previewTemplate(templateId);
+};
+
+window.useTemplate = function(templateId) {
+    window.TemplateGallery.useTemplate(templateId);
+};
+
+window.useCurrentTemplate = function() {
+    window.TemplateGallery.useCurrentTemplate();
+};
+
+window.shareCurrentTemplate = function() {
+    window.TemplateGallery.shareCurrentTemplate();
+};
+
+window.shareTemplate = function(templateId) {
+    window.TemplateGallery.shareTemplate(templateId);
+};
+
+window.favoriteTemplate = function(templateId) {
+    window.TemplateGallery.favoriteTemplate(templateId);
+};
+
+window.editTemplate = function(templateId) {
+    window.TemplateGallery.editTemplate(templateId);
+};
+
+window.deleteTemplate = function(templateId) {
+    window.TemplateGallery.deleteTemplate(templateId);
+};
+
+window.importTemplate = function() {
+    window.TemplateGallery.importTemplate();
+};
+
+window.previewTemplateCreation = function() {
+    window.TemplateGallery.updatePreview();
+};
+
+// Mock functions for featured templates
+window.get_featured_templates = function() {
+    return [
+        {
+            id: 'featured-1',
+            name: 'Dashboard de Productividad',
+            description: 'Un workspace completo para gestionar tareas, objetivos y notas',
+            category: 'productivity',
+            blocks: ['tarea', 'objetivo', 'nota'],
+            rating: 4.8,
+            rating_count: 156,
+            usage_count: 1240,
+            icon: 'bi-speedometer2'
+        },
+        {
+            id: 'featured-2',
+            name: 'Planificador Semanal',
+            description: 'Organiza tu semana con tareas y seguimiento de objetivos',
+            category: 'planning',
+            blocks: ['tarea', 'kanban'],
+            rating: 4.6,
+            rating_count: 89,
+            usage_count: 567,
+            icon: 'bi-calendar-week'
+        }
+    ];
+};
+
+window.get_community_templates = function() {
+    return [];
+};
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    window.TemplateGallery.init();
+});
+</script>
