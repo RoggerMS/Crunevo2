@@ -1,6 +1,8 @@
 /* Personal Space - Optimized CSS Architecture */
 
-/* ===== CSS VARIABLES ===== */
+/* ==========================================================================
+   CSS Variables and Design System
+   ========================================================================== */
 :root {
   /* Colors */
   --ps-primary: #667eea;
@@ -12,7 +14,7 @@
   --ps-info: #4299e1;
   
   /* Gradients */
-  --ps-gradient-primary: linear-gradient(135deg, var(--ps-primary) 0%, var(--ps-primary-dark) 100%);
+  --ps-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --ps-gradient-success: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
   --ps-gradient-warning: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
   --ps-gradient-info: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
@@ -35,52 +37,24 @@
   --ps-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
   --ps-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
   --ps-shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.2);
-  --ps-shadow-primary: 0 4px 15px rgba(102, 126, 234, 0.3);
-  
-  /* Typography */
-  --ps-font-size-xs: 0.75rem;
-  --ps-font-size-sm: 0.875rem;
-  --ps-font-size-base: 1rem;
-  --ps-font-size-lg: 1.125rem;
-  --ps-font-size-xl: 1.25rem;
-  --ps-font-size-2xl: 1.5rem;
-  --ps-font-size-3xl: 2rem;
   
   /* Transitions */
-  --ps-transition-fast: 0.15s ease;
-  --ps-transition-base: 0.2s ease;
-  --ps-transition-slow: 0.3s ease;
+  --ps-transition-fast: 0.2s ease;
+  --ps-transition-normal: 0.3s ease;
+  --ps-transition-slow: 0.5s ease;
 }
 
-/* ===== UTILITY CLASSES ===== */
-.ps-gradient-primary { background: var(--ps-gradient-primary); }
-.ps-gradient-success { background: var(--ps-gradient-success); }
-.ps-gradient-warning { background: var(--ps-gradient-warning); }
-.ps-gradient-info { background: var(--ps-gradient-info); }
+/* ==========================================================================
+   Base Components
+   ========================================================================== */
 
-.ps-shadow-sm { box-shadow: var(--ps-shadow-sm); }
-.ps-shadow-md { box-shadow: var(--ps-shadow-md); }
-.ps-shadow-lg { box-shadow: var(--ps-shadow-lg); }
-.ps-shadow-primary { box-shadow: var(--ps-shadow-primary); }
-
-.ps-radius-sm { border-radius: var(--ps-radius-sm); }
-.ps-radius-md { border-radius: var(--ps-radius-md); }
-.ps-radius-lg { border-radius: var(--ps-radius-lg); }
-.ps-radius-xl { border-radius: var(--ps-radius-xl); }
-
-.ps-transition { transition: all var(--ps-transition-base); }
-.ps-transition-fast { transition: all var(--ps-transition-fast); }
-.ps-transition-slow { transition: all var(--ps-transition-slow); }
-
-/* ===== COMPONENT OPTIMIZATIONS ===== */
-
-/* Base Block Optimizations */
+/* Base Block Styles */
 .base-block {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: var(--ps-radius-md);
   box-shadow: var(--ps-shadow-sm);
-  transition: all var(--ps-transition-base);
+  transition: var(--ps-transition-fast);
   position: relative;
   overflow: hidden;
 }
@@ -94,48 +68,51 @@
   opacity: 1;
 }
 
-/* Button Optimizations */
-.btn-ps-primary {
-  background: var(--ps-gradient-primary);
-  border: none;
-  color: white;
-  padding: 0.75rem 1.5rem;
+/* Block Header */
+.block-header {
+  border-bottom: 1px solid #f1f5f9;
+  padding: var(--ps-spacing-lg);
+}
+
+.block-icon {
+  width: 48px;
+  height: 48px;
   border-radius: var(--ps-radius-md);
-  font-weight: 600;
-  transition: all var(--ps-transition-slow);
-  box-shadow: var(--ps-shadow-primary);
-}
-
-.btn-ps-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
   color: white;
 }
 
-.btn-ps-secondary {
-  background: white;
-  color: var(--ps-primary);
-  border: 2px solid var(--ps-primary);
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--ps-radius-md);
-  font-weight: 600;
-  transition: all var(--ps-transition-slow);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+.block-icon.primary { background: var(--ps-gradient-primary); }
+.block-icon.success { background: var(--ps-gradient-success); }
+.block-icon.warning { background: var(--ps-gradient-warning); }
+.block-icon.info { background: var(--ps-gradient-info); }
+
+/* Block Content */
+.block-content {
+  padding: var(--ps-spacing-lg);
 }
 
-.btn-ps-secondary:hover {
-  background: var(--ps-primary);
-  color: white;
-  transform: translateY(-2px);
+/* Block Footer */
+.block-footer {
+  padding: var(--ps-spacing-lg);
+  padding-top: 0;
+  border-top: 1px solid #f1f5f9;
 }
+
+/* ==========================================================================
+   Button Components
+   ========================================================================== */
 
 .btn-ghost {
   background: transparent;
   border: none;
   color: #6b7280;
-  padding: 0.375rem;
+  padding: var(--ps-spacing-sm);
   border-radius: var(--ps-radius-sm);
-  transition: all var(--ps-transition-base);
+  transition: var(--ps-transition-fast);
 }
 
 .btn-ghost:hover {
@@ -143,68 +120,453 @@
   color: #374151;
 }
 
-/* Card Optimizations */
-.ps-card {
+.quick-action-btn {
+  background: var(--ps-gradient-primary);
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--ps-radius-md);
+  font-weight: 600;
+  transition: var(--ps-transition-normal);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.quick-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  color: white;
+}
+
+.quick-action-btn.secondary {
+  background: #ffffff;
+  color: var(--ps-primary);
+  border: 2px solid var(--ps-primary);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+.quick-action-btn.secondary:hover {
+  background: var(--ps-primary);
+  color: white;
+}
+
+/* ==========================================================================
+   Layout Components
+   ========================================================================== */
+
+/* Dashboard Layout */
+.dashboard-container {
+  background: var(--ps-gradient-primary);
+  min-height: 100vh;
+  padding: 0;
+}
+
+.dashboard-content {
+  background: var(--ps-secondary);
+  border-radius: var(--ps-radius-xl) var(--ps-radius-xl) 0 0;
+  margin-top: var(--ps-spacing-xl);
+  min-height: calc(100vh - 2rem);
+  padding: var(--ps-spacing-xl);
+  position: relative;
+}
+
+.dashboard-header {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: var(--ps-radius-lg);
+  padding: var(--ps-spacing-xl);
+  margin-bottom: var(--ps-spacing-xl);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+/* Workspace Layout */
+.workspace-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--ps-spacing-lg);
+  padding: var(--ps-spacing-lg);
+}
+
+.workspace-item {
   background: white;
   border-radius: var(--ps-radius-md);
-  border: 1px solid #e2e8f0;
-  box-shadow: var(--ps-shadow-sm);
-  transition: all var(--ps-transition-slow);
-  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  transition: var(--ps-transition-fast);
 }
 
-.ps-card:hover {
-  transform: translateY(-2px);
+.workspace-item:hover {
   box-shadow: var(--ps-shadow-md);
+  transform: translateY(-1px);
 }
 
-.ps-card-header {
-  padding: var(--ps-spacing-lg);
-  border-bottom: 1px solid #e2e8f0;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+/* ==========================================================================
+   Widget Components
+   ========================================================================== */
+
+/* Stats Cards */
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--ps-spacing-lg);
+  margin-bottom: var(--ps-spacing-xl);
 }
 
-.ps-card-body {
-  padding: var(--ps-spacing-lg);
-}
-
-.ps-card-footer {
-  padding: var(--ps-spacing-lg);
-  border-top: 1px solid #e2e8f0;
-  background: #f8fafc;
-}
-
-/* Tag and Badge Optimizations */
-.tag-pill {
-  font-size: var(--ps-font-size-xs);
-  padding: var(--ps-spacing-xs) var(--ps-spacing-sm);
+.stat-card {
+  background: #ffffff;
   border-radius: var(--ps-radius-md);
-  background: rgba(102, 126, 234, 0.1);
-  color: var(--ps-primary);
-  border: none;
+  padding: var(--ps-spacing-lg);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: var(--ps-transition-normal);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #718096;
   font-weight: 500;
 }
 
+/* Block Factory */
+.block-factory {
+  padding: var(--ps-spacing-lg);
+}
+
+.factory-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--ps-spacing-xl);
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ps-spacing-sm);
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #718096;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  transition: var(--ps-transition-fast);
+}
+
+.step.active .step-number {
+  background: var(--ps-gradient-primary);
+  color: white;
+}
+
+.block-types-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--ps-spacing-lg);
+}
+
+.block-type-card {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: var(--ps-radius-md);
+  padding: var(--ps-spacing-lg);
+  cursor: pointer;
+  transition: var(--ps-transition-fast);
+}
+
+.block-type-card:hover {
+  border-color: var(--ps-primary);
+  box-shadow: var(--ps-shadow-md);
+  transform: translateY(-2px);
+}
+
+.block-type-card.selected {
+  border-color: var(--ps-primary);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+}
+
+/* ==========================================================================
+   Form Components
+   ========================================================================== */
+
+.form-group {
+  margin-bottom: var(--ps-spacing-lg);
+}
+
+.form-label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: var(--ps-spacing-sm);
+  display: block;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: var(--ps-radius-sm);
+  transition: var(--ps-transition-fast);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--ps-primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+/* Tags and Pills */
+.tag-pill {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--ps-radius-md);
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--ps-primary);
+}
+
+.feature-tag {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--ps-radius-sm);
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* Priority Indicators */
 .priority-alta { color: var(--ps-danger); }
 .priority-media { color: var(--ps-warning); }
 .priority-baja { color: var(--ps-accent); }
+.priority-urgente { color: #dc2626; }
 
 /* Status Indicators */
 .status-indicator {
   display: inline-flex;
   align-items: center;
   gap: var(--ps-spacing-xs);
-  font-size: var(--ps-font-size-sm);
-  font-weight: 500;
 }
 
 /* Progress Indicators */
 .progress-indicator {
-  width: 60px;
-  height: 4px;
-  background: #e2e8f0;
-  border-radius: 2px;
+  background: #f1f5f9;
+  border-radius: var(--ps-radius-sm);
   overflow: hidden;
 }
 
-.progress-indicator .progress-bar {
+.progress-bar {
+  height: 100%;
+  background: var(--ps-gradient-success);
+  transition: width var(--ps-transition-normal);
+}
+
+/* Drag and Drop */
+.drag-handle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: var(--ps-spacing-sm);
+  opacity: 0;
+  transition: opacity var(--ps-transition-fast);
+  cursor: grab;
+}
+
+.dragging {
+  opacity: 0.7;
+  transform: rotate(5deg);
+}
+
+.drop-zone {
+  border: 2px dashed var(--ps-primary);
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: var(--ps-radius-md);
+  padding: var(--ps-spacing-xl);
+  text-align: center;
+  color: var(--ps-primary);
+}
+
+.drop-zone.active {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: var(--ps-primary-dark);
+}
+
+/* ==========================================================================
+   Block Type Specific Styles
+   ========================================================================== */
+
+.block-type-tarea {
+  border-left: 4px solid var(--ps-info);
+}
+
+.block-type-nota {
+  border-left: 4px solid var(--ps-accent);
+}
+
+.block-type-objetivo {
+  border-left: 4px solid var(--ps-warning);
+}
+
+.block-type-kanban {
+  border-left: 4px solid var(--ps-primary);
+}
+
+.block-type-calendario {
+  border-left: 4px solid var(--ps-danger);
+}
+
+.block-type-habito {
+  border-left: 4px solid #8b5cf6;
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .dashboard-sections {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-overview {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  
+  .block-types-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-content {
+    padding: var(--ps-spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-overview {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-actions {
+    flex-direction: column;
+    gap: var(--ps-spacing-sm);
+  }
+  
+  .welcome-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ps-spacing-lg);
+  }
+}
+
+/* ==========================================================================
+   Animation and Transitions
+   ========================================================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* ==========================================================================
+   Dark Mode Support (Future Enhancement)
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ps-secondary: #1a202c;
+    --ps-text-primary: #f7fafc;
+    --ps-text-secondary: #a0aec0;
+  }
+  
+  .base-block {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: var(--ps-text-primary);
+  }
+  
+  .dashboard-content {
+    background: #1a202c;
+  }
+  
+  .stat-card {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: var(--ps-text-primary);
+  }
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+  .dashboard-container {
+    background: white !important;
+  }
+  
+  .base-block {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+  
+  .quick-action-btn,
+  .btn-ghost,
+  .drag-handle {
+    display: none !important;
+  }
+}
