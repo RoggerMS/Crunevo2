@@ -51,13 +51,18 @@ def dashboard():
     )
     recent_blocks = blocks[:5]
 
-    def moment_stub() -> SimpleNamespace:
-        current_time = datetime.utcnow()
+    def moment_stub(dt: datetime | None = None) -> SimpleNamespace:
+        current_time = dt or datetime.utcnow()
 
         def _format(fmt: str | None = None) -> str:
             return current_time.strftime("%Y-%m-%d")
 
-        return SimpleNamespace(hour=current_time.hour, format=_format)
+        def _from_now() -> str:
+            return "hace un momento"
+
+        return SimpleNamespace(
+            hour=current_time.hour, format=_format, fromNow=_from_now
+        )
 
     return render_template(
         "personal_space/dashboard.html",

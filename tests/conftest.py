@@ -19,10 +19,12 @@ def app():
     os.environ["DATABASE_URL"] = "sqlite:///:memory:"
     os.environ["ENABLE_TALISMAN"] = "0"
     os.environ["RATELIMIT_STORAGE_URI"] = "memory://"
+    os.environ["FLASK_ENV"] = "development"
     app = create_app()
     app.config["TESTING"] = True
     app.config["MAIL_SUPPRESS_SEND"] = True
     app.config["WTF_CSRF_ENABLED"] = False
+    app.config["SESSION_COOKIE_SECURE"] = False
     mail.init_app(app)
     with app.app_context():
         db.create_all()

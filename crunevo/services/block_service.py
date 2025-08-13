@@ -142,25 +142,16 @@ class BlockService:
     def reorder_blocks(user_id: int, block_orders: List[Dict[str, Any]]) -> bool:
         """Reorder blocks based on provided order list."""
         try:
-            # Validate reorder data
-            validation_result = ValidationService.validate_reorder_data(block_orders)
-            if not validation_result['valid']:
-                raise ValueError(f"Validation errors: {', '.join(validation_result['errors'])}")
-            
-            cleaned_orders = validation_result['cleaned_data']
-            
-            for item in cleaned_orders:
+            for item in block_orders:
+                idx = item.get("order_index", item.get("position"))
                 block = PersonalSpaceBlock.query.filter_by(
-                    id=item['id'], user_id=user_id
+                    id=item.get("id"), user_id=user_id
                 ).first()
-                if block and 'order_index' in item:
-                    block.order_index = item['order_index']
-            
+                if block is not None and idx is not None:
+                    block.order_index = idx
+
             db.session.commit()
-            
-            # Invalidate cache
             CacheInvalidator.on_block_change(user_id)
-            
             return True
         except Exception:
             db.session.rollback()

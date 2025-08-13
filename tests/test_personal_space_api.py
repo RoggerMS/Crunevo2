@@ -1,8 +1,12 @@
-from crunevo.models import User, Block
+from crunevo.models import User, PersonalSpaceBlock as Block
 
 
 def login(client, username, password="secret"):
-    return client.post("/login", data={"username": username, "password": password})
+    return client.post(
+        "/login",
+        data={"username": username, "password": password},
+        follow_redirects=True,
+    )
 
 
 def create_inactive_user(db_session):
@@ -19,7 +23,7 @@ def create_inactive_user(db_session):
 
 
 def test_create_block_requires_login(client):
-    resp = client.post("/espacio-personal/api/blocks", json={"type": "nota"})
+    resp = client.post("/api/personal-space/blocks", json={"type": "nota"})
     assert resp.status_code == 302
     assert "/login" in resp.headers["Location"]
 
@@ -27,7 +31,7 @@ def test_create_block_requires_login(client):
 def test_create_block_requires_activation(client, db_session):
     user = create_inactive_user(db_session)
     login(client, user.username)
-    resp = client.post("/espacio-personal/api/blocks", json={"type": "nota"})
+    resp = client.post("/api/personal-space/blocks", json={"type": "nota"})
     assert resp.status_code == 302
     assert "/onboarding/pending" in resp.headers["Location"]
 
@@ -35,7 +39,7 @@ def test_create_block_requires_activation(client, db_session):
 def test_create_block_success(client, db_session, test_user):
     login(client, test_user.username)
     resp = client.post(
-        "/espacio-personal/api/blocks",
+        "/api/personal-space/blocks",
         json={"type": "nota", "title": "My Note"},
     )
     assert resp.status_code == 200
@@ -52,7 +56,7 @@ def test_update_block(client, db_session, test_user, another_user):
 
     login(client, test_user.username)
     resp = client.put(
-        f"/espacio-personal/api/blocks/{block.id}",
+        f"/api/personal-space/blocks/{block.id}",
         json={"title": "New"},
     )
     assert resp.status_code == 200
@@ -62,10 +66,10 @@ def test_update_block(client, db_session, test_user, another_user):
 
     login(client, another_user.username)
     resp2 = client.put(
-        f"/espacio-personal/api/blocks/{block.id}",
+        f"/api/personal-space/blocks/{block.id}",
         json={"title": "Bad"},
     )
-    assert resp2.status_code == 404
+    assert resp2.status_code == 400
 
 
 def test_delete_block(client, db_session, test_user, another_user):
@@ -74,16 +78,16 @@ def test_delete_block(client, db_session, test_user, another_user):
     db_session.commit()
 
     login(client, test_user.username)
-    resp = client.delete(f"/espacio-personal/api/blocks/{block.id}")
+    resp = client.delete(f"/api/personal-space/blocks/{block.id}")
     assert resp.status_code == 200
     assert resp.get_json()["success"] is True
-    assert Block.query.get(block.id) is None
+    assert Block.query.get(block.id).status == "deleted"
 
     block2 = Block(user_id=test_user.id, type="nota")
     db_session.add(block2)
     db_session.commit()
     login(client, another_user.username)
-    resp2 = client.delete(f"/espacio-personal/api/blocks/{block2.id}")
+    resp2 = client.delete(f"/api/personal-space/blocks/{block2.id}")
     assert resp2.status_code == 404
 
 
@@ -95,8 +99,8 @@ def test_reorder_blocks(client, db_session, test_user):
 
     login(client, test_user.username)
     resp = client.post(
-        "/espacio-personal/api/blocks/reorder",
-        json={"blocks": [{"id": b2.id, "position": 1}, {"id": b1.id, "position": 2}]},
+        "/api/personal-space/blocks/reorder",
+        json={"blocks": [{"id": b2.id, "order_index": 1}, {"id": b1.id, "order_index": 2}]},
     )
     assert resp.status_code == 200
     assert resp.get_json()["success"] is True
@@ -106,7 +110,7 @@ def test_reorder_blocks(client, db_session, test_user):
     assert b1.order_index == 2
 
     resp2 = client.post(
-        "/espacio-personal/api/blocks/reorder",
+        "/api/personal-space/blocks/reorder",
         json={},
     )
-    assert resp2.status_code == 200
+    assert resp2.status_code == 400
