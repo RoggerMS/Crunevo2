@@ -40,8 +40,30 @@ def dashboard():
         def moment_fn():
             return SimpleNamespace(hour=datetime.utcnow().hour)
 
+    stats = AnalyticsService.get_productivity_metrics(current_user.id)
+    pending_tasks_count = (
+        stats.get("task_completion", {}).get("total_tasks", 0)
+        - stats.get("task_completion", {}).get("completed_tasks", 0)
+    )
+    active_objectives = stats.get("objective_progress", {}).get("total_objectives", 0)
+    objective_progress_avg = stats.get("objective_progress", {}).get(
+        "average_progress", 0
+    )
+    productivity_trend = stats.get("productivity_trends", {}).get(
+        "weekly_average", 0
+    )
+
     return render_template(
-        "personal_space/dashboard.html", user=current_user, moment=moment_fn
+        "personal_space/dashboard.html",
+        user=current_user,
+        moment=moment_fn,
+        pending_tasks_count=pending_tasks_count,
+        active_objectives=active_objectives,
+        objective_progress_avg=objective_progress_avg,
+        productive_hours_today=0,
+        productivity_trend=productivity_trend,
+        focus_score=0,
+        focus_trend=0,
     )
 
 
