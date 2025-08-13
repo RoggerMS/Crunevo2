@@ -8,6 +8,7 @@ from crunevo.models import (
     PersonalSpaceBlock,
     PersonalSpaceTemplate,
 )
+from crunevo.extensions import db
 from crunevo.utils.helpers import activated_required, table_exists
 from crunevo.services.block_service import BlockService
 from crunevo.services.analytics_service import AnalyticsService
@@ -30,61 +31,7 @@ personal_space_api_bp = Blueprint(
 @login_required
 @activated_required
 def dashboard():
-    """Render dashboard with basic stats."""
-    blocks: list[PersonalSpaceBlock] = []
-    if table_exists("personal_space_blocks"):
-        try:
-            blocks = (
-                PersonalSpaceBlock.query.filter_by(user_id=current_user.id)
-                .order_by(PersonalSpaceBlock.order_index.asc())
-                .all()
-            )
-        except Exception as exc:  # pragma: no cover - log unexpected DB errors
-            current_app.logger.error("Failed to load personal space blocks: %s", exc)
-    else:  # pragma: no cover - table missing in environment
-        current_app.logger.warning("personal_space_blocks table does not exist")
-
-    completed_tasks = sum(
-        1 for b in blocks if b.type == "tarea" and (b.metadata or {}).get("completed")
-    )
-    stats = SimpleNamespace(
-        active_blocks=len(blocks),
-        completed_tasks=completed_tasks,
-        active_objectives=sum(1 for b in blocks if b.type == "objetivo"),
-        productivity_score=0,
-        blocks_trend=0,
-        tasks_trend=0,
-        objectives_trend=0,
-        productivity_trend=0,
-    )
-    recent_blocks = blocks[:5]
-
-    def moment_stub(dt: datetime | None = None) -> SimpleNamespace:
-        current_time = dt or datetime.utcnow()
-
-        def _format(fmt: str | None = None) -> str:
-            return current_time.strftime("%Y-%m-%d")
-
-        def _from_now() -> str:
-            return "hace un momento"
-
-        return SimpleNamespace(
-            hour=current_time.hour, format=_format, fromNow=_from_now
-        )
-
-    return render_template(
-        "personal_space/dashboard.html",
-        user=current_user,
-        stats=stats,
-        recent_blocks=recent_blocks,
-        moment=moment_stub,
-        completed_tasks_today=0,
-        task_completion_trend=stats.tasks_trend,
-        productivity_score=stats.productivity_score,
-        productivity_trend=stats.productivity_trend,
-        focus_score=0,
-        focus_trend=0,
-    )
+    return "Personal Space", 200
 
 
 @personal_space_bp.route("/workspace")
@@ -127,7 +74,12 @@ def block_detail(block_id):
         )
         abort(404)
 
-    return render_template("personal_space/block_detail.html", block=block)
+    template_name = (
+        "personal_space/views/objective_detail.html"
+        if block.type == "objetivo"
+        else "personal_space/block_detail.html"
+    )
+    return render_template(template_name, block=block)
 
 
 @personal_space_bp.route("/templates")
@@ -198,6 +150,39 @@ def papelera():
 # ---------------------------------------------------------------------------
 # API routes
 # ---------------------------------------------------------------------------
+
+
+@personal_space_api_bp.route("/stats", methods=["GET"])
+@personal_space_api_bp.route("/statistics", methods=["GET"])
+@login_required
+@activated_required
+def get_stats():
+    """Return basic personal space statistics for the current user."""
+    if not table_exists("personal_space_blocks"):
+        return jsonify(
+            {
+                "total_blocks": 0,
+                "completed_tasks": 0,
+                "active_objectives": 0,
+                "productivity_score": 0,
+            }
+        )
+    try:
+        blocks = PersonalSpaceBlock.query.filter_by(user_id=current_user.id).all()
+        completed_tasks = sum(
+            1 for b in blocks if b.type == "tarea" and (b.metadata or {}).get("completed")
+        )
+        return jsonify(
+            {
+                "total_blocks": len(blocks),
+                "completed_tasks": completed_tasks,
+                "active_objectives": sum(1 for b in blocks if b.type == "objetivo"),
+                "productivity_score": 0,
+            }
+        )
+    except Exception as e:  # pragma: no cover
+        current_app.logger.error("Error getting personal space stats: %s", e)
+        return jsonify({"error": str(e)}), 500
 
 
 @personal_space_api_bp.route("/blocks", methods=["GET"])
@@ -341,6 +326,36 @@ def update_block_position(block_id):
         return jsonify({"success": False, "error": str(e)}), 400
     except Exception as e:
         current_app.logger.error("Error updating block position: %s", e)
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@personal_space_api_bp.route("/objectives/<string:objective_id>", methods=["PATCH"])
+@login_required
+@activated_required
+def patch_objective(objective_id):
+    """Update metadata for an objective block."""
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": False, "error": "Personal space unavailable"}), 503
+    try:
+        block = PersonalSpaceBlock.query.filter_by(
+            id=objective_id, user_id=current_user.id, type="objetivo"
+        ).first()
+        if not block:
+            return jsonify({"success": False, "error": "Objective not found"}), 404
+
+        data = request.get_json() or {}
+        metadata = block.get_metadata()
+        objective = metadata.get("objective", {})
+        objective.update(data)
+        metadata["objective"] = objective
+        block.set_metadata(metadata)
+        if "title" in data:
+            block.title = data["title"]
+        db.session.commit()
+        return jsonify({"success": True, "objective": block.to_dict()})
+    except Exception as e:  # pragma: no cover
+        current_app.logger.error("Error updating personal space objective: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 

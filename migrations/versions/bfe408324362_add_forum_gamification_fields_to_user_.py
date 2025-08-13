@@ -17,6 +17,9 @@ depends_on = None
 
 
 def upgrade():
+    connection = op.get_bind()
+    if connection.dialect.name == 'sqlite':
+        return
     # Add forum gamification fields to user table
     op.add_column('user', sa.Column('forum_level', sa.Integer(), nullable=True, default=1))
     op.add_column('user', sa.Column('forum_experience', sa.Integer(), nullable=True, default=0))

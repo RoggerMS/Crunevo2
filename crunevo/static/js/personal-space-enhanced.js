@@ -124,7 +124,7 @@ class PersonalSpaceManager {
    */
   async loadBlocks(retryCount = 0) {
     try {
-      const response = await this.apiCall('/espacio-personal/api/blocks', {
+      const response = await this.apiCall('/api/personal-space/blocks', {
         method: 'GET',
         timeout: this.config.apiTimeout
       });

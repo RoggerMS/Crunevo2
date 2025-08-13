@@ -1,5 +1,5 @@
 from flask import template_rendered
-from crunevo.models.block import Block
+from crunevo.models.personal_space_block import PersonalSpaceBlock
 
 
 def login(client, username, password="secret"):
@@ -7,7 +7,7 @@ def login(client, username, password="secret"):
 
 
 def test_objective_view_uses_template(client, app, db_session, test_user):
-    block = Block(user_id=test_user.id, type="objetivo", title="Obj")
+    block = PersonalSpaceBlock(user_id=test_user.id, type="objetivo", title="Obj")
     db_session.add(block)
     db_session.commit()
 
@@ -19,7 +19,7 @@ def test_objective_view_uses_template(client, app, db_session, test_user):
     template_rendered.connect(record, app)
     login(client, test_user.username)
     resp = client.get(
-        f"/espacio-personal/bloque/{block.id}",
+        f"/personal-space/block/{block.id}",
         environ_overrides={"wsgi.url_scheme": "https"},
     )
     template_rendered.disconnect(record, app)
@@ -29,13 +29,13 @@ def test_objective_view_uses_template(client, app, db_session, test_user):
 
 
 def test_patch_objective_persists(client, db_session, test_user):
-    block = Block(user_id=test_user.id, type="objetivo", title="Obj")
+    block = PersonalSpaceBlock(user_id=test_user.id, type="objetivo", title="Obj")
     db_session.add(block)
     db_session.commit()
 
     login(client, test_user.username)
     resp = client.patch(
-        f"/espacio-personal/api/objectives/{block.id}",
+        f"/api/personal-space/objectives/{block.id}",
         json={"title": "Nuevo"},
         environ_overrides={"wsgi.url_scheme": "https"},
     )
