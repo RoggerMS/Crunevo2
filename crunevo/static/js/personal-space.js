@@ -45,6 +45,12 @@ function initializePersonalSpace() {
         initializeSortable();
         initializeEventListeners();
         initializeAutoSave();
+        
+        // Initialize BlockFactory if available
+        if (typeof window.BlockFactory !== 'undefined' && window.BlockFactory.init) {
+            window.BlockFactory.init();
+            console.log('BlockFactory initialized');
+        }
 
         // Ensure modals are not constrained by parent containers
         const editModal = document.getElementById('editBlockModal');

@@ -217,4 +217,4 @@ if __name__ == "__main__":
         if init_personal_space_tables():
             print("🎉 Personal Space inicializado correctamente")
         else:
-            print("⚠️ Personal Space inicializado con algunos
+            print("⚠️ Personal Space inicializado con algunos errores")

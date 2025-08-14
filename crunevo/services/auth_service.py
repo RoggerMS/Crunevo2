@@ -4,7 +4,7 @@ import json
 from urllib.parse import urlparse
 
 from flask import url_for
-from flask_login import login_user
+from flask_login import login_user, current_user
 from sqlalchemy import inspect
 
 from crunevo.cache import login_attempts
@@ -34,7 +34,8 @@ def authenticate_user(username: str, password: str, admin_mode: bool = False):
         return user, None, 0
 
     login_attempts.record_fail(username)
-    record_auth_event(user, "login_fail", extra=json.dumps({"username": username}))
+    if user:
+        record_auth_event(user, "login_fail", extra=json.dumps({"username": username}))
     return None, "invalid", 0
 
 
@@ -52,9 +53,17 @@ def requires_two_factor(user: User) -> bool:
 
 def finalize_login(user: User):
     """Log the user in and record login activity."""
-    login_user(user)
-    record_login(user)
-    record_activity("login")
+    try:
+        login_user(user)
+        record_login(user)
+        record_activity("login")
+    except Exception as e:
+        # Log the error but don't fail the login process
+        import logging
+        logging.error(f"Error in finalize_login: {e}")
+        # Ensure user is still logged in even if activity recording fails
+        if not current_user.is_authenticated:
+            login_user(user)
 
 
 def safe_next_page(next_page: str | None) -> str:
