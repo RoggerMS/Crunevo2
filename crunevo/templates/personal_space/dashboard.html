@@ -525,6 +525,12 @@ window.toggleAnalytics = function() {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Personal Space core functionality
+    if (window.initPersonalSpace) {
+        window.initPersonalSpace();
+    }
+    
+    // Initialize Dashboard
     window.PersonalSpaceDashboard.init();
     
     // Restore quick note draft

@@ -5,10 +5,22 @@
     z-index: 1055 !important;
 }
 
-#block-factory-modal .modal-backdrop {
-    z-index: 1050 !important;
+/* Remove duplicate backdrops and fix z-index issues */
+.modal-backdrop {
+    z-index: 1040 !important;
     background-color: rgba(0, 0, 0, 0.5) !important;
-    opacity: 0.5 !important;
+    opacity: 1 !important;
+}
+
+/* Ensure only one backdrop exists */
+.modal-backdrop + .modal-backdrop {
+    display: none !important;
+}
+
+/* Fix modal dialog positioning */
+.modal.show .modal-dialog {
+    z-index: 1060 !important;
+    position: relative;
 }
 
 /* Ensure modal content is above backdrop */

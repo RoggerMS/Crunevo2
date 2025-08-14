@@ -700,6 +700,12 @@ window.deleteBlock = function(blockId) {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Personal Space core functionality
+    if (window.initPersonalSpace) {
+        window.initPersonalSpace();
+    }
+    
+    // Initialize Workspace
     window.PersonalSpaceWorkspace.init();
 });
 </script>

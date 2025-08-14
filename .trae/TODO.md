@@ -1,8 +1,11 @@
 # TODO:
 
-- [x] fix_console_image_errors: Corregir errores de consola relacionados con imágenes (priority: High)
-- [x] fix_modal_blocking: Solucionar fondo negro del modal de nuevo bloque que impide hacer clic (priority: High)
-- [x] fix_button_modal_behavior: Corregir comportamiento de botones (plantillas y tres puntos abriendo modal incorrecto) (priority: High)
-- [x] implement_quick_notes_popup: Implementar notas rápidas como popup desde menú de tres puntos (priority: Medium)
-- [x] fix_analytics_integration: Integrar página de Analytics con el sistema principal (priority: Medium)
-- [x] test_all_functionality: Probar toda la funcionalidad para asegurar que funcione correctamente (priority: Medium)
+- [x] analyze_console_errors: Analizar errores de consola mostrados en las imágenes (priority: High)
+- [x] fix_modal_backdrop: Corregir modal backdrop negro que bloquea interacción al crear bloques (priority: High)
+- [ ] fix_block_creation_error: Solucionar error 'Error al crear el bloque' en creación de bloques (**IN PROGRESS**) (priority: High)
+- [ ] fix_analytics_functionality: Implementar funcionalidad completa en página de Analytics (priority: High)
+- [ ] ensure_database_tables: Crear script para verificar y crear tablas de personal_space si no existen (priority: High)
+- [ ] fix_configuration_page: Corregir errores en página de configuración (priority: Medium)
+- [ ] ensure_block_display: Verificar que los bloques se muestren correctamente en el espacio (priority: Medium)
+- [ ] comprehensive_testing: Probar todo el sistema para asegurar funcionalidad completa (priority: Medium)
+- [ ] prepare_fly_deployment: Preparar sistema para despliegue en Fly (priority: Low)

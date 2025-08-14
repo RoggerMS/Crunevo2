@@ -1,0 +1,563 @@
+<!-- Personal Space Configuration Page -->
+{% extends "base.html" %}
+{% from 'personal_space/components/base/BaseCard.html' import render_stat_card, render_info_card %}
+{% from 'personal_space/components/base/BaseModal.html' import render_confirmation_modal %}
+
+{% block title %}Personal Space - Configuración{% endblock %}
+
+{% block extra_head %}
+<!-- Configuration Page Styles -->
+<style>
+.config-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.config-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.config-section {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.config-section:last-child {
+    border-bottom: none;
+}
+
+.config-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.config-description {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.form-check-input {
+    margin-right: 0.5rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+    background: #6b7280;
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-right: 0.5rem;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.alert-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.alert-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.stat-label {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="config-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="text-white mb-2">Configuración del Espacio Personal</h1>
+                        <p class="text-white-50">Personaliza tu experiencia y gestiona tus preferencias</p>
+                    </div>
+                    <a href="{{ url_for('personal_space.dashboard') }}" class="btn btn-light">
+                        <i class="bi bi-arrow-left me-2"></i>Volver al Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Overview -->
+        <div class="stats-grid mb-4">
+            <div class="stat-card">
+                <div class="stat-value" id="totalBlocks">0</div>
+                <div class="stat-label">Bloques Totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completedTasks">0</div>
+                <div class="stat-label">Tareas Completadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="activeObjectives">0</div>
+                <div class="stat-label">Objetivos Activos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="productivityScore">0</div>
+                <div class="stat-label">Puntuación de Productividad</div>
+            </div>
+        </div>
+
+        <!-- Configuration Sections -->
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- General Settings -->
+                <div class="config-card mb-4">
+                    <div class="config-section">
+                        <h3 class="config-title">Configuración General</h3>
+                        <p class="config-description">Ajusta las preferencias básicas de tu espacio personal</p>
+                        
+                        <form id="generalSettingsForm">
+                            <div class="form-group">
+                                <label class="form-label">Nombre del Espacio</label>
+                                <input type="text" class="form-control" id="spaceName" placeholder="Mi Espacio Personal">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Descripción</label>
+                                <textarea class="form-control" id="spaceDescription" rows="3" placeholder="Describe tu espacio personal..."></textarea>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="autoSave">
+                                <label class="form-check-label" for="autoSave">Guardado automático</label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="notifications">
+                                <label class="form-check-label" for="notifications">Notificaciones</label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="darkMode">
+                                <label class="form-check-label" for="darkMode">Modo oscuro</label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Display Settings -->
+                <div class="config-card mb-4">
+                    <div class="config-section">
+                        <h3 class="config-title">Configuración de Visualización</h3>
+                        <p class="config-description">Personaliza cómo se muestran tus bloques y contenido</p>
+                        
+                        <form id="displaySettingsForm">
+                            <div class="form-group">
+                                <label class="form-label">Tamaño de bloque por defecto</label>
+                                <select class="form-control" id="defaultBlockSize">
+                                    <option value="small">Pequeño</option>
+                                    <option value="medium" selected>Mediano</option>
+                                    <option value="large">Grande</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Tema de color</label>
+                                <select class="form-control" id="colorTheme">
+                                    <option value="blue" selected>Azul</option>
+                                    <option value="green">Verde</option>
+                                    <option value="purple">Morado</option>
+                                    <option value="orange">Naranja</option>
+                                    <option value="red">Rojo</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="showBorders">
+                                <label class="form-check-label" for="showBorders">Mostrar bordes en bloques</label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="showShadows">
+                                <label class="form-check-label" for="showShadows">Mostrar sombras en bloques</label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Privacy Settings -->
+                <div class="config-card mb-4">
+                    <div class="config-section">
+                        <h3 class="config-title">Configuración de Privacidad</h3>
+                        <p class="config-description">Controla quién puede ver y acceder a tu contenido</p>
+                        
+                        <form id="privacySettingsForm">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="publicProfile">
+                                <label class="form-check-label" for="publicProfile">Perfil público</label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="allowCollaboration">
+                                <label class="form-check-label" for="allowCollaboration">Permitir colaboración</label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="shareAnalytics">
+                                <label class="form-check-label" for="shareAnalytics">Compartir estadísticas anónimas</label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Quick Actions -->
+                <div class="config-card mb-4">
+                    <div class="config-section">
+                        <h3 class="config-title">Acciones Rápidas</h3>
+                        <p class="config-description">Gestiona tu espacio personal</p>
+                        
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" onclick="exportData()">
+                                <i class="bi bi-download me-2"></i>Exportar Datos
+                            </button>
+                            <button class="btn btn-secondary" onclick="resetWorkspace()">
+                                <i class="bi bi-arrow-clockwise me-2"></i>Reiniciar Espacio
+                            </button>
+                            <button class="btn btn-secondary" onclick="clearCache()">
+                                <i class="bi bi-trash me-2"></i>Limpiar Caché
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Storage Info -->
+                <div class="config-card mb-4">
+                    <div class="config-section">
+                        <h3 class="config-title">Información de Almacenamiento</h3>
+                        <p class="config-description">Estado actual de tu espacio</p>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Bloques utilizados</span>
+                                <span id="storageUsed">0/100</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" id="storageProgress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <small class="text-muted">Última actualización: <span id="lastUpdate">Nunca</span></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <button class="btn btn-primary btn-lg" onclick="saveAllSettings()">
+                    <i class="bi bi-check-circle me-2"></i>Guardar Configuración
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Messages -->
+<div id="messageContainer"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Configuration Page JavaScript
+class ConfigurationManager {
+    constructor() {
+        this.settings = {};
+        this.init();
+    }
+
+    async init() {
+        await this.loadSettings();
+        await this.loadStats();
+        this.setupEventListeners();
+    }
+
+    async loadSettings() {
+        try {
+            // Load user settings from API
+            const response = await fetch('/api/personal-space/settings');
+            if (response.ok) {
+                this.settings = await response.json();
+                this.populateForm();
+            }
+        } catch (error) {
+            console.error('Error loading settings:', error);
+            this.showMessage('Error al cargar la configuración', 'error');
+        }
+    }
+
+    async loadStats() {
+        try {
+            const response = await fetch('/api/personal-space/stats');
+            if (response.ok) {
+                const stats = await response.json();
+                this.updateStats(stats);
+            }
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
+    }
+
+    updateStats(stats) {
+        document.getElementById('totalBlocks').textContent = stats.total_blocks || 0;
+        document.getElementById('completedTasks').textContent = stats.completed_tasks || 0;
+        document.getElementById('activeObjectives').textContent = stats.active_objectives || 0;
+        document.getElementById('productivityScore').textContent = stats.productivity_score || 0;
+        
+        // Update storage info
+        const used = stats.total_blocks || 0;
+        const max = 100; // Example limit
+        const percentage = (used / max) * 100;
+        
+        document.getElementById('storageUsed').textContent = `${used}/${max}`;
+        document.getElementById('storageProgress').style.width = `${percentage}%`;
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+    }
+
+    populateForm() {
+        // Populate form fields with current settings
+        const fields = {
+            'spaceName': this.settings.space_name || 'Mi Espacio Personal',
+            'spaceDescription': this.settings.space_description || '',
+            'autoSave': this.settings.auto_save || false,
+            'notifications': this.settings.notifications || false,
+            'darkMode': this.settings.dark_mode || false,
+            'defaultBlockSize': this.settings.default_block_size || 'medium',
+            'colorTheme': this.settings.color_theme || 'blue',
+            'showBorders': this.settings.show_borders || false,
+            'showShadows': this.settings.show_shadows || false,
+            'publicProfile': this.settings.public_profile || false,
+            'allowCollaboration': this.settings.allow_collaboration || false,
+            'shareAnalytics': this.settings.share_analytics || false
+        };
+
+        Object.entries(fields).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                if (element.type === 'checkbox') {
+                    element.checked = value;
+                } else {
+                    element.value = value;
+                }
+            }
+        });
+    }
+
+    setupEventListeners() {
+        // Add change listeners for real-time updates
+        const forms = ['generalSettingsForm', 'displaySettingsForm', 'privacySettingsForm'];
+        forms.forEach(formId => {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.addEventListener('change', () => this.markAsChanged());
+            }
+        });
+    }
+
+    markAsChanged() {
+        // Visual feedback that settings have changed
+        const saveButton = document.querySelector('.btn-primary.btn-lg');
+        if (saveButton && !saveButton.classList.contains('btn-warning')) {
+            saveButton.classList.remove('btn-primary');
+            saveButton.classList.add('btn-warning');
+            saveButton.innerHTML = '<i class="bi bi-exclamation-triangle me-2"></i>Guardar Cambios';
+        }
+    }
+
+    async saveSettings() {
+        try {
+            const formData = this.collectFormData();
+            
+            const response = await fetch('/api/personal-space/settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                this.showMessage('Configuración guardada exitosamente', 'success');
+                this.resetSaveButton();
+            } else {
+                throw new Error('Error al guardar la configuración');
+            }
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            this.showMessage('Error al guardar la configuración', 'error');
+        }
+    }
+
+    collectFormData() {
+        return {
+            space_name: document.getElementById('spaceName').value,
+            space_description: document.getElementById('spaceDescription').value,
+            auto_save: document.getElementById('autoSave').checked,
+            notifications: document.getElementById('notifications').checked,
+            dark_mode: document.getElementById('darkMode').checked,
+            default_block_size: document.getElementById('defaultBlockSize').value,
+            color_theme: document.getElementById('colorTheme').value,
+            show_borders: document.getElementById('showBorders').checked,
+            show_shadows: document.getElementById('showShadows').checked,
+            public_profile: document.getElementById('publicProfile').checked,
+            allow_collaboration: document.getElementById('allowCollaboration').checked,
+            share_analytics: document.getElementById('shareAnalytics').checked
+        };
+    }
+
+    resetSaveButton() {
+        const saveButton = document.querySelector('.btn-warning, .btn-primary.btn-lg');
+        if (saveButton) {
+            saveButton.classList.remove('btn-warning');
+            saveButton.classList.add('btn-primary');
+            saveButton.innerHTML = '<i class="bi bi-check-circle me-2"></i>Guardar Configuración';
+        }
+    }
+
+    showMessage(message, type) {
+        const container = document.getElementById('messageContainer');
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+        
+        container.innerHTML = `
+            <div class="alert ${alertClass} position-fixed" style="top: 20px; right: 20px; z-index: 9999;">
+                ${message}
+            </div>
+        `;
+        
+        setTimeout(() => {
+            container.innerHTML = '';
+        }, 5000);
+    }
+
+    getCSRFToken() {
+        const token = document.querySelector('meta[name="csrf-token"]');
+        return token ? token.getAttribute('content') : '';
+    }
+}
+
+// Global functions for buttons
+function saveAllSettings() {
+    window.configManager.saveSettings();
+}
+
+function exportData() {
+    window.open('/api/personal-space/analytics/export?period=all', '_blank');
+}
+
+function resetWorkspace() {
+    if (confirm('¿Estás seguro de que quieres reiniciar tu espacio? Esta acción no se puede deshacer.')) {
+        // Implementation for workspace reset
+        alert('Funcionalidad de reinicio en desarrollo');
+    }
+}
+
+function clearCache() {
+    localStorage.clear();
+    sessionStorage.clear();
+    window.configManager.showMessage('Caché limpiado exitosamente', 'success');
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    window.configManager = new ConfigurationManager();
+});
+</script>
+{% endblock %}

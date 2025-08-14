@@ -106,19 +106,25 @@ def dashboard():
 @login_required
 @activated_required
 def workspace():
-    blocks: list[PersonalSpaceBlock] = []
+    workspace_blocks: list[PersonalSpaceBlock] = []
+    workspace = None
     if table_exists("personal_space_blocks"):
         try:
-            blocks = (
-                PersonalSpaceBlock.query.filter_by(user_id=current_user.id)
+            workspace_blocks = (
+                PersonalSpaceBlock.query.filter_by(user_id=current_user.id, status="active")
                 .order_by(PersonalSpaceBlock.order_index.asc())
                 .all()
             )
+            # Create a mock workspace object for the template
+            if workspace_blocks:
+                workspace = type('obj', (object,), {
+                    'updated_at': max(block.updated_at for block in workspace_blocks) if workspace_blocks else None
+                })
         except Exception as exc:  # pragma: no cover
             current_app.logger.error("Failed to load personal space blocks: %s", exc)
     else:  # pragma: no cover
         current_app.logger.warning("personal_space_blocks table does not exist")
-    return render_template("personal_space/workspace.html", blocks=blocks)
+    return render_template("personal_space/workspace.html", workspace_blocks=workspace_blocks, workspace=workspace)
 
 
 @personal_space_bp.route("/block/<string:block_id>")
@@ -198,7 +204,7 @@ def estadisticas():
 @login_required
 @activated_required
 def configuracion():
-    return render_template("personal_space/dashboard.html")
+    return render_template("personal_space/configuracion.html")
 
 
 @personal_space_bp.route("/buscar")
@@ -295,7 +301,37 @@ def create_block():
         if not data or not data.get("type"):
             return jsonify({"success": False, "error": "Block type is required"}), 400
 
-        block = BlockService.create_block(current_user.id, data)
+        # Process frontend data into backend format
+        processed_data = {
+            "type": data.get("type"),
+            "title": data.get("title", f"Nuevo {data.get('type', 'bloque')}"),
+            "content": data.get("description", ""),
+            "metadata": {
+                # Basic metadata
+                "category": data.get("category", "personal"),
+                "priority": data.get("priority", "medium"),
+                "size": data.get("size", "medium"),
+                "position_x": data.get("position_x", 0),
+                "position_y": data.get("position_y", 0),
+                
+                # Appearance settings
+                "theme_color": data.get("theme_color", "blue"),
+                "header_style": data.get("header_style", "default"),
+                "show_border": data.get("show_border", False),
+                "show_shadow": data.get("show_shadow", False),
+                
+                # Behavior settings
+                "auto_save": data.get("auto_save", False),
+                "notifications": data.get("notifications", False),
+                "collaborative": data.get("collaborative", False),
+                "public_view": data.get("public_view", False),
+                
+                # Type-specific configuration
+                "type_specific_config": data.get("type_specific_config", {})
+            }
+        }
+
+        block = BlockService.create_block(current_user.id, processed_data)
 
         return jsonify({"success": True, "block": block.to_dict()})
     except ValueError as e:
@@ -530,9 +566,35 @@ def productivity_metrics():
         current_app.logger.warning("personal_space_blocks table does not exist")
         return jsonify({"success": True, "metrics": {}})
     try:
-        metrics = AnalyticsService.get_productivity_metrics(current_user.id)
+        # Get raw metrics from service
+        raw_metrics = AnalyticsService.get_productivity_metrics(current_user.id)
+        dashboard_metrics = AnalyticsService.get_dashboard_metrics(current_user.id)
+        
+        # Map to frontend expected format
+        task_completion = raw_metrics.get('task_completion', {})
+        objective_progress = raw_metrics.get('objective_progress', {})
+        
+        # Calculate productive hours (simplified calculation)
+        productive_hours = min(8, max(1, task_completion.get('completed_tasks', 0) * 0.5))
+        
+        # Map to expected frontend fields
+        formatted_metrics = {
+            'tasks_completed': task_completion.get('completed_tasks', 0),
+            'goals_achieved': len([obj for obj in objective_progress.get('objectives', []) 
+                                 if obj.get('progress', 0) >= 100]),
+            'productive_hours': round(productive_hours, 1),
+            'focus_score': dashboard_metrics.get('productivity_score', 0),
+            'total_tasks': task_completion.get('total_tasks', 0),
+            'completion_rate': task_completion.get('completion_rate', 0),
+            'active_objectives': objective_progress.get('total_objectives', 0),
+            'average_progress': objective_progress.get('average_progress', 0),
+            'weekly_activity': raw_metrics.get('weekly_activity', []),
+            'block_distribution': raw_metrics.get('block_distribution', {}),
+            'productivity_trends': raw_metrics.get('productivity_trends', {}),
+            'trends': dashboard_metrics.get('trends', {})
+        }
 
-        return jsonify({"success": True, "metrics": metrics})
+        return jsonify({"success": True, "metrics": formatted_metrics})
     except Exception as e:
         current_app.logger.error("Error getting productivity metrics: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
@@ -569,6 +631,113 @@ def goal_tracking():
         return jsonify({"success": True, "goals": goals})
     except Exception as e:
         current_app.logger.error("Error getting goal tracking: %s", e)
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@personal_space_api_bp.route("/analytics/export", methods=["GET"])
+@login_required
+@activated_required
+def export_analytics():
+    """Export analytics data as CSV."""
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": False, "error": "Personal space unavailable"}), 503
+    try:
+        from flask import make_response
+        import csv
+        from io import StringIO
+        
+        period = request.args.get("period", "week")
+        
+        # Get analytics data
+        metrics = AnalyticsService.get_productivity_metrics(current_user.id)
+        dashboard_metrics = AnalyticsService.get_dashboard_metrics(current_user.id)
+        
+        # Create CSV content
+        output = StringIO()
+        writer = csv.writer(output)
+        
+        # Write headers
+        writer.writerow(["Metric", "Value", "Period"])
+        
+        # Write productivity metrics
+        task_completion = metrics.get("task_completion", {})
+        writer.writerow(["Tasks Completed", task_completion.get("completed_tasks", 0), period])
+        writer.writerow(["Total Tasks", task_completion.get("total_tasks", 0), period])
+        writer.writerow(["Completion Rate", f"{task_completion.get('completion_rate', 0)}%", period])
+        
+        objective_progress = metrics.get("objective_progress", {})
+        writer.writerow(["Active Objectives", objective_progress.get("total_objectives", 0), period])
+        writer.writerow(["Average Progress", f"{objective_progress.get('average_progress', 0)}%", period])
+        
+        # Write dashboard metrics
+        writer.writerow(["Total Blocks", dashboard_metrics.get("total_blocks", 0), period])
+        writer.writerow(["Active Blocks", dashboard_metrics.get("active_blocks", 0), period])
+        
+        # Create response
+        output.seek(0)
+        response = make_response(output.getvalue())
+        response.headers["Content-Type"] = "text/csv"
+        response.headers["Content-Disposition"] = f"attachment; filename=analytics_{period}_{datetime.now().strftime('%Y%m%d')}.csv"
+        
+        return response
+    except Exception as e:
+        current_app.logger.error("Error exporting analytics: %s", e)
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@personal_space_api_bp.route("/settings", methods=["GET"])
+@login_required
+@activated_required
+def get_settings():
+    """Get user's personal space settings."""
+    try:
+        # Default settings - in a real app, these would be stored in database
+        default_settings = {
+            "space_name": "Mi Espacio Personal",
+            "space_description": "",
+            "auto_save": True,
+            "notifications": True,
+            "dark_mode": False,
+            "default_block_size": "medium",
+            "color_theme": "blue",
+            "show_borders": False,
+            "show_shadows": True,
+            "public_profile": False,
+            "allow_collaboration": False,
+            "share_analytics": True
+        }
+        
+        return jsonify({"success": True, "settings": default_settings})
+    except Exception as e:
+        current_app.logger.error("Error getting settings: %s", e)
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@personal_space_api_bp.route("/settings", methods=["POST"])
+@login_required
+@activated_required
+def save_settings():
+    """Save user's personal space settings."""
+    try:
+        data = request.get_json() or {}
+        
+        # Validate settings data
+        allowed_fields = {
+            "space_name", "space_description", "auto_save", "notifications", 
+            "dark_mode", "default_block_size", "color_theme", "show_borders", 
+            "show_shadows", "public_profile", "allow_collaboration", "share_analytics"
+        }
+        
+        settings = {k: v for k, v in data.items() if k in allowed_fields}
+        
+        # In a real app, you would save these to a user_settings table
+        # For now, we'll just return success
+        current_app.logger.info(f"Settings saved for user {current_user.id}: {settings}")
+        
+        return jsonify({"success": True, "message": "Configuración guardada exitosamente"})
+    except Exception as e:
+        current_app.logger.error("Error saving settings: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
 

@@ -6,6 +6,7 @@ function initPersonalSpace() {
     initializeKanbanBoards();
     setupAutoSave();
     setupErrorHandling();
+    setupModalBackdropCleanup();
 }
 
 let sortableInstance = null;
@@ -561,8 +562,26 @@ function showAddBlockModal() {
     
     if (modal) {
         try {
-            const bsModal = new bootstrap.Modal(modal);
-            bsModal.show();
+            // Remove any existing backdrops first
+            const existingBackdrops = document.querySelectorAll('.modal-backdrop');
+            existingBackdrops.forEach(backdrop => backdrop.remove());
+            
+            // Close any other open modals
+            const openModals = document.querySelectorAll('.modal.show');
+            openModals.forEach(openModal => {
+                const instance = bootstrap.Modal.getInstance(openModal);
+                if (instance) instance.hide();
+            });
+            
+            // Wait a bit for cleanup, then show the modal
+            setTimeout(() => {
+                const bsModal = new bootstrap.Modal(modal, {
+                    backdrop: true,
+                    keyboard: true,
+                    focus: true
+                });
+                bsModal.show();
+            }, 100);
         } catch (error) {
             console.error('Error showing modal:', error);
             showNotification('Error al abrir el modal de creación', 'error');
@@ -1902,8 +1921,26 @@ function showNotification(message, type = 'info') {
 function showCreateBlockModal() {
     const modal = document.getElementById('block-factory-modal');
     if (modal) {
-        const bsModal = new bootstrap.Modal(modal);
-        bsModal.show();
+        // Remove any existing backdrops first
+        const existingBackdrops = document.querySelectorAll('.modal-backdrop');
+        existingBackdrops.forEach(backdrop => backdrop.remove());
+        
+        // Close any other open modals
+        const openModals = document.querySelectorAll('.modal.show');
+        openModals.forEach(openModal => {
+            const instance = bootstrap.Modal.getInstance(openModal);
+            if (instance) instance.hide();
+        });
+        
+        // Wait a bit for cleanup, then show the modal
+        setTimeout(() => {
+            const bsModal = new bootstrap.Modal(modal, {
+                backdrop: true,
+                keyboard: true,
+                focus: true
+            });
+            bsModal.show();
+        }, 100);
     } else {
         console.error('Block factory modal not found');
         showNotification('Error al abrir el modal de creación', 'error');
@@ -2055,5 +2092,34 @@ function setupErrorHandling() {
     window.addEventListener('unhandledrejection', (e) => {
         console.error('Unhandled promise rejection:', e.reason);
         showNotification('Error en la comunicación con el servidor', 'error');
+    });
+}
+
+// Setup modal backdrop cleanup
+function setupModalBackdropCleanup() {
+    // Clean up duplicate backdrops when any modal is shown
+    document.addEventListener('shown.bs.modal', function(e) {
+        setTimeout(() => {
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            if (backdrops.length > 1) {
+                // Keep only the last backdrop
+                for (let i = 0; i < backdrops.length - 1; i++) {
+                    backdrops[i].remove();
+                }
+            }
+        }, 50);
+    });
+    
+    // Clean up all backdrops when any modal is hidden
+    document.addEventListener('hidden.bs.modal', function(e) {
+        setTimeout(() => {
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            const openModals = document.querySelectorAll('.modal.show');
+            
+            // If no modals are open, remove all backdrops
+            if (openModals.length === 0) {
+                backdrops.forEach(backdrop => backdrop.remove());
+            }
+        }, 100);
     });
 }
