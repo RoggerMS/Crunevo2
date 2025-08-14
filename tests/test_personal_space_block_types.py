@@ -17,9 +17,9 @@ def test_block_type_views(client, test_user):
     for btype in block_types:
         resp = client.post(
             "/api/personal-space/blocks",
-            json={"type": btype, "title": btype.capitalize()},
+            json={"block_type": btype, "title": btype.capitalize()},
         )
-        assert resp.status_code == 200
+        assert resp.status_code == 201
         data = resp.get_json()
         block_id = data["block"]["id"]
         view_path = f"/personal-space/block/{block_id}"

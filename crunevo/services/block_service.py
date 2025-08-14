@@ -39,6 +39,7 @@ class BlockService:
             metadata_json=cleaned_data.get("metadata", {}),
             order_index=max_order + 1,
             status="active",
+            is_featured=block_data.get("is_featured", False),
         )
 
         # Apply type-specific defaults

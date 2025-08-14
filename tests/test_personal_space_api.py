@@ -23,7 +23,7 @@ def create_inactive_user(db_session):
 
 
 def test_create_block_requires_login(client):
-    resp = client.post("/api/personal-space/blocks", json={"type": "nota"})
+    resp = client.post("/api/personal-space/blocks", json={"block_type": "nota"})
     assert resp.status_code == 302
     assert "/login" in resp.headers["Location"]
 
@@ -31,7 +31,7 @@ def test_create_block_requires_login(client):
 def test_create_block_requires_activation(client, db_session):
     user = create_inactive_user(db_session)
     login(client, user.username)
-    resp = client.post("/api/personal-space/blocks", json={"type": "nota"})
+    resp = client.post("/api/personal-space/blocks", json={"block_type": "nota"})
     assert resp.status_code == 302
     assert "/onboarding/pending" in resp.headers["Location"]
 
@@ -40,9 +40,9 @@ def test_create_block_success(client, db_session, test_user):
     login(client, test_user.username)
     resp = client.post(
         "/api/personal-space/blocks",
-        json={"type": "nota", "title": "My Note"},
+        json={"block_type": "nota", "title": "My Note"},
     )
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     data = resp.get_json()
     assert data["success"] is True
     assert data["block"]["title"] == "My Note"
