@@ -1324,3 +1324,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Added `render_template_gallery_modal` wrapper and corrected template imports to prevent 500 errors on `/personal-space/`. (PR personal-space-gallery-modal-fix)
 - Removed undefined Jinja calls to get_featured_templates and get_community_templates in TemplateGallery, rendering empty grids by default to avoid 500 errors on /personal-space/. (PR personal-space-template-grid-fallback)
 - Normalized personal space API with RESTful block/template endpoints, added template favorite/import stubs, aligned wizard JS payloads/routes, and exposed closeWizardModal. (PR personal-space-rest-wizard)
+- Replaced JavaScript-style comment within sample goals list in AnalyticsDashboard template with Jinja comment to resolve unexpected '//' errors on `/personal-space/`. (PR personal-space-jinja-comment)
