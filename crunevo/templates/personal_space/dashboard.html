@@ -9,6 +9,7 @@
 
 {% block head_extra %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space-optimized.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/modal-fixes.css') }}">
 <!-- Chart.js for analytics -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Sortable.js for drag and drop -->
@@ -67,6 +68,9 @@
                             </a></li>
                             <li><a class="dropdown-item" href="#" onclick="toggleAnalytics()">
                                 <i class="bi bi-graph-up me-2"></i>Analytics
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showQuickNotesModal()">
+                                <i class="bi bi-lightning-charge me-2"></i>Nota Rápida
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ url_for('personal_space.configuracion') }}">

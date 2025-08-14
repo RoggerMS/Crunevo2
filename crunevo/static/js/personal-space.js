@@ -587,17 +587,21 @@ function handleModalEvents(e) {
             return;
         }
         
-        // Handle quick action buttons
+        // Only handle quick action buttons that specifically target block-factory-modal
         const quickActionBtn = e.target.closest('[data-bs-toggle="modal"]');
         if (quickActionBtn) {
             const targetModal = quickActionBtn.getAttribute('data-bs-target');
-            if (targetModal) {
+            // Only intercept if it's specifically targeting the block factory modal
+            if (targetModal === '#block-factory-modal') {
+                e.preventDefault();
+                e.stopPropagation();
                 const modal = document.querySelector(targetModal);
                 if (modal) {
                     const bsModal = new bootstrap.Modal(modal);
                     bsModal.show();
                 }
             }
+            // Let other modals (like template gallery) handle themselves normally
         }
     } catch (error) {
         console.error('Error in handleModalEvents:', error);
@@ -1904,6 +1908,141 @@ function showCreateBlockModal() {
         console.error('Block factory modal not found');
         showNotification('Error al abrir el modal de creación', 'error');
     }
+}
+
+// Toggle Analytics Dashboard
+function toggleAnalytics() {
+    const analyticsSection = document.getElementById('analytics-dashboard');
+    if (analyticsSection) {
+        // Toggle visibility of analytics section using CSS class
+        if (analyticsSection.classList.contains('show')) {
+            analyticsSection.classList.remove('show');
+            showNotification('Panel de Analytics ocultado', 'info');
+        } else {
+            analyticsSection.classList.add('show');
+            analyticsSection.scrollIntoView({ behavior: 'smooth' });
+            showNotification('Panel de Analytics activado', 'success');
+        }
+    } else {
+        // If analytics section doesn't exist, redirect to analytics page
+        window.location.href = '/personal-space/analytics';
+    }
+}
+
+// Quick Notes functionality
+function showQuickNotesModal() {
+    // Create quick notes modal if it doesn't exist
+    let modal = document.getElementById('quick-notes-modal');
+    if (!modal) {
+        modal = createQuickNotesModal();
+        document.body.appendChild(modal);
+    }
+    
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+}
+
+function createQuickNotesModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.id = 'quick-notes-modal';
+    modal.setAttribute('tabindex', '-1');
+    modal.setAttribute('aria-labelledby', 'quickNotesModalLabel');
+    modal.setAttribute('aria-hidden', 'true');
+    
+    modal.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="quickNotesModalLabel">
+                        <i class="bi bi-lightning-charge me-2"></i>Nota Rápida
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="quickNoteTitle" class="form-label">Título (opcional)</label>
+                        <input type="text" class="form-control" id="quickNoteTitle" placeholder="Título de la nota...">
+                    </div>
+                    <div class="mb-3">
+                        <label for="quickNoteContent" class="form-label">Contenido</label>
+                        <textarea class="form-control" id="quickNoteContent" rows="4" placeholder="Escribe tu nota rápida aquí..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quickNoteCategory" class="form-label">Categoría</label>
+                        <select class="form-select" id="quickNoteCategory">
+                            <option value="general">General</option>
+                            <option value="ideas">Ideas</option>
+                            <option value="recordatorios">Recordatorios</option>
+                            <option value="tareas">Tareas</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveQuickNote()">Guardar Nota</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    return modal;
+}
+
+function saveQuickNote() {
+    const title = document.getElementById('quickNoteTitle').value || 'Nota rápida';
+    const content = document.getElementById('quickNoteContent').value;
+    const category = document.getElementById('quickNoteCategory').value;
+    
+    if (!content.trim()) {
+        showNotification('El contenido de la nota no puede estar vacío', 'error');
+        return;
+    }
+    
+    const blockData = {
+        type: 'nota',
+        title: title,
+        content: content,
+        metadata: {
+            color: 'blue',
+            icon: 'bi-lightning-charge',
+            category: category,
+            quick_note: true
+        }
+    };
+    
+    apiCreateBlock(blockData)
+        .then(data => {
+            if (data.success && data.block) {
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('quick-notes-modal'));
+                if (modal) modal.hide();
+                
+                // Clear form
+                document.getElementById('quickNoteTitle').value = '';
+                document.getElementById('quickNoteContent').value = '';
+                document.getElementById('quickNoteCategory').value = 'general';
+                
+                // Add to grid
+                const blockElement = createBlockElement(data.block);
+                if (blockElement) {
+                    const grid = document.getElementById('blocksGrid');
+                    if (grid) {
+                        const emptyState = grid.querySelector('.empty-state');
+                        if (emptyState) emptyState.remove();
+                        grid.appendChild(blockElement);
+                    }
+                }
+                
+                showNotification('Nota rápida guardada exitosamente', 'success');
+            } else {
+                showNotification(data.message || 'Error al guardar la nota', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error saving quick note:', error);
+            showNotification('Error de conexión al guardar la nota', 'error');
+        });
 }
 
 // Setup error handling

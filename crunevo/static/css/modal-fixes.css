@@ -1,0 +1,244 @@
+/* Modal Fixes for Personal Space */
+
+/* Fix for block-factory modal backdrop issue */
+#block-factory-modal {
+    z-index: 1055 !important;
+}
+
+#block-factory-modal .modal-backdrop {
+    z-index: 1050 !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    opacity: 0.5 !important;
+}
+
+/* Ensure modal content is above backdrop */
+#block-factory-modal .modal-dialog {
+    z-index: 1056 !important;
+    position: relative;
+}
+
+#block-factory-modal .modal-content {
+    z-index: 1057 !important;
+    position: relative;
+    background: var(--bs-body-bg) !important;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Fix for template gallery modal */
+#template-gallery-modal {
+    z-index: 1055 !important;
+}
+
+#template-gallery-modal .modal-backdrop {
+    z-index: 1050 !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    opacity: 0.5 !important;
+}
+
+#template-gallery-modal .modal-dialog {
+    z-index: 1056 !important;
+    position: relative;
+}
+
+#template-gallery-modal .modal-content {
+    z-index: 1057 !important;
+    position: relative;
+    background: var(--bs-body-bg) !important;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Prevent multiple backdrops */
+.modal-backdrop.show {
+    z-index: 1050 !important;
+    opacity: 0.5 !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Ensure modal is clickable */
+.modal.show {
+    pointer-events: auto !important;
+}
+
+.modal.show .modal-dialog {
+    pointer-events: auto !important;
+}
+
+.modal.show .modal-content {
+    pointer-events: auto !important;
+}
+
+/* Fix for dark theme modals */
+[data-bs-theme="dark"] .modal-content {
+    background-color: var(--bs-dark) !important;
+    color: var(--bs-light) !important;
+}
+
+[data-bs-theme="dark"] .modal-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-bs-theme="dark"] .modal-footer {
+    border-top-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Remove any conflicting backdrop styles */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Ensure proper modal animation */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+    transform: translate(0, -50px);
+}
+
+.modal.show .modal-dialog {
+    transform: none;
+}
+
+/* Fix for modal body scrolling */
+.modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+/* Responsive modal fixes */
+@media (max-width: 768px) {
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+    
+    .modal-body {
+        max-height: calc(100vh - 150px);
+    }
+}
+
+/* Fix for block factory specific issues */
+.block-factory {
+    position: relative;
+    z-index: 1;
+}
+
+.factory-steps {
+    position: relative;
+    z-index: 2;
+}
+
+.factory-step {
+    position: relative;
+    z-index: 2;
+}
+
+/* Ensure buttons are clickable */
+.modal .btn {
+    pointer-events: auto !important;
+    z-index: 10;
+    position: relative;
+}
+
+/* Fix for dropdown menus in modals */
+.modal .dropdown-menu {
+    z-index: 1060 !important;
+}
+
+/* Clean up any orphaned backdrops */
+.modal-backdrop:not(.show) {
+    display: none !important;
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+    overflow: hidden;
+    padding-right: 0 !important;
+}
+
+/* Fix for modal close button */
+.modal .btn-close {
+    z-index: 1060 !important;
+    position: relative;
+}
+
+/* Ensure modal header is properly positioned */
+.modal-header {
+    position: relative;
+    z-index: 1058;
+}
+
+/* Ensure modal footer is properly positioned */
+.modal-footer {
+    position: relative;
+    z-index: 1058;
+}
+
+/* Fix for color picker in block factory */
+.color-picker-grid {
+    position: relative;
+    z-index: 2;
+}
+
+.color-option {
+    pointer-events: auto !important;
+    cursor: pointer;
+}
+
+/* Fix for form elements in modal */
+.modal input,
+.modal select,
+.modal textarea,
+.modal button {
+    pointer-events: auto !important;
+}
+
+/* Fix for step navigation */
+.factory-footer {
+    position: relative;
+    z-index: 2;
+}
+
+.factory-footer .btn {
+    pointer-events: auto !important;
+}
+
+/* Ensure preview block is interactive */
+.block-preview {
+    position: relative;
+    z-index: 2;
+}
+
+/* Fix for block type cards */
+.block-type-card {
+    pointer-events: auto !important;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+}
+
+/* Fix for form sections */
+.config-section {
+    position: relative;
+    z-index: 2;
+}
+
+/* Ensure all interactive elements work */
+.modal [onclick],
+.modal [data-bs-toggle],
+.modal [data-bs-target] {
+    pointer-events: auto !important;
+    z-index: 10;
+    position: relative;
+}
+
+/* Analytics Dashboard Controls */
+.analytics-dashboard {
+    display: none; /* Hidden by default */
+    transition: all 0.3s ease;
+}
+
+.analytics-dashboard.show {
+    display: block;
+}

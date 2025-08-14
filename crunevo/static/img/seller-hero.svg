@@ -1,0 +1,9 @@
+<svg width="500" height="300" viewBox="0 0 500 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="500" height="300" fill="#F8F9FA"/>
+<rect x="150" y="80" width="200" height="140" rx="12" fill="#E9ECEF"/>
+<circle cx="200" cy="120" r="20" fill="#ADB5BD"/>
+<rect x="170" y="150" width="60" height="8" rx="4" fill="#ADB5BD"/>
+<rect x="170" y="170" width="80" height="8" rx="4" fill="#CED4DA"/>
+<rect x="170" y="190" width="40" height="8" rx="4" fill="#CED4DA"/>
+<text x="250" y="160" font-family="Arial, sans-serif" font-size="14" fill="#495057">Conviértete en vendedor</text>
+</svg>
