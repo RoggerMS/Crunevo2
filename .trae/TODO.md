@@ -1,9 +1,8 @@
 # TODO:
 
-- [x] review_personal_space_routes: Revisar las rutas del backend en routes/ para personal-space (priority: High)
-- [x] check_templates_structure: Verificar que los templates HTML estén correctamente estructurados (priority: High)
-- [x] fix_buttons_ui: Corregir los botones y elementos de interfaz que no funcionan (priority: High)
-- [x] verify_backend_functions: Asegurar que todas las funcionalidades del backend (crear notas, editar, eliminar, etc.) estén operativas (priority: High)
-- [x] check_database_integration: Verificar la integración con la base de datos (priority: Medium)
-- [x] fix_js_css_errors: Corregir cualquier error de JavaScript o CSS que afecte la funcionalidad (priority: Medium)
-- [x] test_all_functions: Probar todas las funciones para confirmar que funcionan correctamente (priority: Medium)
+- [x] analyze_personal_space_issues: Analizar archivos CSS, HTML y JavaScript de personal-space para identificar problemas específicos (priority: High)
+- [x] fix_button_functionality: Corregir funcionalidad de botones que no responden o generan errores (priority: High)
+- [x] improve_color_contrast: Mejorar contraste de colores para mejor legibilidad en modo claro y oscuro (priority: High)
+- [x] fix_theme_adaptation: Asegurar que los colores se adapten correctamente entre temas claro y oscuro (priority: High)
+- [x] optimize_css_hierarchy: Optimizar CSS para mejor jerarquía visual y diseño responsive (priority: Medium)
+- [x] test_interactive_elements: Probar todos los elementos interactivos para confirmar funcionalidad (priority: Medium)

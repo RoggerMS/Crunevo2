@@ -21,7 +21,7 @@ def upgrade():
     op.add_column('personal_space_blocks', sa.Column('is_featured', sa.Boolean(), nullable=False, default=False))
     
     # Update existing records to have is_featured = False
-    op.execute("UPDATE personal_space_blocks SET is_featured = 0 WHERE is_featured IS NULL")
+    op.execute("UPDATE personal_space_blocks SET is_featured = False WHERE is_featured IS NULL")
 
 
 def downgrade():

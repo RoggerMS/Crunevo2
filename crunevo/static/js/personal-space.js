@@ -1519,6 +1519,11 @@ function openBlock(blockId) {
     window.location.href = `/personal-space/bloque/${blockId}`;
 }
 
+function editBlock(blockId) {
+    // Function to edit a block - calls the modal
+    showEditBlockModal(blockId);
+}
+
 function manageBloque(blockId) {
     // Open block management interface
     editBlock(blockId);
