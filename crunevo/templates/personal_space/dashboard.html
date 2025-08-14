@@ -10,6 +10,8 @@
 {% block head_extra %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space-optimized.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/modal-fixes.css') }}">
+<!-- Block Factory Enhanced CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/block-factory-enhanced.css') }}">
 <!-- Chart.js for analytics -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Sortable.js for drag and drop -->
@@ -184,9 +186,9 @@
                             Actividad Reciente
                         </h3>
                         <div class="section-actions">
-                            <a href="#" class="btn btn-sm btn-outline-primary">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewAllActivity()">
                                 Ver todo
-                            </a>
+                            </button>
                         </div>
                     </div>
                     <div class="section-body">
@@ -396,6 +398,123 @@ window.PersonalSpaceDashboard = {
         // Implementation depends on your specific needs
     },
     
+    // Refresh today's focus data
+    refreshTodaysFocus: async function() {
+        const btn = document.querySelector('[onclick="refreshTodaysFocus()"]');
+        if (btn) {
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-arrow-clockwise spin"></i>';
+            btn.disabled = true;
+        }
+        
+        try {
+            const response = await fetch('/api/personal-space/todays-focus');
+            if (response.ok) {
+                const data = await response.json();
+                this.updateTodaysFocus(data);
+                this.showSuccessMessage('Enfoque de hoy actualizado');
+            } else {
+                throw new Error('Error al cargar datos');
+            }
+        } catch (error) {
+            console.error('Error refreshing today\'s focus:', error);
+            this.showErrorMessage('Error al actualizar el enfoque de hoy');
+        } finally {
+            if (btn) {
+                btn.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
+                btn.disabled = false;
+            }
+        }
+    },
+    
+    // Show weekly progress modal
+    showWeeklyProgressModal: async function() {
+        try {
+            const response = await fetch('/api/personal-space/analytics/weekly-progress');
+            if (response.ok) {
+                const data = await response.json();
+                this.displayWeeklyProgressModal(data);
+            } else {
+                throw new Error('Error al cargar datos de progreso semanal');
+            }
+        } catch (error) {
+            console.error('Error loading weekly progress:', error);
+            this.showErrorMessage('Error al cargar el progreso semanal');
+        }
+    },
+    
+    // Display weekly progress modal
+    displayWeeklyProgressModal: function(data) {
+        const modalHtml = `
+            <div class="modal fade" id="weeklyProgressModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Progreso Semanal Detallado</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <h6>Tareas Completadas</h6>
+                                        <div class="display-6 text-success">${data.tasks_completed || 0}</div>
+                                        <small class="text-muted">de ${data.total_tasks || 0} tareas</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <h6>Objetivos Alcanzados</h6>
+                                        <div class="display-6 text-primary">${data.objectives_completed || 0}</div>
+                                        <small class="text-muted">de ${data.total_objectives || 0} objetivos</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <h6>Productividad</h6>
+                                        <div class="display-6 text-warning">${data.productivity_score || 0}%</div>
+                                        <small class="text-muted">puntuación general</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="mt-3">
+                                <h6>Progreso por Día</h6>
+                                <div class="progress-timeline">
+                                    ${(data.daily_progress || []).map(day => `
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span>${day.day}</span>
+                                            <div class="progress flex-grow-1 mx-3" style="height: 8px;">
+                                                <div class="progress-bar" style="width: ${day.progress}%"></div>
+                                            </div>
+                                            <span class="text-muted">${day.progress}%</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Remove existing modal if any
+        const existingModal = document.getElementById('weeklyProgressModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        // Add modal to body
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('weeklyProgressModal'));
+        modal.show();
+    },
+    
     // Save quick note
     saveQuickNote: async function() {
         const textarea = document.getElementById('quick-note-text');
@@ -504,11 +623,15 @@ window.PersonalSpaceDashboard = {
 
 // Global functions
 window.refreshTodaysFocus = function() {
-    window.PersonalSpaceDashboard.loadDashboardData();
+    if (window.PersonalSpaceDashboard) {
+        window.PersonalSpaceDashboard.refreshTodaysFocus();
+    }
 };
 
 window.viewWeeklyDetails = function() {
-    window.location.href = '/personal-space/analytics?period=week';
+    if (window.PersonalSpaceDashboard) {
+        window.PersonalSpaceDashboard.showWeeklyProgressModal();
+    }
 };
 
 window.toggleAnalytics = function() {

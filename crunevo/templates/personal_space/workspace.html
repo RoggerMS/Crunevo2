@@ -527,8 +527,14 @@ window.PersonalSpaceWorkspace = {
     // Switch to grid view
     switchToGridView: function() {
         const container = document.querySelector('.grid-container');
+        if (!container) {
+            console.warn('Grid container not found');
+            return;
+        }
         container.style.display = 'block';
-        this.grid.enable();
+        if (this.grid) {
+            this.grid.enable();
+        }
     },
     
     // Switch to list view
@@ -540,6 +546,10 @@ window.PersonalSpaceWorkspace = {
     // Toggle sidebar
     toggleSidebar: function() {
         const sidebar = document.getElementById('workspace-sidebar');
+        if (!sidebar) {
+            console.warn('Workspace sidebar not found');
+            return;
+        }
         sidebar.classList.toggle('collapsed');
     },
     
@@ -611,7 +621,9 @@ window.PersonalSpaceWorkspace = {
         const indicator = document.getElementById('save-status');
         const text = document.getElementById('save-status-text');
         
-        indicator.className = `status-indicator ${status}`;
+        if (indicator) {
+            indicator.className = `status-indicator ${status}`;
+        }
         
         const statusTexts = {
             saved: 'Guardado',
@@ -620,7 +632,9 @@ window.PersonalSpaceWorkspace = {
             error: 'Error'
         };
         
-        text.textContent = statusTexts[status] || 'Desconocido';
+        if (text) {
+            text.textContent = statusTexts[status] || 'Desconocido';
+        }
     },
     
     // Update last modified

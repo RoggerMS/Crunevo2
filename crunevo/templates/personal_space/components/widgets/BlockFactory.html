@@ -40,8 +40,24 @@
     <div class="factory-step" id="step-1" data-step="1">
         <div class="step-header mb-4">
             <h5 class="step-title">Selecciona el tipo de bloque</h5>
-            <p class="step-description text-muted">Elige el tipo de bloque que mejor se adapte a tus necesidades</p>
+            <p class="step-description text-muted">Elige el tipo de bloque que mejor se adapte a tus necesidades o usa una plantilla</p>
         </div>
+        
+        <!-- Creation Mode Tabs -->
+        <div class="creation-mode-tabs mb-4">
+            <div class="nav nav-pills justify-content-center" id="creation-mode-nav" role="tablist">
+                <button class="nav-link active" id="individual-tab" data-bs-toggle="pill" data-bs-target="#individual-mode" type="button" role="tab" aria-controls="individual-mode" aria-selected="true">
+                    <i class="bi bi-plus-circle me-2"></i>Bloque Individual
+                </button>
+                <button class="nav-link" id="template-tab" data-bs-toggle="pill" data-bs-target="#template-mode" type="button" role="tab" aria-controls="template-mode" aria-selected="false">
+                    <i class="bi bi-collection me-2"></i>Desde Plantilla
+                </button>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="creation-mode-content">
+            <!-- Individual Block Creation -->
+            <div class="tab-pane fade show active" id="individual-mode" role="tabpanel" aria-labelledby="individual-tab">
         
         <div class="block-types-grid">
             <!-- Task Block -->
@@ -136,6 +152,39 @@
                         <span class="feature-tag">Rachas</span>
                         <span class="feature-tag">Estadísticas</span>
                         <span class="feature-tag">Recordatorios</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </div>
+            
+            <!-- Template Mode -->
+            <div class="tab-pane fade" id="template-mode" role="tabpanel" aria-labelledby="template-tab">
+                <div class="template-selection-container">
+                    <div class="template-search mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" id="template-search" placeholder="Buscar plantillas...">
+                        </div>
+                    </div>
+                    
+                    <div class="template-categories mb-3">
+                        <div class="btn-group" role="group" aria-label="Categorías de plantillas">
+                            <button type="button" class="btn btn-outline-primary active" data-category="all">Todas</button>
+                            <button type="button" class="btn btn-outline-primary" data-category="productivity">Productividad</button>
+                            <button type="button" class="btn btn-outline-primary" data-category="personal">Personal</button>
+                            <button type="button" class="btn btn-outline-primary" data-category="work">Trabajo</button>
+                            <button type="button" class="btn btn-outline-primary" data-category="study">Estudio</button>
+                        </div>
+                    </div>
+                    
+                    <div class="templates-grid" id="templates-grid">
+                        <div class="loading-templates text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando plantillas...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Cargando plantillas disponibles...</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -280,7 +329,7 @@
                                 <div class="color-option" data-color="pink" style="background: #d53f8c;" onclick="selectColor('pink')"></div>
                                 <div class="color-option" data-color="gray" style="background: #718096;" onclick="selectColor('gray')"></div>
                             </div>
-                            <input type="hidden" name="theme_color" id="theme_color" value="blue">
+                            <input type="hidden" name="theme_color" id="theme_color" value="purple">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -749,6 +798,123 @@
 .step-indicator {
     font-size: 0.875rem;
     color: #718096;
+}
+
+/* Creation Mode Tabs */
+.creation-mode-tabs .nav-pills .nav-link {
+    background: transparent;
+    border: 2px solid #e2e8f0;
+    color: #4a5568;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    margin: 0 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.creation-mode-tabs .nav-pills .nav-link:hover {
+    border-color: #9f7aea;
+    color: #9f7aea;
+    background: rgba(159, 122, 234, 0.1);
+}
+
+.creation-mode-tabs .nav-pills .nav-link.active {
+    background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+    border-color: #9f7aea;
+    color: white;
+    box-shadow: 0 4px 12px rgba(159, 122, 234, 0.3);
+}
+
+/* Template Selection */
+.template-selection-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.template-categories .btn-group .btn {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-color: #e2e8f0;
+    color: #4a5568;
+}
+
+.template-categories .btn-group .btn.active {
+    background: #9f7aea;
+    border-color: #9f7aea;
+    color: white;
+}
+
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.template-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.template-card:hover {
+    border-color: #9f7aea;
+    box-shadow: 0 4px 12px rgba(159, 122, 234, 0.15);
+    transform: translateY(-2px);
+}
+
+.template-card.selected {
+    border-color: #9f7aea;
+    background: linear-gradient(135deg, rgba(159, 122, 234, 0.1) 0%, rgba(128, 90, 213, 0.1) 100%);
+    box-shadow: 0 4px 12px rgba(159, 122, 234, 0.2);
+}
+
+.template-card.selected::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #9f7aea 0%, #805ad5 100%);
+    border-radius: 8px 8px 0 0;
+}
+
+.template-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.template-description {
+    font-size: 0.75rem;
+    color: #718096;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+}
+
+.template-blocks-count {
+    font-size: 0.75rem;
+    color: #9f7aea;
+    font-weight: 500;
+}
+
+.template-card.selected .template-blocks-count {
+    color: #805ad5;
+}
+
+.loading-templates {
+    color: #718096;
+}
+
+.loading-templates .spinner-border {
+    color: #9f7aea !important;
     font-weight: 500;
 }
 
@@ -1318,7 +1484,11 @@ Completado</textarea>
     canProceedToNextStep: function() {
         switch (this.currentStep) {
             case 1:
-                return this.selectedType !== null;
+                if (this.isTemplateMode()) {
+                    return this.selectedTemplate !== null;
+                } else {
+                    return this.selectedType !== null;
+                }
             case 2:
                 return this.validateConfigForm();
             case 3:
@@ -1330,6 +1500,9 @@ Completado</textarea>
     
     // Validate current step
     validateCurrentStep: function() {
+        if (this.currentStep === 1 && this.isTemplateMode()) {
+            return this.selectedTemplate !== null;
+        }
         return this.canProceedToNextStep();
     },
     
@@ -1368,7 +1541,7 @@ Completado</textarea>
         
         // Get form data
         const title = document.querySelector('input[name="title"]')?.value || 'Título del bloque';
-        const themeColor = document.getElementById('theme_color')?.value || 'blue';
+        const themeColor = document.getElementById('theme_color')?.value || 'purple';
         const showBorder = document.getElementById('show_border')?.checked;
         const showShadow = document.getElementById('show_shadow')?.checked;
         
@@ -1390,7 +1563,7 @@ Completado</textarea>
             gray: '#718096'
         };
         
-        const color = colorMap[themeColor] || colorMap.blue;
+        const color = colorMap[themeColor] || colorMap.purple;
         previewBlock.style.borderColor = color;
         
         // Apply border and shadow
@@ -1398,8 +1571,14 @@ Completado</textarea>
         previewBlock.style.boxShadow = showShadow ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none';
     },
     
-    // Create block
+    // Create block or apply template
     createBlock: async function() {
+        // If in template mode, apply template instead
+        if (this.isTemplateMode()) {
+            await this.applyTemplate();
+            return;
+        }
+        
         try {
             // Collect all form data
             const blockData = this.collectBlockData();
@@ -1461,21 +1640,23 @@ Completado</textarea>
         const data = {
             type: this.selectedType,
             title: document.querySelector('input[name="title"]')?.value || '',
-            description: document.querySelector('textarea[name="description"]')?.value || '',
-            category: document.querySelector('select[name="category"]')?.value || 'personal',
-            priority: document.querySelector('select[name="priority"]')?.value || 'medium',
-            size: document.querySelector('select[name="size"]')?.value || 'medium',
-            position_x: parseInt(document.querySelector('input[name="position_x"]')?.value) || 0,
-            position_y: parseInt(document.querySelector('input[name="position_y"]')?.value) || 0,
-            theme_color: document.getElementById('theme_color')?.value || 'blue',
-            header_style: document.querySelector('select[name="header_style"]')?.value || 'default',
-            show_border: document.getElementById('show_border')?.checked || false,
-            show_shadow: document.getElementById('show_shadow')?.checked || false,
-            auto_save: document.getElementById('auto_save')?.checked || false,
-            notifications: document.getElementById('notifications')?.checked || false,
-            collaborative: document.getElementById('collaborative')?.checked || false,
-            public_view: document.getElementById('public_view')?.checked || false,
-            type_specific_config: this.collectTypeSpecificConfig()
+            content: document.querySelector('textarea[name="description"]')?.value || '',
+            metadata: {
+                category: document.querySelector('select[name="category"]')?.value || 'personal',
+                priority: document.querySelector('select[name="priority"]')?.value || 'medium',
+                size: document.querySelector('select[name="size"]')?.value || 'medium',
+                position_x: parseInt(document.querySelector('input[name="position_x"]')?.value) || 0,
+                position_y: parseInt(document.querySelector('input[name="position_y"]')?.value) || 0,
+                theme_color: document.getElementById('theme_color')?.value || 'purple',
+                header_style: document.querySelector('select[name="header_style"]')?.value || 'default',
+                show_border: document.getElementById('show_border')?.checked || false,
+                show_shadow: document.getElementById('show_shadow')?.checked || false,
+                auto_save: document.getElementById('auto_save')?.checked || false,
+                notifications: document.getElementById('notifications')?.checked || false,
+                collaborative: document.getElementById('collaborative')?.checked || false,
+                public_view: document.getElementById('public_view')?.checked || false,
+                ...this.collectTypeSpecificConfig()
+            }
         };
         
         return data;
@@ -1523,10 +1704,26 @@ Completado</textarea>
         this.currentStep = 1;
         this.selectedType = null;
         this.blockData = {};
+        this.selectedTemplate = null;
         
         // Reset forms
         document.getElementById('block-config-form')?.reset();
         document.getElementById('block-customization-form')?.reset();
+        
+        // Reset creation mode to individual
+        const individualTab = document.getElementById('individual-tab');
+        const templateTab = document.getElementById('template-tab');
+        if (individualTab && templateTab) {
+            individualTab.classList.add('active');
+            templateTab.classList.remove('active');
+            
+            const individualMode = document.getElementById('individual-mode');
+            const templateMode = document.getElementById('template-mode');
+            if (individualMode && templateMode) {
+                individualMode.classList.add('show', 'active');
+                templateMode.classList.remove('show', 'active');
+            }
+        }
         
         // Reset UI
         document.querySelectorAll('.block-type-card').forEach(card => {
@@ -1541,6 +1738,159 @@ Completado</textarea>
         this.showStep(1);
         this.updateStepIndicator();
         this.updateButtons();
+    },
+    
+    // Template-related functions
+    selectedTemplate: null,
+    templates: [],
+    
+    // Load templates
+    loadTemplates: async function() {
+        try {
+            const response = await fetch('/api/personal-space/templates?public=true');
+            if (response.ok) {
+                this.templates = await response.json();
+                this.renderTemplates();
+            } else {
+                throw new Error('Error loading templates');
+            }
+        } catch (error) {
+            console.error('Error loading templates:', error);
+            this.showTemplateError('Error al cargar las plantillas');
+        }
+    },
+    
+    // Render templates in grid
+    renderTemplates: function(filteredTemplates = null) {
+        const templatesGrid = document.getElementById('templates-grid');
+        if (!templatesGrid) return;
+        
+        const templates = filteredTemplates || this.templates;
+        
+        if (templates.length === 0) {
+            templatesGrid.innerHTML = `
+                <div class="text-center py-4">
+                    <i class="bi bi-collection text-muted" style="font-size: 2rem;"></i>
+                    <p class="mt-2 text-muted">No hay plantillas disponibles</p>
+                </div>
+            `;
+            return;
+        }
+        
+        templatesGrid.innerHTML = templates.map(template => `
+            <div class="template-card" data-template-id="${template.id}" onclick="window.BlockFactory.selectTemplate('${template.id}')">
+                <div class="template-title">${template.name}</div>
+                <div class="template-description">${template.description || 'Sin descripción'}</div>
+                <div class="template-blocks-count">${template.blocks_count || 0} bloques</div>
+            </div>
+        `).join('');
+    },
+    
+    // Select template
+    selectTemplate: function(templateId) {
+        // Remove previous selection
+        document.querySelectorAll('.template-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        
+        // Select new template
+        const selectedCard = document.querySelector(`[data-template-id="${templateId}"]`);
+        if (selectedCard) {
+            selectedCard.classList.add('selected');
+        }
+        
+        this.selectedTemplate = templateId;
+        
+        // Enable next button
+        this.updateButtons();
+    },
+    
+    // Filter templates by category
+    filterTemplates: function(category) {
+        // Update active category button
+        document.querySelectorAll('.template-categories .btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        const activeBtn = document.querySelector(`[data-category="${category}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+        
+        // Filter templates
+        let filteredTemplates = this.templates;
+        if (category !== 'all') {
+            filteredTemplates = this.templates.filter(template => 
+                template.category === category
+            );
+        }
+        
+        this.renderTemplates(filteredTemplates);
+    },
+    
+    // Search templates
+    searchTemplates: function(query) {
+        const filteredTemplates = this.templates.filter(template =>
+            template.name.toLowerCase().includes(query.toLowerCase()) ||
+            (template.description && template.description.toLowerCase().includes(query.toLowerCase()))
+        );
+        
+        this.renderTemplates(filteredTemplates);
+    },
+    
+    // Apply selected template
+    applyTemplate: async function() {
+        if (!this.selectedTemplate) return;
+        
+        try {
+            const response = await fetch(`/api/personal-space/templates/${this.selectedTemplate}/apply`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                }
+            });
+            
+            if (response.ok) {
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('block-factory-modal'));
+                if (modal) {
+                    modal.hide();
+                }
+                
+                // Refresh workspace
+                if (window.WorkspaceLayout && window.WorkspaceLayout.refreshBlocks) {
+                    window.WorkspaceLayout.refreshBlocks();
+                }
+                
+                this.showSuccessMessage('Plantilla aplicada exitosamente');
+                this.reset();
+            } else {
+                throw new Error('Error applying template');
+            }
+        } catch (error) {
+            console.error('Error applying template:', error);
+            this.showErrorMessage('Error al aplicar la plantilla. Inténtalo de nuevo.');
+        }
+    },
+    
+    // Show template error
+    showTemplateError: function(message) {
+        const templatesGrid = document.getElementById('templates-grid');
+        if (templatesGrid) {
+            templatesGrid.innerHTML = `
+                <div class="text-center py-4 text-danger">
+                    <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
+                    <p class="mt-2">${message}</p>
+                </div>
+            `;
+        }
+    },
+    
+    // Check if template mode is active
+    isTemplateMode: function() {
+        const templateTab = document.getElementById('template-tab');
+        return templateTab && templateTab.classList.contains('active');
     }
 };
 
@@ -1577,5 +1927,69 @@ document.addEventListener('DOMContentLoaded', function() {
             window.BlockFactory.reset();
         });
     }
+    
+    // Creation mode tabs event listeners
+    const individualTab = document.getElementById('individual-tab');
+    const templateTab = document.getElementById('template-tab');
+    
+    if (individualTab) {
+        individualTab.addEventListener('click', function() {
+            // Switch to individual mode
+            document.querySelectorAll('.creation-mode-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            this.classList.add('active');
+            
+            // Show/hide content
+            document.getElementById('individual-mode').classList.remove('d-none');
+            document.getElementById('template-mode').classList.add('d-none');
+            
+            // Update buttons
+            window.BlockFactory.updateButtons();
+        });
+    }
+    
+    if (templateTab) {
+        templateTab.addEventListener('click', function() {
+            // Switch to template mode
+            document.querySelectorAll('.creation-mode-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            this.classList.add('active');
+            
+            // Show/hide content
+            document.getElementById('individual-mode').classList.add('d-none');
+            document.getElementById('template-mode').classList.remove('d-none');
+            
+            // Load templates if not loaded
+            if (window.BlockFactory.templates.length === 0) {
+                window.BlockFactory.loadTemplates();
+            }
+            
+            // Update buttons
+            window.BlockFactory.updateButtons();
+        });
+    }
+    
+    // Template search functionality
+    const templateSearch = document.getElementById('template-search');
+    if (templateSearch) {
+        templateSearch.addEventListener('input', function() {
+            const query = this.value.trim();
+            if (query === '') {
+                window.BlockFactory.renderTemplates();
+            } else {
+                window.BlockFactory.searchTemplates(query);
+            }
+        });
+    }
+    
+    // Template category buttons
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('[data-category]')) {
+            const category = e.target.getAttribute('data-category');
+            window.BlockFactory.filterTemplates(category);
+        }
+    });
 });
 </script>

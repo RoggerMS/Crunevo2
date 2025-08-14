@@ -2122,9 +2122,12 @@ function setupModalBackdropCleanup() {
             const backdrops = document.querySelectorAll('.modal-backdrop');
             const openModals = document.querySelectorAll('.modal.show');
             
-            // If no modals are open, remove all backdrops
+            // If no modals are open, remove all backdrops and restore body scroll
             if (openModals.length === 0) {
                 backdrops.forEach(backdrop => backdrop.remove());
+                // Restore body scroll when all modals are closed
+                document.body.style.overflow = '';
+                document.body.classList.remove('modal-open');
             }
         }, 100);
     });

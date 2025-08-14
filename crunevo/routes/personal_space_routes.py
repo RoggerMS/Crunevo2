@@ -931,12 +931,32 @@ def search_blocks():
 @login_required
 @activated_required
 def block_analytics():
-    """Get block analytics."""
+    """Get comprehensive block analytics."""
     if not table_exists("personal_space_blocks"):
         current_app.logger.warning("personal_space_blocks table does not exist")
         return jsonify({"success": True, "analytics": {}})
     try:
-        analytics = BlockService.get_block_analytics(current_user.id)
+        from crunevo.services.analytics_service import AnalyticsService
+        
+        # Get comprehensive analytics data
+        dashboard_metrics = AnalyticsService.get_dashboard_metrics(current_user.id)
+        productivity_metrics = AnalyticsService.get_productivity_metrics(current_user.id)
+        goal_tracking = AnalyticsService.get_goal_tracking(current_user.id)
+        
+        # Combine all analytics data
+        analytics = {
+            "dashboard": dashboard_metrics,
+            "productivity": productivity_metrics,
+            "goals": goal_tracking,
+            "summary": {
+                "total_blocks": dashboard_metrics.get("active_blocks", 0),
+                "completed_tasks": dashboard_metrics.get("completed_tasks", 0),
+                "pending_tasks": dashboard_metrics.get("pending_tasks", 0),
+                "active_objectives": dashboard_metrics.get("active_objectives", 0),
+                "productivity_score": dashboard_metrics.get("productivity_score", 0),
+                "completion_rate": productivity_metrics.get("task_completion", {}).get("completion_rate", 0)
+            }
+        }
 
         return jsonify({"success": True, "analytics": analytics})
     except Exception as e:

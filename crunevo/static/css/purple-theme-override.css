@@ -1,0 +1,145 @@
+/* Purple Theme Override - Replace Blue Elements with Purple */
+
+/* Primary Button Styles */
+.btn-primary {
+    background-color: #8b5cf6 !important;
+    border-color: #8b5cf6 !important;
+    color: white !important;
+}
+
+.btn-primary:hover {
+    background-color: #7c3aed !important;
+    border-color: #7c3aed !important;
+    color: white !important;
+}
+
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: #6d28d9 !important;
+    border-color: #6d28d9 !important;
+    box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25) !important;
+}
+
+/* Primary Background and Text Colors */
+.bg-primary {
+    background-color: #8b5cf6 !important;
+}
+
+.text-primary {
+    color: #8b5cf6 !important;
+}
+
+.border-primary {
+    border-color: #8b5cf6 !important;
+}
+
+/* Primary Subtle Variants */
+.bg-primary-subtle {
+    background-color: rgba(139, 92, 246, 0.1) !important;
+}
+
+.text-primary-emphasis {
+    color: #6d28d9 !important;
+}
+
+/* Progress Bars */
+.progress-bar.bg-primary {
+    background-color: #8b5cf6 !important;
+}
+
+/* Badges */
+.badge.bg-primary {
+    background-color: #8b5cf6 !important;
+    color: white !important;
+}
+
+/* Spinners */
+.spinner-border.text-primary {
+    color: #8b5cf6 !important;
+}
+
+/* Links */
+a.text-primary {
+    color: #8b5cf6 !important;
+}
+
+a.text-primary:hover {
+    color: #7c3aed !important;
+}
+
+/* Form Controls Focus */
+.form-control:focus {
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25) !important;
+}
+
+/* Custom Color Options - Replace Blue with Purple */
+.color-option[data-color="blue"] {
+    background: #8b5cf6 !important;
+}
+
+/* Block Icons */
+.block-icon.text-primary {
+    color: #8b5cf6 !important;
+}
+
+/* Status Indicators */
+.status-active .text-primary {
+    color: #8b5cf6 !important;
+}
+
+/* Card Headers with Primary Color */
+.card-header.bg-primary {
+    background-color: #8b5cf6 !important;
+    border-color: #8b5cf6 !important;
+}
+
+/* Navigation Pills */
+.nav-pills .nav-link.active {
+    background-color: #8b5cf6 !important;
+}
+
+/* Dropdown Items */
+.dropdown-item:active {
+    background-color: #8b5cf6 !important;
+}
+
+/* Table Striped */
+.table-primary {
+    background-color: rgba(139, 92, 246, 0.1) !important;
+}
+
+/* Alert Primary */
+.alert-primary {
+    background-color: rgba(139, 92, 246, 0.1) !important;
+    border-color: rgba(139, 92, 246, 0.2) !important;
+    color: #6d28d9 !important;
+}
+
+/* List Group Items */
+.list-group-item.active {
+    background-color: #8b5cf6 !important;
+    border-color: #8b5cf6 !important;
+}
+
+/* Pagination */
+.page-link {
+    color: #8b5cf6 !important;
+}
+
+.page-item.active .page-link {
+    background-color: #8b5cf6 !important;
+    border-color: #8b5cf6 !important;
+}
+
+/* Outline Buttons */
+.btn-outline-primary {
+    color: #8b5cf6 !important;
+    border-color: #8b5cf6 !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: #8b5cf6 !important;
+    border-color: #8b5cf6 !important;
+    color: white !important;
+}

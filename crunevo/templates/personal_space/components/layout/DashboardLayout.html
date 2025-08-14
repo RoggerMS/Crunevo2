@@ -285,50 +285,17 @@
                             <div class="weekly-progress">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="progress-label">Productividad</span>
-                                    <span class="progress-value">85%</span>
+                                    <span class="progress-value" id="weekly-progress-value">0%</span>
                                 </div>
                                 <div class="progress" style="height: 8px;">
-                                    <div class="progress-bar bg-warning" style="width: 85%"></div>
+                                    <div class="progress-bar bg-warning" id="weekly-progress-bar" style="width: 0%"></div>
                                 </div>
                             </div>
                         </div>
                     {% endcall %}
                 </div>
                 
-                <!-- Quick Notes -->
-                <div class="quick-notes">
-                    {% call render_info_card(
-                        title='Notas Rápidas',
-                        icon='bi-sticky'
-                    ) %}
-                        <div class="notes-content">
-                            <div class="quick-note-input mb-3">
-                                <textarea class="form-control" 
-                                          placeholder="Escribe una nota rápida..." 
-                                          rows="3"
-                                          id="quick-note-text"></textarea>
-                                <button type="button" 
-                                        class="btn btn-primary btn-sm mt-2 w-100" 
-                                        onclick="saveQuickNote()">
-                                    <i class="bi bi-plus me-1"></i>
-                                    Guardar Nota
-                                </button>
-                            </div>
-                            
-                            <!-- Recent Notes -->
-                            <div class="recent-notes">
-                                <div class="note-item">
-                                    <p class="note-text">Recordar revisar el documento de especificaciones...</p>
-                                    <small class="note-time text-muted">Hace 2 horas</small>
-                                </div>
-                                <div class="note-item">
-                                    <p class="note-text">Ideas para la presentación del viernes</p>
-                                    <small class="note-time text-muted">Ayer</small>
-                                </div>
-                            </div>
-                        </div>
-                    {% endcall %}
-                </div>
+                <!-- Quick Notes section removed - functionality available in three dots menu -->
             </div>
         </div>
     </div>
@@ -843,7 +810,10 @@ window.DashboardLayout = {
     // Toggle dashboard view
     toggleView: function() {
         const grid = document.getElementById('dashboard-grid');
-        if (!grid) return;
+        if (!grid) {
+            console.warn('Dashboard grid element not found');
+            return;
+        }
         
         this.currentView = this.currentView === 'grid' ? 'list' : 'grid';
         
@@ -881,6 +851,36 @@ window.DashboardLayout = {
         if (savedNote && quickNoteText) {
             quickNoteText.value = savedNote;
         }
+        
+        // Load weekly progress data
+        this.loadWeeklyProgress();
+    },
+    
+    // Load weekly progress data
+    loadWeeklyProgress: async function() {
+        try {
+            const response = await fetch('/api/personal-space/analytics/weekly-progress');
+            if (response.ok) {
+                const data = await response.json();
+                this.updateWeeklyProgress(data.progress || 0);
+            }
+        } catch (error) {
+            console.error('Error loading weekly progress:', error);
+        }
+    },
+    
+    // Update weekly progress display
+    updateWeeklyProgress: function(progress) {
+        const progressValue = document.getElementById('weekly-progress-value');
+        const progressBar = document.getElementById('weekly-progress-bar');
+        
+        if (progressValue) {
+            progressValue.textContent = `${progress}%`;
+        }
+        
+        if (progressBar) {
+            progressBar.style.width = `${progress}%`;
+        }
     },
     
     // Save user preference
@@ -909,7 +909,13 @@ window.DashboardLayout = {
 
 // Global functions for template usage
 window.openBlockFactory = function() {
-    console.log('Open block factory');
+    const modal = new bootstrap.Modal(document.getElementById('blockFactoryModal'));
+    modal.show();
+};
+
+window.viewAllActivity = function() {
+    // Redirect to a dedicated activity page or show expanded activity modal
+    window.location.href = '/personal-space/activity';
 };
 
 window.createQuickNote = function() {
