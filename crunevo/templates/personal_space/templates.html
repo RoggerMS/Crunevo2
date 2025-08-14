@@ -1,6 +1,6 @@
 <!-- Personal Space Templates - Template management and gallery -->
 {% extends "base.html" %}
-{% from 'personal_space/components/widgets/TemplateGallery.html' import render_template_gallery, render_template_creation_modal, render_template_preview_modal %}
+{% from 'personal_space/components/widgets/TemplateGallery.html' import render_template_gallery, render_template_creator_modal, render_template_preview_modal %}
 {% from 'personal_space/components/base/BaseCard.html' import render_stat_card, render_info_card %}
 {% from 'personal_space/components/base/BaseModal.html' import render_confirmation_modal %}
 
@@ -864,7 +864,7 @@
 </div>
 
 <!-- Modals -->
-{{ render_template_creation_modal() }}
+{{ render_template_creator_modal() }}
 {{ render_template_preview_modal() }}
 {{ render_confirmation_modal(
     id='delete-template-modal',

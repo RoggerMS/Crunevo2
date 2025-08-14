@@ -159,12 +159,6 @@
         </div>
     </div>
 </div>
-
-<!-- Template Creator Modal -->
-{{ render_template_creator_modal() }}
-
-<!-- Template Preview Modal -->
-{{ render_template_preview_modal() }}
 {% endmacro %}
 
 <!-- Template Grid -->
@@ -541,6 +535,18 @@
     body=body,
     footer=footer
 ) }}
+{% endmacro %}
+
+<!-- Template Gallery Modal Wrapper -->
+{% macro render_template_gallery_modal(templates=none, user_templates=none, categories=none) %}
+{{ render_base_modal(
+    modal_id='template-gallery-modal',
+    title='Galería de Plantillas',
+    size='xl',
+    body=render_template_gallery(templates, user_templates, categories)
+) }}
+{{ render_template_creator_modal() }}
+{{ render_template_preview_modal() }}
 {% endmacro %}
 
 <style>
