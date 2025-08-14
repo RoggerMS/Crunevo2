@@ -138,8 +138,8 @@ function initializeEventListeners() {
     try {
         console.log('Initializing event listeners...');
         
-        // Add block buttons with improved error handling
-        const addBlockSelectors = ['#addBlockBtn', '[data-bs-target="#block-factory-modal"]', '.quick-action-btn'];
+        // Add block buttons with improved error handling - Using specific IDs and selectors
+        const addBlockSelectors = ['#addBlockBtn', '#new-block-btn', '#create-first-block-btn', '[data-bs-target="#block-factory-modal"]:not(.dropdown-toggle)'];
         addBlockSelectors.forEach(selector => {
             const buttons = document.querySelectorAll(selector);
             buttons.forEach(btn => {
