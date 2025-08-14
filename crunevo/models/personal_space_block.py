@@ -14,6 +14,7 @@ class PersonalSpaceBlock(db.Model):
     metadata_json = db.Column("metadata", db.JSON, default=dict)
     order_index = db.Column(db.Integer, default=0)
     status = db.Column(db.String(20), default="active")
+    is_featured = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
@@ -30,6 +31,7 @@ class PersonalSpaceBlock(db.Model):
             "metadata": self.metadata_json or {},
             "order_index": self.order_index,
             "status": self.status,
+            "is_featured": self.is_featured,
         }
 
     def get_metadata(self):

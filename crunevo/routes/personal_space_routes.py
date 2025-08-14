@@ -305,6 +305,26 @@ def create_block():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@personal_space_api_bp.route("/blocks/<string:block_id>", methods=["GET"])
+@login_required
+@activated_required
+def get_block(block_id):
+    """Get a specific block by ID."""
+    if not table_exists("personal_space_blocks"):
+        current_app.logger.warning("personal_space_blocks table does not exist")
+        return jsonify({"success": False, "error": "Personal space unavailable"}), 503
+    try:
+        block = BlockService.get_block(block_id, current_user.id)
+        
+        if not block:
+            return jsonify({"success": False, "error": "Block not found"}), 404
+        
+        return jsonify({"success": True, "block": block.to_dict()})
+    except Exception as e:
+        current_app.logger.error("Error getting personal space block: %s", e)
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 @personal_space_api_bp.route("/blocks/<string:block_id>", methods=["PUT"])
 @login_required
 @activated_required

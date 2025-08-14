@@ -41,9 +41,6 @@ def upgrade():
                 nullable=False,
             ),
         )
-        op.execute(
-            "ALTER TABLE forum_question ALTER COLUMN requires_review DROP DEFAULT"
-        )
 
     if has_table("forum_answer", conn) and not has_column(
         "forum_answer", "requires_review", conn
@@ -57,7 +54,6 @@ def upgrade():
                 nullable=False,
             ),
         )
-        op.execute("ALTER TABLE forum_answer ALTER COLUMN requires_review DROP DEFAULT")
 
 
 def downgrade():

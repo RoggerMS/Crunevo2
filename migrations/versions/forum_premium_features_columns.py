@@ -40,9 +40,6 @@ def upgrade():
                     nullable=False,
                 ),
             )
-            op.execute(
-                "ALTER TABLE forum_question ALTER COLUMN is_boosted DROP DEFAULT"
-            )
         if not has_column("forum_question", "boost_expires", conn):
             op.add_column("forum_question", sa.Column("boost_expires", sa.DateTime()))
 
@@ -56,9 +53,6 @@ def upgrade():
                     server_default=sa.text("false"),
                     nullable=False,
                 ),
-            )
-            op.execute(
-                "ALTER TABLE forum_answer ALTER COLUMN is_highlighted DROP DEFAULT"
             )
         if not has_column("forum_answer", "highlight_expires", conn):
             op.add_column("forum_answer", sa.Column("highlight_expires", sa.DateTime()))

@@ -138,7 +138,7 @@ function initializeAutoSave() {
 
 // Block Management Functions
 function loadBlocks() {
-    fetch('/api/personal-space/blocks')
+    csrfFetch('/api/personal-space/blocks')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -401,11 +401,10 @@ function handleModalEvents(e) {
 }
 
 function apiCreateBlock(blockData) {
-    return fetch('/api/personal-space/create-block', {
+    return csrfFetch('/api/personal-space/blocks', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken()
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(blockData)
     }).then(response => response.json());
@@ -490,11 +489,10 @@ function getDefaultMetadata(type) {
 
 function startPersonalSpace() {
     const requests = ['nota_enriquecida', 'kanban', 'objetivo'].map(type =>
-        fetch('/api/personal-space/create-block', {
+        csrfFetch('/api/personal-space/blocks', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCsrfToken()
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 type,
@@ -561,7 +559,7 @@ function showEditBlockModal(blockId) {
     document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
 
     // Prefer fetching only this block if endpoint exists
-    fetch(`/api/personal-space/blocks/${blockId}`)
+    csrfFetch(`/api/personal-space/blocks/${blockId}`)
         .then(response => {
             if (!response.ok) throw new Error('single-endpoint-missing');
             return response.json();
@@ -575,7 +573,7 @@ function showEditBlockModal(blockId) {
         })
         .catch(() => {
             // Fallback to full list fetch
-            fetch(`/api/personal-space/blocks`)
+            csrfFetch(`/api/personal-space/blocks`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -842,11 +840,10 @@ function saveCurrentBlock() {
     }
 
     // Save to server
-    fetch(`/api/personal-space/blocks/${currentEditingBlock}`, {
+    csrfFetch(`/api/personal-space/blocks/${currentEditingBlock}`, {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken()
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(updateData)
     })
@@ -900,11 +897,8 @@ function deleteBlock(blockId) {
         return;
     }
 
-    fetch(`/api/personal-space/blocks/${blockId}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRFToken': getCsrfToken()
-        }
+    csrfFetch(`/api/personal-space/blocks/${blockId}`, {
+        method: 'DELETE'
     })
     .then(response => response.json())
     .then(data => {
@@ -953,11 +947,10 @@ function toggleBlockFeatured(blockId) {
     const blockCard = document.querySelector(`[data-block-id="${blockId}"]`);
     const isFeatured = blockCard.classList.contains('featured');
 
-    fetch(`/api/personal-space/blocks/${blockId}`, {
+    csrfFetch(`/api/personal-space/blocks/${blockId}`, {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken()
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             is_featured: !isFeatured
@@ -1010,11 +1003,10 @@ function updateBlockOrder() {
         }
     });
 
-    fetch('/api/personal-space/blocks/reorder', {
+    csrfFetch('/api/personal-space/blocks/reorder', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken()
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({ blocks })
     })
@@ -1142,11 +1134,10 @@ function handleSuggestionClick(e) {
                 break;
             case 'create_nota_block':
                 if (!blockTypeExists('nota_enriquecida')) {
-                    fetch('/api/personal-space/create-block', {
+                    csrfFetch('/api/personal-space/blocks', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCsrfToken()
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
                             type: 'nota_enriquecida',
@@ -1165,11 +1156,10 @@ function handleSuggestionClick(e) {
                 break;
             case 'create_kanban_block':
                 if (!blockTypeExists('kanban')) {
-                    fetch('/api/personal-space/create-block', {
+                    csrfFetch('/api/personal-space/blocks', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCsrfToken()
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
                             type: 'kanban',
@@ -1479,11 +1469,10 @@ function saveKanbanState(kanbanId) {
     });
 
     // Save to backend
-    fetch(`/api/personal-space/blocks/${kanbanId}`, {
+    csrfFetch(`/api/personal-space/blocks/${kanbanId}`, {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken()
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             metadata: { columns: columns }
@@ -1495,11 +1484,10 @@ function toggleTask(blockId) {
     const checkbox = event.target;
     const completed = checkbox.checked;
 
-    fetch(`/api/personal-space/blocks/${blockId}`, {
+    csrfFetch(`/api/personal-space/blocks/${blockId}`, {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken()
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             metadata: { completed: completed }
@@ -1569,11 +1557,10 @@ function autoSaveBlock(blockId, element) {
         data.content = element.textContent;
     }
 
-    fetch(`/api/personal-space/blocks/${blockId}`, {
+    csrfFetch(`/api/personal-space/blocks/${blockId}`, {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken()
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
     }).catch(error => console.error('Auto-save error:', error));

@@ -160,6 +160,13 @@ class BlockService:
             return False
 
     @staticmethod
+    def get_block(block_id: str, user_id: int) -> Optional[PersonalSpaceBlock]:
+        """Get a specific block by ID and user ID."""
+        return PersonalSpaceBlock.query.filter_by(
+            id=block_id, user_id=user_id, status="active"
+        ).first()
+
+    @staticmethod
     def get_user_blocks(
         user_id: int, status: str = "active", block_type: Optional[str] = None
     ) -> List[PersonalSpaceBlock]:

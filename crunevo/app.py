@@ -720,7 +720,7 @@ def create_app():
 
             ensure_database_ready()
 
-    if not app.debug:
+    if not app.debug and not is_serverless:
         if not os.path.exists("logs"):
             os.mkdir("logs")
         file_handler = RotatingFileHandler(
@@ -730,6 +730,7 @@ def create_app():
         file_handler.setFormatter(JSONRequestFormatter())
         app.logger.addHandler(file_handler)
 
+    if not app.debug:
         app.logger.setLevel(logging.INFO)
         app.logger.info("CRUNEVO startup")
         app.logger.info("Debug=%s", app.debug)

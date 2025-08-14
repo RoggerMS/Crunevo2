@@ -11,6 +11,11 @@ os.environ.setdefault("RATELIMIT_STORAGE_URI", "memory://")  # Use memory storag
 # Disable eventlet for serverless compatibility
 os.environ.setdefault("DISABLE_EVENTLET", "1")
 
+# Use in-memory SQLite for serverless compatibility
+if not os.getenv("DATABASE_URL"):
+    # For Vercel, use in-memory SQLite to prevent "Read-only file system" error
+    os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
+
 try:
     from crunevo.app import create_app
 
