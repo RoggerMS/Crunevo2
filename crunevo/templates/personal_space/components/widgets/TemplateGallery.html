@@ -132,7 +132,7 @@
              id="featured-templates" 
              role="tabpanel">
             <div class="templates-grid" id="featured-grid">
-                {{ render_template_grid(templates or get_featured_templates()) }}
+                {{ render_template_grid(templates or []) }}
             </div>
         </div>
         
@@ -141,7 +141,7 @@
              id="community-templates" 
              role="tabpanel">
             <div class="templates-grid" id="community-grid">
-                {{ render_template_grid(get_community_templates()) }}
+                {{ render_template_grid([]) }}
             </div>
         </div>
         

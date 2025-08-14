@@ -1322,3 +1322,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Addressed remaining ruff lint errors by removing unused variables, replacing `== True` checks with direct attribute access, importing missing modules and capturing exception messages. (PR ruff-lint-cleanup)
 - Reworked BaseModal to accept body and footer parameters and updated BlockFactory and TemplateGallery templates accordingly, fixing caller argument errors on `/personal-space/`. (PR render-base-modal-caller-fix)
 - Added `render_template_gallery_modal` wrapper and corrected template imports to prevent 500 errors on `/personal-space/`. (PR personal-space-gallery-modal-fix)
+- Removed undefined Jinja calls to get_featured_templates and get_community_templates in TemplateGallery, rendering empty grids by default to avoid 500 errors on /personal-space/. (PR personal-space-template-grid-fallback)
