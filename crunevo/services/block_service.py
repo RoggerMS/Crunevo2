@@ -104,7 +104,7 @@ class BlockService:
         cleaned_data = validation_result["cleaned_data"]
 
         # Update fields
-        for field in ["title", "content", "status"]:
+        for field in ["title", "content", "status", "is_featured"]:
             if field in update_data:
                 if field in cleaned_data:
                     setattr(block, field, cleaned_data[field])

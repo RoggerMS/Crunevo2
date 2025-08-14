@@ -18,13 +18,10 @@ depends_on = None
 
 def upgrade():
     # Add is_featured column to personal_space_blocks table
-    op.add_column('personal_space_blocks', sa.Column('is_featured', sa.Boolean(), nullable=True, default=False))
+    op.add_column('personal_space_blocks', sa.Column('is_featured', sa.Boolean(), nullable=False, default=False))
     
     # Update existing records to have is_featured = False
-    op.execute("UPDATE personal_space_blocks SET is_featured = FALSE WHERE is_featured IS NULL")
-    
-    # Make the column non-nullable after setting default values
-    op.alter_column('personal_space_blocks', 'is_featured', nullable=False)
+    op.execute("UPDATE personal_space_blocks SET is_featured = 0 WHERE is_featured IS NULL")
 
 
 def downgrade():
