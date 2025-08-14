@@ -1,30 +1,34 @@
 <!-- BaseModal Component - Reusable modal foundation -->
-{% macro render_base_modal(modal_id, title, size='modal-lg', backdrop='true', keyboard='true') %}
-<div class="modal fade" id="{{ modal_id }}" tabindex="-1" 
-     data-bs-backdrop="{{ backdrop }}" 
-     data-bs-keyboard="{{ keyboard }}" 
-     aria-labelledby="{{ modal_id }}Label" 
+{% macro render_base_modal(modal_id, title, body='', footer='', size='modal-lg', backdrop='true', keyboard='true') %}
+<div class="modal fade" id="{{ modal_id }}" tabindex="-1"
+     data-bs-backdrop="{{ backdrop }}"
+     data-bs-keyboard="{{ keyboard }}"
+     aria-labelledby="{{ modal_id }}Label"
      aria-hidden="true">
     <div class="modal-dialog {{ size }} modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header border-0 pb-0">
                 <h5 class="modal-title fw-semibold" id="{{ modal_id }}Label">
-                    {% block modal_title %}{{ title }}{% endblock %}
+                    {{ title }}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            
+
             <div class="modal-body pt-3">
-                {% block modal_body %}
+                {% if body %}
+                {{ body }}
+                {% else %}
                 <p class="text-muted">Contenido del modal</p>
-                {% endblock %}
+                {% endif %}
             </div>
-            
+
             <div class="modal-footer border-0 pt-0">
-                {% block modal_footer %}
+                {% if footer %}
+                {{ footer }}
+                {% else %}
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary">Guardar</button>
-                {% endblock %}
+                {% endif %}
             </div>
         </div>
     </div>
