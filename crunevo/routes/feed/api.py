@@ -136,7 +136,9 @@ def comment_post(post_id):
         )
         return jsonify({"error": "Comentarios deshabilitados"}), 403
     if post.comment_permission == "friends" and post.author_id != current_user.id:
-        if hasattr(post.author, "is_friend") and not post.author.is_friend(current_user):
+        if hasattr(post.author, "is_friend") and not post.author.is_friend(
+            current_user
+        ):
             current_app.logger.info(
                 "Comment blocked: friend-only user=%s post=%s",
                 current_user.id,

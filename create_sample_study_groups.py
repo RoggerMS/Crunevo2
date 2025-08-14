@@ -6,7 +6,6 @@ Script para crear grupos de estudio de ejemplo en Crunevo
 
 import sys
 import os
-from datetime import datetime, timedelta
 
 # Añadir el directorio raíz al path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -14,19 +13,21 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from crunevo import create_app
 from crunevo.extensions import db
 from crunevo.models.social import StudyGroup, StudyGroupMember
-from crunevo.models.user import User
+
 
 def create_sample_study_groups():
     """Crear grupos de estudio de ejemplo"""
     app = create_app()
-    
+
     with app.app_context():
         # Verificar si ya existen grupos de estudio
         existing_groups = StudyGroup.query.count()
         if existing_groups > 0:
-            print(f"Ya existen {existing_groups} grupos de estudio en la base de datos.")
+            print(
+                f"Ya existen {existing_groups} grupos de estudio en la base de datos."
+            )
             return
-        
+
         # Obtener un usuario existente para usar como creador
         try:
             # Usar ID 1 directamente para evitar problemas de consulta
@@ -35,7 +36,7 @@ def create_sample_study_groups():
         except Exception as e:
             print(f"Error getting user: {e}")
             return
-        
+
         # Grupos de estudio de ejemplo
         study_groups = [
             {
@@ -44,7 +45,7 @@ def create_sample_study_groups():
                 "subject": "Matemáticas",
                 "max_members": 8,
                 "creator_id": creator_id,
-                "is_active": True
+                "is_active": True,
             },
             {
                 "name": "Programación Web",
@@ -52,7 +53,7 @@ def create_sample_study_groups():
                 "subject": "Programación",
                 "max_members": 6,
                 "creator_id": creator_id,
-                "is_active": True
+                "is_active": True,
             },
             {
                 "name": "Ciencias Naturales",
@@ -60,7 +61,7 @@ def create_sample_study_groups():
                 "subject": "Ciencias",
                 "max_members": 10,
                 "creator_id": creator_id,
-                "is_active": True
+                "is_active": True,
             },
             {
                 "name": "Historia Mundial",
@@ -68,7 +69,7 @@ def create_sample_study_groups():
                 "subject": "Historia",
                 "max_members": 12,
                 "creator_id": creator_id,
-                "is_active": True
+                "is_active": True,
             },
             {
                 "name": "Literatura Clásica",
@@ -76,7 +77,7 @@ def create_sample_study_groups():
                 "subject": "Literatura",
                 "max_members": 7,
                 "creator_id": creator_id,
-                "is_active": True
+                "is_active": True,
             },
             {
                 "name": "Inglés Conversacional",
@@ -84,45 +85,46 @@ def create_sample_study_groups():
                 "subject": "Idiomas",
                 "max_members": 5,
                 "creator_id": creator_id,
-                "is_active": True
-            }
+                "is_active": True,
+            },
         ]
-        
+
         # Crear grupos de estudio
         created_count = 0
         group_ids = []
-        
+
         for group_data in study_groups:
             study_group = StudyGroup(**group_data)
             db.session.add(study_group)
             db.session.flush()  # Para obtener el ID
             group_ids.append(study_group.id)
             created_count += 1
-        
+
         # Agregar el creador como miembro de cada grupo
         for group_id in group_ids:
             member = StudyGroupMember(
-                group_id=group_id,
-                user_id=creator_id,
-                is_active=True
+                group_id=group_id, user_id=creator_id, is_active=True
             )
             db.session.add(member)
-        
+
         try:
             db.session.commit()
             print(f"Successfully created {created_count} sample study groups!")
-            
+
             # Mostrar grupos creados
             print("\nCreated study groups:")
             for group in StudyGroup.query.all():
                 member_count = len(group.members)
                 status = "active" if group.is_active else "inactive"
-                print(f"- {group.name} ({group.subject}) - {member_count}/{group.max_members} members - {status}")
-                
+                print(
+                    f"- {group.name} ({group.subject}) - {member_count}/{group.max_members} members - {status}"
+                )
+
         except Exception as e:
             db.session.rollback()
             print(f"Error creating study groups: {e}")
             raise
+
 
 if __name__ == "__main__":
     create_sample_study_groups()

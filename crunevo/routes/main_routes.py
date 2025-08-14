@@ -18,7 +18,7 @@ def index():
     except Exception:
         # If there's a database error, treat as not authenticated
         user_authenticated = False
-    
+
     if user_authenticated:
         if current_app.config.get("ADMIN_INSTANCE"):
             return redirect(url_for("admin.dashboard"))

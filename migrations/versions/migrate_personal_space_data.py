@@ -5,38 +5,41 @@ Revises: personal_space_redesign_schema
 Create Date: 2024-01-15 10:30:00.000000
 
 """
+
 from alembic import op
-import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
-from sqlalchemy import text, inspect
+from sqlalchemy import inspect
 
 # revision identifiers, used by Alembic.
-revision = 'migrate_personal_space_data'
-down_revision = 'personal_space_redesign_schema'
+revision = "migrate_personal_space_data"
+down_revision = "personal_space_redesign_schema"
 branch_labels = None
 depends_on = None
 
+
 def upgrade():
     connection = op.get_bind()
-    if connection.dialect.name == 'sqlite':
+    if connection.dialect.name == "sqlite":
         return
 
     # Create temporary table for migration mapping
-    op.execute("""
+    op.execute(
+        """
         CREATE TEMP TABLE block_migration_map (
             old_id INTEGER,
             new_id UUID,
             migration_status VARCHAR(20)
         )
-    """)
+    """
+    )
 
     # Check if old personal space tables exist and migrate data
     inspector = inspect(connection)
-    old_table_exists = 'block' in inspector.get_table_names()
-    
+    old_table_exists = "block" in inspector.get_table_names()
+
     if old_table_exists:
         # Migrate existing blocks to new structure
-        op.execute("""
+        op.execute(
+            """
             INSERT INTO personal_space_blocks (id, user_id, type, title, content, metadata, order_index, status, created_at, updated_at)
             SELECT 
                 gen_random_uuid() as id,
@@ -59,10 +62,12 @@ def upgrade():
                 COALESCE(updated_at, NOW()) as updated_at
             FROM block
             WHERE deleted_at IS NULL OR deleted_at IS NOT NULL
-        """)
-        
+        """
+        )
+
         # Record migration mapping
-        op.execute("""
+        op.execute(
+            """
             INSERT INTO block_migration_map (old_id, new_id, migration_status)
             SELECT 
                 ob.id as old_id,
@@ -72,10 +77,12 @@ def upgrade():
             JOIN personal_space_blocks nb ON ob.user_id = nb.user_id 
                 AND COALESCE(ob.title, 'Sin título') = nb.title
                 AND ob.type = nb.type
-        """)
-        
+        """
+        )
+
         # Update metadata with migration information
-        op.execute("""
+        op.execute(
+            """
             UPDATE personal_space_blocks 
             SET metadata = metadata || jsonb_build_object(
                 'migrated_from', 'legacy_system',
@@ -87,10 +94,12 @@ def upgrade():
                 )
             )
             WHERE id IN (SELECT new_id FROM block_migration_map)
-        """)
-    
+        """
+        )
+
     # Create additional templates based on popular block types
-    op.execute("""
+    op.execute(
+        """
         INSERT INTO personal_space_templates (name, description, template_data, category, is_public)
         SELECT 
             'Plantilla ' || type || ' Popular' as name,
@@ -114,10 +123,12 @@ def upgrade():
             SELECT 1 FROM personal_space_templates 
             WHERE name = 'Plantilla ' || popular_types.type || ' Popular'
         )
-    """)
-    
+    """
+    )
+
     # Create analytics events for existing blocks
-    op.execute("""
+    op.execute(
+        """
         INSERT INTO personal_space_analytics_events (user_id, event_type, event_data)
         SELECT 
             user_id,
@@ -129,21 +140,29 @@ def upgrade():
             ) as event_data
         FROM personal_space_blocks
         WHERE metadata->>'migrated_from' = 'legacy_system'
-    """)
+    """
+    )
+
 
 def downgrade():
     # Remove migrated data (be careful with this in production)
-    op.execute("""
+    op.execute(
+        """
         DELETE FROM personal_space_analytics_events 
         WHERE event_type = 'block_migrated'
-    """)
-    
-    op.execute("""
+    """
+    )
+
+    op.execute(
+        """
         DELETE FROM personal_space_templates 
         WHERE category = 'auto_generated'
-    """)
-    
-    op.execute("""
+    """
+    )
+
+    op.execute(
+        """
         DELETE FROM personal_space_blocks 
         WHERE metadata->>'migrated_from' = 'legacy_system'
-    """)
+    """
+    )

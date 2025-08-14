@@ -357,7 +357,9 @@ def create_app():
         return response
 
     # Initialize database if needed (skip during tests and serverless)
-    is_serverless = os.environ.get('VERCEL') or os.environ.get('AWS_LAMBDA_FUNCTION_NAME')
+    is_serverless = os.environ.get("VERCEL") or os.environ.get(
+        "AWS_LAMBDA_FUNCTION_NAME"
+    )
     with app.app_context():
         if not testing_env and not is_serverless:
             try:
@@ -378,7 +380,9 @@ def create_app():
             except Exception as e:
                 app.logger.error(f"Database initialization error: {e}")
         elif is_serverless:
-            app.logger.info("Skipping database initialization in serverless environment")
+            app.logger.info(
+                "Skipping database initialization in serverless environment"
+            )
 
         try:
             from .models import SiteConfig
@@ -641,24 +645,25 @@ def create_app():
             db.session.rollback()
         except Exception:
             pass  # Ignore rollback errors
-        
+
         try:
             code = getattr(e, "code", 500)
             try:
                 code = int(code)
             except (TypeError, ValueError):
                 code = 500
-            
+
             # Safely get user_id without triggering database queries
             user_id = None
             try:
                 # Try to get user_id from session without accessing current_user
                 from flask import session
-                if '_user_id' in session:
-                    user_id = session['_user_id']
+
+                if "_user_id" in session:
+                    user_id = session["_user_id"]
             except Exception:
                 pass  # If we can't get user_id safely, just use None
-            
+
             err = SystemErrorLog(
                 ruta=request.path,
                 mensaje=str(e),
@@ -669,7 +674,9 @@ def create_app():
             db.session.commit()
         except Exception:
             # If logging fails, don't access current_user or database
-            app.logger.exception("Failed to log system error - avoiding database access")
+            app.logger.exception(
+                "Failed to log system error - avoiding database access"
+            )
 
         if isinstance(e, HTTPException):
             code = e.code
@@ -705,7 +712,8 @@ def create_app():
 
     # Initialize database tables (skip in serverless)
     if not is_serverless and not (
-        app.config.get("TESTING") and "test_migrations.py" in os.getenv("PYTEST_CURRENT_TEST", "")
+        app.config.get("TESTING")
+        and "test_migrations.py" in os.getenv("PYTEST_CURRENT_TEST", "")
     ):
         with app.app_context():
             from .utils.db_init import ensure_database_ready

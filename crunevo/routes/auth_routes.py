@@ -633,7 +633,10 @@ def upload_profile_picture():
     """Upload a new avatar and return its URL as JSON."""
     file = request.files.get("avatar")
     if not file or not file.filename:
-        return jsonify({"success": False, "message": "No se seleccionó ningún archivo"}), 400
+        return (
+            jsonify({"success": False, "message": "No se seleccionó ningún archivo"}),
+            400,
+        )
 
     try:
         cloud_url = current_app.config.get("CLOUDINARY_URL")
@@ -662,7 +665,10 @@ def upload_banner_ajax():
     """Upload a new banner and return its URL as JSON."""
     file = request.files.get("banner")
     if not file or not file.filename:
-        return jsonify({"success": False, "message": "No se seleccionó ningún archivo"}), 400
+        return (
+            jsonify({"success": False, "message": "No se seleccionó ningún archivo"}),
+            400,
+        )
 
     try:
         cloud_url = current_app.config.get("CLOUDINARY_URL")

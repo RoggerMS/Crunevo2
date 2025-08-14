@@ -12,37 +12,40 @@ from authlib.integrations.flask_client import OAuth
 import errno
 import os
 
+
 # Redis client setup
 class MockRedis:
     def __init__(self):
         self._data = {}
-    
+
     def get(self, key):
         return self._data.get(key)
-    
+
     def set(self, key, value, ex=None):
         self._data[key] = value
         return True
-    
+
     def delete(self, *keys):
         for key in keys:
             self._data.pop(key, None)
         return len(keys)
-    
+
     def exists(self, key):
         return key in self._data
-    
+
     def flushdb(self):
         self._data.clear()
         return True
-    
+
     def ping(self):
         return True
 
+
 try:
     import redis
+
     # Try to connect to Redis, fallback to mock if not available
-    redis_url = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+    redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
     redis_client = redis.from_url(redis_url, decode_responses=True)
     # Test connection
     redis_client.ping()
@@ -52,10 +55,11 @@ except Exception:
 # BEGIN: make eventlet optional for local dev compatibility
 USE_EVENTLET = False
 # Check if eventlet is disabled via environment variable (for serverless)
-if not os.environ.get('DISABLE_EVENTLET'):
+if not os.environ.get("DISABLE_EVENTLET"):
     try:
         from eventlet import websocket  # type: ignore
         from eventlet.greenio.base import shutdown_safe  # type: ignore
+
         USE_EVENTLET = True
     except Exception:
         websocket = None  # type: ignore

@@ -121,9 +121,7 @@ def upgrade():
         sa.Column("user_id", sa.Integer(), nullable=True),
         sa.Column("name", sa.String(length=255), nullable=False),
         sa.Column("description", sa.Text(), nullable=True),
-        sa.Column(
-            "template_data", sa.JSON(), nullable=False
-        ),
+        sa.Column("template_data", sa.JSON(), nullable=False),
         sa.Column("category", sa.String(length=100), nullable=True),
         sa.Column(
             "is_public", sa.Boolean(), nullable=True, server_default=sa.text("false")

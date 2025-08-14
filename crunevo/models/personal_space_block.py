@@ -15,7 +15,9 @@ class PersonalSpaceBlock(db.Model):
     order_index = db.Column(db.Integer, default=0)
     status = db.Column(db.String(20), default="active")
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
 
     user = db.relationship("User", backref="personal_space_blocks")
 
