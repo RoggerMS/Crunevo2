@@ -300,24 +300,20 @@
 
 <!-- Template Creator Modal -->
 {% macro render_template_creator_modal() %}
-{% call render_base_modal(
-    modal_id='template-creator-modal',
-    title='Crear Nueva Plantilla',
-    size='lg'
-) %}
+{% set body %}
     <form id="template-creator-form" onsubmit="createTemplate(event)">
         <!-- Basic Info -->
         <div class="row g-3 mb-4">
             <div class="col-md-8">
                 <label for="template-name" class="form-label">Nombre de la plantilla</label>
-                <input type="text" 
-                       class="form-control" 
-                       id="template-name" 
-                       name="name" 
-                       required 
+                <input type="text"
+                       class="form-control"
+                       id="template-name"
+                       name="name"
+                       required
                        placeholder="Ej: Dashboard de Productividad">
             </div>
-            
+
             <div class="col-md-4">
                 <label for="template-category" class="form-label">Categoría</label>
                 <select class="form-select" id="template-category" name="category" required>
@@ -330,32 +326,32 @@
                 </select>
             </div>
         </div>
-        
+
         <div class="mb-4">
             <label for="template-description" class="form-label">Descripción</label>
-            <textarea class="form-control" 
-                      id="template-description" 
-                      name="description" 
-                      rows="3" 
+            <textarea class="form-control"
+                      id="template-description"
+                      name="description"
+                      rows="3"
                       placeholder="Describe qué incluye esta plantilla y para qué es útil..."></textarea>
         </div>
-        
+
         <!-- Template Configuration -->
         <div class="template-config mb-4">
             <h5 class="config-title mb-3">
                 <i class="bi bi-gear me-2"></i>
                 Configuración de la Plantilla
             </h5>
-            
+
             <!-- Blocks Selection -->
             <div class="blocks-selection mb-3">
                 <label class="form-label">Bloques incluidos</label>
                 <div class="blocks-grid">
                     <div class="block-option">
-                        <input type="checkbox" 
-                               class="form-check-input" 
-                               id="include-notes" 
-                               name="blocks[]" 
+                        <input type="checkbox"
+                               class="form-check-input"
+                               id="include-notes"
+                               name="blocks[]"
                                value="nota">
                         <label for="include-notes" class="block-label">
                             <div class="block-icon">
@@ -364,12 +360,12 @@
                             <span>Notas</span>
                         </label>
                     </div>
-                    
+
                     <div class="block-option">
-                        <input type="checkbox" 
-                               class="form-check-input" 
-                               id="include-tasks" 
-                               name="blocks[]" 
+                        <input type="checkbox"
+                               class="form-check-input"
+                               id="include-tasks"
+                               name="blocks[]"
                                value="tarea">
                         <label for="include-tasks" class="block-label">
                             <div class="block-icon">
@@ -378,12 +374,12 @@
                             <span>Tareas</span>
                         </label>
                     </div>
-                    
+
                     <div class="block-option">
-                        <input type="checkbox" 
-                               class="form-check-input" 
-                               id="include-objectives" 
-                               name="blocks[]" 
+                        <input type="checkbox"
+                               class="form-check-input"
+                               id="include-objectives"
+                               name="blocks[]"
                                value="objetivo">
                         <label for="include-objectives" class="block-label">
                             <div class="block-icon">
@@ -392,12 +388,12 @@
                             <span>Objetivos</span>
                         </label>
                     </div>
-                    
+
                     <div class="block-option">
-                        <input type="checkbox" 
-                               class="form-check-input" 
-                               id="include-kanban" 
-                               name="blocks[]" 
+                        <input type="checkbox"
+                               class="form-check-input"
+                               id="include-kanban"
+                               name="blocks[]"
                                value="kanban">
                         <label for="include-kanban" class="block-label">
                             <div class="block-icon">
@@ -408,7 +404,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Layout Configuration -->
             <div class="layout-config mb-3">
                 <label class="form-label">Diseño de cuadrícula</label>
@@ -421,13 +417,13 @@
                             <option value="xlarge">Extra grande (4 columnas)</option>
                         </select>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" 
-                                   type="checkbox" 
-                                   id="auto-arrange" 
-                                   name="auto_arrange" 
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="auto-arrange"
+                                   name="auto_arrange"
                                    checked>
                             <label class="form-check-label" for="auto-arrange">
                                 Organizar automáticamente
@@ -436,31 +432,31 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Sharing Options -->
             <div class="sharing-options">
                 <label class="form-label">Opciones de compartir</label>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="form-check">
-                            <input class="form-check-input" 
-                                   type="radio" 
-                                   name="visibility" 
-                                   id="private-template" 
-                                   value="private" 
+                            <input class="form-check-input"
+                                   type="radio"
+                                   name="visibility"
+                                   id="private-template"
+                                   value="private"
                                    checked>
                             <label class="form-check-label" for="private-template">
                                 <strong>Privada</strong> - Solo yo puedo usarla
                             </label>
                         </div>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <div class="form-check">
-                            <input class="form-check-input" 
-                                   type="radio" 
-                                   name="visibility" 
-                                   id="public-template" 
+                            <input class="form-check-input"
+                                   type="radio"
+                                   name="visibility"
+                                   id="public-template"
                                    value="public">
                             <label class="form-check-label" for="public-template">
                                 <strong>Pública</strong> - Compartir con la comunidad
@@ -470,7 +466,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Preview Area -->
         <div class="template-preview-area mb-4">
             <h5 class="preview-title mb-3">
@@ -485,60 +481,66 @@
             </div>
         </div>
     </form>
-    
-    <!-- Modal Footer -->
-    <div slot="footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            Cancelar
-        </button>
-        <button type="button" 
-                class="btn btn-outline-primary" 
-                onclick="previewTemplateCreation()">
-            <i class="bi bi-eye me-1"></i>
-            Vista Previa
-        </button>
-        <button type="submit" 
-                class="btn btn-primary" 
-                form="template-creator-form">
-            <i class="bi bi-check-lg me-1"></i>
-            Crear Plantilla
-        </button>
-    </div>
-{% endcall %}
+{% endset %}
+{% set footer %}
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        Cancelar
+    </button>
+    <button type="button"
+            class="btn btn-outline-primary"
+            onclick="previewTemplateCreation()">
+        <i class="bi bi-eye me-1"></i>
+        Vista Previa
+    </button>
+    <button type="submit"
+            class="btn btn-primary"
+            form="template-creator-form">
+        <i class="bi bi-check-lg me-1"></i>
+        Crear Plantilla
+    </button>
+{% endset %}
+{{ render_base_modal(
+    modal_id='template-creator-modal',
+    title='Crear Nueva Plantilla',
+    size='lg',
+    body=body,
+    footer=footer
+) }}
 {% endmacro %}
 
 <!-- Template Preview Modal -->
 {% macro render_template_preview_modal() %}
-{% call render_base_modal(
-    modal_id='template-preview-modal',
-    title='Vista Previa de Plantilla',
-    size='xl'
-) %}
+{% set body %}
     <div id="template-preview-content">
         <!-- Content will be loaded dynamically -->
     </div>
-    
-    <!-- Modal Footer -->
-    <div slot="footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            Cerrar
-        </button>
-        <button type="button" 
-                class="btn btn-outline-primary" 
-                onclick="shareCurrentTemplate()" 
-                id="share-template-btn">
-            <i class="bi bi-share me-1"></i>
-            Compartir
-        </button>
-        <button type="button" 
-                class="btn btn-primary" 
-                onclick="useCurrentTemplate()" 
-                id="use-template-btn">
-            <i class="bi bi-plus-lg me-1"></i>
-            Usar Plantilla
-        </button>
-    </div>
-{% endcall %}
+{% endset %}
+{% set footer %}
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        Cerrar
+    </button>
+    <button type="button"
+            class="btn btn-outline-primary"
+            onclick="shareCurrentTemplate()"
+            id="share-template-btn">
+        <i class="bi bi-share me-1"></i>
+        Compartir
+    </button>
+    <button type="button"
+            class="btn btn-primary"
+            onclick="useCurrentTemplate()"
+            id="use-template-btn">
+        <i class="bi bi-plus-lg me-1"></i>
+        Usar Plantilla
+    </button>
+{% endset %}
+{{ render_base_modal(
+    modal_id='template-preview-modal',
+    title='Vista Previa de Plantilla',
+    size='xl',
+    body=body,
+    footer=footer
+) }}
 {% endmacro %}
 
 <style>
