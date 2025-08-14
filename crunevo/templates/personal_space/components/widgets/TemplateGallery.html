@@ -159,12 +159,6 @@
         </div>
     </div>
 </div>
-
-<!-- Template Creator Modal -->
-{{ render_template_creator_modal() }}
-
-<!-- Template Preview Modal -->
-{{ render_template_preview_modal() }}
 {% endmacro %}
 
 <!-- Template Grid -->
@@ -298,8 +292,8 @@
 </div>
 {% endmacro %}
 
-<!-- Template Creator Modal -->
-{% macro render_template_creator_modal() %}
+<!-- Template Creation Modal -->
+{% macro render_template_creation_modal() %}
 {% set body %}
     <form id="template-creator-form" onsubmit="createTemplate(event)">
         <!-- Basic Info -->
@@ -541,6 +535,18 @@
     body=body,
     footer=footer
 ) }}
+{% endmacro %}
+
+<!-- Template Gallery Modal -->
+{% macro render_template_gallery_modal(templates=none, user_templates=none, categories=none) %}
+{{ render_base_modal(
+    modal_id='template-gallery-modal',
+    title='Galería de Plantillas',
+    size='xl',
+    body=render_template_gallery(templates, user_templates, categories)
+) }}
+{{ render_template_creation_modal() }}
+{{ render_template_preview_modal() }}
 {% endmacro %}
 
 <style>
