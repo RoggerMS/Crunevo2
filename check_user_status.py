@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
+
+sys.path.insert(0, os.path.abspath("."))
 
 from crunevo import create_app
 from crunevo.extensions import db
@@ -11,8 +12,8 @@ app = create_app()
 
 with app.app_context():
     # Find the user
-    user = User.query.filter_by(username='estudiante').first()
-    
+    user = User.query.filter_by(username="estudiante").first()
+
     if user:
         print(f"User found: {user.username}")
         print(f"ID: {user.id}")
@@ -24,13 +25,13 @@ with app.app_context():
         print(f"Credits: {user.credits}")
         print(f"Career: {user.career}")
         print(f"Verification level: {user.verification_level}")
-        
+
         # Test password
-        if user.check_password('test'):
+        if user.check_password("test"):
             print("\n✅ Password 'test' is correct!")
         else:
             print("\n❌ Password 'test' is incorrect!")
-            
+
         # Update activation status if needed
         if not user.activated:
             print("\n⚠️ User is not activated. Activating now...")

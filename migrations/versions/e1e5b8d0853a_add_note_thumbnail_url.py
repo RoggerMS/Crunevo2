@@ -26,7 +26,12 @@ def upgrade():
     with op.batch_alter_table("note", schema=None) as batch_op:
         if not has_col("note", "thumbnail_url", conn):
             batch_op.add_column(
-                sa.Column("thumbnail_url", sa.String(length=200), nullable=True, server_default="")
+                sa.Column(
+                    "thumbnail_url",
+                    sa.String(length=200),
+                    nullable=True,
+                    server_default="",
+                )
             )
 
 

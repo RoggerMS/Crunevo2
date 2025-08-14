@@ -65,7 +65,9 @@ class ForumQuestion(db.Model):
     is_urgent = db.Column(db.Boolean, default=False)  # For urgent homework help
     is_featured = db.Column(db.Boolean, default=False)  # Featured questions
     quality_score = db.Column(db.Float, default=0.0)  # Auto-calculated quality score
-    requires_review = db.Column(db.Boolean, default=False)  # Flagged for moderation review
+    requires_review = db.Column(
+        db.Boolean, default=False
+    )  # Flagged for moderation review
 
     # New: Study context
     homework_deadline = db.Column(db.DateTime)  # When homework is due
@@ -157,7 +159,9 @@ class ForumAnswer(db.Model):
     contains_formulas = db.Column(db.Boolean, default=False)
     contains_code = db.Column(db.Boolean, default=False)
     quality_score = db.Column(db.Float, default=0.0)  # Auto-calculated quality score
-    requires_review = db.Column(db.Boolean, default=False)  # Flagged for moderation review
+    requires_review = db.Column(
+        db.Boolean, default=False
+    )  # Flagged for moderation review
 
     # Premium features
     is_highlighted = db.Column(db.Boolean, default=False)  # Highlighted with Crolars

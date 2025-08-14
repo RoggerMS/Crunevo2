@@ -18,7 +18,7 @@ from bs4 import BeautifulSoup
 from flask_login import login_required, current_user
 from sqlalchemy import or_, and_, desc, asc
 from sqlalchemy.exc import ProgrammingError, OperationalError
-from datetime import datetime
+from datetime import datetime, timedelta
 from crunevo.extensions import db
 from crunevo.models.forum import (
     ForumQuestion,
@@ -28,7 +28,7 @@ from crunevo.models.forum import (
     question_tags,
     answer_votes,
 )
-from crunevo.models.badge import ForumBadge, UserBadge
+from crunevo.models.badge import ForumBadge
 from crunevo.models.user import User
 from crunevo.utils.credits import add_credit
 from crunevo.constants.credit_reasons import CreditReasons
@@ -214,11 +214,10 @@ def list_questions():
                 >= datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
             ).count(),
         }
-        
+
         # Get top contributors for leaderboard
         top_contributors = (
-            User.query
-            .filter(User.reputation_score.isnot(None))
+            User.query.filter(User.reputation_score.isnot(None))
             .order_by(desc(User.reputation_score))
             .limit(10)
             .all()
@@ -384,25 +383,30 @@ def ask_question():
         # Deduct bounty points from user
         if bounty_points > 0:
             current_user.points -= bounty_points
-        
+
         # Auto-moderation
         moderation_result = ModerationService.auto_moderate_question(question)
-        
+
         # Handle moderation result
-        if moderation_result['action'] == 'reject':
+        if moderation_result["action"] == "reject":
             db.session.rollback()
-            flash("Tu pregunta no cumple con nuestros estándares de calidad. Por favor, revísala y vuelve a intentarlo.", "error")
+            flash(
+                "Tu pregunta no cumple con nuestros estándares de calidad. Por favor, revísala y vuelve a intentarlo.",
+                "error",
+            )
             # Provide suggestions for improvement
             suggestions = ModerationService.suggest_improvements(
-                question.content, 
-                moderation_result['content_analysis']['issues']
+                question.content, moderation_result["content_analysis"]["issues"]
             )
             for suggestion in suggestions:
                 flash(suggestion, "info")
             return redirect(url_for("forum.ask_question"))
-        elif moderation_result['action'] == 'review':
+        elif moderation_result["action"] == "review":
             question.requires_review = True
-            flash("Tu pregunta está siendo revisada por nuestro equipo de moderación.", "warning")
+            flash(
+                "Tu pregunta está siendo revisada por nuestro equipo de moderación.",
+                "warning",
+            )
 
         db.session.commit()
 
@@ -419,10 +423,12 @@ def ask_question():
             CreditReasons.ACTIVIDAD_SOCIAL,
             related_id=question.id,
         )
-        
+
         # Gamification: Process question action
         is_first_question = current_user.questions_asked == 0
-        GamificationService.process_question_action(current_user, is_first_question, question)
+        GamificationService.process_question_action(
+            current_user, is_first_question, question
+        )
 
         flash("¡Pregunta publicada exitosamente!")
         return redirect(url_for("forum.view_question", question_id=question.id))
@@ -485,26 +491,31 @@ def answer_question(question_id):
 
     db.session.add(answer)
     db.session.flush()  # Get the answer ID
-    
+
     # Auto-moderation
     moderation_result = ModerationService.auto_moderate_answer(answer)
-    
+
     # Handle moderation result
-    if moderation_result['action'] == 'reject':
+    if moderation_result["action"] == "reject":
         db.session.rollback()
-        flash("Tu respuesta no cumple con nuestros estándares de calidad. Por favor, revísala y vuelve a intentarlo.", "error")
+        flash(
+            "Tu respuesta no cumple con nuestros estándares de calidad. Por favor, revísala y vuelve a intentarlo.",
+            "error",
+        )
         # Provide suggestions for improvement
         suggestions = ModerationService.suggest_improvements(
-            answer.content, 
-            moderation_result['content_analysis']['issues']
+            answer.content, moderation_result["content_analysis"]["issues"]
         )
         for suggestion in suggestions:
             flash(suggestion, "info")
         return redirect(url_for("forum.view_question", question_id=question_id))
-    elif moderation_result['action'] == 'review':
+    elif moderation_result["action"] == "review":
         answer.requires_review = True
-        flash("Tu respuesta está siendo revisada por nuestro equipo de moderación.", "warning")
-    
+        flash(
+            "Tu respuesta está siendo revisada por nuestro equipo de moderación.",
+            "warning",
+        )
+
     db.session.commit()
 
     # Award credits for answering
@@ -522,7 +533,7 @@ def answer_question(question_id):
         CreditReasons.ACTIVIDAD_SOCIAL,
         related_id=answer.id,
     )
-    
+
     # Gamification: Process answer action
     is_first_answer = current_user.answers_given == 0
     GamificationService.process_answer_action(current_user, is_first_answer, answer)
@@ -614,7 +625,7 @@ def accept_answer(answer_id):
 
     # Award extra credits to answerer
     add_credit(answer.author, 15, CreditReasons.ACTIVIDAD_SOCIAL, related_id=answer.id)
-    
+
     # Gamification: Process best answer
     GamificationService.process_best_answer(answer.author, answer)
 
@@ -794,36 +805,45 @@ def dashboard():
     """User gamification dashboard"""
     # Update user's reputation score
     GamificationService.calculate_reputation(current_user)
-    
+
     # Get user badges
     user_badges = GamificationService.get_user_badges(current_user)
-    
+
     # Get leaderboard
     leaderboard = GamificationService.get_leaderboard(10)
-    
+
     # Get user's rank in leaderboard
     user_rank = None
     for i, user in enumerate(leaderboard):
         if user.id == current_user.id:
             user_rank = i + 1
             break
-    
+
     # Get recent activity stats
-    recent_questions = ForumQuestion.query.filter_by(
-        author_id=current_user.id
-    ).order_by(desc(ForumQuestion.created_at)).limit(5).all()
-    
-    recent_answers = ForumAnswer.query.filter_by(
-        author_id=current_user.id
-    ).order_by(desc(ForumAnswer.created_at)).limit(5).all()
-    
+    recent_questions = (
+        ForumQuestion.query.filter_by(author_id=current_user.id)
+        .order_by(desc(ForumQuestion.created_at))
+        .limit(5)
+        .all()
+    )
+
+    recent_answers = (
+        ForumAnswer.query.filter_by(author_id=current_user.id)
+        .order_by(desc(ForumAnswer.created_at))
+        .limit(5)
+        .all()
+    )
+
     # Get available badges (not yet earned)
     earned_badge_ids = [ub.badge_id for ub in user_badges]
-    available_badges = ForumBadge.query.filter(
-        ~ForumBadge.id.in_(earned_badge_ids),
-        ForumBadge.is_active == True
-    ).order_by(ForumBadge.category, ForumBadge.rarity).all()
-    
+    available_badges = (
+        ForumBadge.query.filter(
+            ~ForumBadge.id.in_(earned_badge_ids), ForumBadge.is_active
+        )
+        .order_by(ForumBadge.category, ForumBadge.rarity)
+        .all()
+    )
+
     return render_template(
         "forum/dashboard.html",
         user_badges=user_badges,
@@ -832,7 +852,7 @@ def dashboard():
         recent_questions=recent_questions,
         recent_answers=recent_answers,
         available_badges=available_badges,
-        level_progress=current_user.get_level_progress()
+        level_progress=current_user.get_level_progress(),
     )
 
 
@@ -840,25 +860,27 @@ def dashboard():
 def badges_list():
     """List all available badges"""
     badges_by_category = {}
-    all_badges = ForumBadge.query.filter_by(is_active=True).order_by(
-        ForumBadge.category, ForumBadge.rarity
-    ).all()
-    
+    all_badges = (
+        ForumBadge.query.filter_by(is_active=True)
+        .order_by(ForumBadge.category, ForumBadge.rarity)
+        .all()
+    )
+
     for badge in all_badges:
         if badge.category not in badges_by_category:
             badges_by_category[badge.category] = []
         badges_by_category[badge.category].append(badge)
-    
+
     # Get user badges if authenticated
     user_badge_ids = []
     if current_user.is_authenticated:
         user_badges = GamificationService.get_user_badges(current_user)
         user_badge_ids = [ub.badge_id for ub in user_badges]
-    
+
     return render_template(
         "forum/badges.html",
         badges_by_category=badges_by_category,
-        user_badge_ids=user_badge_ids
+        user_badge_ids=user_badge_ids,
     )
 
 
@@ -867,25 +889,34 @@ def leaderboard():
     """Forum leaderboard"""
     # Get different leaderboards
     top_reputation = GamificationService.get_leaderboard(20)
-    
-    top_questions = User.query.filter(
-        User.questions_asked > 0
-    ).order_by(desc(User.questions_asked)).limit(10).all()
-    
-    top_answers = User.query.filter(
-        User.answers_given > 0
-    ).order_by(desc(User.answers_given)).limit(10).all()
-    
-    top_best_answers = User.query.filter(
-        User.best_answers > 0
-    ).order_by(desc(User.best_answers)).limit(10).all()
-    
+
+    top_questions = (
+        User.query.filter(User.questions_asked > 0)
+        .order_by(desc(User.questions_asked))
+        .limit(10)
+        .all()
+    )
+
+    top_answers = (
+        User.query.filter(User.answers_given > 0)
+        .order_by(desc(User.answers_given))
+        .limit(10)
+        .all()
+    )
+
+    top_best_answers = (
+        User.query.filter(User.best_answers > 0)
+        .order_by(desc(User.best_answers))
+        .limit(10)
+        .all()
+    )
+
     return render_template(
         "forum/leaderboard.html",
         top_reputation=top_reputation,
         top_questions=top_questions,
         top_answers=top_answers,
-        top_best_answers=top_best_answers
+        top_best_answers=top_best_answers,
     )
 
 
@@ -905,52 +936,64 @@ def init_gamification():
 def moderation_panel():
     """Panel de moderación para administradores"""
     # Check if user is admin/moderator
-    if not current_user.role or current_user.role not in ['admin', 'moderator']:
+    if not current_user.role or current_user.role not in ["admin", "moderator"]:
         abort(403)
-    
+
     # Get content requiring review
-    questions_to_review = ForumQuestion.query.filter_by(requires_review=True).order_by(desc(ForumQuestion.created_at)).all()
-    answers_to_review = ForumAnswer.query.filter_by(requires_review=True).order_by(desc(ForumAnswer.created_at)).all()
-    
+    questions_to_review = (
+        ForumQuestion.query.filter_by(requires_review=True)
+        .order_by(desc(ForumQuestion.created_at))
+        .all()
+    )
+    answers_to_review = (
+        ForumAnswer.query.filter_by(requires_review=True)
+        .order_by(desc(ForumAnswer.created_at))
+        .all()
+    )
+
     # Get moderation statistics
     moderation_stats = ModerationService.get_moderation_stats()
-    
+
     return render_template(
         "forum/moderation.html",
         questions_to_review=questions_to_review,
         answers_to_review=answers_to_review,
-        stats=moderation_stats
+        stats=moderation_stats,
     )
 
 
-@forum_bp.route("/foro/moderacion/aprobar/<content_type>/<int:content_id>", methods=["POST"])
+@forum_bp.route(
+    "/foro/moderacion/aprobar/<content_type>/<int:content_id>", methods=["POST"]
+)
 @login_required
 def approve_content(content_type, content_id):
     """Aprobar contenido en revisión"""
-    if not current_user.role or current_user.role not in ['admin', 'moderator']:
+    if not current_user.role or current_user.role not in ["admin", "moderator"]:
         abort(403)
-    
+
     if content_type == "question":
         content = ForumQuestion.query.get_or_404(content_id)
     elif content_type == "answer":
         content = ForumAnswer.query.get_or_404(content_id)
     else:
         abort(400)
-    
+
     content.requires_review = False
     db.session.commit()
-    
+
     flash(f"{content_type.title()} aprobado exitosamente", "success")
     return redirect(url_for("forum.moderation_panel"))
 
 
-@forum_bp.route("/foro/moderacion/rechazar/<content_type>/<int:content_id>", methods=["POST"])
+@forum_bp.route(
+    "/foro/moderacion/rechazar/<content_type>/<int:content_id>", methods=["POST"]
+)
 @login_required
 def reject_content(content_type, content_id):
     """Rechazar contenido en revisión"""
-    if not current_user.role or current_user.role not in ['admin', 'moderator']:
+    if not current_user.role or current_user.role not in ["admin", "moderator"]:
         abort(403)
-    
+
     if content_type == "question":
         content = ForumQuestion.query.get_or_404(content_id)
         # Delete the question
@@ -961,9 +1004,9 @@ def reject_content(content_type, content_id):
         db.session.delete(content)
     else:
         abort(400)
-    
+
     db.session.commit()
-    
+
     flash(f"{content_type.title()} rechazado y eliminado", "success")
     return redirect(url_for("forum.moderation_panel"))
 
@@ -974,18 +1017,22 @@ def learning_tools():
     """Herramientas de aprendizaje y seguimiento de progreso"""
     # Get user learning statistics
     learning_stats = LearningToolsService.get_user_learning_stats(current_user.id)
-    
+
     # Get study recommendations
-    study_recommendations = LearningToolsService.get_study_recommendations(current_user.id, 6)
-    
+    study_recommendations = LearningToolsService.get_study_recommendations(
+        current_user.id, 6
+    )
+
     # Get performance analytics
-    performance_analytics = LearningToolsService.get_performance_analytics(current_user.id, 30)
-    
+    performance_analytics = LearningToolsService.get_performance_analytics(
+        current_user.id, 30
+    )
+
     return render_template(
         "forum/learning_tools.html",
         learning_stats=learning_stats,
         study_recommendations=study_recommendations,
-        performance_analytics=performance_analytics
+        performance_analytics=performance_analytics,
     )
 
 
@@ -1002,31 +1049,30 @@ def get_learning_path(subject):
 def save_study_session():
     """Guardar sesión de estudio"""
     data = request.get_json()
-    
-    activity_type = data.get('activity_type')
-    duration_minutes = data.get('duration_minutes', 0)
-    topics = data.get('topics', [])
-    
+
+    activity_type = data.get("activity_type")
+    duration_minutes = data.get("duration_minutes", 0)
+    topics = data.get("topics", [])
+
     if duration_minutes < 5:  # Minimum 5 minutes
         return jsonify({"success": False, "error": "Sesión muy corta"}), 400
-    
+
     # Track the study session
     success = LearningToolsService.track_study_session(
-        current_user.id, 
-        activity_type, 
-        duration_minutes, 
-        topics
+        current_user.id, activity_type, duration_minutes, topics
     )
-    
+
     if success:
         # Calculate XP gained
         xp_gained = duration_minutes // 10  # 1 XP per 10 minutes
-        
-        return jsonify({
-            "success": True, 
-            "xp_gained": xp_gained,
-            "message": f"Sesión de {duration_minutes} minutos guardada"
-        })
+
+        return jsonify(
+            {
+                "success": True,
+                "xp_gained": xp_gained,
+                "message": f"Sesión de {duration_minutes} minutos guardada",
+            }
+        )
     else:
         return jsonify({"success": False, "error": "Error al guardar sesión"}), 500
 
@@ -1035,15 +1081,17 @@ def save_study_session():
 @login_required
 def get_personalized_recommendations():
     """API endpoint para obtener recomendaciones personalizadas"""
-    limit = request.args.get('limit', 10, type=int)
-    recommendations = RecommendationService.get_personalized_recommendations(current_user.id, limit)
+    limit = request.args.get("limit", 10, type=int)
+    recommendations = RecommendationService.get_personalized_recommendations(
+        current_user.id, limit
+    )
     return jsonify(recommendations)
 
 
 @forum_bp.route("/api/recomendaciones/similares/<int:question_id>")
 def get_similar_questions_api(question_id):
     """API endpoint para obtener preguntas similares"""
-    limit = request.args.get('limit', 5, type=int)
+    limit = request.args.get("limit", 5, type=int)
     similar_questions = RecommendationService.get_similar_questions(question_id, limit)
     return jsonify(similar_questions)
 
@@ -1051,8 +1099,8 @@ def get_similar_questions_api(question_id):
 @forum_bp.route("/api/recomendaciones/trending")
 def get_trending_topics_api():
     """API endpoint para obtener temas trending"""
-    days = request.args.get('days', 7, type=int)
-    limit = request.args.get('limit', 10, type=int)
+    days = request.args.get("days", 7, type=int)
+    limit = request.args.get("limit", 10, type=int)
     trending = RecommendationService.get_trending_topics(days, limit)
     return jsonify(trending)
 
@@ -1061,9 +1109,11 @@ def get_trending_topics_api():
 @login_required
 def get_study_recommendations_api():
     """API endpoint para obtener recomendaciones de estudio"""
-    subject = request.args.get('subject')
-    limit = request.args.get('limit', 5, type=int)
-    recommendations = RecommendationService.get_study_recommendations_for_user(current_user.id, subject, limit)
+    subject = request.args.get("subject")
+    limit = request.args.get("limit", 5, type=int)
+    recommendations = RecommendationService.get_study_recommendations_for_user(
+        current_user.id, subject, limit
+    )
     return jsonify(recommendations)
 
 
@@ -1071,35 +1121,43 @@ def get_study_recommendations_api():
 @login_required
 def get_performance_recommendations_api():
     """API endpoint para obtener recomendaciones basadas en rendimiento"""
-    limit = request.args.get('limit', 5, type=int)
-    recommendations = RecommendationService.get_content_recommendations_by_performance(current_user.id, limit)
+    limit = request.args.get("limit", 5, type=int)
+    recommendations = RecommendationService.get_content_recommendations_by_performance(
+        current_user.id, limit
+    )
     return jsonify(recommendations)
 
 
 # ===== CROLARS INTEGRATION ROUTES =====
+
 
 @forum_bp.route("/foro/crolars/estadisticas")
 @login_required
 def crolars_stats():
     """Estadísticas de Crolars del usuario en el foro"""
     # Get user's forum earnings
-    earnings_30_days = CrolarsIntegrationService.get_user_forum_earnings(current_user, 30)
+    earnings_30_days = CrolarsIntegrationService.get_user_forum_earnings(
+        current_user, 30
+    )
     earnings_7_days = CrolarsIntegrationService.get_user_forum_earnings(current_user, 7)
-    
+
     # Get general statistics
     general_stats = CrolarsIntegrationService.get_crolars_statistics()
-    
+
     # Get leaderboard position
     leaderboard = CrolarsIntegrationService.get_forum_leaderboard_by_earnings(50, 30)
-    user_position = next((i+1 for i, user in enumerate(leaderboard) if user.id == current_user.id), None)
-    
+    user_position = next(
+        (i + 1 for i, user in enumerate(leaderboard) if user.id == current_user.id),
+        None,
+    )
+
     return render_template(
         "forum/crolars_stats.html",
         earnings_30_days=earnings_30_days,
         earnings_7_days=earnings_7_days,
         general_stats=general_stats,
         leaderboard=leaderboard[:10],
-        user_position=user_position
+        user_position=user_position,
     )
 
 
@@ -1109,18 +1167,21 @@ def use_premium_feature(feature):
     """Usar funcionalidad premium con Crolars"""
     if feature not in CrolarsIntegrationService.CROLARS_COSTS:
         abort(404)
-    
+
     cost = CrolarsIntegrationService.CROLARS_COSTS[feature]
-    
+
     if current_user.credits < cost:
-        flash(f"Necesitas {cost} Crolars para usar esta funcionalidad. Tienes {current_user.credits} Crolars.", "error")
+        flash(
+            f"Necesitas {cost} Crolars para usar esta funcionalidad. Tienes {current_user.credits} Crolars.",
+            "error",
+        )
         return redirect(url_for("forum.list_questions"))
-    
+
     return render_template(
         "forum/premium_feature.html",
         feature=feature,
         cost=cost,
-        user_credits=current_user.credits
+        user_credits=current_user.credits,
     )
 
 
@@ -1129,7 +1190,7 @@ def use_premium_feature(feature):
 def confirm_premium_feature(feature):
     """Confirmar uso de funcionalidad premium"""
     success = CrolarsIntegrationService.spend_crolars_for_feature(current_user, feature)
-    
+
     if success:
         # Apply the premium feature based on type
         if feature == "boost_question":
@@ -1141,7 +1202,7 @@ def confirm_premium_feature(feature):
                     question.boost_expires = datetime.utcnow() + timedelta(hours=24)
                     db.session.commit()
                     flash("¡Pregunta destacada por 24 horas!", "success")
-        
+
         elif feature == "highlight_answer":
             answer_id = request.form.get("answer_id", type=int)
             if answer_id:
@@ -1151,14 +1212,14 @@ def confirm_premium_feature(feature):
                     answer.highlight_expires = datetime.utcnow() + timedelta(hours=12)
                     db.session.commit()
                     flash("¡Respuesta destacada por 12 horas!", "success")
-        
+
         elif feature == "custom_title":
             custom_title = request.form.get("custom_title", "").strip()
             if custom_title and len(custom_title) <= 50:
                 current_user.custom_forum_title = custom_title
                 db.session.commit()
                 flash(f"Título personalizado '{custom_title}' activado!", "success")
-        
+
         return redirect(url_for("forum.list_questions"))
     else:
         return redirect(url_for("forum.use_premium_feature", feature=feature))
@@ -1167,17 +1228,22 @@ def confirm_premium_feature(feature):
 @forum_bp.route("/api/crolars/leaderboard")
 def crolars_leaderboard_api():
     """API endpoint para obtener leaderboard de Crolars"""
-    days = request.args.get('days', 30, type=int)
-    limit = request.args.get('limit', 10, type=int)
-    
-    leaderboard = CrolarsIntegrationService.get_forum_leaderboard_by_earnings(limit, days)
-    
-    return jsonify([
-        {
-            'user_id': user.id,
-            'username': user.username,
-            'avatar_url': user.avatar_url,
-            'forum_level': user.forum_level,
-            'total_earnings': float(user.total_earnings)
-        } for user in leaderboard
-    ])
+    days = request.args.get("days", 30, type=int)
+    limit = request.args.get("limit", 10, type=int)
+
+    leaderboard = CrolarsIntegrationService.get_forum_leaderboard_by_earnings(
+        limit, days
+    )
+
+    return jsonify(
+        [
+            {
+                "user_id": user.id,
+                "username": user.username,
+                "avatar_url": user.avatar_url,
+                "forum_level": user.forum_level,
+                "total_earnings": float(user.total_earnings),
+            }
+            for user in leaderboard
+        ]
+    )

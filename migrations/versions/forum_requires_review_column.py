@@ -29,17 +29,33 @@ def has_column(table_name: str, column_name: str, conn) -> bool:
 def upgrade():
     conn = op.get_bind()
 
-    if has_table("forum_question", conn) and not has_column("forum_question", "requires_review", conn):
+    if has_table("forum_question", conn) and not has_column(
+        "forum_question", "requires_review", conn
+    ):
         op.add_column(
             "forum_question",
-            sa.Column("requires_review", sa.Boolean(), server_default=sa.text("false"), nullable=False),
+            sa.Column(
+                "requires_review",
+                sa.Boolean(),
+                server_default=sa.text("false"),
+                nullable=False,
+            ),
         )
-        op.execute("ALTER TABLE forum_question ALTER COLUMN requires_review DROP DEFAULT")
+        op.execute(
+            "ALTER TABLE forum_question ALTER COLUMN requires_review DROP DEFAULT"
+        )
 
-    if has_table("forum_answer", conn) and not has_column("forum_answer", "requires_review", conn):
+    if has_table("forum_answer", conn) and not has_column(
+        "forum_answer", "requires_review", conn
+    ):
         op.add_column(
             "forum_answer",
-            sa.Column("requires_review", sa.Boolean(), server_default=sa.text("false"), nullable=False),
+            sa.Column(
+                "requires_review",
+                sa.Boolean(),
+                server_default=sa.text("false"),
+                nullable=False,
+            ),
         )
         op.execute("ALTER TABLE forum_answer ALTER COLUMN requires_review DROP DEFAULT")
 
@@ -47,8 +63,12 @@ def upgrade():
 def downgrade():
     conn = op.get_bind()
 
-    if has_table("forum_question", conn) and has_column("forum_question", "requires_review", conn):
+    if has_table("forum_question", conn) and has_column(
+        "forum_question", "requires_review", conn
+    ):
         op.drop_column("forum_question", "requires_review")
 
-    if has_table("forum_answer", conn) and has_column("forum_answer", "requires_review", conn):
+    if has_table("forum_answer", conn) and has_column(
+        "forum_answer", "requires_review", conn
+    ):
         op.drop_column("forum_answer", "requires_review")

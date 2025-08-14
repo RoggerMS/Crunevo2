@@ -100,7 +100,9 @@ def test_reorder_blocks(client, db_session, test_user):
     login(client, test_user.username)
     resp = client.post(
         "/api/personal-space/blocks/reorder",
-        json={"blocks": [{"id": b2.id, "order_index": 1}, {"id": b1.id, "order_index": 2}]},
+        json={
+            "blocks": [{"id": b2.id, "order_index": 1}, {"id": b1.id, "order_index": 2}]
+        },
     )
     assert resp.status_code == 200
     assert resp.get_json()["success"] is True
