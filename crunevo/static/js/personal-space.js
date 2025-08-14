@@ -1,15 +1,18 @@
-// Personal Space JavaScript
+// Personal Space JavaScript - Optimized Version
 function initPersonalSpace() {
+    console.log('Initializing Personal Space...');
     initializePersonalSpace();
     updateDashboardMetrics();
     initializeKanbanBoards();
     setupAutoSave();
+    setupErrorHandling();
 }
 
 let sortableInstance = null;
 let currentEditingBlock = null;
 let isDarkMode = (localStorage.getItem('theme') || document.documentElement.dataset.bsTheme) === 'dark';
 let isFocusMode = localStorage.getItem('focus_mode') === 'on';
+let isInitialized = false;
 
 const DEFAULT_ICONS = {
     'nota': 'bi-journal-text',
@@ -27,39 +30,72 @@ const DEFAULT_ICONS = {
 };
 
 function initializePersonalSpace() {
-    // Initialize UI components
-    initializeDarkMode();
-    initializeFocusMode();
-    initializeSortable();
-    initializeEventListeners();
-    initializeAutoSave();
-
-    // Ensure modals are not constrained by parent containers
-    const editModal = document.getElementById('editBlockModal');
-    if (editModal && editModal.parentNode !== document.body) {
-        document.body.appendChild(editModal);
+    if (isInitialized) {
+        console.log('Personal Space already initialized');
+        return;
     }
+    
+    try {
+        console.log('Starting Personal Space initialization...');
+        
+        // Initialize UI components
+        initializeDarkMode();
+        initializeFocusMode();
+        initializeSortable();
+        initializeEventListeners();
+        initializeAutoSave();
 
-    // Restore dismissed suggestions
-    hideDismissedSuggestions();
+        // Ensure modals are not constrained by parent containers
+        const editModal = document.getElementById('editBlockModal');
+        if (editModal && editModal.parentNode !== document.body) {
+            document.body.appendChild(editModal);
+        }
 
-    // Load initial data
-    loadBlocks();
+        // Restore dismissed suggestions
+        hideDismissedSuggestions();
 
-    // Set up periodic auto-save
-    setInterval(autoSaveChanges, 30000); // Auto-save every 30 seconds
+        // Load initial data
+        loadBlocks();
+
+        // Set up periodic auto-save
+        setInterval(autoSaveChanges, 30000); // Auto-save every 30 seconds
+        
+        isInitialized = true;
+        console.log('Personal Space initialized successfully');
+    } catch (error) {
+        console.error('Error initializing Personal Space:', error);
+        showNotification('Error al inicializar el espacio personal', 'error');
+    }
 }
 
 function initializeDarkMode() {
     const html = document.documentElement;
+    const body = document.body;
+    
+    // Apply theme classes
     if (isDarkMode) {
         html.classList.add('dark-mode');
+        body.classList.add('dark-theme');
+        body.classList.remove('light-theme');
     } else {
         html.classList.remove('dark-mode');
+        body.classList.add('light-theme');
+        body.classList.remove('dark-theme');
     }
+    
     html.dataset.bsTheme = isDarkMode ? 'dark' : 'light';
     updateDarkModeButton();
     updateThemeColor();
+    
+    // Listen for system theme changes if no manual preference is set
+    const savedTheme = localStorage.getItem('theme');
+    if (!savedTheme) {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        mediaQuery.addEventListener('change', (e) => {
+            isDarkMode = e.matches;
+            initializeDarkMode();
+        });
+    }
 }
 
 function initializeFocusMode() {
@@ -84,44 +120,94 @@ function initializeSortable() {
 }
 
 function initializeEventListeners() {
-    // Add block buttons
-    document.getElementById('addBlockBtn')?.addEventListener('click', showAddBlockModal);
-    document.getElementById('floatingAddBtn')?.addEventListener('click', showAddBlockModal);
-    document.getElementById('createFirstBlock')?.addEventListener('click', startPersonalSpace);
+    try {
+        console.log('Initializing event listeners...');
+        
+        // Add block buttons with improved error handling
+        const addBlockBtn = document.getElementById('addBlockBtn');
+        const floatingAddBtn = document.getElementById('floatingAddBtn');
+        const createFirstBlock = document.getElementById('createFirstBlock');
+        
+        if (addBlockBtn) {
+            addBlockBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showAddBlockModal();
+            });
+        }
+        
+        if (floatingAddBtn) {
+            floatingAddBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showAddBlockModal();
+            });
+        }
+        
+        if (createFirstBlock) {
+            createFirstBlock.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                startPersonalSpace();
+            });
+        }
 
-    // Control buttons
-    document.getElementById('darkModeToggle')?.addEventListener('click', toggleDarkMode);
-    document.getElementById('focusModeBtn')?.addEventListener('click', toggleFocusMode);
-    document.getElementById('exitFocusBtn')?.addEventListener('click', () => {
-        if (isFocusMode) toggleFocusMode();
-    });
+        // Control buttons with error handling
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const focusModeBtn = document.getElementById('focusModeBtn');
+        const exitFocusBtn = document.getElementById('exitFocusBtn');
+        
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleDarkMode();
+            });
+        }
+        
+        if (focusModeBtn) {
+            focusModeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleFocusMode();
+            });
+        }
+        
+        if (exitFocusBtn) {
+            exitFocusBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (isFocusMode) toggleFocusMode();
+            });
+        }
 
-    // Modal events
-    document.addEventListener('click', handleModalEvents);
-    document.getElementById('saveBlockBtn')?.addEventListener('click', saveCurrentBlock);
+        // Modal events
+        document.addEventListener('click', handleModalEvents);
+        const saveBlockBtn = document.getElementById('saveBlockBtn');
+        if (saveBlockBtn) {
+            saveBlockBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                saveCurrentBlock();
+            });
+        }
 
-    // Suggestion events
-    document.querySelectorAll('.apply-suggestion-btn').forEach(btn => {
-        btn.addEventListener('click', handleSuggestionClick);
-    });
+        // Suggestion events
+        document.querySelectorAll('.apply-suggestion-btn').forEach(btn => {
+            btn.addEventListener('click', handleSuggestionClick);
+        });
 
-    // Centralized block interaction delegation
-    const grid = document.getElementById('blocksGrid');
-    if (grid && !grid.dataset.bound) {
-        grid.addEventListener('click', handleBlockInteractions, { passive: true });
-        grid.addEventListener('dblclick', handleBlockInteractions, { passive: true });
-        grid.dataset.bound = '1';
+        // Centralized block interaction delegation with improved handling
+        const grid = document.getElementById('blocksGrid');
+        if (grid && !grid.dataset.bound) {
+            grid.addEventListener('click', handleBlockInteractions);
+            grid.addEventListener('dblclick', handleBlockInteractions);
+            grid.dataset.bound = '1';
+        }
+
+        // Auto-save on content change
+        document.addEventListener('input', debounce(handleContentChange, 500));
+        
+        console.log('Event listeners initialized successfully');
+    } catch (error) {
+        console.error('Error initializing event listeners:', error);
     }
-
-    document.querySelectorAll('.block-card').forEach(card => {
-        card.setAttribute('role', 'button');
-        card.tabIndex = 0;
-        const title = card.querySelector('.block-title');
-        card.setAttribute('aria-label', title ? title.textContent.trim() : 'Bloque');
-    });
-
-    // Auto-save on content change
-    document.addEventListener('input', debounce(handleContentChange, 500));
 }
 
 function initializeAutoSave() {
@@ -138,46 +224,113 @@ function initializeAutoSave() {
 
 // Block Management Functions
 function loadBlocks() {
+    console.log('Loading blocks...');
+    
+    // Show loading state
+    const grid = document.getElementById('blocksGrid');
+    if (grid) {
+        grid.innerHTML = '<div class="text-center p-4"><div class="spinner-border" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
+    }
+    
     csrfFetch('/api/personal-space/blocks')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Blocks loaded:', data);
             if (data.success) {
-                renderBlocks(data.blocks);
+                renderBlocks(data.blocks || []);
+            } else {
+                throw new Error(data.error || 'Error desconocido al cargar bloques');
             }
         })
         .catch(error => {
             console.error('Error loading blocks:', error);
-            showNotification('Error al cargar los bloques', 'error');
+            showNotification('Error al cargar los bloques: ' + error.message, 'error');
+            
+            // Show error state
+            if (grid) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                        <h3>Error al cargar bloques</h3>
+                        <p>No se pudieron cargar los bloques. Intenta recargar la página.</p>
+                        <button class="modern-btn modern-btn-primary" onclick="loadBlocks()">Reintentar</button>
+                    </div>
+                `;
+            }
         });
 }
 
 function renderBlocks(blocks) {
+    console.log('Rendering blocks:', blocks.length);
     const grid = document.getElementById('blocksGrid');
-    if (!grid) return;
-
-    // Clear existing blocks except empty state
-    const emptyState = grid.querySelector('.empty-state');
-    grid.innerHTML = '';
-
-    if (blocks.length === 0 && emptyState) {
-        grid.appendChild(emptyState);
+    if (!grid) {
+        console.error('Blocks grid not found');
         return;
     }
 
-    blocks.forEach(b => {
-        const block = convertBlock(b);
-        const blockElement = createBlockElement(block);
-        grid.appendChild(blockElement);
-    });
+    // Clear existing content
+    grid.innerHTML = '';
 
-    updateDashboardMetrics();
-    initializeKanbanBoards();
+    if (!blocks || blocks.length === 0) {
+        renderEmptyState(grid);
+        return;
+    }
+
+    try {
+        blocks.forEach((b, index) => {
+            try {
+                const block = convertBlock(b);
+                const blockElement = createBlockElement(block);
+                if (blockElement) {
+                    blockElement.classList.add('fade-in');
+                    grid.appendChild(blockElement);
+                }
+            } catch (error) {
+                console.error(`Error rendering block ${index}:`, error, b);
+            }
+        });
+
+        // Setup accessibility
+        setupBlockAccessibility();
+        
+        updateDashboardMetrics();
+        initializeKanbanBoards();
+        
+        console.log('Blocks rendered successfully');
+    } catch (error) {
+        console.error('Error in renderBlocks:', error);
+        showNotification('Error al mostrar los bloques', 'error');
+    }
 }
 
 function convertBlock(block) {
+    if (!block) {
+        console.error('Block is null or undefined');
+        return null;
+    }
+    
+    // Ensure metadata exists
+    if (!block.metadata) {
+        block.metadata = {};
+    }
+    
+    // Set default values
     block.color = block.metadata.color || 'indigo';
     block.icon = block.metadata.icon || DEFAULT_ICONS[block.type] || 'bi-card-text';
     block.progress = computeProgress(block);
+    
+    // Ensure required fields
+    block.title = block.title || 'Sin título';
+    block.content = block.content || '';
+    block.type = block.type || 'nota';
+    
     return block;
 }
 
@@ -389,8 +542,14 @@ function generateBlockContent(block) {
 
 // Modal Functions
 function showAddBlockModal() {
-    const modal = new bootstrap.Modal(document.getElementById('addBlockModal'));
-    modal.show();
+    const modal = document.getElementById('block-factory-modal');
+    if (modal) {
+        const bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+    } else {
+        console.error('Block factory modal not found');
+        showNotification('Error al abrir el modal de creación', 'error');
+    }
 }
 
 function handleModalEvents(e) {
@@ -1025,11 +1184,28 @@ function updateBlockOrder() {
 function toggleDarkMode() {
     isDarkMode = !isDarkMode;
     const html = document.documentElement;
+    const body = document.body;
+    
+    // Update classes for better theme support
     html.classList.toggle('dark-mode', isDarkMode);
     html.dataset.bsTheme = isDarkMode ? 'dark' : 'light';
+    
+    if (isDarkMode) {
+        body.classList.add('dark-theme');
+        body.classList.remove('light-theme');
+    } else {
+        body.classList.add('light-theme');
+        body.classList.remove('dark-theme');
+    }
+    
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
     updateDarkModeButton();
     updateThemeColor();
+    
+    // Trigger custom event for theme change
+    window.dispatchEvent(new CustomEvent('themeChanged', {
+        detail: { isDark: isDarkMode, theme: isDarkMode ? 'dark' : 'light' }
+    }));
 }
 
 function updateDarkModeButton() {
@@ -1569,4 +1745,101 @@ function autoSaveBlock(blockId, element) {
         },
         body: JSON.stringify(data)
     }).catch(error => console.error('Auto-save error:', error));
+}
+
+// Render empty state
+function renderEmptyState(container) {
+    const emptyState = document.createElement('div');
+    emptyState.className = 'empty-state text-center py-5';
+    emptyState.innerHTML = `
+        <div class="empty-state-icon mb-3">
+            <i class="bi bi-journal-plus" style="font-size: 3rem; color: var(--bs-secondary);"></i>
+        </div>
+        <h4 class="empty-state-title mb-2">No hay bloques creados</h4>
+        <p class="empty-state-text text-muted mb-4">Comienza creando tu primer bloque de estudio</p>
+        <button class="btn btn-primary" onclick="showCreateBlockModal()">
+            <i class="bi bi-plus-circle me-2"></i>Crear primer bloque
+        </button>
+    `;
+    container.appendChild(emptyState);
+}
+
+// Setup accessibility features
+function setupBlockAccessibility() {
+    const blocks = document.querySelectorAll('.block-card');
+    blocks.forEach((block, index) => {
+        block.setAttribute('tabindex', '0');
+        block.setAttribute('role', 'button');
+        block.setAttribute('aria-label', `Bloque ${index + 1}`);
+        
+        // Add keyboard navigation
+        block.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                block.click();
+            }
+        });
+    });
+}
+
+// Show notification
+function showNotification(message, type = 'info') {
+    // Remove existing notifications
+    const existing = document.querySelector('.notification-toast');
+    if (existing) {
+        existing.remove();
+    }
+    
+    const notification = document.createElement('div');
+    notification.className = `notification-toast alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    `;
+    
+    notification.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="bi bi-${type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+            <span>${message}</span>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 5000);
+}
+
+// Show create block modal
+function showCreateBlockModal() {
+    const modal = document.getElementById('block-factory-modal');
+    if (modal) {
+        const bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+    } else {
+        console.error('Block factory modal not found');
+        showNotification('Error al abrir el modal de creación', 'error');
+    }
+}
+
+// Setup error handling
+function setupErrorHandling() {
+    window.addEventListener('error', (e) => {
+        console.error('Global error:', e.error);
+        showNotification('Ha ocurrido un error inesperado', 'error');
+    });
+    
+    window.addEventListener('unhandledrejection', (e) => {
+        console.error('Unhandled promise rejection:', e.reason);
+        showNotification('Error en la comunicación con el servidor', 'error');
+    });
 }

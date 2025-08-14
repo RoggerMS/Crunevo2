@@ -11,15 +11,16 @@ with app.app_context():
     print(f"Forum question table exists: {'forum_question' in tables}")
     print(f"Forum answer table exists: {'forum_answer' in tables}")
     print(f"Forum tag table exists: {'forum_tag' in tables}")
-    
-    if 'forum_question' not in tables:
+
+    if "forum_question" not in tables:
         print("\nForum tables are missing! Need to run migrations.")
     else:
         print("\nForum tables exist.")
-        
+
     # Try to query forum question to see if there are any other issues
     try:
         from crunevo.models.forum import ForumQuestion
+
         count = ForumQuestion.query.count()
         print(f"Forum questions count: {count}")
     except Exception as e:

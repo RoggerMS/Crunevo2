@@ -315,10 +315,10 @@ def get_block(block_id):
         return jsonify({"success": False, "error": "Personal space unavailable"}), 503
     try:
         block = BlockService.get_block(block_id, current_user.id)
-        
+
         if not block:
             return jsonify({"success": False, "error": "Block not found"}), 404
-        
+
         return jsonify({"success": True, "block": block.to_dict()})
     except Exception as e:
         current_app.logger.error("Error getting personal space block: %s", e)
