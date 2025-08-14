@@ -68,9 +68,11 @@ def test_complete_system():
         print("\n4. Creando bloque de prueba...")
         block_data = {
             "title": "Bloque de Prueba Sistema",
-            "content": "Este es un bloque creado para probar el sistema completo",
-            "type": "note",
-            "tags": ["prueba", "sistema"]
+            "description": "Este es un bloque creado para probar el sistema completo",
+            "type": "nota",
+            "category": "personal",
+            "priority": "medium",
+            "theme_color": "blue"
         }
         
         create_response = session.post(
@@ -82,10 +84,14 @@ def test_complete_system():
             }
         )
         
-        if create_response.status_code == 201:
+        if create_response.status_code in [200, 201]:
             block_result = create_response.json()
-            block_id = block_result.get('block', {}).get('id')
-            print(f"✅ Bloque creado exitosamente: {block_id}")
+            if block_result.get('success', True):
+                block_id = block_result.get('block', {}).get('id')
+                print(f"✅ Bloque creado exitosamente: {block_id}")
+            else:
+                print(f"❌ Error al crear bloque: {block_result.get('error', 'Error desconocido')}")
+                return False
         else:
             print(f"❌ Error al crear bloque: {create_response.status_code}")
             print(f"Respuesta: {create_response.text[:200]}...")
