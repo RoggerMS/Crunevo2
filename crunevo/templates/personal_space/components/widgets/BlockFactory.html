@@ -4,13 +4,17 @@
 
 <!-- Block Factory Modal -->
 {% macro render_block_factory_modal() %}
-{{ render_base_modal(
-    id='block-factory-modal',
+{% call render_base_modal(
+    modal_id='block-factory-modal',
     title='Crear Nuevo Bloque',
-    size='lg',
-    content=render_block_factory_content(),
-    footer=render_block_factory_footer()
-) }}
+    size='lg'
+) %}
+    {{ render_block_factory_content() }}
+
+    <div slot="footer">
+        {{ render_block_factory_footer() }}
+    </div>
+{% endcall %}
 {% endmacro %}
 
 <!-- Block Factory Content -->
