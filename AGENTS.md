@@ -1321,3 +1321,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Fixed BlockFactory modal invocation to use 'modal_id' and call syntax, preventing keyword argument errors in render_base_modal. (PR block-factory-modal-id-fix)
 - Addressed remaining ruff lint errors by removing unused variables, replacing `== True` checks with direct attribute access, importing missing modules and capturing exception messages. (PR ruff-lint-cleanup)
 - Reworked BaseModal to accept body and footer parameters and updated BlockFactory and TemplateGallery templates accordingly, fixing caller argument errors on `/personal-space/`. (PR render-base-modal-caller-fix)
+- Added `render_template_gallery_modal` wrapper and corrected template imports to prevent 500 errors on `/personal-space/`. (PR personal-space-gallery-modal-fix)
