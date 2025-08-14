@@ -1318,3 +1318,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Updated forum gamification CTA to point to dashboard instead of init API to avoid 405 errors on `/api/gamification/init`.
 - Enhanced `render_form_field` macro to accept `name` and extra attributes, fixing Personal Space form rendering.
 - Replaced unsupported `**attrs` with an `attrs` dict in `render_form_field` and updated BlockFactory calls to resolve Jinja syntax errors on `/personal-space/`. (PR personal-space-form-attrs-fix)
+- Fixed BlockFactory modal invocation to use 'modal_id' and call syntax, preventing keyword argument errors in render_base_modal. (PR block-factory-modal-id-fix)
