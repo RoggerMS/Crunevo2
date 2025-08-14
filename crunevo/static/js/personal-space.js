@@ -599,6 +599,15 @@ function showAddBlockModal() {
     }
 }
 
+function closeWizardModal() {
+    const modal = document.getElementById('block-factory-modal') || document.getElementById('addBlockModal') || document.getElementById('blockFactoryModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+    document.body.classList.remove('overflow-hidden', 'fixed');
+    document.documentElement.style.removeProperty('overflow');
+}
+
 function handleModalEvents(e) {
     try {
         // Handle block type selection
@@ -651,13 +660,13 @@ function createNewBlock(type) {
     }
     
     const blockData = {
-        type: type,
+        block_type: type,
         title: getDefaultTitle(type),
-        content: '',
-        metadata: Object.assign({
+        config: Object.assign({
             color: 'indigo',
             icon: DEFAULT_ICONS[type] || 'bi-card-text'
-        }, getDefaultMetadata(type))
+        }, getDefaultMetadata(type)),
+        is_featured: false
     };
 
     console.log('Creating block with data:', blockData);
@@ -1391,15 +1400,15 @@ function handleSuggestionClick(e) {
         switch (action) {
             case 'create_objetivo_block':
                 if (!blockTypeExists('objetivo')) {
-                    fetch('/api/personal-space/create-block', {
+                    csrfFetch('/api/personal-space/blocks', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCsrfToken()
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            type: 'objetivo',
-                            metadata: { progress: 0, color: 'indigo', icon: DEFAULT_ICONS['objetivo'] }
+                            block_type: 'objetivo',
+                            config: { progress: 0, color: 'indigo', icon: DEFAULT_ICONS['objetivo'] },
+                            is_featured: false
                         })
                     })
                     .then(res => res.json())
@@ -1420,8 +1429,9 @@ function handleSuggestionClick(e) {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            type: 'nota_enriquecida',
-                            metadata: Object.assign({ color: 'indigo', icon: DEFAULT_ICONS['nota_enriquecida'] }, getDefaultMetadata('nota_enriquecida'))
+                            block_type: 'nota_enriquecida',
+                            config: Object.assign({ color: 'indigo', icon: DEFAULT_ICONS['nota_enriquecida'] }, getDefaultMetadata('nota_enriquecida')),
+                            is_featured: false
                         })
                     })
                     .then(res => res.json())
@@ -1442,8 +1452,9 @@ function handleSuggestionClick(e) {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            type: 'kanban',
-                            metadata: { columns: { "Por hacer": [], "En curso": [], "Hecho": [] }, color: 'indigo', icon: DEFAULT_ICONS['kanban'] }
+                            block_type: 'kanban',
+                            config: { columns: { "Por hacer": [], "En curso": [], "Hecho": [] }, color: 'indigo', icon: DEFAULT_ICONS['kanban'] },
+                            is_featured: false
                         })
                     })
                     .then(res => res.json())
