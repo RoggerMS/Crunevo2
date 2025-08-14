@@ -72,6 +72,9 @@ function initializeDarkMode() {
     const html = document.documentElement;
     const body = document.body;
     
+    // Prevent transitions during initialization
+    body.classList.add('preload');
+    
     // Apply theme classes
     if (isDarkMode) {
         html.classList.add('dark-mode');
@@ -86,6 +89,11 @@ function initializeDarkMode() {
     html.dataset.bsTheme = isDarkMode ? 'dark' : 'light';
     updateDarkModeButton();
     updateThemeColor();
+    
+    // Re-enable transitions after initialization
+    setTimeout(() => {
+        body.classList.remove('preload');
+    }, 100);
     
     // Listen for system theme changes if no manual preference is set
     const savedTheme = localStorage.getItem('theme');
@@ -124,32 +132,32 @@ function initializeEventListeners() {
         console.log('Initializing event listeners...');
         
         // Add block buttons with improved error handling
-        const addBlockBtn = document.getElementById('addBlockBtn');
-        const floatingAddBtn = document.getElementById('floatingAddBtn');
+        const addBlockSelectors = ['#addBlockBtn', '[data-bs-target="#block-factory-modal"]', '.quick-action-btn'];
+        addBlockSelectors.forEach(selector => {
+            const buttons = document.querySelectorAll(selector);
+            buttons.forEach(btn => {
+                if (btn && !btn.dataset.listenerAdded) {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Add block button clicked');
+                        showAddBlockModal();
+                    });
+                    btn.dataset.listenerAdded = 'true';
+                }
+            });
+        });
+        
+        // Create first block button
         const createFirstBlock = document.getElementById('createFirstBlock');
-        
-        if (addBlockBtn) {
-            addBlockBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                showAddBlockModal();
-            });
-        }
-        
-        if (floatingAddBtn) {
-            floatingAddBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                showAddBlockModal();
-            });
-        }
-        
-        if (createFirstBlock) {
+        if (createFirstBlock && !createFirstBlock.dataset.listenerAdded) {
             createFirstBlock.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                console.log('Create first block clicked');
                 startPersonalSpace();
             });
+            createFirstBlock.dataset.listenerAdded = 'true';
         }
 
         // Control buttons with error handling
@@ -542,20 +550,57 @@ function generateBlockContent(block) {
 
 // Modal Functions
 function showAddBlockModal() {
-    const modal = document.getElementById('block-factory-modal');
+    // Try multiple modal IDs for compatibility
+    const modalIds = ['block-factory-modal', 'addBlockModal', 'blockFactoryModal'];
+    let modal = null;
+    
+    for (const id of modalIds) {
+        modal = document.getElementById(id);
+        if (modal) break;
+    }
+    
     if (modal) {
-        const bsModal = new bootstrap.Modal(modal);
-        bsModal.show();
+        try {
+            const bsModal = new bootstrap.Modal(modal);
+            bsModal.show();
+        } catch (error) {
+            console.error('Error showing modal:', error);
+            showNotification('Error al abrir el modal de creación', 'error');
+        }
     } else {
-        console.error('Block factory modal not found');
-        showNotification('Error al abrir el modal de creación', 'error');
+        console.error('Block factory modal not found. Available modals:', 
+            Array.from(document.querySelectorAll('[id*="modal"]')).map(m => m.id));
+        showNotification('Modal de creación no encontrado', 'error');
     }
 }
 
 function handleModalEvents(e) {
-    if (e.target.closest('.block-type-card')) {
-        const blockType = e.target.closest('.block-type-card').dataset.type;
-        createNewBlock(blockType);
+    try {
+        // Handle block type selection
+        const blockTypeCard = e.target.closest('.block-type-card');
+        if (blockTypeCard && blockTypeCard.dataset.type) {
+            e.preventDefault();
+            e.stopPropagation();
+            const blockType = blockTypeCard.dataset.type;
+            console.log('Creating new block of type:', blockType);
+            createNewBlock(blockType);
+            return;
+        }
+        
+        // Handle quick action buttons
+        const quickActionBtn = e.target.closest('[data-bs-toggle="modal"]');
+        if (quickActionBtn) {
+            const targetModal = quickActionBtn.getAttribute('data-bs-target');
+            if (targetModal) {
+                const modal = document.querySelector(targetModal);
+                if (modal) {
+                    const bsModal = new bootstrap.Modal(modal);
+                    bsModal.show();
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error in handleModalEvents:', error);
     }
 }
 
@@ -570,45 +615,66 @@ function apiCreateBlock(blockData) {
 }
 
 function createNewBlock(type) {
+    if (!type) {
+        console.error('Block type is required');
+        showNotification('Tipo de bloque requerido', 'error');
+        return;
+    }
+    
     const blockData = {
         type: type,
         title: getDefaultTitle(type),
         content: '',
         metadata: Object.assign({
             color: 'indigo',
-            icon: DEFAULT_ICONS[type]
+            icon: DEFAULT_ICONS[type] || 'bi-card-text'
         }, getDefaultMetadata(type))
     };
 
+    console.log('Creating block with data:', blockData);
+    
     apiCreateBlock(blockData)
         .then(data => {
+            console.log('Block creation response:', data);
             if (data.success && data.block) {
-                bootstrap.Modal.getInstance(document.getElementById('addBlockModal'))?.hide();
+                // Close any open modals
+                const openModals = document.querySelectorAll('.modal.show');
+                openModals.forEach(modal => {
+                    const bsModal = bootstrap.Modal.getInstance(modal);
+                    if (bsModal) bsModal.hide();
+                });
 
                 const blockElement = createBlockElement(data.block);
-                blockElement.classList.add('new-block');
+                if (blockElement) {
+                    blockElement.classList.add('new-block');
 
-                const grid = document.getElementById('blocksGrid');
-                const emptyState = grid.querySelector('.empty-state');
-                if (emptyState) {
-                    emptyState.remove();
+                    const grid = document.getElementById('blocksGrid');
+                    if (grid) {
+                        const emptyState = grid.querySelector('.empty-state');
+                        if (emptyState) {
+                            emptyState.remove();
+                        }
+                        grid.appendChild(blockElement);
+                    }
+
+                    // Auto-open edit modal after a short delay
+                    setTimeout(() => {
+                        showEditBlockModal(data.block.id);
+                    }, 300);
+
+                    showNotification('Bloque creado exitosamente', 'success');
+                } else {
+                    console.error('Failed to create block element');
+                    showNotification('Error al mostrar el bloque creado', 'error');
                 }
-
-                grid.appendChild(blockElement);
-
-                setTimeout(() => {
-                    showEditBlockModal(data.block.id);
-                }, 500);
-
-                showNotification('Bloque creado exitosamente', 'success');
             } else {
+                console.error('Block creation failed:', data);
                 showNotification(data.message || 'Error al crear el bloque', 'error');
-                setTimeout(() => window.location.reload(), 500);
             }
         })
         .catch(error => {
             console.error('Error creating block:', error);
-            showNotification('Error de conexión', 'error');
+            showNotification('Error de conexión al crear el bloque', 'error');
         });
 }
 
@@ -1182,30 +1248,39 @@ function updateBlockOrder() {
 
 // UI Controls
 function toggleDarkMode() {
-    isDarkMode = !isDarkMode;
-    const html = document.documentElement;
-    const body = document.body;
-    
-    // Update classes for better theme support
-    html.classList.toggle('dark-mode', isDarkMode);
-    html.dataset.bsTheme = isDarkMode ? 'dark' : 'light';
-    
-    if (isDarkMode) {
-        body.classList.add('dark-theme');
-        body.classList.remove('light-theme');
-    } else {
-        body.classList.add('light-theme');
-        body.classList.remove('dark-theme');
+    try {
+        isDarkMode = !isDarkMode;
+        const html = document.documentElement;
+        const body = document.body;
+        
+        // Update classes for better theme support
+        html.classList.toggle('dark-mode', isDarkMode);
+        html.dataset.bsTheme = isDarkMode ? 'dark' : 'light';
+        
+        if (isDarkMode) {
+            body.classList.add('dark-theme');
+            body.classList.remove('light-theme');
+        } else {
+            body.classList.add('light-theme');
+            body.classList.remove('dark-theme');
+        }
+        
+        // Save preference
+        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        
+        // Update button state and theme color
+        updateDarkModeButton();
+        updateThemeColor();
+        
+        // Trigger custom event for theme change
+        window.dispatchEvent(new CustomEvent('themeChanged', {
+            detail: { isDark: isDarkMode, theme: isDarkMode ? 'dark' : 'light' }
+        }));
+        
+        console.log('Dark mode toggled:', isDarkMode);
+    } catch (error) {
+        console.error('Error toggling dark mode:', error);
     }
-    
-    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-    updateDarkModeButton();
-    updateThemeColor();
-    
-    // Trigger custom event for theme change
-    window.dispatchEvent(new CustomEvent('themeChanged', {
-        detail: { isDark: isDarkMode, theme: isDarkMode ? 'dark' : 'light' }
-    }));
 }
 
 function updateDarkModeButton() {
