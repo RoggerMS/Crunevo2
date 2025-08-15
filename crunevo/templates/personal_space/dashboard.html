@@ -67,9 +67,11 @@
                             <i class="bi bi-three-dots"></i>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" onclick="openQuickNotesModal()">
-                                <i class="bi bi-sticky me-2"></i>Notas Rápidas
-                            </a></li>
+                            <li>
+                                <button id="btn-quick-notes" type="button" class="dropdown-item" aria-label="Notas Rápidas">
+                                    <i class="bi bi-sticky me-2"></i>Notas Rápidas
+                                </button>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ url_for('personal_space.workspace') }}">
                                 <i class="bi bi-grid-3x3-gap me-2"></i>Workspace
@@ -261,66 +263,25 @@
 {{ render_template_gallery_modal() }}
 
 <!-- Quick Notes Modal -->
-<div class="modal fade" id="quick-notes-modal" tabindex="-1" aria-labelledby="quickNotesModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="quickNotesModal" tabindex="-1" aria-labelledby="quickNotesTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="quickNotesModalLabel">
-                    <i class="bi bi-sticky me-2"></i>
-                    Notas Rápidas
-                </h5>
+                <h5 id="quickNotesTitle" class="modal-title">Notas Rápidas</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="mb-3">
-                            <label for="quick-note-content" class="form-label">Contenido de la nota</label>
-                            <textarea class="form-control" 
-                                      id="quick-note-content" 
-                                      rows="8" 
-                                      placeholder="Escribe tu nota aquí..."
-                                      aria-describedby="quickNoteHelp"></textarea>
-                            <div id="quickNoteHelp" class="form-text">
-                                Presiona Ctrl+Enter para guardar rápidamente
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="quick-note-tags" class="form-label">Etiquetas (opcional)</label>
-                            <input type="text" 
-                                   class="form-control" 
-                                   id="quick-note-tags" 
-                                   placeholder="trabajo, personal, ideas..."
-                                   aria-describedby="tagsHelp">
-                            <div id="tagsHelp" class="form-text">
-                                Separa las etiquetas con comas
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <h6>Notas Recientes</h6>
-                        <div id="recent-notes-list" class="recent-notes-container">
-                            <!-- Recent notes will be loaded here -->
-                        </div>
-                    </div>
+                <label class="form-label">Contenido</label>
+                <textarea id="qn-text" class="form-control" rows="4" placeholder="Escribe tu nota... (Ctrl+Enter para guardar)"></textarea>
+                <div class="mt-3 d-flex gap-3 align-items-center">
+                    <input id="qn-show-on-login" type="checkbox" class="form-check-input">
+                    <label for="qn-show-on-login" class="form-check-label">Mostrar última nota al iniciar sesión</label>
                 </div>
+                <input id="qn-tags" class="form-control mt-3" placeholder="Etiquetas (opcional, separadas por comas)">
             </div>
             <div class="modal-footer">
-                <div class="d-flex justify-content-between w-100">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="showNoteOnLogin" name="showNoteOnLogin">
-                        <label class="form-check-label" for="showNoteOnLogin">
-                            Mostrar última nota al iniciar sesión
-                        </label>
-                    </div>
-                    <div>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" id="save-quick-note-btn">
-                            <i class="bi bi-save me-1"></i>
-                            Guardar Nota
-                        </button>
-                    </div>
-                </div>
+                <button id="qn-cancel" type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button id="qn-save" type="button" class="btn btn-primary">Guardar</button>
             </div>
         </div>
     </div>
@@ -593,153 +554,6 @@ window.viewWeeklyDetails = function() {
         window.PersonalSpaceDashboard.showWeeklyProgressModal();
     }
 };
-
-window.openQuickNotesModal = function() {
-    // Use the new QuickNotesSystem if available
-    if (window.openQuickNotes) {
-        window.openQuickNotes();
-    } else {
-        console.error('QuickNotesSystem not available');
-    }
-};
-
-// Analytics toggle function removed - now navigates to analytics page
-
-// Quick Notes functionality
-function loadRecentQuickNotes() {
-    fetch('/api/personal-space/quick-notes')
-    .then(response => response.json())
-    .then(data => {
-        const container = document.getElementById('recent-notes-list');
-        if (data.success && data.notes.length > 0) {
-            container.innerHTML = data.notes.map(note => `
-                <div class="recent-note-item mb-2 p-2 border rounded">
-                    <div class="note-content text-truncate" title="${note.content}">
-                        ${note.content.substring(0, 50)}${note.content.length > 50 ? '...' : ''}
-                    </div>
-                    <div class="note-meta small text-muted">
-                        ${note.tags ? note.tags.join(', ') : ''}
-                        <span class="float-end">${formatTimeAgo(note.created_at)}</span>
-                    </div>
-                </div>
-            `).join('');
-        } else {
-            container.innerHTML = '<p class="text-muted small">No hay notas recientes</p>';
-        }
-    })
-    .catch(error => {
-        console.error('Error loading recent notes:', error);
-        document.getElementById('recent-notes-list').innerHTML = '<p class="text-muted small">Error al cargar notas</p>';
-    });
-}
-
-function loadQuickNotesPreferences() {
-    const showOnLogin = localStorage.getItem('show_quick_note_on_login') === 'true';
-    document.getElementById('showNoteOnLogin').checked = showOnLogin;
-}
-
-function saveQuickNotesPreferences(showOnLogin) {
-    localStorage.setItem('show_quick_note_on_login', showOnLogin.toString());
-    
-    // Also save to backend
-    fetch('/api/personal-space/preferences', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken()
-        },
-        body: JSON.stringify({
-            show_quick_note_on_login: showOnLogin
-        })
-    })
-    .catch(error => console.error('Error saving preferences:', error));
-}
-
-function saveQuickNote() {
-    const content = document.getElementById('quick-note-content').value.trim();
-    const tags = document.getElementById('quick-note-tags').value.trim();
-    const showOnLogin = document.getElementById('showNoteOnLogin').checked;
-    
-    if (!content) {
-        showMessage('Por favor, escribe algo en la nota.', 'warning');
-        return;
-    }
-    
-    const noteData = {
-        content: content,
-        tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
-        show_on_login: showOnLogin
-    };
-    
-    fetch('/api/personal-space/quick-notes', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken()
-        },
-        body: JSON.stringify(noteData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showMessage('Nota guardada exitosamente', 'success');
-            document.getElementById('quick-note-content').value = '';
-            document.getElementById('quick-note-tags').value = '';
-            loadRecentQuickNotes();
-            
-            // Save preference
-            saveQuickNotesPreferences(showOnLogin);
-        } else {
-            showMessage(data.error || 'Error al guardar la nota', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error saving quick note:', error);
-        showMessage('Error al guardar la nota', 'error');
-    });
-}
-
-function getCSRFToken() {
-    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-}
-
-function showMessage(message, type) {
-    // Integration with your notification system
-    console.log(`${type}: ${message}`);
-}
-
-function formatTimeAgo(date) {
-    const now = new Date();
-    const past = new Date(date);
-    const diff = now - past;
-    
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    
-    if (days > 0) return `hace ${days} día${days > 1 ? 's' : ''}`;
-    if (hours > 0) return `hace ${hours} hora${hours > 1 ? 's' : ''}`;
-    if (minutes > 0) return `hace ${minutes} minuto${minutes > 1 ? 's' : ''}`;
-    return 'hace un momento';
-}
-
-// Bind save button event
-document.addEventListener('DOMContentLoaded', function() {
-    const saveBtn = document.getElementById('save-quick-note-btn');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', saveQuickNote);
-    }
-    
-    // Bind Ctrl+Enter shortcut
-    const textarea = document.getElementById('quick-note-content');
-    if (textarea) {
-        textarea.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'Enter') {
-                saveQuickNote();
-            }
-        });
-    }
-});
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
