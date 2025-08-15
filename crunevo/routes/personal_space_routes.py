@@ -1126,13 +1126,14 @@ def save_quick_note():
     """Save a quick note."""
     try:
         data = request.get_json() or {}
-        
+
         # Validate required fields
         if not data.get("content"):
-            return jsonify({"success": False, "error": "Content is required"}), 400
-        
+            return jsonify({"ok": False, "error": "Content is required"}), 400
+
         content = data.get("content", "").strip()
         tags = data.get("tags", [])
+        show_on_login = bool(data.get("show_on_login"))
         
         # Validate content length
         if len(content) > 5000:
@@ -1156,25 +1157,58 @@ def save_quick_note():
         
         # Insert quick note
         cursor = db.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO quick_notes (user_id, content, tags, created_at)
             VALUES (?, ?, ?, datetime('now'))
-        """, (current_user.id, content, json.dumps(cleaned_tags)))
-        
+            """,
+            (current_user.id, content, json.dumps(cleaned_tags))
+        )
+
         note_id = cursor.lastrowid
+
+        # Update show_on_login preference if provided
+        if "show_on_login" in data:
+            cursor.execute(
+                "SELECT preferences FROM user_preferences WHERE user_id = ?",
+                (current_user.id,)
+            )
+            result = cursor.fetchone()
+            if result and result[0]:
+                prefs = json.loads(result[0])
+            else:
+                prefs = {"show_quick_note_on_login": False, "analytics_enabled": True}
+            prefs["show_quick_note_on_login"] = show_on_login
+            if result:
+                cursor.execute(
+                    """
+                    UPDATE user_preferences
+                    SET preferences = ?, updated_at = datetime('now')
+                    WHERE user_id = ?
+                    """,
+                    (json.dumps(prefs), current_user.id)
+                )
+            else:
+                cursor.execute(
+                    """
+                    INSERT INTO user_preferences (user_id, preferences, created_at, updated_at)
+                    VALUES (?, ?, datetime('now'), datetime('now'))
+                    """,
+                    (current_user.id, json.dumps(prefs))
+                )
+
         db.commit()
-        
+
         current_app.logger.info(f"Quick note saved for user {current_user.id}")
-        
+
         return jsonify({
-            "success": True,
-            "message": "Nota guardada exitosamente",
+            "ok": True,
             "note_id": note_id
         })
         
     except Exception as e:
         current_app.logger.error(f"Error saving quick note: {e}")
-        return jsonify({"success": False, "error": "Error al guardar la nota"}), 500
+        return jsonify({"ok": False, "error": "Error al guardar la nota"}), 500
 
 
 @personal_space_api_bp.route("/quick-notes/latest", methods=["GET"])
@@ -1204,13 +1238,13 @@ def get_latest_quick_note():
                 "tags": json.loads(note[2]) if note[2] else [],
                 "created_at": note[3]
             }
-            return jsonify({"success": True, "note": note_data})
+            return jsonify({"ok": True, "note": note_data})
         else:
-            return jsonify({"success": True, "note": None})
+            return jsonify({"ok": True, "note": None})
             
     except Exception as e:
         current_app.logger.error(f"Error getting latest quick note: {e}")
-        return jsonify({"success": False, "error": "Error al obtener la nota"}), 500
+        return jsonify({"ok": False, "error": "Error al obtener la nota"}), 500
 
 
 @personal_space_api_bp.route("/user-preferences", methods=["GET"])

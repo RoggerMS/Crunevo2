@@ -1326,3 +1326,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Normalized personal space API with RESTful block/template endpoints, added template favorite/import stubs, aligned wizard JS payloads/routes, and exposed closeWizardModal. (PR personal-space-rest-wizard)
 - Replaced JavaScript-style comment within sample goals list in AnalyticsDashboard template with Jinja comment to resolve unexpected '//' errors on `/personal-space/`. (PR personal-space-jinja-comment)
 - Corrected personal space dashboard dropdown link to use existing `analytics_dashboard` endpoint and verified quick notes tables migration. (PR personal-space-analytics-link-fix)
+- Redesigned Quick Notes to open as Bootstrap modal appended to body with portal, replacing anchor trigger and persisting preferences. (PR quick-notes-modal-fix)
