@@ -2,7 +2,6 @@
 {% extends "base.html" %}
 {% from 'personal_space/components/layout/DashboardLayout.html' import render_dashboard_layout with context %}
 {% from 'personal_space/components/widgets/TemplateGallery.html' import render_template_gallery_modal %}
-{% from 'personal_space/components/widgets/BlockFactory.html' import render_block_factory_modal %}
 {% from 'personal_space/components/widgets/AnalyticsDashboard.html' import render_analytics_dashboard %}
 
 {% block title %}Personal Space - Dashboard{% endblock %}
@@ -259,7 +258,7 @@
 </button>
 
 <!-- Modals placeholders -->
-{{ render_block_factory_modal() }}
+{% include 'personal_space/components/widgets/BlockFactory.html' %}
 {{ render_template_gallery_modal() }}
 
 <!-- Quick Notes Modal -->

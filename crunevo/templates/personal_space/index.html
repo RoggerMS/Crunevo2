@@ -1,7 +1,6 @@
 <!-- Personal Space Index - Main entry point for redesigned personal space -->
 {% extends "base.html" %}
 {% from 'personal_space/components/base/BaseCard.html' import render_info_card, render_stat_card %}
-{% from 'personal_space/components/widgets/BlockFactory.html' import render_block_factory_modal %}
 {% from 'personal_space/components/widgets/TemplateGallery.html' import render_template_gallery_modal %}
 
 {% block title %}Personal Space{% endblock %}
@@ -224,7 +223,7 @@
 </div>
 
 <!-- Modals -->
-{{ render_block_factory_modal() }}
+{% include 'personal_space/components/widgets/BlockFactory.html' %}
 {{ render_template_gallery_modal() }}
 {% endblock %}
 

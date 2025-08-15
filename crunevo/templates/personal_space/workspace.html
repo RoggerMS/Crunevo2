@@ -1,7 +1,6 @@
 <!-- Personal Space Workspace - Dynamic drag-and-drop workspace -->
 {% extends "base.html" %}
 {% from 'personal_space/components/layout/WorkspaceLayout.html' import render_workspace_layout %}
-{% from 'personal_space/components/widgets/BlockFactory.html' import render_block_factory_modal %}
 {% from 'personal_space/components/widgets/TemplateGallery.html' import render_template_gallery_modal %}
 
 {% block title %}Personal Space - Workspace{% endblock %}
@@ -249,7 +248,7 @@
 </div>
 
 <!-- Modals -->
-{{ render_block_factory_modal() }}
+{% include 'personal_space/components/widgets/BlockFactory.html' %}
 {{ render_template_gallery_modal() }}
 {% endblock %}
 
