@@ -1,1924 +1,230 @@
-<!-- BlockFactory Component - Modal for creating any type of block -->
-{% from 'personal_space/components/base/BaseModal.html' import render_base_modal %}
-{% from 'personal_space/components/base/BaseForm.html' import render_form_field, render_form_container %}
-
 <!-- Block Factory Modal -->
-{% macro render_block_factory_modal() %}
-{{ render_base_modal(
-    modal_id='block-factory-modal',
-    title='Crear Nuevo Bloque',
-    size='lg',
-    body=render_block_factory_content(),
-    footer=render_block_factory_footer()
-) }}
-{% endmacro %}
+<div class="modal fade" id="block-factory-modal" tabindex="-1" aria-labelledby="blockFactoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="blockFactoryModalLabel">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Crear Nuevo Bloque
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Creation Mode Tabs -->
+                <div class="creation-mode-tabs mb-4">
+                    <div class="btn-group w-100" role="group">
+                        <button type="button" class="btn btn-outline-primary creation-mode-tab active" id="individual-tab">
+                            <i class="bi bi-plus-square me-2"></i>
+                            Bloque Individual
+                        </button>
+                        <button type="button" class="btn btn-outline-primary creation-mode-tab" id="template-tab">
+                            <i class="bi bi-collection me-2"></i>
+                            Desde Plantilla
+                        </button>
+                    </div>
+                </div>
 
-<!-- Block Factory Content -->
-{% macro render_block_factory_content() %}
-<div class="block-factory" id="block-factory">
-    <!-- Step Indicator -->
-    <div class="factory-steps mb-4">
-        <div class="steps-container">
-            <div class="step active" data-step="1">
-                <div class="step-number">1</div>
-                <div class="step-label">Tipo</div>
-            </div>
-            <div class="step-connector"></div>
-            <div class="step" data-step="2">
-                <div class="step-number">2</div>
-                <div class="step-label">Configuración</div>
-            </div>
-            <div class="step-connector"></div>
-            <div class="step" data-step="3">
-                <div class="step-number">3</div>
-                <div class="step-label">Personalización</div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Step 1: Block Type Selection -->
-    <div class="factory-step" id="step-1" data-step="1">
-        <div class="step-header mb-4">
-            <h5 class="step-title">Selecciona el tipo de bloque</h5>
-            <p class="step-description text-muted">Elige el tipo de bloque que mejor se adapte a tus necesidades o usa una plantilla</p>
-        </div>
-        
-        <!-- Creation Mode Tabs -->
-        <div class="creation-mode-tabs mb-4">
-            <div class="nav nav-pills justify-content-center" id="creation-mode-nav" role="tablist">
-                <button class="nav-link active" id="individual-tab" data-bs-toggle="pill" data-bs-target="#individual-mode" type="button" role="tab" aria-controls="individual-mode" aria-selected="true">
-                    <i class="bi bi-plus-circle me-2"></i>Bloque Individual
-                </button>
-                <button class="nav-link" id="template-tab" data-bs-toggle="pill" data-bs-target="#template-mode" type="button" role="tab" aria-controls="template-mode" aria-selected="false">
-                    <i class="bi bi-collection me-2"></i>Desde Plantilla
-                </button>
-            </div>
-        </div>
-        
-        <div class="tab-content" id="creation-mode-content">
-            <!-- Individual Block Creation -->
-            <div class="tab-pane fade show active" id="individual-mode" role="tabpanel" aria-labelledby="individual-tab">
-        
-        <div class="block-types-grid">
-            <!-- Task Block -->
-            <div class="block-type-card" data-type="task" data-action="select-block-type">
-                <div class="block-type-icon">
-                    <i class="bi bi-check-square"></i>
-                </div>
-                <div class="block-type-info">
-                    <h6 class="block-type-title">Lista de Tareas</h6>
-                    <p class="block-type-description">Organiza y rastrea tus tareas pendientes</p>
-                    <div class="block-type-features">
-                        <span class="feature-tag">Checkboxes</span>
-                        <span class="feature-tag">Prioridades</span>
-                        <span class="feature-tag">Fechas límite</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Note Block -->
-            <div class="block-type-card" data-type="note" data-action="select-block-type">
-                <div class="block-type-icon">
-                    <i class="bi bi-journal-text"></i>
-                </div>
-                <div class="block-type-info">
-                    <h6 class="block-type-title">Notas</h6>
-                    <p class="block-type-description">Captura ideas y pensamientos importantes</p>
-                    <div class="block-type-features">
-                        <span class="feature-tag">Texto enriquecido</span>
-                        <span class="feature-tag">Etiquetas</span>
-                        <span class="feature-tag">Búsqueda</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Kanban Block -->
-            <div class="block-type-card" data-type="kanban" data-action="select-block-type">
-                <div class="block-type-icon">
-                    <i class="bi bi-kanban"></i>
-                </div>
-                <div class="block-type-info">
-                    <h6 class="block-type-title">Tablero Kanban</h6>
-                    <p class="block-type-description">Visualiza el flujo de trabajo con columnas</p>
-                    <div class="block-type-features">
-                        <span class="feature-tag">Drag & Drop</span>
-                        <span class="feature-tag">Columnas</span>
-                        <span class="feature-tag">Tarjetas</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Objective Block -->
-            <div class="block-type-card" data-type="objective" data-action="select-block-type">
-                <div class="block-type-icon">
-                    <i class="bi bi-target"></i>
-                </div>
-                <div class="block-type-info">
-                    <h6 class="block-type-title">Objetivos</h6>
-                    <p class="block-type-description">Define y rastrea tus metas y objetivos</p>
-                    <div class="block-type-features">
-                        <span class="feature-tag">Progreso</span>
-                        <span class="feature-tag">Hitos</span>
-                        <span class="feature-tag">Métricas</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Calendar Block -->
-            <div class="block-type-card" data-type="calendar" data-action="select-block-type">
-                <div class="block-type-icon">
-                    <i class="bi bi-calendar-event"></i>
-                </div>
-                <div class="block-type-info">
-                    <h6 class="block-type-title">Calendario</h6>
-                    <p class="block-type-description">Gestiona eventos y citas importantes</p>
-                    <div class="block-type-features">
-                        <span class="feature-tag">Eventos</span>
-                        <span class="feature-tag">Recordatorios</span>
-                        <span class="feature-tag">Vista mensual</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Habit Tracker Block -->
-            <div class="block-type-card" data-type="habit" data-action="select-block-type">
-                <div class="block-type-icon">
-                    <i class="bi bi-arrow-repeat"></i>
-                </div>
-                <div class="block-type-info">
-                    <h6 class="block-type-title">Seguimiento de Hábitos</h6>
-                    <p class="block-type-description">Construye y mantén hábitos positivos</p>
-                    <div class="block-type-features">
-                        <span class="feature-tag">Rachas</span>
-                        <span class="feature-tag">Estadísticas</span>
-                        <span class="feature-tag">Recordatorios</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-            </div>
-            
-            <!-- Template Mode -->
-            <div class="tab-pane fade" id="template-mode" role="tabpanel" aria-labelledby="template-tab">
-                <div class="template-selection-container">
-                    <div class="template-search mb-3">
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" class="form-control" id="template-search" name="templateSearch" placeholder="Buscar plantillas...">
+                <!-- Individual Block Creation Mode -->
+                <div id="individual-mode">
+                    <!-- Step 1: Block Type Selection -->
+                    <div class="step-content" id="step-type">
+                        <div class="step-header mb-4">
+                            <h6 class="step-title">Paso 1: Selecciona el tipo de bloque</h6>
+                            <p class="step-description text-muted">Elige el tipo de bloque que mejor se adapte a tus necesidades</p>
                         </div>
-                    </div>
-                    
-                    <div class="template-categories mb-3">
-                        <div class="btn-group" role="group" aria-label="Categorías de plantillas">
-                            <button type="button" class="btn btn-outline-primary active" data-category="all">Todas</button>
-                            <button type="button" class="btn btn-outline-primary" data-category="productivity">Productividad</button>
-                            <button type="button" class="btn btn-outline-primary" data-category="personal">Personal</button>
-                            <button type="button" class="btn btn-outline-primary" data-category="work">Trabajo</button>
-                            <button type="button" class="btn btn-outline-primary" data-category="study">Estudio</button>
-                        </div>
-                    </div>
-                    
-                    <div class="templates-grid" id="templates-grid">
-                        <div class="loading-templates text-center py-4">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Cargando plantillas...</span>
-                            </div>
-                            <p class="mt-2 text-muted">Cargando plantillas disponibles...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Step 2: Block Configuration -->
-    <div class="factory-step d-none" id="step-2" data-step="2">
-        <div class="step-header mb-4">
-            <h5 class="step-title">Configuración del bloque</h5>
-            <p class="step-description text-muted">Define las propiedades básicas de tu bloque</p>
-        </div>
-        
-        <form id="block-config-form" class="block-config-form">
-            <!-- Basic Configuration -->
-            <div class="config-section mb-4">
-                <h6 class="config-section-title">Información Básica</h6>
-                
-                {{ render_form_field(
-                    type='text',
-                    name='title',
-                    label='Título del bloque',
-                    placeholder='Ej: Mis tareas diarias',
-                    required=true
-                ) }}
-                
-                {{ render_form_field(
-                    type='textarea',
-                    name='description',
-                    label='Descripción (opcional)',
-                    placeholder='Describe el propósito de este bloque...',
-                    attrs={'rows': 3}
-                ) }}
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        {{ render_form_field(
-                            type='select',
-                            name='category',
-                            label='Categoría',
-                            options=[
-                                {'value': 'personal', 'text': 'Personal'},
-                                {'value': 'work', 'text': 'Trabajo'},
-                                {'value': 'study', 'text': 'Estudio'},
-                                {'value': 'health', 'text': 'Salud'},
-                                {'value': 'finance', 'text': 'Finanzas'},
-                                {'value': 'other', 'text': 'Otro'}
-                            ]
-                        ) }}
-                    </div>
-                    <div class="col-md-6">
-                        {{ render_form_field(
-                            type='select',
-                            name='priority',
-                            label='Prioridad',
-                            options=[
-                                {'value': 'low', 'text': 'Baja'},
-                                {'value': 'medium', 'text': 'Media'},
-                                {'value': 'high', 'text': 'Alta'},
-                                {'value': 'urgent', 'text': 'Urgente'}
-                            ],
-                            value='medium'
-                        ) }}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Type-specific Configuration -->
-            <div class="config-section mb-4" id="type-specific-config">
-                <h6 class="config-section-title">Configuración Específica</h6>
-                <div id="type-config-content">
-                    <!-- Content will be populated based on selected type -->
-                </div>
-            </div>
-            
-            <!-- Layout Configuration -->
-            <div class="config-section mb-4">
-                <h6 class="config-section-title">Diseño y Posición</h6>
-                
-                <div class="row">
-                    <div class="col-md-4">
-                        {{ render_form_field(
-                            type='select',
-                            name='size',
-                            label='Tamaño',
-                            options=[
-                                {'value': 'small', 'text': 'Pequeño (1x1)'},
-                                {'value': 'medium', 'text': 'Mediano (2x1)'},
-                                {'value': 'large', 'text': 'Grande (2x2)'},
-                                {'value': 'wide', 'text': 'Ancho (3x1)'},
-                                {'value': 'tall', 'text': 'Alto (1x3)'}
-                            ],
-                            value='medium'
-                        ) }}
-                    </div>
-                    <div class="col-md-4">
-                          {{ render_form_field(
-                              type='number',
-                              name='position_x',
-                              label='Posición X',
-                              value=0,
-                              attrs={'min': 0}
-                          ) }}
-                    </div>
-                    <div class="col-md-4">
-                          {{ render_form_field(
-                              type='number',
-                              name='position_y',
-                              label='Posición Y',
-                              value=0,
-                              attrs={'min': 0}
-                          ) }}
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-    
-    <!-- Step 3: Block Customization -->
-    <div class="factory-step d-none" id="step-3" data-step="3">
-        <div class="step-header mb-4">
-            <h5 class="step-title">Personalización</h5>
-            <p class="step-description text-muted">Personaliza la apariencia y comportamiento de tu bloque</p>
-        </div>
-        
-        <form id="block-customization-form" class="block-customization-form">
-            <!-- Visual Customization -->
-            <div class="config-section mb-4">
-                <h6 class="config-section-title">Apariencia</h6>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Color del tema</label>
-                            <div class="color-picker-grid">
-                                <div class="color-option" data-color="blue" style="background: #3182ce;" data-action="select-color"></div>
-                                <div class="color-option" data-color="green" style="background: #38a169;" data-action="select-color"></div>
-                                <div class="color-option" data-color="purple" style="background: #9f7aea;" data-action="select-color"></div>
-                                <div class="color-option" data-color="orange" style="background: #d69e2e;" data-action="select-color"></div>
-                                <div class="color-option" data-color="red" style="background: #e53e3e;" data-action="select-color"></div>
-                                <div class="color-option" data-color="teal" style="background: #319795;" data-action="select-color"></div>
-                                <div class="color-option" data-color="pink" style="background: #d53f8c;" data-action="select-color"></div>
-                                <div class="color-option" data-color="gray" style="background: #718096;" data-action="select-color"></div>
-                            </div>
-                            <input type="hidden" name="theme_color" id="theme_color" value="purple">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        {{ render_form_field(
-                            type='select',
-                            name='header_style',
-                            label='Estilo del encabezado',
-                            options=[
-                                {'value': 'default', 'text': 'Por defecto'},
-                                {'value': 'minimal', 'text': 'Minimalista'},
-                                {'value': 'bold', 'text': 'Destacado'},
-                                {'value': 'gradient', 'text': 'Degradado'}
-                            ]
-                        ) }}
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="show_border" id="show_border" checked>
-                                <label class="form-check-label" for="show_border">
-                                    Mostrar borde
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="show_shadow" id="show_shadow" checked>
-                                <label class="form-check-label" for="show_shadow">
-                                    Mostrar sombra
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Behavior Customization -->
-            <div class="config-section mb-4">
-                <h6 class="config-section-title">Comportamiento</h6>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="auto_save" id="auto_save" checked>
-                                <label class="form-check-label" for="auto_save">
-                                    Guardado automático
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="notifications" id="notifications">
-                                <label class="form-check-label" for="notifications">
-                                    Notificaciones
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="collaborative" id="collaborative">
-                                <label class="form-check-label" for="collaborative">
-                                    Colaborativo
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="public_view" id="public_view">
-                                <label class="form-check-label" for="public_view">
-                                    Vista pública
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Preview -->
-            <div class="config-section">
-                <h6 class="config-section-title">Vista Previa</h6>
-                <div class="block-preview" id="block-preview">
-                    <div class="preview-container">
-                        <div class="preview-block" id="preview-block">
-                            <div class="preview-header">
-                                <h6 class="preview-title">Título del bloque</h6>
-                                <div class="preview-actions">
-                                    <i class="bi bi-three-dots"></i>
+                        
+                        <div class="block-types-grid">
+                            <div class="block-type-card" data-block-type="task" data-action="select-block-type">
+                                <div class="block-type-icon">
+                                    <i class="bi bi-check-square"></i>
+                                </div>
+                                <div class="block-type-info">
+                                    <h6 class="block-type-title">Tareas</h6>
+                                    <p class="block-type-description">Gestiona tareas y listas de pendientes</p>
                                 </div>
                             </div>
-                            <div class="preview-content">
-                                <p class="text-muted">Vista previa del contenido del bloque...</p>
+                            
+                            <div class="block-type-card" data-block-type="note" data-action="select-block-type">
+                                <div class="block-type-icon">
+                                    <i class="bi bi-journal-text"></i>
+                                </div>
+                                <div class="block-type-info">
+                                    <h6 class="block-type-title">Notas</h6>
+                                    <p class="block-type-description">Crea notas y documentos de texto</p>
+                                </div>
+                            </div>
+                            
+                            <div class="block-type-card" data-block-type="kanban" data-action="select-block-type">
+                                <div class="block-type-icon">
+                                    <i class="bi bi-kanban"></i>
+                                </div>
+                                <div class="block-type-info">
+                                    <h6 class="block-type-title">Kanban</h6>
+                                    <p class="block-type-description">Tableros Kanban para gestión visual</p>
+                                </div>
+                            </div>
+                            
+                            <div class="block-type-card" data-block-type="objective" data-action="select-block-type">
+                                <div class="block-type-icon">
+                                    <i class="bi bi-target"></i>
+                                </div>
+                                <div class="block-type-info">
+                                    <h6 class="block-type-title">Objetivos</h6>
+                                    <p class="block-type-description">Define y rastrea objetivos y metas</p>
+                                </div>
+                            </div>
+                            
+                            <div class="block-type-card" data-block-type="calendar" data-action="select-block-type">
+                                <div class="block-type-icon">
+                                    <i class="bi bi-calendar3"></i>
+                                </div>
+                                <div class="block-type-info">
+                                    <h6 class="block-type-title">Calendario</h6>
+                                    <p class="block-type-description">Calendario para eventos y citas</p>
+                                </div>
+                            </div>
+                            
+                            <div class="block-type-card" data-block-type="chart" data-action="select-block-type">
+                                <div class="block-type-icon">
+                                    <i class="bi bi-bar-chart"></i>
+                                </div>
+                                <div class="block-type-info">
+                                    <h6 class="block-type-title">Gráficos</h6>
+                                    <p class="block-type-description">Visualiza datos con gráficos</p>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Step 2: Basic Configuration -->
+                    <div class="step-content d-none" id="step-config">
+                        <div class="step-header mb-4">
+                            <h6 class="step-title">Paso 2: Configuración básica</h6>
+                            <p class="step-description text-muted">Configura los detalles básicos de tu bloque</p>
+                        </div>
+                        
+                        <form id="block-config-form">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group mb-3">
+                                        <label for="block-title" class="form-label">Título del bloque</label>
+                                        <input type="text" class="form-control" id="block-title" name="title" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label for="block-color" class="form-label">Color</label>
+                                        <select class="form-select" id="block-color" name="color">
+                                            <option value="primary">Azul</option>
+                                            <option value="success">Verde</option>
+                                            <option value="warning">Amarillo</option>
+                                            <option value="danger">Rojo</option>
+                                            <option value="info">Cian</option>
+                                            <option value="secondary">Gris</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="block-description" class="form-label">Descripción (opcional)</label>
+                                <textarea class="form-control" id="block-description" name="description" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="block-size" class="form-label">Tamaño</label>
+                                        <select class="form-select" id="block-size" name="size">
+                                            <option value="small">Pequeño (1x1)</option>
+                                            <option value="medium" selected>Mediano (2x1)</option>
+                                            <option value="large">Grande (2x2)</option>
+                                            <option value="wide">Ancho (3x1)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="block-public" name="public">
+                                            <label class="form-check-label" for="block-public">
+                                                Hacer público
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Type-specific configuration will be loaded here -->
+                            <div id="type-specific-config"></div>
+                        </form>
+                    </div>
+
+                    <!-- Step 3: Preview -->
+                    <div class="step-content d-none" id="step-preview">
+                        <div class="step-header mb-4">
+                            <h6 class="step-title">Paso 3: Vista previa</h6>
+                            <p class="step-description text-muted">Revisa la configuración antes de crear el bloque</p>
+                        </div>
+                        
+                        <div id="block-preview" class="block-preview-container">
+                            <!-- Preview will be generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Template Mode -->
+                <div id="template-mode" class="d-none">
+                    <div class="template-header mb-4">
+                        <h6 class="template-title">Selecciona una plantilla</h6>
+                        <p class="template-description text-muted">Elige una plantilla predefinida para crear múltiples bloques de una vez</p>
+                    </div>
+                    
+                    <!-- Template Search -->
+                    <div class="template-search mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" id="template-search" placeholder="Buscar plantillas...">
+                        </div>
+                    </div>
+                    
+                    <!-- Template Categories -->
+                    <div class="template-categories mb-4">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-secondary active" data-category="all">Todas</button>
+                            <button type="button" class="btn btn-outline-secondary" data-category="productivity">Productividad</button>
+                            <button type="button" class="btn btn-outline-secondary" data-category="project">Proyectos</button>
+                            <button type="button" class="btn btn-outline-secondary" data-category="personal">Personal</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Templates Grid -->
+                    <div id="templates-grid" class="templates-grid">
+                        <!-- Templates will be loaded here -->
+                    </div>
                 </div>
             </div>
-        </form>
-    </div>
-</div>
-{% endmacro %}
-
-<!-- Block Factory Footer -->
-{% macro render_block_factory_footer() %}
-<div class="factory-footer">
-    <div class="d-flex justify-content-between align-items-center">
-        <div class="footer-left">
-            <button type="button" 
-                    class="btn btn-outline-secondary" 
-                    id="prev-step-btn" 
-                    data-action="previous-step"
-                    style="display: none;">
-                <i class="bi bi-arrow-left me-2"></i>
-                Anterior
-            </button>
-        </div>
-        
-        <div class="footer-center">
-            <span class="step-indicator" id="step-indicator">Paso 1 de 3</span>
-        </div>
-        
-        <div class="footer-right">
-            <button type="button" 
-                    class="btn btn-outline-secondary me-2" 
-                    data-bs-dismiss="modal">
-                Cancelar
-            </button>
             
-            <button type="button" 
-                    class="btn btn-primary" 
-                    id="next-step-btn" 
-                    data-action="next-step">
-                Siguiente
-                <i class="bi bi-arrow-right ms-2"></i>
-            </button>
-            
-            <button type="button" 
-                    class="btn btn-success" 
-                    id="create-block-btn" 
-                    data-action="create-block"
-                    style="display: none;">
-                <i class="bi bi-plus-circle me-2"></i>
-                Crear Bloque
-            </button>
+            <div class="modal-footer">
+                <div class="step-navigation">
+                    <button type="button" class="btn btn-secondary" id="prev-step" style="display: none;">Anterior</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="next-step" disabled>Siguiente</button>
+                    <button type="button" class="btn btn-success" id="create-block" style="display: none;">Crear Bloque</button>
+                    <button type="button" class="btn btn-success" id="apply-template" style="display: none;">Aplicar Plantilla</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-{% endmacro %}
-
-<style>
-/* Block Factory Styles */
-.block-factory {
-    min-height: 500px;
-}
-
-/* Steps Indicator */
-.factory-steps {
-    padding: 1rem 0;
-}
-
-.steps-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-.step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    position: relative;
-}
-
-.step-number {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #e2e8f0;
-    color: #718096;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 0.875rem;
-    transition: all 0.3s ease;
-}
-
-.step.active .step-number {
-    background: #3182ce;
-    color: white;
-}
-
-.step.completed .step-number {
-    background: #38a169;
-    color: white;
-}
-
-.step-label {
-    font-size: 0.75rem;
-    color: #718096;
-    font-weight: 500;
-    text-align: center;
-}
-
-.step.active .step-label {
-    color: #3182ce;
-    font-weight: 600;
-}
-
-.step.completed .step-label {
-    color: #38a169;
-    font-weight: 600;
-}
-
-.step-connector {
-    width: 60px;
-    height: 2px;
-    background: #e2e8f0;
-    margin: 0 1rem;
-    position: relative;
-    top: -20px;
-}
-
-.step.completed + .step-connector {
-    background: #38a169;
-}
-
-/* Step Content */
-.factory-step {
-    min-height: 400px;
-}
-
-.step-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.step-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 0.5rem;
-}
-
-.step-description {
-    font-size: 1rem;
-    margin-bottom: 0;
-}
-
-/* Block Types Grid */
-.block-types-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.block-type-card {
-    background: #ffffff;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.block-type-card:hover {
-    border-color: #3182ce;
-    box-shadow: 0 4px 20px rgba(49, 130, 206, 0.1);
-    transform: translateY(-2px);
-}
-
-.block-type-card.selected {
-    border-color: #3182ce;
-    background: linear-gradient(135deg, #ebf8ff 0%, #f0f9ff 100%);
-    box-shadow: 0 4px 20px rgba(49, 130, 206, 0.15);
-}
-
-.block-type-card.selected::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #3182ce 0%, #2c5aa0 100%);
-}
-
-.block-type-icon {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.75rem;
-    margin-bottom: 1rem;
-}
-
-.block-type-card.selected .block-type-icon {
-    background: linear-gradient(135deg, #3182ce 0%, #2c5aa0 100%);
-}
-
-.block-type-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 0.5rem;
-}
-
-.block-type-description {
-    font-size: 0.875rem;
-    color: #718096;
-    line-height: 1.5;
-    margin-bottom: 1rem;
-}
-
-.block-type-features {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.feature-tag {
-    background: #f7fafc;
-    color: #4a5568;
-    font-size: 0.75rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    font-weight: 500;
-}
-
-.block-type-card.selected .feature-tag {
-    background: #ffffff;
-    color: #3182ce;
-    border-color: #3182ce;
-}
-
-/* Configuration Sections */
-.config-section {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 1.5rem;
-}
-
-.config-section-title {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-/* Color Picker */
-.color-picker-grid {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 0.5rem;
-    max-width: 200px;
-}
-
-.color-option {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s ease;
-}
-
-.color-option:hover {
-    transform: scale(1.1);
-    border-color: #ffffff;
-    box-shadow: 0 0 0 2px #3182ce;
-}
-
-.color-option.selected {
-    border-color: #ffffff;
-    box-shadow: 0 0 0 2px #3182ce;
-    transform: scale(1.1);
-}
-
-/* Block Preview */
-.block-preview {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 2rem;
-    text-align: center;
-}
-
-.preview-container {
-    max-width: 300px;
-    margin: 0 auto;
-}
-
-.preview-block {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.preview-header {
-    background: #f8fafc;
-    padding: 1rem;
-    border-bottom: 1px solid #e2e8f0;
-    display: flex;
-    align-items: center;
-    justify-content: between;
-}
-
-.preview-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #2d3748;
-    margin: 0;
-    flex: 1;
-}
-
-.preview-actions {
-    color: #718096;
-    font-size: 0.875rem;
-}
-
-.preview-content {
-    padding: 1rem;
-    text-align: left;
-}
-
-/* Factory Footer */
-.factory-footer {
-    padding: 1rem 0;
-    border-top: 1px solid #e2e8f0;
-    background: #f8fafc;
-    margin: -1rem -1.5rem 0;
-    padding: 1rem 1.5rem;
-}
-
-.step-indicator {
-    font-size: 0.875rem;
-    color: #718096;
-}
-
-/* Creation Mode Tabs */
-.creation-mode-tabs .nav-pills .nav-link {
-    background: transparent;
-    border: 2px solid #e2e8f0;
-    color: #4a5568;
-    font-weight: 500;
-    padding: 0.75rem 1.5rem;
-    margin: 0 0.5rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.creation-mode-tabs .nav-pills .nav-link:hover {
-    border-color: #9f7aea;
-    color: #9f7aea;
-    background: rgba(159, 122, 234, 0.1);
-}
-
-.creation-mode-tabs .nav-pills .nav-link.active {
-    background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
-    border-color: #9f7aea;
-    color: white;
-    box-shadow: 0 4px 12px rgba(159, 122, 234, 0.3);
-}
-
-/* Template Selection */
-.template-selection-container {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.template-categories .btn-group .btn {
-    font-size: 0.875rem;
-    padding: 0.5rem 1rem;
-    border-color: #e2e8f0;
-    color: #4a5568;
-}
-
-.template-categories .btn-group .btn.active {
-    background: #9f7aea;
-    border-color: #9f7aea;
-    color: white;
-}
-
-.templates-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1rem;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.template-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-.template-card:hover {
-    border-color: #9f7aea;
-    box-shadow: 0 4px 12px rgba(159, 122, 234, 0.15);
-    transform: translateY(-2px);
-}
-
-.template-card.selected {
-    border-color: #9f7aea;
-    background: linear-gradient(135deg, rgba(159, 122, 234, 0.1) 0%, rgba(128, 90, 213, 0.1) 100%);
-    box-shadow: 0 4px 12px rgba(159, 122, 234, 0.2);
-}
-
-.template-card.selected::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #9f7aea 0%, #805ad5 100%);
-    border-radius: 8px 8px 0 0;
-}
-
-.template-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 0.5rem;
-}
-
-.template-description {
-    font-size: 0.75rem;
-    color: #718096;
-    line-height: 1.4;
-    margin-bottom: 0.75rem;
-}
-
-.template-blocks-count {
-    font-size: 0.75rem;
-    color: #9f7aea;
-    font-weight: 500;
-}
-
-.template-card.selected .template-blocks-count {
-    color: #805ad5;
-}
-
-.loading-templates {
-    color: #718096;
-}
-
-.loading-templates .spinner-border {
-    color: #9f7aea !important;
-    font-weight: 500;
-}
-
-/* Form Enhancements */
-.block-config-form .form-group,
-.block-customization-form .form-group {
-    margin-bottom: 1.5rem;
-}
-
-.block-config-form .form-label,
-.block-customization-form .form-label {
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 0.5rem;
-}
-
-/* Type-specific Configuration */
-#type-config-content {
-    min-height: 100px;
-}
-
-.type-config-section {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-}
-
-.type-config-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #4a5568;
-    margin-bottom: 0.75rem;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .block-types-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .steps-container {
-        max-width: 300px;
-    }
-    
-    .step-connector {
-        width: 40px;
-    }
-    
-    .factory-footer .d-flex {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .footer-left,
-    .footer-right {
-        order: 2;
-    }
-    
-    .footer-center {
-        order: 1;
-    }
-    
-    .color-picker-grid {
-        grid-template-columns: repeat(4, 1fr);
-        max-width: 120px;
-    }
-}
-
-/* Animation */
-@keyframes stepTransition {
-    0% {
-        opacity: 0;
-        transform: translateX(20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-.factory-step {
-    animation: stepTransition 0.3s ease;
-}
-
-@keyframes cardSelect {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.02);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-.block-type-card.selecting {
-    animation: cardSelect 0.3s ease;
-}
-</style>
 
 <script>
-// Block Factory JavaScript
-window.BlockFactory = {
-    currentStep: 1,
-    totalSteps: 3,
-    selectedType: null,
-    blockData: {},
-    
-    // Initialize factory
-    init: function() {
-        this.bindEvents();
-        this.updateStepIndicator();
-        this.updateButtons();
-    },
-    
-    // Bind event listeners
-    bindEvents: function() {
-        // Form change listeners
-        document.addEventListener('input', (e) => {
-            if (e.target.closest('#block-config-form, #block-customization-form')) {
-                this.updatePreview();
-            }
-        });
-        
-        // Color picker
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('color-option')) {
-                this.selectColor(e.target.dataset.color);
-            }
-        });
-    },
-    
-    // Select block type
-    selectBlockType: function(type) {
-        // Remove previous selection
-        document.querySelectorAll('.block-type-card').forEach(card => {
-            card.classList.remove('selected', 'selecting');
-        });
-        
-        // Select new type
-        const selectedCard = document.querySelector(`[data-type="${type}"]`);
-        if (selectedCard) {
-            selectedCard.classList.add('selecting');
-            setTimeout(() => {
-                selectedCard.classList.remove('selecting');
-                selectedCard.classList.add('selected');
-            }, 150);
-        }
-        
-        this.selectedType = type;
-        this.loadTypeSpecificConfig(type);
-        this.updateButtons();
-    },
-    
-    // Load type-specific configuration
-    loadTypeSpecificConfig: function(type) {
-        const container = document.getElementById('type-config-content');
-        if (!container) return;
-        
-        const configs = {
-            task: this.getTaskConfig(),
-            note: this.getNoteConfig(),
-            kanban: this.getKanbanConfig(),
-            objective: this.getObjectiveConfig(),
-            calendar: this.getCalendarConfig(),
-            habit: this.getHabitConfig()
-        };
-        
-        container.innerHTML = configs[type] || '';
-    },
-    
-    // Get task-specific configuration
-    getTaskConfig: function() {
-        return `
-            <div class="type-config-section">
-                <div class="type-config-title">Configuración de Tareas</div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="show_priority" id="show_priority" checked>
-                                <label class="form-check-label" for="show_priority">
-                                    Mostrar prioridades
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="show_due_date" id="show_due_date" checked>
-                                <label class="form-check-label" for="show_due_date">
-                                    Mostrar fechas límite
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="allow_subtasks" id="allow_subtasks">
-                                <label class="form-check-label" for="allow_subtasks">
-                                    Permitir subtareas
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="show_progress" id="show_progress">
-                                <label class="form-check-label" for="show_progress">
-                                    Mostrar progreso
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-    
-    // Get note-specific configuration
-    getNoteConfig: function() {
-        return `
-            <div class="type-config-section">
-                <div class="type-config-title">Configuración de Notas</div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="rich_text" id="rich_text" checked>
-                                <label class="form-check-label" for="rich_text">
-                                    Editor de texto enriquecido
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="allow_tags" id="allow_tags" checked>
-                                <label class="form-check-label" for="allow_tags">
-                                    Permitir etiquetas
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="search_enabled" id="search_enabled" checked>
-                                <label class="form-check-label" for="search_enabled">
-                                    Búsqueda habilitada
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="attachments" id="attachments">
-                                <label class="form-check-label" for="attachments">
-                                    Permitir archivos adjuntos
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-    
-    // Get kanban-specific configuration
-    getKanbanConfig: function() {
-        return `
-            <div class="type-config-section">
-                <div class="type-config-title">Configuración de Kanban</div>
-                <div class="form-group">
-                    <label class="form-label">Columnas iniciales (una por línea)</label>
-                    <textarea class="form-control" name="initial_columns" rows="4" placeholder="Por hacer\nEn progreso\nRevisión\nCompletado">Por hacer
-En progreso
-Revisión
-Completado</textarea>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="limit_wip" id="limit_wip">
-                                <label class="form-check-label" for="limit_wip">
-                                    Limitar trabajo en progreso
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="card_colors" id="card_colors" checked>
-                                <label class="form-check-label" for="card_colors">
-                                    Colores de tarjetas
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-    
-    // Get objective-specific configuration
-    getObjectiveConfig: function() {
-        return `
-            <div class="type-config-section">
-                <div class="type-config-title">Configuración de Objetivos</div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Tipo de métrica</label>
-                            <select class="form-select" name="metric_type">
-                                <option value="percentage">Porcentaje</option>
-                                <option value="number">Número</option>
-                                <option value="boolean">Sí/No</option>
-                                <option value="time">Tiempo</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="milestones" id="milestones" checked>
-                                <label class="form-check-label" for="milestones">
-                                    Hitos intermedios
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="deadline_alerts" id="deadline_alerts" checked>
-                                <label class="form-check-label" for="deadline_alerts">
-                                    Alertas de fecha límite
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="progress_chart" id="progress_chart">
-                                <label class="form-check-label" for="progress_chart">
-                                    Gráfico de progreso
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-    
-    // Get calendar-specific configuration
-    getCalendarConfig: function() {
-        return `
-            <div class="type-config-section">
-                <div class="type-config-title">Configuración de Calendario</div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Vista por defecto</label>
-                            <select class="form-select" name="default_view">
-                                <option value="month">Mensual</option>
-                                <option value="week">Semanal</option>
-                                <option value="day">Diaria</option>
-                                <option value="agenda">Agenda</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="recurring_events" id="recurring_events" checked>
-                                <label class="form-check-label" for="recurring_events">
-                                    Eventos recurrentes
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="reminders" id="reminders" checked>
-                                <label class="form-check-label" for="reminders">
-                                    Recordatorios
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="time_slots" id="time_slots">
-                                <label class="form-check-label" for="time_slots">
-                                    Franjas horarias
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-    
-    // Get habit-specific configuration
-    getHabitConfig: function() {
-        return `
-            <div class="type-config-section">
-                <div class="type-config-title">Configuración de Hábitos</div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Frecuencia</label>
-                            <select class="form-select" name="frequency">
-                                <option value="daily">Diaria</option>
-                                <option value="weekly">Semanal</option>
-                                <option value="monthly">Mensual</option>
-                                <option value="custom">Personalizada</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="streak_tracking" id="streak_tracking" checked>
-                                <label class="form-check-label" for="streak_tracking">
-                                    Seguimiento de rachas
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="daily_reminders" id="daily_reminders">
-                                <label class="form-check-label" for="daily_reminders">
-                                    Recordatorios diarios
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="statistics" id="statistics" checked>
-                                <label class="form-check-label" for="statistics">
-                                    Estadísticas detalladas
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-    
-    // Navigate to next step
-    nextStep: function() {
-        if (this.currentStep < this.totalSteps) {
-            if (this.validateCurrentStep()) {
-                this.currentStep++;
-                this.showStep(this.currentStep);
-                this.updateStepIndicator();
-                this.updateButtons();
-            }
-        }
-    },
-    
-    // Navigate to previous step
-    previousStep: function() {
-        if (this.currentStep > 1) {
-            this.currentStep--;
-            this.showStep(this.currentStep);
-            this.updateStepIndicator();
-            this.updateButtons();
-        }
-    },
-    
-    // Show specific step
-    showStep: function(step) {
-        // Hide all steps
-        document.querySelectorAll('.factory-step').forEach(stepEl => {
-            stepEl.classList.add('d-none');
-        });
-        
-        // Show current step
-        const currentStepEl = document.getElementById(`step-${step}`);
-        if (currentStepEl) {
-            currentStepEl.classList.remove('d-none');
-        }
-        
-        // Update step indicators
-        document.querySelectorAll('.step').forEach((stepEl, index) => {
-            stepEl.classList.remove('active', 'completed');
-            if (index + 1 < step) {
-                stepEl.classList.add('completed');
-            } else if (index + 1 === step) {
-                stepEl.classList.add('active');
-            }
-        });
-    },
-    
-    // Update step indicator
-    updateStepIndicator: function() {
-        const indicator = document.getElementById('step-indicator');
-        if (indicator) {
-            indicator.textContent = `Paso ${this.currentStep} de ${this.totalSteps}`;
-        }
-    },
-    
-    // Update navigation buttons
-    updateButtons: function() {
-        const prevBtn = document.getElementById('prev-step-btn');
-        const nextBtn = document.getElementById('next-step-btn');
-        const createBtn = document.getElementById('create-block-btn');
-        
-        // Previous button
-        if (prevBtn) {
-            prevBtn.style.display = this.currentStep > 1 ? 'inline-block' : 'none';
-        }
-        
-        // Next/Create buttons
-        if (this.currentStep < this.totalSteps) {
-            if (nextBtn) {
-                nextBtn.style.display = 'inline-block';
-                nextBtn.disabled = !this.canProceedToNextStep();
-            }
-            if (createBtn) {
-                createBtn.style.display = 'none';
-            }
-        } else {
-            if (nextBtn) {
-                nextBtn.style.display = 'none';
-            }
-            if (createBtn) {
-                createBtn.style.display = 'inline-block';
-                createBtn.disabled = !this.validateCurrentStep();
-            }
-        }
-    },
-    
-    // Check if can proceed to next step
-    canProceedToNextStep: function() {
-        switch (this.currentStep) {
-            case 1:
-                if (this.isTemplateMode()) {
-                    return this.selectedTemplate !== null;
-                } else {
-                    return this.selectedType !== null;
-                }
-            case 2:
-                return this.validateConfigForm();
-            case 3:
-                return true;
-            default:
-                return false;
-        }
-    },
-    
-    // Validate current step
-    validateCurrentStep: function() {
-        if (this.currentStep === 1 && this.isTemplateMode()) {
-            return this.selectedTemplate !== null;
-        }
-        return this.canProceedToNextStep();
-    },
-    
-    // Validate configuration form
-    validateConfigForm: function() {
-        const titleInput = document.querySelector('input[name="title"]');
-        return titleInput && titleInput.value.trim() !== '';
-    },
-    
-    // Select color
-    selectColor: function(color) {
-        // Remove previous selection
-        document.querySelectorAll('.color-option').forEach(option => {
-            option.classList.remove('selected');
-        });
-        
-        // Select new color
-        const selectedOption = document.querySelector(`[data-color="${color}"]`);
-        if (selectedOption) {
-            selectedOption.classList.add('selected');
-        }
-        
-        // Update hidden input
-        const hiddenInput = document.getElementById('theme_color');
-        if (hiddenInput) {
-            hiddenInput.value = color;
-        }
-        
-        this.updatePreview();
-    },
-    
-    // Update preview
-    updatePreview: function() {
-        const previewBlock = document.getElementById('preview-block');
-        if (!previewBlock) return;
-        
-        // Get form data
-        const title = document.querySelector('input[name="title"]')?.value || 'Título del bloque';
-        const themeColor = document.getElementById('theme_color')?.value || 'purple';
-        const showBorder = document.getElementById('show_border')?.checked;
-        const showShadow = document.getElementById('show_shadow')?.checked;
-        
-        // Update preview
-        const previewTitle = previewBlock.querySelector('.preview-title');
-        if (previewTitle) {
-            previewTitle.textContent = title;
-        }
-        
-        // Apply theme color
-        const colorMap = {
-            blue: '#3182ce',
-            green: '#38a169',
-            purple: '#9f7aea',
-            orange: '#d69e2e',
-            red: '#e53e3e',
-            teal: '#319795',
-            pink: '#d53f8c',
-            gray: '#718096'
-        };
-        
-        const color = colorMap[themeColor] || colorMap.purple;
-        previewBlock.style.borderColor = color;
-        
-        // Apply border and shadow
-        previewBlock.style.border = showBorder ? `2px solid ${color}` : 'none';
-        previewBlock.style.boxShadow = showShadow ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none';
-    },
-    
-    // Create block or apply template
-    createBlock: async function() {
-        // If in template mode, apply template instead
-        if (this.isTemplateMode()) {
-            await this.applyTemplate();
-            return;
-        }
-        
-        try {
-            // Collect all form data
-            const blockData = this.collectBlockData();
-            
-            // Show loading state
-            const createBtn = document.getElementById('create-block-btn');
-            if (createBtn) {
-                createBtn.disabled = true;
-                createBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Creando...';
-            }
-            
-            // Send to server
-            const response = await fetch('/api/personal-space/blocks', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': this.getCSRFToken()
-                },
-                body: JSON.stringify(blockData)
-            });
-            
-            if (response.ok) {
-                const result = await response.json();
-                
-                // Close modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('block-factory-modal'));
-                if (modal) {
-                    modal.hide();
-                }
-                
-                // Refresh workspace
-                if (window.WorkspaceLayout && window.WorkspaceLayout.refreshBlocks) {
-                    window.WorkspaceLayout.refreshBlocks();
-                }
-                
-                // Show success message
-                this.showSuccessMessage('Bloque creado exitosamente');
-                
-                // Reset factory
-                this.reset();
-            } else {
-                throw new Error('Error al crear el bloque');
-            }
-        } catch (error) {
-            console.error('Error creating block:', error);
-            this.showErrorMessage('Error al crear el bloque. Inténtalo de nuevo.');
-        } finally {
-            // Reset button
-            const createBtn = document.getElementById('create-block-btn');
-            if (createBtn) {
-                createBtn.disabled = false;
-                createBtn.innerHTML = '<i class="bi bi-plus-circle me-2"></i>Crear Bloque';
-            }
-        }
-    },
-    
-    // Collect all block data
-    collectBlockData: function() {
-        const data = {
-            type: this.selectedType,
-            title: document.querySelector('input[name="title"]')?.value || '',
-            content: document.querySelector('textarea[name="description"]')?.value || '',
-            metadata: {
-                category: document.querySelector('select[name="category"]')?.value || 'personal',
-                priority: document.querySelector('select[name="priority"]')?.value || 'medium',
-                size: document.querySelector('select[name="size"]')?.value || 'medium',
-                position_x: parseInt(document.querySelector('input[name="position_x"]')?.value) || 0,
-                position_y: parseInt(document.querySelector('input[name="position_y"]')?.value) || 0,
-                theme_color: document.getElementById('theme_color')?.value || 'purple',
-                header_style: document.querySelector('select[name="header_style"]')?.value || 'default',
-                show_border: document.getElementById('show_border')?.checked || false,
-                show_shadow: document.getElementById('show_shadow')?.checked || false,
-                auto_save: document.getElementById('auto_save')?.checked || false,
-                notifications: document.getElementById('notifications')?.checked || false,
-                collaborative: document.getElementById('collaborative')?.checked || false,
-                public_view: document.getElementById('public_view')?.checked || false,
-                ...this.collectTypeSpecificConfig()
-            }
-        };
-        
-        return data;
-    },
-    
-    // Collect type-specific configuration
-    collectTypeSpecificConfig: function() {
-        const config = {};
-        const container = document.getElementById('type-config-content');
-        if (!container) return config;
-        
-        // Collect all form inputs in type-specific section
-        const inputs = container.querySelectorAll('input, select, textarea');
-        inputs.forEach(input => {
-            if (input.type === 'checkbox') {
-                config[input.name] = input.checked;
-            } else {
-                config[input.name] = input.value;
-            }
-        });
-        
-        return config;
-    },
-    
-    // Get CSRF token
-    getCSRFToken: function() {
-        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        return token || '';
-    },
-    
-    // Show success message
-    showSuccessMessage: function(message) {
-        // This would integrate with your notification system
-        console.log('Success:', message);
-    },
-    
-    // Show error message
-    showErrorMessage: function(message) {
-        // This would integrate with your notification system
-        console.error('Error:', message);
-    },
-    
-    // Reset factory to initial state
-    reset: function() {
-        this.currentStep = 1;
-        this.selectedType = null;
-        this.blockData = {};
-        this.selectedTemplate = null;
-        
-        // Reset forms
-        document.getElementById('block-config-form')?.reset();
-        document.getElementById('block-customization-form')?.reset();
-        
-        // Reset creation mode to individual
-        const individualTab = document.getElementById('individual-tab');
-        const templateTab = document.getElementById('template-tab');
-        if (individualTab && templateTab) {
-            individualTab.classList.add('active');
-            templateTab.classList.remove('active');
-            
-            const individualMode = document.getElementById('individual-mode');
-            const templateMode = document.getElementById('template-mode');
-            if (individualMode && templateMode) {
-                individualMode.classList.add('show', 'active');
-                templateMode.classList.remove('show', 'active');
-            }
-        }
-        
-        // Reset UI
-        document.querySelectorAll('.block-type-card').forEach(card => {
-            card.classList.remove('selected');
-        });
-        
-        document.querySelectorAll('.color-option').forEach(option => {
-            option.classList.remove('selected');
-        });
-        
-        // Show first step
-        this.showStep(1);
-        this.updateStepIndicator();
-        this.updateButtons();
-    },
-    
-    // Template-related functions
-    selectedTemplate: null,
-    templates: [],
-    
-    // Load templates
-    loadTemplates: async function() {
-        // Show loading state
-        const templatesGrid = document.getElementById('templates-grid');
-        if (templatesGrid) {
-            templatesGrid.innerHTML = `
-                <div class="text-center py-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                    <p class="mt-2 text-muted">Cargando plantillas...</p>
-                </div>
-            `;
-        }
-        
-        try {
-            const response = await fetch('/api/personal-space/templates?public=true', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': this.getCSRFToken()
-                }
-            });
-            if (response.ok) {
-                this.templates = await response.json();
-                this.renderTemplates();
-            } else {
-                throw new Error('Error loading templates');
-            }
-        } catch (error) {
-            console.error('Error loading templates:', error);
-            this.showTemplateError('Error al cargar las plantillas');
-        }
-    },
-    
-    // Render templates in grid
-    renderTemplates: function(filteredTemplates = null) {
-        const templatesGrid = document.getElementById('templates-grid');
-        if (!templatesGrid) return;
-        
-        const templates = filteredTemplates || this.templates;
-        
-        if (templates.length === 0) {
-            templatesGrid.innerHTML = `
-                <div class="text-center py-4">
-                    <i class="bi bi-collection text-muted" style="font-size: 2rem;"></i>
-                    <p class="mt-2 text-muted">No hay plantillas disponibles</p>
-                </div>
-            `;
-            return;
-        }
-        
-        templatesGrid.innerHTML = templates.map(template => `
-            <div class="template-card" data-template-id="${template.id}" data-action="select-template">
-                <div class="template-title">${template.name}</div>
-                <div class="template-description">${template.description || 'Sin descripción'}</div>
-                <div class="template-blocks-count">${template.blocks_count || 0} bloques</div>
-            </div>
-        `).join('');
-    },
-    
-    // Select template
-    selectTemplate: function(templateId) {
-        // Remove previous selection
-        document.querySelectorAll('.template-card').forEach(card => {
-            card.classList.remove('selected');
-        });
-        
-        // Select new template
-        const selectedCard = document.querySelector(`[data-template-id="${templateId}"]`);
-        if (selectedCard) {
-            selectedCard.classList.add('selected');
-        }
-        
-        this.selectedTemplate = templateId;
-        
-        // Enable next button
-        this.updateButtons();
-    },
-    
-    // Filter templates by category
-    filterTemplates: function(category) {
-        // Update active category button
-        document.querySelectorAll('.template-categories .btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        const activeBtn = document.querySelector(`[data-category="${category}"]`);
-        if (activeBtn) {
-            activeBtn.classList.add('active');
-        }
-        
-        // Filter templates
-        let filteredTemplates = this.templates;
-        if (category !== 'all') {
-            filteredTemplates = this.templates.filter(template => 
-                template.category === category
-            );
-        }
-        
-        this.renderTemplates(filteredTemplates);
-    },
-    
-    // Search templates
-    searchTemplates: function(query) {
-        const filteredTemplates = this.templates.filter(template =>
-            template.name.toLowerCase().includes(query.toLowerCase()) ||
-            (template.description && template.description.toLowerCase().includes(query.toLowerCase()))
-        );
-        
-        this.renderTemplates(filteredTemplates);
-    },
-    
-    // Apply selected template
-    applyTemplate: async function() {
-        if (!this.selectedTemplate) return;
-        
-        try {
-            const response = await fetch(`/api/personal-space/templates/${this.selectedTemplate}/apply`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': this.getCSRFToken()
-                }
-            });
-            
-            if (response.ok) {
-                // Close modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('block-factory-modal'));
-                if (modal) {
-                    modal.hide();
-                }
-                
-                // Refresh workspace
-                if (window.WorkspaceLayout && window.WorkspaceLayout.refreshBlocks) {
-                    window.WorkspaceLayout.refreshBlocks();
-                }
-                
-                this.showSuccessMessage('Plantilla aplicada exitosamente');
-                this.reset();
-            } else {
-                throw new Error('Error applying template');
-            }
-        } catch (error) {
-            console.error('Error applying template:', error);
-            this.showErrorMessage('Error al aplicar la plantilla. Inténtalo de nuevo.');
-        }
-    },
-    
-    // Show template error
-    showTemplateError: function(message) {
-        const templatesGrid = document.getElementById('templates-grid');
-        if (templatesGrid) {
-            templatesGrid.innerHTML = `
-                <div class="text-center py-4 text-danger">
-                    <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
-                    <p class="mt-2">${message}</p>
-                </div>
-            `;
-        }
-    },
-    
-    // Check if template mode is active
-    isTemplateMode: function() {
-        const templateTab = document.getElementById('template-tab');
-        return templateTab && templateTab.classList.contains('active');
-    }
-};
-
-// Global functions removed - now using event delegation
-
-// Initialize when modal is shown
+// Basic modal initialization - all functionality is handled by BlockFactory.js
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('block-factory-modal');
-    if (modal) {
+    if (modal && window.BlockFactory) {
         modal.addEventListener('shown.bs.modal', function() {
             window.BlockFactory.init();
         });
@@ -1927,67 +233,5 @@ document.addEventListener('DOMContentLoaded', function() {
             window.BlockFactory.reset();
         });
     }
-    
-    // Creation mode tabs event listeners
-    const individualTab = document.getElementById('individual-tab');
-    const templateTab = document.getElementById('template-tab');
-    
-    if (individualTab) {
-        individualTab.addEventListener('click', function() {
-            // Switch to individual mode
-            document.querySelectorAll('.creation-mode-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            this.classList.add('active');
-            
-            // Show/hide content
-            document.getElementById('individual-mode').classList.remove('d-none');
-            document.getElementById('template-mode').classList.add('d-none');
-            
-            // Update buttons
-            window.BlockFactory.updateButtons();
-        });
-    }
-    
-    if (templateTab) {
-        templateTab.addEventListener('click', function() {
-            // Switch to template mode
-            document.querySelectorAll('.creation-mode-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            this.classList.add('active');
-            
-            // Show/hide content
-            document.getElementById('individual-mode').classList.add('d-none');
-            document.getElementById('template-mode').classList.remove('d-none');
-            
-            // Always load templates when switching to template mode
-            window.BlockFactory.loadTemplates();
-            
-            // Update buttons
-            window.BlockFactory.updateButtons();
-        });
-    }
-    
-    // Template search functionality
-    const templateSearch = document.getElementById('template-search');
-    if (templateSearch) {
-        templateSearch.addEventListener('input', function() {
-            const query = this.value.trim();
-            if (query === '') {
-                window.BlockFactory.renderTemplates();
-            } else {
-                window.BlockFactory.searchTemplates(query);
-            }
-        });
-    }
-    
-    // Template category buttons
-    document.addEventListener('click', function(e) {
-        if (e.target.matches('[data-category]')) {
-            const category = e.target.getAttribute('data-category');
-            window.BlockFactory.filterTemplates(category);
-        }
-    });
 });
 </script>

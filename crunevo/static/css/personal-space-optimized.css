@@ -454,17 +454,12 @@ body.light-theme .personal-space-container {
     border-bottom-color: var(--ps-border-dark);
 }
 
+/* .block-icon base definition in workspace-unified.css */
 .block-icon {
     width: 56px;
     height: 56px;
     border-radius: 16px;
-    background: linear-gradient(135deg, var(--ps-indigo), var(--ps-indigo-light));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
     font-size: 1.5rem;
-    flex-shrink: 0;
     box-shadow: var(--ps-shadow-md);
 }
 
