@@ -280,21 +280,63 @@ def apply_template_slug(slug):
 @login_required
 @activated_required
 def analytics_dashboard():
-    return render_template("personal_space/analytics_dashboard.html")
+    analytics_data = None
+    if table_exists("personal_space_blocks"):
+        try:
+            productivity = AnalyticsService.get_productivity_metrics(current_user.id)
+            dashboard = AnalyticsService.get_dashboard_metrics(current_user.id)
+
+            task_completion = productivity.get("task_completion", {})
+            objective_progress = productivity.get("objective_progress", {})
+
+            productive_hours = min(
+                8, max(1, task_completion.get("completed_tasks", 0) * 0.5)
+            )
+
+            analytics_data = SimpleNamespace(
+                tasks_completed=task_completion.get("completed_tasks", 0),
+                goals_achieved=len(
+                    [
+                        obj
+                        for obj in objective_progress.get("objectives", [])
+                        if obj.get("progress", 0) >= 100
+                    ]
+                ),
+                productive_hours=round(productive_hours, 1),
+                focus_score=dashboard.get("productivity_score", 0),
+                goals=objective_progress.get("objectives", []),
+                productivity_trend=productivity.get("productivity_trends", {}).get(
+                    "tasks", []
+                ),
+                time_trend=productivity.get("productivity_trends", {}).get(
+                    "time", []
+                ),
+                focus_trend=productivity.get("productivity_trends", {}).get(
+                    "focus", []
+                ),
+            )
+        except Exception as exc:  # pragma: no cover
+            current_app.logger.error(
+                "Error loading analytics dashboard: %s", exc
+            )
+            analytics_data = None
+    return render_template(
+        "personal_space/analytics_dashboard.html", analytics_data=analytics_data
+    )
 
 
 @personal_space_bp.route("/calendario")
 @login_required
 @activated_required
 def calendario():
-    return render_template("personal_space/analytics_dashboard.html")
+    return analytics_dashboard()
 
 
 @personal_space_bp.route("/estadisticas")
 @login_required
 @activated_required
 def estadisticas():
-    return render_template("personal_space/analytics_dashboard.html")
+    return analytics_dashboard()
 
 
 @personal_space_bp.route("/configuracion")
