@@ -174,7 +174,8 @@
                     </button>
                     <button type="button" 
                             class="btn btn-outline-secondary" 
-                            onclick="editKanban('{{ block.id }}')">
+                            onclick="editKanban('{{ block.id }}')"
+                            aria-label="Configurar kanban">
                         <i class="bi bi-gear"></i>
                     </button>
                 </div>
@@ -202,7 +203,7 @@
                     <i class="bi bi-plus me-1"></i>
                     Agregar Columna
                 </button>
-                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="boardSettings('{{ block.id }}')">
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="boardSettings('{{ block.id }}')" aria-label="Configuración del tablero">
                     <i class="bi bi-gear"></i>
                 </button>
             </div>
@@ -237,7 +238,8 @@
                 <div class="dropdown">
                     <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
                             type="button" 
-                            data-bs-toggle="dropdown">
+                            data-bs-toggle="dropdown"
+                            aria-label="Opciones de columna">
                         <i class="bi bi-three-dots"></i>
                     </button>
                     <ul class="dropdown-menu">

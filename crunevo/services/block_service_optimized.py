@@ -114,9 +114,10 @@ class OptimizedBlockService:
             # Enhanced validation
             validation_result = OptimizedBlockService._validate_block_data(block_data)
             if not validation_result["valid"]:
-                raise ValueError(
-                    f"Validation errors: {', '.join(validation_result['errors'])}"
-                )
+                error_messages = [error.get('message', str(error)) if isinstance(error, dict) else str(error) for error in validation_result['errors']]
+            raise ValueError(
+                f"Validation errors: {', '.join(error_messages)}"
+            )
 
             cleaned_data = validation_result["cleaned_data"]
 
@@ -355,9 +356,10 @@ class OptimizedBlockService:
             # Validate update
             validation_result = OptimizedBlockService._validate_block_data(current_data)
             if not validation_result["valid"]:
-                raise ValueError(
-                    f"Validation errors: {', '.join(validation_result['errors'])}"
-                )
+                error_messages = [error.get('message', str(error)) if isinstance(error, dict) else str(error) for error in validation_result['errors']]
+            raise ValueError(
+                f"Validation errors: {', '.join(error_messages)}"
+            )
 
             cleaned_data = validation_result["cleaned_data"]
 

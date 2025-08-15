@@ -1,22 +1,30 @@
 /**
  * BlockFactory - Modal for creating any type of block
  * Handles block creation workflow, templates, and configuration
+ * Rewritten without global onclick handlers, using event delegation
  */
 
 window.BlockFactory = {
-    // Current state
-    currentStep: 1,
+    // Wizard state
+    wizard: {
+        selectedType: null,
+        config: {},
+        step: 1
+    },
+    
+    // Additional state
     totalSteps: 3,
-    selectedType: null,
-    blockData: {},
     selectedTemplate: null,
     templates: [],
 
     // Initialize the factory
     init: function() {
-        this.currentStep = 1;
-        this.selectedType = null;
-        this.blockData = {};
+        // Reset wizard state
+        this.wizard = {
+            selectedType: null,
+            config: {},
+            step: 1
+        };
         this.selectedTemplate = null;
         
         // Show first step
@@ -31,29 +39,121 @@ window.BlockFactory = {
         this.setupEventListeners();
     },
 
-    // Setup event listeners
+    // Setup event listeners with delegation
     setupEventListeners: function() {
-        // Form input listeners for live preview
-        const titleInput = document.querySelector('input[name="title"]');
-        if (titleInput) {
-            titleInput.addEventListener('input', () => this.updatePreview());
-        }
+        const modal = document.getElementById('block-factory-modal');
+        if (!modal) return;
         
-        const checkboxes = document.querySelectorAll('#show_border, #show_shadow');
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => this.updatePreview());
-        });
+        // Remove existing listeners to avoid duplicates
+        modal.removeEventListener('click', this.handleModalClick);
+        modal.removeEventListener('input', this.handleModalInput);
+        modal.removeEventListener('change', this.handleModalChange);
         
-        // Template search
-        const templateSearch = document.getElementById('template-search');
-        if (templateSearch) {
-            templateSearch.addEventListener('input', (e) => {
-                this.searchTemplates(e.target.value);
-            });
-        }
+        // Event delegation for all modal interactions
+        this.handleModalClick = this.handleModalClick.bind(this);
+        this.handleModalInput = this.handleModalInput.bind(this);
+        this.handleModalChange = this.handleModalChange.bind(this);
+        
+        modal.addEventListener('click', this.handleModalClick);
+        modal.addEventListener('input', this.handleModalInput);
+        modal.addEventListener('change', this.handleModalChange);
         
         // Creation mode tabs
         this.setupCreationModeTabs();
+    },
+    
+    // Handle all click events in modal
+    handleModalClick: function(e) {
+        const target = e.target.closest('[data-action], [data-block-type], [data-template-id], [data-color], .block-type-card, .template-card, .color-option');
+        if (!target) return;
+        
+        // Block type selection
+        if (target.hasAttribute('data-block-type') || target.classList.contains('block-type-card')) {
+            const blockType = target.getAttribute('data-block-type');
+            if (blockType) {
+                this.selectBlockType(blockType);
+            }
+            return;
+        }
+        
+        // Template selection
+        if (target.hasAttribute('data-template-id') || target.classList.contains('template-card')) {
+            const templateId = target.getAttribute('data-template-id');
+            if (templateId) {
+                this.selectTemplate(templateId);
+            }
+            return;
+        }
+        
+        // Color selection
+        if (target.hasAttribute('data-color') || target.classList.contains('color-option')) {
+            const color = target.getAttribute('data-color');
+            if (color) {
+                this.selectColor(color);
+            }
+            return;
+        }
+        
+        // Template selection
+        if (target.classList.contains('template-card') || target.closest('.template-card')) {
+            const templateCard = target.classList.contains('template-card') ? target : target.closest('.template-card');
+            const templateId = templateCard.getAttribute('data-template-id');
+            if (templateId) {
+                this.selectTemplate(templateId);
+            }
+            return;
+        }
+        
+        // Action buttons
+        const action = target.getAttribute('data-action') || target.id;
+        switch (action) {
+            case 'next-step':
+            case 'next-step-btn':
+                this.nextStep();
+                break;
+            case 'prev-step':
+            case 'prev-step-btn':
+                this.previousStep();
+                break;
+            case 'create-block':
+            case 'create-block-btn':
+                this.createBlock();
+                break;
+            case 'select-template':
+                const templateId = target.getAttribute('data-template-id');
+                if (templateId) {
+                    this.selectTemplate(templateId);
+                }
+                break;
+        }
+    },
+    
+    // Handle input events
+    handleModalInput: function(e) {
+        const target = e.target;
+        
+        // Template search
+        if (target.id === 'template-search') {
+            this.searchTemplates(target.value);
+            return;
+        }
+        
+        // Title input for preview
+        if (target.name === 'title') {
+            this.updatePreview();
+            return;
+        }
+    },
+    
+    // Handle change events
+    handleModalChange: function(e) {
+        const target = e.target;
+        
+        // Preview updates
+        if (target.id === 'show_border' || target.id === 'show_shadow') {
+            this.updatePreview();
+            return;
+        }
     },
 
     // Setup creation mode tabs
@@ -120,7 +220,8 @@ window.BlockFactory = {
             selectedCard.classList.add('selected');
         }
         
-        this.selectedType = type;
+        // Update wizard state
+        this.wizard.selectedType = type;
         
         // Load type-specific configuration
         this.loadTypeConfiguration(type);
@@ -146,6 +247,9 @@ window.BlockFactory = {
         };
         
         configContent.innerHTML = configs[type] || '';
+        
+        // Initialize wizard config for this type
+        this.wizard.config = {};
     },
 
     // Get task-specific configuration
@@ -301,14 +405,14 @@ window.BlockFactory = {
 
     // Navigate to next step
     nextStep: function() {
-        if (this.currentStep < this.totalSteps && this.canProceedToNextStep()) {
-            this.currentStep++;
-            this.showStep(this.currentStep);
+        if (this.wizard.step < this.totalSteps && this.canProceedToNextStep()) {
+            this.wizard.step++;
+            this.showStep(this.wizard.step);
             this.updateStepIndicator();
             this.updateButtons();
             
             // Update preview when moving to customization step
-            if (this.currentStep === 3) {
+            if (this.wizard.step === 3) {
                 this.updatePreview();
             }
         }
@@ -316,9 +420,9 @@ window.BlockFactory = {
 
     // Navigate to previous step
     previousStep: function() {
-        if (this.currentStep > 1) {
-            this.currentStep--;
-            this.showStep(this.currentStep);
+        if (this.wizard.step > 1) {
+            this.wizard.step--;
+            this.showStep(this.wizard.step);
             this.updateStepIndicator();
             this.updateButtons();
         }
@@ -342,10 +446,10 @@ window.BlockFactory = {
     updateStepIndicator: function() {
         document.querySelectorAll('.step-indicator .step').forEach((step, index) => {
             const stepNumber = index + 1;
-            if (stepNumber < this.currentStep) {
+            if (stepNumber < this.wizard.step) {
                 step.classList.add('completed');
                 step.classList.remove('active');
-            } else if (stepNumber === this.currentStep) {
+            } else if (stepNumber === this.wizard.step) {
                 step.classList.add('active');
                 step.classList.remove('completed');
             } else {
@@ -362,11 +466,11 @@ window.BlockFactory = {
         
         // Previous button
         if (prevBtn) {
-            prevBtn.style.display = this.currentStep > 1 ? 'inline-block' : 'none';
+            prevBtn.style.display = this.wizard.step > 1 ? 'inline-block' : 'none';
         }
         
         // Next/Create buttons
-        if (this.currentStep < this.totalSteps) {
+        if (this.wizard.step < this.totalSteps) {
             if (nextBtn) {
                 nextBtn.style.display = 'inline-block';
                 nextBtn.disabled = !this.canProceedToNextStep();
@@ -387,17 +491,17 @@ window.BlockFactory = {
 
     // Check if can proceed to next step
     canProceedToNextStep: function() {
-        switch (this.currentStep) {
+        switch (this.wizard.step) {
             case 1:
                 if (this.isTemplateMode()) {
                     return this.selectedTemplate !== null;
                 } else {
-                    return this.selectedType !== null;
+                    return this.wizard.selectedType !== null;
                 }
             case 2:
-                return this.validateConfigForm();
+                return this.validateConfigurationForm();
             case 3:
-                return true;
+                return true; // Customization is optional
             default:
                 return false;
         }
@@ -405,14 +509,19 @@ window.BlockFactory = {
 
     // Validate current step
     validateCurrentStep: function() {
-        if (this.currentStep === 1 && this.isTemplateMode()) {
+        if (this.wizard.step === 1 && this.isTemplateMode()) {
             return this.selectedTemplate !== null;
         }
-        return this.canProceedToNextStep();
+        
+        if (this.wizard.step === 2) {
+            return this.validateConfigurationForm();
+        }
+        
+        return true;
     },
 
     // Validate configuration form
-    validateConfigForm: function() {
+    validateConfigurationForm: function() {
         const titleInput = document.querySelector('input[name="title"]');
         return titleInput && titleInput.value.trim() !== '';
     },
@@ -545,7 +654,7 @@ window.BlockFactory = {
     // Collect all block data
     collectBlockData: function() {
         const data = {
-            type: this.selectedType,
+            type: this.wizard.selectedType,
             title: document.querySelector('input[name="title"]')?.value || '',
             content: document.querySelector('textarea[name="description"]')?.value || '',
             metadata: {
@@ -585,6 +694,9 @@ window.BlockFactory = {
             }
         });
         
+        // Store in wizard config
+        this.wizard.config = { ...this.wizard.config, ...config };
+        
         return config;
     },
 
@@ -614,9 +726,11 @@ window.BlockFactory = {
 
     // Reset factory to initial state
     reset: function() {
-        this.currentStep = 1;
-        this.selectedType = null;
-        this.blockData = {};
+        this.wizard = {
+            selectedType: null,
+            config: {},
+            step: 1
+        };
         this.selectedTemplate = null;
         
         // Reset forms
@@ -806,26 +920,7 @@ window.BlockFactory = {
     }
 };
 
-// Global functions for template usage
-window.selectBlockType = function(type) {
-    window.BlockFactory.selectBlockType(type);
-};
-
-window.nextStep = function() {
-    window.BlockFactory.nextStep();
-};
-
-window.previousStep = function() {
-    window.BlockFactory.previousStep();
-};
-
-window.selectColor = function(color) {
-    window.BlockFactory.selectColor(color);
-};
-
-window.createBlock = function() {
-    window.BlockFactory.createBlock();
-};
+// Global functions removed - now using event delegation
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {

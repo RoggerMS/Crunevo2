@@ -697,7 +697,7 @@
                         <input type="text" 
                                class="search-input" 
                                placeholder="Buscar plantillas..." 
-                               id="template-search" 
+                               id="templates-page-search" 
                                onkeyup="searchTemplates()">
                     </div>
                     
@@ -899,7 +899,7 @@ window.PersonalSpaceTemplates = {
     // Bind event listeners
     bindEvents: function() {
         // Search input
-        const searchInput = document.getElementById('template-search');
+        const searchInput = document.getElementById('templates-page-search');
         if (searchInput) {
             let searchTimeout;
             searchInput.addEventListener('input', (e) => {
@@ -1119,7 +1119,7 @@ window.PersonalSpaceTemplates = {
             category: '',
             sort: 'popular'
         };
-        document.getElementById('template-search').value = '';
+        document.getElementById('templates-page-search').value = '';
         this.filterTemplates();
     },
     

@@ -14,6 +14,8 @@
 <link href="https://cdn.jsdelivr.net/npm/gridstack@latest/dist/gridstack.min.css" rel="stylesheet">
 <!-- Optimized Personal Space CSS -->
 <link href="{{ url_for('static', filename='css/personal-space-optimized.css') }}" rel="stylesheet">
+<!-- Workspace Unified CSS -->
+<link href="{{ url_for('static', filename='css/workspace-unified.css') }}" rel="stylesheet">
 <!-- Personal Space JavaScript -->
 <script src="{{ url_for('static', filename='js/personal-space.js') }}" defer></script>
 <!-- BlockFactory JavaScript -->
@@ -35,16 +37,16 @@
             <!-- View Toggle -->
             <div class="view-toggle">
                 <button type="button" 
-                        class="view-toggle-btn active" 
-                        data-view="grid" 
-                        onclick="switchView('grid')">
+                        class="btn workspace-btn secondary active" 
+                        id="grid-view-btn"
+                        aria-label="Vista de cuadrícula">
                     <i class="bi bi-grid-3x3-gap me-1"></i>
-                    Grid
+                    Cuadrícula
                 </button>
                 <button type="button" 
-                        class="view-toggle-btn" 
-                        data-view="list" 
-                        onclick="switchView('list')">
+                        class="btn workspace-btn secondary" 
+                        id="list-view-btn"
+                        aria-label="Vista de lista">
                     <i class="bi bi-list me-1"></i>
                     Lista
                 </button>
@@ -54,8 +56,8 @@
             <div class="workspace-actions">
                 <button type="button" 
                         class="btn workspace-btn secondary" 
-                        onclick="toggleEditMode()" 
-                        id="edit-mode-btn">
+                        id="edit-mode-btn"
+                        aria-label="Alternar modo de edición">
                     <i class="bi bi-pencil me-1"></i>
                     Editar
                 </button>
@@ -76,17 +78,17 @@
                         <i class="bi bi-three-dots"></i>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" onclick="saveWorkspace()">
+                        <li><a class="dropdown-item" href="#" id="save-workspace-btn">
                             <i class="bi bi-save me-2"></i>Guardar Layout
                         </a></li>
                         <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#template-gallery-modal">
                             <i class="bi bi-collection me-2"></i>Cargar Plantilla
                         </a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#" onclick="resetWorkspace()">
+                        <li><a class="dropdown-item" href="#" id="reset-workspace-btn">
                             <i class="bi bi-arrow-clockwise me-2"></i>Resetear
                         </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="exportWorkspace()">
+                        <li><a class="dropdown-item" href="#" id="export-workspace-btn">
                             <i class="bi bi-download me-2"></i>Exportar
                         </a></li>
                     </ul>
@@ -237,7 +239,8 @@
         <div class="workspace-actions">
             <button type="button" 
                     class="btn btn-sm btn-outline-secondary" 
-                    onclick="toggleSidebar()">
+                    id="toggle-sidebar-btn"
+                    aria-label="Alternar barra lateral">
                 <i class="bi bi-layout-sidebar"></i>
             </button>
         </div>
@@ -398,10 +401,10 @@ window.PersonalSpaceWorkspace = {
                         ${block.title || this.getBlockTypeName(block.type)}
                     </h4>
                     <div class="block-actions">
-                        <button type="button" class="block-action-btn" onclick="editBlock('${block.id}')">
+                        <button type="button" class="block-action-btn" data-action="edit" data-block-id="${block.id}" aria-label="Editar bloque">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button type="button" class="block-action-btn" onclick="deleteBlock('${block.id}')">
+                        <button type="button" class="block-action-btn" data-action="delete" data-block-id="${block.id}" aria-label="Eliminar bloque">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>
@@ -681,40 +684,92 @@ window.PersonalSpaceWorkspace = {
     }
 };
 
-// Global functions
-window.toggleEditMode = function() {
-    window.PersonalSpaceWorkspace.toggleEditMode();
-};
+// Event delegation for block actions
+function setupEventListeners() {
+    // Block actions (edit/delete)
+    document.addEventListener('click', function(e) {
+        const actionBtn = e.target.closest('[data-action]');
+        if (actionBtn) {
+            const action = actionBtn.dataset.action;
+            const blockId = actionBtn.dataset.blockId;
+            
+            if (action === 'edit') {
+                editBlock(blockId);
+            } else if (action === 'delete') {
+                deleteBlock(blockId);
+            }
+        }
+    });
+    
+    // Sidebar toggle
+    const sidebarToggle = document.getElementById('toggle-sidebar-btn');
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', () => {
+            window.PersonalSpaceWorkspace.toggleSidebar();
+        });
+    }
+    
+    // View toggle buttons
+    const gridViewBtn = document.getElementById('grid-view-btn');
+    const listViewBtn = document.getElementById('list-view-btn');
+    
+    if (gridViewBtn) {
+        gridViewBtn.addEventListener('click', () => {
+            window.PersonalSpaceWorkspace.switchView('grid');
+        });
+    }
+    
+    if (listViewBtn) {
+        listViewBtn.addEventListener('click', () => {
+            window.PersonalSpaceWorkspace.switchView('list');
+        });
+    }
+    
+    // Edit mode toggle
+    const editModeBtn = document.getElementById('edit-mode-btn');
+    if (editModeBtn) {
+        editModeBtn.addEventListener('click', () => {
+            window.PersonalSpaceWorkspace.toggleEditMode();
+        });
+    }
+    
+    // Save workspace
+    const saveBtn = document.getElementById('save-workspace-btn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            window.PersonalSpaceWorkspace.saveWorkspace();
+        });
+    }
+    
+    // Reset workspace
+    const resetBtn = document.getElementById('reset-workspace-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            window.PersonalSpaceWorkspace.resetWorkspace();
+        });
+    }
+    
+    // Export workspace
+    const exportBtn = document.getElementById('export-workspace-btn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            window.PersonalSpaceWorkspace.exportWorkspace();
+        });
+    }
+}
 
-window.switchView = function(view) {
-    window.PersonalSpaceWorkspace.switchView(view);
-};
-
-window.toggleSidebar = function() {
-    window.PersonalSpaceWorkspace.toggleSidebar();
-};
-
-window.saveWorkspace = function() {
-    window.PersonalSpaceWorkspace.saveWorkspace();
-};
-
-window.resetWorkspace = function() {
-    window.PersonalSpaceWorkspace.resetWorkspace();
-};
-
-window.exportWorkspace = function() {
-    window.PersonalSpaceWorkspace.exportWorkspace();
-};
-
-window.editBlock = function(blockId) {
+// Block action functions
+function editBlock(blockId) {
     console.log('Edit block:', blockId);
-};
+    // TODO: Implement block editing functionality
+}
 
-window.deleteBlock = function(blockId) {
+function deleteBlock(blockId) {
     if (confirm('¿Estás seguro de que quieres eliminar este bloque?')) {
         console.log('Delete block:', blockId);
+        // TODO: Implement block deletion functionality
     }
-};
+}
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
@@ -722,6 +777,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.initPersonalSpace) {
         window.initPersonalSpace();
     }
+    
+    // Setup event listeners
+    setupEventListeners();
     
     // Initialize Workspace
     window.PersonalSpaceWorkspace.init();
