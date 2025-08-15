@@ -437,10 +437,10 @@ class PerformanceOptimizer {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
                 .then(registration => {
-                    console.log('Service Worker registered:', registration);
+                    // Service Worker registered successfully
                 })
                 .catch(error => {
-                    console.log('Service Worker registration failed:', error);
+                    console.error('Service Worker registration failed:', error);
                 });
         }
     }
@@ -783,7 +783,7 @@ class PerformanceOptimizer {
     cleanupEventListeners() {
         // This would need to be implemented based on specific event listeners
         // For now, just log that cleanup is happening
-        console.log('Cleaning up event listeners for memory optimization');
+        // Cleaning up event listeners for memory optimization
     }
 
     /**

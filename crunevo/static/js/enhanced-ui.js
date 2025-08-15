@@ -324,7 +324,7 @@ function uploadAvatar(file) {
 function uploadBanner(file) {
     if (!file) return;
 
-    console.log('Banner file selected:', file);
+
 
     const formData = new FormData();
     formData.append('banner', file);

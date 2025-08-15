@@ -32,6 +32,8 @@ class PersonalSpaceBlock(db.Model):
             "order_index": self.order_index,
             "status": self.status,
             "is_featured": self.is_featured,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }
 
     def get_metadata(self):

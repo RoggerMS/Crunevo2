@@ -1,6 +1,5 @@
 // Personal Space JavaScript - Optimized Version
 function initPersonalSpace() {
-    console.log('Initializing Personal Space...');
     initializePersonalSpace();
     updateDashboardMetrics();
     initializeKanbanBoards();
@@ -32,13 +31,10 @@ const DEFAULT_ICONS = {
 
 function initializePersonalSpace() {
     if (isInitialized) {
-        console.log('Personal Space already initialized');
         return;
     }
     
     try {
-        console.log('Starting Personal Space initialization...');
-        
         // Initialize UI components
         initializeDarkMode();
         initializeFocusMode();
@@ -49,7 +45,6 @@ function initializePersonalSpace() {
         // Initialize BlockFactory if available
         if (typeof window.BlockFactory !== 'undefined' && window.BlockFactory.init) {
             window.BlockFactory.init();
-            console.log('BlockFactory initialized');
         }
 
         // Ensure modals are not constrained by parent containers
@@ -68,7 +63,6 @@ function initializePersonalSpace() {
         setInterval(autoSaveChanges, 30000); // Auto-save every 30 seconds
         
         isInitialized = true;
-        console.log('Personal Space initialized successfully');
     } catch (error) {
         console.error('Error initializing Personal Space:', error);
         showNotification('Error al inicializar el espacio personal', 'error');
@@ -136,8 +130,6 @@ function initializeSortable() {
 
 function initializeEventListeners() {
     try {
-        console.log('Initializing event listeners...');
-        
         // Add block buttons with improved error handling - Using specific IDs and selectors
         const addBlockSelectors = ['#addBlockBtn', '#new-block-btn', '#create-first-block-btn', '[data-bs-target="#block-factory-modal"]:not(.dropdown-toggle)'];
         addBlockSelectors.forEach(selector => {
@@ -147,7 +139,6 @@ function initializeEventListeners() {
                     btn.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log('Add block button clicked');
                         showAddBlockModal();
                     });
                     btn.dataset.listenerAdded = 'true';
@@ -161,7 +152,6 @@ function initializeEventListeners() {
             createFirstBlock.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Create first block clicked');
                 startPersonalSpace();
             });
             createFirstBlock.dataset.listenerAdded = 'true';
@@ -219,7 +209,6 @@ function initializeEventListeners() {
         // Auto-save on content change
         document.addEventListener('input', debounce(handleContentChange, 500));
         
-        console.log('Event listeners initialized successfully');
     } catch (error) {
         console.error('Error initializing event listeners:', error);
     }
@@ -239,8 +228,6 @@ function initializeAutoSave() {
 
 // Block Management Functions
 function loadBlocks() {
-    console.log('Loading blocks...');
-    
     // Show loading state
     const grid = document.getElementById('blocksGrid');
     if (grid) {
@@ -255,7 +242,6 @@ function loadBlocks() {
             return response.json();
         })
         .then(data => {
-            console.log('Blocks loaded:', data);
             if (data.success) {
                 renderBlocks(data.blocks || []);
             } else {
@@ -283,7 +269,6 @@ function loadBlocks() {
 }
 
 function renderBlocks(blocks) {
-    console.log('Rendering blocks:', blocks.length);
     const grid = document.getElementById('blocksGrid');
     if (!grid) {
         console.error('Blocks grid not found');
@@ -318,7 +303,6 @@ function renderBlocks(blocks) {
         updateDashboardMetrics();
         initializeKanbanBoards();
         
-        console.log('Blocks rendered successfully');
     } catch (error) {
         console.error('Error in renderBlocks:', error);
         showNotification('Error al mostrar los bloques', 'error');
@@ -616,7 +600,6 @@ function handleModalEvents(e) {
             e.preventDefault();
             e.stopPropagation();
             const blockType = blockTypeCard.dataset.type;
-            console.log('Creating new block of type:', blockType);
             createNewBlock(blockType);
             return;
         }
@@ -669,11 +652,8 @@ function createNewBlock(type) {
         is_featured: false
     };
 
-    console.log('Creating block with data:', blockData);
-    
     apiCreateBlock(blockData)
         .then(data => {
-            console.log('Block creation response:', data);
             if (data.success && data.block) {
                 // Close any open modals
                 const openModals = document.querySelectorAll('.modal.show');
@@ -1315,7 +1295,6 @@ function toggleDarkMode() {
             detail: { isDark: isDarkMode, theme: isDarkMode ? 'dark' : 'light' }
         }));
         
-        console.log('Dark mode toggled:', isDarkMode);
     } catch (error) {
         console.error('Error toggling dark mode:', error);
     }
@@ -1964,23 +1943,10 @@ function showCreateBlockModal() {
     }
 }
 
-// Toggle Analytics Dashboard
+// Navigate to Analytics Dashboard
 function toggleAnalytics() {
-    const analyticsSection = document.getElementById('analytics-dashboard');
-    if (analyticsSection) {
-        // Toggle visibility of analytics section using CSS class
-        if (analyticsSection.classList.contains('show')) {
-            analyticsSection.classList.remove('show');
-            showNotification('Panel de Analytics ocultado', 'info');
-        } else {
-            analyticsSection.classList.add('show');
-            analyticsSection.scrollIntoView({ behavior: 'smooth' });
-            showNotification('Panel de Analytics activado', 'success');
-        }
-    } else {
-        // If analytics section doesn't exist, redirect to analytics page
-        window.location.href = '/personal-space/analytics';
-    }
+    // Always navigate to the dedicated analytics page
+    window.location.href = '/personal-space/analytics';
 }
 
 // Quick Notes functionality

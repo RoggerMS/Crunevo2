@@ -115,27 +115,47 @@ def dashboard():
         def moment_fn():
             return SimpleNamespace(hour=datetime.utcnow().hour)
 
+    # Get comprehensive analytics data
     stats = AnalyticsService.get_productivity_metrics(current_user.id)
-    pending_tasks_count = stats.get("task_completion", {}).get(
-        "total_tasks", 0
-    ) - stats.get("task_completion", {}).get("completed_tasks", 0)
-    active_objectives = stats.get("objective_progress", {}).get("total_objectives", 0)
-    objective_progress_avg = stats.get("objective_progress", {}).get(
-        "average_progress", 0
-    )
-    productivity_trend = stats.get("productivity_trends", {}).get("weekly_average", 0)
+    dashboard_metrics = AnalyticsService.get_dashboard_metrics(current_user.id)
+    
+    # Extract task metrics
+    task_completion = stats.get("task_completion", {})
+    completed_tasks_today = task_completion.get("completed_tasks", 0)
+    pending_tasks_count = task_completion.get("total_tasks", 0) - completed_tasks_today
+    task_completion_trend = task_completion.get("completion_rate", 0)
+    
+    # Extract objective metrics
+    objective_progress = stats.get("objective_progress", {})
+    active_objectives = objective_progress.get("total_objectives", 0)
+    objective_progress_avg = objective_progress.get("average_progress", 0)
+    
+    # Calculate productive hours based on weekly activity
+    weekly_activity = stats.get("weekly_activity", [])
+    productive_hours_today = len([day for day in weekly_activity if day.get("blocks_updated", 0) > 0]) * 1.5
+    
+    # Get productivity score and trends
+    productivity_score = dashboard_metrics.get("productivity_score", 0)
+    trends = dashboard_metrics.get("trends", {})
+    productivity_trend = trends.get("productivity_trend", 0)
+    
+    # Calculate focus score based on recent activity and completion rate
+    focus_score = min(productivity_score + task_completion_trend, 100)
+    focus_trend = trends.get("blocks_trend", 0)
 
     return render_template(
         "personal_space/dashboard.html",
         user=current_user,
         moment=moment_fn,
+        completed_tasks_today=completed_tasks_today,
         pending_tasks_count=pending_tasks_count,
+        task_completion_trend=task_completion_trend,
         active_objectives=active_objectives,
         objective_progress_avg=objective_progress_avg,
-        productive_hours_today=0,
+        productive_hours_today=int(productive_hours_today),
         productivity_trend=productivity_trend,
-        focus_score=0,
-        focus_trend=0,
+        focus_score=int(focus_score),
+        focus_trend=focus_trend,
     )
 
 
@@ -293,18 +313,24 @@ def get_stats():
             }
         )
     try:
-        blocks = PersonalSpaceBlock.query.filter_by(user_id=current_user.id).all()
-        completed_tasks = sum(
-            1
-            for b in blocks
-            if b.type == "tarea" and (b.metadata or {}).get("completed")
-        )
+        # Get real analytics data
+        dashboard_metrics = AnalyticsService.get_dashboard_metrics(current_user.id)
+        productivity_metrics = AnalyticsService.get_productivity_metrics(current_user.id)
+        
+        # Extract metrics
+        total_blocks = dashboard_metrics.get("total_blocks", 0)
+        task_completion = productivity_metrics.get("task_completion", {})
+        completed_tasks = task_completion.get("completed_tasks", 0)
+        objective_progress = productivity_metrics.get("objective_progress", {})
+        active_objectives = objective_progress.get("total_objectives", 0)
+        productivity_score = dashboard_metrics.get("productivity_score", 0)
+        
         return jsonify(
             {
-                "total_blocks": len(blocks),
+                "total_blocks": total_blocks,
                 "completed_tasks": completed_tasks,
-                "active_objectives": sum(1 for b in blocks if b.type == "objetivo"),
-                "productivity_score": 0,
+                "active_objectives": active_objectives,
+                "productivity_score": int(productivity_score),
             }
         )
     except Exception as e:  # pragma: no cover
@@ -522,7 +548,26 @@ def list_templates():
         current_app.logger.warning("personal_space_templates table does not exist")
         return jsonify({"ok": True, "success": True, "templates": []}), 200
     try:
-        items = TemplateService.get_templates(user_id=current_user.id)
+        # Handle public parameter from query string
+        public_only = request.args.get('public', 'false').lower() == 'true'
+        category = request.args.get('category')
+        
+        if public_only:
+            # Get only public templates
+            items = TemplateService.get_templates(user_id=current_user.id, category=category, include_public=True)
+            # Filter to only public templates
+            items = [t for t in items if t.is_public]
+        else:
+            # Get user's templates and public templates
+            items = TemplateService.get_templates(user_id=current_user.id, category=category, include_public=True)
+        
+        # Add default templates if no user templates exist
+        if not items:
+            default_templates = TemplateService.get_default_templates()
+            return jsonify(
+                {"ok": True, "success": True, "templates": default_templates}
+            )
+        
         return jsonify(
             {"ok": True, "success": True, "templates": [t.to_dict() for t in items]}
         )

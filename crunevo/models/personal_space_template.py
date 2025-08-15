@@ -27,4 +27,5 @@ class PersonalSpaceTemplate(db.Model):
             "category": self.category,
             "is_public": self.is_public,
             "usage_count": self.usage_count,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
         }
