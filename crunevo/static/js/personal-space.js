@@ -1,4 +1,4 @@
-// Personal Space JavaScript - Optimized Version
+// Personal Space JavaScript - Enhanced Version with Quick Notes Integration
 function initPersonalSpace() {
     initializePersonalSpace();
     updateDashboardMetrics();
@@ -6,6 +6,7 @@ function initPersonalSpace() {
     setupAutoSave();
     setupErrorHandling();
     setupModalBackdropCleanup();
+    initializeQuickNotesIntegration();
 }
 
 let sortableInstance = null;
@@ -61,6 +62,9 @@ function initializePersonalSpace() {
 
         // Set up periodic auto-save
         setInterval(autoSaveChanges, 30000); // Auto-save every 30 seconds
+        
+        // Initialize Quick Notes integration
+        initializeQuickNotesIntegration();
         
         isInitialized = true;
     } catch (error) {
@@ -2108,4 +2112,81 @@ function setupModalBackdropCleanup() {
             }
         }, 100);
     });
+}
+
+// Initialize Quick Notes Integration
+function initializeQuickNotesIntegration() {
+    try {
+        // Initialize Quick Notes System if available
+        if (typeof window.QuickNotesSystem !== 'undefined') {
+            window.QuickNotesSystem.init();
+        }
+        
+        // Setup Quick Notes menu item event listener
+        const quickNotesMenuItem = document.querySelector('[data-action="quick-notes"]');
+        if (quickNotesMenuItem && !quickNotesMenuItem.dataset.listenerAdded) {
+            quickNotesMenuItem.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (typeof window.QuickNotesSystem !== 'undefined') {
+                    window.QuickNotesSystem.showModal();
+                } else {
+                    showQuickNotesModal();
+                }
+            });
+            quickNotesMenuItem.dataset.listenerAdded = 'true';
+        }
+        
+        // Setup keyboard shortcut for Quick Notes (Ctrl+Enter)
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                if (typeof window.QuickNotesSystem !== 'undefined') {
+                    window.QuickNotesSystem.showModal();
+                } else {
+                    showQuickNotesModal();
+                }
+            }
+        });
+        
+    } catch (error) {
+        console.error('Error initializing Quick Notes integration:', error);
+    }
+}
+
+// Improved block grid error handling
+function ensureBlocksGrid() {
+    let grid = document.getElementById('blocksGrid');
+    if (!grid) {
+        // Create blocks grid if it doesn't exist
+        const container = document.querySelector('.blocks-container') || document.querySelector('.dashboard-content') || document.querySelector('main');
+        if (container) {
+            grid = document.createElement('div');
+            grid.id = 'blocksGrid';
+            grid.className = 'blocks-grid row g-3';
+            container.appendChild(grid);
+        } else {
+            console.error('No suitable container found for blocks grid');
+            return null;
+        }
+    }
+    return grid;
+}
+
+// Enhanced error handling for block operations
+function handleBlockError(error, operation = 'operación') {
+    console.error(`Error in block ${operation}:`, error);
+    
+    let message = `Error en ${operation} del bloque`;
+    if (error.message) {
+        if (error.message.includes('network') || error.message.includes('fetch')) {
+            message = 'Error de conexión. Verifica tu conexión a internet.';
+        } else if (error.message.includes('permission') || error.message.includes('unauthorized')) {
+            message = 'No tienes permisos para realizar esta acción.';
+        } else if (error.message.includes('validation')) {
+            message = 'Datos inválidos. Verifica la información ingresada.';
+        }
+    }
+    
+    showNotification(message, 'error');
 }

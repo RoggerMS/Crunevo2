@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from types import SimpleNamespace
 
@@ -25,11 +26,25 @@ _TEMPLATE_FAVORITES: set[tuple[int, str]] = set()
 
 
 def _parse_block_payload(payload: dict) -> dict:
+    # Handle different payload formats from frontend
+    block_type = payload.get("block_type") or payload.get("type")
+    config = payload.get("config") or payload.get("config_json") or payload.get("metadata") or {}
+    
+    # Ensure config is a dictionary
+    if isinstance(config, str):
+        try:
+            import json
+            config = json.loads(config)
+        except (json.JSONDecodeError, ValueError):
+            config = {"raw_config": config}
+    elif not isinstance(config, dict):
+        config = {}
+    
     return {
-        "block_type": payload.get("block_type") or payload.get("type"),
+        "block_type": block_type,
         "template_id": payload.get("template_id") or payload.get("templateId"),
-        "title": payload.get("title"),
-        "config": payload.get("config") or payload.get("config_json") or {},
+        "title": payload.get("title") or f"Nuevo {block_type}" if block_type else "Nuevo bloque",
+        "config": config,
         "is_featured": payload.get("is_featured", False),
     }
 
@@ -41,10 +56,21 @@ def create_personal_space_block(
     config: dict | None = None,
     is_featured: bool = False,
 ):
+    # Ensure config is properly handled as a dictionary
+    metadata = {}
+    if config and isinstance(config, dict):
+        metadata = config.copy()
+    elif config and isinstance(config, str):
+        try:
+            import json
+            metadata = json.loads(config)
+        except (json.JSONDecodeError, ValueError):
+            metadata = {"raw_config": config}
+    
     data = {
         "type": block_type,
-        "title": title,
-        "metadata": config or {},
+        "title": title or f"Nuevo {block_type}",
+        "metadata": metadata,
         "is_featured": is_featured,
     }
     return BlockService.create_block(current_user.id, data)
@@ -1090,3 +1116,192 @@ def block_analytics():
     except Exception as e:
         current_app.logger.error("Error getting block analytics: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
+
+
+# Quick Notes API Routes
+@personal_space_api_bp.route("/quick-notes", methods=["POST"])
+@login_required
+@activated_required
+def save_quick_note():
+    """Save a quick note."""
+    try:
+        data = request.get_json() or {}
+        
+        # Validate required fields
+        if not data.get("content"):
+            return jsonify({"success": False, "error": "Content is required"}), 400
+        
+        content = data.get("content", "").strip()
+        tags = data.get("tags", [])
+        
+        # Validate content length
+        if len(content) > 5000:
+            return jsonify({"success": False, "error": "Content too long (max 5000 characters)"}), 400
+        
+        # Validate tags
+        if not isinstance(tags, list):
+            tags = []
+        
+        # Clean and validate tags
+        cleaned_tags = []
+        for tag in tags[:10]:  # Limit to 10 tags
+            if isinstance(tag, str) and tag.strip():
+                cleaned_tag = tag.strip()[:50]  # Limit tag length
+                if cleaned_tag not in cleaned_tags:
+                    cleaned_tags.append(cleaned_tag)
+        
+        # Create quick note record
+        from crunevo.database import get_db
+        db = get_db()
+        
+        # Insert quick note
+        cursor = db.cursor()
+        cursor.execute("""
+            INSERT INTO quick_notes (user_id, content, tags, created_at)
+            VALUES (?, ?, ?, datetime('now'))
+        """, (current_user.id, content, json.dumps(cleaned_tags)))
+        
+        note_id = cursor.lastrowid
+        db.commit()
+        
+        current_app.logger.info(f"Quick note saved for user {current_user.id}")
+        
+        return jsonify({
+            "success": True,
+            "message": "Nota guardada exitosamente",
+            "note_id": note_id
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"Error saving quick note: {e}")
+        return jsonify({"success": False, "error": "Error al guardar la nota"}), 500
+
+
+@personal_space_api_bp.route("/quick-notes/latest", methods=["GET"])
+@login_required
+@activated_required
+def get_latest_quick_note():
+    """Get the latest quick note for the user."""
+    try:
+        from crunevo.database import get_db
+        db = get_db()
+        
+        cursor = db.cursor()
+        cursor.execute("""
+            SELECT id, content, tags, created_at
+            FROM quick_notes
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 1
+        """, (current_user.id,))
+        
+        note = cursor.fetchone()
+        
+        if note:
+            note_data = {
+                "id": note[0],
+                "content": note[1],
+                "tags": json.loads(note[2]) if note[2] else [],
+                "created_at": note[3]
+            }
+            return jsonify({"success": True, "note": note_data})
+        else:
+            return jsonify({"success": True, "note": None})
+            
+    except Exception as e:
+        current_app.logger.error(f"Error getting latest quick note: {e}")
+        return jsonify({"success": False, "error": "Error al obtener la nota"}), 500
+
+
+@personal_space_api_bp.route("/user-preferences", methods=["GET"])
+@login_required
+@activated_required
+def get_user_preferences():
+    """Get user preferences."""
+    try:
+        from crunevo.database import get_db
+        db = get_db()
+        
+        cursor = db.cursor()
+        cursor.execute("""
+            SELECT preferences
+            FROM user_preferences
+            WHERE user_id = ?
+        """, (current_user.id,))
+        
+        result = cursor.fetchone()
+        
+        if result and result[0]:
+            preferences = json.loads(result[0])
+        else:
+            # Default preferences
+            preferences = {
+                "show_quick_note_on_login": False,
+                "analytics_enabled": True
+            }
+        
+        return jsonify({"success": True, "preferences": preferences})
+        
+    except Exception as e:
+        current_app.logger.error(f"Error getting user preferences: {e}")
+        return jsonify({"success": False, "error": "Error al obtener preferencias"}), 500
+
+
+@personal_space_api_bp.route("/user-preferences", methods=["PATCH"])
+@login_required
+@activated_required
+def update_user_preferences():
+    """Update user preferences."""
+    try:
+        data = request.get_json() or {}
+        
+        from crunevo.database import get_db
+        db = get_db()
+        
+        # Get current preferences
+        cursor = db.cursor()
+        cursor.execute("""
+            SELECT preferences
+            FROM user_preferences
+            WHERE user_id = ?
+        """, (current_user.id,))
+        
+        result = cursor.fetchone()
+        
+        if result and result[0]:
+            current_preferences = json.loads(result[0])
+        else:
+            current_preferences = {
+                "show_quick_note_on_login": False,
+                "analytics_enabled": True
+            }
+        
+        # Update with new data
+        current_preferences.update(data)
+        
+        # Save updated preferences
+        if result:
+            cursor.execute("""
+                UPDATE user_preferences
+                SET preferences = ?, updated_at = datetime('now')
+                WHERE user_id = ?
+            """, (json.dumps(current_preferences), current_user.id))
+        else:
+            cursor.execute("""
+                INSERT INTO user_preferences (user_id, preferences, created_at, updated_at)
+                VALUES (?, ?, datetime('now'), datetime('now'))
+            """, (current_user.id, json.dumps(current_preferences)))
+        
+        db.commit()
+        
+        current_app.logger.info(f"User preferences updated for user {current_user.id}")
+        
+        return jsonify({
+            "success": True,
+            "message": "Preferencias actualizadas",
+            "preferences": current_preferences
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"Error updating user preferences: {e}")
+        return jsonify({"success": False, "error": "Error al actualizar preferencias"}), 500

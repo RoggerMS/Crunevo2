@@ -18,6 +18,8 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <!-- Personal Space JavaScript -->
 <script src="{{ url_for('static', filename='js/personal-space.js') }}" defer></script>
+<!-- Quick Notes System -->
+<script src="{{ url_for('static', filename='js/quick-notes.js') }}" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -593,10 +595,12 @@ window.viewWeeklyDetails = function() {
 };
 
 window.openQuickNotesModal = function() {
-    const modal = new bootstrap.Modal(document.getElementById('quick-notes-modal'));
-    loadRecentQuickNotes();
-    loadQuickNotesPreferences();
-    modal.show();
+    // Use the new QuickNotesSystem if available
+    if (window.openQuickNotes) {
+        window.openQuickNotes();
+    } else {
+        console.error('QuickNotesSystem not available');
+    }
 };
 
 // Analytics toggle function removed - now navigates to analytics page
