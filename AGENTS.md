@@ -1328,3 +1328,4 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Corrected personal space dashboard dropdown link to use existing `analytics_dashboard` endpoint and verified quick notes tables migration. (PR personal-space-analytics-link-fix)
 - Redesigned Quick Notes to open as Bootstrap modal appended to body with portal, replacing anchor trigger and persisting preferences. (PR quick-notes-modal-fix)
 - Made Personal Space analytics dashboard load real metrics from AnalyticsService and added view test. (PR personal-space-analytics-data)
+- Replaced BlockFactory macro imports with includes in personal space templates to prevent missing template errors on dashboard and workspace. (PR blockfactory-include-fix)
