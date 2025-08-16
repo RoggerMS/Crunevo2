@@ -29,7 +29,9 @@
         <div class="container-fluid">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <h1 class="workspace-title">Workspace</h1>
+                    <div class="workspace-title">
+                        <h1>Workspace</h1>
+                    </div>
                     <p class="workspace-subtitle">Organiza tus bloques como prefieras</p>
                 </div>
                 <div class="col-md-6">
@@ -37,14 +39,14 @@
                         <!-- View Toggle -->
                         <div class="view-toggle">
                             <button type="button" 
-                                    class="btn workspace-btn secondary active" 
+                                    class="view-toggle-btn active" 
                                     id="grid-view-btn"
                                     aria-label="Vista de cuadrícula">
                                 <i class="bi bi-grid-3x3-gap me-1"></i>
                                 Cuadrícula
                             </button>
                             <button type="button" 
-                                    class="btn workspace-btn secondary" 
+                                    class="view-toggle-btn" 
                                     id="list-view-btn"
                                     aria-label="Vista de lista">
                                 <i class="bi bi-list me-1"></i>
@@ -55,7 +57,7 @@
                         <!-- Workspace Actions -->
                         <div class="workspace-actions">
                             <button type="button" 
-                                    class="btn workspace-btn secondary" 
+                                    class="workspace-btn secondary" 
                                     id="edit-mode-btn"
                                     aria-label="Alternar modo de edición">
                                 <i class="bi bi-pencil me-1"></i>
@@ -63,7 +65,7 @@
                             </button>
                 
                              <button type="button" 
-                                     class="btn workspace-btn primary" 
+                                     class="workspace-btn primary" 
                                      id="new-block-btn"
                                      data-bs-toggle="modal" 
                                      data-bs-target="#block-factory-modal"
@@ -72,9 +74,8 @@
                                  Nuevo Bloque
                              </button>
                          </div>
-                     </div>
-                </div>
-            </div>
+             </div>
+         </div>
         </div>
     </div>
     
@@ -83,96 +84,64 @@
         <!-- Sidebar -->
         <div class="workspace-sidebar" id="workspace-sidebar">
             <div class="sidebar-header">
-                <h3 class="sidebar-title">
-                    <i class="bi bi-building-add"></i>
-                    <span>Bloques Disponibles</span>
-                </h3>
+                <h3 class="sidebar-title">Bloques Disponibles</h3>
             </div>
             
-            <div class="sidebar-content">
-                <!-- Productivity Blocks -->
-                <div class="block-category">
-                    <div class="category-title">Productividad</div>
-                    <div class="block-list">
-                        <div class="block-item" data-block-type="task" draggable="true">
-                            <div class="block-item-header">
-                                <div class="block-icon task">
-                                    <i class="bi bi-check-square"></i>
-                                </div>
-                                <div>
-                                    <div class="block-name">Tareas</div>
-                                    <div class="block-description">Lista de tareas con seguimiento</div>
-                                </div>
-                            </div>
+            <!-- Productivity Category -->
+            <div class="block-category">
+                <h4 class="category-title">Productividad</h4>
+                <div class="block-list">
+                    <div class="block-item" data-block-type="tasks">
+                        <div class="block-item-header">
+                            <i class="block-icon bi bi-check2-square"></i>
+                            <span>Tareas</span>
                         </div>
-                        
-                        <div class="block-item" data-block-type="kanban" draggable="true">
-                            <div class="block-item-header">
-                                <div class="block-icon kanban">
-                                    <i class="bi bi-kanban"></i>
-                                </div>
-                                <div>
-                                    <div class="block-name">Kanban</div>
-                                    <div class="block-description">Tablero de gestión visual</div>
-                                </div>
-                            </div>
+                        <small>Lista de tareas con seguimiento</small>
+                    </div>
+                    <div class="block-item" data-block-type="kanban">
+                        <div class="block-item-header">
+                            <i class="block-icon bi bi-kanban"></i>
+                            <span>Kanban</span>
                         </div>
-                        
-                        <div class="block-item" data-block-type="objective" draggable="true">
-                            <div class="block-item-header">
-                                <div class="block-icon objective">
-                                    <i class="bi bi-target"></i>
-                                </div>
-                                <div>
-                                    <div class="block-name">Objetivos</div>
-                                    <div class="block-description">Seguimiento de metas</div>
-                                </div>
-                            </div>
+                        <small>Tablero de gestión visual</small>
+                    </div>
+                    <div class="block-item" data-block-type="objectives">
+                        <div class="block-item-header">
+                            <i class="block-icon bi bi-target"></i>
+                            <span>Objetivos</span>
                         </div>
+                        <small>Seguimiento de metas</small>
+                    </div>
+                    <div class="block-item" data-block-type="notes">
+                        <div class="block-item-header">
+                            <i class="block-icon bi bi-journal-text"></i>
+                            <span>Notas</span>
+                        </div>
+                        <small>Notas rápidas y documentos</small>
                     </div>
                 </div>
-                
-                <!-- Organization Blocks -->
-                <div class="block-category">
-                    <div class="category-title">Organización</div>
-                    <div class="block-list">
-                        <div class="block-item" data-block-type="note" draggable="true">
-                            <div class="block-item-header">
-                                <div class="block-icon note">
-                                    <i class="bi bi-journal-text"></i>
-                                </div>
-                                <div>
-                                    <div class="block-name">Notas</div>
-                                    <div class="block-description">Notas rápidas y documentos</div>
-                                </div>
-                            </div>
+            </div>
+            
+            <!-- Organization Category -->
+            <div class="block-category">
+                <h4 class="category-title">Organización</h4>
+                <div class="block-list">
+                    <div class="block-item" data-block-type="calendar">
+                        <div class="block-item-header">
+                            <i class="block-icon bi bi-calendar3"></i>
+                            <span>Calendario</span>
                         </div>
-                        
-                        <div class="block-item" data-block-type="calendar" draggable="true">
-                            <div class="block-item-header">
-                                <div class="block-icon calendar">
-                                    <i class="bi bi-calendar3"></i>
-                                </div>
-                                <div>
-                                    <div class="block-name">Calendario</div>
-                                    <div class="block-description">Eventos y citas</div>
-                                </div>
-                            </div>
+                        <small>Eventos y citas</small>
+                    </div>
+                    <div class="block-item" data-block-type="habits">
+                        <div class="block-item-header">
+                            <i class="block-icon bi bi-arrow-repeat"></i>
+                            <span>Hábitos</span>
                         </div>
-                        
-                        <div class="block-item" data-block-type="habit" draggable="true">
-                            <div class="block-item-header">
-                                <div class="block-icon habit">
-                                    <i class="bi bi-arrow-repeat"></i>
-                                </div>
-                                <div>
-                                    <div class="block-name">Hábitos</div>
-                                    <div class="block-description">Seguimiento de rutinas</div>
-                                </div>
-                            </div>
-                        </div>
+                        <small>Seguimiento de rutinas</small>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
         

@@ -346,6 +346,9 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .block-item {
@@ -634,15 +637,32 @@
         padding: 1rem;
     }
     
-    .workspace-title {
+    .workspace-header .row {
         flex-direction: column;
-        align-items: flex-start;
         gap: 1rem;
+    }
+    
+    .workspace-header .col-md-6 {
+        width: 100%;
+        max-width: 100%;
     }
     
     .workspace-controls {
         width: 100%;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .view-toggle {
+        order: 1;
+        width: 100%;
+    }
+    
+    .workspace-actions {
+        order: 2;
+        width: 100%;
+        justify-content: center;
     }
     
     .workspace-main {
@@ -651,14 +671,40 @@
     
     .workspace-sidebar {
         padding: 1rem;
+        max-height: 300px;
+        overflow-y: auto;
     }
     
     .grid-container {
         padding: 1rem;
     }
+    
+    .block-category {
+        margin-bottom: 1rem;
+    }
+    
+    .category-title {
+        font-size: 0.9rem;
+    }
+    
+    .block-item {
+        padding: 0.75rem;
+    }
 }
 
 @media (max-width: 480px) {
+    .workspace-header {
+        padding: 0.75rem;
+    }
+    
+    .workspace-title h1 {
+        font-size: 1.5rem;
+    }
+    
+    .workspace-subtitle {
+        font-size: 0.875rem;
+    }
+    
     .workspace-actions {
         flex-direction: column;
         width: 100%;
@@ -668,6 +714,8 @@
     .workspace-btn {
         width: 100%;
         justify-content: center;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
     }
     
     .view-toggle {
@@ -677,6 +725,41 @@
     .view-toggle-btn {
         flex: 1;
         text-align: center;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .workspace-main {
+        padding: 0.75rem;
+    }
+    
+    .workspace-sidebar {
+        padding: 0.75rem;
+        max-height: 250px;
+    }
+    
+    .grid-container {
+        padding: 0.75rem;
+    }
+    
+    .block-item {
+        padding: 0.5rem;
+    }
+    
+    .block-item-header {
+        font-size: 0.875rem;
+    }
+    
+    .block-item small {
+        font-size: 0.75rem;
+    }
+    
+    .empty-workspace-title {
+        font-size: 1.25rem;
+    }
+    
+    .empty-workspace-description {
+        font-size: 0.875rem;
     }
 }
 
