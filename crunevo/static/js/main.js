@@ -1101,7 +1101,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initMissionClaimButtons();
     initGroupMissionClaimButtons();
     highlightNewAchievements();
-    initQuickNotes();
     initKeyboardShortcuts();
 
     initWeatherWidget();
@@ -1359,19 +1358,7 @@ function initAchievementsShowMore() {
   });
 }
 
-function initQuickNotes() {
-  const textarea = document.getElementById('quickNotesTextarea');
-  const saveBtn = document.getElementById('quickNotesSaveBtn');
-  if (!textarea || !saveBtn) return;
-  textarea.value = localStorage.getItem('quick_notes') || '';
-  saveBtn.addEventListener('click', () => {
-    localStorage.setItem('quick_notes', textarea.value);
-    bootstrap.Modal.getOrCreateInstance(
-      document.getElementById('quickNotesModal')
-    ).hide();
-    showToast('Nota guardada');
-  });
-}
+// Quick Notes functionality removed - now handled by quick-notes.js and personal-space.js
 
 function initKeyboardShortcuts() {
   document.addEventListener('keydown', (e) => {
@@ -1394,10 +1381,12 @@ function initKeyboardShortcuts() {
         bootstrap.Modal.getOrCreateInstance(modal).show();
       }
     } else if (key === 'Q') {
-      const modal = document.getElementById('quickNotesModal');
-      if (modal) {
-        e.preventDefault();
-        bootstrap.Modal.getOrCreateInstance(modal).show();
+      // Quick Notes shortcut now handled by personal-space.js
+      e.preventDefault();
+      if (typeof window.QuickNotesSystem !== 'undefined') {
+        window.QuickNotesSystem.showModal();
+      } else if (typeof showQuickNotesModal !== 'undefined') {
+        showQuickNotesModal();
       }
     }
   });

@@ -369,41 +369,75 @@ def papelera():
 @personal_space_api_bp.route("/statistics", methods=["GET"])
 @login_required
 @activated_required
-def get_stats():
-    """Return basic personal space statistics for the current user."""
+def get_real_stats():
+    """Return comprehensive personal space statistics for dashboard."""
     if not table_exists("personal_space_blocks"):
         return jsonify(
             {
-                "total_blocks": 0,
-                "completed_tasks": 0,
-                "active_objectives": 0,
-                "productivity_score": 0,
+                "total_tasks": 0,
+                "total_objectives": 0,
+                "productive_hours": 0,
+                "completed_tasks_today": 0,
+                "active_projects": 0,
+                "success": True
             }
         )
     try:
-        # Get real analytics data
+        # Get comprehensive analytics data
         dashboard_metrics = AnalyticsService.get_dashboard_metrics(current_user.id)
         productivity_metrics = AnalyticsService.get_productivity_metrics(current_user.id)
         
-        # Extract metrics
-        total_blocks = dashboard_metrics.get("total_blocks", 0)
+        # Extract task metrics
         task_completion = productivity_metrics.get("task_completion", {})
-        completed_tasks = task_completion.get("completed_tasks", 0)
+        total_tasks = task_completion.get("total_tasks", 0)
+        completed_tasks_today = task_completion.get("completed_tasks", 0)
+        
+        # Extract objective metrics
         objective_progress = productivity_metrics.get("objective_progress", {})
-        active_objectives = objective_progress.get("total_objectives", 0)
-        productivity_score = dashboard_metrics.get("productivity_score", 0)
+        total_objectives = objective_progress.get("total_objectives", 0)
+        
+        # Calculate productive hours based on weekly activity
+        weekly_activity = productivity_metrics.get("weekly_activity", [])
+        productive_hours = len([day for day in weekly_activity if day.get("blocks_updated", 0) > 0]) * 1.5
+        
+        # Count active projects (blocks with type 'proyecto' or similar)
+        active_projects = len(BlockService.get_user_blocks(
+            user_id=current_user.id, 
+            status="active", 
+            block_type="proyecto"
+        ))
+        
+        # If no specific project blocks, count unique categories from metadata
+        if active_projects == 0:
+            all_blocks = BlockService.get_user_blocks(user_id=current_user.id, status="active")
+            categories = set()
+            for block in all_blocks:
+                metadata = block.get_metadata()
+                if metadata.get("category"):
+                    categories.add(metadata["category"])
+            active_projects = len(categories) or 1  # At least 1 if there are any blocks
         
         return jsonify(
             {
-                "total_blocks": total_blocks,
-                "completed_tasks": completed_tasks,
-                "active_objectives": active_objectives,
-                "productivity_score": int(productivity_score),
+                "total_tasks": int(total_tasks),
+                "total_objectives": int(total_objectives),
+                "productive_hours": int(productive_hours),
+                "completed_tasks_today": int(completed_tasks_today),
+                "active_projects": int(active_projects),
+                "success": True
             }
         )
-    except Exception as e:  # pragma: no cover
+    except Exception as e:
         current_app.logger.error("Error getting personal space stats: %s", e)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({
+            "total_tasks": 0,
+            "total_objectives": 0,
+            "productive_hours": 0,
+            "completed_tasks_today": 0,
+            "active_projects": 0,
+            "success": False,
+            "error": str(e)
+        }), 500
 
 
 @personal_space_api_bp.route("/blocks", methods=["GET"])
@@ -455,13 +489,28 @@ def create_block():
                 ),
                 400,
             )
-        block = create_personal_space_block(**data)
-        return jsonify({"ok": True, "success": True, "block": block.to_dict()}), 201
+        
+        # Create block using BlockService for better error handling
+        block_data = {
+            "type": data["block_type"],
+            "title": data.get("title", f"Nuevo {data['block_type']}"),
+            "content": "",
+            "metadata": data.get("config", {}),
+            "is_featured": data.get("is_featured", False)
+        }
+        
+        block = BlockService.create_block(current_user.id, block_data)
+        
+        # Ensure proper JSON serialization
+        block_dict = block.to_dict()
+        
+        return jsonify({"ok": True, "success": True, "block": block_dict}), 201
     except ValueError as e:
+        current_app.logger.error("Validation error creating block: %s", e)
         return jsonify({"ok": False, "success": False, "error": str(e)}), 400
     except Exception as e:
         current_app.logger.error("Error creating personal space block: %s", e)
-        return jsonify({"ok": False, "success": False, "error": str(e)}), 500
+        return jsonify({"ok": False, "success": False, "error": "Error interno del servidor"}), 500
 
 
 @personal_space_api_bp.route("/blocks/<string:block_id>", methods=["GET"])

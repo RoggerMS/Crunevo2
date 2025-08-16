@@ -398,6 +398,51 @@
 .empty-state-icon {
     font-size: 4rem;
     margin-bottom: 1rem;
+}
+
+/* Loading State */
+.loading-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #718096;
+}
+
+.loading-spinner {
+    margin-bottom: 1rem;
+}
+
+.loading-text {
+    font-size: 1rem;
+    color: #64748b;
+    margin: 0;
+}
+
+/* Error State */
+.error-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #718096;
+}
+
+.error-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: #ef4444;
+}
+
+.error-state-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.error-state-description {
+    font-size: 1rem;
+    color: #6b7280;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
     opacity: 0.5;
 }
 
@@ -892,8 +937,13 @@ window.PersonalSpaceTemplates = {
     // Initialize templates page
     init: function() {
         this.bindEvents();
-        this.loadTemplates();
         this.setupSearch();
+        
+        // Only load templates via AJAX if the grid is empty or has server-side error
+        const grid = document.getElementById('templates-grid');
+        if (grid && (grid.children.length === 0 || grid.querySelector('.server-error'))) {
+            this.loadTemplates();
+        }
     },
     
     // Bind event listeners
@@ -935,6 +985,12 @@ window.PersonalSpaceTemplates = {
     
     // Load templates
     loadTemplates: async function() {
+        const grid = document.getElementById('templates-grid');
+        if (!grid) return;
+        
+        // Show loading state
+        grid.innerHTML = this.renderLoadingState();
+        
         try {
             const params = new URLSearchParams({
                 tab: this.currentTab,
@@ -946,12 +1002,14 @@ window.PersonalSpaceTemplates = {
             const response = await fetch(`/api/personal-space/templates?${params}`);
             if (response.ok) {
                 const data = await response.json();
-                this.renderTemplates(data.templates);
+                this.renderTemplates(data.templates || []);
                 this.updatePagination(data.pagination);
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
         } catch (error) {
             console.error('Error loading templates:', error);
-            this.showErrorMessage('Error al cargar las plantillas');
+            this.renderError('Error al cargar las plantillas. Por favor, intenta de nuevo.');
         }
     },
     
@@ -1253,12 +1311,50 @@ window.PersonalSpaceTemplates = {
         return 'hace un momento';
     },
     
+    // Render loading state
+    renderLoadingState: function() {
+        return `
+            <div class="loading-state">
+                <div class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+                <p class="loading-text">Cargando plantillas...</p>
+            </div>
+        `;
+    },
+    
+    // Render error state
+    renderError: function(message) {
+        const grid = document.getElementById('templates-grid');
+        if (!grid) return;
+        
+        grid.innerHTML = `
+            <div class="error-state">
+                <div class="error-state-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <h3 class="error-state-title">Error al cargar plantillas</h3>
+                <p class="error-state-description">${message}</p>
+                <button type="button" 
+                        class="btn template-btn" 
+                        onclick="window.PersonalSpaceTemplates.loadTemplates()">
+                    <i class="bi bi-arrow-clockwise me-2"></i>
+                    Reintentar
+                </button>
+            </div>
+        `;
+    },
+    
     showSuccessMessage: function(message) {
         console.log('Success:', message);
+        // TODO: Implement toast notification
     },
     
     showErrorMessage: function(message) {
         console.error('Error:', message);
+        // TODO: Implement toast notification
     }
 };
 

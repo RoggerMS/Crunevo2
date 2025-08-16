@@ -172,7 +172,7 @@
 <div id="fab-container" class="d-none d-lg-block">
   <button id="fab-main" class="fab-button">+</button>
   <button class="fab-sub btn rounded-circle shadow-lg tw-text-white d-none"
-          data-bs-toggle="modal" data-bs-target="#quickNotesModal"
+          onclick="if (typeof window.QuickNotesSystem !== 'undefined') { window.QuickNotesSystem.showModal(); } else if (typeof showQuickNotesModal !== 'undefined') { showQuickNotesModal(); }"
           title="Notas rápidas" style="background-color:#6f42c1;">
     <i class="bi bi-journal-text fs-5"></i>
   </button>
@@ -187,6 +187,6 @@
     <i class="bi bi-robot fs-5"></i>
   </button>
 </div>
-{% include 'components/quick_notes.html' %}
+<!-- Quick Notes modal now handled by quick-notes.js and personal-space.js -->
 {% include 'components/shortcut_help.html' %}
 {% endblock %}
