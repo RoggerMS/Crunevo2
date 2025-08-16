@@ -75,7 +75,7 @@
             <div class="col-md-3">
                 {{ render_stat_card(
                     title='Tareas Completadas',
-                    value=analytics_data.tasks_completed if analytics_data else 24,
+                    value=analytics_data.tasks_completed if analytics_data else 0,
                     icon='check-circle',
                     color='success',
                     trend='up',
@@ -86,7 +86,7 @@
             <div class="col-md-3">
                 {{ render_stat_card(
                     title='Objetivos Alcanzados',
-                    value=analytics_data.goals_achieved if analytics_data else 3,
+                    value=analytics_data.goals_achieved if analytics_data else 0,
                     icon='target',
                     color='primary',
                     trend='up',
@@ -97,7 +97,7 @@
             <div class="col-md-3">
                 {{ render_stat_card(
                     title='Tiempo Productivo',
-                    value=(analytics_data.productive_hours if analytics_data else 32) ~ 'h',
+                    value=(analytics_data.productive_hours if analytics_data else 0) ~ 'h',
                     icon='clock',
                     color='info',
                     trend='up',
@@ -108,7 +108,7 @@
             <div class="col-md-3">
                 {{ render_stat_card(
                     title='Puntuación de Foco',
-                    value=(analytics_data.focus_score if analytics_data else 85) ~ '%',
+                    value=(analytics_data.focus_score if analytics_data else 0) ~ '%',
                     icon='bullseye',
                     color='warning',
                     trend='down',
@@ -871,24 +871,24 @@ window.AnalyticsDashboard = {
             console.error('Error loading analytics:', error);
         }
         
-        // Fallback to sample data
+        // Fallback to zeroed metrics when data is unavailable
         this.loadSampleData();
     },
-    
+
     // Load sample data
     loadSampleData: function() {
-        const sampleData = {
-            tasks_completed: 24,
-            goals_achieved: 3,
-            productive_hours: 32,
-            focus_score: 85,
-            productivity_trend: [12, 15, 18, 22, 19, 24, 28],
-            time_trend: [4.5, 5.2, 6.1, 5.8, 6.3, 7.2, 6.8],
-            focus_trend: [78, 82, 85, 79, 88, 85, 90]
+        const emptyData = {
+            tasks_completed: 0,
+            goals_achieved: 0,
+            productive_hours: 0,
+            focus_score: 0,
+            productivity_trend: [],
+            time_trend: [],
+            focus_trend: []
         };
-        
-        this.updateMetrics(sampleData);
-        this.updateCharts(sampleData);
+
+        this.updateMetrics(emptyData);
+        this.updateCharts(emptyData);
     },
     
     // Update metrics from API data
