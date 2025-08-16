@@ -145,7 +145,7 @@ class BlockService:
 
     @staticmethod
     def reorder_blocks(user_id: int, block_orders: List[Dict[str, Any]]) -> bool:
-        """Reorder blocks based on provided order list."""
+        """Reorder blocks based on provided order list and save grid positions."""
         try:
             for item in block_orders:
                 idx = item.get("order_index", item.get("position"))
@@ -154,6 +154,23 @@ class BlockService:
                 ).first()
                 if block is not None and idx is not None:
                     block.order_index = idx
+                    
+                    # Save grid position data if provided
+                    if any(key in item for key in ['x', 'y', 'width', 'height']):
+                        if block.metadata_json is None:
+                            block.metadata_json = {}
+                        
+                        if 'grid_position' not in block.metadata_json:
+                            block.metadata_json['grid_position'] = {}
+                        
+                        # Update grid position fields
+                        for field in ['x', 'y', 'width', 'height']:
+                            if field in item:
+                                block.metadata_json['grid_position'][field] = item[field]
+                        
+                        # Mark as modified for SQLAlchemy
+                        from sqlalchemy.orm.attributes import flag_modified
+                        flag_modified(block, 'metadata_json')
 
             db.session.commit()
             CacheInvalidator.on_block_change(user_id)

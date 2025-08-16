@@ -605,18 +605,30 @@ def reorder_blocks():
 @login_required
 @activated_required
 def update_block_position(block_id):
-    """Update a single block's position."""
+    """Update a single block's position and grid data."""
     if not table_exists("personal_space_blocks"):
         current_app.logger.warning("personal_space_blocks table does not exist")
         return jsonify({"success": False, "error": "Personal space unavailable"}), 503
     try:
         data = request.get_json() or {}
-        new_position = data.get("order_index")
+        
+        # Build block order data with all provided fields
+        block_data = {"id": block_id}
+        
+        # Add order_index if provided
+        if "order_index" in data:
+            block_data["order_index"] = data["order_index"]
+        
+        # Add grid position data if provided
+        for field in ["x", "y", "width", "height"]:
+            if field in data:
+                block_data[field] = data[field]
+        
+        # Ensure we have at least one field to update
+        if len(block_data) == 1:  # Only has 'id'
+            return jsonify({"success": False, "error": "Position or grid data required"}), 400
 
-        if new_position is None:
-            return jsonify({"success": False, "error": "Position required"}), 400
-
-        block_orders = [{"id": block_id, "order_index": new_position}]
+        block_orders = [block_data]
         BlockService.reorder_blocks(current_user.id, block_orders)
 
         return jsonify({"success": True})
