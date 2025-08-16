@@ -1018,12 +1018,15 @@ window.PersonalSpaceTemplates = {
         const grid = document.getElementById('templates-grid');
         if (!grid) return;
         
-        if (!templates || templates.length === 0) {
+        // Fix: Ensure templates is an array
+        const templatesArray = Array.isArray(templates) ? templates : [];
+        
+        if (!templatesArray || templatesArray.length === 0) {
             grid.innerHTML = this.renderEmptyState();
             return;
         }
         
-        grid.innerHTML = templates.map(template => this.renderTemplateCard(template)).join('');
+        grid.innerHTML = templatesArray.map(template => this.renderTemplateCard(template)).join('');
     },
     
     // Render template card

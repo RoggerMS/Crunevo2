@@ -244,7 +244,10 @@ class CrunevoStore {
         document.querySelectorAll('.category-item').forEach(item => {
             item.classList.remove('active');
         });
-        document.querySelector(`[data-category="${category}"]`).classList.add('active');
+        const categoryElement = document.querySelector(`[data-category="${category}"]`);
+        if (categoryElement) {
+            categoryElement.classList.add('active');
+        }
 
         this.activeFilters.category = category;
     }
@@ -254,7 +257,10 @@ class CrunevoStore {
         document.querySelectorAll('.availability-option').forEach(option => {
             option.classList.remove('active');
         });
-        document.querySelector(`[data-availability="${availability}"]`).classList.add('active');
+        const availabilityElement = document.querySelector(`[data-availability="${availability}"]`);
+        if (availabilityElement) {
+            availabilityElement.classList.add('active');
+        }
 
         this.activeFilters.availability = availability;
     }
@@ -707,8 +713,14 @@ class CrunevoStore {
             if (mobileMarketplace) {
                 mobileMarketplace.addEventListener('change', function () {
                     const showMarketplace = this.checked;
-                    document.getElementById('mobile-condicion-container').style.display = showMarketplace ? 'block' : 'none';
-                    document.getElementById('mobile-vendedor-verificado-container').style.display = showMarketplace ? 'block' : 'none';
+                    const condicionContainer = document.getElementById('mobile-condicion-container');
+                    const vendedorContainer = document.getElementById('mobile-vendedor-verificado-container');
+                    if (condicionContainer) {
+                        condicionContainer.style.display = showMarketplace ? 'block' : 'none';
+                    }
+                    if (vendedorContainer) {
+                        vendedorContainer.style.display = showMarketplace ? 'block' : 'none';
+                    }
                 });
             }
         }

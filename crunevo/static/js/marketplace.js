@@ -268,7 +268,10 @@ function initializeProductTabs() {
                 });
                 
                 // Show target tab content
-                document.querySelector(target).classList.remove('d-none');
+                const targetElement = document.querySelector(target);
+                if (targetElement) {
+                    targetElement.classList.remove('d-none');
+                }
                 
                 // Add active class to clicked tab
                 this.classList.add('active');

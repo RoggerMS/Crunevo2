@@ -38,33 +38,49 @@ window.WorkspaceManager = {
      * Initialize GridStack with unified configuration
      */
     initializeGrid: function() {
-        this.grid = GridStack.init({
-            cellHeight: 80,
-            verticalMargin: 10,
-            horizontalMargin: 10,
-            minRow: 6,
-            animate: true,
-            float: false,
-            removable: false,
-            acceptWidgets: true,
-            dragIn: '.block-item',
-            dragInOptions: {
-                revert: 'invalid',
-                scroll: false,
-                appendTo: 'body',
-                helper: 'clone'
+        // Check if grid container exists
+        const gridContainer = document.querySelector('.grid-stack');
+        if (!gridContainer) {
+            console.warn('GridStack container not found. Skipping grid initialization.');
+            return;
+        }
+        
+        // Initialize GridStack
+        try {
+            this.grid = GridStack.init({
+                cellHeight: 80,
+                verticalMargin: 10,
+                horizontalMargin: 10,
+                minRow: 6,
+                animate: true,
+                float: false,
+                removable: false,
+                acceptWidgets: true,
+                dragIn: '.block-item',
+                dragInOptions: {
+                    revert: 'invalid',
+                    scroll: false,
+                    appendTo: 'body',
+                    helper: 'clone'
+                }
+            });
+            
+            // Only add event listeners if grid was successfully initialized
+            if (this.grid) {
+                // Handle grid changes
+                this.grid.on('change', (event, items) => {
+                    this.onGridChange(items);
+                });
+                
+                // Handle new items dropped
+                this.grid.on('dropped', (event, previousWidget, newWidget) => {
+                    this.onBlockDropped(newWidget);
+                });
             }
-        });
-        
-        // Handle grid changes
-        this.grid.on('change', (event, items) => {
-            this.onGridChange(items);
-        });
-        
-        // Handle new items dropped
-        this.grid.on('dropped', (event, previousWidget, newWidget) => {
-            this.onBlockDropped(newWidget);
-        });
+        } catch (error) {
+            console.error('Failed to initialize GridStack:', error);
+            this.grid = null;
+        }
     },
     
     /**
@@ -340,6 +356,10 @@ window.WorkspaceManager = {
      */
     renderWorkspaceBlocks: function(blocks) {
         if (!blocks || blocks.length === 0) return;
+        if (!this.grid) {
+            console.warn('Grid not initialized. Cannot render blocks.');
+            return;
+        }
         
         // Clear existing grid
         this.grid.removeAll();
@@ -444,11 +464,13 @@ window.WorkspaceManager = {
         this.isEditMode = !this.isEditMode;
         this.updateEditModeUI();
         
-        if (this.isEditMode) {
-            this.grid.enable();
-        } else {
-            this.grid.disable();
-            this.saveWorkspace();
+        if (this.grid) {
+            if (this.isEditMode) {
+                this.grid.enable();
+            } else {
+                this.grid.disable();
+                this.saveWorkspace();
+            }
         }
     },
     
@@ -613,6 +635,11 @@ window.WorkspaceManager = {
      * Get current workspace state
      */
     getWorkspaceState: function() {
+        if (!this.grid) {
+            console.warn('Grid not initialized. Cannot get workspace state.');
+            return [];
+        }
+        
         const items = this.grid.getGridItems();
         return items.map(item => {
             const node = item.gridstackNode;
@@ -688,7 +715,9 @@ window.WorkspaceManager = {
      */
     resetWorkspace: function() {
         if (confirm('¿Estás seguro de que quieres resetear el workspace? Esta acción no se puede deshacer.')) {
-            this.grid.removeAll();
+            if (this.grid) {
+                this.grid.removeAll();
+            }
             this.saveWorkspace();
         }
     },

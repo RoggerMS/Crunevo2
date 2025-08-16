@@ -74,13 +74,19 @@ class CareerModule {
         document.querySelectorAll('.career-nav .nav-link').forEach(link => {
             link.classList.remove('active');
         });
-        document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+        const tabLink = document.querySelector(`[data-tab="${tab}"]`);
+        if (tabLink) {
+            tabLink.classList.add('active');
+        }
         
         // Update tab content
         document.querySelectorAll('.tab-pane').forEach(pane => {
             pane.classList.remove('show', 'active');
         });
-        document.getElementById(tab).classList.add('show', 'active');
+        const tabElement = document.getElementById(tab);
+        if (tabElement) {
+            tabElement.classList.add('show', 'active');
+        }
         
         // Load tab content
         this.loadCurrentTab();
@@ -538,13 +544,18 @@ class CareerModule {
     }
     
     async submitPost() {
-        const content = document.getElementById('postContent').value.trim();
+        const postContentEl = document.getElementById('postContent');
+        if (!postContentEl) return;
+        const content = postContentEl.value.trim();
         if (!content) return;
         
         try {
             const formData = new FormData();
             formData.append('content', content);
-            formData.append('csrf_token', document.querySelector('[name="csrf_token"]').value);
+            const csrfTokenEl = document.querySelector('[name="csrf_token"]');
+            if (csrfTokenEl) {
+                formData.append('csrf_token', csrfTokenEl.value);
+            }
             
             const response = await fetch('/feed/create_post', {
                 method: 'POST',
@@ -552,7 +563,10 @@ class CareerModule {
             });
             
             if (response.ok) {
-                document.getElementById('postContent').value = '';
+                const postContentEl = document.getElementById('postContent');
+                if (postContentEl) {
+                    postContentEl.value = '';
+                }
                 this.loadPublicaciones(); // Reload posts
                 this.showSuccess('Publicación creada exitosamente');
             } else {
@@ -565,6 +579,7 @@ class CareerModule {
     
     async sendChatMessage() {
         const input = document.getElementById('chatInput');
+        if (!input) return;
         const content = input.value.trim();
         if (!content) return;
         
@@ -578,7 +593,9 @@ class CareerModule {
             });
             
             if (response.ok) {
-                input.value = '';
+                if (input) {
+                    input.value = '';
+                }
                 this.loadChat(); // Reload chat
             } else {
                 this.showError('Error al enviar mensaje');

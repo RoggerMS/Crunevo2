@@ -773,7 +773,9 @@ window.BlockFactory = {
         try {
             const response = await fetch('/api/personal-space/templates?public=true');
             if (response.ok) {
-                this.templates = await response.json();
+                const data = await response.json();
+                // Fix: Extract templates array from response object
+                this.templates = Array.isArray(data.templates) ? data.templates : [];
                 this.renderTemplates();
             } else {
                 throw new Error('Error loading templates');

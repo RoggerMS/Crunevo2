@@ -10,7 +10,8 @@ function getDeviceToken() {
 }
 
 function csrfFetch(url, options = {}) {
-  const token = document.querySelector('meta[name="csrf-token"]').content;
+  const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+  const token = tokenMeta ? tokenMeta.content : '';
   const headers = {
     'X-CSRFToken': token,
     'X-Requested-With': 'XMLHttpRequest',
@@ -1006,7 +1007,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const modal = document.getElementById('imageModal');
       if (modal && !modal.classList.contains('hidden')) {
         modal.classList.add('hidden');
-        document.getElementById('imageModalInfo').innerHTML = '';
+        const modalInfo = document.getElementById('imageModalInfo');
+        if (modalInfo) {
+          modalInfo.innerHTML = '';
+        }
       }
     }
   });
@@ -1488,7 +1492,10 @@ function initEventList() {
           : this.dataset.tab === 'past'
           ? 'past-events'
           : 'my-events';
-      document.getElementById(target).style.display = 'block';
+      const targetElement = document.getElementById(target);
+      if (targetElement) {
+        targetElement.style.display = 'block';
+      }
     });
   });
 }
@@ -1689,9 +1696,12 @@ function initWeatherWidget() {
     const resp = await fetch(`/dashboard/weather?lat=${latitude}&lon=${longitude}`);
     if (!resp.ok) return;
     const data = await resp.json();
-    document.getElementById('weatherCity').textContent = data.city;
-    document.getElementById('weatherTemp').textContent = `${data.temp}°C - ${data.desc}`;
-    document.getElementById('weatherIcon').src = data.icon;
+    const cityEl = document.getElementById('weatherCity');
+    const tempEl = document.getElementById('weatherTemp');
+    const iconEl = document.getElementById('weatherIcon');
+    if (cityEl) cityEl.textContent = data.city;
+    if (tempEl) tempEl.textContent = `${data.temp}°C - ${data.desc}`;
+    if (iconEl) iconEl.src = data.icon;
   });
 }
 

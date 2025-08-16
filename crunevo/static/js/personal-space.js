@@ -545,6 +545,13 @@ function generateBlockContent(block) {
 
 // Modal Functions
 function showAddBlockModal() {
+    // Check if Bootstrap is available
+    if (typeof bootstrap === 'undefined') {
+        console.error('Bootstrap is not loaded');
+        showNotification('Error: Bootstrap no está cargado', 'error');
+        return;
+    }
+    
     // Try multiple modal IDs for compatibility
     const modalIds = ['block-factory-modal', 'addBlockModal', 'blockFactoryModal'];
     let modal = null;
@@ -1098,7 +1105,13 @@ function saveCurrentBlock() {
     .then(data => {
         if (data.success) {
             // Close modal
-            bootstrap.Modal.getInstance(document.getElementById('editBlockModal')).hide();
+            const editModal = document.getElementById('editBlockModal');
+            if (editModal) {
+                const modalInstance = bootstrap.Modal.getInstance(editModal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            }
 
             // Update block in UI
             updateBlockInUI(data.block);
@@ -1333,7 +1346,10 @@ function updateThemeColor() {
 
 function applyFocusMode(state) {
     isFocusMode = state;
-    document.querySelector('.personal-space-container').classList.toggle('focus-mode', state);
+    const container = document.querySelector('.personal-space-container');
+    if (container) {
+        container.classList.toggle('focus-mode', state);
+    }
 
     document.querySelectorAll('.navbar, .sidebar-left, .sidebar-right, .mobile-bottom-nav').forEach(el => {
         if (!el) return;
@@ -1919,6 +1935,13 @@ function showNotification(message, type = 'info') {
 
 // Show create block modal
 function showCreateBlockModal() {
+    // Check if Bootstrap is available
+    if (typeof bootstrap === 'undefined') {
+        console.error('Bootstrap is not loaded');
+        showNotification('Error: Bootstrap no está cargado', 'error');
+        return;
+    }
+    
     const modal = document.getElementById('block-factory-modal');
     if (modal) {
         // Remove any existing backdrops first
@@ -2014,9 +2037,13 @@ function createQuickNotesModal() {
 }
 
 function saveQuickNote() {
-    const title = document.getElementById('quickNoteTitle').value || 'Nota rápida';
-    const content = document.getElementById('quickNoteContent').value;
-    const category = document.getElementById('quickNoteCategory').value;
+    const titleEl = document.getElementById('quickNoteTitle');
+    const contentEl = document.getElementById('quickNoteContent');
+    const categoryEl = document.getElementById('quickNoteCategory');
+    
+    const title = titleEl ? titleEl.value || 'Nota rápida' : 'Nota rápida';
+    const content = contentEl ? contentEl.value : '';
+    const category = categoryEl ? categoryEl.value : 'general';
     
     if (!content.trim()) {
         showNotification('El contenido de la nota no puede estar vacío', 'error');
@@ -2043,9 +2070,9 @@ function saveQuickNote() {
                 if (modal) modal.hide();
                 
                 // Clear form
-                document.getElementById('quickNoteTitle').value = '';
-                document.getElementById('quickNoteContent').value = '';
-                document.getElementById('quickNoteCategory').value = 'general';
+                if (titleEl) titleEl.value = '';
+                if (contentEl) contentEl.value = '';
+                if (categoryEl) categoryEl.value = 'general';
                 
                 // Add to grid
                 const blockElement = createBlockElement(data.block);
@@ -2189,4 +2216,23 @@ function handleBlockError(error, operation = 'operación') {
     }
     
     showNotification(message, 'error');
+}
+
+// Initialize Personal Space when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        // Small delay to ensure all scripts are loaded
+        setTimeout(() => {
+            if (typeof initPersonalSpace === 'function') {
+                initPersonalSpace();
+            }
+        }, 100);
+    });
+} else {
+    // DOM is already loaded
+    setTimeout(() => {
+        if (typeof initPersonalSpace === 'function') {
+            initPersonalSpace();
+        }
+    }, 100);
 }

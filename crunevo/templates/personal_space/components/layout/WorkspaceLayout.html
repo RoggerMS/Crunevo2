@@ -114,8 +114,8 @@
         <!-- Grid Background -->
         <div class="grid-background" id="grid-background"></div>
         
-        <!-- Blocks Container -->
-        <div class="blocks-container" id="blocks-container">
+        <!-- GridStack Container -->
+        <div class="grid-stack" id="grid-stack">
             {% if blocks %}
                 {% for block in blocks %}
                 {{ render_workspace_block(block, editable) }}
@@ -154,18 +154,14 @@
 
 <!-- Workspace Block Wrapper -->
 {% macro render_workspace_block(block, editable=true) %}
-<div class="workspace-block" 
+<div class="grid-stack-item workspace-block" 
      id="workspace-block-{{ block.id }}"
      data-block-id="{{ block.id }}"
      data-block-type="{{ block.type }}"
-     data-grid-x="{{ block.metadata.get('grid_position', {}).get('x', 0) }}"
-     data-grid-y="{{ block.metadata.get('grid_position', {}).get('y', 0) }}"
-     data-grid-width="{{ block.metadata.get('grid_position', {}).get('width', 2) }}"
-     data-grid-height="{{ block.metadata.get('grid_position', {}).get('height', 2) }}"
-     style="
-         grid-column: {{ block.metadata.get('grid_position', {}).get('x', 1) }} / span {{ block.metadata.get('grid_position', {}).get('width', 2) }};
-         grid-row: {{ block.metadata.get('grid_position', {}).get('y', 1) }} / span {{ block.metadata.get('grid_position', {}).get('height', 2) }};
-     ">
+     gs-x="{{ block.metadata.get('grid_position', {}).get('x', 0) }}"
+     gs-y="{{ block.metadata.get('grid_position', {}).get('y', 0) }}"
+     gs-w="{{ block.metadata.get('grid_position', {}).get('width', 2) }}"
+     gs-h="{{ block.metadata.get('grid_position', {}).get('height', 2) }}">
     
     <!-- Block Controls (visible in edit mode) -->
     {% if editable %}
@@ -194,7 +190,7 @@
     {% endif %}
     
     <!-- Block Content -->
-    <div class="block-content">
+    <div class="grid-stack-item-content block-content">
         {% if block.type == 'nota' %}
             {% from 'personal_space/components/blocks/NoteBlock.html' import render_note_block %}
             {{ render_note_block(block, editable=false, draggable=false) }}
