@@ -34,65 +34,45 @@
                 </div>
                 <div class="col-md-6">
                     <div class="workspace-controls">
-            <!-- View Toggle -->
-            <div class="view-toggle">
-                <button type="button" 
-                        class="btn workspace-btn secondary active" 
-                        id="grid-view-btn"
-                        aria-label="Vista de cuadrícula">
-                    <i class="bi bi-grid-3x3-gap me-1"></i>
-                    Cuadrícula
-                </button>
-                <button type="button" 
-                        class="btn workspace-btn secondary" 
-                        id="list-view-btn"
-                        aria-label="Vista de lista">
-                    <i class="bi bi-list me-1"></i>
-                    Lista
-                </button>
-            </div>
-            
-            <!-- Workspace Actions -->
-            <div class="workspace-actions">
-                <button type="button" 
-                        class="btn workspace-btn secondary" 
-                        id="edit-mode-btn"
-                        aria-label="Alternar modo de edición">
-                    <i class="bi bi-pencil me-1"></i>
-                    Editar
-                </button>
+                        <!-- View Toggle -->
+                        <div class="view-toggle">
+                            <button type="button" 
+                                    class="btn workspace-btn secondary active" 
+                                    id="grid-view-btn"
+                                    aria-label="Vista de cuadrícula">
+                                <i class="bi bi-grid-3x3-gap me-1"></i>
+                                Cuadrícula
+                            </button>
+                            <button type="button" 
+                                    class="btn workspace-btn secondary" 
+                                    id="list-view-btn"
+                                    aria-label="Vista de lista">
+                                <i class="bi bi-list me-1"></i>
+                                Lista
+                            </button>
+                        </div>
+                        
+                        <!-- Workspace Actions -->
+                        <div class="workspace-actions">
+                            <button type="button" 
+                                    class="btn workspace-btn secondary" 
+                                    id="edit-mode-btn"
+                                    aria-label="Alternar modo de edición">
+                                <i class="bi bi-pencil me-1"></i>
+                                Editar
+                            </button>
                 
-                <button type="button" 
-                        class="btn workspace-btn" 
-                        id="new-block-btn"
-                        data-bs-toggle="modal" 
-                        data-bs-target="#block-factory-modal">
-                    <i class="bi bi-plus me-1"></i>
-                    Nuevo Bloque
-                </button>
-                
-                <div class="dropdown">
-                    <button class="btn workspace-btn secondary dropdown-toggle" 
-                            type="button" 
-                            data-bs-toggle="dropdown">
-                        <i class="bi bi-three-dots"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" id="save-workspace-btn">
-                            <i class="bi bi-save me-2"></i>Guardar Layout
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#template-gallery-modal">
-                            <i class="bi bi-collection me-2"></i>Cargar Plantilla
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#" id="reset-workspace-btn">
-                            <i class="bi bi-arrow-clockwise me-2"></i>Resetear
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" id="export-workspace-btn">
-                            <i class="bi bi-download me-2"></i>Exportar
-                        </a></li>
-                    </ul>
-                    </div>
+                             <button type="button" 
+                                     class="btn workspace-btn primary" 
+                                     id="new-block-btn"
+                                     data-bs-toggle="modal" 
+                                     data-bs-target="#block-factory-modal"
+                                     aria-label="Crear nuevo bloque">
+                                 <i class="bi bi-plus-lg me-1"></i>
+                                 Nuevo Bloque
+                             </button>
+                         </div>
+                     </div>
                 </div>
             </div>
         </div>

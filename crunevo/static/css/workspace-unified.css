@@ -1,8 +1,33 @@
 /* Workspace Unified Styles - Aligned with Personal Space Design */
-/* Import personal-space variables for consistency */
-@import url('personal-space.css');
+/* Variables imported from personal-space-optimized.css for consistency */
 
 :root {
+    /* Personal Space Variables - Core Theme Colors */
+    --ps-bg-primary: #ffffff;
+    --ps-bg-secondary: #f8fafc;
+    --ps-bg-tertiary: #f1f5f9;
+    --ps-bg-light: #ffffff;
+    --ps-bg-dark: #0f172a;
+    --ps-text-primary-light: #1e293b;
+    --ps-text-secondary-light: #475569;
+    --ps-text-muted-light: #64748b;
+    --ps-text-primary-dark: #ffffff;
+    --ps-text-secondary-dark: #cbd5e1;
+    --ps-text-muted-dark: #94a3b8;
+    --ps-border-light: #e2e8f0;
+    --ps-border-dark: #334155;
+    --ps-border-hover-light: #cbd5e1;
+    --ps-border-hover-dark: #475569;
+    --ps-card-bg-light: #ffffff;
+    --ps-card-bg-dark: #1e293b;
+    --ps-shadow-light: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --ps-shadow-dark: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+    --ps-indigo: #4f46e5;
+    --ps-indigo-light: #6366f1;
+    --ps-emerald: #10b981;
+    --ps-amber: #f59e0b;
+    --ps-rose: #f43f5e;
+    
     /* Workspace-specific variables that extend personal-space */
     --workspace-sidebar-width: 280px;
     --workspace-header-height: 80px;
@@ -238,18 +263,21 @@
     min-height: calc(100vh - 120px);
     gap: 1.5rem;
     padding: 1.5rem 2rem;
+    overflow: hidden;
 }
 
 /* Workspace Sidebar - Consistent with Dashboard Sidebar */
 .workspace-sidebar {
-    width: 300px;
-    background: var(--ps-bg-primary, #ffffff);
-    border: 1px solid var(--ps-border, #e2e8f0);
-    border-radius: 12px;
+    width: var(--workspace-sidebar-width);
+    background: var(--ps-card-bg-light);
+    border-right: 1px solid var(--ps-border-light);
     padding: 1.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    overflow-y: auto;
+    transition: var(--workspace-transition);
+    position: relative;
+    z-index: 10;
     flex-shrink: 0;
+    height: calc(100vh - var(--workspace-header-height));
 }
 
 @media (prefers-color-scheme: dark) {
@@ -440,6 +468,8 @@
 .workspace-area {
     flex: 1;
     min-height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .grid-container {
@@ -450,6 +480,9 @@
     min-height: 600px;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -834,6 +867,37 @@
 .block-action-btn:focus-visible {
     outline: 2px solid var(--ps-indigo, #4f46e5);
     outline-offset: 2px;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .workspace-container {
+    background: var(--ps-bg-dark);
+    color: var(--ps-text-primary-dark);
+}
+
+[data-theme="dark"] .workspace-header {
+    background: var(--ps-card-bg-dark);
+    border-color: var(--ps-border-dark);
+}
+
+[data-theme="dark"] .workspace-sidebar {
+    background: var(--ps-card-bg-dark);
+    border-color: var(--ps-border-dark);
+}
+
+[data-theme="dark"] .workspace-area {
+    background: var(--ps-bg-dark);
+}
+
+[data-theme="dark"] .workspace-btn {
+    background: var(--ps-card-bg-dark);
+    color: var(--ps-text-primary-dark);
+    border-color: var(--ps-border-dark);
+}
+
+[data-theme="dark"] .workspace-btn:hover {
+    background: var(--ps-border-dark);
+    border-color: var(--ps-border-hover-dark);
 }
 
 /* Reduced Motion Support */
