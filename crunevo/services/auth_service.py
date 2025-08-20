@@ -60,6 +60,7 @@ def finalize_login(user: User):
     except Exception as e:
         # Log the error but don't fail the login process
         import logging
+
         logging.error(f"Error in finalize_login: {e}")
         # Ensure user is still logged in even if activity recording fails
         if not current_user.is_authenticated:

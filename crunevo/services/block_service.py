@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Any
-from sqlalchemy import func, and_, or_
+from sqlalchemy import func, or_
 from crunevo.extensions import db
 from crunevo.models import PersonalSpaceBlock
 from crunevo.services.validation_service import ValidationService
@@ -16,10 +16,15 @@ class BlockService:
         # Validate input data
         validation_result = ValidationService.validate_block_data(block_data)
         if not validation_result["valid"]:
-            error_messages = [error.get('message', str(error)) if isinstance(error, dict) else str(error) for error in validation_result['errors']]
-            raise ValueError(
-                f"Validation errors: {', '.join(error_messages)}"
-            )
+            error_messages = [
+                (
+                    error.get("message", str(error))
+                    if isinstance(error, dict)
+                    else str(error)
+                )
+                for error in validation_result["errors"]
+            ]
+            raise ValueError(f"Validation errors: {', '.join(error_messages)}")
 
         cleaned_data = validation_result["cleaned_data"]
 
@@ -99,10 +104,15 @@ class BlockService:
 
         validation_result = ValidationService.validate_block_data(current_data)
         if not validation_result["valid"]:
-            error_messages = [error.get('message', str(error)) if isinstance(error, dict) else str(error) for error in validation_result['errors']]
-            raise ValueError(
-                f"Validation errors: {', '.join(error_messages)}"
-            )
+            error_messages = [
+                (
+                    error.get("message", str(error))
+                    if isinstance(error, dict)
+                    else str(error)
+                )
+                for error in validation_result["errors"]
+            ]
+            raise ValueError(f"Validation errors: {', '.join(error_messages)}")
 
         cleaned_data = validation_result["cleaned_data"]
 
@@ -154,23 +164,26 @@ class BlockService:
                 ).first()
                 if block is not None and idx is not None:
                     block.order_index = idx
-                    
+
                     # Save grid position data if provided
-                    if any(key in item for key in ['x', 'y', 'width', 'height']):
+                    if any(key in item for key in ["x", "y", "width", "height"]):
                         if block.metadata_json is None:
                             block.metadata_json = {}
-                        
-                        if 'grid_position' not in block.metadata_json:
-                            block.metadata_json['grid_position'] = {}
-                        
+
+                        if "grid_position" not in block.metadata_json:
+                            block.metadata_json["grid_position"] = {}
+
                         # Update grid position fields
-                        for field in ['x', 'y', 'width', 'height']:
+                        for field in ["x", "y", "width", "height"]:
                             if field in item:
-                                block.metadata_json['grid_position'][field] = item[field]
-                        
+                                block.metadata_json["grid_position"][field] = item[
+                                    field
+                                ]
+
                         # Mark as modified for SQLAlchemy
                         from sqlalchemy.orm.attributes import flag_modified
-                        flag_modified(block, 'metadata_json')
+
+                        flag_modified(block, "metadata_json")
 
             db.session.commit()
             CacheInvalidator.on_block_change(user_id)
@@ -199,23 +212,27 @@ class BlockService:
         return query.order_by(PersonalSpaceBlock.order_index.asc()).all()
 
     @staticmethod
-    def search_blocks(user_id: int, search_term: str) -> List[PersonalSpaceBlock]:
-        """Search blocks by title and content."""
+    def search_blocks(
+        user_id: int,
+        search_term: str,
+        status: str = "active",
+        block_type: Optional[str] = None,
+    ) -> List[PersonalSpaceBlock]:
+        """Search blocks by title and content with optional filters."""
         search_pattern = f"%{search_term}%"
-        return (
-            PersonalSpaceBlock.query.filter(
-                and_(
-                    PersonalSpaceBlock.user_id == user_id,
-                    PersonalSpaceBlock.status == "active",
-                    or_(
-                        PersonalSpaceBlock.title.ilike(search_pattern),
-                        PersonalSpaceBlock.content.ilike(search_pattern),
-                    ),
-                )
-            )
-            .order_by(PersonalSpaceBlock.updated_at.desc())
-            .all()
+        query = PersonalSpaceBlock.query.filter(
+            PersonalSpaceBlock.user_id == user_id,
+            PersonalSpaceBlock.status == status,
+            or_(
+                PersonalSpaceBlock.title.ilike(search_pattern),
+                PersonalSpaceBlock.content.ilike(search_pattern),
+            ),
         )
+
+        if block_type:
+            query = query.filter(PersonalSpaceBlock.type == block_type)
+
+        return query.order_by(PersonalSpaceBlock.updated_at.desc()).all()
 
     @staticmethod
     def duplicate_block(block_id: str, user_id: int) -> Optional[PersonalSpaceBlock]:
