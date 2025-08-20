@@ -26,6 +26,10 @@ window.WorkspaceManager = {
      * Initialize the workspace manager
      */
     init: function() {
+        if (this.initialized) return;
+        const container = document.getElementById('workspace-container');
+        if (!container) return;
+        this.initialized = true;
         this.initializeGrid();
         this.bindEvents();
         this.loadWorkspaceData();
@@ -39,9 +43,8 @@ window.WorkspaceManager = {
      */
     initializeGrid: function() {
         // Check if grid container exists
-        const gridContainer = document.querySelector('.grid-stack');
+        const gridContainer = document.querySelector('#blocks-grid .grid-stack');
         if (!gridContainer) {
-            console.warn('GridStack container not found. Skipping grid initialization.');
             return;
         }
         
@@ -341,13 +344,17 @@ window.WorkspaceManager = {
      */
     loadWorkspaceData: async function() {
         try {
-            const response = await fetch('/api/personal-space/blocks');
+            const fetchFn = window.csrfFetch || window.fetch.bind(window);
+            if (!window.csrfFetch) {
+                console.warn('csrfFetch not defined, using fetch');
+            }
+            const response = await fetchFn('/api/personal-space/blocks');
             if (response.ok) {
                 const data = await response.json();
                 this.renderWorkspaceBlocks(data.blocks);
             }
         } catch (error) {
-            console.error('Error loading workspace data:', error);
+            console.warn('Error loading workspace data:', error);
         }
     },
     
@@ -480,11 +487,13 @@ window.WorkspaceManager = {
     updateEditModeUI: function() {
         const container = document.getElementById('workspace-container');
         const btn = document.getElementById('edit-mode-btn');
-        
+        const sidebar = document.getElementById('workspace-sidebar');
+        const hasBlocks = document.querySelector('#blocks-grid .grid-stack-item');
+
         if (container) {
             container.classList.toggle('edit-mode', this.isEditMode);
         }
-        
+
         if (btn) {
             if (this.isEditMode) {
                 btn.innerHTML = '<i class="bi bi-check me-1"></i>Finalizar';
@@ -493,6 +502,10 @@ window.WorkspaceManager = {
                 btn.innerHTML = '<i class="bi bi-pencil me-1"></i>Editar';
                 btn.classList.add('secondary');
             }
+        }
+
+        if (sidebar) {
+            sidebar.style.display = this.isEditMode && hasBlocks ? '' : 'none';
         }
     },
     
@@ -774,12 +787,10 @@ window.deleteBlock = function(blockId) {
 };
 
 // Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Personal Space core functionality
+document.addEventListener('DOMContentLoaded', () => {
+    if (!document.getElementById('workspace-container')) return;
     if (window.initPersonalSpace) {
         window.initPersonalSpace();
     }
-    
-    // Initialize Unified Workspace Manager
     window.WorkspaceManager.init();
 });
