@@ -15,64 +15,63 @@ from crunevo.extensions import db
 from crunevo.models import User, PersonalSpaceBlock
 from crunevo.services.block_service import BlockService
 from crunevo.services.validation_service import ValidationService
-from flask import Flask
+
 
 def test_block_creation_direct():
     """Prueba la creación de bloques directamente con el backend"""
     print("🧪 PRUEBA DIRECTA DE CREACIÓN DE BLOQUES")
     print("=" * 50)
-    
+
     # Crear la aplicación Flask
     app = create_app()
-    
+
     with app.app_context():
         try:
             # 1. Verificar o crear usuario de prueba
             print("👤 Verificando usuario de prueba...")
-            test_user = User.query.filter_by(email='test@crunevo.com').first()
-            
+            test_user = User.query.filter_by(email="test@crunevo.com").first()
+
             if not test_user:
                 print("📝 Creando usuario de prueba...")
                 test_user = User(
-                    username='testuser',
-                    email='test@crunevo.com',
-                    password_hash='test_hash',  # En producción usar hash real
-                    activated=True
+                    username="testuser",
+                    email="test@crunevo.com",
+                    password_hash="test_hash",  # En producción usar hash real
+                    activated=True,
                 )
                 db.session.add(test_user)
                 db.session.commit()
                 print(f"✅ Usuario creado: {test_user.username} (ID: {test_user.id})")
             else:
-                print(f"✅ Usuario encontrado: {test_user.username} (ID: {test_user.id})")
-            
+                print(
+                    f"✅ Usuario encontrado: {test_user.username} (ID: {test_user.id})"
+                )
+
             # 2. Probar ValidationService
             print("\n🔍 Probando ValidationService...")
             test_data = {
                 "type": "nota",
                 "title": "Nota de prueba",
                 "content": "Contenido de prueba",
-                "metadata": {
-                    "color": "blue",
-                    "priority": "medium"
-                }
+                "metadata": {"color": "blue", "priority": "medium"},
             }
-            
+
             validation_result = ValidationService.validate_block_data(test_data)
             print(f"Validación: {validation_result}")
-            
-            if not validation_result['valid']:
+
+            if not validation_result["valid"]:
                 print(f"❌ Error de validación: {validation_result['errors']}")
                 return False
-            
+
             print("✅ Datos válidos")
-            
+
             # 3. Probar BlockService
             print("\n🔧 Probando BlockService...")
-            
+
             # Crear bloque
             block = BlockService.create_block(test_user.id, test_data)
             print(f"✅ Bloque creado: {block.id} - {block.title}")
-            
+
             # Verificar que se guardó en la base de datos
             saved_block = PersonalSpaceBlock.query.filter_by(id=block.id).first()
             if saved_block:
@@ -80,21 +79,23 @@ def test_block_creation_direct():
             else:
                 print("❌ Bloque no encontrado en BD")
                 return False
-            
+
             # 4. Probar actualización
             print("\n📝 Probando actualización...")
             update_data = {
                 "title": "Nota actualizada",
-                "content": "Contenido actualizado"
+                "content": "Contenido actualizado",
             }
-            
-            updated_block = BlockService.update_block(block.id, test_user.id, update_data)
+
+            updated_block = BlockService.update_block(
+                block.id, test_user.id, update_data
+            )
             if updated_block:
                 print(f"✅ Bloque actualizado: {updated_block.title}")
             else:
                 print("❌ Error al actualizar bloque")
                 return False
-            
+
             # 5. Probar eliminación
             print("\n🗑️ Probando eliminación...")
             success = BlockService.delete_block(block.id, test_user.id)
@@ -103,15 +104,17 @@ def test_block_creation_direct():
             else:
                 print("❌ Error al eliminar bloque")
                 return False
-            
+
             # 6. Verificar eliminación
-            deleted_block = PersonalSpaceBlock.query.filter_by(id=block.id, status='active').first()
+            deleted_block = PersonalSpaceBlock.query.filter_by(
+                id=block.id, status="active"
+            ).first()
             if not deleted_block:
                 print("✅ Eliminación verificada")
             else:
                 print("❌ El bloque aún existe como activo")
                 return False
-            
+
             print("\n🎉 ¡TODAS LAS PRUEBAS PASARON!")
             print("\n✅ El backend funciona correctamente")
             print("\n🔍 El problema debe estar en:")
@@ -119,22 +122,24 @@ def test_block_creation_direct():
             print("   2. CSRF token (no se envía correctamente)")
             print("   3. Frontend JavaScript (errores en el código)")
             print("   4. Configuración de sesiones Flask")
-            
+
             return True
-            
+
         except Exception as e:
             print(f"❌ Error durante las pruebas: {e}")
             import traceback
+
             traceback.print_exc()
             return False
+
 
 def test_api_endpoint_simulation():
     """Simula exactamente lo que hace el endpoint de la API"""
     print("\n🌐 SIMULACIÓN DEL ENDPOINT API")
     print("=" * 40)
-    
+
     app = create_app()
-    
+
     with app.app_context():
         try:
             # Simular request data
@@ -143,23 +148,25 @@ def test_api_endpoint_simulation():
                 "title": "Nueva nota",
                 "description": "Contenido de prueba",
                 "category": "personal",
-                "priority": "medium"
+                "priority": "medium",
             }
-            
+
             print(f"📥 Datos de entrada: {request_data}")
-            
+
             # Obtener usuario de prueba
-            test_user = User.query.filter_by(email='test@crunevo.com').first()
+            test_user = User.query.filter_by(email="test@crunevo.com").first()
             if not test_user:
                 print("❌ Usuario de prueba no encontrado")
                 return False
-            
+
             print(f"👤 Usuario: {test_user.username}")
-            
+
             # Procesar datos como lo hace el endpoint
             processed_data = {
                 "type": request_data.get("type"),
-                "title": request_data.get("title", f"Nuevo {request_data.get('type', 'bloque')}"),
+                "title": request_data.get(
+                    "title", f"Nuevo {request_data.get('type', 'bloque')}"
+                ),
                 "content": request_data.get("description", ""),
                 "metadata": {
                     "category": request_data.get("category", "personal"),
@@ -175,46 +182,47 @@ def test_api_endpoint_simulation():
                     "notifications": request_data.get("notifications", False),
                     "collaborative": request_data.get("collaborative", False),
                     "public_view": request_data.get("public_view", False),
-                    "type_specific_config": request_data.get("type_specific_config", {})
-                }
+                    "type_specific_config": request_data.get(
+                        "type_specific_config", {}
+                    ),
+                },
             }
-            
+
             print(f"🔄 Datos procesados: {processed_data}")
-            
+
             # Crear bloque
             block = BlockService.create_block(test_user.id, processed_data)
-            
+
             # Simular respuesta JSON
-            response = {
-                "success": True,
-                "block": block.to_dict()
-            }
-            
+            response = {"success": True, "block": block.to_dict()}
+
             print(f"📤 Respuesta simulada: {response}")
             print("\n✅ Simulación del endpoint exitosa")
-            
+
             # Limpiar
             BlockService.delete_block(block.id, test_user.id)
-            
+
             return True
-            
+
         except Exception as e:
             print(f"❌ Error en simulación: {e}")
             import traceback
+
             traceback.print_exc()
             return False
 
+
 if __name__ == "__main__":
     print("DIAGNÓSTICO COMPLETO DEL SISTEMA DE BLOQUES\n")
-    
+
     # Ejecutar pruebas
     backend_ok = test_block_creation_direct()
     api_ok = test_api_endpoint_simulation()
-    
+
     print("\n" + "=" * 60)
     print("RESUMEN FINAL")
     print("=" * 60)
-    
+
     if backend_ok and api_ok:
         print("\n✅ EL BACKEND FUNCIONA PERFECTAMENTE")
         print("\n🔍 EL PROBLEMA ESTÁ EN EL FRONTEND:")
