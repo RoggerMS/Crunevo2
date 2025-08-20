@@ -473,12 +473,17 @@ def list_blocks():
         status = request.args.get("status", "active")
         search = request.args.get("search")
 
-        blocks = BlockService.get_user_blocks(
-            user_id=current_user.id, block_type=block_type, status=status
-        )
-
         if search:
-            blocks = BlockService.search_blocks(current_user.id, search)
+            blocks = BlockService.search_blocks(
+                current_user.id,
+                search,
+                status=status,
+                block_type=block_type,
+            )
+        else:
+            blocks = BlockService.get_user_blocks(
+                user_id=current_user.id, block_type=block_type, status=status
+            )
 
         return jsonify(
             {"success": True, "blocks": [block.to_dict() for block in blocks]}
