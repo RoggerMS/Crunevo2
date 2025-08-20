@@ -125,9 +125,7 @@ def timesince(dt):
     """Return human readable delta from now in Spanish."""
     if not dt:
         return ""
-    now = datetime.utcnow()
-    if dt.tzinfo is not None:
-        now = now.replace(tzinfo=dt.tzinfo)
+    now = datetime.now(tz=dt.tzinfo) if dt.tzinfo else datetime.utcnow()
     delta = now - dt
     seconds = int(delta.total_seconds())
     if seconds < 60:

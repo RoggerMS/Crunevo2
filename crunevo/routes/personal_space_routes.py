@@ -28,22 +28,32 @@ _TEMPLATE_FAVORITES: set[tuple[int, str]] = set()
 def _parse_block_payload(payload: dict) -> dict:
     # Handle different payload formats from frontend
     block_type = payload.get("block_type") or payload.get("type")
-    config = payload.get("config") or payload.get("config_json") or payload.get("metadata") or {}
-    
+    config = (
+        payload.get("config")
+        or payload.get("config_json")
+        or payload.get("metadata")
+        or {}
+    )
+
     # Ensure config is a dictionary
     if isinstance(config, str):
         try:
             import json
+
             config = json.loads(config)
         except (json.JSONDecodeError, ValueError):
             config = {"raw_config": config}
     elif not isinstance(config, dict):
         config = {}
-    
+
     return {
         "block_type": block_type,
         "template_id": payload.get("template_id") or payload.get("templateId"),
-        "title": payload.get("title") or f"Nuevo {block_type}" if block_type else "Nuevo bloque",
+        "title": (
+            payload.get("title") or f"Nuevo {block_type}"
+            if block_type
+            else "Nuevo bloque"
+        ),
         "config": config,
         "is_featured": payload.get("is_featured", False),
     }
@@ -63,10 +73,11 @@ def create_personal_space_block(
     elif config and isinstance(config, str):
         try:
             import json
+
             metadata = json.loads(config)
         except (json.JSONDecodeError, ValueError):
             metadata = {"raw_config": config}
-    
+
     data = {
         "type": block_type,
         "title": title or f"Nuevo {block_type}",
@@ -144,27 +155,29 @@ def dashboard():
     # Get comprehensive analytics data
     stats = AnalyticsService.get_productivity_metrics(current_user.id)
     dashboard_metrics = AnalyticsService.get_dashboard_metrics(current_user.id)
-    
+
     # Extract task metrics
     task_completion = stats.get("task_completion", {})
     completed_tasks_today = task_completion.get("completed_tasks", 0)
     pending_tasks_count = task_completion.get("total_tasks", 0) - completed_tasks_today
     task_completion_trend = task_completion.get("completion_rate", 0)
-    
+
     # Extract objective metrics
     objective_progress = stats.get("objective_progress", {})
     active_objectives = objective_progress.get("total_objectives", 0)
     objective_progress_avg = objective_progress.get("average_progress", 0)
-    
+
     # Calculate productive hours based on weekly activity
     weekly_activity = stats.get("weekly_activity", [])
-    productive_hours_today = len([day for day in weekly_activity if day.get("blocks_updated", 0) > 0]) * 1.5
-    
+    productive_hours_today = (
+        len([day for day in weekly_activity if day.get("blocks_updated", 0) > 0]) * 1.5
+    )
+
     # Get productivity score and trends
     productivity_score = dashboard_metrics.get("productivity_score", 0)
     trends = dashboard_metrics.get("trends", {})
     productivity_trend = trends.get("productivity_trend", 0)
-    
+
     # Calculate focus score based on recent activity and completion rate
     focus_score = min(productivity_score + task_completion_trend, 100)
     focus_trend = trends.get("blocks_trend", 0)
@@ -308,17 +321,13 @@ def analytics_dashboard():
                 productivity_trend=productivity.get("productivity_trends", {}).get(
                     "tasks", []
                 ),
-                time_trend=productivity.get("productivity_trends", {}).get(
-                    "time", []
-                ),
+                time_trend=productivity.get("productivity_trends", {}).get("time", []),
                 focus_trend=productivity.get("productivity_trends", {}).get(
                     "focus", []
                 ),
             )
         except Exception as exc:  # pragma: no cover
-            current_app.logger.error(
-                "Error loading analytics dashboard: %s", exc
-            )
+            current_app.logger.error("Error loading analytics dashboard: %s", exc)
             analytics_data = None
     return render_template(
         "personal_space/analytics_dashboard.html", analytics_data=analytics_data
@@ -379,44 +388,51 @@ def get_real_stats():
                 "productive_hours": 0,
                 "completed_tasks_today": 0,
                 "active_projects": 0,
-                "success": True
+                "success": True,
             }
         )
     try:
         # Get comprehensive analytics data
-        dashboard_metrics = AnalyticsService.get_dashboard_metrics(current_user.id)
-        productivity_metrics = AnalyticsService.get_productivity_metrics(current_user.id)
-        
+        AnalyticsService.get_dashboard_metrics(current_user.id)
+        productivity_metrics = AnalyticsService.get_productivity_metrics(
+            current_user.id
+        )
+
         # Extract task metrics
         task_completion = productivity_metrics.get("task_completion", {})
         total_tasks = task_completion.get("total_tasks", 0)
         completed_tasks_today = task_completion.get("completed_tasks", 0)
-        
+
         # Extract objective metrics
         objective_progress = productivity_metrics.get("objective_progress", {})
         total_objectives = objective_progress.get("total_objectives", 0)
-        
+
         # Calculate productive hours based on weekly activity
         weekly_activity = productivity_metrics.get("weekly_activity", [])
-        productive_hours = len([day for day in weekly_activity if day.get("blocks_updated", 0) > 0]) * 1.5
-        
+        productive_hours = (
+            len([day for day in weekly_activity if day.get("blocks_updated", 0) > 0])
+            * 1.5
+        )
+
         # Count active projects (blocks with type 'proyecto' or similar)
-        active_projects = len(BlockService.get_user_blocks(
-            user_id=current_user.id, 
-            status="active", 
-            block_type="proyecto"
-        ))
-        
+        active_projects = len(
+            BlockService.get_user_blocks(
+                user_id=current_user.id, status="active", block_type="proyecto"
+            )
+        )
+
         # If no specific project blocks, count unique categories from metadata
         if active_projects == 0:
-            all_blocks = BlockService.get_user_blocks(user_id=current_user.id, status="active")
+            all_blocks = BlockService.get_user_blocks(
+                user_id=current_user.id, status="active"
+            )
             categories = set()
             for block in all_blocks:
                 metadata = block.get_metadata()
                 if metadata.get("category"):
                     categories.add(metadata["category"])
             active_projects = len(categories) or 1  # At least 1 if there are any blocks
-        
+
         return jsonify(
             {
                 "total_tasks": int(total_tasks),
@@ -424,20 +440,25 @@ def get_real_stats():
                 "productive_hours": int(productive_hours),
                 "completed_tasks_today": int(completed_tasks_today),
                 "active_projects": int(active_projects),
-                "success": True
+                "success": True,
             }
         )
     except Exception as e:
         current_app.logger.error("Error getting personal space stats: %s", e)
-        return jsonify({
-            "total_tasks": 0,
-            "total_objectives": 0,
-            "productive_hours": 0,
-            "completed_tasks_today": 0,
-            "active_projects": 0,
-            "success": False,
-            "error": str(e)
-        }), 500
+        return (
+            jsonify(
+                {
+                    "total_tasks": 0,
+                    "total_objectives": 0,
+                    "productive_hours": 0,
+                    "completed_tasks_today": 0,
+                    "active_projects": 0,
+                    "success": False,
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
 
 
 @personal_space_api_bp.route("/blocks", methods=["GET"])
@@ -489,28 +510,33 @@ def create_block():
                 ),
                 400,
             )
-        
+
         # Create block using BlockService for better error handling
         block_data = {
             "type": data["block_type"],
             "title": data.get("title", f"Nuevo {data['block_type']}"),
             "content": "",
             "metadata": data.get("config", {}),
-            "is_featured": data.get("is_featured", False)
+            "is_featured": data.get("is_featured", False),
         }
-        
+
         block = BlockService.create_block(current_user.id, block_data)
-        
+
         # Ensure proper JSON serialization
         block_dict = block.to_dict()
-        
+
         return jsonify({"ok": True, "success": True, "block": block_dict}), 201
     except ValueError as e:
         current_app.logger.error("Validation error creating block: %s", e)
         return jsonify({"ok": False, "success": False, "error": str(e)}), 400
     except Exception as e:
         current_app.logger.error("Error creating personal space block: %s", e)
-        return jsonify({"ok": False, "success": False, "error": "Error interno del servidor"}), 500
+        return (
+            jsonify(
+                {"ok": False, "success": False, "error": "Error interno del servidor"}
+            ),
+            500,
+        )
 
 
 @personal_space_api_bp.route("/blocks/<string:block_id>", methods=["GET"])
@@ -611,22 +637,25 @@ def update_block_position(block_id):
         return jsonify({"success": False, "error": "Personal space unavailable"}), 503
     try:
         data = request.get_json() or {}
-        
+
         # Build block order data with all provided fields
         block_data = {"id": block_id}
-        
+
         # Add order_index if provided
         if "order_index" in data:
             block_data["order_index"] = data["order_index"]
-        
+
         # Add grid position data if provided
         for field in ["x", "y", "width", "height"]:
             if field in data:
                 block_data[field] = data[field]
-        
+
         # Ensure we have at least one field to update
         if len(block_data) == 1:  # Only has 'id'
-            return jsonify({"success": False, "error": "Position or grid data required"}), 400
+            return (
+                jsonify({"success": False, "error": "Position or grid data required"}),
+                400,
+            )
 
         block_orders = [block_data]
         BlockService.reorder_blocks(current_user.id, block_orders)
@@ -678,25 +707,29 @@ def list_templates():
         return jsonify({"ok": True, "success": True, "templates": []}), 200
     try:
         # Handle public parameter from query string
-        public_only = request.args.get('public', 'false').lower() == 'true'
-        category = request.args.get('category')
-        
+        public_only = request.args.get("public", "false").lower() == "true"
+        category = request.args.get("category")
+
         if public_only:
             # Get only public templates
-            items = TemplateService.get_templates(user_id=current_user.id, category=category, include_public=True)
+            items = TemplateService.get_templates(
+                user_id=current_user.id, category=category, include_public=True
+            )
             # Filter to only public templates
             items = [t for t in items if t.is_public]
         else:
             # Get user's templates and public templates
-            items = TemplateService.get_templates(user_id=current_user.id, category=category, include_public=True)
-        
+            items = TemplateService.get_templates(
+                user_id=current_user.id, category=category, include_public=True
+            )
+
         # Add default templates if no user templates exist
         if not items:
             default_templates = TemplateService.get_default_templates()
             return jsonify(
                 {"ok": True, "success": True, "templates": default_templates}
             )
-        
+
         return jsonify(
             {"ok": True, "success": True, "templates": [t.to_dict() for t in items]}
         )
@@ -1237,15 +1270,23 @@ def save_quick_note():
         content = data.get("content", "").strip()
         tags = data.get("tags", [])
         show_on_login = bool(data.get("show_on_login"))
-        
+
         # Validate content length
         if len(content) > 5000:
-            return jsonify({"success": False, "error": "Content too long (max 5000 characters)"}), 400
-        
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "error": "Content too long (max 5000 characters)",
+                    }
+                ),
+                400,
+            )
+
         # Validate tags
         if not isinstance(tags, list):
             tags = []
-        
+
         # Clean and validate tags
         cleaned_tags = []
         for tag in tags[:10]:  # Limit to 10 tags
@@ -1253,11 +1294,12 @@ def save_quick_note():
                 cleaned_tag = tag.strip()[:50]  # Limit tag length
                 if cleaned_tag not in cleaned_tags:
                     cleaned_tags.append(cleaned_tag)
-        
+
         # Create quick note record
         from crunevo.database import get_db
+
         db = get_db()
-        
+
         # Insert quick note
         cursor = db.cursor()
         cursor.execute(
@@ -1265,7 +1307,7 @@ def save_quick_note():
             INSERT INTO quick_notes (user_id, content, tags, created_at)
             VALUES (?, ?, ?, datetime('now'))
             """,
-            (current_user.id, content, json.dumps(cleaned_tags))
+            (current_user.id, content, json.dumps(cleaned_tags)),
         )
 
         note_id = cursor.lastrowid
@@ -1274,7 +1316,7 @@ def save_quick_note():
         if "show_on_login" in data:
             cursor.execute(
                 "SELECT preferences FROM user_preferences WHERE user_id = ?",
-                (current_user.id,)
+                (current_user.id,),
             )
             result = cursor.fetchone()
             if result and result[0]:
@@ -1289,7 +1331,7 @@ def save_quick_note():
                     SET preferences = ?, updated_at = datetime('now')
                     WHERE user_id = ?
                     """,
-                    (json.dumps(prefs), current_user.id)
+                    (json.dumps(prefs), current_user.id),
                 )
             else:
                 cursor.execute(
@@ -1297,18 +1339,15 @@ def save_quick_note():
                     INSERT INTO user_preferences (user_id, preferences, created_at, updated_at)
                     VALUES (?, ?, datetime('now'), datetime('now'))
                     """,
-                    (current_user.id, json.dumps(prefs))
+                    (current_user.id, json.dumps(prefs)),
                 )
 
         db.commit()
 
         current_app.logger.info(f"Quick note saved for user {current_user.id}")
 
-        return jsonify({
-            "ok": True,
-            "note_id": note_id
-        })
-        
+        return jsonify({"ok": True, "note_id": note_id})
+
     except Exception as e:
         current_app.logger.error(f"Error saving quick note: {e}")
         return jsonify({"ok": False, "error": "Error al guardar la nota"}), 500
@@ -1321,30 +1360,34 @@ def get_latest_quick_note():
     """Get the latest quick note for the user."""
     try:
         from crunevo.database import get_db
+
         db = get_db()
-        
+
         cursor = db.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT id, content, tags, created_at
             FROM quick_notes
             WHERE user_id = ?
             ORDER BY created_at DESC
             LIMIT 1
-        """, (current_user.id,))
-        
+        """,
+            (current_user.id,),
+        )
+
         note = cursor.fetchone()
-        
+
         if note:
             note_data = {
                 "id": note[0],
                 "content": note[1],
                 "tags": json.loads(note[2]) if note[2] else [],
-                "created_at": note[3]
+                "created_at": note[3],
             }
             return jsonify({"ok": True, "note": note_data})
         else:
             return jsonify({"ok": True, "note": None})
-            
+
     except Exception as e:
         current_app.logger.error(f"Error getting latest quick note: {e}")
         return jsonify({"ok": False, "error": "Error al obtener la nota"}), 500
@@ -1357,31 +1400,35 @@ def get_user_preferences():
     """Get user preferences."""
     try:
         from crunevo.database import get_db
+
         db = get_db()
-        
+
         cursor = db.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT preferences
             FROM user_preferences
             WHERE user_id = ?
-        """, (current_user.id,))
-        
+        """,
+            (current_user.id,),
+        )
+
         result = cursor.fetchone()
-        
+
         if result and result[0]:
             preferences = json.loads(result[0])
         else:
             # Default preferences
-            preferences = {
-                "show_quick_note_on_login": False,
-                "analytics_enabled": True
-            }
-        
+            preferences = {"show_quick_note_on_login": False, "analytics_enabled": True}
+
         return jsonify({"success": True, "preferences": preferences})
-        
+
     except Exception as e:
         current_app.logger.error(f"Error getting user preferences: {e}")
-        return jsonify({"success": False, "error": "Error al obtener preferencias"}), 500
+        return (
+            jsonify({"success": False, "error": "Error al obtener preferencias"}),
+            500,
+        )
 
 
 @personal_space_api_bp.route("/user-preferences", methods=["PATCH"])
@@ -1391,54 +1438,69 @@ def update_user_preferences():
     """Update user preferences."""
     try:
         data = request.get_json() or {}
-        
+
         from crunevo.database import get_db
+
         db = get_db()
-        
+
         # Get current preferences
         cursor = db.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT preferences
             FROM user_preferences
             WHERE user_id = ?
-        """, (current_user.id,))
-        
+        """,
+            (current_user.id,),
+        )
+
         result = cursor.fetchone()
-        
+
         if result and result[0]:
             current_preferences = json.loads(result[0])
         else:
             current_preferences = {
                 "show_quick_note_on_login": False,
-                "analytics_enabled": True
+                "analytics_enabled": True,
             }
-        
+
         # Update with new data
         current_preferences.update(data)
-        
+
         # Save updated preferences
         if result:
-            cursor.execute("""
+            cursor.execute(
+                """
                 UPDATE user_preferences
                 SET preferences = ?, updated_at = datetime('now')
                 WHERE user_id = ?
-            """, (json.dumps(current_preferences), current_user.id))
+            """,
+                (json.dumps(current_preferences), current_user.id),
+            )
         else:
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT INTO user_preferences (user_id, preferences, created_at, updated_at)
                 VALUES (?, ?, datetime('now'), datetime('now'))
-            """, (current_user.id, json.dumps(current_preferences)))
-        
+            """,
+                (current_user.id, json.dumps(current_preferences)),
+            )
+
         db.commit()
-        
+
         current_app.logger.info(f"User preferences updated for user {current_user.id}")
-        
-        return jsonify({
-            "success": True,
-            "message": "Preferencias actualizadas",
-            "preferences": current_preferences
-        })
-        
+
+        return jsonify(
+            {
+                "success": True,
+                "message": "Preferencias actualizadas",
+                "preferences": current_preferences,
+            }
+        )
+
     except Exception as e:
         current_app.logger.error(f"Error updating user preferences: {e}")
-        return jsonify({"success": False, "error": "Error al actualizar preferencias"}), 500
+        return (
+            jsonify({"success": False, "error": "Error al actualizar preferencias"}),
+            500,
+        )
