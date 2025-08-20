@@ -36,16 +36,19 @@
 
 /* Workspace Container - Unified with Dashboard */
 .workspace-container {
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
-    background: linear-gradient(135deg, var(--ps-bg-light) 0%, #f1f5f9 100%);
+    overflow: hidden;
+    background-color: #fff;
     color: var(--ps-text-primary-light);
     transition: var(--workspace-transition);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 [data-bs-theme="dark"] .workspace-container {
-    background: linear-gradient(135deg, #1e293b 0%, var(--ps-bg-dark) 100%);
-    color: var(--ps-text-primary-dark);
+    background-color: #fff;
+    color: var(--ps-text-primary-light);
 }
 
 /* Workspace Header - Unified with Personal Space */
@@ -260,16 +263,19 @@
 /* Workspace Main Layout */
 .workspace-main {
     display: flex;
-    min-height: calc(100vh - 120px);
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
     gap: 1.5rem;
     padding: 1.5rem 2rem;
     overflow: hidden;
+    background-color: #fff;
 }
 
 /* Workspace Sidebar - Consistent with Dashboard Sidebar */
 .workspace-sidebar {
     width: var(--workspace-sidebar-width);
-    background: var(--ps-card-bg-light);
+    background: #fff;
     border-right: 1px solid var(--ps-border-light);
     padding: 1.5rem;
     overflow-y: auto;
@@ -469,10 +475,19 @@
 
 /* Workspace Area - Grid Container */
 .workspace-area {
-    flex: 1;
-    min-height: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
     display: flex;
     flex-direction: column;
+    overflow: auto;
+    background-color: #fff;
+}
+
+[data-bs-theme="dark"] .workspace-main,
+[data-bs-theme="dark"] .workspace-area,
+[data-bs-theme="dark"] #workspace-sidebar {
+    background-color: #fff;
+    color: var(--ps-text-primary-light);
 }
 
 .grid-container {

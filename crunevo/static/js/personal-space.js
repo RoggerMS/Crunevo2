@@ -118,7 +118,7 @@ function initializeFocusMode() {
 }
 
 function initializeSortable() {
-    const grid = document.getElementById('blocksGrid');
+    const grid = document.getElementById('blocks-grid');
     if (!grid) return;
 
     sortableInstance = Sortable.create(grid, {
@@ -203,7 +203,7 @@ function initializeEventListeners() {
         });
 
         // Centralized block interaction delegation with improved handling
-        const grid = document.getElementById('blocksGrid');
+        const grid = document.getElementById('blocks-grid');
         if (grid && !grid.dataset.bound) {
             grid.addEventListener('click', handleBlockInteractions);
             grid.addEventListener('dblclick', handleBlockInteractions);
@@ -232,13 +232,20 @@ function initializeAutoSave() {
 
 // Block Management Functions
 function loadBlocks() {
-    // Show loading state
-    const grid = document.getElementById('blocksGrid');
-    if (grid) {
-        grid.innerHTML = '<div class="text-center p-4"><div class="spinner-border" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
+    const grid = document.getElementById('blocks-grid');
+    if (!grid) {
+        console.warn('Blocks grid not found');
+        return;
     }
-    
-    csrfFetch('/api/personal-space/blocks')
+
+    grid.innerHTML = '<div class="text-center p-4"><div class="spinner-border" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
+
+    const fetchFn = window.csrfFetch || window.fetch.bind(window);
+    if (!window.csrfFetch) {
+        console.warn('csrfFetch not defined, using fetch');
+    }
+
+    fetchFn('/api/personal-space/blocks')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -253,29 +260,15 @@ function loadBlocks() {
             }
         })
         .catch(error => {
-            console.error('Error loading blocks:', error);
-            showNotification('Error al cargar los bloques: ' + error.message, 'error');
-            
-            // Show error state
-            if (grid) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">
-                            <i class="bi bi-exclamation-triangle"></i>
-                        </div>
-                        <h3>Error al cargar bloques</h3>
-                        <p>No se pudieron cargar los bloques. Intenta recargar la página.</p>
-                        <button class="modern-btn modern-btn-primary" onclick="loadBlocks()">Reintentar</button>
-                    </div>
-                `;
-            }
+            console.warn('Error loading blocks:', error);
+            renderEmptyState(grid);
         });
 }
 
 function renderBlocks(blocks) {
-    const grid = document.getElementById('blocksGrid');
+    const grid = document.getElementById('blocks-grid');
     if (!grid) {
-        console.error('Blocks grid not found');
+        console.warn('Blocks grid not found');
         return;
     }
 
@@ -677,7 +670,7 @@ function createNewBlock(type) {
                 if (blockElement) {
                     blockElement.classList.add('new-block');
 
-                    const grid = document.getElementById('blocksGrid');
+                    const grid = document.getElementById('blocks-grid');
                     if (grid) {
                         const emptyState = grid.querySelector('.empty-state');
                         if (emptyState) {
@@ -1136,7 +1129,7 @@ function updateBlockInUI(blockData) {
 }
 
 function addBlockToUI(blockData) {
-    const grid = document.getElementById('blocksGrid');
+    const grid = document.getElementById('blocks-grid');
     if (!grid) return;
     const block = convertBlock(blockData);
     const element = createBlockElement(block);
@@ -1173,7 +1166,7 @@ function deleteBlock(blockId) {
                     blockCard.remove();
 
                     // Show empty state if no blocks left
-                    const grid = document.getElementById('blocksGrid');
+                    const grid = document.getElementById('blocks-grid');
                     if (grid.children.length === 0) {
                         grid.innerHTML = `
                             <div class="empty-state">
@@ -2077,7 +2070,7 @@ function saveQuickNote() {
                 // Add to grid
                 const blockElement = createBlockElement(data.block);
                 if (blockElement) {
-                    const grid = document.getElementById('blocksGrid');
+                    const grid = document.getElementById('blocks-grid');
                     if (grid) {
                         const emptyState = grid.querySelector('.empty-state');
                         if (emptyState) emptyState.remove();
@@ -2183,13 +2176,13 @@ function initializeQuickNotesIntegration() {
 
 // Improved block grid error handling
 function ensureBlocksGrid() {
-    let grid = document.getElementById('blocksGrid');
+    let grid = document.getElementById('blocks-grid');
     if (!grid) {
         // Create blocks grid if it doesn't exist
         const container = document.querySelector('.blocks-container') || document.querySelector('.dashboard-content') || document.querySelector('main');
         if (container) {
             grid = document.createElement('div');
-            grid.id = 'blocksGrid';
+            grid.id = 'blocks-grid';
             grid.className = 'blocks-grid row g-3';
             container.appendChild(grid);
         } else {
@@ -2219,20 +2212,8 @@ function handleBlockError(error, operation = 'operación') {
 }
 
 // Initialize Personal Space when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-        // Small delay to ensure all scripts are loaded
-        setTimeout(() => {
-            if (typeof initPersonalSpace === 'function') {
-                initPersonalSpace();
-            }
-        }, 100);
-    });
-} else {
-    // DOM is already loaded
-    setTimeout(() => {
-        if (typeof initPersonalSpace === 'function') {
-            initPersonalSpace();
-        }
-    }, 100);
-}
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('workspace-container') && typeof initPersonalSpace === 'function') {
+        initPersonalSpace();
+    }
+});

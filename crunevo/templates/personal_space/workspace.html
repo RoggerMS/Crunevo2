@@ -81,9 +81,9 @@
     </div>
     
     <!-- Workspace Main Area -->
-    <div class="workspace-main">
+        <div class="workspace-main">
         <!-- Sidebar -->
-        <div class="workspace-sidebar" id="workspace-sidebar">
+        <div class="workspace-sidebar d-none tw-hidden" id="workspace-sidebar">
             <div class="sidebar-header">
                 <h3 class="sidebar-title">Bloques Disponibles</h3>
             </div>
@@ -148,10 +148,10 @@
         
         <!-- Workspace Area -->
         <div class="workspace-area">
-            <div class="grid-container">
-                {% if workspace_blocks %}
-                    {{ render_workspace_layout(blocks=workspace_blocks, edit_mode=false) }}
-                {% else %}
+            {% if workspace_blocks %}
+                {{ render_workspace_layout(workspace=workspace, blocks=workspace_blocks, editable=false) }}
+            {% else %}
+                <div id="blocks-grid" class="grid-container">
                     <div class="empty-workspace">
                         <div class="empty-workspace-icon">
                             <i class="bi bi-grid-3x3-gap"></i>
@@ -160,17 +160,17 @@
                         <p class="empty-workspace-description">
                             Arrastra bloques desde la barra lateral o crea nuevos bloques para comenzar a organizar tu espacio de trabajo.
                         </p>
-                        <button type="button" 
-                                class="btn workspace-btn" 
+                        <button type="button"
+                                class="btn workspace-btn"
                                 id="create-first-block-btn"
-                                data-bs-toggle="modal" 
+                                data-bs-toggle="modal"
                                 data-bs-target="#block-factory-modal">
                             <i class="bi bi-plus me-2"></i>
                             Crear tu primer bloque
                         </button>
                     </div>
-                {% endif %}
-            </div>
+                </div>
+            {% endif %}
         </div>
     </div>
     
