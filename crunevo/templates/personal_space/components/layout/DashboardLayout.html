@@ -121,7 +121,7 @@
                     ) %}
                         <div class="quick-actions-grid">
                             {% for action in quick_actions %}
-                            <div class="quick-action-item" onclick="{{ action.onclick }}">
+                            <div class="quick-action-item" onclick="{{ action.onclick }}" title="{{ action.tooltip or action.description }}" tabindex="0" role="button">
                                 <div class="action-icon">
                                     <i class="{{ action.icon }}"></i>
                                 </div>
@@ -300,6 +300,9 @@
         </div>
     </div>
 </div>
+
+<!-- Include BlockFactory Modal -->
+{% include 'personal_space/components/widgets/BlockFactory.html' %}
 {% endmacro %}
 
 <!-- Dashboard Grid Layout -->
@@ -346,16 +349,31 @@
             <div class="empty-icon">
                 <i class="bi bi-grid-3x3-gap"></i>
             </div>
-            <h4 class="empty-title">Tu espacio personal está vacío</h4>
+            <h4 class="empty-title">¡Bienvenido a tu espacio personal!</h4>
             <p class="empty-description">
-                Comienza creando tu primer bloque. Puedes agregar notas, tareas, objetivos o tableros Kanban.
+                Tu workspace está listo para ser personalizado. Crea bloques para organizar tus tareas, notas, objetivos y mucho más.
             </p>
-            <button type="button" 
-                    class="btn btn-primary" 
-                    onclick="openBlockFactory()">
-                <i class="bi bi-plus-lg me-1"></i>
-                Crear tu primer bloque
-            </button>
+            <div class="empty-actions">
+                <button type="button" 
+                        class="btn btn-primary me-2" 
+                        onclick="openBlockFactory()"
+                        title="Abre el asistente para crear tu primer bloque">
+                    <i class="bi bi-plus-circle me-1"></i>
+                    Crear tu primer bloque
+                </button>
+                <button type="button" 
+                        class="btn btn-outline-primary" 
+                        onclick="openTemplateGallery()"
+                        title="Explora plantillas prediseñadas para empezar rápido">
+                    <i class="bi bi-collection me-1"></i>
+                    Ver plantillas
+                </button>
+            </div>
+            <div class="empty-tip mt-3">
+                <small class="text-muted">
+                    💡 <strong>Tip:</strong> Puedes arrastrar y reorganizar tus bloques una vez creados
+                </small>
+            </div>
         </div>
     </div>
     {% endif %}
@@ -909,8 +927,35 @@ window.DashboardLayout = {
 
 // Global functions for template usage
 window.openBlockFactory = function() {
-    const modal = new bootstrap.Modal(document.getElementById('blockFactoryModal'));
-    modal.show();
+    if (window.BlockFactory) {
+        window.BlockFactory.show();
+    } else {
+        console.error('BlockFactory not available');
+    }
+};
+
+window.createQuickNote = function() {
+    if (window.BlockFactory) {
+        window.BlockFactory.createFromType('nota');
+    }
+};
+
+window.createQuickTask = function() {
+    if (window.BlockFactory) {
+        window.BlockFactory.createFromType('tarea');
+    }
+};
+
+window.createQuickObjective = function() {
+    if (window.BlockFactory) {
+        window.BlockFactory.createFromType('objetivo');
+    }
+};
+
+window.openTemplateGallery = function() {
+    if (window.BlockFactory) {
+        window.BlockFactory.openTemplateTab();
+    }
 };
 
 window.viewAllActivity = function() {

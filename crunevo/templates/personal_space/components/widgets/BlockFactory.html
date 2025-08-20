@@ -7,17 +7,17 @@
                     <i class="bi bi-plus-circle me-2"></i>
                     Crear Nuevo Bloque
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal" title="Cerrar"></button>
             </div>
             <div class="modal-body">
                 <!-- Creation Mode Tabs -->
                 <div class="creation-mode-tabs mb-4">
                     <div class="btn-group w-100" role="group">
-                        <button type="button" class="btn btn-outline-primary creation-mode-tab active" id="individual-tab">
+                        <button type="button" class="btn btn-outline-primary creation-mode-tab active" id="individual-tab" title="Crear un bloque personalizado desde cero">
                             <i class="bi bi-plus-square me-2"></i>
                             Bloque Individual
                         </button>
-                        <button type="button" class="btn btn-outline-primary creation-mode-tab" id="template-tab">
+                        <button type="button" class="btn btn-outline-primary creation-mode-tab" id="template-tab" title="Usar una plantilla predefinida para crear múltiples bloques">
                             <i class="bi bi-collection me-2"></i>
                             Desde Plantilla
                         </button>
@@ -34,7 +34,7 @@
                         </div>
                         
                         <div class="block-types-grid">
-                            <div class="block-type-card" data-block-type="task" data-action="select-block-type">
+                            <div class="block-type-card" data-block-type="task" data-action="select-block-type" tabindex="0" role="button" aria-label="Seleccionar tipo Tareas" title="Crear un bloque para gestionar tareas y listas de pendientes">
                                 <div class="block-type-icon">
                                     <i class="bi bi-check-square"></i>
                                 </div>
@@ -44,7 +44,7 @@
                                 </div>
                             </div>
                             
-                            <div class="block-type-card" data-block-type="note" data-action="select-block-type">
+                            <div class="block-type-card" data-block-type="note" data-action="select-block-type" tabindex="0" role="button" aria-label="Seleccionar tipo Notas" title="Crear un bloque para notas y documentos de texto">
                                 <div class="block-type-icon">
                                     <i class="bi bi-journal-text"></i>
                                 </div>
@@ -54,7 +54,7 @@
                                 </div>
                             </div>
                             
-                            <div class="block-type-card" data-block-type="kanban" data-action="select-block-type">
+                            <div class="block-type-card" data-block-type="kanban" data-action="select-block-type" tabindex="0" role="button" aria-label="Seleccionar tipo Kanban" title="Crear un tablero Kanban para gestión visual de proyectos">
                                 <div class="block-type-icon">
                                     <i class="bi bi-kanban"></i>
                                 </div>
@@ -64,7 +64,7 @@
                                 </div>
                             </div>
                             
-                            <div class="block-type-card" data-block-type="objective" data-action="select-block-type">
+                            <div class="block-type-card" data-block-type="objective" data-action="select-block-type" tabindex="0" role="button" aria-label="Seleccionar tipo Objetivos" title="Crear un bloque para definir y rastrear objetivos y metas">
                                 <div class="block-type-icon">
                                     <i class="bi bi-bullseye"></i>
                                 </div>
@@ -74,7 +74,7 @@
                                 </div>
                             </div>
                             
-                            <div class="block-type-card" data-block-type="calendar" data-action="select-block-type">
+                            <div class="block-type-card" data-block-type="calendar" data-action="select-block-type" tabindex="0" role="button" aria-label="Seleccionar tipo Calendario" title="Crear un bloque de calendario para eventos y citas">
                                 <div class="block-type-icon">
                                     <i class="bi bi-calendar3"></i>
                                 </div>
@@ -84,7 +84,7 @@
                                 </div>
                             </div>
                             
-                            <div class="block-type-card" data-block-type="chart" data-action="select-block-type">
+                            <div class="block-type-card" data-block-type="chart" data-action="select-block-type" tabindex="0" role="button" aria-label="Seleccionar tipo Gráficos" title="Crear un bloque para visualizar datos con gráficos">
                                 <div class="block-type-icon">
                                     <i class="bi bi-bar-chart"></i>
                                 </div>
@@ -107,49 +107,54 @@
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="form-group mb-3">
-                                        <label for="block-title" class="form-label">Título del bloque</label>
-                                        <input type="text" class="form-control" id="block-title" name="title" required>
+                                        <label for="block-title" class="form-label">Título del bloque <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="block-title" name="title" required placeholder="Ej: Mi lista de tareas" title="Ingresa un título descriptivo para tu bloque">
+                                        <div class="form-text">Este título aparecerá en la cabecera de tu bloque</div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group mb-3">
-                                        <label for="block-color" class="form-label">Color</label>
-                                        <select class="form-select" id="block-color" name="color">
-                                            <option value="primary">Azul</option>
-                                            <option value="success">Verde</option>
-                                            <option value="warning">Amarillo</option>
-                                            <option value="danger">Rojo</option>
-                                            <option value="info">Cian</option>
-                                            <option value="secondary">Gris</option>
+                                        <label for="block-color" class="form-label">Color del tema</label>
+                                        <select class="form-select" id="block-color" name="color" title="Selecciona el color principal de tu bloque">
+                                            <option value="primary">🔵 Azul (Predeterminado)</option>
+                                            <option value="success">🟢 Verde (Productividad)</option>
+                                            <option value="warning">🟡 Amarillo (Atención)</option>
+                                            <option value="danger">🔴 Rojo (Urgente)</option>
+                                            <option value="info">🔵 Cian (Información)</option>
+                                            <option value="secondary">⚫ Gris (Neutral)</option>
                                         </select>
+                                        <div class="form-text">El color ayuda a identificar visualmente tu bloque</div>
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="form-group mb-3">
-                                <label for="block-description" class="form-label">Descripción (opcional)</label>
-                                <textarea class="form-control" id="block-description" name="description" rows="3"></textarea>
+                                <label for="block-description" class="form-label">Descripción <span class="text-muted">(opcional)</span></label>
+                                <textarea class="form-control" id="block-description" name="description" rows="3" placeholder="Describe brevemente el propósito de este bloque..." title="Añade una descripción para recordar el propósito de este bloque"></textarea>
+                                <div class="form-text">Máximo 200 caracteres. Esta descripción te ayudará a recordar el propósito del bloque.</div>
                             </div>
                             
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
-                                        <label for="block-size" class="form-label">Tamaño</label>
-                                        <select class="form-select" id="block-size" name="size">
-                                            <option value="small">Pequeño (1x1)</option>
-                                            <option value="medium" selected>Mediano (2x1)</option>
-                                            <option value="large">Grande (2x2)</option>
-                                            <option value="wide">Ancho (3x1)</option>
+                                        <label for="block-size" class="form-label">Tamaño del bloque</label>
+                                        <select class="form-select" id="block-size" name="size" title="Selecciona el tamaño que ocupará tu bloque en el workspace">
+                                            <option value="small">📱 Pequeño (1x1) - Ideal para widgets simples</option>
+                                            <option value="medium" selected>📋 Mediano (2x1) - Recomendado para la mayoría</option>
+                                            <option value="large">📊 Grande (2x2) - Para contenido extenso</option>
+                                            <option value="wide">📏 Ancho (3x1) - Para listas largas</option>
                                         </select>
+                                        <div class="form-text">Puedes cambiar el tamaño después de crear el bloque</div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="block-public" name="public">
+                                            <input class="form-check-input" type="checkbox" id="block-public" name="public" title="Permitir que otros usuarios vean este bloque">
                                             <label class="form-check-label" for="block-public">
-                                                Hacer público
+                                                <i class="bi bi-globe me-1"></i> Hacer público
                                             </label>
+                                            <div class="form-text">Los bloques públicos pueden ser vistos por otros usuarios</div>
                                         </div>
                                     </div>
                                 </div>
@@ -186,8 +191,9 @@
                             <span class="input-group-text">
                                 <i class="bi bi-search"></i>
                             </span>
-                            <input type="text" class="form-control" id="template-search" placeholder="Buscar plantillas...">
+                            <input type="text" class="form-control" id="template-search" placeholder="Buscar plantillas por nombre o categoría..." title="Busca plantillas escribiendo palabras clave">
                         </div>
+                        <div class="form-text">💡 Tip: Prueba buscar 'productividad', 'estudio' o 'proyecto'</div>
                     </div>
                     
                     <!-- Template Categories -->
@@ -203,17 +209,45 @@
                     <!-- Templates Grid -->
                     <div id="templates-grid" class="templates-grid">
                         <!-- Templates will be loaded here -->
+                        <div class="templates-loading d-none">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando plantillas...</span>
+                                </div>
+                                <p class="mt-2 text-muted">Cargando plantillas disponibles...</p>
+                            </div>
+                        </div>
+                        <div class="templates-empty d-none">
+                            <div class="text-center py-5">
+                                <i class="bi bi-collection" style="font-size: 3rem; color: var(--bs-secondary);"></i>
+                                <h5 class="mt-3 mb-2">No se encontraron plantillas</h5>
+                                <p class="text-muted mb-4">No hay plantillas que coincidan con tu búsqueda.</p>
+                                <button class="btn btn-outline-primary" onclick="document.getElementById('template-search').value=''; window.BlockFactory.searchTemplates('')">
+                                    <i class="bi bi-arrow-clockwise me-1"></i> Ver todas las plantillas
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             
             <div class="modal-footer">
                 <div class="step-navigation">
-                    <button type="button" class="btn btn-secondary" id="prev-step" style="display: none;">Anterior</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="next-step" disabled>Siguiente</button>
-                    <button type="button" class="btn btn-success" id="create-block" style="display: none;">Crear Bloque</button>
-                    <button type="button" class="btn btn-success" id="apply-template" style="display: none;">Aplicar Plantilla</button>
+                    <button type="button" class="btn btn-secondary" id="prev-step" style="display: none;" title="Volver al paso anterior">
+                        <i class="bi bi-arrow-left me-1"></i> Anterior
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="Cerrar sin guardar cambios">
+                        <i class="bi bi-x-lg me-1"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="next-step" disabled title="Continuar al siguiente paso">
+                        Siguiente <i class="bi bi-arrow-right ms-1"></i>
+                    </button>
+                    <button type="button" class="btn btn-success" id="create-block" style="display: none;" title="Crear el bloque con la configuración actual">
+                        <i class="bi bi-plus-circle me-1"></i> Crear Bloque
+                    </button>
+                    <button type="button" class="btn btn-success" id="apply-template" style="display: none;" title="Aplicar la plantilla seleccionada">
+                        <i class="bi bi-check-circle me-1"></i> Aplicar Plantilla
+                    </button>
                 </div>
             </div>
         </div>

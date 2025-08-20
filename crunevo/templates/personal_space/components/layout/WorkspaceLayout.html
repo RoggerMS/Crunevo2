@@ -134,17 +134,32 @@
             <div class="empty-icon">
                 <i class="bi bi-grid-3x3-gap"></i>
             </div>
-            <h4 class="empty-title">Tu workspace está vacío</h4>
+            <h4 class="empty-title">¡Tu workspace está listo!</h4>
             <p class="empty-description">
-                Arrastra bloques aquí desde la barra lateral o crea nuevos bloques para comenzar a organizar tu espacio de trabajo.
+                Comienza creando bloques para organizar tus tareas, notas y objetivos. Podrás arrastrarlos y reorganizarlos como prefieras.
             </p>
             {% if editable %}
-            <button type="button" 
-                    class="btn btn-primary" 
-                    onclick="addNewBlock()">
-                <i class="bi bi-plus-lg me-1"></i>
-                Agregar primer bloque
-            </button>
+            <div class="empty-actions">
+                <button type="button" 
+                        class="btn btn-primary me-2" 
+                        onclick="addNewBlock()"
+                        title="Abre el asistente para crear tu primer bloque">
+                    <i class="bi bi-plus-circle me-1"></i>
+                    Crear primer bloque
+                </button>
+                <button type="button" 
+                        class="btn btn-outline-primary" 
+                        onclick="openTemplateGallery()"
+                        title="Explora plantillas prediseñadas">
+                    <i class="bi bi-collection me-1"></i>
+                    Ver plantillas
+                </button>
+            </div>
+            <div class="empty-tip mt-3">
+                <small class="text-muted">
+                    💡 <strong>Tip:</strong> Activa el modo edición para reorganizar tus bloques
+                </small>
+            </div>
             {% endif %}
         </div>
     </div>
@@ -166,24 +181,26 @@
     <!-- Block Controls (visible in edit mode) -->
     {% if editable %}
     <div class="block-controls" style="display: none;">
-        <div class="control-handle drag-handle" title="Mover">
+        <div class="control-handle drag-handle" title="Arrastra para mover este bloque" tabindex="0" role="button">
             <i class="bi bi-arrows-move"></i>
         </div>
-        <div class="control-handle resize-handle" title="Redimensionar">
+        <div class="control-handle resize-handle" title="Arrastra para redimensionar este bloque" tabindex="0" role="button">
             <i class="bi bi-arrows-angle-expand"></i>
         </div>
         <div class="control-actions">
             <button type="button" 
                     class="btn btn-sm btn-outline-primary" 
                     onclick="editBlockSettings('{{ block.id }}')" 
-                    title="Configurar">
+                    title="Abrir configuración del bloque: {{ block.title }}" 
+                    aria-label="Configurar bloque {{ block.title }}">
                 <i class="bi bi-gear"></i>
             </button>
             <button type="button" 
                     class="btn btn-sm btn-outline-danger" 
                     onclick="removeBlockFromWorkspace('{{ block.id }}')" 
-                    title="Quitar">
-                <i class="bi bi-x"></i>
+                    title="Quitar '{{ block.title }}' del workspace" 
+                    aria-label="Eliminar bloque {{ block.title }}">
+                <i class="bi bi-trash"></i>
             </button>
         </div>
     </div>

@@ -39,6 +39,42 @@ window.BlockFactory = {
         this.setupEventListeners();
     },
 
+    // Show the BlockFactory modal
+    show: function() {
+        const modal = document.getElementById('block-factory-modal');
+        if (modal) {
+            // Initialize if not already done
+            this.init();
+            
+            // Show the modal
+            const bsModal = new bootstrap.Modal(modal);
+            bsModal.show();
+        } else {
+            console.error('Block factory modal not found');
+        }
+    },
+
+    // Create block from specific type (shortcut method)
+    createFromType: function(type) {
+        this.show();
+        // Wait for modal to be shown, then select type
+        setTimeout(() => {
+            this.selectBlockType(type);
+        }, 100);
+    },
+
+    // Open template tab directly
+    openTemplateTab: function() {
+        this.show();
+        // Wait for modal to be shown, then switch to template tab
+        setTimeout(() => {
+            const templateTab = document.getElementById('template-tab');
+            if (templateTab) {
+                templateTab.click();
+            }
+        }, 100);
+    },
+
     // Setup event listeners with delegation
     setupEventListeners: function() {
         const modal = document.getElementById('block-factory-modal');
@@ -118,6 +154,9 @@ window.BlockFactory = {
             case 'create-block':
             case 'create-block-btn':
                 this.createBlock();
+                break;
+            case 'apply-template':
+                this.applyTemplate();
                 break;
             case 'select-template':
                 const templateId = target.getAttribute('data-template-id');
@@ -460,10 +499,27 @@ window.BlockFactory = {
 
     // Update navigation buttons
     updateButtons: function() {
-        const prevBtn = document.getElementById('prev-step-btn');
-        const nextBtn = document.getElementById('next-step-btn');
-        const createBtn = document.getElementById('create-block-btn');
+        const prevBtn = document.getElementById('prev-step');
+        const nextBtn = document.getElementById('next-step');
+        const createBtn = document.getElementById('create-block');
+        const applyTemplateBtn = document.getElementById('apply-template');
         
+        // Hide all buttons first
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+        if (createBtn) createBtn.style.display = 'none';
+        if (applyTemplateBtn) applyTemplateBtn.style.display = 'none';
+        
+        // Template mode - show apply template button
+        if (this.isTemplateMode()) {
+            if (applyTemplateBtn) {
+                applyTemplateBtn.style.display = 'inline-block';
+                applyTemplateBtn.disabled = !this.selectedTemplate;
+            }
+            return;
+        }
+        
+        // Individual mode - show step navigation
         // Previous button
         if (prevBtn) {
             prevBtn.style.display = this.wizard.step > 1 ? 'inline-block' : 'none';
@@ -475,13 +531,7 @@ window.BlockFactory = {
                 nextBtn.style.display = 'inline-block';
                 nextBtn.disabled = !this.canProceedToNextStep();
             }
-            if (createBtn) {
-                createBtn.style.display = 'none';
-            }
         } else {
-            if (nextBtn) {
-                nextBtn.style.display = 'none';
-            }
             if (createBtn) {
                 createBtn.style.display = 'inline-block';
                 createBtn.disabled = !this.validateCurrentStep();
@@ -869,7 +919,7 @@ window.BlockFactory = {
         if (!this.selectedTemplate) return;
         
         try {
-            const response = await fetch(`/api/personal-space/templates/${this.selectedTemplate}/apply`, {
+            const response = await fetch(`/api/personal-space/templates/${this.selectedTemplate}/instantiate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

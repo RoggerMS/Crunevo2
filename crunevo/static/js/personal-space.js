@@ -58,8 +58,10 @@ function initializePersonalSpace() {
         // Restore dismissed suggestions
         hideDismissedSuggestions();
 
-        // Load initial data
-        loadBlocks();
+        // Load initial data (only if blocks grid exists)
+        if (document.getElementById('blocks-grid')) {
+            loadBlocks();
+        }
 
         // Set up periodic auto-save
         setInterval(autoSaveChanges, 30000); // Auto-save every 30 seconds
@@ -235,7 +237,7 @@ function initializeAutoSave() {
 function loadBlocks() {
     const grid = document.getElementById('blocks-grid');
     if (!grid) {
-        console.warn('Blocks grid not found');
+        // Silently return if blocks grid doesn't exist (e.g., on dashboard)
         return;
     }
 
@@ -269,7 +271,7 @@ function loadBlocks() {
 function renderBlocks(blocks) {
     const grid = document.getElementById('blocks-grid');
     if (!grid) {
-        console.warn('Blocks grid not found');
+        // Silently return if blocks grid doesn't exist (e.g., on dashboard)
         return;
     }
 
