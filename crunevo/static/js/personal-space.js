@@ -20,13 +20,14 @@ const DEFAULT_ICONS = {
     'nota_enriquecida': 'bi-file-richtext',
     'bitacora': 'bi-journal-text',
     'lista': 'bi-check2-square',
-    'meta': 'bi-target',
+    'meta': 'bi-bullseye',
     'recordatorio': 'bi-alarm',
     'frase': 'bi-quote',
     'enlace': 'bi-link-45deg',
     'tarea': 'bi-clipboard-check',
     'kanban': 'bi-kanban',
-    'objetivo': 'bi-trophy',
+    'objetivo': 'bi-bullseye',
+    'objective': 'bi-bullseye',
     'bloque': 'bi-grid-3x3'
 };
 

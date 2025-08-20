@@ -1390,6 +1390,11 @@ select:focus {
     color: var(--ps-blue);
 }
 
+.stat-icon.violet {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
 .stat-value {
     font-size: 2rem;
     font-weight: 700;

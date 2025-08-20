@@ -88,8 +88,8 @@
                 {% call render_stat_card(
                     title='Objetivos en Progreso',
                     value=stats.active_objectives,
-                    icon='bi-target',
-                    color='info',
+                    icon='bi-bullseye',
+                    color='primary',
                     trend=stats.objectives_trend
                 ) %}{% endcall %}
             </div>
@@ -150,7 +150,7 @@
                                     <i class="{{ {
                                         'nota': 'bi-file-text',
                                         'tarea': 'bi-check-square',
-                                        'objetivo': 'bi-target',
+                                        'objetivo': 'bi-bullseye',
                                         'kanban': 'bi-kanban'
                                     }.get(block.type, 'bi-square') }}"></i>
                                 </div>

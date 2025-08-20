@@ -429,7 +429,7 @@ window.WorkspaceManager = {
             task: 'check-square',
             note: 'journal-text',
             kanban: 'kanban',
-            objective: 'target',
+            objective: 'bullseye',
             calendar: 'calendar3',
             habit: 'arrow-repeat'
         };
