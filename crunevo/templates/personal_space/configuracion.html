@@ -6,6 +6,7 @@
 {% block title %}Personal Space - Configuración{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal-space-config.css') }}">
 <!-- Configuration Page Styles -->
 <style>
 .config-container {
@@ -125,67 +126,11 @@
     color: #991b1b;
     border: 1px solid #fca5a5;
 }
-
-.stats-grid {
-    display: grid;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    grid-template-columns: 1fr;
-}
-
-@media (min-width: 768px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1200px) {
-    .stats-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-.stat-card {
-    background: white;
-    padding: 1rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e5e7eb;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.stat-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(var(--bs-primary-rgb), 0.1);
-    color: var(--bs-primary);
-    font-size: 1.25rem;
-}
-
-.stat-value {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--bs-primary);
-    line-height: 1;
-}
-
-.stat-label {
-    color: #374151;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-    font-weight: 600;
-}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="config-container">
+<div id="personal-space-config" class="config-container">
     <div class="container">
         <!-- Header -->
         <div class="row my-4">
@@ -204,40 +149,40 @@
 
         <!-- Statistics Overview -->
         <div class="stats-grid mb-4" role="group" aria-label="Métricas del espacio">
-            <div class="stat-card">
+            <div class="stat-card" id="stat-total-blocks" aria-describedby="totalBlocksLabel">
                 <div class="stat-icon">
                     <i class="bi bi-grid"></i>
                 </div>
                 <div>
                     <div class="stat-value" id="totalBlocks">0</div>
-                    <div class="stat-label">Bloques Totales</div>
+                    <div class="stat-label" id="totalBlocksLabel">Bloques Totales</div>
                 </div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" id="stat-completed-tasks" aria-describedby="completedTasksLabel">
                 <div class="stat-icon">
                     <i class="bi bi-check2-circle"></i>
                 </div>
                 <div>
                     <div class="stat-value" id="completedTasks">0</div>
-                    <div class="stat-label">Tareas Completadas</div>
+                    <div class="stat-label" id="completedTasksLabel">Tareas Completadas</div>
                 </div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" id="stat-active-objectives" aria-describedby="activeObjectivesLabel">
                 <div class="stat-icon">
                     <i class="bi bi-bullseye"></i>
                 </div>
                 <div>
                     <div class="stat-value" id="activeObjectives">0</div>
-                    <div class="stat-label">Objetivos Activos</div>
+                    <div class="stat-label" id="activeObjectivesLabel">Objetivos Activos</div>
                 </div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" id="stat-productivity-score" aria-describedby="productivityScoreLabel">
                 <div class="stat-icon">
-                    <i class="bi bi-activity"></i>
+                    <i class="bi bi-graph-up-arrow"></i>
                 </div>
                 <div>
                     <div class="stat-value" id="productivityScore">0</div>
-                    <div class="stat-label">Puntuación de Productividad</div>
+                    <div class="stat-label" id="productivityScoreLabel">Puntuación de Productividad</div>
                 </div>
             </div>
         </div>
@@ -253,12 +198,12 @@
                         
                         <form id="generalSettingsForm">
                             <div class="form-group">
-                                <label class="form-label">Nombre del Espacio</label>
+                                <label class="form-label" for="spaceName">Nombre del Espacio</label>
                                 <input type="text" class="form-control" id="spaceName" name="spaceName" placeholder="Mi Espacio Personal">
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Descripción</label>
+                                <label class="form-label" for="spaceDescription">Descripción</label>
                                 <textarea class="form-control" id="spaceDescription" rows="3" placeholder="Describe tu espacio personal..."></textarea>
                             </div>
                             
@@ -288,7 +233,7 @@
                         
                         <form id="displaySettingsForm">
                             <div class="form-group">
-                                <label class="form-label">Tamaño de bloque por defecto</label>
+                                <label class="form-label" for="defaultBlockSize">Tamaño de bloque por defecto</label>
                                 <select class="form-control" id="defaultBlockSize">
                                     <option value="small">Pequeño</option>
                                     <option value="medium" selected>Mediano</option>
@@ -297,7 +242,7 @@
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Tema de color</label>
+                                <label class="form-label" for="colorTheme">Tema de color</label>
                                 <select class="form-control" id="colorTheme">
                                     <option value="blue" selected>Azul</option>
                                     <option value="green">Verde</option>
@@ -358,10 +303,10 @@
                                 <i class="bi bi-download me-2"></i>Exportar Datos
                             </button>
                             <button class="btn btn-secondary" onclick="resetWorkspace()">
-                                <i class="bi bi-arrow-clockwise me-2"></i>Reiniciar Espacio
+                                <i class="bi bi-arrow-counterclockwise me-2"></i>Reiniciar Espacio
                             </button>
                             <button class="btn btn-secondary" onclick="clearCache()">
-                                <i class="bi bi-trash me-2"></i>Limpiar Caché
+                                <i class="bi bi-trash3 me-2"></i>Limpiar Caché
                             </button>
                         </div>
                     </div>
@@ -435,10 +380,10 @@ class ConfigurationManager {
 
     async loadStats() {
         try {
-            const response = await fetch('/api/personal-space/stats');
+            const response = await fetch('/api/personal-space/analytics/dashboard');
             if (response.ok) {
-                const stats = await response.json();
-                this.updateStats(stats);
+                const data = await response.json();
+                this.updateStats(data.metrics || {});
             }
         } catch (error) {
             console.error('Error loading stats:', error);
