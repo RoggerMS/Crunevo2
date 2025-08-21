@@ -200,16 +200,16 @@
             
             <div class="modal-footer">
                 <div class="step-navigation">
-                    <button type="button" class="btn btn-secondary" id="prev-step" style="display: none;" title="Volver al paso anterior">
+                    <button type="button" class="btn btn-secondary" data-action="prev-step" id="prev-step" style="display: none;" title="Volver al paso anterior">
                         <i class="bi bi-arrow-left me-1"></i> Anterior
                     </button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="Cerrar sin guardar cambios">
                         <i class="bi bi-x-lg me-1"></i> Cancelar
                     </button>
-                    <button type="button" class="btn btn-primary" id="next-step" disabled title="Continuar al siguiente paso">
+                    <button type="button" class="btn btn-primary" data-action="next-step" id="next-step" disabled title="Continuar al siguiente paso">
                         Siguiente <i class="bi bi-arrow-right ms-1"></i>
                     </button>
-                    <button type="button" class="btn btn-success" id="create-block" style="display: none;" title="Crear el bloque con la configuración actual">
+                    <button type="button" class="btn btn-success" data-action="create-block" id="create-block" style="display: none;" title="Crear el bloque con la configuración actual">
                         <i class="bi bi-plus-circle me-1"></i> Crear Bloque
                     </button>
                 </div>
