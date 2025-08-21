@@ -71,6 +71,17 @@ window.BlockFactory = {
         }
     },
 
+    openInTemplateMode: function() {
+        this.show();
+        // Wait for modal to be shown, then switch to template tab
+        setTimeout(() => {
+            const templateTab = document.getElementById('template-tab');
+            if (templateTab) {
+                templateTab.click();
+            }
+        }, 100);
+    },
+
     // Setup event listeners with delegation
     setupEventListeners: function() {
         const modal = document.getElementById('block-factory-modal');

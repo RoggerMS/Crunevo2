@@ -214,6 +214,17 @@ function initializeEventListeners() {
             grid.dataset.bound = '1';
         }
 
+        const templatesBtn = document.getElementById('templates-btn');
+        if (templatesBtn) {
+            templatesBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (window.BlockFactory) {
+                    window.BlockFactory.openInTemplateMode();
+                }
+            });
+        }
+
         // Auto-save on content change
         document.addEventListener('input', debounce(handleContentChange, 500));
         
