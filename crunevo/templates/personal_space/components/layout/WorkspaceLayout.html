@@ -168,10 +168,12 @@
 
 <!-- Workspace Block Wrapper -->
 {% macro render_workspace_block(block, editable=true) %}
-<div class="grid-stack-item workspace-block" 
+<div class="grid-stack-item workspace-block"
      id="workspace-block-{{ block.id }}"
      data-block-id="{{ block.id }}"
      data-block-type="{{ block.type }}"
+     data-x="{{ block.metadata.get('position', {}).get('x', 0) }}"
+     data-y="{{ block.metadata.get('position', {}).get('y', 0) }}"
      gs-x="{{ block.metadata.get('grid_position', {}).get('x', 0) }}"
      gs-y="{{ block.metadata.get('grid_position', {}).get('y', 0) }}"
      gs-w="{{ block.metadata.get('grid_position', {}).get('width', 2) }}"

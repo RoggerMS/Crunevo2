@@ -6,11 +6,6 @@
 {% block title %}Personal Space - Workspace{% endblock %}
 
 {% block head_extra %}
-<!-- Sortable.js for drag and drop -->
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-<!-- GridStack for advanced grid layout -->
-<script src="https://cdn.jsdelivr.net/npm/gridstack@latest/dist/gridstack-all.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/gridstack@latest/dist/gridstack.min.css" rel="stylesheet">
 <!-- Optimized Personal Space CSS -->
 <link href="{{ url_for('static', filename='css/personal-space-optimized.css') }}" rel="stylesheet">
 <!-- Block Factory Enhanced CSS -->
@@ -21,8 +16,8 @@
 <script src="{{ url_for('static', filename='js/personal-space.js') }}" defer></script>
 <!-- BlockFactory JavaScript -->
 <script src="{{ url_for('static', filename='js/BlockFactory.js') }}" defer></script>
-<!-- Workspace Unified JavaScript -->
-<script src="{{ url_for('static', filename='js/workspace-unified.js') }}" defer></script>
+<!-- Free drag & drop workspace JS -->
+<script src="{{ url_for('static', filename='js/workspace-free.js') }}" defer></script>
 {% endblock %}
 
 {% block content %}
