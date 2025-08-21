@@ -178,57 +178,6 @@
                     </div>
                 </div>
 
-                <!-- Template Mode -->
-                <div id="template-mode" class="d-none">
-                    <div class="template-header mb-4">
-                        <h6 class="template-title">Selecciona una plantilla</h6>
-                        <p class="template-description text-muted">Elige una plantilla predefinida para crear múltiples bloques de una vez</p>
-                    </div>
-                    
-                    <!-- Template Search -->
-                    <div class="template-search mb-3">
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text" class="form-control" id="template-search" placeholder="Buscar plantillas por nombre o categoría..." title="Busca plantillas escribiendo palabras clave">
-                        </div>
-                        <div class="form-text">💡 Tip: Prueba buscar 'productividad', 'estudio' o 'proyecto'</div>
-                    </div>
-                    
-                    <!-- Template Categories -->
-                    <div class="template-categories mb-4">
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-outline-secondary active" data-category="all">Todas</button>
-                            <button type="button" class="btn btn-outline-secondary" data-category="productivity">Productividad</button>
-                            <button type="button" class="btn btn-outline-secondary" data-category="project">Proyectos</button>
-                            <button type="button" class="btn btn-outline-secondary" data-category="personal">Personal</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Templates Grid -->
-                    <div id="templates-grid" class="templates-grid">
-                        <!-- Templates will be loaded here -->
-                        <div class="templates-loading d-none">
-                            <div class="text-center py-4">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Cargando plantillas...</span>
-                                </div>
-                                <p class="mt-2 text-muted">Cargando plantillas disponibles...</p>
-                            </div>
-                        </div>
-                        <div class="templates-empty d-none">
-                            <div class="text-center py-5">
-                                <i class="bi bi-collection" style="font-size: 3rem; color: var(--bs-secondary);"></i>
-                                <h5 class="mt-3 mb-2">No se encontraron plantillas</h5>
-                                <p class="text-muted mb-4">No hay plantillas que coincidan con tu búsqueda.</p>
-                                <button class="btn btn-outline-primary" onclick="document.getElementById('template-search').value=''; window.BlockFactory.searchTemplates('')">
-                                    <i class="bi bi-arrow-clockwise me-1"></i> Ver todas las plantillas
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             
             <div class="modal-footer">
@@ -244,9 +193,6 @@
                     </button>
                     <button type="button" class="btn btn-success" id="create-block" style="display: none;" title="Crear el bloque con la configuración actual">
                         <i class="bi bi-plus-circle me-1"></i> Crear Bloque
-                    </button>
-                    <button type="button" class="btn btn-success" id="apply-template" style="display: none;" title="Aplicar la plantilla seleccionada">
-                        <i class="bi bi-check-circle me-1"></i> Aplicar Plantilla
                     </button>
                 </div>
             </div>
