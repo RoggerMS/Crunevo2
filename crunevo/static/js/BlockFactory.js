@@ -688,29 +688,30 @@ window.BlockFactory = {
 
     // Collect all block data
     collectBlockData: function() {
-        const data = {
-            type: this.wizard.selectedType,
-            title: document.querySelector('input[name="title"]')?.value || '',
-            content: document.querySelector('textarea[name="description"]')?.value || '',
+        const type = this.wizard.selectedType;
+        const title = document.getElementById('block-title')?.value?.trim() || '';
+        const description = document.getElementById('block-description')?.value?.trim() || '';
+        const color = document.getElementById('block-color')?.value || 'primary';
+        const size = document.getElementById('block-size')?.value || 'medium';
+        const isPublic = !!document.getElementById('block-public')?.checked;
+
+        const typeConfig = this.collectTypeSpecificConfig();
+
+        return {
+            type,
+            title,
+            description,
             metadata: {
-                category: document.querySelector('select[name="category"]')?.value || 'personal',
-                priority: document.querySelector('select[name="priority"]')?.value || 'medium',
-                size: document.querySelector('select[name="size"]')?.value || 'medium',
-                position_x: parseInt(document.querySelector('input[name="position_x"]')?.value) || 0,
-                position_y: parseInt(document.querySelector('input[name="position_y"]')?.value) || 0,
-                theme_color: document.getElementById('theme_color')?.value || 'purple',
-                header_style: document.querySelector('select[name="header_style"]')?.value || 'default',
-                show_border: document.getElementById('show_border')?.checked || false,
-                show_shadow: document.getElementById('show_shadow')?.checked || false,
-                auto_save: document.getElementById('auto_save')?.checked || false,
-                notifications: document.getElementById('notifications')?.checked || false,
-                collaborative: document.getElementById('collaborative')?.checked || false,
-                public_view: document.getElementById('public_view')?.checked || false,
-                ...this.collectTypeSpecificConfig()
-            }
+                size,
+                theme_color: color,
+                public_view: isPublic,
+                ...typeConfig
+            },
+            color,
+            size,
+            public: isPublic,
+            ...typeConfig
         };
-        
-        return data;
     },
 
     // Collect type-specific configuration

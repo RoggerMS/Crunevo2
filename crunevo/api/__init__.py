@@ -2,6 +2,7 @@ from .feed import feed_api_bp
 from .notes import notes_api_bp
 from .users import users_api_bp
 from .search import search_api_bp
+from .personal_space_api import personal_space_api_bp
 
 
 def init_api(app):
@@ -9,3 +10,5 @@ def init_api(app):
     app.register_blueprint(notes_api_bp)
     app.register_blueprint(users_api_bp)
     app.register_blueprint(search_api_bp)
+    if "personal_space_api" not in app.blueprints:
+        app.register_blueprint(personal_space_api_bp)
