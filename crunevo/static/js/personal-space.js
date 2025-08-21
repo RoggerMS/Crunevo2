@@ -276,7 +276,6 @@ function loadBlocks() {
         })
         .catch(error => {
             console.warn('Error loading blocks:', error);
-            renderEmptyState(grid);
         });
 }
 
@@ -287,13 +286,13 @@ function renderBlocks(blocks) {
         return;
     }
 
-    // Clear existing content
-    grid.innerHTML = '';
-
     if (!blocks || blocks.length === 0) {
-        renderEmptyState(grid);
+        // Keep server-rendered empty state if no blocks
         return;
     }
+
+    // Clear existing content
+    grid.innerHTML = '';
 
     try {
         blocks.forEach((b, index) => {
@@ -1867,23 +1866,6 @@ function autoSaveBlock(blockId, element) {
         },
         body: JSON.stringify(data)
     }).catch(error => console.error('Auto-save error:', error));
-}
-
-// Render empty state
-function renderEmptyState(container) {
-    const emptyState = document.createElement('div');
-    emptyState.className = 'empty-state text-center py-5';
-    emptyState.innerHTML = `
-        <div class="empty-state-icon mb-3">
-            <i class="bi bi-journal-plus" style="font-size: 3rem; color: var(--bs-secondary);"></i>
-        </div>
-        <h4 class="empty-state-title mb-2">No hay bloques creados</h4>
-        <p class="empty-state-text text-muted mb-4">Comienza creando tu primer bloque de estudio</p>
-        <button class="btn btn-primary" onclick="showCreateBlockModal()">
-            <i class="bi bi-plus-circle me-2"></i>Crear primer bloque
-        </button>
-    `;
-    container.appendChild(emptyState);
 }
 
 // Setup accessibility features
