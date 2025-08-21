@@ -31,3 +31,6 @@ args = "python -m flask --app crunevo:create_app run --host=0.0.0.0 --port=5000 
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[geminicodeassist]
+updateChannel = "Insiders"

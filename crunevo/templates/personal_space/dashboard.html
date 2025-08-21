@@ -54,8 +54,7 @@
                     
                     <button type="button" 
                             class="btn quick-action-btn secondary" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#template-gallery-modal">
+                            id="templates-btn">
                         <i class="bi bi-collection me-2"></i>
                         Plantillas
                     </button>
@@ -559,7 +558,7 @@ window.viewWeeklyDetails = function() {
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Personal Space core functionality
-    if (window.initPersonalSpace) {
+    if (window.initPersonalSpace && document.getElementById('workspace-container')) {
         window.initPersonalSpace();
     }
     

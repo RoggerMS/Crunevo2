@@ -28,6 +28,7 @@ const DEFAULT_ICONS = {
     'kanban': 'bi-kanban',
     'objetivo': 'bi-bullseye',
     'objective': 'bi-bullseye',
+    'objectives': 'bi-bullseye',
     'bloque': 'bi-grid-3x3'
 };
 

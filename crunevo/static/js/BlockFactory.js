@@ -158,41 +158,29 @@ window.BlockFactory = {
     },
 
     // Setup creation mode tabs
+    // Setup creation mode tabs
     setupCreationModeTabs: function() {
         const individualTab = document.getElementById('individual-tab');
         const templateTab = document.getElementById('template-tab');
-        
-        if (individualTab) {
+        const individualMode = document.getElementById('individual-mode');
+        const templateMode = document.getElementById('template-mode');
+
+        if (individualTab && templateTab && individualMode && templateMode) {
             individualTab.addEventListener('click', () => {
-                document.querySelectorAll('.creation-mode-tab').forEach(tab => {
-                    tab.classList.remove('active');
-                });
                 individualTab.classList.add('active');
-
-                const individualMode = document.getElementById('individual-mode');
-                if (individualMode) {
-                    individualMode.classList.remove('d-none');
-                }
-
+                templateTab.classList.remove('active');
+                individualMode.classList.remove('d-none');
+                templateMode.classList.add('d-none');
                 this.updateButtons();
             });
-        }
 
-        if (templateTab) {
             templateTab.addEventListener('click', () => {
-                const factoryModalEl = document.getElementById('block-factory-modal');
-                const factoryModal = bootstrap.Modal.getInstance(factoryModalEl);
-                if (factoryModal) {
-                    factoryModal.hide();
-                }
-
-                const galleryModalEl = document.getElementById('template-gallery-modal');
-                if (galleryModalEl) {
-                    const galleryModal = new bootstrap.Modal(galleryModalEl);
-                    galleryModal.show();
-                } else {
-                    console.error('Template gallery modal not found');
-                }
+                templateTab.classList.add('active');
+                individualTab.classList.remove('active');
+                templateMode.classList.remove('d-none');
+                individualMode.classList.add('d-none');
+                this.loadTemplates();
+                this.updateButtons();
             });
         }
     },
@@ -453,35 +441,35 @@ window.BlockFactory = {
         const prevBtn = document.getElementById('prev-step');
         const nextBtn = document.getElementById('next-step');
         const createBtn = document.getElementById('create-block');
-        const applyTemplateBtn = document.getElementById('apply-template'); // legacy element
         
         // Hide all buttons first
         if (prevBtn) prevBtn.style.display = 'none';
         if (nextBtn) nextBtn.style.display = 'none';
         if (createBtn) createBtn.style.display = 'none';
-        if (applyTemplateBtn) applyTemplateBtn.style.display = 'none';
 
-        // Template mode handled externally via TemplateGallery
         if (this.isTemplateMode()) {
-            return;
-        }
-        
-        // Individual mode - show step navigation
-        // Previous button
-        if (prevBtn) {
-            prevBtn.style.display = this.wizard.step > 1 ? 'inline-block' : 'none';
-        }
-        
-        // Next/Create buttons
-        if (this.wizard.step < this.totalSteps) {
-            if (nextBtn) {
-                nextBtn.style.display = 'inline-block';
-                nextBtn.disabled = !this.canProceedToNextStep();
-            }
-        } else {
             if (createBtn) {
                 createBtn.style.display = 'inline-block';
-                createBtn.disabled = !this.validateCurrentStep();
+                createBtn.innerHTML = '<i class="bi bi-plus-circle me-1"></i> Aplicar Plantilla';
+                createBtn.disabled = this.selectedTemplate === null;
+            }
+        } else {
+            // Individual mode - show step navigation
+            if (prevBtn) {
+                prevBtn.style.display = this.wizard.step > 1 ? 'inline-block' : 'none';
+            }
+            
+            if (this.wizard.step < this.totalSteps) {
+                if (nextBtn) {
+                    nextBtn.style.display = 'inline-block';
+                    nextBtn.disabled = !this.canProceedToNextStep();
+                }
+            } else {
+                if (createBtn) {
+                    createBtn.style.display = 'inline-block';
+                    createBtn.innerHTML = '<i class="bi bi-plus-circle me-1"></i> Crear Bloque';
+                    createBtn.disabled = !this.validateCurrentStep();
+                }
             }
         }
     },
@@ -768,7 +756,101 @@ window.BlockFactory = {
     isTemplateMode: function() {
         const templateTab = document.getElementById('template-tab');
         return templateTab && templateTab.classList.contains('active');
-    }
+    },
+
+    // Load templates from the server
+    loadTemplates: async function() {
+        const gallery = document.getElementById('template-gallery-content');
+        if (!gallery) return;
+
+        gallery.innerHTML = '<p>Cargando plantillas...</p>';
+
+        try {
+            const response = await fetch('/api/personal-space/templates');
+            if (!response.ok) {
+                throw new Error('Failed to load templates');
+            }
+            const data = await response.json();
+            this.templates = data.templates || [];
+            this.renderTemplates();
+        } catch (error) {
+            console.error('Error loading templates:', error);
+            gallery.innerHTML = '<p class="text-danger">Error al cargar las plantillas.</p>';
+        }
+    },
+
+    // Render templates in the gallery
+    renderTemplates: function() {
+        const gallery = document.getElementById('template-gallery-content');
+        if (!gallery) return;
+
+        if (this.templates.length === 0) {
+            gallery.innerHTML = '<p>No hay plantillas disponibles.</p>';
+            return;
+        }
+
+        gallery.innerHTML = this.templates.map(template => `
+            <div class="template-card" data-template-id="${template.id}">
+                <h6>${template.name}</h6>
+                <p>${template.description}</p>
+            </div>
+        `).join('');
+
+        // Add event listeners to template cards
+        gallery.querySelectorAll('.template-card').forEach(card => {
+            card.addEventListener('click', () => {
+                this.selectTemplate(card.dataset.templateId);
+            });
+        });
+    },
+
+    // Select a template
+    selectTemplate: function(templateId) {
+        this.selectedTemplate = this.templates.find(t => t.id == templateId);
+        
+        // Highlight selected template
+        document.querySelectorAll('.template-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        const selectedCard = document.querySelector(`[data-template-id="${templateId}"]`);
+        if (selectedCard) {
+            selectedCard.classList.add('selected');
+        }
+
+        this.updateButtons();
+    },
+
+    // Apply the selected template
+    applyTemplate: async function() {
+        if (!this.selectedTemplate) return;
+
+        try {
+            const response = await fetch(`/api/personal-space/templates/${this.selectedTemplate.id}/apply`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                }
+            });
+
+            if (response.ok) {
+                // Close modal and refresh
+                const modal = bootstrap.Modal.getInstance(document.getElementById('block-factory-modal'));
+                if (modal) {
+                    modal.hide();
+                }
+                if (window.loadBlocks) {
+                    window.loadBlocks();
+                }
+                this.showSuccessMessage('Plantilla aplicada exitosamente');
+            } else {
+                throw new Error('Error al aplicar la plantilla');
+            }
+        } catch (error) {
+            console.error('Error applying template:', error);
+            this.showErrorMessage('Error al aplicar la plantilla. Inténtalo de nuevo.');
+        }
+    },
 };
 
 // Global functions removed - now using event delegation
