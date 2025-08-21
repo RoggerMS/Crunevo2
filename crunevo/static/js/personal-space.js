@@ -123,7 +123,7 @@ function initializeFocusMode() {
 
 function initializeSortable() {
     const grid = document.getElementById('blocks-grid');
-    if (!grid) return;
+    if (!grid || typeof Sortable === 'undefined') return;
 
     sortableInstance = Sortable.create(grid, {
         animation: 150,
