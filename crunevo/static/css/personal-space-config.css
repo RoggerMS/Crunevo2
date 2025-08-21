@@ -1,0 +1,71 @@
+/* Personal Space Configuration styles */
+#personal-space-config .stats-grid {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+    #personal-space-config .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    #personal-space-config .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+#personal-space-config .stat-card {
+    background: var(--ps-card-bg-light);
+    padding: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: var(--ps-shadow-sm);
+    border: 1px solid var(--ps-border-light);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-bs-theme="dark"] #personal-space-config .stat-card {
+    background: var(--ps-card-bg-dark);
+    border-color: var(--ps-border-dark);
+}
+
+#personal-space-config .stat-card:hover {
+    transform: scale(1.02);
+    box-shadow: var(--ps-shadow-md);
+}
+
+#personal-space-config .stat-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    color: var(--bs-primary);
+    font-size: 1.25rem;
+}
+
+[data-bs-theme="dark"] #personal-space-config .stat-icon {
+    background-color: rgba(var(--bs-primary-rgb), 0.2);
+}
+
+#personal-space-config .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--bs-primary);
+    line-height: 1;
+}
+
+#personal-space-config .stat-label {
+    color: #111827;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    font-weight: 600;
+}
