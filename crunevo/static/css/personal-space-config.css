@@ -1,4 +1,13 @@
 /* Personal Space Configuration styles */
+:root {
+    --ps-card-bg-light: #fff;
+    --ps-card-bg-dark: #1f1f1f;
+    --ps-border-light: #e5e7eb;
+    --ps-border-dark: #2d2f31;
+    --ps-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.06);
+    --ps-shadow-md: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
 #personal-space-config .stats-grid {
     display: grid;
     gap: 1rem;
@@ -64,7 +73,7 @@
 }
 
 #personal-space-config .stat-label {
-    color: #111827;
+    color: var(--bs-body-color);
     font-size: 0.875rem;
     margin-top: 0.25rem;
     font-weight: 600;
