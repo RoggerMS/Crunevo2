@@ -34,6 +34,7 @@ window.BlockFactory = {
 
         // Setup event listeners
         this.setupEventListeners();
+        this.setupBlockTypeSelection();
     },
 
     // Show the BlockFactory modal
@@ -104,21 +105,39 @@ window.BlockFactory = {
         // Creation mode tabs
         this.setupCreationModeTabs();
     },
+
+    // Setup block type card interactions
+    setupBlockTypeSelection: function() {
+        const modal = document.getElementById('block-factory-modal');
+        if (!modal) return;
+
+        const cards = modal.querySelectorAll('.block-type-card');
+        const nextBtn = document.getElementById('next-step');
+        cards.forEach(card => {
+            if (card.__bfBound) return;
+            const input = card.querySelector('input[type=radio]');
+            const type = input ? input.value : card.getAttribute('data-block-type');
+            const select = () => {
+                this.selectBlockType(type);
+            };
+            card.addEventListener('click', select);
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    select();
+                }
+            });
+            card.__bfBound = true;
+        });
+
+        if (nextBtn) nextBtn.disabled = true;
+    },
     
     // Handle all click events in modal
     handleModalClick: function(e) {
-        const target = e.target.closest('[data-action], [data-block-type], [data-color], .block-type-card, .color-option');
+        const target = e.target.closest('[data-action], [data-color], .color-option');
         if (!target) return;
-        
-        // Block type selection
-        if (target.hasAttribute('data-block-type') || target.classList.contains('block-type-card')) {
-            const blockType = target.getAttribute('data-block-type');
-            if (blockType) {
-                this.selectBlockType(blockType);
-            }
-            return;
-        }
-        
+
         // Color selection
         if (target.hasAttribute('data-color') || target.classList.contains('color-option')) {
             const color = target.getAttribute('data-color');
@@ -132,15 +151,12 @@ window.BlockFactory = {
         const action = target.getAttribute('data-action') || target.id;
         switch (action) {
             case 'next-step':
-            case 'next-step-btn':
                 this.nextStep();
                 break;
             case 'prev-step':
-            case 'prev-step-btn':
                 this.previousStep();
                 break;
             case 'create-block':
-            case 'create-block-btn':
                 this.createBlock();
                 break;
         }
@@ -204,54 +220,55 @@ window.BlockFactory = {
     // Select block type
     selectBlockType: function(type) {
         // Remove previous selection
-        document.querySelectorAll('.block-type-card').forEach(card => {
-            card.classList.remove('selected');
+        const cards = document.querySelectorAll('#block-factory-modal .block-type-card');
+        cards.forEach(card => {
+            card.classList.remove('active');
             const input = card.querySelector('input[type="radio"][name="block-type"]');
             if (input) input.checked = false;
         });
 
         // Select new type
-        const selectedCard = document.querySelector(`[data-block-type="${type}"]`);
+        const selectedCard = document.querySelector(`#block-factory-modal .block-type-card[data-block-type="${type}"]`);
         if (selectedCard) {
-            selectedCard.classList.add('selected');
+            selectedCard.classList.add('active');
             const input = selectedCard.querySelector('input[type="radio"][name="block-type"]');
             if (input) input.checked = true;
         }
-        
+
         // Update wizard state
         this.wizard.selectedType = type;
-        
+
         // Load type-specific configuration
         this.loadTypeConfiguration(type);
-        
+
         // Enable next button
+        const nextBtn = document.getElementById('next-step');
+        if (nextBtn) nextBtn.disabled = false;
         this.updateButtons();
     },
 
     // Load type-specific configuration
     loadTypeConfiguration: function(type) {
-        const configContent = document.getElementById('type-config-content');
-        if (!configContent) return;
-        
-        // This would load type-specific form fields
-        // For now, we'll use a basic implementation
-        const configs = {
-            'task': this.getTaskConfig(),
-            'note': this.getNoteConfig(),
-            'kanban': this.getKanbanConfig(),
-            'objective': this.getObjectiveConfig(),
-            'calendar': this.getCalendarConfig(),
-            'habit': this.getHabitConfig()
+        const container = document.getElementById('type-specific-config');
+        if (!container) return;
+
+        const renderers = {
+            task: this.renderTaskConfig.bind(this),
+            note: this.renderNoteConfig.bind(this),
+            kanban: this.renderKanbanConfig.bind(this),
+            objective: this.renderObjectiveConfig.bind(this),
+            calendar: this.renderCalendarConfig.bind(this),
+            habit: this.renderHabitConfig.bind(this)
         };
-        
-        configContent.innerHTML = configs[type] || '';
-        
-        // Initialize wizard config for this type
+
+        const renderer = renderers[type];
+        container.innerHTML = renderer ? renderer() : '';
+
         this.wizard.config = {};
     },
 
     // Get task-specific configuration
-    getTaskConfig: function() {
+    renderTaskConfig: function() {
         return `
             <div class="row">
                 <div class="col-md-6">
@@ -283,7 +300,7 @@ window.BlockFactory = {
     },
 
     // Get note-specific configuration
-    getNoteConfig: function() {
+    renderNoteConfig: function() {
         return `
             <div class="form-group">
                 <label for="note_type">Tipo de nota</label>
@@ -305,7 +322,7 @@ window.BlockFactory = {
     },
 
     // Get kanban-specific configuration
-    getKanbanConfig: function() {
+    renderKanbanConfig: function() {
         return `
             <div class="form-group">
                 <label for="columns">Columnas iniciales (separadas por coma)</label>
@@ -324,7 +341,7 @@ window.BlockFactory = {
     },
 
     // Get objective-specific configuration
-    getObjectiveConfig: function() {
+    renderObjectiveConfig: function() {
         return `
             <div class="row">
                 <div class="col-md-6">
@@ -348,7 +365,7 @@ window.BlockFactory = {
     },
 
     // Get calendar-specific configuration
-    getCalendarConfig: function() {
+    renderCalendarConfig: function() {
         return `
             <div class="form-group">
                 <label for="view_type">Vista predeterminada</label>
@@ -370,7 +387,7 @@ window.BlockFactory = {
     },
 
     // Get habit-specific configuration
-    getHabitConfig: function() {
+    renderHabitConfig: function() {
         return `
             <div class="row">
                 <div class="col-md-6">
@@ -614,10 +631,10 @@ window.BlockFactory = {
             const blockData = this.collectBlockData();
             
             // Show loading state
-            const createBtn = document.getElementById('create-block-btn');
+            const createBtn = document.getElementById('create-block');
             if (createBtn) {
                 createBtn.disabled = true;
-                createBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Creando...';
+                createBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Creando...';
             }
             
             // Send to server
@@ -661,10 +678,10 @@ window.BlockFactory = {
             this.showErrorMessage('Error al crear el bloque. Inténtalo de nuevo.');
         } finally {
             // Reset button
-            const createBtn = document.getElementById('create-block-btn');
+            const createBtn = document.getElementById('create-block');
             if (createBtn) {
                 createBtn.disabled = false;
-                createBtn.innerHTML = '<i class="bi bi-plus-circle me-2"></i>Crear Bloque';
+                createBtn.innerHTML = '<i class="bi bi-plus-circle me-1"></i> Crear Bloque';
             }
         }
     },
@@ -699,7 +716,7 @@ window.BlockFactory = {
     // Collect type-specific configuration
     collectTypeSpecificConfig: function() {
         const config = {};
-        const container = document.getElementById('type-config-content');
+        const container = document.getElementById('type-specific-config');
         if (!container) return config;
         
         // Collect all form inputs in type-specific section
@@ -753,34 +770,41 @@ window.BlockFactory = {
         
         // Reset forms
         document.getElementById('block-config-form')?.reset();
-        document.getElementById('block-customization-form')?.reset();
-        
+
+        // Clear block type selection
+        document.querySelectorAll('#block-factory-modal .block-type-card').forEach(card => {
+            card.classList.remove('active');
+            const input = card.querySelector('input[type="radio"]');
+            if (input) input.checked = false;
+        });
+
+        // Reset navigation
+        const nextBtn = document.getElementById('next-step');
+        if (nextBtn) nextBtn.disabled = true;
+
+        // Clear dynamic sections
+        const typeConfig = document.getElementById('type-specific-config');
+        if (typeConfig) typeConfig.innerHTML = '';
+        const preview = document.getElementById('block-preview');
+        if (preview) preview.innerHTML = '';
+
         // Reset creation mode to individual
         const individualTab = document.getElementById('individual-tab');
         const templateTab = document.getElementById('template-tab');
         if (individualTab && templateTab) {
             individualTab.classList.add('active');
             templateTab.classList.remove('active');
-
-            const individualMode = document.getElementById('individual-mode');
-            if (individualMode) {
-                individualMode.classList.add('show', 'active');
-            }
         }
-        
-        // Reset UI
-        document.querySelectorAll('.block-type-card').forEach(card => {
-            card.classList.remove('selected');
-        });
-        
-        document.querySelectorAll('.color-option').forEach(option => {
-            option.classList.remove('selected');
-        });
-        
+
         // Show first step
         this.showStep(1);
         this.updateStepIndicator();
         this.updateButtons();
+    },
+
+    // Called when modal opens after initial initialization
+    onOpen: function() {
+        this.reset();
     },
 
     // Template-related functions
