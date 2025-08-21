@@ -219,17 +219,33 @@
 </div>
 
 <script>
-// Basic modal initialization - all functionality is handled by BlockFactory.js
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('block-factory-modal');
-    if (modal && window.BlockFactory) {
-        modal.addEventListener('shown.bs.modal', function() {
-            window.BlockFactory.init();
-        });
-        
-        modal.addEventListener('hidden.bs.modal', function() {
-            window.BlockFactory.reset();
-        });
-    }
+// Initialize BlockFactory modal once and guard against double init
+document.addEventListener('DOMContentLoaded', () => {
+  const modalEl = document.getElementById('block-factory-modal');
+  if (!modalEl) return;
+
+  modalEl.addEventListener('shown.bs.modal', () => {
+    let tries = 0;
+    const boot = () => {
+      if (window.BlockFactory && typeof window.BlockFactory.init === 'function') {
+        if (!modalEl.__bfInited) {
+          window.BlockFactory.init();
+          modalEl.__bfInited = true;
+        } else if (window.BlockFactory.onOpen) {
+          window.BlockFactory.onOpen();
+        }
+      } else if (tries++ < 20) {
+        setTimeout(boot, 50);
+      } else {
+        console.error('BlockFactory no disponible');
+      }
+    };
+    boot();
+  });
+
+  modalEl.addEventListener('hidden.bs.modal', () => {
+    if (window.BlockFactory?.reset) window.BlockFactory.reset();
+    modalEl.__bfInited = false;
+  });
 });
 </script>

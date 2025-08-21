@@ -303,19 +303,7 @@ window.PersonalSpaceDashboard = {
     bindEvents: function() {
         // Quick notes functionality moved to modal
 
-        // Ensure Bootstrap modals open when buttons are clicked
-        document.querySelectorAll('[data-bs-toggle="modal"]').forEach((btn) => {
-            btn.addEventListener('click', () => {
-                const target = btn.getAttribute('data-bs-target');
-                if (target) {
-                    const el = document.querySelector(target);
-                    if (el) {
-                        const modal = new bootstrap.Modal(el);
-                        modal.show();
-                    }
-                }
-            });
-        });
+        // Bootstrap handles data-bs-toggle="modal" automatically; no manual initialization needed
     },
     
     // Load dashboard data
