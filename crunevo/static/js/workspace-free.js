@@ -92,19 +92,41 @@
     },
     addBlock(block){
       if(!this.container) return;
-      const el=document.createElement('div');
-      el.className='grid-stack-item workspace-block';
-      el.dataset.blockId=block.id;
-      const posX = (block.position && block.position.x) || block.position_x || 0;
-      const posY = (block.position && block.position.y) || block.position_y || 0;
-      el.dataset.x=posX;
-      el.dataset.y=posY;
-      el.style.position='absolute';
-      el.style.left=posX+'px';
-      el.style.top=posY+'px';
-      el.innerHTML=`<div class="grid-stack-item-content"><h4>${block.title||'Bloque'}</h4></div>`;
+      const b = block && (block.block || block);
+      if(!b) return;
+
+      // Normalize block data using existing helpers when available
+      let normalized = b;
+      if (typeof convertBlock === 'function') {
+        normalized = convertBlock(b);
+      }
+
+      let el;
+      if (typeof createBlockElement === 'function') {
+        el = createBlockElement(normalized);
+      } else {
+        el = document.createElement('div');
+        el.className = 'grid-stack-item workspace-block';
+        el.innerHTML = `<div class="grid-stack-item-content"><h4>${normalized.title||'Bloque'}</h4></div>`;
+      }
+
+      el.dataset.blockId = normalized.id;
+      const posX = (b.position && b.position.x) || b.position_x || 0;
+      const posY = (b.position && b.position.y) || b.position_y || 0;
+      el.dataset.x = posX;
+      el.dataset.y = posY;
+      el.style.position = 'absolute';
+      el.style.left = posX + 'px';
+      el.style.top = posY + 'px';
+
       this.container.appendChild(el);
       this.attachDrag(el);
+
+      // Hide empty state and update footer count
+      const empty = document.querySelector('.empty-workspace');
+      if (empty) empty.classList.add('d-none');
+      const countEl = document.querySelector('.workspace-info div:nth-child(2)');
+      if (countEl) countEl.textContent = `${this.blocks().length} bloques`;
     }
   };
   window.WorkspaceBlocks=WS;

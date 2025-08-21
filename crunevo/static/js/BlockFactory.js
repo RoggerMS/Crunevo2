@@ -658,7 +658,7 @@ window.BlockFactory = {
                 
                 // Refresh workspace
                 if (window.WorkspaceBlocks && window.WorkspaceBlocks.addBlock) {
-                    window.WorkspaceBlocks.addBlock(result);
+                    window.WorkspaceBlocks.addBlock(result.block || result);
                 } else if (window.WorkspaceLayout && window.WorkspaceLayout.refreshBlocks) {
                     window.WorkspaceLayout.refreshBlocks();
                 } else if (window.loadBlocks) {
