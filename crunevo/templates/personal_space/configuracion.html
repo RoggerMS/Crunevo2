@@ -128,29 +128,58 @@
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
     margin-bottom: 2rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
 
 .stat-card {
     background: white;
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: 0.75rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.stat-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    color: var(--bs-primary);
+    font-size: 1.25rem;
 }
 
 .stat-value {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 700;
-    color: #667eea;
+    color: var(--bs-primary);
+    line-height: 1;
 }
 
 .stat-label {
-    color: #6b7280;
+    color: #374151;
     font-size: 0.875rem;
     margin-top: 0.25rem;
+    font-weight: 600;
 }
 </style>
 {% endblock %}
@@ -159,14 +188,14 @@
 <div class="config-container">
     <div class="container">
         <!-- Header -->
-        <div class="row mb-4">
+        <div class="row my-4">
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h1 class="text-white mb-2">Configuración del Espacio Personal</h1>
-                        <p class="text-white-50">Personaliza tu experiencia y gestiona tus preferencias</p>
+                        <h1 class="mb-2 fw-semibold tw-text-gray-900">Configuración del Espacio Personal</h1>
+                        <p class="tw-text-gray-600">Personaliza tu experiencia y gestiona tus preferencias</p>
                     </div>
-                    <a href="{{ url_for('personal_space.dashboard') }}" class="btn btn-light">
+                    <a href="{{ url_for('personal_space.dashboard') }}" class="btn btn-outline-secondary btn-sm">
                         <i class="bi bi-arrow-left me-2"></i>Volver al Dashboard
                     </a>
                 </div>
@@ -174,22 +203,42 @@
         </div>
 
         <!-- Statistics Overview -->
-        <div class="stats-grid mb-4">
+        <div class="stats-grid mb-4" role="group" aria-label="Métricas del espacio">
             <div class="stat-card">
-                <div class="stat-value" id="totalBlocks">0</div>
-                <div class="stat-label">Bloques Totales</div>
+                <div class="stat-icon">
+                    <i class="bi bi-grid"></i>
+                </div>
+                <div>
+                    <div class="stat-value" id="totalBlocks">0</div>
+                    <div class="stat-label">Bloques Totales</div>
+                </div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="completedTasks">0</div>
-                <div class="stat-label">Tareas Completadas</div>
+                <div class="stat-icon">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+                <div>
+                    <div class="stat-value" id="completedTasks">0</div>
+                    <div class="stat-label">Tareas Completadas</div>
+                </div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="activeObjectives">0</div>
-                <div class="stat-label">Objetivos Activos</div>
+                <div class="stat-icon">
+                    <i class="bi bi-bullseye"></i>
+                </div>
+                <div>
+                    <div class="stat-value" id="activeObjectives">0</div>
+                    <div class="stat-label">Objetivos Activos</div>
+                </div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="productivityScore">0</div>
-                <div class="stat-label">Puntuación de Productividad</div>
+                <div class="stat-icon">
+                    <i class="bi bi-activity"></i>
+                </div>
+                <div>
+                    <div class="stat-value" id="productivityScore">0</div>
+                    <div class="stat-label">Puntuación de Productividad</div>
+                </div>
             </div>
         </div>
 
