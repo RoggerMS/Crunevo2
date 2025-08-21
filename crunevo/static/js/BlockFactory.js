@@ -166,6 +166,11 @@ window.BlockFactory = {
             this.updatePreview();
             return;
         }
+
+        if (target.name === 'block-type') {
+            this.selectBlockType(target.value);
+            return;
+        }
     },
 
     // Setup creation mode tabs
@@ -201,12 +206,16 @@ window.BlockFactory = {
         // Remove previous selection
         document.querySelectorAll('.block-type-card').forEach(card => {
             card.classList.remove('selected');
+            const input = card.querySelector('input[type="radio"][name="block-type"]');
+            if (input) input.checked = false;
         });
-        
+
         // Select new type
         const selectedCard = document.querySelector(`[data-block-type="${type}"]`);
         if (selectedCard) {
             selectedCard.classList.add('selected');
+            const input = selectedCard.querySelector('input[type="radio"][name="block-type"]');
+            if (input) input.checked = true;
         }
         
         // Update wizard state
@@ -519,7 +528,14 @@ window.BlockFactory = {
     // Validate configuration form
     validateConfigurationForm: function() {
         const titleInput = document.querySelector('input[name="title"]');
-        return titleInput && titleInput.value.trim() !== '';
+        if (!titleInput) return false;
+        const valid = titleInput.value.trim() !== '';
+        if (!valid) {
+            titleInput.classList.add('is-invalid');
+        } else {
+            titleInput.classList.remove('is-invalid');
+        }
+        return valid;
     },
 
     // Select color
@@ -588,7 +604,11 @@ window.BlockFactory = {
             await this.applyTemplate();
             return;
         }
-        
+
+        if (!this.validateConfigurationForm()) {
+            return;
+        }
+
         try {
             // Collect all form data
             const blockData = this.collectBlockData();
@@ -620,7 +640,9 @@ window.BlockFactory = {
                 }
                 
                 // Refresh workspace
-                if (window.WorkspaceLayout && window.WorkspaceLayout.refreshBlocks) {
+                if (window.WorkspaceBlocks && window.WorkspaceBlocks.addBlock) {
+                    window.WorkspaceBlocks.addBlock(result);
+                } else if (window.WorkspaceLayout && window.WorkspaceLayout.refreshBlocks) {
                     window.WorkspaceLayout.refreshBlocks();
                 } else if (window.loadBlocks) {
                     window.loadBlocks();
