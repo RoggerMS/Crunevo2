@@ -31,10 +31,7 @@ window.BlockFactory = {
         this.showStep(1);
         this.updateStepIndicator();
         this.updateButtons();
-        
-        // Load templates for template mode
-        this.loadTemplates();
-        
+
         // Setup event listeners
         this.setupEventListeners();
     },
@@ -65,14 +62,13 @@ window.BlockFactory = {
 
     // Open template tab directly
     openTemplateTab: function() {
-        this.show();
-        // Wait for modal to be shown, then switch to template tab
-        setTimeout(() => {
-            const templateTab = document.getElementById('template-tab');
-            if (templateTab) {
-                templateTab.click();
-            }
-        }, 100);
+        const galleryModalEl = document.getElementById('template-gallery-modal');
+        if (galleryModalEl) {
+            const galleryModal = new bootstrap.Modal(galleryModalEl);
+            galleryModal.show();
+        } else {
+            console.error('Template gallery modal not found');
+        }
     },
 
     // Setup event listeners with delegation
@@ -100,7 +96,7 @@ window.BlockFactory = {
     
     // Handle all click events in modal
     handleModalClick: function(e) {
-        const target = e.target.closest('[data-action], [data-block-type], [data-template-id], [data-color], .block-type-card, .template-card, .color-option');
+        const target = e.target.closest('[data-action], [data-block-type], [data-color], .block-type-card, .color-option');
         if (!target) return;
         
         // Block type selection
@@ -112,30 +108,11 @@ window.BlockFactory = {
             return;
         }
         
-        // Template selection
-        if (target.hasAttribute('data-template-id') || target.classList.contains('template-card')) {
-            const templateId = target.getAttribute('data-template-id');
-            if (templateId) {
-                this.selectTemplate(templateId);
-            }
-            return;
-        }
-        
         // Color selection
         if (target.hasAttribute('data-color') || target.classList.contains('color-option')) {
             const color = target.getAttribute('data-color');
             if (color) {
                 this.selectColor(color);
-            }
-            return;
-        }
-        
-        // Template selection
-        if (target.classList.contains('template-card') || target.closest('.template-card')) {
-            const templateCard = target.classList.contains('template-card') ? target : target.closest('.template-card');
-            const templateId = templateCard.getAttribute('data-template-id');
-            if (templateId) {
-                this.selectTemplate(templateId);
             }
             return;
         }
@@ -155,27 +132,12 @@ window.BlockFactory = {
             case 'create-block-btn':
                 this.createBlock();
                 break;
-            case 'apply-template':
-                this.applyTemplate();
-                break;
-            case 'select-template':
-                const templateId = target.getAttribute('data-template-id');
-                if (templateId) {
-                    this.selectTemplate(templateId);
-                }
-                break;
         }
     },
     
     // Handle input events
     handleModalInput: function(e) {
         const target = e.target;
-        
-        // Template search
-        if (target.id === 'template-search') {
-            this.searchTemplates(target.value);
-            return;
-        }
         
         // Title input for preview
         if (target.name === 'title') {
@@ -202,46 +164,35 @@ window.BlockFactory = {
         
         if (individualTab) {
             individualTab.addEventListener('click', () => {
-                // Switch to individual mode
                 document.querySelectorAll('.creation-mode-tab').forEach(tab => {
                     tab.classList.remove('active');
                 });
                 individualTab.classList.add('active');
-                
-                // Show/hide content
+
                 const individualMode = document.getElementById('individual-mode');
-                const templateMode = document.getElementById('template-mode');
-                if (individualMode && templateMode) {
+                if (individualMode) {
                     individualMode.classList.remove('d-none');
-                    templateMode.classList.add('d-none');
                 }
-                
-                // Update buttons
+
                 this.updateButtons();
             });
         }
-        
+
         if (templateTab) {
             templateTab.addEventListener('click', () => {
-                // Switch to template mode
-                document.querySelectorAll('.creation-mode-tab').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                templateTab.classList.add('active');
-                
-                // Show/hide content
-                const individualMode = document.getElementById('individual-mode');
-                const templateMode = document.getElementById('template-mode');
-                if (individualMode && templateMode) {
-                    individualMode.classList.add('d-none');
-                    templateMode.classList.remove('d-none');
+                const factoryModalEl = document.getElementById('block-factory-modal');
+                const factoryModal = bootstrap.Modal.getInstance(factoryModalEl);
+                if (factoryModal) {
+                    factoryModal.hide();
                 }
-                
-                // Load templates when switching to template mode
-                this.loadTemplates();
-                
-                // Update buttons
-                this.updateButtons();
+
+                const galleryModalEl = document.getElementById('template-gallery-modal');
+                if (galleryModalEl) {
+                    const galleryModal = new bootstrap.Modal(galleryModalEl);
+                    galleryModal.show();
+                } else {
+                    console.error('Template gallery modal not found');
+                }
             });
         }
     },
@@ -502,20 +453,16 @@ window.BlockFactory = {
         const prevBtn = document.getElementById('prev-step');
         const nextBtn = document.getElementById('next-step');
         const createBtn = document.getElementById('create-block');
-        const applyTemplateBtn = document.getElementById('apply-template');
+        const applyTemplateBtn = document.getElementById('apply-template'); // legacy element
         
         // Hide all buttons first
         if (prevBtn) prevBtn.style.display = 'none';
         if (nextBtn) nextBtn.style.display = 'none';
         if (createBtn) createBtn.style.display = 'none';
         if (applyTemplateBtn) applyTemplateBtn.style.display = 'none';
-        
-        // Template mode - show apply template button
+
+        // Template mode handled externally via TemplateGallery
         if (this.isTemplateMode()) {
-            if (applyTemplateBtn) {
-                applyTemplateBtn.style.display = 'inline-block';
-                applyTemplateBtn.disabled = !this.selectedTemplate;
-            }
             return;
         }
         
@@ -793,12 +740,10 @@ window.BlockFactory = {
         if (individualTab && templateTab) {
             individualTab.classList.add('active');
             templateTab.classList.remove('active');
-            
+
             const individualMode = document.getElementById('individual-mode');
-            const templateMode = document.getElementById('template-mode');
-            if (individualMode && templateMode) {
+            if (individualMode) {
                 individualMode.classList.add('show', 'active');
-                templateMode.classList.remove('show', 'active');
             }
         }
         
@@ -819,152 +764,6 @@ window.BlockFactory = {
 
     // Template-related functions
     // Load templates
-    loadTemplates: async function() {
-        try {
-            const response = await fetch('/api/personal-space/templates?public=true');
-            if (response.ok) {
-                const data = await response.json();
-                // Fix: Extract templates array from response object
-                this.templates = Array.isArray(data.templates) ? data.templates : [];
-                this.renderTemplates();
-            } else {
-                throw new Error('Error loading templates');
-            }
-        } catch (error) {
-            console.error('Error loading templates:', error);
-            this.showTemplateError('Error al cargar las plantillas');
-        }
-    },
-
-    // Render templates in grid
-    renderTemplates: function(filteredTemplates = null) {
-        const templatesGrid = document.getElementById('templates-grid');
-        if (!templatesGrid) return;
-        
-        const templates = filteredTemplates || this.templates;
-        
-        if (templates.length === 0) {
-            templatesGrid.innerHTML = `
-                <div class="text-center py-4">
-                    <i class="bi bi-collection text-muted" style="font-size: 2rem;"></i>
-                    <p class="mt-2 text-muted">No hay plantillas disponibles</p>
-                </div>
-            `;
-            return;
-        }
-        
-        templatesGrid.innerHTML = templates.map(template => `
-            <div class="template-card" data-template-id="${template.id}" onclick="window.BlockFactory.selectTemplate('${template.id}')">
-                <div class="template-title">${template.name}</div>
-                <div class="template-description">${template.description || 'Sin descripción'}</div>
-                <div class="template-blocks-count">${template.blocks_count || 0} bloques</div>
-            </div>
-        `).join('');
-    },
-
-    // Select template
-    selectTemplate: function(templateId) {
-        // Remove previous selection
-        document.querySelectorAll('.template-card').forEach(card => {
-            card.classList.remove('selected');
-        });
-        
-        // Select new template
-        const selectedCard = document.querySelector(`[data-template-id="${templateId}"]`);
-        if (selectedCard) {
-            selectedCard.classList.add('selected');
-        }
-        
-        this.selectedTemplate = templateId;
-        
-        // Enable next button
-        this.updateButtons();
-    },
-
-    // Filter templates by category
-    filterTemplates: function(category) {
-        // Update active category button
-        document.querySelectorAll('.template-categories .btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        const activeBtn = document.querySelector(`[data-category="${category}"]`);
-        if (activeBtn) {
-            activeBtn.classList.add('active');
-        }
-        
-        // Filter templates
-        let filteredTemplates = this.templates;
-        if (category !== 'all') {
-            filteredTemplates = this.templates.filter(template => 
-                template.category === category
-            );
-        }
-        
-        this.renderTemplates(filteredTemplates);
-    },
-
-    // Search templates
-    searchTemplates: function(query) {
-        const filteredTemplates = this.templates.filter(template =>
-            template.name.toLowerCase().includes(query.toLowerCase()) ||
-            (template.description && template.description.toLowerCase().includes(query.toLowerCase()))
-        );
-        
-        this.renderTemplates(filteredTemplates);
-    },
-
-    // Apply selected template
-    applyTemplate: async function() {
-        if (!this.selectedTemplate) return;
-        
-        try {
-            const response = await fetch(`/api/personal-space/templates/${this.selectedTemplate}/instantiate`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': this.getCSRFToken()
-                }
-            });
-            
-            if (response.ok) {
-                // Close modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('block-factory-modal'));
-                if (modal) {
-                    modal.hide();
-                }
-                
-                // Refresh workspace
-                if (window.WorkspaceLayout && window.WorkspaceLayout.refreshBlocks) {
-                    window.WorkspaceLayout.refreshBlocks();
-                } else if (window.loadBlocks) {
-                    window.loadBlocks();
-                }
-                
-                this.showSuccessMessage('Plantilla aplicada exitosamente');
-                this.reset();
-            } else {
-                throw new Error('Error applying template');
-            }
-        } catch (error) {
-            console.error('Error applying template:', error);
-            this.showErrorMessage('Error al aplicar la plantilla. Inténtalo de nuevo.');
-        }
-    },
-
-    // Show template error
-    showTemplateError: function(message) {
-        const templatesGrid = document.getElementById('templates-grid');
-        if (templatesGrid) {
-            templatesGrid.innerHTML = `
-                <div class="text-center py-4 text-danger">
-                    <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
-                    <p class="mt-2">${message}</p>
-                </div>
-            `;
-        }
-    },
-
     // Check if template mode is active
     isTemplateMode: function() {
         const templateTab = document.getElementById('template-tab');
