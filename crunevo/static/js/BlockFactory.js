@@ -88,19 +88,15 @@ window.BlockFactory = {
         const modal = document.getElementById('block-factory-modal');
         if (!modal) return;
         
-        // Remove existing listeners to avoid duplicates
-        modal.removeEventListener('click', this.handleModalClick);
-        modal.removeEventListener('input', this.handleModalInput);
-        modal.removeEventListener('change', this.handleModalChange);
-        
-        // Event delegation for all modal interactions
-        this.handleModalClick = this.handleModalClick.bind(this);
-        this.handleModalInput = this.handleModalInput.bind(this);
-        this.handleModalChange = this.handleModalChange.bind(this);
-        
-        modal.addEventListener('click', this.handleModalClick);
-        modal.addEventListener('input', this.handleModalInput);
-        modal.addEventListener('change', this.handleModalChange);
+        // Only setup listeners if not already bound
+        if (!modal._bfListenersSetup) {
+            // Event delegation for all modal interactions
+            modal.addEventListener('click', this.handleModalClick.bind(this));
+            modal.addEventListener('input', this.handleModalInput.bind(this));
+            modal.addEventListener('change', this.handleModalChange.bind(this));
+            
+            modal._bfListenersSetup = true;
+        }
         
         // Creation mode tabs
         this.setupCreationModeTabs();
@@ -135,7 +131,9 @@ window.BlockFactory = {
     
     // Handle all click events in modal
     handleModalClick: function(e) {
+        console.log('BlockFactory: Click event detected', e.target);
         const target = e.target.closest('[data-action], [data-color], .color-option');
+        console.log('BlockFactory: Target found', target);
         if (!target) return;
 
         // Color selection
@@ -149,14 +147,25 @@ window.BlockFactory = {
         
         // Action buttons
         const action = target.getAttribute('data-action') || target.id;
+        console.log('BlockFactory: Action detected', action);
         switch (action) {
+            case 'select-block-type':
+                const blockType = target.getAttribute('data-block-type');
+                console.log('BlockFactory: Selecting block type:', blockType);
+                if (blockType) {
+                    this.selectBlockType(blockType);
+                }
+                break;
             case 'next-step':
+                console.log('BlockFactory: Calling nextStep()');
                 this.nextStep();
                 break;
             case 'prev-step':
+                console.log('BlockFactory: Calling previousStep()');
                 this.previousStep();
                 break;
             case 'create-block':
+                console.log('BlockFactory: Calling createBlock()');
                 this.createBlock();
                 break;
         }
@@ -219,6 +228,7 @@ window.BlockFactory = {
 
     // Select block type
     selectBlockType: function(type) {
+        console.log('BlockFactory: selectBlockType() called with type:', type);
         // Remove previous selection
         const cards = document.querySelectorAll('#block-factory-modal .block-type-card');
         cards.forEach(card => {
@@ -229,6 +239,7 @@ window.BlockFactory = {
 
         // Select new type
         const selectedCard = document.querySelector(`#block-factory-modal .block-type-card[data-block-type="${type}"]`);
+        console.log('BlockFactory: Selected card found:', selectedCard);
         if (selectedCard) {
             selectedCard.classList.add('active');
             const input = selectedCard.querySelector('input[type="radio"][name="block-type"]');
@@ -237,13 +248,18 @@ window.BlockFactory = {
 
         // Update wizard state
         this.wizard.selectedType = type;
+        console.log('BlockFactory: Updated wizard.selectedType to:', this.wizard.selectedType);
 
         // Load type-specific configuration
         this.loadTypeConfiguration(type);
 
         // Enable next button
         const nextBtn = document.getElementById('next-step');
-        if (nextBtn) nextBtn.disabled = false;
+        console.log('BlockFactory: Next button found:', nextBtn);
+        if (nextBtn) {
+            nextBtn.disabled = false;
+            console.log('BlockFactory: Next button enabled');
+        }
         this.updateButtons();
     },
 
@@ -420,8 +436,11 @@ window.BlockFactory = {
 
     // Navigate to next step
     nextStep: function() {
+        console.log('BlockFactory: nextStep() called, wizard.step:', this.wizard.step);
+        console.log('BlockFactory: canProceedToNextStep():', this.canProceedToNextStep());
         if (this.wizard.step < this.totalSteps && this.canProceedToNextStep()) {
             this.wizard.step++;
+            console.log('BlockFactory: Moving to step:', this.wizard.step);
             this.showStep(this.wizard.step);
             this.updateStepIndicator();
             this.updateButtons();
@@ -430,6 +449,8 @@ window.BlockFactory = {
             if (this.wizard.step === 3) {
                 this.updatePreview();
             }
+        } else {
+            console.log('BlockFactory: Cannot proceed to next step');
         }
     },
 
@@ -513,18 +534,28 @@ window.BlockFactory = {
 
     // Check if can proceed to next step
     canProceedToNextStep: function() {
+        console.log('BlockFactory: canProceedToNextStep() - current step:', this.wizard.step);
+        console.log('BlockFactory: selectedType:', this.wizard.selectedType);
         switch (this.wizard.step) {
             case 1:
                 if (this.isTemplateMode()) {
-                    return this.selectedTemplate !== null;
+                    const canProceed = this.selectedTemplate !== null;
+                    console.log('BlockFactory: Step 1 (template mode) - can proceed:', canProceed);
+                    return canProceed;
                 } else {
-                    return this.wizard.selectedType !== null;
+                    const canProceed = this.wizard.selectedType !== null;
+                    console.log('BlockFactory: Step 1 (individual mode) - can proceed:', canProceed);
+                    return canProceed;
                 }
             case 2:
-                return this.validateConfigurationForm();
+                const isValid = this.validateConfigurationForm();
+                console.log('BlockFactory: Step 2 - validation result:', isValid);
+                return isValid;
             case 3:
+                console.log('BlockFactory: Step 3 - customization is optional: true');
                 return true; // Customization is optional
             default:
+                console.log('BlockFactory: Default case - cannot proceed: false');
                 return false;
         }
     },

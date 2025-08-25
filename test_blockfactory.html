@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test BlockFactory</title>
+    <style>
+        .block-type-card {
+            border: 2px solid #ddd;
+            padding: 20px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            display: inline-block;
+            width: 200px;
+        }
+        .block-type-card.active {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test BlockFactory Modal</h1>
+    
+    <div id="block-factory-modal">
+        <div id="step-1" class="step active">
+            <h3>Paso 1: Selecciona el tipo de bloque</h3>
+            <div class="block-type-card" data-block-type="task" data-action="select-block-type">
+                <h4>Tareas</h4>
+                <p>Gestiona tus tareas y listas de pendientes</p>
+            </div>
+            <div class="block-type-card" data-block-type="note" data-action="select-block-type">
+                <h4>Notas</h4>
+                <p>Crea notas y documentos de texto</p>
+            </div>
+            <div class="block-type-card" data-block-type="kanban" data-action="select-block-type">
+                <h4>Kanban</h4>
+                <p>Tablero Kanban para gestión visual</p>
+            </div>
+        </div>
+        
+        <div id="step-2" class="step">
+            <h3>Paso 2: Configuración básica</h3>
+            <form>
+                <label>Título: <input type="text" id="block-title" required></label><br><br>
+                <label>Descripción: <textarea id="block-description"></textarea></label><br><br>
+            </form>
+        </div>
+        
+        <div class="modal-footer">
+            <button id="prev-step" class="btn" data-action="prev-step" style="display: none;">Anterior</button>
+            <button id="next-step" class="btn btn-primary" data-action="next-step" disabled>Continuar</button>
+            <button id="create-block" class="btn btn-primary" data-action="create-block" style="display: none;">Crear Bloque</button>
+        </div>
+    </div>
+
+    <script>
+        // Simplified BlockFactory for testing
+        const BlockFactory = {
+            wizard: {
+                step: 1,
+                selectedType: null
+            },
+            totalSteps: 2,
+            
+            init: function() {
+                console.log('BlockFactory: Initializing test version');
+                this.setupEventListeners();
+            },
+            
+            setupEventListeners: function() {
+                const modal = document.getElementById('block-factory-modal');
+                modal.addEventListener('click', this.handleModalClick.bind(this));
+            },
+            
+            handleModalClick: function(e) {
+                console.log('BlockFactory: Click event detected', e.target);
+                const target = e.target.closest('[data-action], [data-color], .color-option');
+                console.log('BlockFactory: Target found', target);
+                if (!target) return;
+                
+                const action = target.getAttribute('data-action') || target.id;
+                console.log('BlockFactory: Action detected', action);
+                switch (action) {
+                    case 'select-block-type':
+                        const blockType = target.getAttribute('data-block-type');
+                        console.log('BlockFactory: Selecting block type:', blockType);
+                        if (blockType) {
+                            this.selectBlockType(blockType);
+                        }
+                        break;
+                    case 'next-step':
+                        console.log('BlockFactory: Calling nextStep()');
+                        this.nextStep();
+                        break;
+                    case 'prev-step':
+                        console.log('BlockFactory: Calling previousStep()');
+                        this.previousStep();
+                        break;
+                    case 'create-block':
+                        console.log('BlockFactory: Calling createBlock()');
+                        alert('¡Bloque creado exitosamente!');
+                        break;
+                }
+            },
+            
+            selectBlockType: function(type) {
+                console.log('BlockFactory: selectBlockType() called with type:', type);
+                
+                // Remove previous selection
+                const cards = document.querySelectorAll('.block-type-card');
+                cards.forEach(card => card.classList.remove('active'));
+                
+                // Add selection to clicked card
+                const selectedCard = document.querySelector(`[data-block-type="${type}"]`);
+                console.log('BlockFactory: Selected card found:', selectedCard);
+                if (selectedCard) {
+                    selectedCard.classList.add('active');
+                }
+                
+                // Update wizard state
+                this.wizard.selectedType = type;
+                console.log('BlockFactory: Updated wizard.selectedType to:', this.wizard.selectedType);
+                
+                // Enable next button
+                const nextBtn = document.getElementById('next-step');
+                console.log('BlockFactory: Next button found:', nextBtn);
+                if (nextBtn) {
+                    nextBtn.disabled = false;
+                    console.log('BlockFactory: Next button enabled');
+                }
+            },
+            
+            nextStep: function() {
+                console.log('BlockFactory: nextStep() called, current step:', this.wizard.step);
+                console.log('BlockFactory: canProceedToNextStep():', this.canProceedToNextStep());
+                if (this.wizard.step < this.totalSteps && this.canProceedToNextStep()) {
+                    this.wizard.step++;
+                    console.log('BlockFactory: Moving to step:', this.wizard.step);
+                    this.showStep(this.wizard.step);
+                    this.updateButtons();
+                } else {
+                    console.log('BlockFactory: Cannot proceed to next step');
+                }
+            },
+            
+            previousStep: function() {
+                console.log('BlockFactory: previousStep() called');
+                if (this.wizard.step > 1) {
+                    this.wizard.step--;
+                    this.showStep(this.wizard.step);
+                    this.updateButtons();
+                }
+            },
+            
+            showStep: function(step) {
+                console.log('BlockFactory: showStep() called with step:', step);
+                // Hide all steps
+                document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+                
+                // Show current step
+                const currentStep = document.getElementById(`step-${step}`);
+                if (currentStep) {
+                    currentStep.classList.add('active');
+                }
+            },
+            
+            updateButtons: function() {
+                console.log('BlockFactory: updateButtons() called for step:', this.wizard.step);
+                const prevBtn = document.getElementById('prev-step');
+                const nextBtn = document.getElementById('next-step');
+                const createBtn = document.getElementById('create-block');
+                
+                if (this.wizard.step === 1) {
+                    prevBtn.style.display = 'none';
+                    nextBtn.style.display = 'inline-block';
+                    createBtn.style.display = 'none';
+                    nextBtn.disabled = !this.canProceedToNextStep();
+                } else if (this.wizard.step === this.totalSteps) {
+                    prevBtn.style.display = 'inline-block';
+                    nextBtn.style.display = 'none';
+                    createBtn.style.display = 'inline-block';
+                }
+            },
+            
+            canProceedToNextStep: function() {
+                console.log('BlockFactory: canProceedToNextStep() - current step:', this.wizard.step);
+                console.log('BlockFactory: selectedType:', this.wizard.selectedType);
+                switch (this.wizard.step) {
+                    case 1:
+                        const canProceed = this.wizard.selectedType !== null;
+                        console.log('BlockFactory: Step 1 - can proceed:', canProceed);
+                        return canProceed;
+                    case 2:
+                        console.log('BlockFactory: Step 2 - validation result: true');
+                        return true;
+                    default:
+                        console.log('BlockFactory: Default case - cannot proceed: false');
+                        return false;
+                }
+            }
+        };
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            BlockFactory.init();
+        });
+    </script>
+</body>
+</html>
