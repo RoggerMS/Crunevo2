@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { HomeIcon, MagnifyingGlassIcon, BellIcon, UserIcon, RssIcon } from '@heroicons/react/24/outline';
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -29,7 +31,7 @@ export default function RootLayout({
             <span className="text-xs">Feed</span>
           </Link>
           <Link href="/search" className="flex flex-col items-center">
-            <SearchIcon className="w-6 h-6" />
+            <MagnifyingGlassIcon className="w-6 h-6" />
             <span className="text-xs">Buscar</span>
           </Link>
           <Link href="/notifications" className="flex flex-col items-center">
@@ -45,5 +47,3 @@ export default function RootLayout({
     </html>
   );
 }
-import Link from "next/link";
-import { HomeIcon, SearchIcon, BellIcon, UserIcon, RssIcon } from '@heroicons/react/24/outline';
