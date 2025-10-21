@@ -85,6 +85,7 @@ class ModernFeedManager {
     const selector = '.post-skeleton';
     document.querySelectorAll(selector).forEach(skeleton => {
       skeleton.classList.add('fade-out');
+      console.log('⚠️ fade-out aplicado a:', skeleton);
       setTimeout(() => skeleton.remove(), 300);
     });
   }
@@ -295,6 +296,7 @@ class ModernFeedManager {
       }
     } else {
       commentsSection.classList.add('fade-out');
+      console.log('⚠️ fade-out aplicado a:', commentsSection);
       setTimeout(() => {
         commentsSection.style.display = 'none';
         commentsSection.classList.remove('fade-out');
@@ -1435,6 +1437,7 @@ class ModernFeedManager {
     // Auto-remove after delay
     setTimeout(() => {
       toast.classList.add('fade-out');
+      console.log('⚠️ fade-out aplicado a:', toast);
       setTimeout(() => toast.remove(), 300);
     }, type === 'error' ? 5000 : 3000);
   }
@@ -1701,6 +1704,7 @@ function deletePost(postId) {
       const postElement = document.querySelector(selector);
       if (postElement) {
         postElement.classList.add('fade-out');
+        console.log('⚠️ fade-out aplicado a:', postElement);
         setTimeout(() => postElement.remove(), 300);
       }
       window.modernFeedManager?.showToast('Publicación eliminada', 'success');
