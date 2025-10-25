@@ -1338,6 +1338,7 @@ Todos los cambios mantienen la funcionalidad original mientras mejoran significa
 - Replaced JavaScript-style comment within sample goals list in AnalyticsDashboard template with Jinja comment to resolve unexpected '//' errors on `/personal-space/`. (PR personal-space-jinja-comment)
 - Corrected personal space dashboard dropdown link to use existing `analytics_dashboard` endpoint and verified quick notes tables migration. (PR personal-space-analytics-link-fix)
 - Redesigned Quick Notes to open as Bootstrap modal appended to body with portal, replacing anchor trigger and persisting preferences. (PR quick-notes-modal-fix)
+- Removed placeholder analytics values and zeroed fallback data so dashboard metrics reflect real user information. (PR analytics-dashboard-real-data)
 - Made Personal Space analytics dashboard load real metrics from AnalyticsService and added view test. (PR personal-space-analytics-data)
 - Replaced BlockFactory macro imports with includes in personal space templates to prevent missing template errors on dashboard and workspace. (PR blockfactory-include-fix)
 - Corrected workspace.html block name to `head_extra` so workspace CSS and JS load properly. (PR workspace-head-extra-block)
